@@ -21,14 +21,14 @@ Begin VB.UserControl commandBar
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   637
    ToolboxBitmap   =   "commandBar.ctx":0000
-   Begin PhotoDemon.pdComboBox cmbPreset 
+   Begin PhotoDemon.pdComboBox cboPreset 
       Height          =   345
       Left            =   1800
       TabIndex        =   5
       Top             =   195
       Width           =   3135
-      _extentx        =   5530
-      _extenty        =   609
+      _ExtentX        =   5530
+      _ExtentY        =   609
    End
    Begin VB.CommandButton cmdRandomize 
       Caption         =   "Randomize"
@@ -312,16 +312,15 @@ Public Property Set Font(mNewFont As StdFont)
     
 End Property
 
-'When a preset is selected from the drop-down, load it
-Private Sub cmbPreset_Click()
-    readXMLSettings cmbPreset.List(cmbPreset.ListIndex)
-End Sub
+'External objects can use this function to retrieve a matching list of preset entries
+' Returns TRUE if custom presets exist for this function; FALSE otherwise.
+Public Function retrievePresetList(ByRef dstList() As String) As Boolean
 
-Private Sub cmbPreset_KeyPress(KeyAscii As Integer)
-    If KeyAscii = vbKeyReturn Then
-        KeyAscii = 0
-        savePreset
-    End If
+End Function
+
+'When a preset is selected from the drop-down, load it
+Private Sub cboPreset_Click()
+    If cboPreset.ListIndex > 0 Then readXMLSettings cboPreset.List(cboPreset.ListIndex)
 End Sub
 
 'Randomize all control values on the page.  This control will automatically handle all standard controls, and a separate
@@ -407,7 +406,7 @@ Private Sub cmdRandomize_Click()
             Case "ListBox", "ComboBox", "pdComboBox"
             
                 'Make sure the combo box is not the preset box on this control!
-                If (eControl.hWnd <> cmbPreset.hWnd) Then
+                If (eControl.hWnd <> cboPreset.hWnd) Then
                     eControl.ListIndex = Int(Rnd * eControl.ListCount)
                 End If
             
@@ -423,7 +422,7 @@ Private Sub cmdRandomize_Click()
     RaiseEvent RandomizeClick
     
     'For good measure, erase any preset name in the combo box
-    'cmbPreset.Text = ""
+    cboPreset.ListIndex = 0
     
     'Enable preview
     allowPreviews = True
@@ -457,8 +456,8 @@ Private Function savePreset() As Boolean
         
         'Old overwrite detection code continues here, for convenience.
         Dim i As Long
-        For i = 0 To cmbPreset.ListCount - 1
-            If (StrComp(cmbPreset.List(i), newPresetName, vbTextCompare) = 0) Or ((StrComp(xmlEngine.getXMLSafeTagName(cmbPreset.List(i)), xmlEngine.getXMLSafeTagName(newPresetName), vbTextCompare) = 0)) Then
+        For i = 0 To cboPreset.ListCount - 1
+            If (StrComp(cboPreset.List(i), newPresetName, vbTextCompare) = 0) Or ((StrComp(xmlEngine.getXMLSafeTagName(cboPreset.List(i)), xmlEngine.getXMLSafeTagName(newPresetName), vbTextCompare) = 0)) Then
 '
 '                Dim msgReturn As VbMsgBoxResult
 '                msgReturn = pdMsgBox("A preset with this name already exists.  Do you want to overwrite it?", vbYesNoCancel + vbApplicationModal + vbInformation, "Overwrite existing preset")
@@ -472,10 +471,10 @@ Private Function savePreset() As Boolean
 '
 '                    'If the user selects NO, exit and let them enter a new name
 '                    Case vbNo
-'                        cmbPreset.Text = g_Language.TranslateMessage("(enter name here)")
-'                        cmbPreset.SetFocus
-'                        cmbPreset.SelStart = 0
-'                        cmbPreset.SelLength = Len(cmbPreset.Text)
+'                        cboPreset.Text = g_Language.TranslateMessage("(enter name here)")
+'                        cboPreset.SetFocus
+'                        cboPreset.SelStart = 0
+'                        cboPreset.SelLength = Len(cboPreset.Text)
 '                        Message "Preset save canceled."
 '                        savePreset = False
 '                        Exit Function
@@ -503,7 +502,7 @@ Private Function savePreset() As Boolean
         'Also, add this preset to the combo box
         If Not overwritingExistingPreset Then
             newPresetName = " " & newPresetName
-            cmbPreset.AddItem newPresetName
+            cboPreset.AddItem newPresetName
         End If
         
         Message "Preset saved."
@@ -526,7 +525,7 @@ Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set cmdReset.Font = mFont
     Set cmdSavePreset.Font = mFont
     Set cmdRandomize.Font = mFont
-    cmbPreset.FontSize = mFont.Size
+    cboPreset.FontSize = mFont.Size
 End Sub
 
 'Backcolor is used to control the color of the base user control; nothing else is affected by it
@@ -676,7 +675,7 @@ Private Sub cmdReset_Click()
             Case "ListBox", "ComboBox", "pdComboBox"
             
                 'Make sure the combo box is not the preset box on this control!
-                If (eControl.hWnd <> cmbPreset.hWnd) Then
+                If (eControl.hWnd <> cboPreset.hWnd) Then
                     eControl.ListIndex = 0
                 End If
             
@@ -691,7 +690,7 @@ Private Sub cmdReset_Click()
     RaiseEvent ResetClick
     
     'For good measure, erase any preset name in the combo box
-    'cmbPreset.Text = ""
+    cboPreset.ListIndex = 0
     
     'Enable previews
     allowPreviews = True
@@ -829,9 +828,10 @@ Private Sub UserControl_Show()
             .AddTool cmdReset, g_Language.TranslateMessage("Reset all settings to their default values.")
             .AddTool cmdRandomize, g_Language.TranslateMessage("Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.")
             .AddTool cmdSavePreset, g_Language.TranslateMessage("Save the current settings as a preset.  Please enter a descriptive preset name before saving.")
-            .AddTool cmbPreset, g_Language.TranslateMessage("Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.")
             
         End With
+        
+        cboPreset.assignTooltip "Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right."
         
         'Translate all control captions
         cmdOK.Caption = g_Language.TranslateMessage(cmdOK.Caption)
@@ -995,7 +995,7 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
             Case "ListBox", "ComboBox", "pdComboBox"
             
                 'Make sure the combo box is not the preset box on this control!
-                If (eControl.hWnd <> cmbPreset.hWnd) Then controlValue = Str(eControl.ListIndex)
+                If (eControl.hWnd <> cboPreset.hWnd) Then controlValue = Str(eControl.ListIndex)
                 
             Case "TextBox", "pdTextBox"
                 controlValue = eControl.Text
@@ -1196,7 +1196,10 @@ End Function
 ' names to the preset combo box.
 Private Sub findAllXMLPresets()
 
-    cmbPreset.Clear
+    cboPreset.Clear
+    
+    'We always add one blank entry to the preset combo box, which is selected by default
+    cboPreset.AddItem " ", 0, True
 
     'The XML engine will do most the heavy lifting for this task.  We pass it a String array, and it fills it with
     ' all values corresponding to the given tag name and attribute.
@@ -1207,13 +1210,13 @@ Private Sub findAllXMLPresets()
         For i = 0 To UBound(allPresets)
             Dim presetToAdd As String
             presetToAdd = " " & xmlEngine.getUniqueTag_String("fullPresetName", , , "presetEntry", "id", allPresets(i))
-            cmbPreset.AddItem presetToAdd, i
+            cboPreset.AddItem presetToAdd, i + 1
         Next i
     
     End If
     
     'When finished, clear any active text in the combo box
-    'cmbPreset.Text = ""
+    cboPreset.ListIndex = 0
 
 End Sub
 
