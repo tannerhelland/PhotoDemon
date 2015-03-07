@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Dictionary Class
 'Copyright 2014-2015 by Tanner Helland
 'Created: 16/October/14
-'Last updated: 17/October/14
-'Last update: wrap up initial build
+'Last updated: 07/March/15
+'Last update: add support for removing dictionary items
 '
 'Per its name, this class provides a simple key/value approach to storing data.
 '
@@ -47,6 +47,7 @@ Option Explicit
 Private Type dictEntry
     dKey As String
     dItem As Variant
+    wasDeleted As Boolean
 End Type
 
 Private m_DictEntries() As dictEntry
@@ -71,16 +72,25 @@ Public Function AddEntry(ByVal entryKey As String, ByVal entryData As Variant) A
         
         Dim i As Long
         For i = 0 To m_NumOfEntries - 1
-        
+            
+            'Compare the requested key with this one.
             If StrComp(entryKey, m_DictEntries(i).dKey, vbBinaryCompare) = 0 Then
-                keyFound = i
-                Exit For
+                
+                'It's a match!  Make sure this key isn't scheduled for deletion.
+                ' (For performance reasons, this class does delete entries immediately.  It just marks them for deletion.)
+                If Not m_DictEntries(i).wasDeleted Then
+                    keyFound = i
+                    Exit For
+                End If
+                
+                'Note: if this key was marked for deletion, we ignore it completely.
+                
             End If
         
         Next i
         
-        'If the key already exists in our collection, simply update it
-        If keyFound >= 0 Then
+        'If the key already exists in our collection, simply update it.
+        If (keyFound >= 0) Then
         
             m_DictEntries(keyFound).dItem = entryData
             AddEntry = entryKey
@@ -100,11 +110,39 @@ Public Function AddEntry(ByVal entryKey As String, ByVal entryData As Variant) A
             
         End If
     
+    'For performance reasons, the first entry is handled specially.  (A number of places in PD may store only one item
+    ' in a dictionary.)
     Else
+        
         m_NumOfEntries = 1
-        m_DictEntries(0).dKey = entryKey
-        m_DictEntries(0).dItem = entryData
+                
+        With m_DictEntries(0)
+            .dKey = entryKey
+            .dItem = entryData
+            .wasDeleted = False
+        End With
+        
         AddEntry = 0
+        
+    End If
+    
+End Function
+
+'Delete a dictionary entry.  For performance reasons, this doesn't actually delete the item.  It just marks it for deletion.
+' (If I ever hit a point in the future where I'm deleting a ton of entries, I'll add a trim function to actually trim the
+' dictionary, but for now, deleted entries remain in the table.)
+'
+'Returns: TRUE if item was found and deleted; FALSE otherwise
+Public Function DeleteEntry(ByVal entryKey As String) As Boolean
+    
+    Dim keyIndex As Long
+    keyIndex = getIndexOfEntry(entryKey)
+    
+    If keyIndex >= 0 Then
+        m_DictEntries(keyIndex).wasDeleted = True
+        DeleteEntry = True
+    Else
+        DeleteEntry = False
     End If
     
 End Function
@@ -231,10 +269,19 @@ Private Function getIndexOfEntry(ByRef entryKey As String) As Long
     'Search the dictionary array, looking for a match
     Dim i As Long
     For i = 0 To m_NumOfEntries - 1
+        
         If StrComp(entryKey, m_DictEntries(i).dKey, vbBinaryCompare) = 0 Then
-            getIndexOfEntry = i
-            Exit Function
+            
+            'If we find a match, make sure this entry isn't scheduled for deletion
+            If Not m_DictEntries(i).wasDeleted Then
+                getIndexOfEntry = i
+                Exit Function
+            End If
+            
+            'Note: if an entry *was* scheduled for deletion at some point, we simply ignore it
+            
         End If
+        
     Next i
     
     'If we made it all the way here, the requested key was not found.  Return -1.
