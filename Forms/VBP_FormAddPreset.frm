@@ -26,6 +26,7 @@ Begin VB.Form dialog_AddPreset
    StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton cmdAnswer 
       Caption         =   "&OK"
+      Default         =   -1  'True
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   9
@@ -43,6 +44,7 @@ Begin VB.Form dialog_AddPreset
       Width           =   1365
    End
    Begin VB.CommandButton cmdAnswer 
+      Cancel          =   -1  'True
       Caption         =   "&Cancel"
       BeginProperty Font 
          Name            =   "Tahoma"
