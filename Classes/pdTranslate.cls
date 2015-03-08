@@ -693,22 +693,29 @@ End Sub
 'Given the translated caption of a message or control, return the original translation from the active translation file
 Private Function getOriginalTagFromTranslation(ByVal curCaption As String) As String
 
-    'Remove white space from the caption (if necessary, white space will be added back in after retrieving the translation from file)
-    preProcessText curCaption
-    
-    Dim phraseLocation As Long
-    phraseLocation = xmlEngine.getLocationOfParentTag("phrase", "translation", curCaption)
-    
-    'Make sure a phrase tag was found
-    If phraseLocation > 0 Then
+    'If translations aren't active, return the requested caption as-is
+    If translationActive Then
+
+        'Remove white space from the caption (if necessary, white space will be added back in after retrieving the translation from file)
+        preProcessText curCaption
         
-        'Retrieve the <translation> tag inside this phrase tag
-        curCaption = xmlEngine.getUniqueTag_String("original", "", phraseLocation)
+        Dim phraseLocation As Long
+        phraseLocation = xmlEngine.getLocationOfParentTag("phrase", "translation", curCaption)
+        
+        'Make sure a phrase tag was found
+        If phraseLocation > 0 Then
+            
+            'Retrieve the <translation> tag inside this phrase tag
+            curCaption = xmlEngine.getUniqueTag_String("original", "", phraseLocation)
+            
+        End If
+        
+        'Apply any relevant post-processing, then return the text
         postProcessText curCaption
         getOriginalTagFromTranslation = curCaption
         
     Else
-        getOriginalTagFromTranslation = ""
+        getOriginalTagFromTranslation = curCaption
     End If
 
 End Function
