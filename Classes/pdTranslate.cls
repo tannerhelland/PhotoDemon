@@ -798,8 +798,9 @@ Public Function TranslateMessage(ByRef srcMessage As String, ParamArray ExtraTex
     
 End Function
 
-'Given a message (basically, a string), return the translation of said string.
-' If a translation cannot be found, return the original string.
+'Given a translated string, return the original English version of said string.
+'
+'Returns: ORIGINAL ENGLISH VERSION of string, if such a thing exists; ORIGINAL STRING otherwise.
 Public Function RestoreMessage(ByRef srcMessage As String) As String
     
     Dim searchString As String, newString As String
