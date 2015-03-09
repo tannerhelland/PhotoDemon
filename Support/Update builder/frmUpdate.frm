@@ -292,6 +292,8 @@ Private Sub addReleaseAnnouncementLinks(ByRef xmlOutput As pdXML, ByRef srcPath 
         xmlOutput.writeTag "raurl-stable", xmlSource.getUniqueTag_String("raurl-stable")
         xmlOutput.writeTag "raurl-beta", xmlSource.getUniqueTag_String("raurl-beta")
         xmlOutput.writeTag "raurl-nightly", xmlSource.getUniqueTag_String("raurl-nightly")
+        xmlOutput.writeBlankLine
+        xmlOutput.writeTag "releasenumber-beta", xmlSource.getUniqueTag_String("releasenumber-beta")
     
     Else
         MsgBox "Something went wrong with the release announcement URL file.  You should probably investigate.", vbOKOnly + vbApplicationModal + vbCritical, "Release announcement XML failure"
