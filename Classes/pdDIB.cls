@@ -534,13 +534,27 @@ Public Function createFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
         
         'If the width and height values are not being changed, the transfer is simple
         If (newWidth = srcDIB.getDIBWidth) And (newHeight = srcDIB.getDIBHeight) Then
-        
-            'Create a new, blank DIB the same size as the source DIB
-            If createBlank(srcDIB.getDIBWidth, srcDIB.getDIBHeight, srcDIB.getDIBColorDepth) Then
+            
+            'If we are already at the same size and bit-depth as the source image, we can use our existing DIB and DC as-is.
+            If (newWidth = dibWidth) And (newHeight = dibHeight) And (srcDIB.getDIBColorDepth = dibColorDepth) Then
+            
                 'Copy the image data without modification
                 BitBlt dibDC, 0, 0, dibWidth, dibHeight, srcDIB.getDIBDC, 0, 0, vbSrcCopy
                 createFromExistingDIB = True
                 Exit Function
+            
+            Else
+            
+                'Create a new, blank DIB the same size as the source DIB
+                If createBlank(srcDIB.getDIBWidth, srcDIB.getDIBHeight, srcDIB.getDIBColorDepth) Then
+                    
+                    'Copy the image data without modification
+                    BitBlt dibDC, 0, 0, dibWidth, dibHeight, srcDIB.getDIBDC, 0, 0, vbSrcCopy
+                    createFromExistingDIB = True
+                    Exit Function
+                    
+                End If
+                
             End If
         
         'If new width and height values are being specified, the transfer is a bit more complex
