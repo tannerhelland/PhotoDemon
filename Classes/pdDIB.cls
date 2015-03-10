@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon DIB Wrapper class (formerly known as "pdLayer")
 'Copyright 2012-2015 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 14/August/14
-'Last update: clarify process of 32bpp conversion when the DIB is already 32bpp
+'Last updated: 10/March/15
+'Last update: optimize createFromExistingDIB; if the DIB-to-copy has the same dimensions and pitch as this DIB, skip initialization
+'             and simply do an in-place overwrite.
 '
 'This class is the core of PhotoDemon.  Any image interactions are handled through this lightweight Windows DIB wrapper, and as you
 ' might expect, a number of other capabilities are built into the class.
@@ -28,7 +29,6 @@ Attribute VB_Exposed = False
 'In building this class, I utilized a number of other DIB classes for reference and testing. Special thanks to:
 ' Carles PV's iBMP project: http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=42376&lngWId=1
 ' Steve McMahon's DIB/SafeArray analysis: http://www.vbaccelerator.com/home/VB/Code/vbMedia/DIB_Sections/True_Colour_DIBSection/article.asp
-' Many thanks to these three individuals for their outstanding work on graphics in VB.
 '
 'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
 ' projects IF you provide attribution. For more information, please visit http://photodemon.org/about/license/
