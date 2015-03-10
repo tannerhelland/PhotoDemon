@@ -6279,7 +6279,12 @@ Sta het programma toe om deze gratis, open-source insteekmodule(s) automatisch t
 <translation>Updatecontrole uitgesteld (een controle is onlangs uitgevoerd)</translation>
 </phrase>
 
-<!-- VBP_SoftwareUpdater.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<phrase>
+<original>%1.%2 Beta %3</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_SoftwareUpdater.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_SoftwareUpdater.bas-->
 
@@ -10360,58 +10365,18 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 <!-- BEGIN text for commandBar.ctl -->
 
 <phrase>
-<original>Randomize</original>
-<translation>Randomize</translation>
-</phrase>
-
-<phrase>
-<original>Save preset</original>
-<translation>Opslaan voorinstelling</translation>
-</phrase>
-
-<phrase>
-<original>Reset</original>
-<translation>Reset</translation>
-</phrase>
-
-<phrase>
 <original>Saving preset</original>
 <translation>Opslaan voorinstelling</translation>
 </phrase>
 
 <phrase>
-<original>Before saving, please enter a name for this preset (in the box next to the save button).</original>
-<translation>Alvorens op te slaan, geef een naam voor deze voorinstelling (in de kader naast de Opslaan knop).</translation>
-</phrase>
-
-<phrase>
-<original>Preset name required</original>
-<translation>Naam voorinstelling nodig</translation>
-</phrase>
-
-<phrase>
-<original>(enter name here)</original>
-<translation>(geef een naam op)</translation>
+<original>Preset saved.</original>
+<translation>Voorinstelling opgeslagen</translation>
 </phrase>
 
 <phrase>
 <original>Preset save canceled.</original>
 <translation>Voorinstelling opslaan geannuleerd.</translation>
-</phrase>
-
-<phrase>
-<original>A preset with this name already exists.  Do you want to overwrite it?</original>
-<translation>Een voorinstelling met de zelfde naam bestaat reeds. Wens je deze te overschrijven?</translation>
-</phrase>
-
-<phrase>
-<original>Overwrite existing preset</original>
-<translation>Overschrijven bestaande voorinstelling</translation>
-</phrase>
-
-<phrase>
-<original>Preset saved.</original>
-<translation>Voorinstelling opgeslagen</translation>
 </phrase>
 
 <phrase>
@@ -10430,13 +10395,28 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 </phrase>
 
 <phrase>
+<original>Reset</original>
+<translation>Reset</translation>
+</phrase>
+
+<phrase>
 <original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
 <translation>Selecteer nieuwe instellingen voor dit gereedschap willekeurig. Dit is nuttig voor het verkennen hoe verschillende instellingen de afbeelding beïnvloeden.</translation>
 </phrase>
 
 <phrase>
-<original>Save the current settings as a preset.  Please enter a descriptive preset name before saving.</original>
-<translation>Bewaar de huidige instellingen als een voorinstelling. Geef een omschrijvende voorinstelling-naam alvorens op te slaan.</translation>
+<original>Randomize</original>
+<translation>Randomize</translation>
+</phrase>
+
+<phrase>
+<original>Save the current settings as a new preset.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Save preset</original>
+<translation>Opslaan voorinstelling</translation>
 </phrase>
 
 <phrase>
@@ -10444,12 +10424,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 <translation>Eerder opgeslagen voorinstellingen kunnen hier worden geselecteerd. Je kan de huidige instellingen als een nieuwe voorinstelling opslaan door te klikken op de knop "Voorinstelling opslaan" aan de rechterkant.</translation>
 </phrase>
 
-<phrase>
-<original>This tool's preset file may be corrupted.  A new preset file has been created.</original>
-<translation>Dit gereedschaps-voorinstelling bestand is mogelijk corrupt. Een nieuw voorinstelling-bestand is aangemaakt.</translation>
-</phrase>
-
-<!-- commandBar.ctl contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- commandBar.ctl contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for commandBar.ctl-->
 
@@ -12552,6 +12527,11 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
+<original>(enter name here)</original>
+<translation>(geef een naam op)</translation>
+</phrase>
+
+<phrase>
 <original>default (above current layer)</original>
 <translation>standaard (boven de huidige laag)</translation>
 </phrase>
@@ -12571,7 +12551,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation>onderkant van lagenstack</translation>
 </phrase>
 
-<!-- VBP_FormNewLayer.frm contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- VBP_FormNewLayer.frm contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for VBP_FormNewLayer.frm-->
 
@@ -13214,8 +13194,8 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>Learn more about the new features in version %1</original>
-<translation>Kom meer te weten over de nieuwe functies in versie %1</translation>
+<original>Learn more about the new features in %1</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -13264,12 +13244,54 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- END text for pdFFT.cls-->
 
+<!-- BEGIN text for VBP_FormAddPreset.frm (dialog_AddPreset) -->
+
+<phrase>
+<original>Add new preset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>enter a name for this preset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>A preset with this name already exists.  Do you want to overwrite it?</original>
+<translation>Een voorinstelling met de zelfde naam bestaat reeds. Wens je deze te overschrijven?</translation>
+</phrase>
+
+<phrase>
+<original>Overwrite existing preset</original>
+<translation>Overschrijven bestaande voorinstelling</translation>
+</phrase>
+
+<phrase>
+<original>Please enter a name for this preset.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Preset name required</original>
+<translation>Naam voorinstelling nodig</translation>
+</phrase>
+
+<!-- VBP_FormAddPreset.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for VBP_FormAddPreset.frm-->
+
+<!-- BEGIN text for pdToolPreset.cls -->
+
+<!-- pdToolPreset.cls contains 0 phrases. -->
+
+<!-- END text for pdToolPreset.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2314</phrasecount>
+<phrasecount>2316</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3947 phrases. -->
-<!-- 1633 are duplicates, so only 2314 unique phrases have been written to file. -->
-<!-- These 2314 phrases contain approximately 13357 total words. -->
+<!-- As of this build, PhotoDemon contains 3943 phrases. -->
+<!-- 1627 are duplicates, so only 2316 unique phrases have been written to file. -->
+<!-- These 2316 phrases contain approximately 13334 total words. -->
 
 </pdData>
