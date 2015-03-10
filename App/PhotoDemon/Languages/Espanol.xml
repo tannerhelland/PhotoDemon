@@ -6276,7 +6276,12 @@ To mejorar su experiencia de usuario, por favor, deje que el programa descarga a
 <translation>Actualización cheque aplazado (un cheque se ha realizado recientemente)</translation>
 </phrase>
 
-<!-- VBP_SoftwareUpdater.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<phrase>
+<original>%1.%2 Beta %3</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_SoftwareUpdater.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_SoftwareUpdater.bas-->
 
@@ -10357,58 +10362,18 @@ By defecto, la transparencia se divide por la mitad, o se puede especificar un v
 <!-- BEGIN text for commandBar.ctl -->
 
 <phrase>
-<original>Randomize</original>
-<translation>Selección aleatoria</translation>
-</phrase>
-
-<phrase>
-<original>Save preset</original>
-<translation>Save preset</translation>
-</phrase>
-
-<phrase>
-<original>Reset</original>
-<translation>reajustar</translation>
-</phrase>
-
-<phrase>
 <original>Saving preset</original>
 <translation>Ahorrar preestablecido</translation>
 </phrase>
 
 <phrase>
-<original>Before saving, please enter a name for this preset (in the box next to the save button).</original>
-<translation>Antes de guardar, por favor, introduzca un nombre para este valor predeterminado (en la casilla junto al botón guardar).</translation>
-</phrase>
-
-<phrase>
-<original>Preset name required</original>
-<translation>Nombre Preset deseado</translation>
-</phrase>
-
-<phrase>
-<original>(enter name here)</original>
-<translation>(escriba el nombre aquí)</translation>
+<original>Preset saved.</original>
+<translation>Preset guardado.</translation>
 </phrase>
 
 <phrase>
 <original>Preset save canceled.</original>
 <translation>Guardar predefinido cancelado.</translation>
-</phrase>
-
-<phrase>
-<original>A preset with this name already exists.  Do you want to overwrite it?</original>
-<translation>Un preset con ese nombre ya existe. ¿Quiere sobreescribirlo?</translation>
-</phrase>
-
-<phrase>
-<original>Overwrite existing preset</original>
-<translation>Sobrescribir preset existente</translation>
-</phrase>
-
-<phrase>
-<original>Preset saved.</original>
-<translation>Preset guardado.</translation>
 </phrase>
 
 <phrase>
@@ -10427,13 +10392,28 @@ By defecto, la transparencia se divide por la mitad, o se puede especificar un v
 </phrase>
 
 <phrase>
+<original>Reset</original>
+<translation>reajustar</translation>
+</phrase>
+
+<phrase>
 <original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
 <translation>Seleccionar aleatoriamente nuevas configuraciones para esta herramienta. Esto es útil para explorar cómo los diferentes parámetros afectan a la imagen.</translation>
 </phrase>
 
 <phrase>
-<original>Save the current settings as a preset.  Please enter a descriptive preset name before saving.</original>
-<translation>Guardar los ajustes actuales como un ajuste preestablecido. Por favor, introduzca un nombre para la memoria descriptiva antes de guardar.</translation>
+<original>Randomize</original>
+<translation>Selección aleatoria</translation>
+</phrase>
+
+<phrase>
+<original>Save the current settings as a new preset.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Save preset</original>
+<translation>Save preset</translation>
 </phrase>
 
 <phrase>
@@ -10441,12 +10421,7 @@ By defecto, la transparencia se divide por la mitad, o se puede especificar un v
 <translation>Presets previamente guardados se pueden seleccionar aquí. Puede guardar la configuración actual como un nuevo preset haciendo clic en el botón Guardar ajustes en la derecha.</translation>
 </phrase>
 
-<phrase>
-<original>This tool's preset file may be corrupted.  A new preset file has been created.</original>
-<translation>Archivo de preset de este instrumento puede estar dañado. Un nuevo archivo de definición ha sido creado.</translation>
-</phrase>
-
-<!-- commandBar.ctl contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- commandBar.ctl contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for commandBar.ctl-->
 
@@ -12549,6 +12524,11 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
+<original>(enter name here)</original>
+<translation>(escriba el nombre aquí)</translation>
+</phrase>
+
+<phrase>
 <original>default (above current layer)</original>
 <translation>por defecto (por encima de la capa actual)</translation>
 </phrase>
@@ -12568,7 +12548,7 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <translation>parte inferior de la pila de capas</translation>
 </phrase>
 
-<!-- VBP_FormNewLayer.frm contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- VBP_FormNewLayer.frm contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for VBP_FormNewLayer.frm-->
 
@@ -13211,7 +13191,7 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>Learn more about the new features in version %1</original>
+<original>Learn more about the new features in %1</original>
 <translation></translation>
 </phrase>
 
@@ -13261,12 +13241,54 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <!-- END text for pdFFT.cls-->
 
+<!-- BEGIN text for VBP_FormAddPreset.frm (dialog_AddPreset) -->
+
+<phrase>
+<original>Add new preset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>enter a name for this preset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>A preset with this name already exists.  Do you want to overwrite it?</original>
+<translation>Un preset con ese nombre ya existe. ¿Quiere sobreescribirlo?</translation>
+</phrase>
+
+<phrase>
+<original>Overwrite existing preset</original>
+<translation>Sobrescribir preset existente</translation>
+</phrase>
+
+<phrase>
+<original>Please enter a name for this preset.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Preset name required</original>
+<translation>Nombre Preset deseado</translation>
+</phrase>
+
+<!-- VBP_FormAddPreset.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for VBP_FormAddPreset.frm-->
+
+<!-- BEGIN text for pdToolPreset.cls -->
+
+<!-- pdToolPreset.cls contains 0 phrases. -->
+
+<!-- END text for pdToolPreset.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2314</phrasecount>
+<phrasecount>2316</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3947 phrases. -->
-<!-- 1633 are duplicates, so only 2314 unique phrases have been written to file. -->
-<!-- These 2314 phrases contain approximately 13357 total words. -->
+<!-- As of this build, PhotoDemon contains 3943 phrases. -->
+<!-- 1627 are duplicates, so only 2316 unique phrases have been written to file. -->
+<!-- These 2316 phrases contain approximately 13334 total words. -->
 
 </pdData>
