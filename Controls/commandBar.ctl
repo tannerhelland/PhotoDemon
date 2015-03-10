@@ -21,72 +21,32 @@ Begin VB.UserControl commandBar
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   637
    ToolboxBitmap   =   "commandBar.ctx":0000
+   Begin PhotoDemon.pdButtonToolbox cmdAction 
+      Height          =   510
+      Index           =   0
+      Left            =   120
+      TabIndex        =   3
+      Top             =   120
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   900
+      AutoToggle      =   -1  'True
+   End
    Begin PhotoDemon.pdComboBox cboPreset 
       Height          =   345
       Left            =   1800
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   195
       Width           =   3135
       _ExtentX        =   5530
       _ExtentY        =   609
-   End
-   Begin VB.CommandButton cmdRandomize 
-      Caption         =   "Randomize"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   510
-      Left            =   960
-      TabIndex        =   3
-      Top             =   120
-      Width           =   720
-   End
-   Begin VB.CommandButton cmdSavePreset 
-      Caption         =   "Save preset"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   510
-      Left            =   5010
-      TabIndex        =   4
-      Top             =   120
-      Width           =   720
-   End
-   Begin VB.CommandButton cmdReset 
-      Caption         =   "Reset"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   510
-      Left            =   120
-      TabIndex        =   2
-      Top             =   120
-      Width           =   720
    End
    Begin VB.CommandButton cmdCancel 
       Caption         =   "&Cancel"
       Height          =   510
       Left            =   8070
       TabIndex        =   1
-      Top             =   120
+      Top             =   135
       Width           =   1365
    End
    Begin VB.CommandButton cmdOK 
@@ -94,8 +54,30 @@ Begin VB.UserControl commandBar
       Height          =   510
       Left            =   6600
       TabIndex        =   0
-      Top             =   120
+      Top             =   135
       Width           =   1365
+   End
+   Begin PhotoDemon.pdButtonToolbox cmdAction 
+      Height          =   510
+      Index           =   1
+      Left            =   960
+      TabIndex        =   4
+      Top             =   120
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   900
+      AutoToggle      =   -1  'True
+   End
+   Begin PhotoDemon.pdButtonToolbox cmdAction 
+      Height          =   510
+      Index           =   2
+      Left            =   5010
+      TabIndex        =   5
+      Top             =   120
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   900
+      AutoToggle      =   -1  'True
    End
 End
 Attribute VB_Name = "commandBar"
@@ -314,14 +296,6 @@ Public Property Set Font(mNewFont As StdFont)
     
 End Property
 
-'External objects can use this function to retrieve a matching list of preset entries
-' Returns TRUE if custom presets exist for this function; FALSE otherwise.
-Public Function retrievePresetList(ByRef dstList() As String) As Boolean
-
-    'TODO!
-
-End Function
-
 'When a preset is selected from the drop-down, load it.  Note that we change the combo box .ListIndex when adding a new preset;
 ' to prevent this from causing a redraw, we ignore click events if allowPreviews is FALSE.
 Private Sub cboPreset_Click()
@@ -330,7 +304,7 @@ End Sub
 
 'Randomize all control values on the page.  This control will automatically handle all standard controls, and a separate
 ' event is exposed for dialogs that need to do their own randomization (Curves, etc).
-Private Sub cmdRandomize_Click()
+Private Sub RandomizeSettings()
 
     'Disable previews
     allowPreviews = False
@@ -437,64 +411,17 @@ Private Sub cmdRandomize_Click()
     
 End Sub
 
-'Save the current settings as a new preset
-Private Sub cmdSavePreset_Click()
-    savePreset
-End Sub
-
-'When the user
+'Save the current dialog settings as a new preset
 Private Function savePreset() As Boolean
 
     Message "Saving preset..."
 
     'Prompt the user for a name
     Dim newNameReturn As VbMsgBoxResult, newPresetName As String
-    newNameReturn = Dialog_Handler.promptNewPreset(Me, UserControl.Parent, newPresetName)
+    newNameReturn = Dialog_Handler.promptNewPreset(m_Presets, UserControl.Parent, newPresetName)
     
     If newNameReturn = vbOK Then
-        
-        'If a name has been entered but it is the same as an existing preset, prompt the user to overwrite.
-        Dim overwritingExistingPreset As Boolean
-        overwritingExistingPreset = False
-        
-        'For now, overwriting happens automatically.  I'll deal with this more elegantly in the future.
-        
-        'Old overwrite detection code continues here, for convenience.
-        If m_Presets.doesPresetExist(newPresetName) Then
-        
-'
-'                Dim msgReturn As VbMsgBoxResult
-'                msgReturn = pdMsgBox("A preset with this name already exists.  Do you want to overwrite it?", vbYesNoCancel + vbApplicationModal + vbInformation, "Overwrite existing preset")
-'
-'                'Based on the user's answer to the confirmation message box, continue or exit
-'                Select Case msgReturn
-'
-'                    'If the user selects YES, continue on like normal
-'                    Case vbYes
-                        overwritingExistingPreset = True
-'
-'                    'If the user selects NO, exit and let them enter a new name
-'                    Case vbNo
-'                        cboPreset.Text = g_Language.TranslateMessage("(enter name here)")
-'                        cboPreset.SetFocus
-'                        cboPreset.SelStart = 0
-'                        cboPreset.SelLength = Len(cboPreset.Text)
-'                        Message "Preset save canceled."
-'                        savePreset = False
-'                        Exit Function
-'
-'                    'If the user selects CANCEL, just exit
-'                    Case vbCancel
-'                        Message "Preset save canceled."
-'                        savePreset = False
-'                        Exit Function
-'
-'                End Select
-'
-        End If
-        
-        'If we've made it all the way here, the combo box contains the user's desired name for this preset.
-        
+    
         'Create the new preset.  Note that this will also write the preset out to file, which is important as we want to save
         ' the user's work immediately, in case they cancel the dialog.
         storePreset newPresetName
@@ -530,25 +457,52 @@ Private Function savePreset() As Boolean
     
 End Function
 
+Private Sub cmdAction_Click(Index As Integer)
+    
+    Select Case Index
+    
+        'Reset settings
+        Case 0
+            ResetSettings
+        
+        'Randomize settings
+        Case 1
+            RandomizeSettings
+        
+        'Save new preset
+        Case 2
+            savePreset
+    
+    End Select
+    
+End Sub
+
 'When the font is changed, all controls must manually have their fonts set to match
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
-    Set CmdOK.Font = mFont
-    Set CmdCancel.Font = mFont
-    Set cmdReset.Font = mFont
-    Set cmdSavePreset.Font = mFont
-    Set cmdRandomize.Font = mFont
+    Set cmdOK.Font = mFont
+    Set cmdCancel.Font = mFont
     cboPreset.FontSize = mFont.Size
 End Sub
 
 'Backcolor is used to control the color of the base user control; nothing else is affected by it
 Public Property Get BackColor() As OLE_COLOR
-    BackColor = UserControl.BackColor
+    'BackColor = UserControl.BackColor
+    BackColor = RGB(220, 220, 225)
 End Property
 
 Public Property Let BackColor(ByVal newColor As OLE_COLOR)
-    UserControl.BackColor = newColor
+    
+    'UserControl.BackColor = newColor
+    UserControl.BackColor = RGB(220, 220, 225)
     PropertyChanged "BackColor"
+    
+    'Update all button backgrounds to match
+    Dim i As Long
+    For i = cmdAction.lBound To cmdAction.UBound
+        cmdAction(i).BackColor = UserControl.BackColor
+    Next i
+    
 End Property
 
 'CANCEL button
@@ -624,7 +578,7 @@ Private Sub CmdOK_Click()
 End Sub
 
 'RESET button
-Private Sub cmdReset_Click()
+Private Sub ResetSettings()
 
     'Disable previews
     allowPreviews = False
@@ -724,34 +678,16 @@ Private Sub UserControl_Initialize()
     
     'Apply the hand cursor to all command buttons
     If g_IsProgramRunning Then
-        setHandCursorToHwnd CmdOK.hWnd
-        setHandCursorToHwnd CmdCancel.hWnd
-        setHandCursorToHwnd cmdReset.hWnd
-        setHandCursorToHwnd cmdRandomize.hWnd
-        setHandCursorToHwnd cmdSavePreset.hWnd
+        setHandCursorToHwnd cmdOK.hWnd
+        setHandCursorToHwnd cmdCancel.hWnd
     End If
 
-    'When compiled, we can assign images to special command buttons
-    If g_IsProgramCompiled Then
-    
-        'Extract relevant icons from the resource file, and render them onto the buttons at run-time.
-        ' (NOTE: because the icons require manifest theming, they will not appear in the IDE.)
-        Set cImgCtl = New clsControlImage
-        With cImgCtl
-            
-            cmdReset.Caption = ""
-            .LoadImageFromStream cmdReset.hWnd, LoadResData("RESETBUTTON", "CUSTOM"), fixDPI(24), fixDPI(24)
-            .Align(cmdReset.hWnd) = Icon_Center
-            
-            cmdSavePreset.Caption = ""
-            .LoadImageFromStream cmdSavePreset.hWnd, LoadResData("PRESETSAVE", "CUSTOM"), fixDPI(24), fixDPI(24)
-            .Align(cmdSavePreset.hWnd) = Icon_Center
-            
-            cmdRandomize.Caption = ""
-            .LoadImageFromStream cmdRandomize.hWnd, LoadResData("RANDOMIZE24", "CUSTOM"), fixDPI(24), fixDPI(24)
-            .Align(cmdRandomize.hWnd) = Icon_Center
-            
-        End With
+    'When running, we can assign images and tooltips to the image-only command buttons
+    If g_IsProgramRunning Then
+        
+        cmdAction(0).AssignImage "CMDBAR_RESET"
+        cmdAction(1).AssignImage "CMDBAR_RANDOM"
+        cmdAction(2).AssignImage "CMDBAR_SAVE"
         
     End If
     
@@ -814,8 +750,8 @@ Private Sub updateControlLayout()
         UserControl.Width = UserControl.Parent.ScaleWidth * TwipsPerPixelXFix
         
         'Right-align the Cancel and OK buttons
-        CmdCancel.Left = UserControl.Parent.ScaleWidth - CmdCancel.Width - fixDPI(8)
-        CmdOK.Left = CmdCancel.Left - CmdOK.Width - fixDPI(8)
+        cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - fixDPI(8)
+        cmdOK.Left = cmdCancel.Left - cmdOK.Width - fixDPI(8)
         
     End If
     
@@ -838,28 +774,21 @@ Private Sub UserControl_Show()
         Set m_Tooltip = New pdToolTip
         With m_Tooltip
             
-            .setTooltip CmdOK.hWnd, UserControl.hWnd, "Apply this action to the current image."
-            .setTooltip CmdCancel.hWnd, UserControl.hWnd, "Exit this tool.  No changes will be made to the image."
-            .setTooltip cmdReset.hWnd, UserControl.hWnd, "Reset all settings to their default values."
-            .setTooltip cmdRandomize.hWnd, UserControl.hWnd, "Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image."
-            .setTooltip cmdSavePreset.hWnd, UserControl.hWnd, "Save the current settings as a preset.  Please enter a descriptive preset name before saving."
+            .setTooltip cmdOK.hWnd, UserControl.hWnd, "Apply this action to the current image."
+            .setTooltip cmdCancel.hWnd, UserControl.hWnd, "Exit this tool.  No changes will be made to the image."
             
             .updateAgainstCurrentTheme
             
         End With
         
+        cmdAction(0).assignTooltip "Reset all settings to their default values.", "Reset"
+        cmdAction(1).assignTooltip "Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.", "Randomize"
+        cmdAction(2).assignTooltip "Save the current settings as a new preset.", "Save preset"
         cboPreset.assignTooltip "Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right."
         
         'Translate all control captions
-        CmdOK.Caption = g_Language.TranslateMessage(CmdOK.Caption)
-        CmdCancel.Caption = g_Language.TranslateMessage(CmdCancel.Caption)
-        
-        'In the IDE, we also need to translate the left-hand buttons
-        If Not g_IsProgramCompiled Then
-            cmdReset.Caption = g_Language.TranslateMessage(cmdReset.Caption)
-            cmdRandomize.Caption = g_Language.TranslateMessage(cmdRandomize.Caption)
-            cmdSavePreset.Caption = g_Language.TranslateMessage(cmdSavePreset.Caption)
-        End If
+        cmdOK.Caption = g_Language.TranslateMessage(cmdOK.Caption)
+        cmdCancel.Caption = g_Language.TranslateMessage(cmdCancel.Caption)
         
         'Prep a preset file location.  In most cases, this is just the name of the parent form...
         parentToolName = Replace$(UserControl.Parent.Name, "Form", "", , , vbTextCompare)
@@ -886,7 +815,7 @@ Private Sub UserControl_Show()
             ' default values.
             If Not loadPreset() Then
             
-                cmdReset_Click
+                ResetSettings
                 
                 'Note that the ResetClick event will re-enable previews, so we must forcibly disable them until the
                 ' end of this function.
@@ -897,7 +826,7 @@ Private Sub UserControl_Show()
         'If the parent dialog doesn't want us to auto-load last-used settings, we still want to request a RESET event to
         ' populate all dialog controls with default values.
         Else
-            cmdReset_Click
+            ResetSettings
             allowPreviews = False
         End If
         
@@ -914,7 +843,7 @@ Private Sub UserControl_Show()
     'Additional note: some forms may chose to explicitly set focus away from the OK button.  If that happens, the line below
     ' will throw a critical error.  To avoid that, simply ignore any errors that arise from resetting focus.
     On Error GoTo somethingStoleFocus
-    If g_IsProgramRunning Then CmdOK.SetFocus
+    If g_IsProgramRunning Then cmdOK.SetFocus
 
 somethingStoleFocus:
     
