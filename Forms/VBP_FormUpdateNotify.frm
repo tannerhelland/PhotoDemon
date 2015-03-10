@@ -31,21 +31,21 @@ Begin VB.Form FormUpdateNotify
       TabIndex        =   2
       Top             =   2370
       Width           =   9015
-      _ExtentX        =   15901
-      _ExtentY        =   159
-      Caption         =   "in the future, do not notify me of updates"
-      Value           =   0
+      _extentx        =   15901
+      _extenty        =   582
+      caption         =   "in the future, do not notify me of updates"
+      value           =   0
    End
    Begin PhotoDemon.pdHyperlink lblReleaseAnnouncement 
       Height          =   270
       Left            =   840
       Top             =   930
       Width           =   8130
-      _ExtentX        =   14340
-      _ExtentY        =   503
-      Alignment       =   2
-      Caption         =   "(text populated at run-time)"
-      FontSize        =   11
+      _extentx        =   14340
+      _extenty        =   503
+      alignment       =   2
+      caption         =   "(text populated at run-time)"
+      fontsize        =   11
    End
    Begin VB.CommandButton cmdUpdate 
       Caption         =   "Keep working"
@@ -88,10 +88,10 @@ Begin VB.Form FormUpdateNotify
       Left            =   960
       Top             =   120
       Width           =   7980
-      _ExtentX        =   14076
-      _ExtentY        =   1296
-      FontSize        =   11
-      Layout          =   1
+      _extentx        =   14076
+      _extenty        =   1296
+      fontsize        =   11
+      layout          =   1
    End
 End
 Attribute VB_Name = "FormUpdateNotify"
@@ -149,7 +149,7 @@ Private Sub Form_Load()
     Dim raURL As String
     raURL = Software_Updater.getReleaseAnnouncementURL
     If Len(raURL) <> 0 Then
-        lblReleaseAnnouncement.Caption = g_Language.TranslateMessage("Learn more about the new features in version %1", Software_Updater.getUpdateVersion)
+        lblReleaseAnnouncement.Caption = g_Language.TranslateMessage("Learn more about the new features in %1", Software_Updater.getUpdateVersion_Friendly)
         lblReleaseAnnouncement.Visible = True
         lblReleaseAnnouncement.URL = raURL
     Else

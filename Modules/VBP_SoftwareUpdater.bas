@@ -50,8 +50,14 @@ Private m_UpdateFilePath As String
 'If an update is available, that update's release announcement will be stored in this persistent string.  UI elements can retrieve it as necessary.
 Private m_UpdateReleaseAnnouncementURL As String
 
+'If an update is available, that update's track will be stored here.  UI elements can retrieve it as necessary.
+Private m_UpdateTrack As PD_UPDATE_TRACK
+
 'Outside functions can also request the update version
 Private m_UpdateVersion As String
+
+'Beta releases use custom labeling, independent of the actual version (e.g. "PD 6.6 beta 3"), so we also retrieve and store this value as necessary.
+Private m_BetaNumber As String
 
 
 'Determine if the program should check online for update information.  This will return true IFF the following
@@ -534,6 +540,12 @@ Public Function processProgramUpdateFile(ByRef srcXML As String) As Boolean
                 ' as it contains failsafe checksumming information.
                 m_PDPatchXML = xmlEngine.returnCurrentXMLString(True)
                 
+                'We also want to cache the current update track at module-level, so we can display customized update notifications to the user
+                m_UpdateTrack = trackWithValidUpdate
+                
+                'Retrieve the manually listed beta number, just in case we need it later
+                m_BetaNumber = xmlEngine.getUniqueTag_String("releasenumber-beta", "1")
+                
                 'Construct a URL that matches the selected update track
                 Dim updateURL As String
                 updateURL = "http://photodemon.org/downloads/updates/"
@@ -825,8 +837,14 @@ Public Function getReleaseAnnouncementURL() As String
     getReleaseAnnouncementURL = m_UpdateReleaseAnnouncementURL
 End Function
 
-'Outside functions can also request a human-readable string of the update number.
-Public Function getUpdateVersion() As String
+'Outside functions can also the track of the currently active update.  Note that this doesn't predictably correspond to the user's current
+' update preference, as most users will allow updates from multiple potential tracks (e.g. both stable and beta).
+Public Function getUpdateTrack() As PD_UPDATE_TRACK
+    getUpdateTrack = m_UpdateTrack
+End Function
+
+'Outside functions can also request a human-readable string of the literal update number (e.g. Major.Minor.Build, untouched).
+Public Function getUpdateVersion_Literal(Optional ByVal forceRevisionDisplay As Boolean = False) As String
     
     'Parse the version string, which is currently on the form Major.Minor.Build.Revision
     Dim verStrings() As String
@@ -836,15 +854,73 @@ Public Function getUpdateVersion() As String
     'We always want major and minor version numbers
     If UBound(verStrings) >= 1 Then
         
-        getUpdateVersion = verStrings(0) & "." & verStrings(1)
+        getUpdateVersion_Literal = verStrings(0) & "." & verStrings(1)
         
-        'If the revision value is non-zero, include it too
-        If UBound(verStrings) >= 3 Then
-            If StrComp(verStrings(3), "0", vbBinaryCompare) <> 0 Then getUpdateVersion = getUpdateVersion & "." & verStrings(3)
+        'If the revision value is non-zero, or the user demands a revision number, include it
+        If (UBound(verStrings) >= 3) Or forceRevisionDisplay Then
+            
+            'If the revision number exists, use it
+            If UBound(verStrings) >= 3 Then
+                If StrComp(verStrings(3), "0", vbBinaryCompare) <> 0 Then getUpdateVersion_Literal = getUpdateVersion_Literal & "." & verStrings(3)
+            
+            'If the revision number does not exist, append 0 in its place
+            Else
+                getUpdateVersion_Literal = getUpdateVersion_Literal & ".0"
+            End If
+            
         End If
         
     Else
-        getUpdateVersion = m_UpdateVersion
+        getUpdateVersion_Literal = m_UpdateVersion
     End If
     
+End Function
+
+'Outside functions can use this to request a human-readable string of the "friendly" update number (e.g. beta releases are properly identified and
+' bumped up to the next stable release).
+Public Function getUpdateVersion_Friendly() As String
+    
+    'Start by retrieving the literal version number
+    Dim litVersion As String
+    litVersion = getUpdateVersion_Literal(True)
+    
+    'If the current update track is *NOT* a beta, the friendly string matches the literal string.  Return it now.
+    If m_UpdateTrack <> PDUT_BETA Then
+        getUpdateVersion_Friendly = litVersion
+    
+    'If the current update track *IS* a beta, we need to manually update the number prior to returning it
+    Else
+        
+        On Error GoTo VersionFormatError
+        
+        'Start by extracting all version numbers
+        Dim vSplit() As String
+        vSplit = Split(litVersion, ".")
+        
+        Dim vMajor As Long, vMinor As Long, vRevision As Long
+        
+        vMajor = vSplit(0)
+        vMinor = vSplit(1)
+        vRevision = vSplit(2)
+        
+        'Bump minor by 1
+        vMinor = vMinor + 1
+        
+        'Account for .10, which means a release to the next major version (e.g. 6.9 leads to 7.0, not 6.10)
+        If vMinor = 10 Then
+            vMinor = 0
+            vMajor = vMajor + 1
+        End If
+        
+        'Construct a new version string
+        getUpdateVersion_Friendly = g_Language.TranslateMessage("%1.%2 Beta %3", vMajor, vMinor, m_BetaNumber)
+        
+    End If
+    
+    Exit Function
+    
+VersionFormatError:
+
+    getUpdateVersion_Friendly = litVersion
+
 End Function
