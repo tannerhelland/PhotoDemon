@@ -113,8 +113,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Effect Preview custom control
 'Copyright 2013-2015 by Tanner Helland
 'Created: 10/January/13
-'Last updated: 31/May/14
-'Last update: convert custom mouse handling code to use pdInput
+'Last updated: 10/March/14
+'Last update: implement a custom ID system, which the FastDrawing module can use to avoid unnecessary preview
+'             DIB regenerations.
 '
 'For the first decade of its life, PhotoDemon relied on simple picture boxes for rendering its effect previews.
 ' This worked well enough when there were only a handful of tools available, but as the complexity of the program
@@ -184,11 +185,24 @@ Private m_OffsetX As Long, m_OffsetY As Long
 'Is the image large enough that the user is allowed to scroll?
 Private m_HScrollAllowed As Boolean, m_VScrollAllowed As Boolean
 
+'This UniqueID is generated when the UC is first shown.  Any actions that cause the preview area to change
+' (e.g. changing zoom, panning the image, etc) cause the ID to change.  This value is used by the FastDrawing module
+' when generating a base preview DIB; if the UniqueID hasn't changed since the last request, the previous base preview
+' DIB is copied instead of generating a new one from scratch.
+Private m_UniqueID As Double
+
+Public Function getUniqueID() As Double
+    getUniqueID = m_UniqueID
+End Function
+
 Private Sub cmdFit_Click()
     
     'Note that we no longer have a valid copy of the original image data, so prepImageData must supply us with a new one
     m_HasOriginal = False
     m_HasFX = False
+    
+    'Change our unique ID value, so the preview engine knows to recreate the base preview DIB
+    m_UniqueID = m_UniqueID - 0.1
     
     'Raise a viewport change event so the containing form can redraw itself accordingly
     RaiseEvent ViewportChanged
@@ -429,6 +443,9 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
             m_HasOriginal = False
             m_HasFX = False
             
+            'Change our unique ID value, so the preview engine knows to recreate the base preview DIB
+            m_UniqueID = m_UniqueID - 0.1
+            
             'Raise an external viewport change event that tool dialogs can use to refresh their effect preview
             RaiseEvent ViewportChanged
             
@@ -630,6 +647,9 @@ Private Sub UserControl_Show()
     End If
         
     'setArrowCursorToHwnd UserControl.hWnd
+    
+    'Generate a unique ID for this session
+    m_UniqueID = Timer
     
     'Ensure the control is redrawn at least once
     redrawControl
