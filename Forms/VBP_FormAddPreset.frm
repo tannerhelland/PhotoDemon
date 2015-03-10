@@ -117,9 +117,9 @@ Private userAnswer As VbMsgBoxResult
 'The new preset name entered in the text box
 Private presetName As String
 
-'Because this form needs to interact with a command bar (as the command bar handles all preset loading/unloading),
+'Because this form needs to interact with a preset manager (provided by the command bar that raises the dialog),
 ' we must maintain a reference to it.  This reference is initially supplied via the showDialog function.
-Private ownerCommandBar As commandBar
+Private m_Presets As pdToolPreset
 
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
@@ -130,7 +130,7 @@ Public Property Get newPresetName() As String
 End Property
 
 'The ShowDialog routine presents the user with this form.
-Public Sub showDialog(ByRef srcCommandBar As commandBar, ByRef parentForm As Form)
+Public Sub showDialog(ByRef srcPresetManager As pdToolPreset, ByRef parentForm As Form)
 
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbCancel
@@ -139,7 +139,7 @@ Public Sub showDialog(ByRef srcCommandBar As commandBar, ByRef parentForm As For
     Screen.MousePointer = 0
     
     'Maintain a persistent reference to the source command bar
-    Set ownerCommandBar = srcCommandBar
+    Set m_Presets = srcPresetManager
     
     'Theme the dialog
     makeFormPretty Me
@@ -157,7 +157,39 @@ Private Sub cmdAnswer_Click(Index As Integer)
         
             'Make sure a valid name was entered.
             If Len(Trim$(txtName.Text)) <> 0 Then
-                userAnswer = vbOK
+                
+                'A valid name was entered.  See if this name already exists in the preset manager.
+                If m_Presets.doesPresetExist(Trim$(txtName.Text)) Then
+                
+                    'This name already exists.  Ask the user if an overwrite is okay.
+                    Dim msgReturn As VbMsgBoxResult
+                    msgReturn = pdMsgBox("A preset with this name already exists.  Do you want to overwrite it?", vbYesNoCancel + vbApplicationModal + vbInformation, "Overwrite existing preset")
+                    
+                    'Based on the user's answer to the confirmation message box, continue or exit
+                    Select Case msgReturn
+
+                        'If the user selects YES, continue on like normal
+                        Case vbYes
+                            userAnswer = vbOK
+
+                        'If the user selects NO, let them enter a new name
+                        Case vbNo
+                            txtName.Text = g_Language.TranslateMessage("(enter name here)")
+                            txtName.SetFocus
+                            txtName.selectAll
+                            Exit Sub
+
+                        'If the user selects CANCEL, exit the dialog entirely
+                        Case vbCancel
+                            userAnswer = vbCancel
+                        
+                    End Select
+                    
+                'This preset does not exist, so no special handling is required
+                Else
+                    userAnswer = vbOK
+                End If
+                
             Else
                 pdMsgBox "Please enter a name for this preset.", vbInformation + vbOKOnly + vbApplicationModal, "Preset name required"
                 txtName.Text = g_Language.TranslateMessage("(enter name here)")
@@ -181,6 +213,6 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     
     'Release our hold on the parent command bar
-    Set ownerCommandBar = Nothing
+    Set m_Presets = Nothing
     
 End Sub
