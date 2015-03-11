@@ -27,17 +27,17 @@
 
 <phrase>
 <original>Decrease speed</original>
-<translation></translation>
+<translation>Disminuir la velocidad</translation>
 </phrase>
 
 <phrase>
 <original>Increase speed</original>
-<translation></translation>
+<translation>Aumentar la velocidad</translation>
 </phrase>
 
 <phrase>
 <original>Pause scrolling</original>
-<translation></translation>
+<translation>Pausa de desplazamiento</translation>
 </phrase>
 
 <phrase>
@@ -282,22 +282,22 @@ Please utilizar otro programa para guardar esta imagen en un formato genérico (
 
 <phrase>
 <original>frame %1</original>
-<translation></translation>
+<translation>marco 1%</translation>
 </phrase>
 
 <phrase>
 <original>icon (%1x%2)</original>
-<translation></translation>
+<translation>icono ( %1x %2)</translation>
 </phrase>
 
 <phrase>
 <original>icon (%1x%2, %3 bpp)</original>
-<translation></translation>
+<translation>icono ( %1x %2, %3 bpp)</translation>
 </phrase>
 
 <phrase>
 <original>page %1</original>
-<translation></translation>
+<translation>página 1%</translation>
 </phrase>
 
 <phrase>
@@ -3237,7 +3237,7 @@ You puede utilizar el MenuTest () sub en el módulo Filters_Miscellaneous para p
 
 <phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
-<translation></translation>
+<translation>Una nueva versión de PhotoDemon está disponible. La actualización está procesando automáticamente en segundo plano</translation>
 </phrase>
 
 <phrase>
@@ -3249,7 +3249,9 @@ You puede utilizar el MenuTest () sub en el módulo Filters_Miscellaneous para p
 <original>A new version of PhotoDemon is available!
 
 The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
-<translation></translation>
+<translation>Una nueva versión de PhotoDemon está disponible! Actualización 
+
+The está procesando automáticamente en segundo plano. Usted recibirá una nueva notificación cuando se completa.</translation>
 </phrase>
 
 <phrase>
@@ -4371,7 +4373,7 @@ To habilitar el soporte de escáner, por favor copie el archivo EZTW32.dll (disp
 
 <phrase>
 <original>notify me when an update is ready</original>
-<translation></translation>
+<translation>notificarme cuando una actualización está lista</translation>
 </phrase>
 
 <phrase>
@@ -5245,14 +5247,16 @@ Are ¿Seguro que quieres continuar?</translation>
 
 <phrase>
 <original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
-<translation></translation>
+<translation>PhotoDemon puede notificarle cuando está listo para aplicar una actualización. Esto le permite utilizar la versión actualizada de inmediato.</translation>
 </phrase>
 
 <phrase>
 <original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
 
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation></translation>
+<translation>Los desarrolladores de PhotoDemon toman privacidad muy en serio, así que no hay información - estadística o de otra manera - se carga durante el proceso de actualización. Actualizaciones simplemente implican la descarga de varios archivos XML pequeños de photodemon.org. Estos archivos contienen las cifras más recientes de software, plug-in, y la versión del lenguaje. Si se encuentran versiones actualizadas, y las preferencias del usuario lo permiten, los archivos actualizados se descargan y parcheados automatically.
+
+If usted todavía elige desactivar las actualizaciones, no se olvide de visitar photodemon.org de vez en cuando para comprobar si hay nuevas versiones.</translation>
 </phrase>
 
 <phrase>
@@ -6161,7 +6165,7 @@ To mejorar su experiencia de usuario, por favor, deje que el programa descarga a
 
 <phrase>
 <original>Verifying plugin URL</original>
-<translation></translation>
+<translation>Verificación URL Plugin</translation>
 </phrase>
 
 <phrase>
@@ -6278,7 +6282,7 @@ To mejorar su experiencia de usuario, por favor, deje que el programa descarga a
 
 <phrase>
 <original>%1.%2 Beta %3</original>
-<translation></translation>
+<translation> %1. %2 %Beta 3</translation>
 </phrase>
 
 <!-- VBP_SoftwareUpdater.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -8030,7 +8034,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 
 <phrase>
 <original>show original image (alt+t)</original>
-<translation></translation>
+<translation>Mostrar mensaje original de la imagen (alt t)</translation>
 </phrase>
 
 <!-- fxPreview.ctl contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -8264,7 +8268,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 
 <phrase>
 <original>caption</original>
-<translation></translation>
+<translation>subtítulo</translation>
 </phrase>
 
 <!-- smartOptionButton.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -9402,7 +9406,7 @@ By defecto, la transparencia se divide por la mitad, o se puede especificar un v
 
 <phrase>
 <original>(encoding unknown)</original>
-<translation></translation>
+<translation>(desconocido codificación)</translation>
 </phrase>
 
 <!-- VBP_FormMetadata.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -10408,7 +10412,7 @@ By defecto, la transparencia se divide por la mitad, o se puede especificar un v
 
 <phrase>
 <original>Save the current settings as a new preset.</original>
-<translation></translation>
+<translation>Guarde los ajustes actuales como nuevo ajuste preestablecido.</translation>
 </phrase>
 
 <phrase>
@@ -10670,12 +10674,12 @@ By defecto, la transparencia se divide por la mitad, o se puede especificar un v
 
 <phrase>
 <original>Automatic translations were interrupted (the translation object stopped responding).  The existing work has been auto-saved.</original>
-<translation></translation>
+<translation>Traducciones automáticas fueron interrumpidos (el objeto traducción dejó de responder). El trabajo existente ha sido guardado automáticamente.</translation>
 </phrase>
 
 <phrase>
 <original>Translations interrupted</original>
-<translation></translation>
+<translation>Traducciones interrumpidas</translation>
 </phrase>
 
 <phrase>
@@ -11404,12 +11408,12 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 
 <phrase>
 <original>Open location in E&xplorer</original>
-<translation></translation>
+<translation>Abrir ubicación en el Explorador</translation>
 </phrase>
 
 <phrase>
 <original>Close all except this</original>
-<translation></translation>
+<translation>Cerrar todos excepto este</translation>
 </phrase>
 
 <phrase>
@@ -11919,22 +11923,22 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 
 <phrase>
 <original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation></translation>
+<translation>Mantener la relación de aspecto (a veces llamada Restringir proporciones). Utilice esta opción para cambiar el tamaño de una imagen, manteniendo la anchura y altura en sincronía.</translation>
 </phrase>
 
 <phrase>
 <original>Preserve aspect ratio</original>
-<translation></translation>
+<translation>Preservar la relación de aspecto</translation>
 </phrase>
 
 <phrase>
 <original>Change the unit of measurement used to resize the image.</original>
-<translation></translation>
+<translation>Cambie la unidad de medida utilizada para cambiar el tamaño de la imagen.</translation>
 </phrase>
 
 <phrase>
 <original>Change the unit of measurement used for image resolution (pixel density).</original>
-<translation></translation>
+<translation>Cambie la unidad de medida utilizada para la resolución de la imagen (densidad de píxeles).</translation>
 </phrase>
 
 <phrase>
@@ -13172,57 +13176,57 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <phrase>
 <original>Update ready</original>
-<translation></translation>
+<translation>actualizar lista</translation>
 </phrase>
 
 <phrase>
 <original>in the future, do not notify me of updates</original>
-<translation></translation>
+<translation>en el futuro, no me de cambios no notificar</translation>
 </phrase>
 
 <phrase>
 <original>Keep working</original>
-<translation></translation>
+<translation>Sigue trabajando</translation>
 </phrase>
 
 <phrase>
 <original>Restart PhotoDemon</original>
-<translation></translation>
+<translation>Reiniciar PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>Learn more about the new features in %1</original>
-<translation></translation>
+<translation>Más información sobre las nuevas funciones de %1</translation>
 </phrase>
 
 <phrase>
 <original>(Sorry, but automatic restarts don't work inside the IDE.)</original>
-<translation></translation>
+<translation>(Lo siento, pero reinicios automáticos no funcionan dentro del IDE.)</translation>
 </phrase>
 
 <phrase>
 <original>A new version of PhotoDemon is available.  Restart the program to complete the update process.</original>
-<translation></translation>
+<translation>Una nueva versión de PhotoDemon está disponible. Reinicie el programa para completar el proceso de actualización.</translation>
 </phrase>
 
 <phrase>
 <original>Restart now to access to the latest version of the program.</original>
-<translation></translation>
+<translation>Reinicie ahora para acceder a la última versión del programa.</translation>
 </phrase>
 
 <phrase>
 <original>Apply update now</original>
-<translation></translation>
+<translation>Aplicar la actualización ahora</translation>
 </phrase>
 
 <phrase>
 <original>If you're in the middle of something, feel free to keep working.  The update process will automatically complete whenever you next use the program.</original>
-<translation></translation>
+<translation>Si estás en el medio de algo, no dude en seguir trabajando. El proceso de actualización se completará automáticamente cada vez que se utiliza el siguiente programa.</translation>
 </phrase>
 
 <phrase>
 <original>Apply update later</original>
-<translation></translation>
+<translation>Aplicar actualización posterior</translation>
 </phrase>
 
 <!-- VBP_FormUpdateNotify.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -13245,12 +13249,12 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <phrase>
 <original>Add new preset</original>
-<translation></translation>
+<translation>Añadir nuevo preset</translation>
 </phrase>
 
 <phrase>
 <original>enter a name for this preset</original>
-<translation></translation>
+<translation>escriba un nombre para este preset</translation>
 </phrase>
 
 <phrase>
@@ -13265,7 +13269,7 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <phrase>
 <original>Please enter a name for this preset.</original>
-<translation></translation>
+<translation>Por favor, introduzca un nombre para este valor predeterminado.</translation>
 </phrase>
 
 <phrase>

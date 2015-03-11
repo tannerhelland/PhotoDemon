@@ -27,17 +27,17 @@
 
 <phrase>
 <original>Decrease speed</original>
-<translation></translation>
+<translation>Minska hastigheten</translation>
 </phrase>
 
 <phrase>
 <original>Increase speed</original>
-<translation></translation>
+<translation>Öka hastigheten</translation>
 </phrase>
 
 <phrase>
 <original>Pause scrolling</original>
-<translation></translation>
+<translation>Paus rullning</translation>
 </phrase>
 
 <phrase>
@@ -103,7 +103,7 @@
 
 <phrase>
 <original>version %1</original>
-<translation></translation>
+<translation>version %1</translation>
 </phrase>
 
 <!-- VBP_FormSplash.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -282,22 +282,22 @@ Please använda ett annat program för att spara denna bild i ett generiskt form
 
 <phrase>
 <original>frame %1</original>
-<translation></translation>
+<translation>ram %1</translation>
 </phrase>
 
 <phrase>
 <original>icon (%1x%2)</original>
-<translation></translation>
+<translation>Ikonen ( %1x %2)</translation>
 </phrase>
 
 <phrase>
 <original>icon (%1x%2, %3 bpp)</original>
-<translation></translation>
+<translation>Ikonen ( %1x %2, %3 bpp)</translation>
 </phrase>
 
 <phrase>
 <original>page %1</original>
-<translation></translation>
+<translation>sida %1</translation>
 </phrase>
 
 <phrase>
@@ -373,7 +373,7 @@ Please använda ett annat program för att spara dessa bilder i ett generiskt fo
 
 <phrase>
 <original>Layer import canceled.</original>
-<translation></translation>
+<translation>Import Layer annulleras.</translation>
 </phrase>
 
 <phrase>
@@ -417,12 +417,12 @@ To aktivera stöd för komprimerade PDI-filer, klicka på Hjälp> Sök efter upp
 
 <phrase>
 <original>Ctrl</original>
-<translation></translation>
+<translation>Ctrl</translation>
 </phrase>
 
 <phrase>
 <original>Shift</original>
-<translation></translation>
+<translation>Shift</translation>
 </phrase>
 
 <phrase>
@@ -787,12 +787,14 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 <original>Before lossless copies can be saved, you must save this image at least once.
 
 Lossless copies will be saved to the same folder as this initial image save.</original>
-<translation></translation>
+<translation>Innan förlustfria kopior kan sparas, måste du spara den här bilden minst once.
+
+Lossless kopior sparas i samma mapp som denna första bild Spara.</translation>
 </phrase>
 
 <phrase>
 <original>Initial save required</original>
-<translation></translation>
+<translation>Initial spara krävs</translation>
 </phrase>
 
 <phrase>
@@ -802,7 +804,7 @@ Lossless copies will be saved to the same folder as this initial image save.</or
 
 <phrase>
 <original>Background</original>
-<translation></translation>
+<translation>bakgrund</translation>
 </phrase>
 
 <!-- VBP_MenuModule.bas contains 29 phrases. 19 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
@@ -1915,7 +1917,7 @@ You kan använda MenuTest () sub i Filters_Miscellaneous modulen för att testa 
 
 <phrase>
 <original>&New</original>
-<translation></translation>
+<translation>ny</translation>
 </phrase>
 
 <phrase>
@@ -1990,7 +1992,7 @@ You kan använda MenuTest () sub i Filters_Miscellaneous modulen för att testa 
 
 <phrase>
 <original>Save copy (&lossless)</original>
-<translation></translation>
+<translation>Spara kopia (förlustfri)</translation>
 </phrase>
 
 <phrase>
@@ -2830,7 +2832,7 @@ You kan använda MenuTest () sub i Filters_Miscellaneous modulen för att testa 
 
 <phrase>
 <original>Cross-screen</original>
-<translation></translation>
+<translation>Cross-skärm</translation>
 </phrase>
 
 <phrase>
@@ -3035,17 +3037,17 @@ You kan använda MenuTest () sub i Filters_Miscellaneous modulen för att testa 
 
 <phrase>
 <original>Record macro</original>
-<translation></translation>
+<translation>Record makro</translation>
 </phrase>
 
 <phrase>
 <original>Start recording</original>
-<translation></translation>
+<translation>starta inspelning</translation>
 </phrase>
 
 <phrase>
 <original>Stop recording</original>
-<translation></translation>
+<translation>Stoppa inspelning</translation>
 </phrase>
 
 <phrase>
@@ -3055,12 +3057,12 @@ You kan använda MenuTest () sub i Filters_Miscellaneous modulen för att testa 
 
 <phrase>
 <original>Recent macros</original>
-<translation></translation>
+<translation>Nya makron</translation>
 </phrase>
 
 <phrase>
 <original>Clear recent macro list</original>
-<translation></translation>
+<translation>Rensa senaste makro listan</translation>
 </phrase>
 
 <phrase>
@@ -3075,17 +3077,17 @@ You kan använda MenuTest () sub i Filters_Miscellaneous modulen för att testa 
 
 <phrase>
 <original>PD developer tools</original>
-<translation></translation>
+<translation>PD utvecklingsverktyg</translation>
 </phrase>
 
 <phrase>
 <original>Debug window</original>
-<translation></translation>
+<translation>Debug fönster</translation>
 </phrase>
 
 <phrase>
 <original>Theme editor</original>
-<translation></translation>
+<translation>tema redaktör</translation>
 </phrase>
 
 <phrase>
@@ -3095,37 +3097,37 @@ You kan använda MenuTest () sub i Filters_Miscellaneous modulen för att testa 
 
 <phrase>
 <original>Toolbox</original>
-<translation></translation>
+<translation>Verktygslåda</translation>
 </phrase>
 
 <phrase>
 <original>Display toolbox</original>
-<translation></translation>
+<translation>Display verktygslåda</translation>
 </phrase>
 
 <phrase>
 <original>Display tool category titles</original>
-<translation></translation>
+<translation>Display Verktygskategori titlar</translation>
 </phrase>
 
 <phrase>
 <original>Small buttons</original>
-<translation></translation>
+<translation>Små knappar</translation>
 </phrase>
 
 <phrase>
 <original>Normal buttons</original>
-<translation></translation>
+<translation>Normala knappar</translation>
 </phrase>
 
 <phrase>
 <original>Large buttons</original>
-<translation></translation>
+<translation>Stora knappar</translation>
 </phrase>
 
 <phrase>
 <original>Tool options</original>
-<translation></translation>
+<translation>verktygsalternativ</translation>
 </phrase>
 
 <phrase>
@@ -3235,7 +3237,7 @@ You kan använda MenuTest () sub i Filters_Miscellaneous modulen för att testa 
 
 <phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
-<translation></translation>
+<translation>En ny version av PhotoDemon är tillgänglig. Uppdateringen automatiskt bearbetning i bakgrunden</translation>
 </phrase>
 
 <phrase>
@@ -3247,7 +3249,9 @@ You kan använda MenuTest () sub i Filters_Miscellaneous modulen för att testa 
 <original>A new version of PhotoDemon is available!
 
 The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
-<translation></translation>
+<translation>En ny version av PhotoDemon är tillgänglig! 
+
+The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny anmälan när den är klar.</translation>
 </phrase>
 
 <phrase>
@@ -3351,17 +3355,17 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Rotate layer 90 clockwise</original>
-<translation></translation>
+<translation>Rotera lagret 90 medurs</translation>
 </phrase>
 
 <phrase>
 <original>Rotate layer 90 counter-clockwise</original>
-<translation></translation>
+<translation>Rotera lagret 90 moturs</translation>
 </phrase>
 
 <phrase>
 <original>Rotate layer 180</original>
-<translation></translation>
+<translation>Rotera skiktet 180</translation>
 </phrase>
 
 <phrase>
@@ -3531,7 +3535,7 @@ The update is automatically processing in the background.  You will receive a ne
 
 <phrase>
 <original>Save copy</original>
-<translation></translation>
+<translation>Spara kopia</translation>
 </phrase>
 
 <phrase>
@@ -3642,7 +3646,9 @@ Do du har en GitHub konto? (Om du har ingen aning om vad det här betyder, svara
 <original>Language changed successfully!
 
 Note: some minor program text cannot be live-updated.  Such text will be properly translated the next time you start the application.</original>
-<translation></translation>
+<translation>Språk 
+
+Note förändrats framgångsrikt: några mindre program kan inte vara levande uppdaterad. Sådan text kommer att korrekt översatt nästa gång du startar programmet.</translation>
 </phrase>
 
 <phrase>
@@ -3712,17 +3718,17 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 
 <phrase>
 <original>Rotate image 90 clockwise</original>
-<translation></translation>
+<translation>Rotera bilden 90 medsols</translation>
 </phrase>
 
 <phrase>
 <original>Rotate image 90 counter-clockwise</original>
-<translation></translation>
+<translation>Rotera bilden 90 motsols</translation>
 </phrase>
 
 <phrase>
 <original>Rotate image 180</original>
-<translation></translation>
+<translation>Rotera bild 180</translation>
 </phrase>
 
 <phrase>
@@ -4282,7 +4288,7 @@ To aktivera skannerstödet, vänligen kopiera EZTW32.dll fil (finns att ladda ne
 
 <phrase>
 <original>Performance Options</original>
-<translation></translation>
+<translation>Prestandaalternativ</translation>
 </phrase>
 
 <phrase>
@@ -4342,22 +4348,22 @@ To aktivera skannerstödet, vänligen kopiera EZTW32.dll fil (finns att ladda ne
 
 <phrase>
 <original>update language files independently</original>
-<translation></translation>
+<translation>uppdateringsspråk filer självständigt</translation>
 </phrase>
 
 <phrase>
 <original>automatically check for updates</original>
-<translation></translation>
+<translation>automatiskt söka efter uppdateringar</translation>
 </phrase>
 
 <phrase>
 <original>update plugins independently</original>
-<translation></translation>
+<translation>uppdateringsinsticks oberoende</translation>
 </phrase>
 
 <phrase>
 <original>allow updates from these tracks</original>
-<translation></translation>
+<translation>tillåter uppdateringar från dessa spår</translation>
 </phrase>
 
 <phrase>
@@ -4367,17 +4373,17 @@ To aktivera skannerstödet, vänligen kopiera EZTW32.dll fil (finns att ladda ne
 
 <phrase>
 <original>notify me when an update is ready</original>
-<translation></translation>
+<translation>meddela mig när en uppdatering är klar</translation>
 </phrase>
 
 <phrase>
 <original>use high-resolution input tracking</original>
-<translation></translation>
+<translation>Använd högupplösta ingång spårning</translation>
 </phrase>
 
 <phrase>
 <original>mouse and pen input</original>
-<translation></translation>
+<translation>mus och penninmatning</translation>
 </phrase>
 
 <phrase>
@@ -4607,7 +4613,7 @@ To aktivera skannerstödet, vänligen kopiera EZTW32.dll fil (finns att ladda ne
 
 <phrase>
 <original>display tone mapping options when importing HDR and RAW images</original>
-<translation></translation>
+<translation>display tonmappning alternativ när du importerar HDR och RAW-bilder</translation>
 </phrase>
 
 <phrase>
@@ -4742,22 +4748,22 @@ To aktivera skannerstödet, vänligen kopiera EZTW32.dll fil (finns att ladda ne
 
 <phrase>
 <original>If the current image has not been saved, you will receive a prompt to save it before it closes.</original>
-<translation></translation>
+<translation>Om den aktuella bilden inte har sparats, kommer du att få en uppmaning att spara den innan den stängs.</translation>
 </phrase>
 
 <phrase>
 <original>Close the current image</original>
-<translation></translation>
+<translation>Stäng den aktuella bilden</translation>
 </phrase>
 
 <phrase>
 <original>Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.</original>
-<translation></translation>
+<translation>Eftersom du har stängt av save prompter (via Edit -> Preferences), kommer du inte att få en uppmaning att spara bilden innan den stängs.</translation>
 </phrase>
 
 <phrase>
 <original>Preferences updated.</original>
-<translation></translation>
+<translation>Inställningar uppdateras.</translation>
 </phrase>
 
 <phrase>
@@ -4816,7 +4822,7 @@ Are du säker på att du vill fortsätta?</translation>
 
 <phrase>
 <original>High-resolution tracking allows PhotoDemon to more accurately reproduce mouse and pen movement.  On some older PCs, the system may struggle to keep up with the extra tracking data, so you can disable this if necessary.</original>
-<translation></translation>
+<translation>Högupplöst spårning gör PhotoDemon att mer exakt återge mus och penna rörelse. På vissa äldre datorer kan systemet kämpa för att hänga med de extra spårningsinformation, så att du kan stänga av detta om det behövs.</translation>
 </phrase>
 
 <phrase>
@@ -4846,7 +4852,7 @@ Are du säker på att du vill fortsätta?</translation>
 
 <phrase>
 <original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
-<translation></translation>
+<translation>HDR och RAW-bilder innehåller fler färger än datorskärmar fysiskt kan visa. Innan visning sådana bilder måste en tonmappning operation appliceras på den ursprungliga bildinformationen.</translation>
 </phrase>
 
 <phrase>
@@ -5186,69 +5192,71 @@ Are du säker på att du vill fortsätta?</translation>
 
 <phrase>
 <original>each session</original>
-<translation></translation>
+<translation>varje session</translation>
 </phrase>
 
 <phrase>
 <original>weekly</original>
-<translation></translation>
+<translation>veckovis</translation>
 </phrase>
 
 <phrase>
 <original>monthly</original>
-<translation></translation>
+<translation>månatlig</translation>
 </phrase>
 
 <phrase>
 <original>never (not recommended)</original>
-<translation></translation>
+<translation>aldrig (rekommenderas inte)</translation>
 </phrase>
 
 <phrase>
 <original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
-<translation></translation>
+<translation>Eftersom PhotoDemon är en portabel applikation, kan den bara söka efter uppdateringar när programmet körs. Som standard kommer PhotoDemon söka efter uppdateringar varje gång programmet startas, men du kan minska denna frekvens om så önskas.</translation>
 </phrase>
 
 <phrase>
 <original>stable releases</original>
-<translation></translation>
+<translation>stabila utgåvor</translation>
 </phrase>
 
 <phrase>
 <original>stable and beta releases</original>
-<translation></translation>
+<translation>stabila och betaversioner</translation>
 </phrase>
 
 <phrase>
 <original>stable, beta, and developer releases</original>
-<translation></translation>
+<translation>stabila, släpper beta, och utvecklare</translation>
 </phrase>
 
 <phrase>
 <original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation></translation>
+<translation>Ett av de bästa sätten att stödja PhotoDemon är att hjälpa testa nya releaser. Som standard kommer PhotoDemon föreslå både stabila och betaversioner, men den verkligt äventyr kan också prova utvecklare utgåvor. (Developer releaser ger dig omedelbar tillgång till de senaste program förbättringarna, men du kan stöta några buggar.)</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon's volunteer translators regularly update the program's language files.  PhotoDemon can automatically download these updates separate from the main program, ensuring that you always have the most up-to-date language files.</original>
-<translation></translation>
+<translation>PhotoDemon s frivilliga översättare regelbundet uppdatera programmets språkfiler. PhotoDemon kan automatiskt hämta dessa uppdateringar separat från huvudprogrammet, se till att du alltid har de mest up-to-date språkfiler.</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon uses some 3rd-party plugins.  Sometimes, the authors of these plugins fix bugs or add new features.  Instead of waiting for the next PhotoDemon release, you can receive plugin updates as soon as they become available.</original>
-<translation></translation>
+<translation>PhotoDemon använder några 3rd part plugins. Ibland författarna till dessa plugins rätta fel eller lägga till nya funktioner. Istället för att vänta på nästa PhotoDemon utgåvan kan du få plugin uppdateringar så snart de blir tillgängliga.</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
-<translation></translation>
+<translation>PhotoDemon kan meddela dig när det är redo att tillämpa en uppdatering. Detta gör att du kan använda den uppdaterade versionen direkt.</translation>
 </phrase>
 
 <phrase>
 <original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
 
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation></translation>
+<translation>Utvecklarna av PhotoDemon tar integritet på största allvar, så ingen information - statistik eller av annat - laddas upp under uppdateringsprocessen. Uppdateringar helt enkelt innebära att ladda ner flera små XML-filer från photodemon.org. Dessa filer innehåller de senaste mjukvaran, plugin, och språkversionsnummer. Om uppdaterade versioner finns, och användarinställningar tillåter, är de uppdaterade filerna sedan hämtas och lappade automatically.
+
+If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photodemon.org från tid till annan för att kontrollera om det finns nya versioner.</translation>
 </phrase>
 
 <phrase>
@@ -5303,7 +5311,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
-<translation></translation>
+<translation>Prestanda alternativ kan du styra om PhotoDemon betonar hastighet eller kvalitet när du utför vissa uppgifter.</translation>
 </phrase>
 
 <phrase>
@@ -5721,7 +5729,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>set levels automatically</original>
-<translation></translation>
+<translation>inställda nivåer automatiskt</translation>
 </phrase>
 
 <phrase>
@@ -5736,7 +5744,7 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>channel</original>
-<translation></translation>
+<translation>kanal</translation>
 </phrase>
 
 <phrase>
@@ -6157,7 +6165,7 @@ To höja prestandan, låt programmet för att automatiskt ladda ner dessa gratis
 
 <phrase>
 <original>Verifying plugin URL</original>
-<translation></translation>
+<translation>Verifiera plugin URL</translation>
 </phrase>
 
 <phrase>
@@ -6210,22 +6218,22 @@ To höja prestandan, låt programmet för att automatiskt ladda ner dessa gratis
 
 <phrase>
 <original>Alt</original>
-<translation></translation>
+<translation>alt</translation>
 </phrase>
 
 <phrase>
 <original>Enter</original>
-<translation></translation>
+<translation>Enter</translation>
 </phrase>
 
 <phrase>
 <original>Page Up</original>
-<translation></translation>
+<translation>Page Up</translation>
 </phrase>
 
 <phrase>
 <original>Page Down</original>
-<translation></translation>
+<translation>Page Down</translation>
 </phrase>
 
 <phrase>
@@ -6269,12 +6277,12 @@ To höja prestandan, låt programmet för att automatiskt ladda ner dessa gratis
 
 <phrase>
 <original>Update check postponed (a check has been performed recently)</original>
-<translation></translation>
+<translation>Uppdatera check skjutas (en kontroll har utförts nyligen)</translation>
 </phrase>
 
 <phrase>
 <original>%1.%2 Beta %3</original>
-<translation></translation>
+<translation> %1. %2 Beta %3</translation>
 </phrase>
 
 <!-- VBP_SoftwareUpdater.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -6615,7 +6623,7 @@ Please ange ett numeriskt värde.</translation>
 
 <phrase>
 <original>Fade last action</original>
-<translation></translation>
+<translation>Fade senaste åtgärden</translation>
 </phrase>
 
 <phrase>
@@ -6635,12 +6643,12 @@ Please ange ett numeriskt värde.</translation>
 
 <phrase>
 <original>Undo last action</original>
-<translation></translation>
+<translation>Ångra den senaste åtgärden</translation>
 </phrase>
 
 <phrase>
 <original>Redo previous action</original>
-<translation></translation>
+<translation>Gör om tidigare åtgärder</translation>
 </phrase>
 
 <phrase>
@@ -7495,7 +7503,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>Please choose a transparency threshold</original>
-<translation></translation>
+<translation>Välj en tröskel öppenhet</translation>
 </phrase>
 
 <phrase>
@@ -7911,7 +7919,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>options</original>
-<translation></translation>
+<translation>alternativ</translation>
 </phrase>
 
 <phrase>
@@ -7921,12 +7929,12 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>basic</original>
-<translation></translation>
+<translation>grundläggande</translation>
 </phrase>
 
 <phrase>
 <original>advanced</original>
-<translation></translation>
+<translation>avancerad</translation>
 </phrase>
 
 <!-- VBP_FormRipple.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -8026,7 +8034,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>show original image (alt+t)</original>
-<translation></translation>
+<translation>visa originalbilden (alt t)</translation>
 </phrase>
 
 <!-- fxPreview.ctl contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -8260,7 +8268,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>caption</original>
-<translation></translation>
+<translation>bildtext</translation>
 </phrase>
 
 <!-- smartOptionButton.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -8980,7 +8988,7 @@ Would du spara din satslistan innan du avslutar?</translation>
 
 <phrase>
 <original>Step 5: wait for batch processing to finish</original>
-<translation></translation>
+<translation>Steg 5: vänta på gruppbearbetning till slut</translation>
 </phrase>
 
 <phrase>
@@ -9307,7 +9315,7 @@ By standard kommer öppenheten att delas i mitten, eller så kan du ange en anpa
 
 <phrase>
 <original>This file format does not support metadata.  Metadata processing skipped.</original>
-<translation></translation>
+<translation>Detta filformat stöder inte metadata. Metadata bearbetning hoppade.</translation>
 </phrase>
 
 <phrase>
@@ -9343,62 +9351,62 @@ By standard kommer öppenheten att delas i mitten, eller så kan du ange en anpa
 
 <phrase>
 <original>Generate full metadata report (HTML)</original>
-<translation></translation>
+<translation>Generera fullständig metadata rapport (HTML)</translation>
 </phrase>
 
 <phrase>
 <original>metadata options</original>
-<translation></translation>
+<translation>metadata alternativ</translation>
 </phrase>
 
 <phrase>
 <original>tag values</original>
-<translation></translation>
+<translation>taggvärdena</translation>
 </phrase>
 
 <phrase>
 <original>tag names</original>
-<translation></translation>
+<translation>taggnamn</translation>
 </phrase>
 
 <phrase>
 <original>tags in this category</original>
-<translation></translation>
+<translation>taggar i denna kategori</translation>
 </phrase>
 
 <phrase>
 <original>metadata groups in this image</original>
-<translation></translation>
+<translation>metadata grupper i den här bilden</translation>
 </phrase>
 
 <phrase>
 <original>1 tag in this category</original>
-<translation></translation>
+<translation>1 tagg i denna kategori</translation>
 </phrase>
 
 <phrase>
 <original>%1 tags in this category</original>
-<translation></translation>
+<translation> %1 taggar i denna kategori</translation>
 </phrase>
 
 <phrase>
 <original>simple</original>
-<translation></translation>
+<translation>enkel</translation>
 </phrase>
 
 <phrase>
 <original>technical</original>
-<translation></translation>
+<translation>teknisk</translation>
 </phrase>
 
 <phrase>
 <original>All metadata information is supplied by the ExifTool plugin.  You can learn more about ExifTool at http://www.sno.phy.queensu.ca/~phil/exiftool/</original>
-<translation></translation>
+<translation>All metadata information lämnas av ExifTool plugin. Du kan läsa mer om ExifTool på http://www.sno.phy.queensu.ca/~phil/exiftool/</translation>
 </phrase>
 
 <phrase>
 <original>(encoding unknown)</original>
-<translation></translation>
+<translation>(kodning ålder)</translation>
 </phrase>
 
 <!-- VBP_FormMetadata.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -9447,7 +9455,7 @@ By standard kommer öppenheten att delas i mitten, eller så kan du ange en anpa
 
 <phrase>
 <original>area outside sphere</original>
-<translation></translation>
+<translation>området utanför sfären</translation>
 </phrase>
 
 <phrase>
@@ -9467,12 +9475,12 @@ By standard kommer öppenheten att delas i mitten, eller så kan du ange en anpa
 
 <phrase>
 <original>empty</original>
-<translation></translation>
+<translation>tom</translation>
 </phrase>
 
 <phrase>
 <original>rays of light</original>
-<translation></translation>
+<translation>strålar av ljus</translation>
 </phrase>
 
 <!-- VBP_FormSpherize.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -9950,12 +9958,12 @@ By standard kommer öppenheten att delas i mitten, eller så kan du ange en anpa
 
 <phrase>
 <original>input channel(s)</original>
-<translation></translation>
+<translation>ingångskanal (er)</translation>
 </phrase>
 
 <phrase>
 <original>options for all channels</original>
-<translation></translation>
+<translation>alternativ för alla kanaler</translation>
 </phrase>
 
 <phrase>
@@ -10188,12 +10196,12 @@ By standard kommer öppenheten att delas i mitten, eller så kan du ange en anpa
 
 <phrase>
 <original>original curve (diagonal line)</original>
-<translation></translation>
+<translation>ursprungliga kurvan (diagonal linje)</translation>
 </phrase>
 
 <phrase>
 <original>grid</original>
-<translation></translation>
+<translation>rutnät</translation>
 </phrase>
 
 <phrase>
@@ -10203,7 +10211,7 @@ By standard kommer öppenheten att delas i mitten, eller så kan du ange en anpa
 
 <phrase>
 <original>display</original>
-<translation></translation>
+<translation>display</translation>
 </phrase>
 
 <phrase>
@@ -10238,17 +10246,17 @@ By standard kommer öppenheten att delas i mitten, eller så kan du ange en anpa
 
 <phrase>
 <original>on</original>
-<translation></translation>
+<translation>på</translation>
 </phrase>
 
 <phrase>
 <original>off</original>
-<translation></translation>
+<translation>off</translation>
 </phrase>
 
 <phrase>
 <original>tool</original>
-<translation></translation>
+<translation>verktyg</translation>
 </phrase>
 
 <phrase>
@@ -10404,7 +10412,7 @@ By standard kommer öppenheten att delas i mitten, eller så kan du ange en anpa
 
 <phrase>
 <original>Save the current settings as a new preset.</original>
-<translation></translation>
+<translation>Spara de aktuella inställningarna som en ny förinställning.</translation>
 </phrase>
 
 <phrase>
@@ -10666,12 +10674,12 @@ By standard kommer öppenheten att delas i mitten, eller så kan du ange en anpa
 
 <phrase>
 <original>Automatic translations were interrupted (the translation object stopped responding).  The existing work has been auto-saved.</original>
-<translation></translation>
+<translation>Automatiska översättningar avbröts (översättningsobjekt slutade svara). Den befintliga arbetet har varit automatiskt sparas.</translation>
 </phrase>
 
 <phrase>
 <original>Translations interrupted</original>
-<translation></translation>
+<translation>Translations avbryts</translation>
 </phrase>
 
 <phrase>
@@ -10972,22 +10980,22 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>file</original>
-<translation></translation>
+<translation>fil</translation>
 </phrase>
 
 <phrase>
 <original>undo</original>
-<translation></translation>
+<translation>ångra</translation>
 </phrase>
 
 <phrase>
 <original>non-destructive</original>
-<translation></translation>
+<translation>icke-förstörande</translation>
 </phrase>
 
 <phrase>
 <original>selection</original>
-<translation></translation>
+<translation>val</translation>
 </phrase>
 
 <phrase>
@@ -10997,57 +11005,57 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.</original>
-<translation></translation>
+<translation>Detta alternativ kommer att skapa en tom bild. Andra sätt att skapa nya bilder kan hittas i Arkiv -> Importera menyn.</translation>
 </phrase>
 
 <phrase>
 <original>New Image</original>
-<translation></translation>
+<translation>ny bild</translation>
 </phrase>
 
 <phrase>
 <original>Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.</original>
-<translation></translation>
+<translation>Ett annat sätt att öppna bilderna är att dra dem från skrivbordet eller Utforskaren och släppa dem på PhotoDemon.</translation>
 </phrase>
 
 <phrase>
 <original>Open one or more images for editing</original>
-<translation></translation>
+<translation>Öppna en eller flera bilder för redigering</translation>
 </phrase>
 
 <phrase>
 <original>WARNING: this will overwrite the current image file.  To save to a different file, use the "Save As" button.</original>
-<translation></translation>
+<translation>VARNING: Detta kommer att skriva över den aktuella bildfilen. För att spara till en annan fil, använd "Spara som" -knappen.</translation>
 </phrase>
 
 <phrase>
 <original>Save image in current format</original>
-<translation></translation>
+<translation>Spara bilden i aktuellt format</translation>
 </phrase>
 
 <phrase>
 <original>You have specified "safe" save mode, which means that each save will create a new file with an auto-incremented filename.</original>
-<translation></translation>
+<translation>Du har specificerat "säkra" sparläge, vilket innebär att varje räddning kommer att skapa en ny fil med en auto-ökas filnamn.</translation>
 </phrase>
 
 <phrase>
 <original>Use this to quickly save a lossless copy of the current image.  The lossless copy will be saved in PDI format, in the image's current folder, using the current filename (plus an auto-incremented number, as necessary).</original>
-<translation></translation>
+<translation>Använd detta för att snabbt spara en förlustfri kopia av den aktuella bilden. Den förlustfria kopia sparas i PDI-format, i bildens aktuella mappen, med den aktuella filnamnet (plus en auto-ökas numret vid behov).</translation>
 </phrase>
 
 <phrase>
 <original>Save lossless copy</original>
-<translation></translation>
+<translation>Spara förlustfri kopia</translation>
 </phrase>
 
 <phrase>
 <original>The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image.</original>
-<translation></translation>
+<translation>Med kommandot Spara som väcker alltid en dialog, så att du kan ange ett nytt filnamn, mapp och/eller bildformat för den aktuella bilden.</translation>
 </phrase>
 
 <phrase>
 <original>Save As (export to new format or filename)</original>
-<translation></translation>
+<translation>Spara som (export till nya format eller filnamn)</translation>
 </phrase>
 
 <phrase>
@@ -11082,17 +11090,17 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>Polygon Selection</original>
-<translation></translation>
+<translation>Polygon Urval</translation>
 </phrase>
 
 <phrase>
 <original>Lasso (Freehand) Selection</original>
-<translation></translation>
+<translation>Lasso (Freehand) Val</translation>
 </phrase>
 
 <phrase>
 <original>Magic Wand Selection</original>
-<translation></translation>
+<translation>Trollstaven Selection</translation>
 </phrase>
 
 <!-- VBP_ToolbarPrimary.frm contains 42 phrases. 17 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
@@ -11144,17 +11152,17 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>sampling area</original>
-<translation></translation>
+<translation>provtagningsområdet</translation>
 </phrase>
 
 <phrase>
 <original>tolerance</original>
-<translation></translation>
+<translation>tolerans</translation>
 </phrase>
 
 <phrase>
 <original>stroke smoothing</original>
-<translation></translation>
+<translation>stroke utjämning</translation>
 </phrase>
 
 <phrase>
@@ -11234,7 +11242,7 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>Highlight</original>
-<translation></translation>
+<translation>Markera</translation>
 </phrase>
 
 <phrase>
@@ -11244,7 +11252,7 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>Outline</original>
-<translation></translation>
+<translation>Outline</translation>
 </phrase>
 
 <phrase>
@@ -11269,47 +11277,47 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>image</original>
-<translation></translation>
+<translation>bild</translation>
 </phrase>
 
 <phrase>
 <original>layer</original>
-<translation></translation>
+<translation>skikt</translation>
 </phrase>
 
 <phrase>
 <original>contiguous</original>
-<translation></translation>
+<translation>sammanhängande</translation>
 </phrase>
 
 <phrase>
 <original>global</original>
-<translation></translation>
+<translation>globala</translation>
 </phrase>
 
 <phrase>
 <original>Luminance</original>
-<translation></translation>
+<translation>Luminans</translation>
 </phrase>
 
 <phrase>
 <original>Red</original>
-<translation></translation>
+<translation>röd</translation>
 </phrase>
 
 <phrase>
 <original>Green</original>
-<translation></translation>
+<translation>grön</translation>
 </phrase>
 
 <phrase>
 <original>Blue</original>
-<translation></translation>
+<translation>blå</translation>
 </phrase>
 
 <phrase>
 <original>Alpha</original>
-<translation></translation>
+<translation>Alpha</translation>
 </phrase>
 
 <phrase>
@@ -11359,32 +11367,32 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>This option adjusts the curvature, if any, of a polygon selection's sides.</original>
-<translation></translation>
+<translation>Det här alternativet justerar krökning, om någon, av en polygon urval sidor.</translation>
 </phrase>
 
 <phrase>
 <original>This option increases the smoothness of a hand-drawn lasso selection.</original>
-<translation></translation>
+<translation>Detta alternativ ökar jämnhet en handritad lasso valet.</translation>
 </phrase>
 
 <phrase>
 <original>Tolerance controls how similar two pixels must be before adding them to a magic wand selection.</original>
-<translation></translation>
+<translation>Tolerans styr hur liknande två pixlar måste vara innan du lägger dem på ett trollspö val.</translation>
 </phrase>
 
 <phrase>
 <original>The magic wand can operate on the entire image, or just the active layer.</original>
-<translation></translation>
+<translation>Trollspö kan verka på hela bilden, eller bara det aktiva lagret.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuity.</original>
-<translation></translation>
+<translation>Normalt kommer trollspö utspridda från målet pixel, lägga intilliggande pixlar till valet som det går. Alternativt kan du ställa in den för att söka i hela bilden, utan det gäller för kontinuitet.</translation>
 </phrase>
 
 <phrase>
 <original>This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection.</original>
-<translation></translation>
+<translation>Det här alternativet styr vilka kriterier trollspö använder för att avgöra om en pixel bör läggas till den aktuella markeringen.</translation>
 </phrase>
 
 <!-- VBP_ToolbarTools.frm contains 72 phrases. 16 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
@@ -11400,27 +11408,27 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>Open location in E&xplorer</original>
-<translation></translation>
+<translation>Öppen plats i Utforskaren</translation>
 </phrase>
 
 <phrase>
 <original>Close all except this</original>
-<translation></translation>
+<translation>Stäng alla utom detta</translation>
 </phrase>
 
 <phrase>
 <original>Once this image has been saved to disk, its filename will appear here.</original>
-<translation></translation>
+<translation>När denna bild har sparats till disk, kommer dess filnamn visas här.</translation>
 </phrase>
 
 <phrase>
 <original>This image does not have a filename.</original>
-<translation></translation>
+<translation>Denna bild har inte ett filnamn.</translation>
 </phrase>
 
 <phrase>
 <original>Hover an image thumbnail to see its name and current file location.</original>
-<translation></translation>
+<translation>För musen över en miniatyrbild för att se sitt namn och aktuella filen plats.</translation>
 </phrase>
 
 <!-- VBP_ToolbarImageTabs.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -11739,17 +11747,17 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>Fit width</original>
-<translation></translation>
+<translation>Fit bredd</translation>
 </phrase>
 
 <phrase>
 <original>Fit height</original>
-<translation></translation>
+<translation>Fit höjd</translation>
 </phrase>
 
 <phrase>
 <original>Fit image</original>
-<translation></translation>
+<translation>Fit bild</translation>
 </phrase>
 
 <!-- pdZoom.cls contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -11915,22 +11923,22 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation></translation>
+<translation>Bevara sidförhållande (kallas ibland Bibehåll proportioner). Använd detta alternativ för att ändra storlek på en bild samtidigt som bredden och höjden i synk.</translation>
 </phrase>
 
 <phrase>
 <original>Preserve aspect ratio</original>
-<translation></translation>
+<translation>Bevara bildformat</translation>
 </phrase>
 
 <phrase>
 <original>Change the unit of measurement used to resize the image.</original>
-<translation></translation>
+<translation>Ändra måttenhet som används för att ändra storlek på bilden.</translation>
 </phrase>
 
 <phrase>
 <original>Change the unit of measurement used for image resolution (pixel density).</original>
-<translation></translation>
+<translation>Ändra måttenhet som används för bildupplösning (pixeltätheten).</translation>
 </phrase>
 
 <phrase>
@@ -11961,7 +11969,7 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>Fit the image on-screen</original>
-<translation></translation>
+<translation>Montera bilden på skärmen</translation>
 </phrase>
 
 <phrase>
@@ -11976,12 +11984,12 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>Change viewport zoom</original>
-<translation></translation>
+<translation>Ändra visnings zoom</translation>
 </phrase>
 
 <phrase>
 <original>Change the image size unit displayed to the left of this box</original>
-<translation></translation>
+<translation>Ändra bildstorlek enheten visas till vänster på denna ruta</translation>
 </phrase>
 
 <phrase>
@@ -11996,7 +12004,7 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>Release the mouse button to complete the lasso selection</original>
-<translation></translation>
+<translation>Släpp musknappen för att fullborda lasso valet</translation>
 </phrase>
 
 <phrase>
@@ -12021,7 +12029,7 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 
 <phrase>
 <original>Click on the first point to complete the polygon selection</original>
-<translation></translation>
+<translation>Klicka på den första punkten för att slutföra polygon val</translation>
 </phrase>
 
 <phrase>
@@ -12250,7 +12258,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>New layer</original>
-<translation></translation>
+<translation>nytt lager</translation>
 </phrase>
 
 <phrase>
@@ -12265,7 +12273,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Move layer up</original>
-<translation></translation>
+<translation>Flytta skikt upp</translation>
 </phrase>
 
 <phrase>
@@ -12275,7 +12283,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Move layer down</original>
-<translation></translation>
+<translation>Flytta skikt ned</translation>
 </phrase>
 
 <!-- VBP_ToolbarLayers.frm contains 41 phrases. 21 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
@@ -12296,7 +12304,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Legacy file format could not be decoded.</original>
-<translation></translation>
+<translation>Legacy filformat kunde inte avkodas.</translation>
 </phrase>
 
 <phrase>
@@ -12306,22 +12314,22 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Directory is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation></translation>
+<translation>Katalog komprimeras, men ZLIB misslyckades med att packa det. Felkod return: %1</translation>
 </phrase>
 
 <phrase>
 <original>Directory chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation></translation>
+<translation>Register bit komprimeras, men ZLIB saknas. Dekompression omöjligt; överge belastning.</translation>
 </phrase>
 
 <phrase>
 <original>Data chunk is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation></translation>
+<translation>Data bit komprimeras, men ZLIB misslyckades med att packa det. Felkod return: %1</translation>
 </phrase>
 
 <phrase>
 <original>Data chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation></translation>
+<translation>Datastycket komprimeras, men ZLIB saknas. Dekompression omöjligt; överge belastning.</translation>
 </phrase>
 
 <phrase>
@@ -12331,7 +12339,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>File node is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation></translation>
+<translation>Fil nod komprimeras, men ZLIB saknas. Dekompression omöjligt; överge belastning.</translation>
 </phrase>
 
 <phrase>
@@ -12579,22 +12587,22 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>synchronize intensity</original>
-<translation></translation>
+<translation>synkronisera intensitet</translation>
 </phrase>
 
 <phrase>
 <original>secondary intensity</original>
-<translation></translation>
+<translation>sekundär intensitet</translation>
 </phrase>
 
 <phrase>
 <original>tertiary intensity</original>
-<translation></translation>
+<translation>tertiär intensitet</translation>
 </phrase>
 
 <phrase>
 <original>Note: you can also set a position by clicking the preview window.</original>
-<translation></translation>
+<translation>Obs: Du kan också ställa in en position genom att klicka på förhandsgranskningsfönstret.</translation>
 </phrase>
 
 <phrase>
@@ -12604,12 +12612,12 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>yes</original>
-<translation></translation>
+<translation>ja</translation>
 </phrase>
 
 <phrase>
 <original>no</original>
-<translation></translation>
+<translation>ingen</translation>
 </phrase>
 
 <!-- VBP_FormLensFlare.frm contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -12991,87 +12999,87 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>HDR image identified</original>
-<translation></translation>
+<translation>HDR-bild som identifierats</translation>
 </phrase>
 
 <phrase>
 <original>in the future, automatically apply these settings</original>
-<translation></translation>
+<translation>i framtiden, automatiskt tillämpa dessa inställningar</translation>
 </phrase>
 
 <phrase>
 <original>gamma</original>
-<translation></translation>
+<translation>gamma</translation>
 </phrase>
 
 <phrase>
 <original>adaptation</original>
-<translation></translation>
+<translation>anpassning</translation>
 </phrase>
 
 <phrase>
 <original>color correction</original>
-<translation></translation>
+<translation>färgkorrigering</translation>
 </phrase>
 
 <phrase>
 <original>white point</original>
-<translation></translation>
+<translation>vitpunkt</translation>
 </phrase>
 
 <phrase>
 <original>normalize</original>
-<translation></translation>
+<translation>normalisera</translation>
 </phrase>
 
 <phrase>
 <original>visible spectrum</original>
-<translation></translation>
+<translation>synliga spektrat</translation>
 </phrase>
 
 <phrase>
 <original>full spectrum</original>
-<translation></translation>
+<translation>fullt spektrum</translation>
 </phrase>
 
 <phrase>
 <original>This image contains more than 16 million colors.  Before it can be displayed on your screen, it must be converted to a simpler format.  This process is called tone mapping.</original>
-<translation></translation>
+<translation>Denna bild innehåller mer än 16 miljoner färger. Innan den kan visas på skärmen, måste den omvandlas till ett enklare format. Denna process kallas tonmappning.</translation>
 </phrase>
 
 <phrase>
 <original>Waiting for tone mapping instructions</original>
-<translation></translation>
+<translation>Väntar på tonmappning instruktioner</translation>
 </phrase>
 
 <phrase>
 <original>Cancelling image import</original>
-<translation></translation>
+<translation>Avbryta bildimport</translation>
 </phrase>
 
 <phrase>
 <original>Proceeding with tone mapping</original>
-<translation></translation>
+<translation>Fortsätter med tonmappning</translation>
 </phrase>
 
 <phrase>
 <original>Linear</original>
-<translation></translation>
+<translation>Linjär</translation>
 </phrase>
 
 <phrase>
 <original>Filmic</original>
-<translation></translation>
+<translation>fILMISK</translation>
 </phrase>
 
 <phrase>
 <original>Drago</original>
-<translation></translation>
+<translation>Drago</translation>
 </phrase>
 
 <phrase>
 <original>Reinhard</original>
-<translation></translation>
+<translation>Reinhard</translation>
 </phrase>
 
 <!-- VBP_FormToneMapping.frm contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -13082,7 +13090,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Create new image</original>
-<translation></translation>
+<translation>Skapa ny bild</translation>
 </phrase>
 
 <!-- VBP_FormNewImage.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -13099,17 +13107,17 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Cross-screen (stars)</original>
-<translation></translation>
+<translation>Cross-skärm (stjärnor)</translation>
 </phrase>
 
 <phrase>
 <original>spokes</original>
-<translation></translation>
+<translation>ekrar</translation>
 </phrase>
 
 <phrase>
 <original>Applying cross-screen filter</original>
-<translation></translation>
+<translation>Tillämpa kors nätfilter</translation>
 </phrase>
 
 <!-- VBP_FormCrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -13168,57 +13176,57 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Update ready</original>
-<translation></translation>
+<translation>Uppdatera redo</translation>
 </phrase>
 
 <phrase>
 <original>in the future, do not notify me of updates</original>
-<translation></translation>
+<translation>i framtiden, inte meddela mig om uppdateringar</translation>
 </phrase>
 
 <phrase>
 <original>Keep working</original>
-<translation></translation>
+<translation>Fortsätt arbeta</translation>
 </phrase>
 
 <phrase>
 <original>Restart PhotoDemon</original>
-<translation></translation>
+<translation>omstart PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>Learn more about the new features in %1</original>
-<translation></translation>
+<translation>Läs mer om de nya funktionerna i %1</translation>
 </phrase>
 
 <phrase>
 <original>(Sorry, but automatic restarts don't work inside the IDE.)</original>
-<translation></translation>
+<translation>(Tyvärr, men automatiska omstarter fungerar inte inne i IDE.)</translation>
 </phrase>
 
 <phrase>
 <original>A new version of PhotoDemon is available.  Restart the program to complete the update process.</original>
-<translation></translation>
+<translation>En ny version av PhotoDemon är tillgänglig. Starta om programmet för att slutföra uppdateringen.</translation>
 </phrase>
 
 <phrase>
 <original>Restart now to access to the latest version of the program.</original>
-<translation></translation>
+<translation>Starta nu för att få tillgång till den senaste versionen av programmet.</translation>
 </phrase>
 
 <phrase>
 <original>Apply update now</original>
-<translation></translation>
+<translation>Ansök uppdatering nu</translation>
 </phrase>
 
 <phrase>
 <original>If you're in the middle of something, feel free to keep working.  The update process will automatically complete whenever you next use the program.</original>
-<translation></translation>
+<translation>Om du är i mitten av något, tveka inte att fortsätta arbeta. Uppdateringsprocessen kommer automatiskt att slutföra nästa gång du använder programmet.</translation>
 </phrase>
 
 <phrase>
 <original>Apply update later</original>
-<translation></translation>
+<translation>Applicera uppdateringen senare</translation>
 </phrase>
 
 <!-- VBP_FormUpdateNotify.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -13241,12 +13249,12 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Add new preset</original>
-<translation></translation>
+<translation>Lägg nya förinställningen</translation>
 </phrase>
 
 <phrase>
 <original>enter a name for this preset</original>
-<translation></translation>
+<translation>ange ett namn för den här förinställningen</translation>
 </phrase>
 
 <phrase>
@@ -13261,7 +13269,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrase>
 <original>Please enter a name for this preset.</original>
-<translation></translation>
+<translation>Ange ett namn för den här förinställningen.</translation>
 </phrase>
 
 <phrase>
