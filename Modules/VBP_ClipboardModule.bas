@@ -146,6 +146,10 @@ End Sub
 ' The parameter "srcIsMeantAsLayer" controls whether the clipboard data is loaded as a new image, or as a new layer in an existing image.
 Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     
+    'In the future, I'd like to move all file interactions in this function to pdFSO, but for now, only a few actions are covered.
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
     Dim pasteWasSuccessful As Boolean
     pasteWasSuccessful = False
     
@@ -160,49 +164,62 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     'See if clipboard data is available in PNG format.  If it is, attempt to load it.
     ' (If successful, this IF block will manually exit the sub upon completion.)
     If clpObject.IsDataAvailableForFormatName(FormMain.hWnd, "PNG") Then
-            
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "PNG format found on clipboard.  Attempting to retrieve data..."
+        #End If
+        
         Dim PNGID As Long
         PNGID = clpObject.FormatIDForName(FormMain.hWnd, "PNG")
         
-        Dim PNGData() As Byte
         If clpObject.ClipboardOpen(FormMain.hWnd) Then
+        
+            Dim PNGData() As Byte
         
             If clpObject.GetBinaryData(PNGID, PNGData) Then
                 
                 'Dump the PNG data out to file
                 tmpClipboardFile = g_UserPreferences.GetTempPath & "PDClipboard.png"
                 
-                Dim fileID As Integer
-                fileID = FreeFile()
-                Open tmpClipboardFile For Binary As #fileID
-                    Put #fileID, 1, PNGData
-                Close #fileID
+                If cFile.SaveByteArrayToFile(PNGData, tmpClipboardFile) Then
                 
-                'We can now use the standard image load routine to import the temporary file
-                sFile(0) = tmpClipboardFile
-                sTitle = g_Language.TranslateMessage("Clipboard Image")
-                sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
-                
-                'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
-                If srcIsMeantAsLayer Then
-                    Layer_Handler.loadImageAsNewLayer False, sFile(0), sTitle, True
+                    'We can now use the standard image load routine to import the temporary file
+                    sFile(0) = tmpClipboardFile
+                    sTitle = g_Language.TranslateMessage("Clipboard Image")
+                    sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+                    
+                    'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
+                    If srcIsMeantAsLayer Then
+                        Layer_Handler.loadImageAsNewLayer False, sFile(0), sTitle, True
+                    Else
+                        LoadFileAsNewImage sFile, False, sTitle, sFilename
+                    End If
+                        
+                    'Be polite and remove the temporary file
+                    cFile.KillFile tmpClipboardFile
+                        
+                    Message "Clipboard data imported successfully "
+                    
+                    clpObject.ClipboardClose
+                    
+                    pasteWasSuccessful = True
+                    
                 Else
-                    LoadFileAsNewImage sFile, False, sTitle, sFilename
+                    pasteWasSuccessful = False
                 End If
-                    
-                'Be polite and remove the temporary file
-                If FileExist(tmpClipboardFile) Then Kill tmpClipboardFile
-                    
-                Message "Clipboard data imported successfully "
                 
-                clpObject.ClipboardClose
-                
-                pasteWasSuccessful = True
-                
+            Else
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Could not retrieve PNG binary data.  PNG paste action abandoned."
+                #End If
             End If
         
             clpObject.ClipboardClose
         
+        Else
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Could not open clipboard.  PNG paste action abandoned."
+            #End If
         End If
         
     End If
@@ -211,7 +228,11 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     ' copied image from within the browser, which we can use to download the image in question.
     ' (If successful, this IF block will manually exit the sub upon completion.)
     If clpObject.IsDataAvailableForFormatName(FormMain.hWnd, "HTML Format") And (Not pasteWasSuccessful) Then
-    
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "HTML format found on clipboard.  Attempting to retrieve data..."
+        #End If
+        
         Dim HtmlID As Long
         HtmlID = clpObject.FormatIDForName(FormMain.hWnd, "HTML Format")
         
@@ -262,7 +283,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
                             End If
                             
                             'Delete the temporary file
-                            If FileExist(tmpDownloadFile) Then Kill tmpDownloadFile
+                            cFile.KillFile tmpDownloadFile
                             
                             Message "Clipboard data imported successfully "
                             
@@ -307,6 +328,10 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     'Make sure the clipboard format is a bitmap
     If Clipboard.GetFormat(vbCFBitmap) And (Not pasteWasSuccessful) Then
         
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "BMP format found on clipboard.  Attempting to retrieve data..."
+        #End If
+        
         'Copy the image into an StdPicture object
         Dim tmpPicture As StdPicture
         Set tmpPicture = Clipboard.GetData(2)
@@ -338,7 +363,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
         End If
             
         'Be polite and remove the temporary file
-        If FileExist(tmpClipboardFile) Then Kill tmpClipboardFile
+        cFile.KillFile tmpClipboardFile
             
         Message "Clipboard data imported successfully "
         
@@ -351,6 +376,10 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
         
         If (StrComp(UCase$(Left$(tmpDownloadFile, 7)), "HTTP://", vbBinaryCompare) = 0) Or (StrComp(UCase$(Left$(tmpDownloadFile, 6)), "FTP://", vbBinaryCompare) = 0) Then
         
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Probably URL found on clipboard.  Attempting to retrieve data..."
+            #End If
+            
             Message "Image URL found on clipboard.  Attempting to download..."
             
             tmpDownloadFile = FormInternetImport.downloadURLToTempFile(tmpDownloadFile)
@@ -368,7 +397,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
                 End If
                 
                 'Delete the temporary file
-                If FileExist(tmpDownloadFile) Then Kill tmpDownloadFile
+                cFile.KillFile tmpDownloadFile
                 
                 Message "Clipboard data imported successfully "
         
@@ -387,7 +416,11 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
         
     'Next, see if the clipboard contains one or more files.  If it does, try to load them.
     ElseIf Clipboard.GetFormat(vbCFFiles) Then
-    
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "One or more file locations found on clipboard.  Attempting to retrieve data..."
+        #End If
+        
         Dim listFiles() As String
         listFiles = ClipboardGetFiles()
         
