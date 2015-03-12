@@ -82,6 +82,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 ### Who contributes to PhotoDemon's development?
 
 PhotoDemon would not be possible without the help of many talented contributors, including...
+
 * Helmut Kuerbiss for maintaining (and hand-editing!) the German language file
 * Dirk Hartmann for additional help with the German language file
 (http://www.taichi-zentrum-heidelberg.de)
