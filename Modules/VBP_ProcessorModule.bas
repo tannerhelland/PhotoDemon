@@ -85,8 +85,8 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     'Main error handler for the software processor is initialized by this line
     On Error GoTo MainErrHandler
     
-    'Mark the software processor as busy
-    Processing = True
+    'Mark the software processor as busy, but only we're not showing a dialog.
+    If Not showDialog Then Processing = True
         
     'If we are applying an action to the image (e.g. not just showing a dialog), and the action is likely to take awhile
     ' (e.g. it is processing an image, and not just modifying a layer header) display a busy cursor.
@@ -1574,9 +1574,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     ' (NOTE: if we are in the midst of a batch conversion, leave the cursor on "busy".  The batch function will restore the cursor when done.)
     If MacroStatus <> MacroBATCH Then
         Screen.MousePointer = vbDefault
-        DoEvents
-    End If
         
+        '13 March 2015: I don't know why this DoEvents is here.  I have commented it out for now, but will reinstate it if I can
+        ' figure out why I ever used it in the first place.
+        'DoEvents
+        
+    End If
+    
     'If the histogram form is visible and images are loaded, redraw the histogram
     'If FormHistogram.Visible Then
         'If g_OpenImageCount > 0 Then
@@ -1597,9 +1601,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         createCustomFormIcon pdImages(g_CurrentImage)
         toolbar_ImageTabs.notifyUpdatedImage g_CurrentImage
     End If
-    
-    'Unlock the main form
-    If MacroStatus <> MacroBATCH Then FormMain.Enabled = True
     
     'If the user canceled the requested action before it completed, we need to roll back the undo data we created
     If cancelCurrentAction Then
@@ -1642,7 +1643,16 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         End If
     
     End If
-        
+    
+    'Make a note of the current layer settings.  If the user makes on-canvas non-destructive changes (like toggling opacity or blend mode),
+    ' we can use this value to detect those changes and trigger Undo/Redo creation.  Note that we do this even for UNDO_NOTHING requests,
+    ' because actions like changing the active layer won't trigger Undo creation for themselves, but they do need to trigger Undo creation
+    ' for any non-destructive actions that have occurred on the present layer.
+    setImageCheckpoint
+    
+    'Unlock the main form
+    If MacroStatus <> MacroBATCH Then FormMain.Enabled = True
+    
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
     If (createUndo <> UNDO_NOTHING) Then
     
@@ -1653,12 +1663,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         FormMain.OLEDropMode = 1
         
     End If
-    
-    'Make a note of the current layer settings.  If the user makes on-canvas non-destructive changes (like toggling opacity or blend mode),
-    ' we can use this value to detect those changes and trigger Undo/Redo creation.  Note that we do this even for UNDO_NOTHING requests,
-    ' because actions like changing the active layer won't trigger Undo creation for themselves, but they do need to trigger Undo creation
-    ' for any non-destructive actions that have occurred on the present layer.
-    setImageCheckpoint
     
     'The interface will automatically be synched if an image is open and some undo-related action was applied,
     ' but if either of those did not occur, sync the interface now
