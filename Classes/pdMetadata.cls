@@ -739,13 +739,19 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
     'PD supports handling of some esoteric metadata elements, which can affect the RGB/A data of the image.  Look for any such tags now,
     ' and if found, apply any changes immediately.
     If maxMetadataCount > 0 Then
-        
+    
+    'Also, apply some failsafe checks for pdImage boundaries.  I would prefer to include all this on one line, but VB doesn't short-circuit,
+    ' so I have no choice but to list them like this.
+    If (parentImageID <= UBound(pdImages)) Then
+    If Not pdImages(parentImageID) Is Nothing Then
+    
         Dim tagIndex As Long
         
         'First up are some PNG chunks that require special handling.  The PNG spec (http://www.libpng.org/pub/png/spec/1.2/png-1.2-pdg.html)
         ' provides instructions on which color modification chunks should be given preference, and we mirror that behavior here.  PD's order
         ' of operations for PNG chunk processing is: ICC, sRGB, cHRM, gAMA.  ICC handling will happen separately, away from the load process,
         ' and if an ICC profile was found, this whole section can be skipped.
+        
         If (pdImages(parentImageID).originalFileFormat = FIF_PNG) And (Not pdImages(parentImageID).getActiveDIB.ICCProfile.hasICCData) Then
         
             Dim srcGamma As Double
@@ -919,8 +925,10 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
         'END special PNG format handling
         End If
 
-    
+        
     'End special metadata analysis and usage
+    End If
+    End If
     End If
     
     
