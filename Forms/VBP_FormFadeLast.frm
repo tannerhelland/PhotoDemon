@@ -50,6 +50,7 @@ Begin VB.Form FormFadeLast
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -70,7 +71,9 @@ Begin VB.Form FormFadeLast
       _ExtentY        =   873
       Min             =   1
       Max             =   100
-      Value           =   1
+      Value           =   50
+      NotchPosition   =   2
+      NotchValueCustom=   50
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -142,9 +145,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
-
 'To save ourselves some processing time, we're going to load a copy of the relevant Undo data as soon as the dialog loads.
 ' Any changes to the on-screen settings can use that copy directly, instead of requesting new ones from file.
 ' Note that we also cache a "current layer DIB" - this is a bit of misnomer, because it is *not necessarily the current
@@ -166,11 +166,14 @@ Private Sub cmdBar_OKClick()
     Process "Fade", , buildParams(sltOpacity, cboBlendMode.ListIndex), UNDO_LAYER
 End Sub
 
+Private Sub cmdBar_ResetClick()
+    sltOpacity.Value = 50
+End Sub
+
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    makeFormPretty Me
     
     'Render a preview
     cmdBar.markPreviewStatus True
