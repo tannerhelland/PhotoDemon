@@ -491,7 +491,7 @@ Public Sub selectAll()
 
     'Set basic information about this selection
     setSelectionShape sRectangle
-    setSelectionProperty SP_AREA, sRectangle
+    setSelectionProperty SP_AREA, sInterior
     setSelectionProperty SP_FEATHERING_RADIUS, 0
     setSelectionProperty SP_SMOOTHING, sAntialiased
     setSelectionProperty SP_ROUNDED_CORNER_RADIUS, 0
@@ -1535,14 +1535,14 @@ Private Sub createSelectionMask()
     
     'Debug msg: trying to minimize redundant mask creation requests
     If isMaskReady Then Debug.Print "Selection mask is marked as READY, but a new mask was requested.  FIX THIS!"
-        
+    
     'If the current selection is raster-type, this function should not have been called!
     If sShape = sRaster Then
         Debug.Print "Mask redraw requested for raster-type selection - FIX THIS!"
         isMaskReady = True
         Exit Sub
     End If
-
+    
     Dim maskBackColor As Long, maskForeColor As Long
     
     'Interior and exterior selections are rendered using identical code; the only difference is the colors used

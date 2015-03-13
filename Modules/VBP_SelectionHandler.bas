@@ -98,7 +98,7 @@ Public Sub SelectWholeImage()
     'Unselect any existing selection
     pdImages(g_CurrentImage).mainSelection.lockRelease
     pdImages(g_CurrentImage).selectionActive = False
-        
+    
     'Create a new selection at the size of the image
     pdImages(g_CurrentImage).mainSelection.selectAll
     
@@ -108,7 +108,7 @@ Public Sub SelectWholeImage()
     
     'Synchronize all user-facing controls to match
     syncTextToCurrentSelection g_CurrentImage
-        
+    
     'Draw the new selection to the screen
     Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
