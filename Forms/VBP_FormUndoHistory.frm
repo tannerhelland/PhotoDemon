@@ -158,9 +158,6 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 Private WithEvents cKeyEvents As pdInputKeyboard
 Attribute cKeyEvents.VB_VarHelpID = -1
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
-
 'Extra variables for custom list rendering
 Dim bufferDIB As pdDIB
 Dim m_BufferWidth As Long, m_BufferHeight As Long
@@ -249,6 +246,7 @@ Private Sub renderUndoBlock(ByVal blockIndex As Long, ByVal offsetX As Long, ByV
         'Render the index and name fields
         firstFont.attachToDC bufferDIB.getDIBDC
         firstFont.fastRenderText thumbWidth + fixDPI(16) + offsetX, offsetY + fixDPI(4), drawString
+        firstFont.releaseFromDC
                 
         'Below that, add the description text
         mHeight = firstFont.getHeightOfString(drawString) + linePadding
@@ -256,6 +254,7 @@ Private Sub renderUndoBlock(ByVal blockIndex As Long, ByVal offsetX As Long, ByV
         
         secondFont.attachToDC bufferDIB.getDIBDC
         secondFont.fastRenderText thumbWidth + fixDPI(16) + offsetX, offsetY + fixDPI(4) + mHeight, drawString
+        secondFont.releaseFromDC
         
     End If
 
@@ -381,8 +380,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    makeFormPretty Me
     
     'Redraw the undo list
     redrawUndoList
