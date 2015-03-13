@@ -174,6 +174,7 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
             
             '-1: the mouse is not over the layer.  Do nothing.
             Case -1
+                srcCanvas.setRedrawSuspension False
                 Exit Sub
                 
             '0: the mouse is dragging the top-left corner of the layer
