@@ -41,6 +41,7 @@ Begin VB.Form FormCrossScreen
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -285,7 +286,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Apply a cross-screen blur to an image
 'Inputs: 1) luminance threshold for pixels to be considered for filtering
@@ -319,6 +320,17 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     csDistance = (csDistance / 100) * (minDimension * 0.5)
     If csDistance = 0 Then csDistance = 1
     
+    'We can save a lot of time by avoiding alpha handling.  Query the base image to see if we need to deal with alpha.
+    Dim alphaIsRelevant As Boolean
+    alphaIsRelevant = Not workingDIB.isAlphaBinary(False)
+    
+    'If alpha is relevant, we need to make a copy of the current image's alpha channel, so we can restore it when we're done
+    Dim alphaBackupDIB As pdDIB
+    If alphaIsRelevant Then
+        Set alphaBackupDIB = New pdDIB
+        alphaBackupDIB.createFromExistingDIB workingDIB
+    End If
+    
     'A pdCompositor class will help us blend various images together
     Dim cComposite As pdCompositor
     Set cComposite = New pdCompositor
@@ -345,7 +357,7 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     
     'Progress is reported artificially, because it's too complex to handle using normal means
     If Not toPreview Then
-        If userPressedESC() Then GoTo PrematureCrossScreenExit:
+        If userPressedESC() Then GoTo PrematureCrossScreenExit
         SetProgBarVal 1
     End If
     
@@ -360,10 +372,10 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     ' mbDIB serves as the "master" spoke DIB, and we will also be merging subsequent spokes onto it as we go.
     mbDIB.createFromExistingDIB thresholdDIB
     getMotionBlurredDIB thresholdDIB, mbDIB, csAngle, csDistance, True, ((csSpokes Mod 2) = 0)
-    mbDIB.fixPremultipliedAlpha True
+    If alphaIsRelevant Then mbDIB.fixPremultipliedAlpha True
     
     If Not toPreview Then
-        If userPressedESC() Then GoTo PrematureCrossScreenExit:
+        If userPressedESC() Then GoTo PrematureCrossScreenExit
         SetProgBarVal 1
     End If
     
@@ -382,23 +394,23 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
                 
                 'Create the new spoke layer
                 mbDIBTemp.createFromExistingDIB thresholdDIB
-                getMotionBlurredDIB thresholdDIB, mbDIBTemp, csAngle + (i * spokeIntervalDegrees), csDistance, True
+                getMotionBlurredDIB thresholdDIB, mbDIBTemp, csAngle + (i * spokeIntervalDegrees), csDistance, True, Not alphaIsRelevant
                 
                 If Not toPreview Then
-                    If userPressedESC() Then GoTo PrematureCrossScreenExit:
-                    SetProgBarVal 2 + (i * 4) - 2
+                    If userPressedESC() Then GoTo PrematureCrossScreenExit
+                    SetProgBarVal 2 + i * 2
                 End If
                 
                 'Premultiply alpha (as required by the compositor)
-                mbDIBTemp.fixPremultipliedAlpha True
+                If alphaIsRelevant Then mbDIBTemp.fixPremultipliedAlpha True
                 
                 'Composite our two motion-blurred images together.  This blend mode is somewhat like alpha-blending, but it
                 ' over-emphasizes bright areas, which gives a nice "bloom" effect.
                 cComposite.quickMergeTwoDibsOfEqualSize mbDIB, mbDIBTemp, BL_LINEARDODGE, 100
                 
                 If Not toPreview Then
-                    If userPressedESC() Then GoTo PrematureCrossScreenExit:
-                    SetProgBarVal 2 + (i * 4)
+                    If userPressedESC() Then GoTo PrematureCrossScreenExit
+                    SetProgBarVal 3 + (i * 2)
                 End If
                 
             Next i
@@ -421,22 +433,22 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
                 
                 'Create the new spoke layer
                 mbDIBTemp.createFromExistingDIB thresholdDIB
-                getMotionBlurredDIB thresholdDIB, mbDIBTemp, csAngle + (i * spokeIntervalDegrees), csDistance, True, False
+                getMotionBlurredDIB thresholdDIB, mbDIBTemp, csAngle + (i * spokeIntervalDegrees), csDistance, True, False, Not alphaIsRelevant
                 
                 If Not toPreview Then
-                    If userPressedESC() Then GoTo PrematureCrossScreenExit:
+                    If userPressedESC() Then GoTo PrematureCrossScreenExit
                     SetProgBarVal 2 + (i * 2) - 1
                 End If
                 
                 'Premultiply alpha (as required by the compositor)
-                mbDIBTemp.fixPremultipliedAlpha True
+                If alphaIsRelevant Then mbDIBTemp.fixPremultipliedAlpha True
                 
                 'Composite our two motion-blurred images together.  This blend mode is somewhat like alpha-blending, but it
                 ' over-emphasizes bright areas, which gives a nice "bloom" effect.
                 cComposite.quickMergeTwoDibsOfEqualSize mbDIB, mbDIBTemp, BL_LINEARDODGE, 100
                 
                 If Not toPreview Then
-                    If userPressedESC() Then GoTo PrematureCrossScreenExit:
+                    If userPressedESC() Then GoTo PrematureCrossScreenExit
                     SetProgBarVal 2 + (i * 2)
                 End If
                 
@@ -448,7 +460,7 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     
     'Remove premultipled alpha from the final, fully composited DIB, and release any temporary DIBs that
     ' are no longer needed.
-    mbDIB.fixPremultipliedAlpha False
+    If alphaIsRelevant Then mbDIB.fixPremultipliedAlpha False
     thresholdDIB.eraseDIB
     Set mbDIBTemp = Nothing
     
@@ -476,7 +488,7 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     End If
     
     If Not toPreview Then
-        If userPressedESC() Then GoTo PrematureCrossScreenExit:
+        If userPressedESC() Then GoTo PrematureCrossScreenExit
         SetProgBarVal calculatedProgBarMax - 3
     End If
     
@@ -484,20 +496,31 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     ' This gives a nice, lightly colored version of the star effect, using luminance from the stars, but colors from the
     ' underlying image.
     thresholdDIB.createFromExistingDIB workingDIB
+    If alphaIsRelevant Then
+        thresholdDIB.fixPremultipliedAlpha True
+        mbDIB.fixPremultipliedAlpha True
+    End If
     cComposite.quickMergeTwoDibsOfEqualSize thresholdDIB, mbDIB, BL_HARDLIGHT, 100
     
     'thresholdDIB now contains the final, fully processed light effect.
     If Not toPreview Then
-        If userPressedESC() Then GoTo PrematureCrossScreenExit:
+        If userPressedESC() Then GoTo PrematureCrossScreenExit
         SetProgBarVal calculatedProgBarMax - 2
     End If
     
     'The final step is to merge the light effect onto the original image, using the Strength input parameter
     ' to control opacity of the merge.
+    If alphaIsRelevant Then workingDIB.fixPremultipliedAlpha True
     cComposite.quickMergeTwoDibsOfEqualSize workingDIB, thresholdDIB, BL_LINEARDODGE, 100
     
+    If alphaIsRelevant Then
+        workingDIB.fixPremultipliedAlpha False
+        workingDIB.copyAlphaFromExistingDIB alphaBackupDIB
+        workingDIB.fixPremultipliedAlpha True
+    End If
+    
     If Not toPreview Then
-        If userPressedESC() Then GoTo PrematureCrossScreenExit:
+        If userPressedESC() Then GoTo PrematureCrossScreenExit
         SetProgBarVal calculatedProgBarMax - 1
     End If
     
@@ -513,7 +536,7 @@ PrematureCrossScreenExit:
 End Sub
 
 'Used to motion-blur the intermediate images required by the cross-screen filter
-Private Sub getMotionBlurredDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal mbAngle As Double, ByVal mbDistance As Double, Optional ByVal toPreview As Boolean = False, Optional ByVal spokesAreSymmetrical As Boolean = True)
+Private Sub getMotionBlurredDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal mbAngle As Double, ByVal mbDistance As Double, Optional ByVal toPreview As Boolean = False, Optional ByVal spokesAreSymmetrical As Boolean = True, Optional ByVal useGDIPlus As Boolean = False)
 
     Dim finalX As Long, finalY As Long
     finalX = srcDIB.getDIBWidth
@@ -546,14 +569,21 @@ Private Sub getMotionBlurredDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, By
     ' Code for the other engines is still here, in case those methods prove faster after future updates.  (For example, FreeImage may
     ' be faster once they finally implement arbitrary view support, so we don't have to make so many intermediate DIB copies.)
     
-    'GDI+ code:
-    rotateDIB.createBlank tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, tmpClampDIB.getDIBColorDepth, 0, 255
-    GDIPlusRotateDIB rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, tmpClampDIB, 0, 0, tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, -mbAngle, InterpolationModeHighQualityBicubic
+    If useGDIPlus Then
     
-    'FreeImage code:
-    'Plugin_FreeImage_Expanded_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, -mbAngle, False, False
+        'GDI+ code:
+        rotateDIB.createBlank tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, tmpClampDIB.getDIBColorDepth, 0, 255
+        GDIPlusRotateDIB rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, tmpClampDIB, 0, 0, tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, -mbAngle, InterpolationModeHighQualityBicubic
+    
+    Else
+    
+        'FreeImage code:
+        Plugin_FreeImage_Expanded_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, -mbAngle, False, False
+        
+    End If
     
     'Internal pure-VB code:
+    'rotateDIB.createBlank tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, tmpClampDIB.getDIBColorDepth, 0, 255
     'CreateRotatedDIB mbAngle, EDGE_CLAMP, True, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3
     
     'Next, apply a horizontal blur, using the blur radius supplied by the user
@@ -565,12 +595,18 @@ Private Sub getMotionBlurredDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, By
         'Finally, rotate the image back to its original orientation, using the opposite parameters of the first conversion.
         ' As before, multiple rotation engines could be used, but GDI+ is presently fastest:
         
-        'GDI+ code:
-        GDI_Plus.GDIPlusFillDIBRect rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, 0, 255
-        GDIPlusRotateDIB rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, tmpClampDIB, 0, 0, tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, mbAngle, InterpolationModeHighQualityBicubic
+        If useGDIPlus Then
         
-        'FreeImage code:
-        'Plugin_FreeImage_Expanded_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, mbAngle, False, False
+            'GDI+ code:
+            'GDI_Plus.GDIPlusFillDIBRect rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, 0, 255
+            'GDIPlusRotateDIB rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, tmpClampDIB, 0, 0, tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, mbAngle, InterpolationModeHighQualityBicubic
+        
+        Else
+        
+            'FreeImage code:
+            Plugin_FreeImage_Expanded_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, mbAngle, False, False
+            
+        End If
         
         'Internal pure-VB code:
         'CreateRotatedDIB -mbAngle, EDGE_CLAMP, True, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth * 2
@@ -611,8 +647,8 @@ End Sub
 Private Sub Form_Activate()
 
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
         
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True

@@ -883,7 +883,7 @@ End Function
 
 'Does this DIB have "binary" transparency, e.g. does it have alpha values of only 0 or 255?
 ' (This is used to determine how transparency is handled when exporting to lower color depths.)
-Public Function isAlphaBinary() As Boolean
+Public Function isAlphaBinary(Optional ByVal checkForZero As Boolean = True) As Boolean
 
     'Make sure this DIB is 32bpp. If it isn't, running this function is pointless.
     If dibColorDepth = 32 Then
@@ -914,10 +914,17 @@ Public Function isAlphaBinary() As Boolean
                 chkAlpha = iData(QuickX + 3, y)
                 
                 'For optimization reasons, this is stated as two IFs instead of an OR. I'm not sure if VB
-                ' short-circuits OR statements, but I know nested IF statements work. :)
+                ' short-circuits OR statements, but I know nested IF statements work.
                 If chkAlpha <> 255 Then
                 
-                    If chkAlpha <> 0 Then
+                    If checkForZero Then
+                    
+                        If chkAlpha <> 0 Then
+                            notBinary = True
+                            Exit For
+                        End If
+                        
+                    Else
                         notBinary = True
                         Exit For
                     End If
@@ -925,7 +932,7 @@ Public Function isAlphaBinary() As Boolean
                 End If
                 
             Next y
-                If notBinary = True Then Exit For
+                If notBinary Then Exit For
             Next x
     
             'With our alpha channel complete, point iData() away from the DIB and deallocate it
