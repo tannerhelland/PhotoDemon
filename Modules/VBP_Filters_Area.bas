@@ -3,9 +3,8 @@ Attribute VB_Name = "Filters_Area"
 'Filter (Area) Interface
 'Copyright 2001-2015 by Tanner Helland
 'Created: 12/June/01
-'Last updated: 10/June/14
-'Last update: rewrite central convolution function to accept source/destination layers; this will allow us to use it from
-'              any arbitrary internal function.
+'Last updated: 14/March/15
+'Last update: finish work on an IIR Gaussian Blur implementation
 '
 'Holder module for generalized area filters, including most of the project's convolution filters.
 '
@@ -531,16 +530,24 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     If sigma <= 0 Then sigma = 0.01
     If numSteps <= 0 Then numSteps = 1
     
+    'In the best paper I've read on this topic (http://dx.doi.org/10.5201/ipol.2013.87), an alternate lambda calculation
+    ' is proposed.  This adjustment doesn't affect running time at all, and should reduce errors relative to a pure Gaussian.
+    ' The behavior could be toggled by the caller, but for now, I've hard-coded use of the modified formula.
+    Dim useModifiedQ As Boolean, q As Single
+    useModifiedQ = True
+    
+    If useModifiedQ Then
+        q = sigma * (1# + (0.3165 * numSteps + 0.5695) / ((numSteps + 0.7818) * (numSteps + 0.7818)))
+    Else
+        q = sigma
+    End If
+    
     'Calculate IIR values
-    lambda = (sigma * sigma) / (2 * numSteps)
+    lambda = (q * q) / (2 * numSteps)
     dnu = (1 + 2 * lambda - Sqr(1 + 4 * lambda)) / (2 * lambda)
     nu = dnu
     boundaryScale = (1 / (1 - dnu))
-    
-    'Normally, post-scaling would be multiplied by 255, but this function inexplicably renders an image ever so slightly darker
-    ' than PD's standard Gaussian Blur.  I'm not sure where the error lies (or maybe there isn't an error, and it's just a
-    ' floating-point imprecision issue), but by multiplying by 253 instead of 255 I get a more aesthetically pleasing end result.
-    postScale = ((dnu / lambda) ^ (2 * numSteps)) * 253
+    postScale = ((dnu / lambda) ^ (2 * numSteps)) * 255
     
     'Intermediate float arrays are required, so this technique consumes a *lot* of memory.
     Dim rFloat() As Single, gFloat() As Single, bFloat() As Single, aFloat() As Single
