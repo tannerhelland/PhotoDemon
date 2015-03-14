@@ -41,6 +41,7 @@ Begin VB.Form FormGaussianBlur
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
@@ -72,15 +73,6 @@ Begin VB.Form FormGaussianBlur
       Width           =   5835
       _ExtentX        =   11774
       _ExtentY        =   1058
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -184,7 +176,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
@@ -201,15 +193,11 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuali
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
     srcDIB.createFromExistingDIB workingDIB
-    
-    'If the quality is set to 1 ("better" quality), and the radius is under 30, simply use quality 0.  There is no reason
-    ' to distinguish between them at that level, as differences really aren't noticeable until much larger amounts.
-    If (gaussQuality = 1) And (gRadius < 30) Then gaussQuality = 0
-    
+        
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         gRadius = gRadius * curDIBValues.previewModifier
-        If gRadius = 0 Then gRadius = 0.1
+        If gRadius = 0 Then gRadius = 0.01
     End If
         
     'I almost always recommend quality over speed for PD tools, but in this case, the fast option is SO much faster,
@@ -222,10 +210,10 @@ Public Sub GaussianBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuali
         Case 0
             CreateApproximateGaussianBlurDIB gRadius, srcDIB, workingDIB, 3, toPreview
         
-        '5 iteration box blur
+        'IIR Gaussian estimation
         Case 1
-            CreateApproximateGaussianBlurDIB gRadius, srcDIB, workingDIB, 5, toPreview
-        
+            Filters_Area.GaussianBlur_IIRImplementation workingDIB, gRadius, 3, toPreview
+            
         'True Gaussian
         Case 2
             CreateGaussianBlurDIB gRadius, srcDIB, workingDIB, toPreview
@@ -260,8 +248,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'If the program is not compiled, display a special warning for this tool
     If Not g_IsProgramCompiled Then
