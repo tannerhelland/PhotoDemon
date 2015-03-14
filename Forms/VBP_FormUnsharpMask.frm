@@ -41,6 +41,7 @@ Begin VB.Form FormUnsharpMask
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -96,15 +97,6 @@ Begin VB.Form FormUnsharpMask
       Width           =   5910
       _ExtentX        =   10425
       _ExtentY        =   1058
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -242,9 +234,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
-
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the blur (min 1, no real max - but the scroll bar is maxed at 200 presently)
 Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal umThreshold As Long, Optional ByVal gaussQuality As Long = 2, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -270,7 +259,7 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
     
     'If the quality is set to 1 ("better" quality), and the radius is under 30, simply use quality 0.  There is no reason
     ' to distinguish between them at that level, as differences really aren't noticeable until much larger amounts.
-    If (gaussQuality = 1) And (umRadius < 30) Then gaussQuality = 0
+    'If (gaussQuality = 1) And (umRadius < 30) Then gaussQuality = 0
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
@@ -297,8 +286,9 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
         
         '5 iteration box blur
         Case 1
-            progBarCalculation = finalY * 5 + finalX * 5
-            gaussBlurSuccess = CreateApproximateGaussianBlurDIB(umRadius, workingDIB, srcDIB, 5, toPreview, progBarCalculation + finalX)
+            progBarCalculation = finalY + finalX
+            'gaussBlurSuccess = CreateApproximateGaussianBlurDIB(umRadius, workingDIB, srcDIB, 5, toPreview, progBarCalculation + finalX)
+            gaussBlurSuccess = Filters_Area.GaussianBlur_IIRImplementation(srcDIB, umRadius, 3, toPreview, progBarCalculation + finalX)
         
         'True Gaussian
         Case Else
@@ -442,9 +432,8 @@ End Sub
 
 Private Sub Form_Activate()
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    'Apply visual themes to the form
+    makeFormPretty Me
     
     'If the program is not compiled, display a special warning for this tool
     If Not g_IsProgramCompiled Then
