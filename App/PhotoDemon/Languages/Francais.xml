@@ -8156,16 +8156,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for VBP_FormSmartBlur.frm (FormSurfaceBlur) -->
 
 <phrase>
-<original>smooth areas</original>
-<translation>les zones lisses</translation>
-</phrase>
-
-<phrase>
-<original>edges</original>
-<translation>bords</translation>
-</phrase>
-
-<phrase>
 <original>apply blur to</original>
 <translation>s'estomper s'applique pas</translation>
 </phrase>
@@ -8181,11 +8171,21 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>Applying smart blur</original>
-<translation>On applique un flou intelligent</translation>
+<original>Applying surface blur</original>
+<translation></translation>
 </phrase>
 
-<!-- VBP_FormSmartBlur.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<phrase>
+<original>smooth areas</original>
+<translation>les zones lisses</translation>
+</phrase>
+
+<phrase>
+<original>edges</original>
+<translation>bords</translation>
+</phrase>
+
+<!-- VBP_FormSmartBlur.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for VBP_FormSmartBlur.frm-->
 
@@ -13291,8 +13291,8 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrasecount>2316</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3943 phrases. -->
-<!-- 1627 are duplicates, so only 2316 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 3945 phrases. -->
+<!-- 1629 are duplicates, so only 2316 unique phrases have been written to file. -->
 <!-- These 2316 phrases contain approximately 13334 total words. -->
 
 </pdData>

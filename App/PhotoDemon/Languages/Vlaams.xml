@@ -8156,16 +8156,6 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <!-- BEGIN text for VBP_FormSmartBlur.frm (FormSurfaceBlur) -->
 
 <phrase>
-<original>smooth areas</original>
-<translation>gladde gebieden</translation>
-</phrase>
-
-<phrase>
-<original>edges</original>
-<translation>randen</translation>
-</phrase>
-
-<phrase>
 <original>apply blur to</original>
 <translation>vervaging toepassen aan</translation>
 </phrase>
@@ -8181,11 +8171,21 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 </phrase>
 
 <phrase>
-<original>Applying smart blur</original>
-<translation>Toepassen van slimme vervaging</translation>
+<original>Applying surface blur</original>
+<translation></translation>
 </phrase>
 
-<!-- VBP_FormSmartBlur.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<phrase>
+<original>smooth areas</original>
+<translation>gladde gebieden</translation>
+</phrase>
+
+<phrase>
+<original>edges</original>
+<translation>randen</translation>
+</phrase>
+
+<!-- VBP_FormSmartBlur.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for VBP_FormSmartBlur.frm-->
 
@@ -13290,8 +13290,8 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <phrasecount>2316</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3943 phrases. -->
-<!-- 1627 are duplicates, so only 2316 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 3945 phrases. -->
+<!-- 1629 are duplicates, so only 2316 unique phrases have been written to file. -->
 <!-- These 2316 phrases contain approximately 13334 total words. -->
 
 </pdData>
