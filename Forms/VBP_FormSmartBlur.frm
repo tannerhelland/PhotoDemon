@@ -41,27 +41,7 @@ Begin VB.Form FormSurfaceBlur
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-   End
-   Begin PhotoDemon.smartOptionButton optEdges 
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   6
-      Top             =   1800
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   635
-      Caption         =   "smooth areas"
-      Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -72,31 +52,11 @@ Begin VB.Form FormSurfaceBlur
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.smartOptionButton optEdges 
-      Height          =   360
-      Index           =   1
-      Left            =   6120
-      TabIndex        =   7
-      Top             =   2160
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   635
-      Caption         =   "edges"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
       Left            =   6000
-      TabIndex        =   8
-      Top             =   3000
+      TabIndex        =   5
+      Top             =   2160
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -108,13 +68,52 @@ Begin VB.Form FormSurfaceBlur
    Begin PhotoDemon.sliderTextCombo sltThreshold 
       Height          =   495
       Left            =   6000
-      TabIndex        =   9
-      Top             =   3960
+      TabIndex        =   6
+      Top             =   3120
       Width           =   5925
       _ExtentX        =   10451
       _ExtentY        =   873
       Max             =   255
       Value           =   50
+   End
+   Begin PhotoDemon.buttonStrip btsQuality 
+      Height          =   600
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   4140
+      Width           =   5910
+      _ExtentX        =   10425
+      _ExtentY        =   1058
+   End
+   Begin PhotoDemon.buttonStrip btsArea 
+      Height          =   600
+      Left            =   6000
+      TabIndex        =   9
+      Top             =   1080
+      Width           =   5910
+      _ExtentX        =   10425
+      _ExtentY        =   1058
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "quality:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   315
+      Index           =   3
+      Left            =   6000
+      TabIndex        =   8
+      Top             =   3720
+      Width           =   795
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
@@ -135,8 +134,8 @@ Begin VB.Form FormSurfaceBlur
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   5
-      Top             =   1440
+      TabIndex        =   4
+      Top             =   720
       Width           =   1440
    End
    Begin VB.Label lblTitle 
@@ -156,29 +155,9 @@ Begin VB.Form FormSurfaceBlur
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   4
-      Top             =   3600
-      Width           =   1080
-   End
-   Begin VB.Label lblIDEWarning 
-      BackStyle       =   0  'Transparent
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H000000FF&
-      Height          =   1215
-      Left            =   6000
       TabIndex        =   3
-      Top             =   4440
-      Visible         =   0   'False
-      Width           =   5775
-      WordWrap        =   -1  'True
+      Top             =   2760
+      Width           =   1080
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -198,7 +177,7 @@ Begin VB.Form FormSurfaceBlur
       Index           =   0
       Left            =   6000
       TabIndex        =   1
-      Top             =   2640
+      Top             =   1800
       Width           =   735
    End
 End
@@ -230,12 +209,13 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
-
 'Convolve an image using a selective gaussian kernel (separable implementation!)
-'Input: radius of the blur (min 1, no real max - but processing speed obviously drops as the radius increases)
-Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, ByVal smoothEdges As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+' Inputs:
+'   - Radius of the blur (min 1, no real max - but processing speed obviously drops as the radius increases)
+'   - Threshold (controls edge/surface distinction)
+'   - Smooth Edges (for traditional surface blur (false) vs PD's edge-only softening (true))
+'   - Blur quality (0, 1, 2 for iterative box blur, IIR blur, or true Gaussian, respectively)
+Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, ByVal smoothEdges As Boolean, Optional ByVal sbQuality As Long = 0, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Analyzing image in preparation for surface blur..."
             
@@ -250,10 +230,6 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
-    Dim srcDIB As pdDIB
-    Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
-    
     Dim gaussDIB As pdDIB
     Set gaussDIB = New pdDIB
     gaussDIB.createFromExistingDIB workingDIB
@@ -268,12 +244,45 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         gRadius = gRadius * curDIBValues.previewModifier
-        If gRadius = 0 Then gRadius = 0.1
+        If gRadius = 0 Then gRadius = 0.01
     End If
     
-    'Smart blur requires a gaussian blur DIB to operate.  Create that DIB now.
-    If CreateGaussianBlurDIB(gRadius, srcDIB, gaussDIB, toPreview, finalY * 2 + finalX) Then
-            
+    'I almost always recommend quality over speed for PD tools, but in this case, the fast option is SO much faster,
+    ' and the results so indistinguishable (3% different according to the Central Limit Theorem:
+    ' https://www.khanacademy.org/math/probability/statistics-inferential/sampling_distribution/v/central-limit-theorem?playlist=Statistics
+    ' ), that I recommend the faster methods instead.
+    Dim gaussBlurSuccess As Long
+    gaussBlurSuccess = 0
+    
+    Dim progBarCalculation As Long
+    progBarCalculation = 0
+    
+    Select Case sbQuality
+    
+        '3 iteration box blur
+        Case 0
+            progBarCalculation = finalY * 3 + finalX * 3
+            gaussBlurSuccess = CreateApproximateGaussianBlurDIB(gRadius, workingDIB, gaussDIB, 3, toPreview, progBarCalculation + finalX)
+        
+        'IIR Gaussian estimation
+        Case 1
+            progBarCalculation = finalY + finalX
+            gaussBlurSuccess = Filters_Area.GaussianBlur_IIRImplementation(gaussDIB, gRadius, 3, toPreview, progBarCalculation + finalX)
+        
+        'True Gaussian
+        Case Else
+            progBarCalculation = finalY * 2
+            gaussBlurSuccess = CreateGaussianBlurDIB(gRadius, workingDIB, gaussDIB, toPreview, progBarCalculation + finalX)
+        
+    End Select
+    
+    'Make sure our blur DIB created successfully before continuing
+    If gaussBlurSuccess Then
+        
+        Dim srcDIB As pdDIB
+        Set srcDIB = New pdDIB
+        srcDIB.createFromExistingDIB workingDIB
+        
         'Now that we have a gaussian DIB created in gaussDIB, we can point arrays toward it and the source DIB
         Dim dstImageData() As Byte
         prepImageData dstSA, toPreview, dstPic
@@ -299,7 +308,7 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
         Dim progBarCheck As Long
         progBarCheck = findBestProgBarValue()
             
-        If Not toPreview Then Message "Applying smart blur..."
+        If Not toPreview Then Message "Applying surface blur..."
             
         Dim blendVal As Double
         
@@ -351,7 +360,7 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
             If Not toPreview Then
                 If (x And progBarCheck) = 0 Then
                     If userPressedESC() Then Exit For
-                    SetProgBarVal x + (finalY * 2)
+                    SetProgBarVal x + progBarCalculation
                 End If
             End If
         Next x
@@ -376,8 +385,16 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
     
 End Sub
 
+Private Sub btsArea_Click(ByVal buttonIndex As Long)
+    updatePreview
+End Sub
+
+Private Sub btsQuality_Click(ByVal buttonIndex As Long)
+    updatePreview
+End Sub
+
 Private Sub cmdBar_OKClick()
-    Process "Surface blur", , buildParams(sltRadius, sltThreshold, optEdges(1)), UNDO_LAYER
+    Process "Surface blur", , buildParams(sltRadius, sltThreshold, CBool(btsArea.ListIndex = 1), btsQuality.ListIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -390,16 +407,9 @@ End Sub
 
 Private Sub Form_Activate()
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
-    
-    'If the program is not compiled, display a special warning for this tool
-    If Not g_IsProgramCompiled Then
-        lblIDEWarning.Caption = g_Language.TranslateMessage("WARNING! This tool is very slow when used inside the IDE. Please compile for best results.")
-        lblIDEWarning.Visible = True
-    End If
-    
+    'Apply visual themes
+    makeFormPretty Me
+        
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
     updatePreview
@@ -410,6 +420,16 @@ Private Sub Form_Load()
     
     'Disable previews until the dialog is fully loaded
     cmdBar.markPreviewStatus False
+    
+    'Apply button strip captions
+    btsArea.AddItem "smooth areas", 0
+    btsArea.AddItem "edges", 1
+    btsArea.ListIndex = 0
+    
+    btsQuality.AddItem "good", 0
+    btsQuality.AddItem "better", 1
+    btsQuality.AddItem "best", 2
+    btsQuality.ListIndex = 0
     
 End Sub
 
@@ -431,7 +451,7 @@ End Sub
 
 'Render a new effect preview
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then SurfaceBlurFilter sltRadius, sltThreshold, optEdges(1), True, fxPreview
+    If cmdBar.previewsAllowed Then SurfaceBlurFilter sltRadius, sltThreshold, CBool(btsArea.ListIndex = 1), btsQuality.ListIndex, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

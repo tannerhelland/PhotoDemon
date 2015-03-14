@@ -284,10 +284,9 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
             progBarCalculation = finalY * 3 + finalX * 3
             gaussBlurSuccess = CreateApproximateGaussianBlurDIB(umRadius, workingDIB, srcDIB, 3, toPreview, progBarCalculation + finalX)
         
-        '5 iteration box blur
+        'IIR Gaussian estimation
         Case 1
             progBarCalculation = finalY + finalX
-            'gaussBlurSuccess = CreateApproximateGaussianBlurDIB(umRadius, workingDIB, srcDIB, 5, toPreview, progBarCalculation + finalX)
             gaussBlurSuccess = Filters_Area.GaussianBlur_IIRImplementation(srcDIB, umRadius, 3, toPreview, progBarCalculation + finalX)
         
         'True Gaussian

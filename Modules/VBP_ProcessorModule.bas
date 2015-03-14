@@ -1134,7 +1134,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 showPDDialog vbModal, FormSurfaceBlur
             Else
-                FormSurfaceBlur.SurfaceBlurFilter cParams.GetDouble(1), cParams.GetByte(2), cParams.GetBool(3)
+                FormSurfaceBlur.SurfaceBlurFilter cParams.GetDouble(1), cParams.GetByte(2), cParams.GetBool(3), cParams.GetLong(4, 1)
             End If
             
         'Motion (directional) blurs
