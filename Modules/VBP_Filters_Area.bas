@@ -670,7 +670,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
                     aFloat(x, initY) = aFloat(x, initY) * boundaryScale
                     
                     For y = initY + 1 To finalY
-                        aFloat(x, y) = aFloat(x, y) + nu * rFloat(x, y - 1)
+                        aFloat(x, y) = aFloat(x, y) + nu * aFloat(x, y - 1)
                     Next y
                     
                     aFloat(x, finalY) = aFloat(x, finalY) * boundaryScale
