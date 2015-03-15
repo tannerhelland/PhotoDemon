@@ -41,26 +41,19 @@ Begin VB.Form FormReduceColors
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.smartOptionButton optQuant 
-      Height          =   375
+      Height          =   360
       Index           =   0
       Left            =   6120
       TabIndex        =   4
       Top             =   2040
       Width           =   6000
       _ExtentX        =   10583
-      _ExtentY        =   661
+      _ExtentY        =   635
       Caption         =   "Xiaolin Wu"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      FontSize        =   11
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -72,24 +65,16 @@ Begin VB.Form FormReduceColors
       _ExtentY        =   9922
    End
    Begin PhotoDemon.smartOptionButton optQuant 
-      Height          =   375
+      Height          =   360
       Index           =   1
       Left            =   6120
       TabIndex        =   5
       Top             =   2520
       Width           =   6000
       _ExtentX        =   10583
-      _ExtentY        =   661
+      _ExtentY        =   635
       Caption         =   "NeuQuant neural network"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      FontSize        =   11
    End
    Begin VB.Label lblFlatten 
       Appearance      =   0  'Flat
@@ -181,9 +166,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
-
 'OK button
 Private Sub cmdBar_OKClick()
     
@@ -201,8 +183,7 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    makeFormPretty Me
     
     'Render a preview
     cmdBar.markPreviewStatus True
@@ -283,7 +264,9 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
     End If
     
     'FreeImage requires 24bpp images as color reduction targets.
-    If workingDIB.getDIBColorDepth = 32 Then workingDIB.convertTo24bpp
+    ' UPDATE MARCH 2015: the Wu quantizer supports a 32-bpp input, but it simply ignores alpha, resulting in a
+    '                    nasty-looking image.  So we still forcibly downsample to 24bpp.
+    If (workingDIB.getDIBColorDepth = 32) Then workingDIB.convertTo24bpp
     
     'Make sure we found the FreeImage plug-in when the program was loaded
     If g_ImageFormats.FreeImageEnabled Then
@@ -307,15 +290,13 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
             
             'If this is a preview, copy the FreeImage data into the global workingDIB object.
             If toPreview Then
-                workingDIB.createBlank workingDIB.getDIBWidth, workingDIB.getDIBHeight, 24
-                SetDIBitsToDevice workingDIB.getDIBDC, 0, 0, workingDIB.getDIBWidth, workingDIB.getDIBHeight, 0, 0, 0, workingDIB.getDIBHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
-            
+                Plugin_FreeImage_Expanded_Interface.getPDDibFromFreeImageHandle returnDIB, workingDIB
+                
             'This is not a preview.  Overwrite the current active layer with the quantized FreeImage data.
             Else
                 
                 SetProgBarVal 3
-                pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB.createBlank workingDIB.getDIBWidth, workingDIB.getDIBHeight, 24
-                SetDIBitsToDevice pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB.getDIBDC, 0, 0, workingDIB.getDIBWidth, workingDIB.getDIBHeight, 0, 0, 0, workingDIB.getDIBHeight, ByVal FreeImage_GetBits(returnDIB), ByVal FreeImage_GetInfo(returnDIB), 0&
+                Plugin_FreeImage_Expanded_Interface.getPDDibFromFreeImageHandle returnDIB, pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB
                 pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB.convertTo32bpp
                 
                 'Ask FreeImage for the size of the quantized image's palette
