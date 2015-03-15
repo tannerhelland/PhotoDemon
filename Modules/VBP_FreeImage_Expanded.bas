@@ -534,7 +534,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
             fi_hasTransparency = FreeImage_IsTransparent(fi_hDIB)
         
             'Images with an alpha channel are converted to 32 bit.  Without, 24.
-            If fi_hasTransparency = True Then
+            If fi_hasTransparency Then
                 new_hDIB = FreeImage_ConvertColorDepth(fi_hDIB, FICF_RGB_32BPP, False)
                 
                 If pageToLoad <= 0 Then
@@ -815,25 +815,60 @@ End Function
 '
 'ALSO NOTE!  This function does not free the incoming FreeImage handle.
 Public Function getPDDibFromFreeImageHandle(ByVal srcFI_Handle As Long, ByRef dstDIB As pdDIB) As Boolean
-
+    
+    Dim fiHandleBackup As Long
+    fiHandleBackup = srcFI_Handle
+    
     'Double-check the FreeImage handle's bit depth
     Dim fiBPP As Long
     fiBPP = FreeImage_GetBPP(srcFI_Handle)
     
     If (fiBPP <> 24) And (fiBPP <> 32) Then
-        getPDDibFromFreeImageHandle = False
-    Else
         
-        Dim fi_Width As Long, fi_Height As Long
-        fi_Width = FreeImage_GetWidth(srcFI_Handle)
-        fi_Height = FreeImage_GetHeight(srcFI_Handle)
-        dstDIB.createBlank fi_Width, fi_Height, fiBPP, 0
-        SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(srcFI_Handle), ByVal FreeImage_GetInfo(srcFI_Handle), 0&
-        
-        getPDDibFromFreeImageHandle = True
+        'If the DIB is less than 24 bpp, upsample now
+        If fiBPP < 24 Then
+            
+            'Conversion to higher bit depths is contingent on the presence of an alpha channel
+            If FreeImage_IsTransparent(srcFI_Handle) Or (FreeImage_GetTransparentIndex(srcFI_Handle) <> -1) Then
+                srcFI_Handle = FreeImage_ConvertColorDepth(srcFI_Handle, FICF_RGB_32BPP, False)
+            Else
+                srcFI_Handle = FreeImage_ConvertColorDepth(srcFI_Handle, FICF_RGB_24BPP, False)
+            End If
+            
+            'Verify the new bit-depth
+            fiBPP = FreeImage_GetBPP(srcFI_Handle)
+            
+            If (fiBPP <> 24) And (fiBPP <> 32) Then
+                
+                'If a new DIB was created, release it now.  (Note that the caller must still free the original handle.)
+                If (srcFI_Handle <> 0) And (srcFI_Handle <> fiHandleBackup) Then FreeImage_Unload srcFI_Handle
+                
+                getPDDibFromFreeImageHandle = False
+                Exit Function
+            End If
+            
+        Else
+            getPDDibFromFreeImageHandle = False
+            Exit Function
+        End If
         
     End If
-
+    
+    'Proceed with DIB copying
+    Dim fi_Width As Long, fi_Height As Long
+    fi_Width = FreeImage_GetWidth(srcFI_Handle)
+    fi_Height = FreeImage_GetHeight(srcFI_Handle)
+    dstDIB.createBlank fi_Width, fi_Height, fiBPP, 0
+    SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(srcFI_Handle), ByVal FreeImage_GetInfo(srcFI_Handle), 0&
+    
+    'If we created a temporary DIB, free it now
+    If srcFI_Handle <> fiHandleBackup Then
+        FreeImage_Unload srcFI_Handle
+        srcFI_Handle = fiHandleBackup
+    End If
+    
+    getPDDibFromFreeImageHandle = True
+    
 End Function
 
 'Prior to applying tone-mapping settings, query the user for their preferred behavior.  If the user doesn't want this dialog raised, this
