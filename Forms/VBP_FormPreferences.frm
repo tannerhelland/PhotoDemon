@@ -24,6 +24,15 @@ Begin VB.Form FormPreferences
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   767
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.buttonStripVertical btsvCategory 
+      Height          =   6735
+      Left            =   12000
+      TabIndex        =   73
+      Top             =   120
+      Width           =   2055
+      _ExtentX        =   3625
+      _ExtentY        =   11880
+   End
    Begin VB.CommandButton cmdReset 
       Caption         =   "Reset all options"
       BeginProperty Font 
@@ -2904,12 +2913,36 @@ End Sub
 
 'When the form is loaded, populate the various checkboxes and textboxes with the values from the preferences file
 Private Sub Form_Load()
-
+    
+    Dim i As Long
+    
     'Populate all controls with the corresponding values from the preferences file
     LoadAllPreferences
     
     'Load custom command button images
     cmdCopyReportClipboard.AssignImage "CLIPBOARDCPY"
+    
+    'Prep the category button strip
+    With btsvCategory
+        .AddItem "Interface", 0
+        .AddItem "Loading", 1
+        .AddItem "Saving", 2
+        .AddItem "File formats", 3
+        .AddItem "Performance", 4
+        .AddItem "Color and Transparency", 5
+        .AddItem "Updates", 6
+        .AddItem "Advanced", 7
+        
+        'DEBUG ONLY!  Test button images.
+        
+        For i = 0 To .ListCount - 1
+            .AssignImageToItem i, "CLIPBOARDCPY"
+        Next i
+        
+        .updateAgainstCurrentTheme
+    End With
+    
+    
     
     'Populate the multi-line tooltips for the category command buttons (on the left)
         'Interface
@@ -2930,7 +2963,6 @@ Private Sub Form_Load()
         cmdCategory(7).ToolTip = g_Language.TranslateMessage("Advanced options can be safely ignored by regular users. Testers and developers may, however, find these settings useful.")
     
     'Hide all category panels (the proper one will be activated in a moment)
-    Dim i As Long
     For i = 0 To picContainer.Count - 1
         picContainer(i).Visible = False
         cmdCategory(i).Value = False
