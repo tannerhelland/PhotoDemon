@@ -150,7 +150,7 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
                 controlValue = Str(eControl.Value)
             
             'Button strips have a .ListIndex property
-            Case "buttonStrip"
+            Case "buttonStrip", "buttonStripVertical"
                 controlValue = Str(eControl.ListIndex)
                 
             'Color pickers have a .Color property
@@ -282,7 +282,7 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                     eControl.Value = CBool(controlValue)
                     
                 'Button strips have a .ListIndex property
-                Case "buttonStrip"
+                Case "buttonStrip", "buttonStripVertical"
                     If CLng(controlValue) < eControl.ListCount Then
                         eControl.ListIndex = CLng(controlValue)
                     Else

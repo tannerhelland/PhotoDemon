@@ -378,7 +378,7 @@ Private Sub RandomizeSettings()
                 eControl.Value = eControl.Min + Int(Rnd * (eControl.Max - eControl.Min + 1))
             
             'Button strips work like list and drop-down boxes
-            Case "buttonStrip"
+            Case "buttonStrip", "buttonStripVertical"
                 eControl.ListIndex = Int(Rnd * eControl.ListCount)
                 
             'List boxes and combo boxes are assigned a random ListIndex
@@ -630,7 +630,7 @@ Private Sub ResetSettings()
                 End If
                 
             'Button strips are set to their first entry
-            Case "buttonStrip"
+            Case "buttonStrip", "buttonStripVertical"
                 eControl.ListIndex = 0
             
             'Scroll bars obey the same rules as other numeric controls
@@ -900,7 +900,7 @@ Private Sub storePreset(Optional ByVal presetName As String = "last-used setting
                 controlValue = Str(eControl.Value)
             
             'Button strips have a .ListIndex property
-            Case "buttonStrip"
+            Case "buttonStrip", "buttonStripVertical"
                 controlValue = Str(eControl.ListIndex)
             
             'Color pickers have a .Color property (which is just a Long-type value now; in the future, it might be nice to
@@ -1067,7 +1067,7 @@ Private Function loadPreset(Optional ByVal presetName As String = "last-used set
                         If CBool(controlValue) Then eControl.Value = CBool(controlValue)
                         
                     'Button strips are similar to list boxes, so they use a .ListIndex property
-                    Case "buttonStrip"
+                    Case "buttonStrip", "buttonStripVertical"
                     
                         'To protect against future changes that modify the number of available entries in a button strip, we always
                         ' validate the list index against the current list count prior to setting it.
