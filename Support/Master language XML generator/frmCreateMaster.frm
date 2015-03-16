@@ -1309,6 +1309,9 @@ Private Sub processFile(ByVal srcFile As String)
         Case "VBP_PublicVariables.bas", "pdParamString.cls", "VBP_ToolbarDebug.frm"
             Exit Sub
             
+        Case "buttonStrip.ctl", "buttonStripVertical.ctl"
+            Exit Sub
+            
         'TEMPORARILY: I am disabling the Theme Editor, as it only contains debug text at present.
         ' When PD has an actual theme editor, the form *will* need to be translated.
         Case "VBP_FormThemeEditor.frm"

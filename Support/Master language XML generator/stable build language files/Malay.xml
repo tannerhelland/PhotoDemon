@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="windows-1252"?>
+ï»¿<?xml version="1.0" encoding="UTF-8"?>
 
 <pdData>
 
@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.4.0</langversion>
+<langversion>6.5.8</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -23,6 +23,21 @@
 <phrase>
 <original>&OK</original>
 <translation>OK</translation>
+</phrase>
+
+<phrase>
+<original>Decrease speed</original>
+<translation>kelajuan penurunan</translation>
+</phrase>
+
+<phrase>
+<original>Increase speed</original>
+<translation>peningkatan kelajuan</translation>
+</phrase>
+
+<phrase>
+<original>Pause scrolling</original>
+<translation>Jeda menatal</translation>
 </phrase>
 
 <phrase>
@@ -75,7 +90,7 @@
 <translation>Terima kasih kerana menggunakan PhotoDemon</translation>
 </phrase>
 
-<!-- VBP_FormAbout.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- VBP_FormAbout.frm contains 25 phrases. 10 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for VBP_FormAbout.frm-->
 
@@ -86,7 +101,12 @@
 <translation>kemas kini langsung</translation>
 </phrase>
 
-<!-- VBP_FormSplash.frm contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<phrase>
+<original>version %1</original>
+<translation>versi %1</translation>
+</phrase>
+
+<!-- VBP_FormSplash.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormSplash.frm-->
 
@@ -124,7 +144,7 @@
 <!-- BEGIN text for VBP_LoadModule.bas -->
 
 <phrase>
-<original>Detecting Windows® version</original>
+<original>Detecting WindowsÂ® version</original>
 <translation>Versi Windows Mengesan</translation>
 </phrase>
 
@@ -136,11 +156,6 @@
 <phrase>
 <original>Loading all user settings</original>
 <translation>Memuatkan semua tetapan pengguna</translation>
-</phrase>
-
-<phrase>
-<original>Analyzing current monitor setup</original>
-<translation>Menganalisis setup monitor semasa</translation>
 </phrase>
 
 <phrase>
@@ -156,6 +171,11 @@
 <phrase>
 <original>Applying selected language</original>
 <translation>Menggunakan bahasa dipilih</translation>
+</phrase>
+
+<phrase>
+<original>Analyzing current monitor setup</original>
+<translation>Menganalisis setup monitor semasa</translation>
 </phrase>
 
 <phrase>
@@ -191,47 +211,6 @@
 <phrase>
 <original>Initializing user interface</original>
 <translation>Memulakan antara muka pengguna</translation>
-</phrase>
-
-<phrase>
-<original>Open one or more images for editing.
-
-(Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.)</original>
-<translation>Membuka satu atau lebih banyak imej untuk editing.
-
-(Satu lagi cara untuk membuka imej yang mengheret mereka dari desktop anda atau Windows Explorer dan menjatuhkan mereka pada PhotoDemon.)</translation>
-</phrase>
-
-<phrase>
-<original>Close the current image.
-
-If the current image has not been saved, you will receive a prompt to save it before it closes.</original>
-<translation>Tutup image.
-
-If semasa imej semasa belum disimpan, anda akan menerima segera untuk menyimpannya sebelum ia ditutup.</translation>
-</phrase>
-
-<phrase>
-<original>Close the current image.
-
-Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.</original>
-<translation>Tutup image.
-
-Because semasa anda telah mematikan jimat penggesa (melalui Edit -> Keutamaan), anda TIDAK AKAN menerima segera untuk menyelamatkan imej ini sebelum ia ditutup.</translation>
-</phrase>
-
-<phrase>
-<original>Save the current image.
-
-WARNING: this will overwrite the current image file.  To save to a different file, use the "Save As" button.</original>
-<translation>Jimat image.
-
-WARNING semasa: ini akan menulis ganti fail imej semasa. Untuk menyimpan fail yang berbeza, menggunakan "Save As" butang.</translation>
-</phrase>
-
-<phrase>
-<original>Save the current image to a new file.</original>
-<translation>Menyimpan imej semasa ke fail baru.</translation>
 </phrase>
 
 <phrase>
@@ -302,13 +281,28 @@ Please menggunakan program lain untuk menyelamatkan imej ini dalam format generi
 </phrase>
 
 <phrase>
-<original>frame</original>
-<translation>bingkai</translation>
+<original>frame %1</original>
+<translation>rangka %1</translation>
 </phrase>
 
 <phrase>
-<original>icon</original>
-<translation>icon</translation>
+<original>icon (%1x%2)</original>
+<translation>icon ( %1x %2)</translation>
+</phrase>
+
+<phrase>
+<original>icon (%1x%2, %3 bpp)</original>
+<translation>icon ( %1x %2, %3 bpp)</translation>
+</phrase>
+
+<phrase>
+<original>page %1</original>
+<translation>Laman %1</translation>
+</phrase>
+
+<phrase>
+<original>frame</original>
+<translation>bingkai</translation>
 </phrase>
 
 <phrase>
@@ -378,6 +372,11 @@ Please menggunakan program lain untuk menyimpan imej-imej ini dalam format yang 
 </phrase>
 
 <phrase>
+<original>Layer import canceled.</original>
+<translation>Lapisan import dibatalkan.</translation>
+</phrase>
+
+<phrase>
 <original>Selected file is not in PDI format.  Load abandoned.</original>
 <translation>Fail yang dipilih bukan dalam format PDI. Beban terbengkalai.</translation>
 </phrase>
@@ -417,6 +416,16 @@ To membolehkan sokongan untuk fail PDI mampat, klik Bantuan> Semak Terbaru, dan 
 </phrase>
 
 <phrase>
+<original>Ctrl</original>
+<translation>Ctrl</translation>
+</phrase>
+
+<phrase>
+<original>Shift</original>
+<translation>Shift</translation>
+</phrase>
+
+<phrase>
 <original>Previous PhotoDemon session terminated unexpectedly.  Performing plugin clean-up</original>
 <translation>Sesi PhotoDemon sebelumnya ditamatkan tidak disangka-sangka. Persembahan plugin pembersihan</translation>
 </phrase>
@@ -436,7 +445,7 @@ To membolehkan sokongan untuk fail PDI mampat, klik Bantuan> Semak Terbaru, dan 
 <translation>Pertindihan imej yang lengkap.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 77 phrases. 24 were duplicates of existing phrases, so only 53 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 82 phrases. 28 were duplicates of existing phrases, so only 54 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -667,7 +676,7 @@ To membolehkan sokongan untuk format imej ini, sila menyalin fail FreeImage.dll 
 <translation>Thumbnail menyelamatkan gagal (ralat GDI tidak ditentukan).</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 114 phrases. 73 were duplicates of existing phrases, so only 41 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 121 phrases. 80 were duplicates of existing phrases, so only 41 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -775,11 +784,30 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 </phrase>
 
 <phrase>
+<original>Before lossless copies can be saved, you must save this image at least once.
+
+Lossless copies will be saved to the same folder as this initial image save.</original>
+<translation>Sebelum salinan Lossless boleh disimpan, anda perlu menyimpan imej ini sekurang-kurangnya salinan once.
+
+Lossless akan disimpan ke folder yang sama dengan imej awal ini jimat.</translation>
+</phrase>
+
+<phrase>
+<original>Initial save required</original>
+<translation>Awal jimat diperlukan</translation>
+</phrase>
+
+<phrase>
 <original>Unloading image %1 of %2</original>
 <translation>Memunggah imej %1 daripada %2</translation>
 </phrase>
 
-<!-- VBP_MenuModule.bas contains 15 phrases. 8 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<phrase>
+<original>Background</original>
+<translation>latar Belakang</translation>
+</phrase>
+
+<!-- VBP_MenuModule.bas contains 29 phrases. 19 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for VBP_MenuModule.bas-->
 
@@ -986,7 +1014,7 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 <translation>Selesai.</translation>
 </phrase>
 
-<!-- VBP_FormResize.frm contains 59 phrases. 29 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
+<!-- VBP_FormResize.frm contains 55 phrases. 25 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
 
 <!-- END text for VBP_FormResize.frm-->
 
@@ -1184,16 +1212,11 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 </phrase>
 
 <phrase>
-<original>Invalid zoom value.</original>
-<translation>Nilai zoom tidak sah.</translation>
-</phrase>
-
-<phrase>
 <original>Viewport rendering paused due to unexpected error (#%1)</original>
 <translation>Rendering viewport berhenti disebabkan kesilapan yang tidak dijangka (# %1)...</translation>
 </phrase>
 
-<!-- VBP_ZoomModule.bas contains 6 phrases.  All 6 were unique, so 6 new phrases were written to file. -->
+<!-- VBP_ZoomModule.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
 
 <!-- END text for VBP_ZoomModule.bas-->
 
@@ -1229,6 +1252,11 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 <!-- END text for VBP_FormNoise.frm-->
 
 <!-- BEGIN text for VBP_ProcessorModule.bas -->
+
+<phrase>
+<original>Remove selection</original>
+<translation>Hapuskan pilihan</translation>
+</phrase>
 
 <phrase>
 <original>Unknown processor request submitted: %1
@@ -1390,7 +1418,7 @@ When selesai, klik butang Hantar. Terima kasih!</translation>
 <translation>Arahan laporan pepijat</translation>
 </phrase>
 
-<!-- VBP_ProcessorModule.bas contains 28 phrases. 6 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- VBP_ProcessorModule.bas contains 29 phrases. 6 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for VBP_ProcessorModule.bas-->
 
@@ -1501,7 +1529,7 @@ When selesai, klik butang Hantar. Terima kasih!</translation>
 <!-- BEGIN text for cCommonDialog.cls -->
 
 <phrase>
-<original>Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
+<original>Unfortunately, the number of images you selected exceeds what WindowsÂ® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
 <translation>Malangnya, bilangan imej yang anda pilih melebihi apa yang Windows membolehkan operasi beban tunggal. Sila cuba lagi dengan set yang lebih kecil daripada imej yang terpilih.</translation>
 </phrase>
 
@@ -1888,6 +1916,11 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 </phrase>
 
 <phrase>
+<original>&New</original>
+<translation>baru</translation>
+</phrase>
+
+<phrase>
 <original>&Open</original>
 <translation>terbuka</translation>
 </phrase>
@@ -1955,6 +1988,11 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 <phrase>
 <original>&Save</original>
 <translation>Simpan</translation>
+</phrase>
+
+<phrase>
+<original>Save copy (&lossless)</original>
+<translation>Simpan salinan (lossless)</translation>
 </phrase>
 
 <phrase>
@@ -2128,18 +2166,18 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 </phrase>
 
 <phrase>
-<original>90° clockwise</original>
-<translation>90 ° ikut arah jam</translation>
+<original>90Â° clockwise</original>
+<translation>90 Â° ikut arah jam</translation>
 </phrase>
 
 <phrase>
-<original>90° counter-clockwise</original>
-<translation>90 ° melawan arah jam</translation>
+<original>90Â° counter-clockwise</original>
+<translation>90 Â° melawan arah jam</translation>
 </phrase>
 
 <phrase>
-<original>180°</original>
-<translation>180 °</translation>
+<original>180Â°</original>
+<translation>180 Â°</translation>
 </phrase>
 
 <phrase>
@@ -2263,18 +2301,18 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 </phrase>
 
 <phrase>
-<original>Rotate 90° clockwise</original>
-<translation>Putar 90 ° ikut arah jam</translation>
+<original>Rotate 90Â° clockwise</original>
+<translation>Putar 90 Â° ikut arah jam</translation>
 </phrase>
 
 <phrase>
-<original>Rotate 90° counter-clockwise</original>
-<translation>Putar 90 ° melawan arah jam</translation>
+<original>Rotate 90Â° counter-clockwise</original>
+<translation>Putar 90 Â° melawan arah jam</translation>
 </phrase>
 
 <phrase>
-<original>Rotate 180°</original>
-<translation>Putar 180 °</translation>
+<original>Rotate 180Â°</original>
+<translation>Putar 180 Â°</translation>
 </phrase>
 
 <phrase>
@@ -2793,6 +2831,11 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 </phrase>
 
 <phrase>
+<original>Cross-screen</original>
+<translation>Skrin Cross</translation>
+</phrase>
+
+<phrase>
 <original>Lens flare</original>
 <translation>Lens flare</translation>
 </phrase>
@@ -2993,23 +3036,33 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 </phrase>
 
 <phrase>
-<original>&Macros</original>
-<translation>makro</translation>
+<original>Record macro</original>
+<translation>rekod makro</translation>
 </phrase>
 
 <phrase>
-<original>Play saved macro</original>
-<translation>Bermain makro disimpan</translation>
+<original>Start recording</original>
+<translation>memulakan rakaman</translation>
 </phrase>
 
 <phrase>
-<original>&Record new macro</original>
-<translation>Makro baru Rekod</translation>
-</phrase>
-
-<phrase>
-<original>Sto&p recording</original>
+<original>Stop recording</original>
 <translation>Hentikan rakaman</translation>
+</phrase>
+
+<phrase>
+<original>Play macro</original>
+<translation>Main makro</translation>
+</phrase>
+
+<phrase>
+<original>Recent macros</original>
+<translation>makro baru-baru ini</translation>
+</phrase>
+
+<phrase>
+<original>Clear recent macro list</original>
+<translation>Senarai jelas makro baru-baru ini</translation>
 </phrase>
 
 <phrase>
@@ -3023,23 +3076,63 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 </phrase>
 
 <phrase>
+<original>PD developer tools</original>
+<translation>Alat pemaju PD</translation>
+</phrase>
+
+<phrase>
+<original>Debug window</original>
+<translation>tetingkap debug</translation>
+</phrase>
+
+<phrase>
+<original>Theme editor</original>
+<translation>editor tema</translation>
+</phrase>
+
+<phrase>
 <original>&Window</original>
 <translation>window</translation>
 </phrase>
 
 <phrase>
-<original>File toolbox</original>
-<translation>fail toolbox</translation>
+<original>Toolbox</original>
+<translation>toolbox</translation>
 </phrase>
 
 <phrase>
-<original>Layers toolbox</original>
-<translation>lapisan toolbox</translation>
+<original>Display toolbox</original>
+<translation>paparan toolbox</translation>
 </phrase>
 
 <phrase>
-<original>Tools toolbox</original>
-<translation>alat toolbox</translation>
+<original>Display tool category titles</original>
+<translation>Tajuk kategori alat paparan</translation>
+</phrase>
+
+<phrase>
+<original>Small buttons</original>
+<translation>butang kecil</translation>
+</phrase>
+
+<phrase>
+<original>Normal buttons</original>
+<translation>butang normal</translation>
+</phrase>
+
+<phrase>
+<original>Large buttons</original>
+<translation>butang besar</translation>
+</phrase>
+
+<phrase>
+<original>Tool options</original>
+<translation>alat pilihan</translation>
+</phrase>
+
+<phrase>
+<original>Layers</original>
+<translation>lapisan</translation>
 </phrase>
 
 <phrase>
@@ -3099,7 +3192,7 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 
 <phrase>
 <original>&Help</original>
-<translation>bantuan</translation>
+<translation>Membantu</translation>
 </phrase>
 
 <phrase>
@@ -3140,6 +3233,39 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 <phrase>
 <original>&About PhotoDemon</original>
 <translation>Mengenai PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
+<translation>Versi baru PhotoDemon disediakan. Kemas kini secara automatik memproses di latar belakang</translation>
+</phrase>
+
+<phrase>
+<original>This copy of PhotoDemon is up to date.</original>
+<translation>Ini salinan PhotoDemon adalah terkini.</translation>
+</phrase>
+
+<phrase>
+<original>A new version of PhotoDemon is available!
+
+The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
+<translation>Versi baru PhotoDemon boleh didapati! 
+
+The kemas kini secara automatik memproses di latar belakang. Anda akan menerima pemberitahuan baru apabila ia selesai.</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon Updates</original>
+<translation>PhotoDemon Terbaru</translation>
+</phrase>
+
+<phrase>
+<original>This copy of PhotoDemon is the newest version available.
+
+(Current version: %1.%2.%3)</original>
+<translation>Ini salinan PhotoDemon adalah versi available.
+
+terbaru (versi semasa: %1 %2 %3)</translation>
 </phrase>
 
 <phrase>
@@ -3228,18 +3354,18 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 </phrase>
 
 <phrase>
-<original>Rotate layer 90° clockwise</original>
-<translation>Putar lapisan 90 ° ikut arah jam</translation>
+<original>Rotate layer 90 clockwise</original>
+<translation>Berputar mengikut arah jam 90 lapisan</translation>
 </phrase>
 
 <phrase>
-<original>Rotate layer 90° counter-clockwise</original>
-<translation>Lapisan putar 90 ° melawan arah jam</translation>
+<original>Rotate layer 90 counter-clockwise</original>
+<translation>Putar lapisan 90 melawan arah jam</translation>
 </phrase>
 
 <phrase>
-<original>Rotate layer 180°</original>
-<translation>Putar lapisan 180 °</translation>
+<original>Rotate layer 180</original>
+<translation>Lapisan Putar 180</translation>
 </phrase>
 
 <phrase>
@@ -3278,8 +3404,13 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 </phrase>
 
 <phrase>
-<original>Remove selection</original>
-<translation>Hapuskan pilihan</translation>
+<original>Start macro recording</original>
+<translation>Memulakan rakaman makro</translation>
+</phrase>
+
+<phrase>
+<original>Stop macro recording</original>
+<translation>Menghentikan rakaman makro</translation>
 </phrase>
 
 <phrase>
@@ -3315,26 +3446,6 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 <phrase>
 <original>Initializing software updater (this feature can be disabled from the Tools -> Options menu)</original>
 <translation>Memulakan perisian updater (ciri ini boleh dimatikan dari Tools -> Menu Pilihan)</translation>
-</phrase>
-
-<phrase>
-<original>Checking for previously downloaded update data</original>
-<translation>Memeriksa untuk kemas kini data sebelum turun</translation>
-</phrase>
-
-<phrase>
-<original>An error occurred while looking for an update file.</original>
-<translation>Ralat berlaku semasa mencari fail kemas kini.</translation>
-</phrase>
-
-<phrase>
-<original>Update data found, but this copy of PhotoDemon is already up-to-date.</original>
-<translation>Data kemas kini dijumpai, tetapi salinan ini PhotoDemon sudah up-to-tarikh.</translation>
-</phrase>
-
-<phrase>
-<original>New PhotoDemon update found!  Launching update notifier</original>
-<translation>New PhotoDemon update dijumpai! Pelancaran update Pemberitahu</translation>
 </phrase>
 
 <phrase>
@@ -3423,6 +3534,11 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 </phrase>
 
 <phrase>
+<original>Save copy</original>
+<translation>Simpan salinan</translation>
+</phrase>
+
+<phrase>
 <original>Save as</original>
 <translation>Simpan sebagai</translation>
 </phrase>
@@ -3445,40 +3561,6 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 <phrase>
 <original>Checking for software updates</original>
 <translation>Menyemak kemas kini perisian</translation>
-</phrase>
-
-<phrase>
-<original>An error occurred while checking for updates.  Please try again later.</original>
-<translation>Ralat berlaku semasa menyemak kemas kini. Sila cuba lagi kemudian.</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon Updates</original>
-<translation>PhotoDemon Terbaru</translation>
-</phrase>
-
-<phrase>
-<original>Software update check postponed.</original>
-<translation>Perisian pemeriksaan kemas ditangguhkan.</translation>
-</phrase>
-
-<phrase>
-<original>This copy of PhotoDemon is the newest version available.
-
-(Current version: %1.%2.%3)</original>
-<translation>Ini salinan PhotoDemon adalah versi available.
-
-terbaru (versi semasa: %1 %2 %3)</translation>
-</phrase>
-
-<phrase>
-<original>This copy of PhotoDemon is up to date.</original>
-<translation>Ini salinan PhotoDemon adalah terkini.</translation>
-</phrase>
-
-<phrase>
-<original>Software update found!  Launching update notifier</original>
-<translation>Kemas kini perisian dijumpai! Pelancaran update Pemberitahu</translation>
 </phrase>
 
 <phrase>
@@ -3563,10 +3645,10 @@ Do anda mempunyai akaun GitHub? (Jika anda tidak tahu apa ini bermakna, jawapan 
 <phrase>
 <original>Language changed successfully!
 
-Note: some minor program text (such as hover tooltips) cannot be live-updated.  Such text will be properly translated the next time you start the application.</original>
-<translation>! Bahasa berubah berjaya
+Note: some minor program text cannot be live-updated.  Such text will be properly translated the next time you start the application.</original>
+<translation>! Bahasa berjaya ditukar 
 
-Note: beberapa teks program minor (seperti petua hover) tidak boleh tinggal dikemaskini. Teks tersebut akan diterjemahkan dengan betul apabila anda memulakan aplikasi.</translation>
+Note: beberapa teks program minor tidak boleh hidup dikemaskini. Teks tersebut akan diterjemahkan dengan betul pada kali seterusnya anda memulakan aplikasi.</translation>
 </phrase>
 
 <phrase>
@@ -3630,28 +3712,23 @@ Note: beberapa teks program minor (seperti petua hover) tidak boleh tinggal dike
 </phrase>
 
 <phrase>
-<original>Play macro</original>
-<translation>Main makro</translation>
-</phrase>
-
-<phrase>
 <original>Straighten image</original>
 <translation>meluruskan imej</translation>
 </phrase>
 
 <phrase>
-<original>Rotate image 90° clockwise</original>
-<translation>Putar imej 90 ° ikut arah jam</translation>
+<original>Rotate image 90 clockwise</original>
+<translation>Putar gambar mengikut arah jam 90</translation>
 </phrase>
 
 <phrase>
-<original>Rotate image 90° counter-clockwise</original>
-<translation>Putar imej 90 ° melawan arah jam</translation>
+<original>Rotate image 90 counter-clockwise</original>
+<translation>Imej Putar 90 melawan arah jam</translation>
 </phrase>
 
 <phrase>
-<original>Rotate image 180°</original>
-<translation>Putar imej 180 °</translation>
+<original>Rotate image 180</original>
+<translation>Putar imej 180</translation>
 </phrase>
 
 <phrase>
@@ -3730,16 +3807,6 @@ Note: beberapa teks program minor (seperti petua hover) tidak boleh tinggal dike
 </phrase>
 
 <phrase>
-<original>Start macro recording</original>
-<translation>Memulakan rakaman makro</translation>
-</phrase>
-
-<phrase>
-<original>Stop macro recording</original>
-<translation>Menghentikan rakaman makro</translation>
-</phrase>
-
-<phrase>
 <original>Add alpha channel</original>
 <translation>Tambah saluran alpha</translation>
 </phrase>
@@ -3754,7 +3821,7 @@ Note: beberapa teks program minor (seperti petua hover) tidak boleh tinggal dike
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 526 phrases. 154 were duplicates of existing phrases, so only 372 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 538 phrases. 159 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -4195,183 +4262,28 @@ To membolehkan sokongan pengimbas, sila menyalin fail EZTW32.dll (tersedia untuk
 </phrase>
 
 <phrase>
-<original>Interface</original>
-<translation>antara muka</translation>
+<original>(disclaimer populated at run-time)</original>
+<translation>(penafian penduduk di jangka masa)</translation>
 </phrase>
 
 <phrase>
-<original>Interface Options</original>
-<translation>Pilihan antara muka</translation>
+<original>update language files independently</original>
+<translation>bahasa kemas kini fail secara bebas</translation>
 </phrase>
 
 <phrase>
-<original>Updates</original>
-<translation>kemas kini</translation>
+<original>automatically check for updates</original>
+<translation>secara automatik menyemak kemas kini</translation>
 </phrase>
 
 <phrase>
-<original>Update Options</original>
-<translation>update Pilihan</translation>
+<original>update plugins independently</original>
+<translation>plugin kemas kini bebas</translation>
 </phrase>
 
 <phrase>
-<original>Performance</original>
-<translation>prestasi</translation>
-</phrase>
-
-<phrase>
-<original>Tool Options</original>
-<translation>Pilihan alat</translation>
-</phrase>
-
-<phrase>
-<original>Advanced</original>
-<translation>Advanced</translation>
-</phrase>
-
-<phrase>
-<original>Advanced Options</original>
-<translation>Pilihan Advanced</translation>
-</phrase>
-
-<phrase>
-<original>Color and Transparency</original>
-<translation>Warna dan Ketelusan</translation>
-</phrase>
-
-<phrase>
-<original>Color and Transparency Options</original>
-<translation>Warna dan Ketelusan Pilihan</translation>
-</phrase>
-
-<phrase>
-<original>Loading</original>
-<translation>Memuatkan</translation>
-</phrase>
-
-<phrase>
-<original>Load (Import) Options</original>
-<translation>Beban (Import) Pilihan</translation>
-</phrase>
-
-<phrase>
-<original>Saving</original>
-<translation>menyimpan</translation>
-</phrase>
-
-<phrase>
-<original>Save (Export) Options</original>
-<translation>Jimat (Eksport) Pilihan</translation>
-</phrase>
-
-<phrase>
-<original>File formats</original>
-<translation>format fail</translation>
-</phrase>
-
-<phrase>
-<original>File Format Options</original>
-<translation>Pilihan Format fail</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>pengurusan warna</translation>
-</phrase>
-
-<phrase>
-<original>when calculating color values</original>
-<translation>apabila mengira nilai warna</translation>
-</phrase>
-
-<phrase>
-<original>when decorating interface elements</original>
-<translation>apabila menghias unsur-unsur antara muka</translation>
-</phrase>
-
-<phrase>
-<original>interface</original>
-<translation>antara muka</translation>
-</phrase>
-
-<phrase>
-<original>no compression (fastest)</original>
-<translation>tiada pemampatan (paling cepat)</translation>
-</phrase>
-
-<phrase>
-<original>maximum compression (slowest)</original>
-<translation>mampatan maksimum (paling lambat)</translation>
-</phrase>
-
-<phrase>
-<original>compress undo/redo data at the following level</original>
-<translation>memampatkan batal/buat semula data pada tahap yang berikut</translation>
-</phrase>
-
-<phrase>
-<original>undo/redo</original>
-<translation>batal/buat semula</translation>
-</phrase>
-
-<phrase>
-<original>thumbnails</original>
-<translation>imej kecil</translation>
-</phrase>
-
-<phrase>
-<original>when generating image and layer thumbnail images</original>
-<translation>apabila menjana imej dan lapisan imej thumbnail</translation>
-</phrase>
-
-<phrase>
-<original>when rendering the image canvas</original>
-<translation>apabila menjadikan kanvas imej</translation>
-</phrase>
-
-<phrase>
-<original>viewport</original>
-<translation>viewport</translation>
-</phrase>
-
-<phrase>
-<original>Folder used for temporary files</original>
-<translation>Folder digunakan untuk fail sementara</translation>
-</phrase>
-
-<phrase>
-<original>Click to open a browse-for-folder dialog</original>
-<translation>Klik untuk membuka dialog browse untuk folder</translation>
-</phrase>
-
-<phrase>
-<original>hardware acceleration report</original>
-<translation>perkakasan laporan pecutan</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>penggunaan memori akan dipaparkan di sini</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>diagnostik memori</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>Fail sementara lokasi</translation>
-</phrase>
-
-<phrase>
-<original>if core plugins cannot be located, offer to download them</original>
-<translation>jika plugin teras tidak dapat dikesan, tawaran untuk memuat turun mereka</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for software updates every 10 days</original>
-<translation>secara automatik menyemak kemas kini perisian setiap 10 hari</translation>
+<original>allow updates from these tracks</original>
+<translation>membolehkan kemas kini daripada trek ini</translation>
 </phrase>
 
 <phrase>
@@ -4380,18 +4292,18 @@ To membolehkan sokongan pengimbas, sila menyalin fail EZTW32.dll (tersedia untuk
 </phrase>
 
 <phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(penafian penduduk di jangka masa)</translation>
+<original>notify me when an update is ready</original>
+<translation>memberitahu saya apabila kemas kini bersedia</translation>
 </phrase>
 
 <phrase>
-<original>render PhotoDemon text with modern typefaces (only available on Vista or newer)</original>
-<translation>menyebabkan teks PhotoDemon dengan typefaces moden (hanya terdapat pada Vista atau yang lebih baru)</translation>
+<original>use high-resolution input tracking</original>
+<translation>menggunakan Penjejakan input resolusi tinggi</translation>
 </phrase>
 
 <phrase>
-<original>Image windows tend to be large, so feel free to display each image's full location in the image window title bars.</original>
-<translation>Imej tingkap cenderung besar, jadi berasa bebas untuk memaparkan lokasi penuh setiap imej dalam bar tajuk tetingkap imej.</translation>
+<original>mouse and pen input</original>
+<translation>tetikus dan input pen</translation>
 </phrase>
 
 <phrase>
@@ -4417,11 +4329,6 @@ To membolehkan sokongan pengimbas, sila menyalin fail EZTW32.dll (tersedia untuk
 <phrase>
 <original>image window titles should be</original>
 <translation>tajuk tetingkap imej harus</translation>
-</phrase>
-
-<phrase>
-<original>miscellaneous</original>
-<translation>pelbagai</translation>
 </phrase>
 
 <phrase>
@@ -4465,6 +4372,11 @@ To membolehkan sokongan pengimbas, sila menyalin fail EZTW32.dll (tersedia untuk
 </phrase>
 
 <phrase>
+<original>color management</original>
+<translation>pengurusan warna</translation>
+</phrase>
+
+<phrase>
 <original>transparency checkerboard size</original>
 <translation>saiz ketelusan papan main dam</translation>
 </phrase>
@@ -4477,6 +4389,41 @@ To membolehkan sokongan pengimbas, sila menyalin fail EZTW32.dll (tersedia untuk
 <phrase>
 <original>transparency management</original>
 <translation>pengurusan ketelusan</translation>
+</phrase>
+
+<phrase>
+<original>please select a file type</original>
+<translation>sila pilih jenis fail</translation>
+</phrase>
+
+<phrase>
+<original>file format options</original>
+<translation>pilihan format fail</translation>
+</phrase>
+
+<phrase>
+<original>save TIFFs as separated CMYK (for printing)</original>
+<translation>menyelamatkan TIFFs sebagai CMYK dipisahkan (untuk percetakan)</translation>
+</phrase>
+
+<phrase>
+<original>TIFF (Tagged Image File Format) options</original>
+<translation>TIFF (Tagged Image File Format) pilihan</translation>
+</phrase>
+
+<phrase>
+<original>when saving, compress TIFFs using</original>
+<translation>apabila menyimpan, memampatkan TIFFs menggunakan</translation>
+</phrase>
+
+<phrase>
+<original>PPM (Portable Pixmap) options</original>
+<translation>PPM (Pixmap Portable) pilihan</translation>
+</phrase>
+
+<phrase>
+<original>export PPM files using</original>
+<translation>mengeksport fail PPM menggunakan</translation>
 </phrase>
 
 <phrase>
@@ -4527,41 +4474,6 @@ To membolehkan sokongan pengimbas, sila menyalin fail EZTW32.dll (tersedia untuk
 <phrase>
 <original>BMP (Bitmap) options</original>
 <translation>BMP (Bitmap) pilihan</translation>
-</phrase>
-
-<phrase>
-<original>save TIFFs as separated CMYK (for printing)</original>
-<translation>menyelamatkan TIFFs sebagai CMYK dipisahkan (untuk percetakan)</translation>
-</phrase>
-
-<phrase>
-<original>TIFF (Tagged Image File Format) options</original>
-<translation>TIFF (Tagged Image File Format) pilihan</translation>
-</phrase>
-
-<phrase>
-<original>when saving, compress TIFFs using</original>
-<translation>apabila menyimpan, memampatkan TIFFs menggunakan</translation>
-</phrase>
-
-<phrase>
-<original>PPM (Portable Pixmap) options</original>
-<translation>PPM (Pixmap Portable) pilihan</translation>
-</phrase>
-
-<phrase>
-<original>export PPM files using</original>
-<translation>mengeksport fail PPM menggunakan</translation>
-</phrase>
-
-<phrase>
-<original>please select a file type</original>
-<translation>sila pilih jenis fail</translation>
-</phrase>
-
-<phrase>
-<original>file format options</original>
-<translation>pilihan format fail</translation>
 </phrase>
 
 <phrase>
@@ -4620,8 +4532,8 @@ To membolehkan sokongan pengimbas, sila menyalin fail EZTW32.dll (tersedia untuk
 </phrase>
 
 <phrase>
-<original>automatically apply tone mapping to HDR and RAW images (48, 64, 96, 128bpp)</original>
-<translation>secara automatik memohon pemetaan nada untuk HDR dan imej RAW (48, 64, 96, 128bpp)</translation>
+<original>display tone mapping options when importing HDR and RAW images</original>
+<translation>pilihan pemetaan paparan nada apabila mengimport HDR dan imej RAW</translation>
 </phrase>
 
 <phrase>
@@ -4655,6 +4567,86 @@ To membolehkan sokongan pengimbas, sila menyalin fail EZTW32.dll (tersedia untuk
 </phrase>
 
 <phrase>
+<original>when calculating color values</original>
+<translation>apabila mengira nilai warna</translation>
+</phrase>
+
+<phrase>
+<original>when decorating interface elements</original>
+<translation>apabila menghias unsur-unsur antara muka</translation>
+</phrase>
+
+<phrase>
+<original>interface</original>
+<translation>antara muka</translation>
+</phrase>
+
+<phrase>
+<original>no compression (fastest)</original>
+<translation>tiada pemampatan (paling cepat)</translation>
+</phrase>
+
+<phrase>
+<original>maximum compression (slowest)</original>
+<translation>mampatan maksimum (paling lambat)</translation>
+</phrase>
+
+<phrase>
+<original>compress undo/redo data at the following level</original>
+<translation>memampatkan batal/buat semula data pada tahap yang berikut</translation>
+</phrase>
+
+<phrase>
+<original>undo/redo</original>
+<translation>batal/buat semula</translation>
+</phrase>
+
+<phrase>
+<original>thumbnails</original>
+<translation>imej kecil</translation>
+</phrase>
+
+<phrase>
+<original>when generating image and layer thumbnail images</original>
+<translation>apabila menjana imej dan lapisan imej thumbnail</translation>
+</phrase>
+
+<phrase>
+<original>when rendering the image canvas</original>
+<translation>apabila menjadikan kanvas imej</translation>
+</phrase>
+
+<phrase>
+<original>viewport</original>
+<translation>viewport</translation>
+</phrase>
+
+<phrase>
+<original>Click to open a browse-for-folder dialog</original>
+<translation>Klik untuk membuka dialog browse untuk folder</translation>
+</phrase>
+
+<phrase>
+<original>hardware acceleration report</original>
+<translation>perkakasan laporan pecutan</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>penggunaan memori akan dipaparkan di sini</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>diagnostik memori</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>Fail sementara lokasi</translation>
+</phrase>
+
+<phrase>
 <original>(none)</original>
 <translation>(Tiada)</translation>
 </phrase>
@@ -4675,12 +4667,23 @@ To membolehkan sokongan pengimbas, sila menyalin fail EZTW32.dll (tersedia untuk
 </phrase>
 
 <phrase>
-<original>Close the current image.
+<original>If the current image has not been saved, you will receive a prompt to save it before it closes.</original>
+<translation>Jika imej semasa belum disimpan, anda akan menerima segera menyimpannya sebelum ia ditutup.</translation>
+</phrase>
 
-Because you have turned off save prompts (via Tools -> Options), you WILL NOT receive a prompt to save this image before it closes.</original>
-<translation>Tutup image.
+<phrase>
+<original>Close the current image</original>
+<translation>Tutup imej semasa</translation>
+</phrase>
 
-Because semasa anda telah mematikan jimat penggesa (melalui Tools -> Pilihan), anda TIDAK menerima segera untuk menyelamatkan imej ini sebelum ia ditutup.</translation>
+<phrase>
+<original>Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.</original>
+<translation>Kerana anda telah mematikan jimat gesaan (melalui Edit -> Keutamaan), anda TIDAK AKAN menerima segera untuk menyelamatkan imej ini sebelum ia ditutup.</translation>
+</phrase>
+
+<phrase>
+<original>Preferences updated.</original>
+<translation>Keutamaan dikemaskini.</translation>
 </phrase>
 
 <phrase>
@@ -4733,6 +4736,16 @@ Are anda pasti anda mahu teruskan?</translation>
 </phrase>
 
 <phrase>
+<original>Image windows tend to be large, so feel free to display each image's full location in the image window title bars.</original>
+<translation>Imej tingkap cenderung besar, jadi berasa bebas untuk memaparkan lokasi penuh setiap imej dalam bar tajuk tetingkap imej.</translation>
+</phrase>
+
+<phrase>
+<original>High-resolution tracking allows PhotoDemon to more accurately reproduce mouse and pen movement.  On some older PCs, the system may struggle to keep up with the extra tracking data, so you can disable this if necessary.</original>
+<translation>Pengesanan tinggi resolusi membolehkan PhotoDemon untuk mengeluarkan semula tetikus dan gerakan pen dengan lebih tepat. Pada sesetengah komputer yang lebih tua, sistem yang boleh berjuang untuk bersaing dengan data pengesanan tambahan, jadi anda boleh mematikan ini jika perlu.</translation>
+</phrase>
+
+<phrase>
 <original>compact - file names only</original>
 <translation>padat - nama fail hanya</translation>
 </phrase>
@@ -4748,11 +4761,6 @@ Are anda pasti anda mahu teruskan?</translation>
 </phrase>
 
 <phrase>
-<original>render PhotoDemon text with modern typefaces</original>
-<translation>menyebabkan teks PhotoDemon dengan typefaces moden</translation>
-</phrase>
-
-<phrase>
 <original>This option allows PhotoDemon to scan incoming images to determine the most appropriate color depth on a case-by-case basis (rather than relying on the source image file's color depth, which may have been chosen arbitrarily).</original>
 <translation>Pilihan ini membolehkan PhotoDemon untuk mengimbas imej yang masuk untuk menentukan kedalaman warna yang paling sesuai berdasarkan kes demi kes (dan bukannya bergantung kepada kedalaman warna fail imej sumber, yang mungkin telah dipilih secara sewenang-wenangnya).</translation>
 </phrase>
@@ -4763,8 +4771,8 @@ Are anda pasti anda mahu teruskan?</translation>
 </phrase>
 
 <phrase>
-<original>Tone mapping is used to preserve the tonal range of HDR images.  This setting is very useful for RAW photos and scanned documents, but it adds a significant amount of time to the image load process.</original>
-<translation>Pemetaan nada digunakan untuk mengekalkan julat yg mempergunakan gaya suara imej HDR. Tetapan ini adalah sangat berguna untuk gambar RAW dan dokumen diimbas, tetapi ia menambah sejumlah besar masa untuk proses beban imej.</translation>
+<original>HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data.</original>
+<translation>HDR dan imej RAW mengandungi lebih banyak warna daripada skrin PC fizikal boleh memaparkan. Sebelum memaparkan imej tersebut, operasi pemetaan nada mesti digunakan dengan data imej asal.</translation>
 </phrase>
 
 <phrase>
@@ -5103,21 +5111,72 @@ Are anda pasti anda mahu teruskan?</translation>
 </phrase>
 
 <phrase>
-<original>PhotoDemon relies on several free, open-source plugins for full functionality. If any of these plugins are missing (for example, if you downloaded PhotoDemon from a 3rd-party site), this option will offer to download the missing plugins for you.</original>
-<translation>PhotoDemon bergantung kepada beberapa plugin percuma, sumber terbuka untuk kefungsian penuh. Jika mana-mana plugin ini hilang (contohnya, jika anda memuat turun PhotoDemon dari laman pihak ke-3), pilihan ini akan menawarkan untuk memuat turun plugin hilang untuk anda.</translation>
+<original>each session</original>
+<translation>setiap sesi</translation>
 </phrase>
 
 <phrase>
-<original>PhotoDemon provides two non-essential features that require Internet access: checking for software updates, and offering to download core plugins if they aren't present in the \App\PhotoDemon\Plugins subdirectory.
+<original>weekly</original>
+<translation>mingguan</translation>
+</phrase>
 
-The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded by these features. Checking for software updates involves downloading a single "updates.txt" file containing the latest software version number. Similarly, downloading missing plugins simply involves downloading one or more compressed plugin files from the PhotoDemon server.
+<phrase>
+<original>monthly</original>
+<translation>bulanan</translation>
+</phrase>
 
-If you choose to disable these features, you can always visit photodemon.org to manually download the most recent version of the program.</original>
-<translation>PhotoDemon menyediakan dua ciri yang tidak penting yang memerlukan akses Internet: memeriksa untuk kemas kini perisian, dan menawarkan untuk memuat turun plugin teras jika mereka tidak terdapat di dalam\App\PhotoDemon\Plugins subdirectory.
+<phrase>
+<original>never (not recommended)</original>
+<translation>tidak pernah (tidak digalakkan)</translation>
+</phrase>
 
-The pemaju PhotoDemon mengambil serius privasi, jadi tidak maklumat - statistik atau sebaliknya - dimuat naik oleh ciri-ciri ini. Menyemak kemas kini perisian melibatkan memuat turun satu "updates.txt" fail yang mengandungi nombor versi perisian terkini. Begitu juga, memuat turun plugin hilang hanya melibatkan memuat turun satu atau lebih fail termampat plugin dari PhotoDemon server.
+<phrase>
+<original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
+<translation>Kerana PhotoDemon adalah aplikasi mudah alih, ia hanya boleh menyemak kemas kini apabila program sedang berjalan. Secara lalai, PhotoDemon akan menyemak kemas kini setiap kali program itu dilancarkan, tetapi anda boleh mengurangkan kekerapan ini jika dikehendaki.</translation>
+</phrase>
 
-If anda memilih untuk melumpuhkan ciri ini, anda sentiasa boleh melawat photodemon.org turun manual versi terkini program.</translation>
+<phrase>
+<original>stable releases</original>
+<translation>siaran stabil</translation>
+</phrase>
+
+<phrase>
+<original>stable and beta releases</original>
+<translation>siaran stabil dan beta</translation>
+</phrase>
+
+<phrase>
+<original>stable, beta, and developer releases</original>
+<translation>stabil, siaran beta, dan pemaju</translation>
+</phrase>
+
+<phrase>
+<original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
+<translation>Salah satu cara terbaik untuk menyokong PhotoDemon adalah untuk membantu ujian siaran baru. Secara lalai, PhotoDemon akan mencadangkan dilepaskan di stabil dan beta, tetapi yang benar-benar mencabar juga boleh cuba siaran pemaju. (Siaran Pemaju memberikan anda akses segera kepada penambahbaikan program terkini, tetapi anda mungkin menghadapi beberapa bug.)</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon's volunteer translators regularly update the program's language files.  PhotoDemon can automatically download these updates separate from the main program, ensuring that you always have the most up-to-date language files.</original>
+<translation>Penterjemah sukarela PhotoDemon dengan kerap mengemas kini fail-fail bahasa program. PhotoDemon secara automatik boleh memuat turun kemas kini ini berasingan daripada program utama, memastikan bahawa anda sentiasa mempunyai fail bahasa up-to-tarikh.</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon uses some 3rd-party plugins.  Sometimes, the authors of these plugins fix bugs or add new features.  Instead of waiting for the next PhotoDemon release, you can receive plugin updates as soon as they become available.</original>
+<translation>PhotoDemon menggunakan beberapa plugin pihak ke-3. Kadang-kadang, pengarang plugin ini membetulkan bug atau menambah ciri-ciri baru. Daripada menunggu PhotoDemon siaran seterusnya, anda boleh menerima kemas kini plugin sebaik sahaja ia tersedia.</translation>
+</phrase>
+
+<phrase>
+<original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
+<translation>PhotoDemon boleh memberitahu anda apabila ia bersedia untuk memohon kemas kini. Ini membolehkan anda menggunakan versi yang dikemas kini segera.</translation>
+</phrase>
+
+<phrase>
+<original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
+
+If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
+<translation>Pemaju PhotoDemon mengambil privasi sangat serius, jadi tidak ada maklumat - statistik atau sebaliknya - dimuat naik semasa proses kemas kini. Maklumat hanya melibatkan memuat turun beberapa fail XML kecil dari photodemon.org. Fail-fail mengandungi nombor perisian, plugin, dan versi bahasa terkini. Jika versi yang dikemas kini berada, dan pilihan pengguna membenarkan, fail dikemaskini kemudiannya turun dan ditampal automatically.
+
+If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat photodemon.org dari semasa ke semasa untuk memeriksa versi baru.</translation>
 </phrase>
 
 <phrase>
@@ -5151,8 +5210,53 @@ If anda memilih untuk melumpuhkan ciri ini, anda sentiasa boleh melawat photodem
 </phrase>
 
 <phrase>
+<original>Interface</original>
+<translation>antara muka</translation>
+</phrase>
+
+<phrase>
+<original>Loading</original>
+<translation>Memuatkan</translation>
+</phrase>
+
+<phrase>
+<original>Saving</original>
+<translation>menyimpan</translation>
+</phrase>
+
+<phrase>
+<original>File formats</original>
+<translation>format fail</translation>
+</phrase>
+
+<phrase>
+<original>Performance</original>
+<translation>prestasi</translation>
+</phrase>
+
+<phrase>
+<original>Color and Transparency</original>
+<translation>Warna dan Ketelusan</translation>
+</phrase>
+
+<phrase>
+<original>Updates</original>
+<translation>kemas kini</translation>
+</phrase>
+
+<phrase>
+<original>Advanced</original>
+<translation>Advanced</translation>
+</phrase>
+
+<phrase>
 <original>Interface options include settings for the main PhotoDemon interface, including things like canvas settings, font selection, and positioning.</original>
 <translation>Pilihan antara muka termasuk tetapan untuk antara muka PhotoDemon utama, termasuk hal-hal seperti tetapan kanvas, pemilihan font, dan kedudukan.</translation>
+</phrase>
+
+<phrase>
+<original>Interface Options</original>
+<translation>Pilihan antara muka</translation>
 </phrase>
 
 <phrase>
@@ -5161,8 +5265,18 @@ If anda memilih untuk melumpuhkan ciri ini, anda sentiasa boleh melawat photodem
 </phrase>
 
 <phrase>
+<original>Load (Import) Options</original>
+<translation>Beban (Import) Pilihan</translation>
+</phrase>
+
+<phrase>
 <original>Save options allow you to customize the way image files leave the application.</original>
 <translation>Simpan pilihan membolehkan anda untuk menyesuaikan cara yang fail-fail imej meninggalkan permohonan.</translation>
+</phrase>
+
+<phrase>
+<original>Save (Export) Options</original>
+<translation>Jimat (Eksport) Pilihan</translation>
 </phrase>
 
 <phrase>
@@ -5171,8 +5285,18 @@ If anda memilih untuk melumpuhkan ciri ini, anda sentiasa boleh melawat photodem
 </phrase>
 
 <phrase>
-<original>Tool options currently include customizable options for the Selection Tool. In the future, PhotoDemon will gain paint tools, and those settings will appear here as well.</original>
-<translation>Pilihan Alat kini termasuk pilihan disesuaikan untuk Alat Pemilihan. Pada masa akan datang, PhotoDemon akan mendapat alat cat, dan orang-orang tetapan akan muncul di sini juga.</translation>
+<original>File Format Options</original>
+<translation>Pilihan Format fail</translation>
+</phrase>
+
+<phrase>
+<original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
+<translation>Prestasi pilihan membolehkan anda untuk mengawal sama ada PhotoDemon menekankan kelajuan atau kualiti apabila melakukan tugas-tugas tertentu.</translation>
+</phrase>
+
+<phrase>
+<original>Performance Options</original>
+<translation>Pilihan prestasi</translation>
 </phrase>
 
 <phrase>
@@ -5181,8 +5305,18 @@ If anda memilih untuk melumpuhkan ciri ini, anda sentiasa boleh melawat photodem
 </phrase>
 
 <phrase>
+<original>Color and Transparency Options</original>
+<translation>Warna dan Ketelusan Pilihan</translation>
+</phrase>
+
+<phrase>
 <original>Update options control how frequently PhotoDemon checks for updated versions, and how it handles the download of missing plugins.</original>
 <translation>Pilihan kemas kini mengawal berapa kerap PhotoDemon cek untuk versi dikemaskini, dan bagaimana ia mengendalikan muat turun plugin hilang.</translation>
+</phrase>
+
+<phrase>
+<original>Update Options</original>
+<translation>update Pilihan</translation>
 </phrase>
 
 <phrase>
@@ -5191,11 +5325,16 @@ If anda memilih untuk melumpuhkan ciri ini, anda sentiasa boleh melawat photodem
 </phrase>
 
 <phrase>
+<original>Advanced Options</original>
+<translation>Pilihan Advanced</translation>
+</phrase>
+
+<phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If no new folder is provided, PhotoDemon will use the system's default temp location.</original>
 <translation>AMARAN: folder ini adalah tidak sah (akses dilarang). Sila berikan folder yang sah. Jika tiada folder baru disediakan, PhotoDemon akan menggunakan lokasi temp lalai sistem.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 275 phrases. 75 were duplicates of existing phrases, so only 200 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 247 phrases. 31 were duplicates of existing phrases, so only 216 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -5370,11 +5509,6 @@ If anda memilih untuk melumpuhkan ciri ini, anda sentiasa boleh melawat photodem
 </phrase>
 
 <phrase>
-<original>Crop complete.  (Note: the selected area was automatically unselected.)</original>
-<translation>Tanaman lengkap. (Nota: kawasan yang dipilih adalah secara automatik tidak dipilih.)</translation>
-</phrase>
-
-<phrase>
 <original>Flipping image</original>
 <translation>imej Melibas</translation>
 </phrase>
@@ -5419,7 +5553,7 @@ If anda memilih untuk melumpuhkan ciri ini, anda sentiasa boleh melawat photodem
 <translation>Perapian gambar untuk dimensi baru</translation>
 </phrase>
 
-<!-- VBP_Filters_Rotate.bas contains 33 phrases. 14 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- VBP_Filters_Rotate.bas contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_Filters_Rotate.bas-->
 
@@ -5594,8 +5728,8 @@ If anda memilih untuk melumpuhkan ciri ini, anda sentiasa boleh melawat photodem
 </phrase>
 
 <phrase>
-<original>Auto-Levels</original>
-<translation>Auto-Level</translation>
+<original>set levels automatically</original>
+<translation>tahap set secara automatik</translation>
 </phrase>
 
 <phrase>
@@ -5604,13 +5738,13 @@ If anda memilih untuk melumpuhkan ciri ini, anda sentiasa boleh melawat photodem
 </phrase>
 
 <phrase>
-<original>RGB</original>
-<translation>RGB</translation>
+<original>When this button is active, you can set the highlight input level color by right-clicking a color in the preview window.</original>
+<translation>Apabila butang ini aktif, anda boleh menetapkan tahap warna input kemuncak dengan klik kanan warna dalam tetingkap pratonton.</translation>
 </phrase>
 
 <phrase>
-<original>When this button is active, you can set the highlight input level color by right-clicking a color in the preview window.</original>
-<translation>Apabila butang ini aktif, anda boleh menetapkan tahap warna input kemuncak dengan klik kanan warna dalam tetingkap pratonton.</translation>
+<original>channel</original>
+<translation>saluran</translation>
 </phrase>
 
 <phrase>
@@ -5624,11 +5758,16 @@ If anda memilih untuk melumpuhkan ciri ini, anda sentiasa boleh melawat photodem
 </phrase>
 
 <phrase>
+<original>RGB</original>
+<translation>RGB</translation>
+</phrase>
+
+<phrase>
 <original>Mapping new image levels</original>
 <translation>Pemetaan tahap imej baru</translation>
 </phrase>
 
-<!-- VBP_FormImageLevels.frm contains 12 phrases. 4 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- VBP_FormImageLevels.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for VBP_FormImageLevels.frm-->
 
@@ -6025,6 +6164,11 @@ To meningkatkan pengalaman pengguna anda, sila membenarkan program untuk memuat 
 </phrase>
 
 <phrase>
+<original>Verifying plugin URL</original>
+<translation>Mengesahkan URL plugin</translation>
+</phrase>
+
+<phrase>
 <original>%1 could not locate the plugin server.  Please double-check your Internet connection.  If the problem persists, please try again at another time.</original>
 <translation> %1 tidak dapat mencari pelayan plugin. Sila semak sambungan internet anda. Jika masalah berterusan, sila cuba lagi di masa yang lain.</translation>
 </phrase>
@@ -6054,7 +6198,7 @@ To meningkatkan pengalaman pengguna anda, sila membenarkan program untuk memuat 
 <translation>Jumlah saiz muat turun</translation>
 </phrase>
 
-<!-- VBP_FormPluginDownloader.frm contains 67 phrases. 19 were duplicates of existing phrases, so only 48 new phrases were written to file. -->
+<!-- VBP_FormPluginDownloader.frm contains 70 phrases. 21 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPluginDownloader.frm-->
 
@@ -6073,11 +6217,31 @@ To meningkatkan pengalaman pengguna anda, sila membenarkan program untuk memuat 
 <!-- BEGIN text for vbalHookControl.ctl -->
 
 <phrase>
+<original>Alt</original>
+<translation>alt</translation>
+</phrase>
+
+<phrase>
+<original>Enter</original>
+<translation>Masukkan</translation>
+</phrase>
+
+<phrase>
+<original>Page Up</original>
+<translation>Page Up</translation>
+</phrase>
+
+<phrase>
+<original>Page Down</original>
+<translation>Page Down</translation>
+</phrase>
+
+<phrase>
 <original>Failed to initialize custom hotkey handler.</original>
 <translation>Gagal memulakan pengendali hotkey adat.</translation>
 </phrase>
 
-<!-- vbalHookControl.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<!-- vbalHookControl.ctl contains 13 phrases. 8 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for vbalHookControl.ctl-->
 
@@ -6109,94 +6273,19 @@ To meningkatkan pengalaman pengguna anda, sila membenarkan program untuk memuat 
 
 <!-- END text for VBP_FormWhiteBalance.frm-->
 
-<!-- BEGIN text for VBP_FormSoftwareUpdates.frm (FormSoftwareUpdate) -->
-
-<phrase>
-<original>Update Notifier</original>
-<translation>update Pemberitahu</translation>
-</phrase>
-
-<phrase>
-<original>PhotoDemon website</original>
-<translation>laman web PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>Not now, not ever.  Do not prompt me about future updates.</original>
-<translation>Tidak sekarang, tidak pernah. Jangan meminta saya tentang kemas kini masa hadapan.</translation>
-</phrase>
-
-<phrase>
-<original>Not right now, but please remind me again in the future.</original>
-<translation>Bukan sekarang, tetapi sila mengingatkan saya sekali lagi pada masa akan datang.</translation>
-</phrase>
-
-<phrase>
-<original>&Yes!  Take me to the download page.</original>
-<translation>Ya! Bawa saya ke laman muat turun.</translation>
-</phrase>
-
-<phrase>
-<original>Do you want to download the new version?</original>
-<translation>Adakah anda ingin memuat turun versi baru?</translation>
-</phrase>
-
-<phrase>
-<original>To learn about the latest version before downloading, please visit</original>
-<translation>Untuk mengetahui tentang versi terbaru sebelum sebarang muat turun, sila layari</translation>
-</phrase>
-
-<phrase>
-<original>Newest version</original>
-<translation>Versi terbaru</translation>
-</phrase>
-
-<phrase>
-<original>Your version</original>
-<translation>versi</translation>
-</phrase>
-
-<phrase>
-<original>A new version of PhotoDemon is available!</original>
-<translation>Versi baru PhotoDemon boleh didapati!</translation>
-</phrase>
-
-<phrase>
-<original>Automatic update canceled.</original>
-<translation>Kemas kini automatik dibatalkan.</translation>
-</phrase>
-
-<phrase>
-<original>The next time you launch the program, it will remind you about this software update.
-
-Note: you can always manually download the latest version by visiting photodemon.org.</original>
-<translation>Lain kali anda memulakan program ini, ia akan mengingatkan anda mengenai update.
-
-Note perisian ini: anda boleh sentiasa manual memuat turun versi terkini dengan melawat photodemon.org.</translation>
-</phrase>
-
-<phrase>
-<original>Thanks for downloading the latest PhotoDemon update.  Hope you enjoy it!</original>
-<translation>Terima kasih kerana memuat turun PhotoDemon update terkini. Berharap anda menikmati!</translation>
-</phrase>
-
-<phrase>
-<original>What's new in PhotoDemon</original>
-<translation>Apa yang baru dalam PhotoDemon</translation>
-</phrase>
-
-<!-- VBP_FormSoftwareUpdates.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
-
-<!-- END text for VBP_FormSoftwareUpdates.frm-->
-
 <!-- BEGIN text for VBP_SoftwareUpdater.bas -->
 
 <phrase>
-<original>Update check postponed (a check has been performed in the last 10 days)</original>
-<translation>Semakan kemas kini ditangguhkan (cek telah dijalankan dalam tempoh 10 hari lepas)</translation>
+<original>Update check postponed (a check has been performed recently)</original>
+<translation>Semakan kemas kini ditangguhkan (cek telah dijalankan baru-baru ini)</translation>
 </phrase>
 
-<!-- VBP_SoftwareUpdater.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
+<phrase>
+<original>%1.%2 Beta %3</original>
+<translation> %1. %2 %3 Beta</translation>
+</phrase>
+
+<!-- VBP_SoftwareUpdater.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_SoftwareUpdater.bas-->
 
@@ -6428,22 +6517,7 @@ Note perisian ini: anda boleh sentiasa manual memuat turun versi terkini dengan 
 <translation>Fail pilihan yang diminta tidak boleh ditempat. Beban Pemilihan terbengkalai.</translation>
 </phrase>
 
-<phrase>
-<original>Inverting selection</original>
-<translation>pemilihan menyongsang</translation>
-</phrase>
-
-<phrase>
-<original>Selection inversion complete.</original>
-<translation>Pemilihan penyongsangan lengkap.</translation>
-</phrase>
-
-<phrase>
-<original>Finding new selection boundaries</original>
-<translation>Mencari sempadan pemilihan baru</translation>
-</phrase>
-
-<!-- pdSelection.cls contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- pdSelection.cls contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdSelection.cls-->
 
@@ -6548,6 +6622,11 @@ Please masukkan nilai berangka.</translation>
 </phrase>
 
 <phrase>
+<original>Fade last action</original>
+<translation>Fade tindakan lepas</translation>
+</phrase>
+
+<phrase>
 <original>Please load or import an image to begin editing.</original>
 <translation>Sila memuatkan atau mengimport imej untuk memulakan penyuntingan.</translation>
 </phrase>
@@ -6560,6 +6639,16 @@ Please masukkan nilai berangka.</translation>
 <phrase>
 <original>Fade: %1</original>
 <translation>Pudar: %1</translation>
+</phrase>
+
+<phrase>
+<original>Undo last action</original>
+<translation>Buat asal tindakan</translation>
+</phrase>
+
+<phrase>
+<original>Redo previous action</original>
+<translation>Buat semula tindakan sebelumnya</translation>
 </phrase>
 
 <phrase>
@@ -6712,7 +6801,7 @@ Please masukkan nilai berangka.</translation>
 <translation>kilauan</translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 54 phrases. 20 were duplicates of existing phrases, so only 34 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 59 phrases. 22 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -7413,8 +7502,8 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for VBP_FormAlphaCutoff.frm (dialog_AlphaCutoff) -->
 
 <phrase>
-<original>Please Choose A Transparency Threshold</original>
-<translation>Sila Pilih A Ambang Ketelusan</translation>
+<original>Please choose a transparency threshold</original>
+<translation>Sila pilih ambang ketelusan</translation>
 </phrase>
 
 <phrase>
@@ -7762,8 +7851,13 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for VBP_FormSwirl.frm (FormSwirl) -->
 
 <phrase>
-<original>speed</original>
-<translation>kelajuan</translation>
+<original>center position (x, y)</original>
+<translation>kedudukan pusat (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>Note: you can also set a center position by clicking the preview window.</original>
+<translation>Nota: Anda juga boleh menetapkan kedudukan pusat dengan mengklik tetingkap pratonton.</translation>
 </phrase>
 
 <phrase>
@@ -7774,11 +7868,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <phrase>
 <original>radius (percentage)</original>
 <translation>jejari (peratusan)</translation>
-</phrase>
-
-<phrase>
-<original>render emphasis</original>
-<translation>menyebabkan penekanan</translation>
 </phrase>
 
 <phrase>
@@ -7798,16 +7887,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for VBP_FormLens.frm (FormLens) -->
 
 <phrase>
-<original>Note: you can also set a center position by clicking the preview window.</original>
-<translation>Nota: Anda juga boleh menetapkan kedudukan pusat dengan mengklik tetingkap pratonton.</translation>
-</phrase>
-
-<phrase>
-<original>center position (x, y)</original>
-<translation>kedudukan pusat (x, y)</translation>
-</phrase>
-
-<phrase>
 <original>lens strength (refractive index)</original>
 <translation>kekuatan kanta (indeks biasan)</translation>
 </phrase>
@@ -7817,20 +7896,15 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Mengunjurkan imej melalui kanta simulasi</translation>
 </phrase>
 
-<!-- VBP_FormLens.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- VBP_FormLens.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormLens.frm-->
 
 <!-- BEGIN text for VBP_FormRipple.frm (FormRipple) -->
 
 <phrase>
-<original>Set a new center position by clicking the preview window</original>
-<translation>Tetapkan kedudukan pusat yang baru dengan mengklik tetingkap pratonton</translation>
-</phrase>
-
-<phrase>
-<original>time (phase)</original>
-<translation>masa (fasa)</translation>
+<original>length of ripples (wavelength)</original>
+<translation>panjang riak (panjang gelombang)</translation>
 </phrase>
 
 <phrase>
@@ -7839,8 +7913,13 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>length of ripples (wavelength)</original>
-<translation>panjang riak (panjang gelombang)</translation>
+<original>time (phase)</original>
+<translation>masa (fasa)</translation>
+</phrase>
+
+<phrase>
+<original>options</original>
+<translation>pilihan</translation>
 </phrase>
 
 <phrase>
@@ -7848,7 +7927,17 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Simulasi riak di permukaan imej</translation>
 </phrase>
 
-<!-- VBP_FormRipple.frm contains 13 phrases. 8 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<phrase>
+<original>basic</original>
+<translation>asas</translation>
+</phrase>
+
+<phrase>
+<original>advanced</original>
+<translation>maju</translation>
+</phrase>
+
+<!-- VBP_FormRipple.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for VBP_FormRipple.frm-->
 
@@ -7869,7 +7958,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Mencubit dan Pusaran imej</translation>
 </phrase>
 
-<!-- VBP_FormPinch.frm contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_FormPinch.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPinch.frm-->
 
@@ -7900,7 +7989,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Mencelup imej dalam kolam gelombang maya</translation>
 </phrase>
 
-<!-- VBP_FormWaves.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- VBP_FormWaves.frm contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_FormWaves.frm-->
 
@@ -7921,7 +8010,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Mengunjurkan imej melalui kaca simulasi</translation>
 </phrase>
 
-<!-- VBP_FormFiguredGlass.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_FormFiguredGlass.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_FormFiguredGlass.frm-->
 
@@ -7943,20 +8032,25 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>menunjukkan kesan pratonton</translation>
 </phrase>
 
-<!-- fxPreview.ctl contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>show original image (alt+t)</original>
+<translation>menunjukkan imej asal (alt t)</translation>
+</phrase>
+
+<!-- fxPreview.ctl contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for fxPreview.ctl-->
 
 <!-- BEGIN text for VBP_FormKaleidoscope.frm (FormKaleidoscope) -->
 
 <phrase>
-<original>secondary angle</original>
-<translation>sudut menengah</translation>
+<original>render emphasis</original>
+<translation>menyebabkan penekanan</translation>
 </phrase>
 
 <phrase>
-<original>number of mirrors</original>
-<translation>beberapa cermin</translation>
+<original>secondary angle</original>
+<translation>sudut menengah</translation>
 </phrase>
 
 <phrase>
@@ -7965,11 +8059,21 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
+<original>number of mirrors</original>
+<translation>beberapa cermin</translation>
+</phrase>
+
+<phrase>
 <original>Peering at image through imaginary kaleidoscope</original>
 <translation>Mengintip pada imej melalui kaleidoskop khayalan</translation>
 </phrase>
 
-<!-- VBP_FormKaleidoscope.frm contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<phrase>
+<original>speed</original>
+<translation>kelajuan</translation>
+</phrase>
+
+<!-- VBP_FormKaleidoscope.frm contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for VBP_FormKaleidoscope.frm-->
 
@@ -8017,21 +8121,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for VBP_FormGaussianBlur.frm (FormGaussianBlur) -->
 
 <phrase>
-<original>good</original>
-<translation>baik</translation>
-</phrase>
-
-<phrase>
-<original>better</original>
-<translation>lebih baik</translation>
-</phrase>
-
-<phrase>
-<original>best</original>
-<translation>terbaik</translation>
-</phrase>
-
-<phrase>
 <original>blur radius</original>
 <translation>jejari kabur</translation>
 </phrase>
@@ -8046,21 +8135,26 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>AMARAN! Alat ini adalah sangat perlahan apabila digunakan di dalam IDE. Sila menyusun untuk hasil yang terbaik.</translation>
 </phrase>
 
+<phrase>
+<original>good</original>
+<translation>baik</translation>
+</phrase>
+
+<phrase>
+<original>better</original>
+<translation>lebih baik</translation>
+</phrase>
+
+<phrase>
+<original>best</original>
+<translation>terbaik</translation>
+</phrase>
+
 <!-- VBP_FormGaussianBlur.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for VBP_FormGaussianBlur.frm-->
 
 <!-- BEGIN text for VBP_FormSmartBlur.frm (FormSurfaceBlur) -->
-
-<phrase>
-<original>smooth areas</original>
-<translation>kawasan licin</translation>
-</phrase>
-
-<phrase>
-<original>edges</original>
-<translation>tepi</translation>
-</phrase>
 
 <phrase>
 <original>apply blur to</original>
@@ -8078,11 +8172,21 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>Applying smart blur</original>
-<translation>Memohon kabur pintar</translation>
+<original>Applying surface blur</original>
+<translation></translation>
 </phrase>
 
-<!-- VBP_FormSmartBlur.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<phrase>
+<original>smooth areas</original>
+<translation>kawasan licin</translation>
+</phrase>
+
+<phrase>
+<original>edges</original>
+<translation>tepi</translation>
+</phrase>
+
+<!-- VBP_FormSmartBlur.frm contains 13 phrases. 7 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for VBP_FormSmartBlur.frm-->
 
@@ -8119,7 +8223,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Memohon topeng unsharp (Langkah %1 daripada %2)</translation>
 </phrase>
 
-<!-- VBP_FormUnsharpMask.frm contains 9 phrases. 7 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- VBP_FormUnsharpMask.frm contains 13 phrases. 11 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormUnsharpMask.frm-->
 
@@ -8150,7 +8254,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Membetulkan herotan imej</translation>
 </phrase>
 
-<!-- VBP_FormLensCorrect.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- VBP_FormLensCorrect.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_FormLensCorrect.frm-->
 
@@ -8162,13 +8266,18 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <!-- BEGIN text for smartOptionButton.ctl -->
 
-<!-- smartOptionButton.ctl contains 0 phrases. -->
+<phrase>
+<original>caption</original>
+<translation>kapsyen</translation>
+</phrase>
+
+<!-- smartOptionButton.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for smartOptionButton.ctl-->
 
 <!-- BEGIN text for smartCheckBox.ctl -->
 
-<!-- smartCheckBox.ctl contains 0 phrases. -->
+<!-- smartCheckBox.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for smartCheckBox.ctl-->
 
@@ -8211,21 +8320,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>shadows</original>
-<translation>bayang-bayang</translation>
-</phrase>
-
-<phrase>
-<original>midtones</original>
-<translation>midtones</translation>
-</phrase>
-
-<phrase>
-<original>highlights</original>
-<translation>acara kemuncak</translation>
-</phrase>
-
-<phrase>
 <original>preserve luminance</original>
 <translation>memelihara luminance</translation>
 </phrase>
@@ -8243,6 +8337,21 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <phrase>
 <original>Adjusting color balance</original>
 <translation>Melaraskan keseimbangan warna</translation>
+</phrase>
+
+<phrase>
+<original>shadows</original>
+<translation>bayang-bayang</translation>
+</phrase>
+
+<phrase>
+<original>midtones</original>
+<translation>midtones</translation>
+</phrase>
+
+<phrase>
+<original>highlights</original>
+<translation>acara kemuncak</translation>
 </phrase>
 
 <!-- VBP_FormColorBalance.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -8878,6 +8987,11 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
+<original>Step 5: wait for batch processing to finish</original>
+<translation>Langkah 5: menunggu pemprosesan kelompok untuk menyelesaikan</translation>
+</phrase>
+
+<phrase>
 <original>Batch processing is now underway.</original>
 <translation>Pemprosesan kelompok kini dijalankan.</translation>
 </phrase>
@@ -9036,7 +9150,7 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <translation>diproses sebelum pembatalan. Last imej diproses adalah " %1".</translation>
 </phrase>
 
-<!-- VBP_FormBatchWizard.frm contains 265 phrases. 144 were duplicates of existing phrases, so only 121 new phrases were written to file. -->
+<!-- VBP_FormBatchWizard.frm contains 260 phrases. 138 were duplicates of existing phrases, so only 122 new phrases were written to file. -->
 
 <!-- END text for VBP_FormBatchWizard.frm-->
 
@@ -9057,7 +9171,7 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <translation>imej ricih</translation>
 </phrase>
 
-<!-- VBP_FormShear.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_FormShear.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_FormShear.frm-->
 
@@ -9068,7 +9182,7 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <translation>imej memerah</translation>
 </phrase>
 
-<!-- VBP_FormSquish.frm contains 9 phrases. 8 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- VBP_FormSquish.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for VBP_FormSquish.frm-->
 
@@ -9114,13 +9228,13 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <translation>bawah-kiri</translation>
 </phrase>
 
-<!-- VBP_FormPerspective.frm contains 18 phrases. 10 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- VBP_FormPerspective.frm contains 16 phrases. 8 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPerspective.frm-->
 
 <!-- BEGIN text for textSliderCombo.ctl -->
 
-<!-- textSliderCombo.ctl contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<!-- textSliderCombo.ctl contains 0 phrases. -->
 
 <!-- END text for textSliderCombo.ctl-->
 
@@ -9200,6 +9314,11 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 </phrase>
 
 <phrase>
+<original>This file format does not support metadata.  Metadata processing skipped.</original>
+<translation>Format fail tidak menyokong metadata. Pemprosesan Metadata dilangkau.</translation>
+</phrase>
+
+<phrase>
 <original>ExifTool initiated successfully.  Ready to process metadata.</original>
 <translation>ExifTool dimulakan dengan jayanya. Bersedia untuk memproses metadata.</translation>
 </phrase>
@@ -9224,23 +9343,73 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <translation>Gagal untuk memulakan perkhidmatan plugin (tidak boleh mewujudkan proses: %1).</translation>
 </phrase>
 
-<!-- VBP_ExifToolInterface.bas contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<!-- VBP_ExifToolInterface.bas contains 8 phrases.  One was a duplicate of an existing phrase, so only 7 new phrases were written to file. -->
 
 <!-- END text for VBP_ExifToolInterface.bas-->
 
 <!-- BEGIN text for VBP_FormMetadata.frm (FormMetadata) -->
 
 <phrase>
-<original>use readable names</original>
-<translation>menggunakan nama-nama yang boleh dibaca</translation>
+<original>Generate full metadata report (HTML)</original>
+<translation>Menjana laporan metadata penuh (HTML)</translation>
 </phrase>
 
 <phrase>
-<original>use readable values</original>
-<translation>menggunakan nilai-nilai yang boleh dibaca</translation>
+<original>metadata options</original>
+<translation>pilihan metadata</translation>
 </phrase>
 
-<!-- VBP_FormMetadata.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>tag values</original>
+<translation>nilai tag</translation>
+</phrase>
+
+<phrase>
+<original>tag names</original>
+<translation>nama tag</translation>
+</phrase>
+
+<phrase>
+<original>tags in this category</original>
+<translation>tag dalam kategori ini</translation>
+</phrase>
+
+<phrase>
+<original>metadata groups in this image</original>
+<translation>kumpulan metadata dalam imej ini</translation>
+</phrase>
+
+<phrase>
+<original>1 tag in this category</original>
+<translation>1 tanda dalam kategori ini</translation>
+</phrase>
+
+<phrase>
+<original>%1 tags in this category</original>
+<translation> %1 tag dalam kategori ini</translation>
+</phrase>
+
+<phrase>
+<original>simple</original>
+<translation>mudah</translation>
+</phrase>
+
+<phrase>
+<original>technical</original>
+<translation>teknikal</translation>
+</phrase>
+
+<phrase>
+<original>All metadata information is supplied by the ExifTool plugin.  You can learn more about ExifTool at http://www.sno.phy.queensu.ca/~phil/exiftool/</original>
+<translation>Semua maklumat metadata dibekalkan oleh plugin ExifTool itu. Anda boleh mengetahui lebih lanjut mengenai ExifTool di http://www.sno.phy.queensu.ca/~phil/exiftool/</translation>
+</phrase>
+
+<phrase>
+<original>(encoding unknown)</original>
+<translation>(pengekodan tidak diketahui)</translation>
+</phrase>
+
+<!-- VBP_FormMetadata.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMetadata.frm-->
 
@@ -9261,7 +9430,7 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <translation>Menggunakan pan dan zum (Ken Burns) Kesan</translation>
 </phrase>
 
-<!-- VBP_FormPanZoom.frm contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_FormPanZoom.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPanZoom.frm-->
 
@@ -9278,15 +9447,15 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <translation>imej menyodok</translation>
 </phrase>
 
-<!-- VBP_FormPoke.frm contains 10 phrases. 9 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- VBP_FormPoke.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for VBP_FormPoke.frm-->
 
 <!-- BEGIN text for VBP_FormSpherize.frm (FormSpherize) -->
 
 <phrase>
-<original>fill exterior with matching light rays</original>
-<translation>mengisi luaran dengan padanan sinar cahaya</translation>
+<original>area outside sphere</original>
+<translation>kawasan di luar sfera</translation>
 </phrase>
 
 <phrase>
@@ -9304,7 +9473,17 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <translation>Membungkus imej di sekeliling sfera</translation>
 </phrase>
 
-<!-- VBP_FormSpherize.frm contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<phrase>
+<original>empty</original>
+<translation>kosong</translation>
+</phrase>
+
+<phrase>
+<original>rays of light</original>
+<translation>sinar cahaya</translation>
+</phrase>
+
+<!-- VBP_FormSpherize.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for VBP_FormSpherize.frm-->
 
@@ -9766,7 +9945,7 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <translation>lubang ulat</translation>
 </phrase>
 
-<!-- VBP_FormMiscDistorts.frm contains 24 phrases. 13 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- VBP_FormMiscDistorts.frm contains 22 phrases. 11 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMiscDistorts.frm-->
 
@@ -9775,6 +9954,16 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <phrase>
 <original>monochrome</original>
 <translation>monokrom</translation>
+</phrase>
+
+<phrase>
+<original>input channel(s)</original>
+<translation>saluran input (s)</translation>
+</phrase>
+
+<phrase>
+<original>options for all channels</original>
+<translation>pilihan untuk semua saluran</translation>
 </phrase>
 
 <phrase>
@@ -9792,7 +9981,7 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <translation>Mencampurkan saluran warna</translation>
 </phrase>
 
-<!-- VBP_FormChannelMixer.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- VBP_FormChannelMixer.frm contains 15 phrases. 9 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for VBP_FormChannelMixer.frm-->
 
@@ -9903,6 +10092,16 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 </phrase>
 
 <phrase>
+<original>Inverting selection</original>
+<translation>pemilihan menyongsang</translation>
+</phrase>
+
+<phrase>
+<original>Selection inversion complete.</original>
+<translation>Pemilihan penyongsangan lengkap.</translation>
+</phrase>
+
+<phrase>
 <original>Feathering complete.</original>
 <translation>Bulu-bulu yang lengkap.</translation>
 </phrase>
@@ -9932,7 +10131,7 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <translation>Mencari pilihan sempadan</translation>
 </phrase>
 
-<!-- VBP_SelectionHandler.bas contains 42 phrases. 24 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- VBP_SelectionHandler.bas contains 44 phrases. 24 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for VBP_SelectionHandler.bas-->
 
@@ -9996,18 +10195,23 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <!-- BEGIN text for VBP_FormCurves.frm (FormCurves) -->
 
 <phrase>
-<original>display grid</original>
-<translation>paparan grid</translation>
+<original>original curve (diagonal line)</original>
+<translation>lengkung asal (garis pepenjuru)</translation>
 </phrase>
 
 <phrase>
-<original>display original curve (diagonal line)</original>
-<translation>memaparkan lengkung asal (garis pepenjuru)</translation>
+<original>grid</original>
+<translation>grid</translation>
 </phrase>
 
 <phrase>
 <original>histogram overlay</original>
 <translation>histogram overlay</translation>
+</phrase>
+
+<phrase>
+<original>display</original>
+<translation>paparan</translation>
 </phrase>
 
 <phrase>
@@ -10041,6 +10245,21 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 </phrase>
 
 <phrase>
+<original>on</original>
+<translation>pada</translation>
+</phrase>
+
+<phrase>
+<original>off</original>
+<translation>off</translation>
+</phrase>
+
+<phrase>
+<original>tool</original>
+<translation>alat</translation>
+</phrase>
+
+<phrase>
 <original>input</original>
 <translation>input</translation>
 </phrase>
@@ -10050,7 +10269,7 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <translation>output</translation>
 </phrase>
 
-<!-- VBP_FormCurves.frm contains 23 phrases. 12 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- VBP_FormCurves.frm contains 31 phrases. 16 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for VBP_FormCurves.frm-->
 
@@ -10147,58 +10366,18 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <!-- BEGIN text for commandBar.ctl -->
 
 <phrase>
-<original>Randomize</original>
-<translation>Rawakkan</translation>
-</phrase>
-
-<phrase>
-<original>Save preset</original>
-<translation>Simpan pratetap</translation>
-</phrase>
-
-<phrase>
-<original>Reset</original>
-<translation>menetapkan semula</translation>
-</phrase>
-
-<phrase>
 <original>Saving preset</original>
 <translation>menyimpan pratetap</translation>
 </phrase>
 
 <phrase>
-<original>Before saving, please enter a name for this preset (in the box next to the save button).</original>
-<translation>Sebelum penjimatan, sila masukkan nama untuk pratetap ini (di dalam kotak di sebelah butang simpan).</translation>
-</phrase>
-
-<phrase>
-<original>Preset name required</original>
-<translation>Nama pratetap yang dikehendaki</translation>
-</phrase>
-
-<phrase>
-<original>(enter name here)</original>
-<translation>(masukkan nama di sini)</translation>
+<original>Preset saved.</original>
+<translation>Pratetap disimpan.</translation>
 </phrase>
 
 <phrase>
 <original>Preset save canceled.</original>
 <translation>Pratetap save dibatalkan.</translation>
-</phrase>
-
-<phrase>
-<original>A preset with this name already exists.  Do you want to overwrite it?</original>
-<translation>A pratetap dengan nama ini telah wujud. Adakah anda mahu tindih?</translation>
-</phrase>
-
-<phrase>
-<original>Overwrite existing preset</original>
-<translation>Tulis ganti preset yang sedia ada</translation>
-</phrase>
-
-<phrase>
-<original>Preset saved.</original>
-<translation>Pratetap disimpan.</translation>
 </phrase>
 
 <phrase>
@@ -10217,13 +10396,28 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 </phrase>
 
 <phrase>
+<original>Reset</original>
+<translation>menetapkan semula</translation>
+</phrase>
+
+<phrase>
 <original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
 <translation>Secara rawak memilih tetapan baru untuk alat ini. Ini adalah berguna untuk meneroka bagaimana tetapan yang berbeza memberi kesan kepada imej.</translation>
 </phrase>
 
 <phrase>
-<original>Save the current settings as a preset.  Please enter a descriptive preset name before saving.</original>
-<translation>Simpan tetapan semasa pratetap. Sila masukkan nama pratetap deskriptif sebelum menyimpan.</translation>
+<original>Randomize</original>
+<translation>Rawakkan</translation>
+</phrase>
+
+<phrase>
+<original>Save the current settings as a new preset.</original>
+<translation>Simpan tetapan semasa sebagai pratetap baru.</translation>
+</phrase>
+
+<phrase>
+<original>Save preset</original>
+<translation>Simpan pratetap</translation>
 </phrase>
 
 <phrase>
@@ -10231,12 +10425,7 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <translation>Sebelum ini disimpan pratetap boleh dipilih di sini. Anda boleh menyimpan tetapan semasa sebagai pratetap baru dengan mengklik butang Simpan Pratetap di sebelah kanan.</translation>
 </phrase>
 
-<phrase>
-<original>This tool's preset file may be corrupted.  A new preset file has been created.</original>
-<translation>Fail pratetap Alat ini boleh rosak. Fail pratetap baru telah diwujudkan.</translation>
-</phrase>
-
-<!-- commandBar.ctl contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- commandBar.ctl contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for commandBar.ctl-->
 
@@ -10318,6 +10507,11 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <!-- BEGIN text for VBP_FormZoomBlur.frm (FormZoomBlur) -->
 
 <phrase>
+<original>Applying zoom blur</original>
+<translation>Memohon kabur zoom</translation>
+</phrase>
+
+<phrase>
 <original>modern</original>
 <translation>moden</translation>
 </phrase>
@@ -10325,11 +10519,6 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <phrase>
 <original>traditional</original>
 <translation>tradisional</translation>
-</phrase>
-
-<phrase>
-<original>Applying zoom blur</original>
-<translation>Memohon kabur zoom</translation>
 </phrase>
 
 <!-- VBP_FormZoomBlur.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -10481,6 +10670,16 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <phrase>
 <original>Automatic translation complete!</original>
 <translation>Terjemahan automatik lengkap!</translation>
+</phrase>
+
+<phrase>
+<original>Automatic translations were interrupted (the translation object stopped responding).  The existing work has been auto-saved.</original>
+<translation>Terjemahan automatik terganggu (objek terjemahan berhenti bertindak balas). Kerja-kerja yang sedia ada telah automatik disimpan.</translation>
+</phrase>
+
+<phrase>
+<original>Translations interrupted</original>
+<translation>Penterjemahan terganggu</translation>
 </phrase>
 
 <phrase>
@@ -10739,7 +10938,7 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <translation>disimpan secara automatik pada</translation>
 </phrase>
 
-<!-- VBP_FormLanguageEditor.frm contains 135 phrases. 58 were duplicates of existing phrases, so only 77 new phrases were written to file. -->
+<!-- VBP_FormLanguageEditor.frm contains 137 phrases. 58 were duplicates of existing phrases, so only 79 new phrases were written to file. -->
 
 <!-- END text for VBP_FormLanguageEditor.frm-->
 
@@ -10777,14 +10976,134 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 
 <!-- END text for pdLastUsedSettings.cls-->
 
-<!-- BEGIN text for VBP_ToolbarPrimary.frm (toolbar_File) -->
+<!-- BEGIN text for VBP_ToolbarPrimary.frm (toolbar_Toolbox) -->
+
+<phrase>
+<original>file</original>
+<translation>fail</translation>
+</phrase>
+
+<phrase>
+<original>undo</original>
+<translation>buat asal</translation>
+</phrase>
+
+<phrase>
+<original>non-destructive</original>
+<translation>tidak memusnahkan</translation>
+</phrase>
+
+<phrase>
+<original>selection</original>
+<translation>pilihan</translation>
+</phrase>
 
 <phrase>
 <original>macro recording in progress</original>
 <translation>rakaman makro dijalankan</translation>
 </phrase>
 
-<!-- VBP_ToolbarPrimary.frm contains 14 phrases. 13 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.</original>
+<translation>Pilihan ini akan mewujudkan satu imej kosong. Cara lain untuk mendapatkan imej baru boleh didapati dalam File -> menu Import.</translation>
+</phrase>
+
+<phrase>
+<original>New Image</original>
+<translation>New Image</translation>
+</phrase>
+
+<phrase>
+<original>Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.</original>
+<translation>Satu lagi cara untuk membuka imej yang menyeret mereka dari desktop anda atau Windows Explorer dan menjatuhkan mereka pada PhotoDemon.</translation>
+</phrase>
+
+<phrase>
+<original>Open one or more images for editing</original>
+<translation>Buka satu atau lebih banyak imej untuk mengedit</translation>
+</phrase>
+
+<phrase>
+<original>WARNING: this will overwrite the current image file.  To save to a different file, use the "Save As" button.</original>
+<translation>AMARAN: ini akan menulis ganti fail imej semasa. Untuk menyimpan ke fail yang berbeza, menggunakan "Save As" butang.</translation>
+</phrase>
+
+<phrase>
+<original>Save image in current format</original>
+<translation>Simpan imej dalam format semasa</translation>
+</phrase>
+
+<phrase>
+<original>You have specified "safe" save mode, which means that each save will create a new file with an auto-incremented filename.</original>
+<translation>Anda telah menyatakan "selamat" mod jimat, yang bermaksud bahawa setiap menjimatkan akan mencipta fail baru dengan nama fail auto-incremented.</translation>
+</phrase>
+
+<phrase>
+<original>Use this to quickly save a lossless copy of the current image.  The lossless copy will be saved in PDI format, in the image's current folder, using the current filename (plus an auto-incremented number, as necessary).</original>
+<translation>Gunakan ini untuk cepat menyimpan salinan Lossless imej semasa. Salinan Lossless akan disimpan dalam format PDI, dalam folder semasa imej, menggunakan nama fail semasa (ditambah dengan jumlah auto-incremented, seperti yang diperlukan).</translation>
+</phrase>
+
+<phrase>
+<original>Save lossless copy</original>
+<translation>Simpan salinan Lossless</translation>
+</phrase>
+
+<phrase>
+<original>The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image.</original>
+<translation>Arahan Simpan Seperti biasa menimbulkan dialog, jadi anda boleh menetapkan baru nama fail, folder, dan/atau format imej untuk imej semasa.</translation>
+</phrase>
+
+<phrase>
+<original>Save As (export to new format or filename)</original>
+<translation>Save As (eksport ke format baru atau nama fail)</translation>
+</phrase>
+
+<phrase>
+<original>Hand (click-and-drag image scrolling)</original>
+<translation>Tangan (klik-dan-seret imej menatal)</translation>
+</phrase>
+
+<phrase>
+<original>Move and resize image layers</original>
+<translation>Bergerak dan mengubah saiz imej lapisan</translation>
+</phrase>
+
+<phrase>
+<original>Apply non-destructive lighting adjustments</original>
+<translation>Memohon pelarasan lampu tidak memusnahkan</translation>
+</phrase>
+
+<phrase>
+<original>Rectangular Selection</original>
+<translation>Pemilihan segi empat tepat</translation>
+</phrase>
+
+<phrase>
+<original>Elliptical (Oval) Selection</original>
+<translation>Elips (Oval) Pemilihan</translation>
+</phrase>
+
+<phrase>
+<original>Line Selection</original>
+<translation>Pemilihan talian</translation>
+</phrase>
+
+<phrase>
+<original>Polygon Selection</original>
+<translation>Polygon Pemilihan</translation>
+</phrase>
+
+<phrase>
+<original>Lasso (Freehand) Selection</original>
+<translation>Lasso (freehand) Pemilihan</translation>
+</phrase>
+
+<phrase>
+<original>Magic Wand Selection</original>
+<translation>Magic Wand Pemilihan</translation>
+</phrase>
+
+<!-- VBP_ToolbarPrimary.frm contains 42 phrases. 17 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarPrimary.frm-->
 
@@ -10794,7 +11113,7 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 
 <!-- END text for pdWindowManager.cls-->
 
-<!-- BEGIN text for VBP_ToolbarTools.frm (toolbar_Tools) -->
+<!-- BEGIN text for VBP_ToolbarTools.frm (toolbar_Options) -->
 
 <phrase>
 <original>Tools</original>
@@ -10802,43 +11121,8 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>show layer borders</original>
-<translation>sempadan lapisan persembahan</translation>
-</phrase>
-
-<phrase>
-<original>show layer transform nodes</original>
-<translation>lapisan persembahan mengubah nod</translation>
-</phrase>
-
-<phrase>
-<original>automatically activate layer beneath mouse</original>
-<translation>secara automatik mengaktifkan lapisan bawah tetikus</translation>
-</phrase>
-
-<phrase>
-<original>ignore transparent pixels when auto-activating layers</original>
-<translation>mengabaikan piksel telus apabila auto-mengaktifkan lapisan</translation>
-</phrase>
-
-<phrase>
-<original>interaction options</original>
-<translation>pilihan interaksi</translation>
-</phrase>
-
-<phrase>
-<original>display options</original>
-<translation>pilihan paparan</translation>
-</phrase>
-
-<phrase>
-<original>This option controls the selection's area.  You can switch between the three settings without losing the current selection.</original>
-<translation>Opsyen ini mengawal kawasan pemilihan ini. Anda boleh bertukar antara tiga tetapan tanpa kehilangan pilihan semasa.</translation>
-</phrase>
-
-<phrase>
-<original>Use this option to change the way selections blend with their surroundings.</original>
-<translation>Gunakan opsyen ini untuk mengubah cara pemilihan campuran dengan persekitaran mereka.</translation>
+<original>smoothing</original>
+<translation>pelicinan</translation>
 </phrase>
 
 <phrase>
@@ -10847,8 +11131,8 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>size (w, h)</original>
-<translation>saiz (w, h)</translation>
+<original>corner rounding</original>
+<translation>sudut pembundaran</translation>
 </phrase>
 
 <phrase>
@@ -10857,8 +11141,8 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>corner rounding</original>
-<translation>sudut pembundaran</translation>
+<original>size (w, h)</original>
+<translation>saiz (w, h)</translation>
 </phrase>
 
 <phrase>
@@ -10867,8 +11151,38 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>smoothing</original>
-<translation>pelicinan</translation>
+<original>sampling area</original>
+<translation>kawasan persampelan</translation>
+</phrase>
+
+<phrase>
+<original>tolerance</original>
+<translation>toleransi</translation>
+</phrase>
+
+<phrase>
+<original>stroke smoothing</original>
+<translation>strok pelicinan</translation>
+</phrase>
+
+<phrase>
+<original>curvature</original>
+<translation>kelengkungan</translation>
+</phrase>
+
+<phrase>
+<original>line width</original>
+<translation>lebar talian</translation>
+</phrase>
+
+<phrase>
+<original>2nd point (x, y)</original>
+<translation>2 titik (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>1st point (x, y)</original>
+<translation>1 titik (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -10892,18 +11206,33 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>quick fix</original>
-<translation>cepat</translation>
+<original>interaction options</original>
+<translation>pilihan interaksi</translation>
 </phrase>
 
 <phrase>
-<original>nav</original>
-<translation>nav</translation>
+<original>show layer borders</original>
+<translation>sempadan lapisan persembahan</translation>
 </phrase>
 
 <phrase>
-<original>selections</original>
-<translation>pilihan</translation>
+<original>show layer transform nodes</original>
+<translation>lapisan persembahan mengubah nod</translation>
+</phrase>
+
+<phrase>
+<original>automatically activate layer beneath mouse</original>
+<translation>secara automatik mengaktifkan lapisan bawah tetikus</translation>
+</phrase>
+
+<phrase>
+<original>ignore transparent pixels when auto-activating layers</original>
+<translation>mengabaikan piksel telus apabila auto-mengaktifkan lapisan</translation>
+</phrase>
+
+<phrase>
+<original>display options</original>
+<translation>pilihan paparan</translation>
 </phrase>
 
 <phrase>
@@ -10912,38 +11241,8 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>Hand (click-and-drag image scrolling)</original>
-<translation>Tangan (klik-dan-seret imej menatal)</translation>
-</phrase>
-
-<phrase>
-<original>Move and resize image layers</original>
-<translation>Bergerak dan mengubah saiz imej lapisan</translation>
-</phrase>
-
-<phrase>
-<original>Rectangular Selection</original>
-<translation>Pemilihan segi empat tepat</translation>
-</phrase>
-
-<phrase>
-<original>Elliptical (Oval) Selection</original>
-<translation>Elips (Oval) Pemilihan</translation>
-</phrase>
-
-<phrase>
-<original>Line Selection</original>
-<translation>Pemilihan talian</translation>
-</phrase>
-
-<phrase>
-<original>Apply non-destructive lighting adjustments</original>
-<translation>Memohon pelarasan lampu tidak memusnahkan</translation>
-</phrase>
-
-<phrase>
-<original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
-<translation>Klik untuk mengubah cara pilihan diberikan ke kanvas imej. Ini tidak berkaitan dengan kandungan pemilihan - hanya cara mereka muncul semasa penyuntingan.</translation>
+<original>Highlight</original>
+<translation>highlight</translation>
 </phrase>
 
 <phrase>
@@ -10952,18 +11251,8 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>Highlight (Blue)</original>
-<translation>Highlight (Blue)</translation>
-</phrase>
-
-<phrase>
-<original>Highlight (Red)</original>
-<translation>Highlight (Merah)</translation>
-</phrase>
-
-<phrase>
-<original>This option controls how smoothly a selection blends with its surroundings.</original>
-<translation>Opsyen ini mengawal bagaimana lancar pilihan menggabungkan dengan persekitarannya.</translation>
+<original>Outline</original>
+<translation>Rangka</translation>
 </phrase>
 
 <phrase>
@@ -10977,11 +11266,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.</original>
-<translation>Pilihan ini mengawal kawasan yang terjejas oleh pilihan. Pemilihan boleh diubah suai di kanvas manakala mana-mana tetapan aktif. Untuk pelarasan pemilihan maju, gunakan menu Pilih.</translation>
-</phrase>
-
-<phrase>
 <original>Interior</original>
 <translation>Dalam Negeri</translation>
 </phrase>
@@ -10989,6 +11273,81 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <phrase>
 <original>Exterior</original>
 <translation>Bahagian Luar</translation>
+</phrase>
+
+<phrase>
+<original>image</original>
+<translation>imej</translation>
+</phrase>
+
+<phrase>
+<original>layer</original>
+<translation>lapisan</translation>
+</phrase>
+
+<phrase>
+<original>contiguous</original>
+<translation>berdampingan</translation>
+</phrase>
+
+<phrase>
+<original>global</original>
+<translation>global</translation>
+</phrase>
+
+<phrase>
+<original>Luminance</original>
+<translation>lar</translation>
+</phrase>
+
+<phrase>
+<original>Red</original>
+<translation>merah</translation>
+</phrase>
+
+<phrase>
+<original>Green</original>
+<translation>hijau</translation>
+</phrase>
+
+<phrase>
+<original>Blue</original>
+<translation>Blue</translation>
+</phrase>
+
+<phrase>
+<original>Alpha</original>
+<translation>Alpha</translation>
+</phrase>
+
+<phrase>
+<original>Reset all quick-fix adjustment values</original>
+<translation>Tetapkan semula semua nilai pelarasan yang cepat</translation>
+</phrase>
+
+<phrase>
+<original>Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.</original>
+<translation>Buat pelarasan yang cepat kekal. Tindakan ini tidak diperlukan, tetapi jika rendering viewport adalah pelarasan yang cepat lembap dan ramai yang aktif, ia boleh meningkatkan prestasi.</translation>
+</phrase>
+
+<phrase>
+<original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
+<translation>Klik untuk mengubah cara pilihan diberikan ke kanvas imej. Ini tidak berkaitan dengan kandungan pemilihan - hanya cara mereka muncul semasa penyuntingan.</translation>
+</phrase>
+
+<phrase>
+<original>This option controls how smoothly a selection blends with its surroundings.</original>
+<translation>Opsyen ini mengawal bagaimana lancar pilihan menggabungkan dengan persekitarannya.</translation>
+</phrase>
+
+<phrase>
+<original>These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.</original>
+<translation>Pilihan ini mengawal kawasan yang terjejas oleh pilihan. Pemilihan boleh diubah suai di kanvas manakala mana-mana tetapan aktif. Untuk pelarasan pemilihan maju, gunakan menu Pilih.</translation>
+</phrase>
+
+<phrase>
+<original>This option adjusts the width of the selection border.</original>
+<translation>Pilihan ini menyesuaikan lebar sempadan pemilihan.</translation>
 </phrase>
 
 <phrase>
@@ -11007,41 +11366,36 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>This option adjusts the width of the selection border.</original>
-<translation>Pilihan ini menyesuaikan lebar sempadan pemilihan.</translation>
+<original>This option adjusts the curvature, if any, of a polygon selection's sides.</original>
+<translation>Pilihan ini menyesuaikan kelengkungan, jika ada, sisi pilihan poligon ini.</translation>
 </phrase>
 
 <phrase>
-<original>Reset all quick-fix adjustment values</original>
-<translation>Tetapkan semula semua nilai pelarasan yang cepat</translation>
+<original>This option increases the smoothness of a hand-drawn lasso selection.</original>
+<translation>Pilihan ini meningkatkan kelancaran pilihan lasso tangan yang ditarik.</translation>
 </phrase>
 
 <phrase>
-<original>Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.</original>
-<translation>Buat pelarasan yang cepat kekal. Tindakan ini tidak diperlukan, tetapi jika rendering viewport adalah pelarasan yang cepat lembap dan ramai yang aktif, ia boleh meningkatkan prestasi.</translation>
+<original>Tolerance controls how similar two pixels must be before adding them to a magic wand selection.</original>
+<translation>Toleransi mengawal bagaimana serupa dua piksel mestilah sebelum menambah mereka untuk pemilihan tongkat sakti.</translation>
 </phrase>
 
 <phrase>
-<original>size (x, y)</original>
-<translation>saiz (x, y)</translation>
+<original>The magic wand can operate on the entire image, or just the active layer.</original>
+<translation>The tongkat sihir boleh beroperasi pada keseluruhan imej, atau hanya lapisan yang aktif.</translation>
 </phrase>
 
 <phrase>
-<original>1st point (x, y)</original>
-<translation>1 titik (x, y)</translation>
+<original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuity.</original>
+<translation>Biasanya, tongkat ajaib akan mengembang dari pixel sasaran, menambah piksel jiran untuk pilihan kerana ia pergi. Anda alternatif boleh menetapkannya untuk mencari semua imej, tanpa berkaitan untuk kesinambungan.</translation>
 </phrase>
 
 <phrase>
-<original>2nd point (x, y)</original>
-<translation>2 titik (x, y)</translation>
+<original>This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection.</original>
+<translation>Opsyen ini mengawal kriteria yang tongkat sihir digunakan untuk menentukan sama ada piksel yang perlu ditambah kepada pilihan semasa.</translation>
 </phrase>
 
-<phrase>
-<original>line width</original>
-<translation>lebar talian</translation>
-</phrase>
-
-<!-- VBP_ToolbarTools.frm contains 75 phrases. 26 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 72 phrases. 16 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -11053,16 +11407,31 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
+<original>Open location in E&xplorer</original>
+<translation>Lokasi terbuka di Explorer</translation>
+</phrase>
+
+<phrase>
+<original>Close all except this</original>
+<translation>Tutup semua kecuali ini</translation>
+</phrase>
+
+<phrase>
+<original>Once this image has been saved to disk, its filename will appear here.</original>
+<translation>Setelah imej ini telah disimpan ke cakera, nama fail akan muncul di sini.</translation>
+</phrase>
+
+<phrase>
 <original>This image does not have a filename.</original>
 <translation>Imej ini tidak mempunyai nama fail.</translation>
 </phrase>
 
 <phrase>
-<original>Once this image has been saved to disk, its filename will appear here.</original>
-<translation>Apabila imej ini telah disimpan ke cakera, nama fail akan muncul di sini.</translation>
+<original>Hover an image thumbnail to see its name and current file location.</original>
+<translation>Tuding satu thumbnail gambar untuk melihat nama dan semasa Lokasi fail.</translation>
 </phrase>
 
-<!-- VBP_ToolbarImageTabs.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_ToolbarImageTabs.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarImageTabs.frm-->
 
@@ -11113,17 +11482,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <!-- VBP_FormReplaceColor.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for VBP_FormReplaceColor.frm-->
-
-<!-- BEGIN text for pdRecentFiles.cls -->
-
-<phrase>
-<original>List of recently opened images seems to be invalid.  A new recent images list has been created.</original>
-<translation>Senarai imej baru-baru ini dibuka seolah-olah menjadi tidak sah. Senarai imej baru-baru ini baru telah diwujudkan.</translation>
-</phrase>
-
-<!-- pdRecentFiles.cls contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for pdRecentFiles.cls-->
 
 <!-- BEGIN text for pdICCProfile.cls -->
 
@@ -11387,15 +11745,24 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 
 <!-- BEGIN text for pdZoom.cls -->
 
-<!-- pdZoom.cls contains 0 phrases. -->
+<phrase>
+<original>Fit width</original>
+<translation>lebar Fit</translation>
+</phrase>
+
+<phrase>
+<original>Fit height</original>
+<translation>ketinggian Fit</translation>
+</phrase>
+
+<phrase>
+<original>Fit image</original>
+<translation>imej Fit</translation>
+</phrase>
+
+<!-- pdZoom.cls contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for pdZoom.cls-->
-
-<!-- BEGIN text for bluDownload.ctl -->
-
-<!-- bluDownload.ctl contains 0 phrases. -->
-
-<!-- END text for bluDownload.ctl-->
 
 <!-- BEGIN text for VBP_FormContentAwareResize.frm (FormResizeContentAware) -->
 
@@ -11560,13 +11927,18 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
+<original>Preserve aspect ratio</original>
+<translation>Mengekalkan nisbah aspek</translation>
+</phrase>
+
+<phrase>
 <original>Change the unit of measurement used to resize the image.</original>
-<translation>Menukar unit ukuran yang digunakan untuk mengubah saiz imej.</translation>
+<translation>Tukar unit ukuran yang digunakan untuk mengubah saiz imej.</translation>
 </phrase>
 
 <phrase>
 <original>Change the unit of measurement used for image resolution (pixel density).</original>
-<translation>Menukar unit ukuran yang digunakan untuk resolusi imej (kepadatan piksel).</translation>
+<translation>Tukar unit ukuran yang digunakan untuk resolusi imej (kepadatan piksel).</translation>
 </phrase>
 
 <phrase>
@@ -11579,26 +11951,11 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <translation>saiz tepat akan berbeza mengikut imej</translation>
 </phrase>
 
-<!-- smartResize.ctl contains 39 phrases. 26 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- smartResize.ctl contains 26 phrases. 12 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for smartResize.ctl-->
 
 <!-- BEGIN text for pdCanvas.ctl -->
-
-<phrase>
-<original>Zoom in</original>
-<translation>zum masuk</translation>
-</phrase>
-
-<phrase>
-<original>Zoom out</original>
-<translation>zum keluar</translation>
-</phrase>
-
-<phrase>
-<original>Fit image on screen</original>
-<translation>Fit imej pada skrin</translation>
-</phrase>
 
 <phrase>
 <original>size</original>
@@ -11611,6 +11968,31 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
+<original>Fit the image on-screen</original>
+<translation>Fit imej pada skrin</translation>
+</phrase>
+
+<phrase>
+<original>Zoom in</original>
+<translation>zum masuk</translation>
+</phrase>
+
+<phrase>
+<original>Zoom out</original>
+<translation>zum keluar</translation>
+</phrase>
+
+<phrase>
+<original>Change viewport zoom</original>
+<translation>Perubahan viewport zoom</translation>
+</phrase>
+
+<phrase>
+<original>Change the image size unit displayed to the left of this box</original>
+<translation>Tukar unit saiz imej dipaparkan di sebelah kiri kotak ini</translation>
+</phrase>
+
+<phrase>
 <original>Add new layer</original>
 <translation>Tambah lapisan baru</translation>
 </phrase>
@@ -11618,6 +12000,11 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
 <translation>Shift utama: mengekalkan nisbah aspek lapisan</translation>
+</phrase>
+
+<phrase>
+<original>Release the mouse button to complete the lasso selection</original>
+<translation>Lepaskan butang tetikus untuk melengkapkan pilihan lasso</translation>
 </phrase>
 
 <phrase>
@@ -11638,6 +12025,11 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <phrase>
 <original>Resize selection</original>
 <translation>Saiz semula pemilihan</translation>
+</phrase>
+
+<phrase>
+<original>Click on the first point to complete the polygon selection</original>
+<translation>Klik pada titik pertama untuk melengkapkan pilihan poligon</translation>
 </phrase>
 
 <phrase>
@@ -11671,7 +12063,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <translation>cm</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 30 phrases. 14 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 48 phrases. 28 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -11784,34 +12176,24 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
-<original>Image file could not be loaded (unknown error occurred).</original>
-<translation>Fail imej boleh dimuatkan (ralat tidak diketahui berlaku).</translation>
-</phrase>
-
-<phrase>
 <original>Merged layers</original>
 <translation>lapisan yang digabungkan</translation>
 </phrase>
 
-<!-- VBP_LayerHandler.bas contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_LayerHandler.bas contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_LayerHandler.bas-->
 
 <!-- BEGIN text for VBP_ToolbarLayers.frm (toolbar_Layers) -->
 
 <phrase>
-<original>Layers</original>
-<translation>lapisan</translation>
+<original>opacity</original>
+<translation>kelegapan</translation>
 </phrase>
 
 <phrase>
 <original>blend</original>
 <translation>gabungan</translation>
-</phrase>
-
-<phrase>
-<original>opacity</original>
-<translation>kelegapan</translation>
 </phrase>
 
 <phrase>
@@ -11865,8 +12247,18 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
+<original>(hidden)</original>
+<translation>(tersembunyi)</translation>
+</phrase>
+
+<phrase>
 <original>Add a blank layer to the image.</original>
 <translation>Tambah lapisan kosong untuk imej.</translation>
+</phrase>
+
+<phrase>
+<original>New layer</original>
+<translation>lapisan baru</translation>
 </phrase>
 
 <phrase>
@@ -11880,20 +12272,25 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
+<original>Move layer up</original>
+<translation>Pindah lapisan sehingga</translation>
+</phrase>
+
+<phrase>
 <original>Move the current layer downward in the layer stack.</original>
 <translation>Pindah lapisan semasa menurun dalam timbunan lapisan.</translation>
 </phrase>
 
 <phrase>
-<original>(hidden)</original>
-<translation>(tersembunyi)</translation>
+<original>Move layer down</original>
+<translation>Pindah ke bawah lapisan</translation>
 </phrase>
 
-<!-- VBP_ToolbarLayers.frm contains 45 phrases. 27 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- VBP_ToolbarLayers.frm contains 41 phrases. 21 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarLayers.frm-->
 
-<!-- BEGIN text for pdPacker.cls -->
+<!-- BEGIN text for pdPackager.cls -->
 
 <phrase>
 <original>File doesn't have valid pdPackage header.  Abandoning load.</original>
@@ -11906,8 +12303,33 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
+<original>Legacy file format could not be decoded.</original>
+<translation>Format fail Legacy tidak dapat dinyahkod.</translation>
+</phrase>
+
+<phrase>
 <original>Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load.</original>
 <translation>Saiz nod struct dalam header tidak sah. Fail ini kelihatan untuk rasuah! Meninggalkan beban.</translation>
+</phrase>
+
+<phrase>
+<original>Directory is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
+<translation>Direktori dimampatkan, tetapi zlib gagal nyahmampat ia. Kod ralat kembali: %1</translation>
+</phrase>
+
+<phrase>
+<original>Directory chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
+<translation>Direktori sebahagian dimampatkan, tetapi zlib hilang. Penyahmampatan mustahil; meninggalkan beban.</translation>
+</phrase>
+
+<phrase>
+<original>Data chunk is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
+<translation>Sebahagian data dimampatkan, tetapi zlib gagal nyahmampat ia. Kod ralat kembali: %1</translation>
+</phrase>
+
+<phrase>
+<original>Data chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
+<translation>Sebahagian data dimampatkan, tetapi zlib hilang. Penyahmampatan mustahil; meninggalkan beban.</translation>
 </phrase>
 
 <phrase>
@@ -11916,8 +12338,8 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
-<original>File node is compressed, but zLib dll is missing.  Decompression is impossible, abandoning load.</original>
-<translation>Nod fail dimampatkan tetapi zlib dll hilang. Penyahmampatan adalah mustahil, meninggalkan beban.</translation>
+<original>File node is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
+<translation>Nod fail dimampatkan, tetapi zlib hilang. Penyahmampatan mustahil; meninggalkan beban.</translation>
 </phrase>
 
 <phrase>
@@ -11925,9 +12347,9 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <translation>Checksum gagal untuk nod #</translation>
 </phrase>
 
-<!-- pdPacker.cls contains 6 phrases.  All 6 were unique, so 6 new phrases were written to file. -->
+<!-- pdPackager.cls contains 12 phrases.  One was a duplicate of an existing phrase, so only 11 new phrases were written to file. -->
 
-<!-- END text for pdPacker.cls-->
+<!-- END text for pdPackager.cls-->
 
 <!-- BEGIN text for cBasicBuffer.cls -->
 
@@ -12017,16 +12439,11 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <!-- BEGIN text for VBP_FormGlassTiles.frm (FormGlassTiles) -->
 
 <phrase>
-<original>curvature</original>
-<translation>kelengkungan</translation>
-</phrase>
-
-<phrase>
 <original>Generating glass tiles</original>
 <translation>Menjana jubin kaca</translation>
 </phrase>
 
-<!-- VBP_FormGlassTiles.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- VBP_FormGlassTiles.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for VBP_FormGlassTiles.frm-->
 
@@ -12036,11 +12453,11 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <!-- END text for OutsideDevelopment_SPBuffer.cls-->
 
-<!-- BEGIN text for pdInput.cls -->
+<!-- BEGIN text for pdInputKeyboard.cls -->
 
-<!-- pdInput.cls contains 0 phrases. -->
+<!-- pdInputKeyboard.cls contains 0 phrases. -->
 
-<!-- END text for pdInput.cls-->
+<!-- END text for pdInputKeyboard.cls-->
 
 <!-- BEGIN text for VBP_FormSunshine.frm (FormSunshine) -->
 
@@ -12111,6 +12528,11 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
+<original>(enter name here)</original>
+<translation>(masukkan nama di sini)</translation>
+</phrase>
+
+<phrase>
 <original>default (above current layer)</original>
 <translation>default (atas lapisan semasa)</translation>
 </phrase>
@@ -12130,7 +12552,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <translation>bahagian bawah lapisan timbunan</translation>
 </phrase>
 
-<!-- VBP_FormNewLayer.frm contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- VBP_FormNewLayer.frm contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for VBP_FormNewLayer.frm-->
 
@@ -12164,11 +12586,41 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <!-- BEGIN text for VBP_FormLensFlare.frm (FormLensFlare) -->
 
 <phrase>
+<original>synchronize intensity</original>
+<translation>menyegerakkan keamatan</translation>
+</phrase>
+
+<phrase>
+<original>secondary intensity</original>
+<translation>keamatan menengah</translation>
+</phrase>
+
+<phrase>
+<original>tertiary intensity</original>
+<translation>keamatan tinggi</translation>
+</phrase>
+
+<phrase>
+<original>Note: you can also set a position by clicking the preview window.</original>
+<translation>Nota: Anda juga boleh menetapkan kedudukan dengan mengklik tetingkap pratonton.</translation>
+</phrase>
+
+<phrase>
 <original>Applying lens flare</original>
 <translation>Menggunakan kanta suar</translation>
 </phrase>
 
-<!-- VBP_FormLensFlare.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>yes</original>
+<translation>ya</translation>
+</phrase>
+
+<phrase>
+<original>no</original>
+<translation>tidak</translation>
+</phrase>
+
+<!-- VBP_FormLensFlare.frm contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for VBP_FormLensFlare.frm-->
 
@@ -12270,7 +12722,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <translation>Menjana peta untuk imej HDR</translation>
 </phrase>
 
-<!-- VBP_FormHDR.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- VBP_FormHDR.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for VBP_FormHDR.frm-->
 
@@ -12483,13 +12935,358 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <!-- END text for VBP_FormComicBook.frm-->
 
+<!-- BEGIN text for pdButtonToolbox.ctl -->
+
+<!-- pdButtonToolbox.ctl contains 0 phrases. -->
+
+<!-- END text for pdButtonToolbox.ctl-->
+
+<!-- BEGIN text for pdInputMouse.cls -->
+
+<!-- pdInputMouse.cls contains 0 phrases. -->
+
+<!-- END text for pdInputMouse.cls-->
+
+<!-- BEGIN text for pdFloodFill.cls -->
+
+<!-- pdFloodFill.cls contains 0 phrases. -->
+
+<!-- END text for pdFloodFill.cls-->
+
+<!-- BEGIN text for pdDictionary.cls -->
+
+<!-- pdDictionary.cls contains 0 phrases. -->
+
+<!-- END text for pdDictionary.cls-->
+
+<!-- BEGIN text for pdGraphicsPath.cls -->
+
+<!-- pdGraphicsPath.cls contains 0 phrases. -->
+
+<!-- END text for pdGraphicsPath.cls-->
+
+<!-- BEGIN text for pdWindowPainter.cls -->
+
+<!-- pdWindowPainter.cls contains 0 phrases. -->
+
+<!-- END text for pdWindowPainter.cls-->
+
+<!-- BEGIN text for pdLabel.ctl -->
+
+<!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+
+<!-- END text for pdLabel.ctl-->
+
+<!-- BEGIN text for pdTextBox.ctl -->
+
+<!-- pdTextBox.ctl contains 0 phrases. -->
+
+<!-- END text for pdTextBox.ctl-->
+
+<!-- BEGIN text for pdComboBox.ctl -->
+
+<!-- pdComboBox.ctl contains 0 phrases. -->
+
+<!-- END text for pdComboBox.ctl-->
+
+<!-- BEGIN text for VBP_FormToneMapping.frm (dialog_ToneMapping) -->
+
+<phrase>
+<original>HDR image identified</original>
+<translation>Imej HDR dikenal pasti</translation>
+</phrase>
+
+<phrase>
+<original>in the future, automatically apply these settings</original>
+<translation>pada masa akan datang, secara automatik menggunakan tetapan ini</translation>
+</phrase>
+
+<phrase>
+<original>gamma</original>
+<translation>gamma</translation>
+</phrase>
+
+<phrase>
+<original>adaptation</original>
+<translation>penyesuaian</translation>
+</phrase>
+
+<phrase>
+<original>color correction</original>
+<translation>pembetulan warna</translation>
+</phrase>
+
+<phrase>
+<original>white point</original>
+<translation>titik putih</translation>
+</phrase>
+
+<phrase>
+<original>normalize</original>
+<translation>menormalkan</translation>
+</phrase>
+
+<phrase>
+<original>visible spectrum</original>
+<translation>spektrum dilihat</translation>
+</phrase>
+
+<phrase>
+<original>full spectrum</original>
+<translation>spektrum penuh</translation>
+</phrase>
+
+<phrase>
+<original>This image contains more than 16 million colors.  Before it can be displayed on your screen, it must be converted to a simpler format.  This process is called tone mapping.</original>
+<translation>Imej ini mengandungi lebih daripada 16 juta warna. Sebelum ia boleh dipaparkan pada skrin anda, ia perlu ditukar kepada format yang lebih mudah. Proses ini dipanggil pemetaan nada.</translation>
+</phrase>
+
+<phrase>
+<original>Waiting for tone mapping instructions</original>
+<translation>Menunggu arahan pemetaan nada</translation>
+</phrase>
+
+<phrase>
+<original>Cancelling image import</original>
+<translation>Membatalkan imej import</translation>
+</phrase>
+
+<phrase>
+<original>Proceeding with tone mapping</original>
+<translation>Meneruskan pemetaan nada</translation>
+</phrase>
+
+<phrase>
+<original>Linear</original>
+<translation>linear</translation>
+</phrase>
+
+<phrase>
+<original>Filmic</original>
+<translation>Filmic</translation>
+</phrase>
+
+<phrase>
+<original>Drago</original>
+<translation>Drago</translation>
+</phrase>
+
+<phrase>
+<original>Reinhard</original>
+<translation>Reinhard</translation>
+</phrase>
+
+<!-- VBP_FormToneMapping.frm contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+
+<!-- END text for VBP_FormToneMapping.frm-->
+
+<!-- BEGIN text for VBP_FormNewImage.frm (FormNewImage) -->
+
+<phrase>
+<original>Create new image</original>
+<translation>Buat imej baru</translation>
+</phrase>
+
+<!-- VBP_FormNewImage.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for VBP_FormNewImage.frm-->
+
+<!-- BEGIN text for pdFilterLUT.cls -->
+
+<!-- pdFilterLUT.cls contains 0 phrases. -->
+
+<!-- END text for pdFilterLUT.cls-->
+
+<!-- BEGIN text for VBP_FormCrossScreen.frm (FormCrossScreen) -->
+
+<phrase>
+<original>Cross-screen (stars)</original>
+<translation>Skrin Cross (bintang)</translation>
+</phrase>
+
+<phrase>
+<original>spokes</original>
+<translation>jejari</translation>
+</phrase>
+
+<phrase>
+<original>Applying cross-screen filter</original>
+<translation>Menggunakan penapis skrin balas</translation>
+</phrase>
+
+<!-- VBP_FormCrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for VBP_FormCrossScreen.frm-->
+
+<!-- BEGIN text for pdDownload.ctl -->
+
+<!-- pdDownload.ctl contains 0 phrases. -->
+
+<!-- END text for pdDownload.ctl-->
+
+<!-- BEGIN text for pdFSO.cls -->
+
+<!-- pdFSO.cls contains 0 phrases. -->
+
+<!-- END text for pdFSO.cls-->
+
+<!-- BEGIN text for pdStringStack.cls -->
+
+<!-- pdStringStack.cls contains 0 phrases. -->
+
+<!-- END text for pdStringStack.cls-->
+
+<!-- BEGIN text for IMRUList.cls -->
+
+<!-- IMRUList.cls contains 0 phrases. -->
+
+<!-- END text for IMRUList.cls-->
+
+<!-- BEGIN text for pdMRUManager.cls -->
+
+<!-- pdMRUManager.cls contains 0 phrases. -->
+
+<!-- END text for pdMRUManager.cls-->
+
+<!-- BEGIN text for pdMRURecentFiles.cls -->
+
+<!-- pdMRURecentFiles.cls contains 8 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<!-- END text for pdMRURecentFiles.cls-->
+
+<!-- BEGIN text for pdMRURecentMacros.cls -->
+
+<!-- pdMRURecentMacros.cls contains 2 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<!-- END text for pdMRURecentMacros.cls-->
+
+<!-- BEGIN text for pdUnicode.cls -->
+
+<!-- pdUnicode.cls contains 0 phrases. -->
+
+<!-- END text for pdUnicode.cls-->
+
+<!-- BEGIN text for VBP_FormUpdateNotify.frm (FormUpdateNotify) -->
+
+<phrase>
+<original>Update ready</original>
+<translation>Kemas kini bersedia</translation>
+</phrase>
+
+<phrase>
+<original>in the future, do not notify me of updates</original>
+<translation>pada masa akan datang, tidak memberitahu saya tentang maklumat terbaru</translation>
+</phrase>
+
+<phrase>
+<original>Keep working</original>
+<translation>terus bekerja</translation>
+</phrase>
+
+<phrase>
+<original>Restart PhotoDemon</original>
+<translation>Mulakan semula PhotoDemon</translation>
+</phrase>
+
+<phrase>
+<original>Learn more about the new features in %1</original>
+<translation>Ketahui lebih lanjut mengenai ciri-ciri baru dalam %1</translation>
+</phrase>
+
+<phrase>
+<original>(Sorry, but automatic restarts don't work inside the IDE.)</original>
+<translation>(Maaf, tetapi bermula semula automatik tidak berfungsi di dalam IDE.)</translation>
+</phrase>
+
+<phrase>
+<original>A new version of PhotoDemon is available.  Restart the program to complete the update process.</original>
+<translation>Versi baru PhotoDemon disediakan. Memulakan semula program untuk menyelesaikan proses kemas kini.</translation>
+</phrase>
+
+<phrase>
+<original>Restart now to access to the latest version of the program.</original>
+<translation>Mulakan semula sekarang untuk mengakses kepada versi terkini program ini.</translation>
+</phrase>
+
+<phrase>
+<original>Apply update now</original>
+<translation>Memohon kemas kini sekarang</translation>
+</phrase>
+
+<phrase>
+<original>If you're in the middle of something, feel free to keep working.  The update process will automatically complete whenever you next use the program.</original>
+<translation>Jika anda berada di tengah-tengah sesuatu, berasa bebas untuk menyimpan kerja. Proses kemas kini secara automatik akan melengkapkan setiap kali anda datang menggunakan program ini.</translation>
+</phrase>
+
+<phrase>
+<original>Apply update later</original>
+<translation>Memohon kemas kini kemudian</translation>
+</phrase>
+
+<!-- VBP_FormUpdateNotify.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+
+<!-- END text for VBP_FormUpdateNotify.frm-->
+
+<!-- BEGIN text for pdHyperlink.ctl -->
+
+<!-- pdHyperlink.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+
+<!-- END text for pdHyperlink.ctl-->
+
+<!-- BEGIN text for pdFFT.cls -->
+
+<!-- pdFFT.cls contains 0 phrases. -->
+
+<!-- END text for pdFFT.cls-->
+
+<!-- BEGIN text for VBP_FormAddPreset.frm (dialog_AddPreset) -->
+
+<phrase>
+<original>Add new preset</original>
+<translation>Tambah pratetap baru</translation>
+</phrase>
+
+<phrase>
+<original>enter a name for this preset</original>
+<translation>masukkan nama untuk pratetap ini</translation>
+</phrase>
+
+<phrase>
+<original>A preset with this name already exists.  Do you want to overwrite it?</original>
+<translation>A pratetap dengan nama ini telah wujud. Adakah anda mahu tindih?</translation>
+</phrase>
+
+<phrase>
+<original>Overwrite existing preset</original>
+<translation>Tulis ganti preset yang sedia ada</translation>
+</phrase>
+
+<phrase>
+<original>Please enter a name for this preset.</original>
+<translation>Sila masukkan nama untuk pratetap ini.</translation>
+</phrase>
+
+<phrase>
+<original>Preset name required</original>
+<translation>Nama pratetap yang dikehendaki</translation>
+</phrase>
+
+<!-- VBP_FormAddPreset.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for VBP_FormAddPreset.frm-->
+
+<!-- BEGIN text for pdToolPreset.cls -->
+
+<!-- pdToolPreset.cls contains 0 phrases. -->
+
+<!-- END text for pdToolPreset.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2180</phrasecount>
+<phrasecount>2316</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3800 phrases. -->
-<!-- 1620 are duplicates, so only 2180 unique phrases have been written to file. -->
-<!-- These 2180 phrases contain approximately 12709 total words. -->
+<!-- As of this build, PhotoDemon contains 3937 phrases. -->
+<!-- 1621 are duplicates, so only 2316 unique phrases have been written to file. -->
+<!-- These 2316 phrases contain approximately 13334 total words. -->
 
 </pdData>
-

@@ -4262,86 +4262,6 @@ To membolehkan sokongan pengimbas, sila menyalin fail EZTW32.dll (tersedia untuk
 </phrase>
 
 <phrase>
-<original>Interface</original>
-<translation>antara muka</translation>
-</phrase>
-
-<phrase>
-<original>Interface Options</original>
-<translation>Pilihan antara muka</translation>
-</phrase>
-
-<phrase>
-<original>Updates</original>
-<translation>kemas kini</translation>
-</phrase>
-
-<phrase>
-<original>Update Options</original>
-<translation>update Pilihan</translation>
-</phrase>
-
-<phrase>
-<original>Performance</original>
-<translation>prestasi</translation>
-</phrase>
-
-<phrase>
-<original>Performance Options</original>
-<translation>Pilihan prestasi</translation>
-</phrase>
-
-<phrase>
-<original>Advanced</original>
-<translation>Advanced</translation>
-</phrase>
-
-<phrase>
-<original>Advanced Options</original>
-<translation>Pilihan Advanced</translation>
-</phrase>
-
-<phrase>
-<original>Color and Transparency</original>
-<translation>Warna dan Ketelusan</translation>
-</phrase>
-
-<phrase>
-<original>Color and Transparency Options</original>
-<translation>Warna dan Ketelusan Pilihan</translation>
-</phrase>
-
-<phrase>
-<original>Loading</original>
-<translation>Memuatkan</translation>
-</phrase>
-
-<phrase>
-<original>Load (Import) Options</original>
-<translation>Beban (Import) Pilihan</translation>
-</phrase>
-
-<phrase>
-<original>Saving</original>
-<translation>menyimpan</translation>
-</phrase>
-
-<phrase>
-<original>Save (Export) Options</original>
-<translation>Jimat (Eksport) Pilihan</translation>
-</phrase>
-
-<phrase>
-<original>File formats</original>
-<translation>format fail</translation>
-</phrase>
-
-<phrase>
-<original>File Format Options</original>
-<translation>Pilihan Format fail</translation>
-</phrase>
-
-<phrase>
 <original>(disclaimer populated at run-time)</original>
 <translation>(penafian penduduk di jangka masa)</translation>
 </phrase>
@@ -5290,8 +5210,53 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 </phrase>
 
 <phrase>
+<original>Interface</original>
+<translation>antara muka</translation>
+</phrase>
+
+<phrase>
+<original>Loading</original>
+<translation>Memuatkan</translation>
+</phrase>
+
+<phrase>
+<original>Saving</original>
+<translation>menyimpan</translation>
+</phrase>
+
+<phrase>
+<original>File formats</original>
+<translation>format fail</translation>
+</phrase>
+
+<phrase>
+<original>Performance</original>
+<translation>prestasi</translation>
+</phrase>
+
+<phrase>
+<original>Color and Transparency</original>
+<translation>Warna dan Ketelusan</translation>
+</phrase>
+
+<phrase>
+<original>Updates</original>
+<translation>kemas kini</translation>
+</phrase>
+
+<phrase>
+<original>Advanced</original>
+<translation>Advanced</translation>
+</phrase>
+
+<phrase>
 <original>Interface options include settings for the main PhotoDemon interface, including things like canvas settings, font selection, and positioning.</original>
 <translation>Pilihan antara muka termasuk tetapan untuk antara muka PhotoDemon utama, termasuk hal-hal seperti tetapan kanvas, pemilihan font, dan kedudukan.</translation>
+</phrase>
+
+<phrase>
+<original>Interface Options</original>
+<translation>Pilihan antara muka</translation>
 </phrase>
 
 <phrase>
@@ -5300,8 +5265,18 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 </phrase>
 
 <phrase>
+<original>Load (Import) Options</original>
+<translation>Beban (Import) Pilihan</translation>
+</phrase>
+
+<phrase>
 <original>Save options allow you to customize the way image files leave the application.</original>
 <translation>Simpan pilihan membolehkan anda untuk menyesuaikan cara yang fail-fail imej meninggalkan permohonan.</translation>
+</phrase>
+
+<phrase>
+<original>Save (Export) Options</original>
+<translation>Jimat (Eksport) Pilihan</translation>
 </phrase>
 
 <phrase>
@@ -5310,8 +5285,18 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 </phrase>
 
 <phrase>
+<original>File Format Options</original>
+<translation>Pilihan Format fail</translation>
+</phrase>
+
+<phrase>
 <original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
 <translation>Prestasi pilihan membolehkan anda untuk mengawal sama ada PhotoDemon menekankan kelajuan atau kualiti apabila melakukan tugas-tugas tertentu.</translation>
+</phrase>
+
+<phrase>
+<original>Performance Options</original>
+<translation>Pilihan prestasi</translation>
 </phrase>
 
 <phrase>
@@ -5320,8 +5305,18 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 </phrase>
 
 <phrase>
+<original>Color and Transparency Options</original>
+<translation>Warna dan Ketelusan Pilihan</translation>
+</phrase>
+
+<phrase>
 <original>Update options control how frequently PhotoDemon checks for updated versions, and how it handles the download of missing plugins.</original>
 <translation>Pilihan kemas kini mengawal berapa kerap PhotoDemon cek untuk versi dikemaskini, dan bagaimana ia mengendalikan muat turun plugin hilang.</translation>
+</phrase>
+
+<phrase>
+<original>Update Options</original>
+<translation>update Pilihan</translation>
 </phrase>
 
 <phrase>
@@ -5330,11 +5325,16 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 </phrase>
 
 <phrase>
+<original>Advanced Options</original>
+<translation>Pilihan Advanced</translation>
+</phrase>
+
+<phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If no new folder is provided, PhotoDemon will use the system's default temp location.</original>
 <translation>AMARAN: folder ini adalah tidak sah (akses dilarang). Sila berikan folder yang sah. Jika tiada folder baru disediakan, PhotoDemon akan menggunakan lokasi temp lalai sistem.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 255 phrases. 39 were duplicates of existing phrases, so only 216 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 247 phrases. 31 were duplicates of existing phrases, so only 216 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -12935,11 +12935,11 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <!-- END text for VBP_FormComicBook.frm-->
 
-<!-- BEGIN text for buttonStrip.ctl -->
+<!-- BEGIN text for pdButtonToolbox.ctl -->
 
-<!-- buttonStrip.ctl contains 0 phrases. -->
+<!-- pdButtonToolbox.ctl contains 0 phrases. -->
 
-<!-- END text for buttonStrip.ctl-->
+<!-- END text for pdButtonToolbox.ctl-->
 
 <!-- BEGIN text for pdInputMouse.cls -->
 
@@ -12964,12 +12964,6 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <!-- pdGraphicsPath.cls contains 0 phrases. -->
 
 <!-- END text for pdGraphicsPath.cls-->
-
-<!-- BEGIN text for pdButtonToolbox.ctl -->
-
-<!-- pdButtonToolbox.ctl contains 0 phrases. -->
-
-<!-- END text for pdButtonToolbox.ctl-->
 
 <!-- BEGIN text for pdWindowPainter.cls -->
 
@@ -13291,8 +13285,8 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <phrasecount>2316</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3945 phrases. -->
-<!-- 1629 are duplicates, so only 2316 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 3937 phrases. -->
+<!-- 1621 are duplicates, so only 2316 unique phrases have been written to file. -->
 <!-- These 2316 phrases contain approximately 13334 total words. -->
 
 </pdData>

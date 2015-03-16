@@ -4261,86 +4261,6 @@ Om de scannerondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (b
 </phrase>
 
 <phrase>
-<original>Interface</original>
-<translation>Interface</translation>
-</phrase>
-
-<phrase>
-<original>Interface Options</original>
-<translation>Interface opties</translation>
-</phrase>
-
-<phrase>
-<original>Updates</original>
-<translation>Updates</translation>
-</phrase>
-
-<phrase>
-<original>Update Options</original>
-<translation>Update opties</translation>
-</phrase>
-
-<phrase>
-<original>Performance</original>
-<translation>Prestaties</translation>
-</phrase>
-
-<phrase>
-<original>Performance Options</original>
-<translation>Prestatieinstellingen</translation>
-</phrase>
-
-<phrase>
-<original>Advanced</original>
-<translation>Geavanceerd</translation>
-</phrase>
-
-<phrase>
-<original>Advanced Options</original>
-<translation>Geavanceerde opties</translation>
-</phrase>
-
-<phrase>
-<original>Color and Transparency</original>
-<translation>Kleur en transparantie</translation>
-</phrase>
-
-<phrase>
-<original>Color and Transparency Options</original>
-<translation>Kleur en Transparant opties</translation>
-</phrase>
-
-<phrase>
-<original>Loading</original>
-<translation>Laden</translation>
-</phrase>
-
-<phrase>
-<original>Load (Import) Options</original>
-<translation>Laden (Importeren) Opties</translation>
-</phrase>
-
-<phrase>
-<original>Saving</original>
-<translation>Opslaan</translation>
-</phrase>
-
-<phrase>
-<original>Save (Export) Options</original>
-<translation>Opslaan (Exporteren) Opties</translation>
-</phrase>
-
-<phrase>
-<original>File formats</original>
-<translation>Bestandsformaten</translation>
-</phrase>
-
-<phrase>
-<original>File Format Options</original>
-<translation>Opties voor bestandsformaat</translation>
-</phrase>
-
-<phrase>
 <original>(disclaimer populated at run-time)</original>
 <translation>(disclaimer opgevuld in run-time)</translation>
 </phrase>
@@ -5289,8 +5209,53 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 </phrase>
 
 <phrase>
+<original>Interface</original>
+<translation>Interface</translation>
+</phrase>
+
+<phrase>
+<original>Loading</original>
+<translation>Laden</translation>
+</phrase>
+
+<phrase>
+<original>Saving</original>
+<translation>Opslaan</translation>
+</phrase>
+
+<phrase>
+<original>File formats</original>
+<translation>Bestandsformaten</translation>
+</phrase>
+
+<phrase>
+<original>Performance</original>
+<translation>Prestaties</translation>
+</phrase>
+
+<phrase>
+<original>Color and Transparency</original>
+<translation>Kleur en transparantie</translation>
+</phrase>
+
+<phrase>
+<original>Updates</original>
+<translation>Updates</translation>
+</phrase>
+
+<phrase>
+<original>Advanced</original>
+<translation>Geavanceerd</translation>
+</phrase>
+
+<phrase>
 <original>Interface options include settings for the main PhotoDemon interface, including things like canvas settings, font selection, and positioning.</original>
 <translation>Interface-opties bevatten instellingen voor de belangrijkste PhotoDemon interface, met inbegrip van dingen zoals canvas instellingen, lettertype selectie, en positionering.</translation>
+</phrase>
+
+<phrase>
+<original>Interface Options</original>
+<translation>Interface opties</translation>
 </phrase>
 
 <phrase>
@@ -5299,8 +5264,18 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 </phrase>
 
 <phrase>
+<original>Load (Import) Options</original>
+<translation>Laden (Importeren) Opties</translation>
+</phrase>
+
+<phrase>
 <original>Save options allow you to customize the way image files leave the application.</original>
 <translation>Met de opties voor opslaan kan je de manier aanpassen waarop afbeeldingsbestanden de applicatie verlaten.</translation>
+</phrase>
+
+<phrase>
+<original>Save (Export) Options</original>
+<translation>Opslaan (Exporteren) Opties</translation>
 </phrase>
 
 <phrase>
@@ -5309,8 +5284,18 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 </phrase>
 
 <phrase>
+<original>File Format Options</original>
+<translation>Opties voor bestandsformaat</translation>
+</phrase>
+
+<phrase>
 <original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
 <translation>Prestatieopties geven u de mogelijkheid om te bepalen of PhotoDemon snelheid of kwaliteit benadrukt bij het uitvoeren van bepaalde taken.</translation>
+</phrase>
+
+<phrase>
+<original>Performance Options</original>
+<translation>Prestatieinstellingen</translation>
 </phrase>
 
 <phrase>
@@ -5319,8 +5304,18 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 </phrase>
 
 <phrase>
+<original>Color and Transparency Options</original>
+<translation>Kleur en Transparant opties</translation>
+</phrase>
+
+<phrase>
 <original>Update options control how frequently PhotoDemon checks for updated versions, and how it handles the download of missing plugins.</original>
 <translation>Update opties bepalen hoe vaak PhotoDemon controleert op nieuwe versies, en hoe hij omgaat met het downloaden van ontbrekende insteekmodules.</translation>
+</phrase>
+
+<phrase>
+<original>Update Options</original>
+<translation>Update opties</translation>
 </phrase>
 
 <phrase>
@@ -5329,11 +5324,16 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 </phrase>
 
 <phrase>
+<original>Advanced Options</original>
+<translation>Geavanceerde opties</translation>
+</phrase>
+
+<phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If no new folder is provided, PhotoDemon will use the system's default temp location.</original>
 <translation>WAARSCHUWING: deze map is ongeldig (toegang verboden). Geef een geldige map op. Als er geen nieuwe map wordt voorzien, zal PhotoDemon gebruik maken van de systeem standaard temp locatie.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 255 phrases. 39 were duplicates of existing phrases, so only 216 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 247 phrases. 31 were duplicates of existing phrases, so only 216 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -12934,11 +12934,11 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- END text for VBP_FormComicBook.frm-->
 
-<!-- BEGIN text for buttonStrip.ctl -->
+<!-- BEGIN text for pdButtonToolbox.ctl -->
 
-<!-- buttonStrip.ctl contains 0 phrases. -->
+<!-- pdButtonToolbox.ctl contains 0 phrases. -->
 
-<!-- END text for buttonStrip.ctl-->
+<!-- END text for pdButtonToolbox.ctl-->
 
 <!-- BEGIN text for pdInputMouse.cls -->
 
@@ -12963,12 +12963,6 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <!-- pdGraphicsPath.cls contains 0 phrases. -->
 
 <!-- END text for pdGraphicsPath.cls-->
-
-<!-- BEGIN text for pdButtonToolbox.ctl -->
-
-<!-- pdButtonToolbox.ctl contains 0 phrases. -->
-
-<!-- END text for pdButtonToolbox.ctl-->
 
 <!-- BEGIN text for pdWindowPainter.cls -->
 
@@ -13290,8 +13284,8 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <phrasecount>2316</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3945 phrases. -->
-<!-- 1629 are duplicates, so only 2316 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 3937 phrases. -->
+<!-- 1621 are duplicates, so only 2316 unique phrases have been written to file. -->
 <!-- These 2316 phrases contain approximately 13334 total words. -->
 
 </pdData>
