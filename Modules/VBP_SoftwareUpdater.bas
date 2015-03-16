@@ -206,7 +206,7 @@ Public Sub processLanguageUpdateFile(ByRef srcXML As String)
                 
                 'Iterate the language update list, looking for version matches
                 Dim i As Long
-                For i = 0 To UBound(langList)
+                For i = LBound(langList) To UBound(langList)
                 
                     'Retrieve the major/minor version of this language file.  (String format is fine, as we're just
                     ' checking equality.)
@@ -239,7 +239,9 @@ Public Sub processLanguageUpdateFile(ByRef srcXML As String)
                                     updateFlags(i) = True
                                     numOfUpdates = numOfUpdates + 1
                                     
-                                    Debug.Print "Language ID " & langID & " will be updated to revision " & langRevision & "."
+                                    #If DEBUGMODE = 1 Then
+                                        pdDebug.LogAction "Language ID " & langID & " will be updated to revision " & langRevision & "."
+                                    #End If
                                 
                                 'The current file is up-to-date.
                                 Else
