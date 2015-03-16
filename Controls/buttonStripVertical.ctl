@@ -132,6 +132,10 @@ Private Type buttonEntry
     btImageCoords As POINTAPI       '(x, y) position of the button image, if any
     btFontSize As Single            'If a button caption fits just fine, this value is 0.  If a translation is active and a button caption must be shrunk,
                                     ' this value will be non-zero, and the button renderer must use it when rendering the button.
+    btToolTipText As String         'This control supports per-button tooltips.  This behavior can be overridden by not supplying an index to the
+                                    ' assignTooltip function.
+    btToolTipTitle As String        'See above comments for btToolTipText
+    btToolTipIcon As TT_ICON_TYPE  'See above comments for btToolTipText
 End Type
 
 Private m_Buttons() As buttonEntry
@@ -148,6 +152,9 @@ Private m_FocusRectActive As Long
 
 'Additional helper for rendering themed and multiline tooltips
 Private toolTipManager As pdToolTip
+
+'To prevent over-frequent tooltip updates, we track the last index we received and ignore matching requests
+Private m_LastToolTipIndex As Long
 
 'Padding between images (if any) and text.  This is automatically adjusted according to DPI, so set this value as it would be at the
 ' Windows default of 96 DPI
@@ -332,7 +339,10 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     If mouseHoverIndex <> m_ButtonHoverIndex Then
     
         m_ButtonHoverIndex = mouseHoverIndex
-    
+        
+        'Synchronize the tooltip accordingly.
+        synchronizeToolTipToIndex m_ButtonHoverIndex
+        
         'If the mouse is not currently hovering a button, set a default arrow cursor and exit
         If mouseHoverIndex = -1 Then
         
@@ -577,6 +587,7 @@ Private Sub UserControl_Initialize()
     m_MouseInsideUC = False
     m_FocusRectActive = -1
     m_ButtonHoverIndex = -1
+    m_LastToolTipIndex = -1
     
     'Update the control size parameters at least once
     updateControlSize
@@ -706,7 +717,7 @@ Private Sub updateControlSize()
         'If a button has an image, we have to alter its sizing somewhat.  To make sure word-wrap is calculated correctly,
         ' remove the width of the image, plus padding, in advance.
         If m_ImagesActive Then
-            buttonWidth = buttonWidth - (m_ImageSize + fixDPI(IMG_TEXT_PADDING))
+            buttonWidth = buttonWidth - (m_ImageSize + fixDPI(IMG_TEXT_PADDING) * 2)
         End If
         
         'Retrieve the expected size of the string, in pixels
@@ -973,6 +984,54 @@ End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
-Public Sub assignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    toolTipManager.setTooltip Me.hWnd, Me.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+Public Sub assignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE, Optional ByVal toolTipIndex As Long = -1)
+    
+    'If toolTipIndex = -1, all buttons receive the same tooltip
+    If toolTipIndex = -1 Then
+    
+        Dim i As Long
+        For i = LBound(m_Buttons) To UBound(m_Buttons)
+            With m_Buttons(i)
+                .btToolTipText = newTooltip
+                .btToolTipTitle = newTooltipTitle
+                .btToolTipIcon = newTooltipIcon
+            End With
+        Next i
+        
+        'Update the index to 0, so the subsequent call to synchronizeToolTipToIndex doesn't fail.
+        toolTipIndex = 0
+        
+    'If an index is specified, each button is allowed its own tooltip.  This can be used to set tooltips for all buttons but one,
+    ' for example.
+    Else
+        
+        If (toolTipIndex >= LBound(m_Buttons)) And (toolTipIndex <= UBound(m_Buttons)) Then
+        
+            With m_Buttons(toolTipIndex)
+                .btToolTipText = newTooltip
+                .btToolTipTitle = newTooltipTitle
+                .btToolTipIcon = newTooltipIcon
+            End With
+            
+        End If
+                
+    End If
+    
+    'Synchronize the tooltip object to the new tooltip
+        
+End Sub
+
+Private Sub synchronizeToolTipToIndex(Optional ByVal srcIndex As Long = 0)
+
+    'Ignore invalid index requests
+    If (srcIndex >= LBound(m_Buttons)) And (srcIndex <= UBound(m_Buttons)) And (srcIndex <> m_LastToolTipIndex) Then
+    
+        'Manually sync the tooltip now
+        toolTipManager.setTooltip Me.hWnd, Me.containerHwnd, m_Buttons(srcIndex).btToolTipText, m_Buttons(srcIndex).btToolTipTitle, m_Buttons(srcIndex).btToolTipIcon
+        
+        'Update the cached last index value
+        m_LastToolTipIndex = srcIndex
+    
+    End If
+
 End Sub
