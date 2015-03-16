@@ -4261,86 +4261,6 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dl
 </phrase>
 
 <phrase>
-<original>Interface</original>
-<translation>Interface</translation>
-</phrase>
-
-<phrase>
-<original>Interface Options</original>
-<translation>Options de l'interface</translation>
-</phrase>
-
-<phrase>
-<original>Updates</original>
-<translation>Mises à jour</translation>
-</phrase>
-
-<phrase>
-<original>Update Options</original>
-<translation>Mettre à jour les options</translation>
-</phrase>
-
-<phrase>
-<original>Performance</original>
-<translation>Performance</translation>
-</phrase>
-
-<phrase>
-<original>Performance Options</original>
-<translation>Options de performances</translation>
-</phrase>
-
-<phrase>
-<original>Advanced</original>
-<translation>Avancé</translation>
-</phrase>
-
-<phrase>
-<original>Advanced Options</original>
-<translation>Options avancées</translation>
-</phrase>
-
-<phrase>
-<original>Color and Transparency</original>
-<translation>Couleur et transparence</translation>
-</phrase>
-
-<phrase>
-<original>Color and Transparency Options</original>
-<translation>Des options Couleur et transparence</translation>
-</phrase>
-
-<phrase>
-<original>Loading</original>
-<translation>Bourrage</translation>
-</phrase>
-
-<phrase>
-<original>Load (Import) Options</original>
-<translation>Options Charger (Importer)</translation>
-</phrase>
-
-<phrase>
-<original>Saving</original>
-<translation>L'enregistrement</translation>
-</phrase>
-
-<phrase>
-<original>Save (Export) Options</original>
-<translation>Options Enregistrer (Exporter)</translation>
-</phrase>
-
-<phrase>
-<original>File formats</original>
-<translation>Formats de fichiers</translation>
-</phrase>
-
-<phrase>
-<original>File Format Options</original>
-<translation>Options de format de fichier</translation>
-</phrase>
-
-<phrase>
 <original>(disclaimer populated at run-time)</original>
 <translation>(disclaimer peuplée au moment de l'exécution)</translation>
 </phrase>
@@ -5289,8 +5209,53 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 </phrase>
 
 <phrase>
+<original>Interface</original>
+<translation>Interface</translation>
+</phrase>
+
+<phrase>
+<original>Loading</original>
+<translation>Bourrage</translation>
+</phrase>
+
+<phrase>
+<original>Saving</original>
+<translation>L'enregistrement</translation>
+</phrase>
+
+<phrase>
+<original>File formats</original>
+<translation>Formats de fichiers</translation>
+</phrase>
+
+<phrase>
+<original>Performance</original>
+<translation>Performance</translation>
+</phrase>
+
+<phrase>
+<original>Color and Transparency</original>
+<translation>Couleur et transparence</translation>
+</phrase>
+
+<phrase>
+<original>Updates</original>
+<translation>Mises à jour</translation>
+</phrase>
+
+<phrase>
+<original>Advanced</original>
+<translation>Avancé</translation>
+</phrase>
+
+<phrase>
 <original>Interface options include settings for the main PhotoDemon interface, including things like canvas settings, font selection, and positioning.</original>
 <translation>Options d'interface comprennent des paramètres de l'interface principale PhotoDemon, y compris choses comme paramètres toile, sélection de polices et de positionnement.</translation>
+</phrase>
+
+<phrase>
+<original>Interface Options</original>
+<translation>Options de l'interface</translation>
 </phrase>
 
 <phrase>
@@ -5299,8 +5264,18 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 </phrase>
 
 <phrase>
+<original>Load (Import) Options</original>
+<translation>Options Charger (Importer)</translation>
+</phrase>
+
+<phrase>
 <original>Save options allow you to customize the way image files leave the application.</original>
 <translation>Les Options Enregistrer vous permettent de personnaliser la façon dont les fichiers image quitter l'application.</translation>
+</phrase>
+
+<phrase>
+<original>Save (Export) Options</original>
+<translation>Options Enregistrer (Exporter)</translation>
 </phrase>
 
 <phrase>
@@ -5309,8 +5284,18 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 </phrase>
 
 <phrase>
+<original>File Format Options</original>
+<translation>Options de format de fichier</translation>
+</phrase>
+
+<phrase>
 <original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
 <translation>Options de performance permettent de contrôler si PhotoDemon souligne vitesse ou la qualité lors de l'exécution de certaines tâches.</translation>
+</phrase>
+
+<phrase>
+<original>Performance Options</original>
+<translation>Options de performances</translation>
 </phrase>
 
 <phrase>
@@ -5319,8 +5304,18 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 </phrase>
 
 <phrase>
+<original>Color and Transparency Options</original>
+<translation>Des options Couleur et transparence</translation>
+</phrase>
+
+<phrase>
 <original>Update options control how frequently PhotoDemon checks for updated versions, and how it handles the download of missing plugins.</original>
 <translation>Options de mise à jour des contrôles PhotoDemon contrôler la fréquence à laquelle des versions mises à jour, et comment il gère le téléchargement de plug-ins manquants.</translation>
+</phrase>
+
+<phrase>
+<original>Update Options</original>
+<translation>Mettre à jour les options</translation>
 </phrase>
 
 <phrase>
@@ -5329,11 +5324,16 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 </phrase>
 
 <phrase>
+<original>Advanced Options</original>
+<translation>Options avancées</translation>
+</phrase>
+
+<phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If no new folder is provided, PhotoDemon will use the system's default temp location.</original>
 <translation>ATTENTION: ce dossier est invalide (accès interdit). S'il vous plaît fournir un dossier valide. Si aucun nouveau dossier est fourni, PhotoDemon va utiliser l'emplacement par défaut du système temp.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 255 phrases. 39 were duplicates of existing phrases, so only 216 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 247 phrases. 31 were duplicates of existing phrases, so only 216 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -12935,11 +12935,11 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <!-- END text for VBP_FormComicBook.frm-->
 
-<!-- BEGIN text for buttonStrip.ctl -->
+<!-- BEGIN text for pdButtonToolbox.ctl -->
 
-<!-- buttonStrip.ctl contains 0 phrases. -->
+<!-- pdButtonToolbox.ctl contains 0 phrases. -->
 
-<!-- END text for buttonStrip.ctl-->
+<!-- END text for pdButtonToolbox.ctl-->
 
 <!-- BEGIN text for pdInputMouse.cls -->
 
@@ -12964,12 +12964,6 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 <!-- pdGraphicsPath.cls contains 0 phrases. -->
 
 <!-- END text for pdGraphicsPath.cls-->
-
-<!-- BEGIN text for pdButtonToolbox.ctl -->
-
-<!-- pdButtonToolbox.ctl contains 0 phrases. -->
-
-<!-- END text for pdButtonToolbox.ctl-->
 
 <!-- BEGIN text for pdWindowPainter.cls -->
 
@@ -13291,8 +13285,8 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrasecount>2316</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3945 phrases. -->
-<!-- 1629 are duplicates, so only 2316 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 3937 phrases. -->
+<!-- 1621 are duplicates, so only 2316 unique phrases have been written to file. -->
 <!-- These 2316 phrases contain approximately 13334 total words. -->
 
 </pdData>

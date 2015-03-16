@@ -470,6 +470,15 @@ CHANNEL_RGB   CUSTOM  MOVEABLE       LOADONCALL      RGB.png
 CLOSE_MINI_RED   CUSTOM  MOVEABLE       LOADONCALL      close_red_16.png
 CLOSE_MINI_GRAY  CUSTOM  MOVEABLE       LOADONCALL      close_gray_16.png
 
+//Preferences dialog button images
+PREF_ADVANCED    CUSTOM  MOVEABLE       LOADONCALL      pref_advanced.png
+PREF_COLOR       CUSTOM  MOVEABLE       LOADONCALL      pref_color.png
+PREF_FORMATS     CUSTOM  MOVEABLE       LOADONCALL      pref_formats.png
+PREF_INTERFACE   CUSTOM  MOVEABLE       LOADONCALL      pref_interface.png
+PREF_LOADING     CUSTOM  MOVEABLE       LOADONCALL      pref_folder.png
+PREF_NETWORK     CUSTOM  MOVEABLE       LOADONCALL      pref_network.png
+PREF_PERFORMANCE CUSTOM  MOVEABLE       LOADONCALL      pref_performance.png
+PREF_SAVING      CUSTOM  MOVEABLE       LOADONCALL      pref_floppy.png
 
 //Sample image for rendering sample effects
 //SAMPLEIMAGE  CUSTOM  MOVEABLE        LOADONCALL      reference_flower.jpg

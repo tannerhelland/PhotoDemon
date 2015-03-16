@@ -4262,86 +4262,6 @@ To aktivera skannerstödet, vänligen kopiera EZTW32.dll fil (finns att ladda ne
 </phrase>
 
 <phrase>
-<original>Interface</original>
-<translation>gränssnitt</translation>
-</phrase>
-
-<phrase>
-<original>Interface Options</original>
-<translation>Gränssnittsalternativ</translation>
-</phrase>
-
-<phrase>
-<original>Updates</original>
-<translation>Uppdateringar</translation>
-</phrase>
-
-<phrase>
-<original>Update Options</original>
-<translation>Update Options</translation>
-</phrase>
-
-<phrase>
-<original>Performance</original>
-<translation>Prestanda</translation>
-</phrase>
-
-<phrase>
-<original>Performance Options</original>
-<translation>Prestandaalternativ</translation>
-</phrase>
-
-<phrase>
-<original>Advanced</original>
-<translation>Utökad</translation>
-</phrase>
-
-<phrase>
-<original>Advanced Options</original>
-<translation>Avancerade alternativ</translation>
-</phrase>
-
-<phrase>
-<original>Color and Transparency</original>
-<translation>Färg och genomskinlighet</translation>
-</phrase>
-
-<phrase>
-<original>Color and Transparency Options</original>
-<translation>Färg och transparens alternativ</translation>
-</phrase>
-
-<phrase>
-<original>Loading</original>
-<translation>Loading</translation>
-</phrase>
-
-<phrase>
-<original>Load (Import) Options</original>
-<translation>Läs in (importera) Alternativ</translation>
-</phrase>
-
-<phrase>
-<original>Saving</original>
-<translation>Spara</translation>
-</phrase>
-
-<phrase>
-<original>Save (Export) Options</original>
-<translation>Spara (Export) Alternativ</translation>
-</phrase>
-
-<phrase>
-<original>File formats</original>
-<translation>filformat</translation>
-</phrase>
-
-<phrase>
-<original>File Format Options</original>
-<translation>Val av filformat</translation>
-</phrase>
-
-<phrase>
 <original>(disclaimer populated at run-time)</original>
 <translation>(disclaimer befolkat vid run-time)</translation>
 </phrase>
@@ -5290,8 +5210,53 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
+<original>Interface</original>
+<translation>gränssnitt</translation>
+</phrase>
+
+<phrase>
+<original>Loading</original>
+<translation>Loading</translation>
+</phrase>
+
+<phrase>
+<original>Saving</original>
+<translation>Spara</translation>
+</phrase>
+
+<phrase>
+<original>File formats</original>
+<translation>filformat</translation>
+</phrase>
+
+<phrase>
+<original>Performance</original>
+<translation>Prestanda</translation>
+</phrase>
+
+<phrase>
+<original>Color and Transparency</original>
+<translation>Färg och genomskinlighet</translation>
+</phrase>
+
+<phrase>
+<original>Updates</original>
+<translation>Uppdateringar</translation>
+</phrase>
+
+<phrase>
+<original>Advanced</original>
+<translation>Utökad</translation>
+</phrase>
+
+<phrase>
 <original>Interface options include settings for the main PhotoDemon interface, including things like canvas settings, font selection, and positioning.</original>
 <translation>Gränssnitts alternativ inkluderar inställningarna för huvud PhotoDemon gränssnittet, inklusive saker som duk inställningar, val av teckensnitt och placering.</translation>
+</phrase>
+
+<phrase>
+<original>Interface Options</original>
+<translation>Gränssnittsalternativ</translation>
 </phrase>
 
 <phrase>
@@ -5300,8 +5265,18 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
+<original>Load (Import) Options</original>
+<translation>Läs in (importera) Alternativ</translation>
+</phrase>
+
+<phrase>
 <original>Save options allow you to customize the way image files leave the application.</original>
 <translation>Spara alternativ kan du anpassa hur bildfiler lämna programmet.</translation>
+</phrase>
+
+<phrase>
+<original>Save (Export) Options</original>
+<translation>Spara (Export) Alternativ</translation>
 </phrase>
 
 <phrase>
@@ -5310,8 +5285,18 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
+<original>File Format Options</original>
+<translation>Val av filformat</translation>
+</phrase>
+
+<phrase>
 <original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
 <translation>Prestanda alternativ kan du styra om PhotoDemon betonar hastighet eller kvalitet när du utför vissa uppgifter.</translation>
+</phrase>
+
+<phrase>
+<original>Performance Options</original>
+<translation>Prestandaalternativ</translation>
 </phrase>
 
 <phrase>
@@ -5320,8 +5305,18 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
+<original>Color and Transparency Options</original>
+<translation>Färg och transparens alternativ</translation>
+</phrase>
+
+<phrase>
 <original>Update options control how frequently PhotoDemon checks for updated versions, and how it handles the download of missing plugins.</original>
 <translation>Uppdatering alternativ styr hur ofta PhotoDemon kontroller för uppdaterade versioner, och hur den hanterar nedladdningen av saknade plugins.</translation>
+</phrase>
+
+<phrase>
+<original>Update Options</original>
+<translation>Update Options</translation>
 </phrase>
 
 <phrase>
@@ -5330,11 +5325,16 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
+<original>Advanced Options</original>
+<translation>Avancerade alternativ</translation>
+</phrase>
+
+<phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If no new folder is provided, PhotoDemon will use the system's default temp location.</original>
 <translation>VARNING: denna mapp är ogiltigt (tillträde förbjudet). Ange en giltig mapp. Om ingen ny mapp lämnas kommer PhotoDemon använda systemets standard temp plats.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 255 phrases. 39 were duplicates of existing phrases, so only 216 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 247 phrases. 31 were duplicates of existing phrases, so only 216 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -12935,11 +12935,11 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <!-- END text for VBP_FormComicBook.frm-->
 
-<!-- BEGIN text for buttonStrip.ctl -->
+<!-- BEGIN text for pdButtonToolbox.ctl -->
 
-<!-- buttonStrip.ctl contains 0 phrases. -->
+<!-- pdButtonToolbox.ctl contains 0 phrases. -->
 
-<!-- END text for buttonStrip.ctl-->
+<!-- END text for pdButtonToolbox.ctl-->
 
 <!-- BEGIN text for pdInputMouse.cls -->
 
@@ -12964,12 +12964,6 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 <!-- pdGraphicsPath.cls contains 0 phrases. -->
 
 <!-- END text for pdGraphicsPath.cls-->
-
-<!-- BEGIN text for pdButtonToolbox.ctl -->
-
-<!-- pdButtonToolbox.ctl contains 0 phrases. -->
-
-<!-- END text for pdButtonToolbox.ctl-->
 
 <!-- BEGIN text for pdWindowPainter.cls -->
 
@@ -13291,8 +13285,8 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrasecount>2316</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3945 phrases. -->
-<!-- 1629 are duplicates, so only 2316 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 3937 phrases. -->
+<!-- 1621 are duplicates, so only 2316 unique phrases have been written to file. -->
 <!-- These 2316 phrases contain approximately 13334 total words. -->
 
 </pdData>
