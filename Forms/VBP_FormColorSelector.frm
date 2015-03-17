@@ -25,40 +25,26 @@ Begin VB.Form dialog_ColorSelector
    ScaleWidth      =   769
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
+   Begin PhotoDemon.pdButtonToolbox cmdCapture 
+      Height          =   600
+      Left            =   10320
+      TabIndex        =   38
+      Top             =   3720
+      Visible         =   0   'False
+      Width           =   1095
+      _ExtentX        =   1931
+      _ExtentY        =   1058
+      AutoToggle      =   -1  'True
+   End
    Begin PhotoDemon.pdTextBox txtHex 
       Height          =   315
       Left            =   6480
-      TabIndex        =   38
+      TabIndex        =   37
       Top             =   3735
       Width           =   1455
       _ExtentX        =   2566
       _ExtentY        =   556
       Text            =   "abcdef"
-   End
-   Begin PhotoDemon.jcbutton cmdCapture 
-      Height          =   600
-      Left            =   10320
-      TabIndex        =   37
-      Top             =   3720
-      Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   1058
-      ButtonStyle     =   13
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Caption         =   ""
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormColorSelector.frx":0000
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      TooltipTitle    =   "Select color from screen"
    End
    Begin VB.PictureBox picRecColor 
       Appearance      =   0  'Flat
@@ -791,7 +777,7 @@ Private Const MOUSEEVENTF_LEFTUP As Long = &H4
 
 'Various API declarations for capturing mosue events and retrieving colors accordingly
 Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
-Private Declare Function GetPixel Lib "gdi32" (ByVal srcDC As Long, ByVal X As Long, ByVal Y As Long) As Long
+Private Declare Function GetPixel Lib "gdi32" (ByVal srcDC As Long, ByVal x As Long, ByVal y As Long) As Long
 Private Declare Function GetWindowDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetDesktopWindow Lib "user32" () As Long
 Private Declare Function GetCursorPos Lib "user32" (ByRef lpPoint As POINTAPI) As Long
@@ -803,6 +789,7 @@ Private Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Long, ByVal dx As
 
 'pdInputMouse makes it easier to deal with a custom hand cursor for the many picture boxes on the form
 Private WithEvents cMouse As pdInputMouse
+Attribute cMouse.VB_VarHelpID = -1
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -836,7 +823,7 @@ Private Sub updateHoveredColor()
     
     'Retrieve the color at the given pixel location
     Dim newColor As Long
-    newColor = GetPixel(srcDC, mouseLocation.X, mouseLocation.Y)
+    newColor = GetPixel(srcDC, mouseLocation.x, mouseLocation.y)
     
     'Extract RGB components from the Long-type color
     curRed = ExtractR(newColor)
@@ -860,15 +847,20 @@ Private Sub toggleCaptureMode(ByVal toActivate As Boolean)
     'Activation is requested!
     If toActivate And (Not screenCaptureActive) Then
         
-        screenCaptureActive = True
+        'Disable any current capture or cursor handlers
+        cmdCapture.overrideMouseCapture True
+        prepSpecialMouseHandling False
         
-        'Assign a color dropper cursor to the screen
-        prevCursorHandle = SetCursor(requestCustomCursor("C_PIPETTE", 0, 0))
+        screenCaptureActive = True
         
         'Start capture mode, and use a fake mouse click to retain capture even though the user isn't holding
         ' down a mouse button.  (Thank you to VB coder LaVolpe for this handy trick!)
+        ReleaseCapture
         SetCapture Me.hWnd
         mouse_event MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0
+        
+        'Assign a color dropper cursor to the screen
+        prevCursorHandle = SetCursor(requestCustomCursor("C_PIPETTE", 0, 0))
         
         'Start subclassing relevant mouse event messages
         Set cSubclass = New cSelfSubHookCallback
@@ -893,6 +885,10 @@ Private Sub toggleCaptureMode(ByVal toActivate As Boolean)
         cSubclass.ssc_UnSubclass Me.hWnd
         cSubclass.ssc_Terminate
         Set cSubclass = Nothing
+        
+        'Re-enable any current capture or cursor handlers
+        cmdCapture.overrideMouseCapture False
+        prepSpecialMouseHandling True
         
     End If
 
@@ -970,16 +966,35 @@ Public Sub showDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     drawHueBox
     
     'Apply extra tooltips to certain controls
-    cmdCapture.ToolTip = g_Language.TranslateMessage("Click this button to enable color capturing from anywhere on the screen.")
+    cmdCapture.AssignImage "CS_FROM_SCREEN"
+    cmdCapture.assignTooltip "Click this button to enable color capturing from anywhere on the screen."
     
     'Assign the system hand cursor to all relevant objects
     Set m_Tooltip = New clsToolTip
     makeFormPretty Me, m_Tooltip
     
-    'Manually assign a hand cursor to the main picture box.  Because cursors are assigned on a class basis, this will also assign
-    ' a hand cursor to all other picture boxes on the form.  I'm okay with that.
-    'setHandCursor picColor
-    If g_IsProgramRunning Then
+    'Manually assign a hand cursor to the various picture boxes.
+    prepSpecialMouseHandling True
+    
+    'Initialize an XML engine, which we will use to read/write recent color data to file
+    Set xmlEngine = New pdXML
+    
+    'The XML file will be stored in the Preset path (/Data/Presets)
+    XMLFilename = g_UserPreferences.getPresetPath & "Color_Selector.xml"
+    
+    'If an XML file exists, load its contents now
+    loadRecentColorList
+    
+    'Display the dialog
+    showPDDialog vbModal, Me, True
+
+End Sub
+
+'Capture-from-screen mode requires special handling
+Private Sub prepSpecialMouseHandling(ByVal handleMode As Boolean)
+    
+    If g_IsProgramRunning And handleMode Then
+    
         Set cMouse = New pdInputMouse
         
         With cMouse
@@ -1002,23 +1017,13 @@ Public Sub showDialog(ByVal initialColor As Long, Optional ByRef callingControl 
             Next i
             
             .setSystemCursor IDC_HAND
-        
+            
         End With
         
+    Else
+        Set cMouse = Nothing
     End If
     
-    'Initialize an XML engine, which we will use to read/write recent color data to file
-    Set xmlEngine = New pdXML
-    
-    'The XML file will be stored in the Preset path (/Data/Presets)
-    XMLFilename = g_UserPreferences.getPresetPath & "Color_Selector.xml"
-    
-    'If an XML file exists, load its contents now
-    loadRecentColorList
-    
-    'Display the dialog
-    showPDDialog vbModal, Me, True
-
 End Sub
 
 'If the user has used the color selector before, their last-used colors will be stored to an XML file.  Use this function
@@ -1175,11 +1180,11 @@ Private Sub resetXMLData()
 End Sub
 
 'Refresh the various color box cursors when the mouse enters
-Private Sub cMouse_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub cMouse_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     cMouse.setSystemCursor IDC_HAND, cMouse.getLastHwnd
 End Sub
 
-Private Sub cMouse_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub cMouse_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     cMouse.setSystemCursor IDC_HAND, cMouse.getLastHwnd
 End Sub
 
@@ -1202,19 +1207,19 @@ Private Sub drawHueBox()
     hueBox.createBlank picHue.ScaleWidth, picHue.ScaleHeight
     
     'Simple gradient-ish code implementation of drawing hue
-    Dim Y As Long
-    For Y = 0 To hueBox.getDIBHeight
+    Dim y As Long
+    For y = 0 To hueBox.getDIBHeight
     
         'Based on our x-position, gradient a value between -1 and 5
-        hVal = Y / hueBox.getDIBHeight
+        hVal = y / hueBox.getDIBHeight
         
         'Generate a hue for this position (the 1 and 0.5 correspond to full saturation and half luminance, respectively)
         HSVtoRGB hVal, 1, 1, r, g, b
         
         'Draw the color
-        drawLineToDC hueBox.getDIBDC, 0, Y, picHue.ScaleWidth, Y, RGB(r, g, b)
+        drawLineToDC hueBox.getDIBDC, 0, y, picHue.ScaleWidth, y, RGB(r, g, b)
         
-    Next Y
+    Next y
     
     'Render the hue to the picture box, which will also activate color management
     hueBox.renderToPictureBox picHue
@@ -1239,7 +1244,7 @@ Private Sub syncInterfaceToCurrentColor()
     prepSafeArray psa, primaryBox
     CopyMemory ByVal VarPtrArray(pImageData()), VarPtr(psa), 4
     
-    Dim X As Long, Y As Long, QuickX As Long
+    Dim x As Long, y As Long, QuickX As Long
     
     Dim tmpR As Long, tmpG As Long, tmpB As Long
     
@@ -1247,20 +1252,20 @@ Private Sub syncInterfaceToCurrentColor()
     loopWidth = primaryBox.getDIBWidth - 1
     loopHeight = primaryBox.getDIBHeight - 1
     
-    For X = 0 To loopWidth
-        QuickX = X * 3
-    For Y = 0 To loopHeight
+    For x = 0 To loopWidth
+        QuickX = x * 3
+    For y = 0 To loopHeight
     
         'The x-axis position determines value (0 -> 1)
         'The y-axis position determines saturation (1 -> 0)
-        HSVtoRGB curHue, (loopHeight - Y) / loopHeight, X / loopWidth, tmpR, tmpG, tmpB
+        HSVtoRGB curHue, (loopHeight - y) / loopHeight, x / loopWidth, tmpR, tmpG, tmpB
         
-        pImageData(QuickX + 2, Y) = tmpR
-        pImageData(QuickX + 1, Y) = tmpG
-        pImageData(QuickX, Y) = tmpB
+        pImageData(QuickX + 2, y) = tmpR
+        pImageData(QuickX + 1, y) = tmpG
+        pImageData(QuickX, y) = tmpB
     
-    Next Y
-    Next X
+    Next y
+    Next x
     
     'With our work complete, point the ImageData() array away from the DIBs and deallocate it
     CopyMemory ByVal VarPtrArray(pImageData), 0&, 4
@@ -1405,20 +1410,20 @@ Private Sub primaryBoxClicked(ByVal clickX As Long, ByVal clickY As Long)
 
 End Sub
 
-Private Sub picColor_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    primaryBoxClicked X, Y
+Private Sub picColor_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+    primaryBoxClicked x, y
 End Sub
 
-Private Sub picColor_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    If Button = vbLeftButton Then primaryBoxClicked X, Y
+Private Sub picColor_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+    If Button = vbLeftButton Then primaryBoxClicked x, y
 End Sub
 
-Private Sub picHue_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    hueBoxClicked Y
+Private Sub picHue_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+    hueBoxClicked y
 End Sub
 
-Private Sub picHue_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    If Button = vbLeftButton Then hueBoxClicked Y
+Private Sub picHue_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+    If Button = vbLeftButton Then hueBoxClicked y
 End Sub
 
 Private Sub trimHSV(ByRef hsvValue As Double)
@@ -1450,10 +1455,10 @@ Private Sub renderSampleDIB(ByRef dstDIB As pdDIB, ByVal dibColorType As colorCh
     gradientMax = dstDIB.getDIBWidth
     
     'Simple gradient-ish code implementation of drawing any individual color component
-    Dim X As Long
-    For X = 0 To dstDIB.getDIBWidth
+    Dim x As Long
+    For x = 0 To dstDIB.getDIBWidth
     
-        gradientValue = X / gradientMax
+        gradientValue = x / gradientMax
     
         'We handle RGB separately from HSV
         If dibColorType <= ccBlue Then
@@ -1491,9 +1496,9 @@ Private Sub renderSampleDIB(ByRef dstDIB As pdDIB, ByVal dibColorType As colorCh
         End If
         
         'Draw the color
-        drawLineToDC dstDIB.getDIBDC, X, 0, X, dstDIB.getDIBHeight, RGB(r, g, b)
+        drawLineToDC dstDIB.getDIBDC, x, 0, x, dstDIB.getDIBHeight, RGB(r, g, b)
         
-    Next X
+    Next x
     
 End Sub
 
@@ -1528,12 +1533,12 @@ Private Sub picRecColor_Click(Index As Integer)
 
 End Sub
 
-Private Sub picSampleHSV_MouseDown(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
-    hsvBoxClicked Index, X
+Private Sub picSampleHSV_MouseDown(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+    hsvBoxClicked Index, x
 End Sub
 
-Private Sub picSampleHSV_MouseMove(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
-    If Button = vbLeftButton Then hsvBoxClicked Index, X
+Private Sub picSampleHSV_MouseMove(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+    If Button = vbLeftButton Then hsvBoxClicked Index, x
 End Sub
 
 'Whenever one of the HSV sample boxes is clicked, this function is called; it calculates new RGB/HSV values, then redraws the interface
@@ -1567,12 +1572,12 @@ Private Sub hsvBoxClicked(ByVal boxIndex As Long, ByVal xPos As Long)
 
 End Sub
 
-Private Sub picSampleRGB_MouseDown(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
-    rgbBoxClicked Index, X
+Private Sub picSampleRGB_MouseDown(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+    rgbBoxClicked Index, x
 End Sub
 
-Private Sub picSampleRGB_MouseMove(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
-    If Button = vbLeftButton Then rgbBoxClicked Index, X
+Private Sub picSampleRGB_MouseMove(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+    If Button = vbLeftButton Then rgbBoxClicked Index, x
 End Sub
 
 'Whenever one of the RGB sample boxes is clicked, this function is called; it calculates new RGB/HSV values, then redraws the interface

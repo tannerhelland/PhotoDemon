@@ -293,12 +293,24 @@ Private m_DoNotCaptureOnButtonPress As Boolean
 ' hwnd here.
 Private m_LastMsgHWnd As Long
 
+'If the mouse is currently captured, this will be set to TRUE
+Private m_MouseHasBeenCaptured As Boolean
+
 Public Function getLastHwnd() As Long
     getLastHwnd = m_LastMsgHWnd
 End Function
 
 Public Sub setCaptureOverride(ByVal newCaptureMode As Boolean)
+    
     m_DoNotCaptureOnButtonPress = newCaptureMode
+    
+    'Also, release a current capture, if any
+    If newCaptureMode And m_MouseHasBeenCaptured Then
+        m_CaptureCounter = 0
+        ReleaseCapture
+        m_MouseHasBeenCaptured = False
+    End If
+    
 End Sub
 
 'For details, see the declaration for m_IgnoreLastMessage
@@ -445,28 +457,33 @@ End Function
 'Assign a cursor to the hWnd collection.  Call this function without a parameter to reset the cursor to the default arrow.
 Public Sub setSystemCursor(Optional ByVal systemCursorType As SystemCursorConstant = IDC_DEFAULT, Optional ByVal confirmHwnd As Long = 0)
     
-    'Load the relevant cursor handle
-    Dim tmpCursorHandle As Long
+    'Ignore requests while an override is active
+    If Not m_OverrideSetCursorMessages Then
     
-    If systemCursorType = IDC_DEFAULT Then
-        tmpCursorHandle = LoadCursor(0, IDC_ARROW)
-    Else
-        tmpCursorHandle = LoadCursor(0, systemCursorType)
-    End If
-    
-    'Check for duplicate cursor requests, and ignore them as necessary
-    If (GetCursor() <> tmpCursorHandle) Then
+        'Load the relevant cursor handle
+        Dim tmpCursorHandle As Long
         
-        m_CursorHandle = tmpCursorHandle
-        
-        If confirmHwnd = 0 Then
-            applyCursorToHwnds False
+        If systemCursorType = IDC_DEFAULT Then
+            tmpCursorHandle = LoadCursor(0, IDC_ARROW)
         Else
-            If getIndexFromHwnd(confirmHwnd) >= 0 Then
-                applyCursorToHwnds False, getIndexFromHwnd(confirmHwnd)
-            Else
+            tmpCursorHandle = LoadCursor(0, systemCursorType)
+        End If
+        
+        'Check for duplicate cursor requests, and ignore them as necessary
+        If (GetCursor() <> tmpCursorHandle) Then
+            
+            m_CursorHandle = tmpCursorHandle
+            
+            If confirmHwnd = 0 Then
                 applyCursorToHwnds False
+            Else
+                If getIndexFromHwnd(confirmHwnd) >= 0 Then
+                    applyCursorToHwnds False, getIndexFromHwnd(confirmHwnd)
+                Else
+                    applyCursorToHwnds False
+                End If
             End If
+            
         End If
         
     End If
@@ -480,12 +497,16 @@ End Sub
 ' custom cursors at exit time, so this class need not concern itself with unloading requested cursors.
 Public Sub setPNGCursor(ByVal pngResourceName As String, Optional ByVal cursorHotspotX As Long = 0, Optional ByVal cursorHotspotY As Long = 0)
     
-    Dim tmpCursorHandle As Long
-    tmpCursorHandle = Icon_and_Cursor_Handler.requestCustomCursor(pngResourceName, cursorHotspotX, cursorHotspotY)
+    If (Not m_OverrideSetCursorMessages) Then
     
-    If m_CursorHandle <> tmpCursorHandle Then
-        m_CursorHandle = tmpCursorHandle
-        applyCursorToHwnds False
+        Dim tmpCursorHandle As Long
+        tmpCursorHandle = Icon_and_Cursor_Handler.requestCustomCursor(pngResourceName, cursorHotspotX, cursorHotspotY)
+        
+        If m_CursorHandle <> tmpCursorHandle Then
+            m_CursorHandle = tmpCursorHandle
+            applyCursorToHwnds False
+        End If
+        
     End If
     
 End Sub
@@ -495,19 +516,27 @@ End Sub
 ' WM_SETCURSOR messages every time the mouse is moved.  Set the optional parameter to TRUE to cache the existing class
 ' cursor and overwrite it with NULL.
 Private Sub applyCursorToHwnds(Optional ByVal removeExistingClassCursor As Boolean = False, Optional ByVal currentIndex As Long = 0)
-
-    'If removeExistingClassCursor is set, use SetClassLong to remove any existing class-level cursor definition
-    If removeExistingClassCursor Then m_PrevClassCursorHandle = SetClassLong(m_TrackingData(PDIT_DEFAULT, currentIndex), GCL_HCURSOR, 0&)
     
-    'Apply the new cursor using SetCursor
-    SetCursor m_CursorHandle
+    If (Not m_OverrideSetCursorMessages) Then
+    
+        'If removeExistingClassCursor is set, use SetClassLong to remove any existing class-level cursor definition
+        If removeExistingClassCursor Then m_PrevClassCursorHandle = SetClassLong(m_TrackingData(PDIT_DEFAULT, currentIndex), GCL_HCURSOR, 0&)
+        
+        'Apply the new cursor using SetCursor
+        SetCursor m_CursorHandle
+        
+    End If
 
 End Sub
 
 'Partner to applyCursorToHwnds, above.  To be used only when the mouse leaves a cursor-controlled area.
 Private Sub resetClassCursor(Optional ByVal currentIndex As Long = 0)
-    SetClassLong m_TrackingData(PDIT_DEFAULT, currentIndex), GCL_HCURSOR, LoadCursor(0, IDC_ARROW) 'For now, always reset the cursor to an arrow.  This is necessary until we can fix some bad SetClassLong handling elsewhere in PD (via setHandCursor, when applied to picture boxes) :: m_PrevClassCursorHandle
-    SetCursor LoadCursor(0, IDC_ARROW)
+    
+    If (Not m_OverrideSetCursorMessages) Then
+        SetClassLong m_TrackingData(PDIT_DEFAULT, currentIndex), GCL_HCURSOR, LoadCursor(0, IDC_ARROW) 'For now, always reset the cursor to an arrow.  This is necessary until we can fix some bad SetClassLong handling elsewhere in PD (via setHandCursor, when applied to picture boxes) :: m_PrevClassCursorHandle
+        SetCursor LoadCursor(0, IDC_ARROW)
+    End If
+    
 End Sub
 
 'Given an hWnd, populate a generic TrackMouseEvent struct and pass it to the TrackMouseEvent function
@@ -534,7 +563,9 @@ End Function
 Private Sub Class_Terminate()
 
     'Release all subclassing and hooking
+    cSubclass.shk_TerminateHooks
     cSubclass.ssc_Terminate
+    Set cSubclass = Nothing
     
 End Sub
 
@@ -1023,7 +1054,10 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 m_CaptureCounter = m_CaptureCounter + 1
                 
                 'If we have not captured the mouse, capture it now
-                If (m_CaptureCounter = 1) And (Not m_DoNotCaptureOnButtonPress) Then SetCapture lng_hWnd
+                If (m_CaptureCounter = 1) And (Not m_DoNotCaptureOnButtonPress) And (Not m_MouseHasBeenCaptured) Then
+                    SetCapture lng_hWnd
+                    m_MouseHasBeenCaptured = True
+                End If
                 
                 'Reset the mouse move counter
                 m_MouseMoveCount = 0
@@ -1070,9 +1104,10 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
                 'Decrement the capture counter; if all buttons have been released, release our capture entirely
                 m_CaptureCounter = m_CaptureCounter - 1
-                If (m_CaptureCounter <= 0) And (Not m_DoNotCaptureOnButtonPress) Then
+                If (m_CaptureCounter <= 0) And (Not m_DoNotCaptureOnButtonPress) And m_MouseHasBeenCaptured Then
                     m_CaptureCounter = 0
                     ReleaseCapture
+                    m_MouseHasBeenCaptured = False
                 End If
                 
                 'Because mouse up/down events tend to focus on the use of a single button, it makes more sense for us to
