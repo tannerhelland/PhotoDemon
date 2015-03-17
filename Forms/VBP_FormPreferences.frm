@@ -29,8 +29,8 @@ Begin VB.Form FormPreferences
       Left            =   120
       TabIndex        =   65
       Top             =   120
-      Width           =   2535
-      _ExtentX        =   4471
+      Width           =   2700
+      _ExtentX        =   4763
       _ExtentY        =   11774
    End
    Begin VB.CommandButton cmdReset 
@@ -1538,13 +1538,6 @@ Begin VB.Form FormPreferences
       TabIndex        =   62
       Top             =   6900
       Width           =   11535
-   End
-   Begin VB.Line lneVertical 
-      BorderColor     =   &H8000000D&
-      X1              =   184
-      X2              =   184
-      Y1              =   8
-      Y2              =   448
    End
 End
 Attribute VB_Name = "FormPreferences"
