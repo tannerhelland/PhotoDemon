@@ -644,6 +644,13 @@ Private Sub redrawBackBuffer()
 
 End Sub
 
+'The color selector dialog has the unique need of capturing colors from anywhere on the screen, using a custom hook solution.  For it to work,
+' the pdInputMouse class inside this button control must forcibly release its capture.
+Public Sub overrideMouseCapture(ByVal newState As Boolean)
+    cMouseEvents.setCaptureOverride newState
+    cMouseEvents.setCursorOverrideState newState
+End Sub
+
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
 Public Sub assignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)

@@ -480,5 +480,7 @@ PREF_NETWORK     CUSTOM  MOVEABLE       LOADONCALL      pref_network.png
 PREF_PERFORMANCE CUSTOM  MOVEABLE       LOADONCALL      pref_performance.png
 PREF_SAVING      CUSTOM  MOVEABLE       LOADONCALL      pref_floppy.png
 
+//Color selector 
+CS_FROM_SCREEN   CUSTOM  MOVEABLE       LOADONCALL      color_selector_from_screen.png
 //Sample image for rendering sample effects
 //SAMPLEIMAGE  CUSTOM  MOVEABLE        LOADONCALL      reference_flower.jpg
