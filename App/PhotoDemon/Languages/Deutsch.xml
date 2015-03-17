@@ -27,37 +27,37 @@
 
 <phrase>
 <original>Decrease speed</original>
-<translation></translation>
+<translation>langsamer scrollen</translation>
 </phrase>
 
 <phrase>
 <original>Increase speed</original>
-<translation></translation>
+<translation>schneller scrollen</translation>
 </phrase>
 
 <phrase>
 <original>Pause scrolling</original>
-<translation></translation>
+<translation>Scrolling anhalten</translation>
 </phrase>
 
 <phrase>
 <original>click to visit</original>
-<translation>Bitte hier klicken!</translation>
+<translation>Zum Besuchen bitte hier klicken!</translation>
 </phrase>
 
 <phrase>
 <original>the fast, free, portable photo editor</original>
-<translation>die schnelle, freie, portable Bildbearbeitung</translation>
+<translation>Die schnelle, freie und portable Bildbearbeitung</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon is the product of many talented contributors, including</original>
-<translation>PhotoDemon ist das Produkt von vielen talentierten Mitwirkenden, darunter</translation>
+<translation>PhotoDemon ist das Produkt vieler talentierter Mitwirkender, darunter</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon is released under an open-source BSD license</original>
-<translation>PhotoDemon steht unter einer Open-Source BSD-Lizenz</translation>
+<translation>PhotoDemon ist unter einer Open-Source BSD-Lizenz freigegeben</translation>
 </phrase>
 
 <phrase>
@@ -67,22 +67,22 @@
 
 <phrase>
 <original>Please note that PhotoDemon uses several third-party plugins</original>
-<translation>Bitte beachten Sie, dass PhotoDemon mehrere Plugins von Drittanbietern verwendet</translation>
+<translation>Bitte beachten Sie, dass PhotoDemon einige Plugins von Drittanbietern verwendet</translation>
 </phrase>
 
 <phrase>
 <original>These plugins are also free and open source</original>
-<translation>Diese Plugins sind ebenfalls kostenlos Open Source Software</translation>
+<translation>Diese Plugins sind ebenfalls kostenlos und Open Source</translation>
 </phrase>
 
 <phrase>
 <original>...but they are governed by their own licenses, separate from PhotoDemon</original>
-<translation>... aber sie haben ihre eigenen Lizenzregeln, nicht die von PhotoDemon</translation>
+<translation>... werden aber durch ihre eigenen Lizenzen geregelt, getrennt von PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>For more information on plugin licensing, please visit</original>
-<translation>Weitere Informationen über Plugin-Lizenzen finden Sie unter</translation>
+<translation>Weitere Informationen zur Plugin-Lizenzierung finden Sie unter</translation>
 </phrase>
 
 <phrase>
@@ -150,37 +150,37 @@
 
 <phrase>
 <original>Initializing all program directories</original>
-<translation>Alle Programmordner initialisieren</translation>
+<translation>Alle Programmverzeichnisse initialisieren</translation>
 </phrase>
 
 <phrase>
 <original>Loading all user settings</original>
-<translation>Benutzereinstellungen laden</translation>
+<translation>Alle Benutzereinstellungen laden</translation>
 </phrase>
 
 <phrase>
 <original>Scanning for language files</original>
-<translation>Sprachdateien suchen</translation>
+<translation>Nach Sprachdateien suchen</translation>
 </phrase>
 
 <phrase>
 <original>Determining which language to use</original>
-<translation>Benutzte Sprache festlegen</translation>
+<translation>Verwendete Sprache festlegen</translation>
 </phrase>
 
 <phrase>
 <original>Applying selected language</original>
-<translation>Gewählte Sprache anwenden</translation>
+<translation>Ausgewählte Sprache anwenden</translation>
 </phrase>
 
 <phrase>
 <original>Analyzing current monitor setup</original>
-<translation>Monitoreinstellung analysieren</translation>
+<translation>Aktuelle Monitoreinstellung analysieren</translation>
 </phrase>
 
 <phrase>
 <original>Loading plugins</original>
-<translation>Plug-Ins laden</translation>
+<translation>Plugins laden</translation>
 </phrase>
 
 <phrase>
@@ -190,12 +190,12 @@
 
 <phrase>
 <original>Initializing theme engine</original>
-<translation>Thema initialisieren</translation>
+<translation>Themen-Engine initialisieren</translation>
 </phrase>
 
 <phrase>
 <original>Initializing viewport engine</original>
-<translation>Viewport initialisieren</translation>
+<translation>Viewport-Engine initialisieren</translation>
 </phrase>
 
 <phrase>
@@ -225,7 +225,7 @@
 
 <phrase>
 <original>Finishing final program initialization steps</original>
-<translation>Letzte Initialisierungsschritte ausführen</translation>
+<translation>Letzte Initialisierungsschritte werden ausgeführt</translation>
 </phrase>
 
 <phrase>
@@ -282,27 +282,27 @@ Bitte benutzen Sie ein anderes Programm, um das Bild in einem bekannteren Format
 
 <phrase>
 <original>frame %1</original>
-<translation></translation>
+<translation>Einzelbild %1</translation>
 </phrase>
 
 <phrase>
 <original>icon (%1x%2)</original>
-<translation></translation>
+<translation>Icon (%1 x %2)</translation>
 </phrase>
 
 <phrase>
 <original>icon (%1x%2, %3 bpp)</original>
-<translation></translation>
+<translation>Icon (%1 x %2, mit %3 bpp)</translation>
 </phrase>
 
 <phrase>
 <original>page %1</original>
-<translation></translation>
+<translation>Seite %1</translation>
 </phrase>
 
 <phrase>
 <original>frame</original>
-<translation>Rahmen</translation>
+<translation>Einzelbild</translation>
 </phrase>
 
 <phrase>
@@ -345,7 +345,7 @@ Wenn es/sie auf einem Wechselmedium (DVD, USB-Stick usw.) gespeichert war(en), m
 
 <phrase>
 <original>Image files missing</original>
-<translation>Bilddatei(en) nicht zu finden</translation>
+<translation>Bilddatei(en) nicht auffindbar</translation>
 </phrase>
 
 <phrase>
@@ -378,7 +378,7 @@ Bitte benutzen Sie ein anderes Programm, um es/sie in einem bekannteren Format z
 
 <phrase>
 <original>Selected file is not in PDI format.  Load abandoned.</original>
-<translation>Die gewählte Datei ist nicht im PDI-Format. Laden abgebrochen.</translation>
+<translation>Die ausgewählte Datei ist nicht im PDI-Format. Laden abgebrochen.</translation>
 </phrase>
 
 <phrase>
@@ -735,7 +735,7 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 
 <phrase>
 <original>Image successfully quantized to %1 unique colors.</original>
-<translation>Das Bild wurde auf %1 einzelne Farben quantisiert.</translation>
+<translation>Das Bild wurde auf %1 eindeutige Farben quantisiert.</translation>
 </phrase>
 
 <phrase>
@@ -780,7 +780,7 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 
 <phrase>
 <original>Save an image</original>
-<translation>Speichern Sie ein Bild</translation>
+<translation>Ein Bild speichern</translation>
 </phrase>
 
 <phrase>
@@ -886,7 +886,7 @@ Danach werden die verlustfreien Kopien im gleichen Ordner wie beim ersten Speich
 
 <phrase>
 <original>when changing aspect ratio, fit image to new size by</original>
-<translation>Was tun, wenn sich das Seitenverhältnis ändert</translation>
+<translation>Was geschehen soll, wenn sich das Seitenverhältnis ändert</translation>
 </phrase>
 
 <phrase>
@@ -931,7 +931,7 @@ Danach werden die verlustfreien Kopien im gleichen Ordner wie beim ersten Speich
 
 <phrase>
 <original>Bilinear</original>
-<translation> Bilinear</translation>
+<translation>Bilinear</translation>
 </phrase>
 
 <phrase>
@@ -941,7 +941,7 @@ Danach werden die verlustfreien Kopien im gleichen Ordner wie beim ersten Speich
 
 <phrase>
 <original>B-Spline</original>
-<translation> B-Spline</translation>
+<translation>B-Spline</translation>
 </phrase>
 
 <phrase>
@@ -956,7 +956,7 @@ Danach werden die verlustfreien Kopien im gleichen Ordner wie beim ersten Speich
 
 <phrase>
 <original>Sinc (Lanczos 3-lobe)</original>
-<translation> Sinc (Lanczos 3-lobe)</translation>
+<translation>Sinc (Lanczos 3-lobe)</translation>
 </phrase>
 
 <phrase>
@@ -981,7 +981,7 @@ Danach werden die verlustfreien Kopien im gleichen Ordner wie beim ersten Speich
 
 <phrase>
 <original>fitting exclusively, and cropping as necessary</original>
-<translation>Bild anpassen, notfalls zuschneiden</translation>
+<translation>Bild ohne Montage anpassen, notfalls zuschneiden</translation>
 </phrase>
 
 <phrase>
@@ -996,7 +996,7 @@ Danach werden die verlustfreien Kopien im gleichen Ordner wie beim ersten Speich
 
 <phrase>
 <original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
-<translation>Wenn das Seitenverhältnis eines Bildes verändert wird, kann eine unerwünschte Verzerrung auftreten. PhotoDemon kann dies durch Hinzufügen leerer Ränder oder durch Zuschneiden vermeiden.</translation>
+<translation>Wenn das Seitenverhältnis eines Bildes geändert wird, kann eine unerwünschte Verzerrung auftreten. PhotoDemon kann dies durch Hinzufügen leerer Ränder oder durch Zuschneiden vermeiden.</translation>
 </phrase>
 
 <phrase>
@@ -1136,7 +1136,7 @@ Danach werden die verlustfreien Kopien im gleichen Ordner wie beim ersten Speich
 
 <phrase>
 <original>Sampling image data to determine true contrast</original>
-<translation>echten Kontrast in den Bilddaten feststellen</translation>
+<translation>Echten Kontrast aus den Bilddaten ermitteln</translation>
 </phrase>
 
 <phrase>
@@ -1304,10 +1304,9 @@ Bitte melden Sie das unter dem Menüpunkt "Hilfe > Fehlerbericht senden".</trans
 
 - If this image file came from a digital camera, scanner, or other image editing program, it's possible that PhotoDemon simply doesn't understand this particular file format.  Please save the image in a generic format (such as JPEG or PNG), then reload it.</original>
 <translation>Leider scheint diese Bilddatei ungültig zu sein. Das kann passieren, wenn eine Datei gar keine Bilddaten oder Bilddaten in einem nicht verwendbaren Format enthält.
+- Wenn Sie dieses Bild aus dem Internet haben, könnte auch der Download vorzeitig beendet worden sein. Bitte versuchen Sie das Bild erneut zu laden.
 
- - Wenn Sie dieses Bild aus dem Internet haben, könnte auch der Download vorzeitig beendet worden sein. Bitte versuchen Sie das Bild erneut zu laden.
-
- - Wenn diese Bilddatei von einer Digitalkamera, einem Scanner oder einem anderen Bildbearbeitungsprogramm stammt, versteht PhotoDemon dieses besondere Dateiformat vielleicht einfach nicht. Bitte speichern Sie das Bild in einem bekannteren Format (wie JPEG oder PNG) und laden es nochmal.</translation>
+- Wenn diese Bilddatei von einer Digitalkamera, einem Scanner oder einem anderen Bildbearbeitungsprogramm stammt, versteht PhotoDemon dieses besondere Dateiformat vielleicht einfach nicht. Bitte speichern Sie das Bild in einem bekannteren Format (wie JPEG oder PNG) und laden es nochmal.</translation>
 </phrase>
 
 <phrase>
@@ -1373,7 +1372,6 @@ Beschreibung: %2
 
 Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
 <translation>Vielen Dank für Ihren Fehlerbericht! Damit der Fehler schnellstmöglich bearbeitet wird, möchte PhotoDemon Ihnen noch eine Frage stellen:
-
 Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, antworten Sie bitte mit "Nein")</translation>
 </phrase>
 
@@ -1821,12 +1819,12 @@ In Version 6.0 wurden das Format der PhotoDemon-Makrodateien überarbeitet, um n
 
 <phrase>
 <original>Accelerating to 88mph in order to antique-ify this image</original>
-<translation>Beschleunigung auf 999 km/h um das Bild alt aussehen zu lassen</translation>
+<translation>Beschleunigung auf 88 Meilen pro Stunde, um das Bild sehr alt aussehen zu lassen ;)</translation>
 </phrase>
 
 <phrase>
 <original>Engaging hipsters to perform sepia conversion</original>
-<translation>Sepia-Umwandlung durchzuführen</translation>
+<translation>Mit den Hipstern Sepia-Umwandlung durchführen</translation>
 </phrase>
 
 <phrase>
@@ -1861,7 +1859,7 @@ In Version 6.0 wurden das Format der PhotoDemon-Makrodateien überarbeitet, um n
 
 <phrase>
 <original>This image contains %1 unique colors.</original>
-<translation>Dieses Bild enthält %1 einzelne Farbe(n).</translation>
+<translation>Dieses Bild enthält %1 eindeutige Farbe(n).</translation>
 </phrase>
 
 <phrase>
@@ -2042,7 +2040,7 @@ Sie können das Unterprogramm MenuTest () im Modul Filters_Miscellaneous verwend
 
 <phrase>
 <original>Repeat &last action</original>
-<translation>Letzte Aktion wiederholen</translation>
+<translation>Letzten Vorgang wiederholen</translation>
 </phrase>
 
 <phrase>
@@ -2067,7 +2065,7 @@ Sie können das Unterprogramm MenuTest () im Modul Filters_Miscellaneous verwend
 
 <phrase>
 <original>Copy from layer</original>
-<translation>Von der Ebene kopieren</translation>
+<translation>Aus der Ebene kopieren</translation>
 </phrase>
 
 <phrase>
@@ -2197,7 +2195,7 @@ Sie können das Unterprogramm MenuTest () im Modul Filters_Miscellaneous verwend
 
 <phrase>
 <original>Tile</original>
-<translation>Kacheln </translation>
+<translation>Kacheln</translation>
 </phrase>
 
 <phrase>
@@ -2212,7 +2210,7 @@ Sie können das Unterprogramm MenuTest () im Modul Filters_Miscellaneous verwend
 
 <phrase>
 <original>Count unique colors</original>
-<translation>Einzelne Farben zählen</translation>
+<translation>Eindeutige Farben zählen</translation>
 </phrase>
 
 <phrase>
@@ -3037,17 +3035,17 @@ Sie können das Unterprogramm MenuTest () im Modul Filters_Miscellaneous verwend
 
 <phrase>
 <original>Record macro</original>
-<translation></translation>
+<translation>Makro aufnehmen</translation>
 </phrase>
 
 <phrase>
 <original>Start recording</original>
-<translation></translation>
+<translation>Aufnahme beginnen</translation>
 </phrase>
 
 <phrase>
 <original>Stop recording</original>
-<translation></translation>
+<translation>Aufnahme beenden</translation>
 </phrase>
 
 <phrase>
@@ -3057,12 +3055,12 @@ Sie können das Unterprogramm MenuTest () im Modul Filters_Miscellaneous verwend
 
 <phrase>
 <original>Recent macros</original>
-<translation></translation>
+<translation>Zuletzt verwendete Makros</translation>
 </phrase>
 
 <phrase>
 <original>Clear recent macro list</original>
-<translation></translation>
+<translation>Liste der zuletzt verwendeten Makros löschen</translation>
 </phrase>
 
 <phrase>
@@ -3237,7 +3235,7 @@ Sie können das Unterprogramm MenuTest () im Modul Filters_Miscellaneous verwend
 
 <phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
-<translation></translation>
+<translation>Es gibt eine neue Version von PhotoDemon! Das Update wird automatisch im Hintergrund durchgeführt.</translation>
 </phrase>
 
 <phrase>
@@ -3249,7 +3247,9 @@ Sie können das Unterprogramm MenuTest () im Modul Filters_Miscellaneous verwend
 <original>A new version of PhotoDemon is available!
 
 The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
-<translation></translation>
+<translation>Es gibt eine neue Version von PhotoDemon!
+
+Das Update wird automatisch im Hintergrund durchgeführt. Sie werden benachrichtigt, wenn es fertig ist.</translation>
 </phrase>
 
 <phrase>
@@ -4260,13 +4260,93 @@ Um mit dem Scanner arbeiten zu können, kopieren Sie bitte die Datei EZTW32.dll 
 </phrase>
 
 <phrase>
+<original>Interface</original>
+<translation>Interface</translation>
+</phrase>
+
+<phrase>
+<original>Interface Options</original>
+<translation>Interface-Einstellungen</translation>
+</phrase>
+
+<phrase>
+<original>Updates</original>
+<translation>Updates</translation>
+</phrase>
+
+<phrase>
+<original>Update Options</original>
+<translation>Update-Einstellungen</translation>
+</phrase>
+
+<phrase>
+<original>Performance</original>
+<translation>Leistung</translation>
+</phrase>
+
+<phrase>
+<original>Performance Options</original>
+<translation>Leistungseinstellungen</translation>
+</phrase>
+
+<phrase>
+<original>Advanced</original>
+<translation>Erweitert</translation>
+</phrase>
+
+<phrase>
+<original>Advanced Options</original>
+<translation>Erweiterte Einstellungen</translation>
+</phrase>
+
+<phrase>
+<original>Color and Transparency</original>
+<translation>Farbe und Transparenz</translation>
+</phrase>
+
+<phrase>
+<original>Color and Transparency Options</original>
+<translation>Farb- und Transparenz-Einstellungen</translation>
+</phrase>
+
+<phrase>
+<original>Loading</original>
+<translation>Laden</translation>
+</phrase>
+
+<phrase>
+<original>Load (Import) Options</original>
+<translation>Lade-/Import-Einstellungen</translation>
+</phrase>
+
+<phrase>
+<original>Saving</original>
+<translation>Speichern</translation>
+</phrase>
+
+<phrase>
+<original>Save (Export) Options</original>
+<translation>Speicher-/Export-Einstellungen</translation>
+</phrase>
+
+<phrase>
+<original>File formats</original>
+<translation>Dateiformate</translation>
+</phrase>
+
+<phrase>
+<original>File Format Options</original>
+<translation>Dateiformat-Einstellungen</translation>
+</phrase>
+
+<phrase>
 <original>(disclaimer populated at run-time)</original>
 <translation>(Haftungsausschluss wird zur Laufzeit gefüllt)</translation>
 </phrase>
 
 <phrase>
 <original>update language files independently</original>
-<translation>getrennte Updates für Sprachdateien</translation>
+<translation>Updates für Sprachdateien getrennt durchführen</translation>
 </phrase>
 
 <phrase>
@@ -4276,12 +4356,12 @@ Um mit dem Scanner arbeiten zu können, kopieren Sie bitte die Datei EZTW32.dll 
 
 <phrase>
 <original>update plugins independently</original>
-<translation>getrennte Updates für Plugins</translation>
+<translation>Updates für Plugins getrennt durchführen</translation>
 </phrase>
 
 <phrase>
 <original>allow updates from these tracks</original>
-<translation>Updates aus diesen Bereichen zulassen</translation>
+<translation>Updates aus folgenden Bereichen zulassen</translation>
 </phrase>
 
 <phrase>
@@ -4291,7 +4371,7 @@ Um mit dem Scanner arbeiten zu können, kopieren Sie bitte die Datei EZTW32.dll 
 
 <phrase>
 <original>notify me when an update is ready</original>
-<translation></translation>
+<translation>Ich möchte erfahren, wenn ein Update fertig ist</translation>
 </phrase>
 
 <phrase>
@@ -4526,7 +4606,7 @@ Um mit dem Scanner arbeiten zu können, kopieren Sie bitte die Datei EZTW32.dll 
 
 <phrase>
 <original>count unique colors in incoming images (to determine optimal color depth)</original>
-<translation>einzelne Farben in eingehenden Bilder zählen (um die optimale Farbtiefe zu bestimmen)</translation>
+<translation>eindeutige Farben in eingehenden Bilder zählen (um die optimale Farbtiefe zu bestimmen)</translation>
 </phrase>
 
 <phrase>
@@ -4621,7 +4701,7 @@ Um mit dem Scanner arbeiten zu können, kopieren Sie bitte die Datei EZTW32.dll 
 
 <phrase>
 <original>Click to open a browse-for-folder dialog</original>
-<translation> Für den Dialog "Ordner suchen" anklicken</translation>
+<translation>Für den Dialog "Ordner suchen" anklicken</translation>
 </phrase>
 
 <phrase>
@@ -4676,7 +4756,7 @@ Um mit dem Scanner arbeiten zu können, kopieren Sie bitte die Datei EZTW32.dll 
 
 <phrase>
 <original>Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.</original>
-<translation>Sie haben die Speicher-Aufforderung abgeschaltet (über Bearbeiten > Einstellungen). Deshalb erhalten Sie KEINE Aufforderung, dieses Bild vor dem Schließen zu speichern.</translation>
+<translation>Sie haben die Speicher-Aufforderung abgeschaltet (über den Menüpunkt "Werkzeuge > Einstellungen"). Deshalb erhalten Sie KEINE Aufforderung, dieses Bild vor dem Schließen zu speichern.</translation>
 </phrase>
 
 <phrase>
@@ -4730,7 +4810,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>descriptive - full location, including folder(s)</original>
-<translation>ausführlich - voller Standort mit Ordnerpfad</translation>
+<translation>ausführlich - vollständiger Speicherort, mit Ordnerpfad</translation>
 </phrase>
 
 <phrase>
@@ -4750,12 +4830,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>descriptive - full locations, including folder(s)</original>
-<translation>ausführlich - voller Standort mit Ordnerpfad</translation>
+<translation>ausführlich - vollständigere Speicherorte, mit Ordnerpfad(en)</translation>
 </phrase>
 
 <phrase>
 <original>The "Recent Files" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations.</original>
-<translation>Das Menü "Zuletzt geöffnete Dateien" wird von Windows in der Breite beschränkt. Damit es nicht "überläuft", kann PhotoDemon nur Bildnamen statt vollständige Standorte anzeigen.</translation>
+<translation>Das Menü "Zuletzt geöffnete Dateien" wird von Windows in der Breite beschränkt. Damit es nicht "überläuft", kann PhotoDemon nur Bildnamen statt vollständiger Speicherorte anzeigen.</translation>
 </phrase>
 
 <phrase>
@@ -4795,7 +4875,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>to match the image file's original color depth</original>
-<translation>... auf die Farbtiefe der ursprünglichen Bilddatei</translation>
+<translation>auf die Farbtiefe der ursprünglichen Bilddatei</translation>
 </phrase>
 
 <phrase>
@@ -4820,7 +4900,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>the last image format I used in the "Save As" screen</original>
-<translation>das Bildformat, das bei "Speichern als" zuletzt verwendet wurde</translation>
+<translation>das Dateiformat, das bei "Speichern als" zuletzt verwendet wurde</translation>
 </phrase>
 
 <phrase>
@@ -4830,12 +4910,12 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>overwrite the current file (standard behavior)</original>
-<translation>vorhandene Datei überschreiben (Das ist Standard)</translation>
+<translation>vorhandene Datei überschreiben - das ist Standard</translation>
 </phrase>
 
 <phrase>
 <original>save a new copy, e.g. "filename (2).jpg" (safe behavior)</original>
-<translation>eine neue Kopie, z. B. als "Dateiname (2).jpg", speichern (Das ist sicherer!)</translation>
+<translation>eine neue Kopie, z. B. als "Dateiname (2).jpg", speichern - das ist sicherer!</translation>
 </phrase>
 
 <phrase>
@@ -4850,7 +4930,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>preserve all relevant metadata, but remove personal tags (GPS coords, serial #'s, etc)</original>
-<translation>alle relevanten Metadaten beibehalten, aber persönliche Informationen (GPS-Koordinaten, Seriennummern usw.) entfernen</translation>
+<translation>alle relevanten Metadaten beibehalten, aber keine persönlichen Informationen</translation>
 </phrase>
 
 <phrase>
@@ -4860,7 +4940,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Image metadata is extra data placed in an image file by a camera or photo software.  This data can include things like the make and model of the camera, the GPS coordinates where a photo was taken, or many other items.  To view an image's metadata, use the Image -> Metadata menu.</original>
-<translation>Metadaten sind zusätzliche Informationen, die von einer Kamera oder Foto-Software in einer Bilddatei gespeichert werden. Darin können Dinge wie die Marke und das Modell der Kamera enthalten sein, die GPS-Koordinaten, wo ein Foto aufgenommen wurde, und viele andere Informationen. Um die Metadaten eines Bildes anzuzeigen, verwenden Sie den Menüpunkt "Bild > Metadaten".</translation>
+<translation>Metadaten sind zusätzliche Informationen, die von einer Kamera oder Foto-Software in einer Bilddatei gespeichert werden. Darin können auch persönliche Dinge wie die Marke und das Modell Ihrer Kamera enthalten sein, irgendwelche Seriennummern, die GPS-Koordinaten, wo ein Foto aufgenommen wurde, und viele andere Informationen. Um die Metadaten eines Bildes anzuzeigen, verwenden Sie den Menüpunkt "Bild > Metadaten".</translation>
 </phrase>
 
 <phrase>
@@ -4900,7 +4980,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>PNG interlacing is similar to "progressive scan" on JPEGs.  Interlacing slightly increases file size, but an interlaced image can "fade-in" while it downloads.</original>
-<translation>PNG-Interlacing ist ähnlich wie "Progressive Scan" bei JPEGs. Interlacing erhöht die Dateigröße leicht, aber ein solches Bild kann während eines Downloads "eingeblendet" werden.</translation>
+<translation>PNG-Interlacing ist ähnlich wie "Progressive Scan" bei JPEGs. Interlacing erhöht die Dateigröße leicht, aber ein solches Bild kann im Browser nach und nach "eingeblendet" werden.</translation>
 </phrase>
 
 <phrase>
@@ -5030,7 +5110,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
-<translation>Diese Einstellung ist für die meisten Anwender die beste Wahl. Wenn Sie keine Ahnung von Farbmanagement haben, bleiben Sie bei dieser Einstellung. Und wenn Sie mit der Windows-Systemsteuerung  ein Anzeigeprofil konfiguriert haben, verwenden Sie diese Einstellung bitte auch!</translation>
+<translation>Diese Einstellung ist für die meisten Anwender die beste Wahl. Wenn Sie keine Ahnung von Farbmanagement haben, bleiben Sie bei dieser Einstellung. Und wenn Sie mit der Windows-Systemsteuerung  ein passendes Anzeigeprofil konfiguriert haben, verwenden Sie diese Einstellung bitte auch!</translation>
 </phrase>
 
 <phrase>
@@ -5045,7 +5125,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>Click this button to bring up a "browse for color profile" dialog.</original>
-<translation>Klicken Sie hier für den Dialog "Farbprofil suchen".</translation>
+<translation>Klicken Sie hier für den Dialog "Bitte wählen Sie ein Farbprofil".</translation>
 </phrase>
 
 <phrase>
@@ -5155,7 +5235,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>PhotoDemon's volunteer translators regularly update the program's language files.  PhotoDemon can automatically download these updates separate from the main program, ensuring that you always have the most up-to-date language files.</original>
-<translation>Die Texte in PhotoDemon werden von einigen Freiwilligen regelmäßig in mehrere Sprachen übersetzt. Auf Wunsch kann die neueste Sprachdatei getrennt vom gesamten Programmpaket auf den neuesten Stand gebracht werden.</translation>
+<translation>Die Sprachdateien für PhotoDemon werden von freiwilligen Übersetzern regelmäßig auf den neuesten Stand gebracht. Wenn Sie möchten, kann die jeweils neueste Sprachdatei, getrennt vom gesamten Programmpaket, heruntergeladen und verwendet werden.</translation>
 </phrase>
 
 <phrase>
@@ -5165,18 +5245,16 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
-<translation></translation>
+<translation>PhotoDemon kann Sie benachrichtigen, wenn es zum Update bereit ist. Dadurch können Sie sofort mit der neuen Version arbeiten.</translation>
 </phrase>
 
 <phrase>
 <original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
 
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation>Zwei Funktionen von PhotoDemon, die allerdings nicht unbedingt benötigt werden, brauchen einen Internetzugang: die Prüfung auf Software-Updates und die Möglichkeit, fehlende Kern-Plugins nachzuladen, wenn sie nicht im Ordner \App\PhotoDemon\Plugins vorhanden sind.
+<translation>Die Entwickler von PhotoDemon nehmen Datenschutz sehr ernst, so dass keine Informationen - statistische oder andere - während des Updates hochgeladen werden. Bei einem Update werden einfach einige kleine XML-Dateien von photodemon.org heruntergeladen. Darin sind die aktuellen Versionsnummern des Programms, der Plugins und der Sprachdateien angegeben. Wenn Updates bereitstehen und vom Benutzer zugelassen wurden, werden die neuen Dateien heruntergeladen und automatisch in das Programm eingefügt.
 
-Die Entwickler von PhotoDemon nehmen Datenschutz sehr ernst, sodass keine Informationen - statistische oder andere - durch diese Funktionen hochgeladen werden. Die Prüfung auf Software-Updates beinhaltet das Herunterladen einer einzigen "updates.txt"-Datei mit der Nummer der neuesten Software-Version. Der Download von fehlenden Plugins ist das Herunterladen einer oder mehrerer komprimierter Dateien vom PhotoDemon-Server.
-
-Wenn Sie diese Funktionen deaktivieren, können Sie trotzdem jederzeit photodemon.org besuchen und manuell die neueste Programmversion laden.</translation>
+Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich photodemon.org besuchen und die neueste Programmversion herunterladen.</translation>
 </phrase>
 
 <phrase>
@@ -5210,53 +5288,8 @@ Wenn Sie diese Funktionen deaktivieren, können Sie trotzdem jederzeit photodemo
 </phrase>
 
 <phrase>
-<original>Interface</original>
-<translation>Interface</translation>
-</phrase>
-
-<phrase>
-<original>Loading</original>
-<translation>Laden</translation>
-</phrase>
-
-<phrase>
-<original>Saving</original>
-<translation>Speichern</translation>
-</phrase>
-
-<phrase>
-<original>File formats</original>
-<translation>Dateiformate</translation>
-</phrase>
-
-<phrase>
-<original>Performance</original>
-<translation>Leistung</translation>
-</phrase>
-
-<phrase>
-<original>Color and Transparency</original>
-<translation>Farbe und Transparenz</translation>
-</phrase>
-
-<phrase>
-<original>Updates</original>
-<translation>Updates</translation>
-</phrase>
-
-<phrase>
-<original>Advanced</original>
-<translation>Erweitert</translation>
-</phrase>
-
-<phrase>
 <original>Interface options include settings for the main PhotoDemon interface, including things like canvas settings, font selection, and positioning.</original>
 <translation>Mit den Interface-Einstellungen legen Sie die Darstellung des Hauptfensters von PhotoDemon fest, darunter Dinge wie Leinwandeinstellungen, Schrift-Auswahl und Positionierung.</translation>
-</phrase>
-
-<phrase>
-<original>Interface Options</original>
-<translation>Interface-Einstellungen</translation>
 </phrase>
 
 <phrase>
@@ -5265,18 +5298,8 @@ Wenn Sie diese Funktionen deaktivieren, können Sie trotzdem jederzeit photodemo
 </phrase>
 
 <phrase>
-<original>Load (Import) Options</original>
-<translation>Lade-/Import-Einstellungen</translation>
-</phrase>
-
-<phrase>
 <original>Save options allow you to customize the way image files leave the application.</original>
 <translation>Mit den Speicher-Einstellungen können Sie festlegen, wie Bilddateien die Anwendung verlassen.</translation>
-</phrase>
-
-<phrase>
-<original>Save (Export) Options</original>
-<translation>Speicher-/Export-Einstellungen</translation>
 </phrase>
 
 <phrase>
@@ -5285,18 +5308,8 @@ Wenn Sie diese Funktionen deaktivieren, können Sie trotzdem jederzeit photodemo
 </phrase>
 
 <phrase>
-<original>File Format Options</original>
-<translation>Dateiformat-Einstellungen</translation>
-</phrase>
-
-<phrase>
 <original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Performance Options</original>
-<translation></translation>
+<translation>Mit den Leistungseinstellungen legen Sie fest, ob bestimmte Vorgänge in PhotoDemon besonders schnell oder aber besonders sorgfältig durchgeführt werden.</translation>
 </phrase>
 
 <phrase>
@@ -5305,18 +5318,8 @@ Wenn Sie diese Funktionen deaktivieren, können Sie trotzdem jederzeit photodemo
 </phrase>
 
 <phrase>
-<original>Color and Transparency Options</original>
-<translation>Farb- und Transparenz-Einstellungen</translation>
-</phrase>
-
-<phrase>
 <original>Update options control how frequently PhotoDemon checks for updated versions, and how it handles the download of missing plugins.</original>
 <translation>Update-Einstellungen steuern, wie häufig PhotoDemon Updates sucht und wie es mit fehlenden Plugins umgeht.</translation>
-</phrase>
-
-<phrase>
-<original>Update Options</original>
-<translation>Update-Einstellungen</translation>
 </phrase>
 
 <phrase>
@@ -5325,16 +5328,11 @@ Wenn Sie diese Funktionen deaktivieren, können Sie trotzdem jederzeit photodemo
 </phrase>
 
 <phrase>
-<original>Advanced Options</original>
-<translation>Erweiterte Einstellungen</translation>
-</phrase>
-
-<phrase>
 <original>WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If no new folder is provided, PhotoDemon will use the system's default temp location.</original>
 <translation>WARNUNG: Dieser Ordner ist ungültig (Zutritt verboten!). Bitte geben Sie einen gültigen Ordner an. Wenn Sie keinen neuen Ordner angeben, verwendet PhotoDemon den üblichen Speicherort des Systems für temporäre Dateien.</translation>
 </phrase>
 
-<!-- VBP_FormPreferences.frm contains 247 phrases. 31 were duplicates of existing phrases, so only 216 new phrases were written to file. -->
+<!-- VBP_FormPreferences.frm contains 255 phrases. 39 were duplicates of existing phrases, so only 216 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPreferences.frm-->
 
@@ -5652,7 +5650,7 @@ Wenn Sie diese Funktionen deaktivieren, können Sie trotzdem jederzeit photodemo
 
 <phrase>
 <original>Print previewing requires the FreeImage plugin, which could not be located on this computer. To enable previewing, please go to Edit -> Preferences and select "check for missing plugins on program start."  The next time you load PhotoDemon, it will offer to download this plugin for you.</original>
-<translation>Die Druckvorschau erfordert das FreeImage-Plugin, das auf diesem Computer nicht gefunden wurde. Aktivieren Sie die Vorschau, indem Sie im Menü unter "Bearbeiten > Einstellungen" den Punkt "Auf fehlende Plugins beim Start überprüfen" auswählen. Beim nächsten Start von PhotoDemon werden Sie die Möglichkeit zum Laden dieses Plugins erhalten.</translation>
+<translation>Die Druckvorschau erfordert das FreeImage-Plugin, das auf diesem Computer nicht gefunden wurde. Aktivieren Sie die Vorschau, indem Sie im Menü unter "Werkzeuge > Einstellungen" den Punkt "Auf fehlende Plugins beim Start überprüfen" auswählen. Beim nächsten Start von PhotoDemon werden Sie die Möglichkeit zum Laden dieses Plugins erhalten.</translation>
 </phrase>
 
 <phrase>
@@ -6165,7 +6163,7 @@ Sie werden mit PhotoDemon zufriedener sein, wenn Sie das Programm diese kostenlo
 
 <phrase>
 <original>Verifying plugin URL</original>
-<translation></translation>
+<translation>Die URL des Plugins wird geprüft</translation>
 </phrase>
 
 <phrase>
@@ -6282,7 +6280,7 @@ Sie werden mit PhotoDemon zufriedener sein, wenn Sie das Programm diese kostenlo
 
 <phrase>
 <original>%1.%2 Beta %3</original>
-<translation></translation>
+<translation>%1.%2 Beta %3</translation>
 </phrase>
 
 <!-- VBP_SoftwareUpdater.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -6633,7 +6631,7 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 
 <phrase>
 <original>Repeat: %1</original>
-<translation> %1 wiederholen</translation>
+<translation>%1 wiederholen</translation>
 </phrase>
 
 <phrase>
@@ -7017,7 +7015,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>General image actions</original>
-<translation>Allgemeine Bild-Aktionen</translation>
+<translation>Allgemeine Bildbearbeitungen</translation>
 </phrase>
 
 <phrase>
@@ -7113,7 +7111,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Load each frame as a separate image</original>
-<translation>Jedes Teilbild einzeln laden</translation>
+<translation>Jedes Einzelbild einzeln laden</translation>
 </phrase>
 
 <phrase>
@@ -7123,7 +7121,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Load only the first frame</original>
-<translation>Nur das erste Teilbild laden</translation>
+<translation>Nur das erste Einzelbild laden</translation>
 </phrase>
 
 <phrase>
@@ -7810,7 +7808,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>disable</original>
-<translation>Ausschalten von</translation>
+<translation>Deaktiviere</translation>
 </phrase>
 
 <phrase>
@@ -7830,7 +7828,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>enable</original>
-<translation>aktivieren</translation>
+<translation>Aktiviere</translation>
 </phrase>
 
 <phrase>
@@ -8034,7 +8032,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>show original image (alt+t)</original>
-<translation></translation>
+<translation>Originalbild anzeigen (Alt+t)</translation>
 </phrase>
 
 <!-- fxPreview.ctl contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -8173,7 +8171,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying surface blur</original>
-<translation></translation>
+<translation>Oberflächenunschärfe wird erzeugt</translation>
 </phrase>
 
 <phrase>
@@ -8268,7 +8266,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>caption</original>
-<translation></translation>
+<translation>Titel</translation>
 </phrase>
 
 <!-- smartOptionButton.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -8744,7 +8742,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>custom actions from a saved macro file</original>
-<translation>Aktionen aus einer gespeicherten Makro-Datei anwenden</translation>
+<translation>Bearbeitungsschritte aus einer gespeicherten Makro-Datei anwenden</translation>
 </phrase>
 
 <phrase>
@@ -8754,12 +8752,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>do not apply photo editing actions</original>
-<translation>keine Fotobearbeitungs-Aktionen durchführen</translation>
+<translation>keinerlei Fotobearbeitung durchführen</translation>
 </phrase>
 
 <phrase>
 <original>apply one or more photo editing actions</original>
-<translation>eine oder mehrere Fotobearbeitungs-Aktionen durchführen</translation>
+<translation>einen oder mehrere Fotobearbeitungsschritte durchführen</translation>
 </phrase>
 
 <phrase>
@@ -8784,7 +8782,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Step 1: select the photo editing action(s) to apply to each image</original>
-<translation>Schritt 1: Wählen Sie die Fotobearbeitungs-Aktion(en), die auf jedes Bild anzuwenden ist/sind</translation>
+<translation>Schritt 1: Wählen Sie den/die Fotobearbeitungsschritt(e), der/die auf jedes Bild anzuwenden ist/sind</translation>
 </phrase>
 
 <phrase>
@@ -8893,12 +8891,12 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Start by selecting the photo editing action(s) you want to apply.  If multiple actions are selected, they will be applied in the order they appear on this page.</original>
-<translation>Wählen Sie zunächst die Fotobearbeitungs-Aktion(en) aus, die Sie anwenden möchten. Wenn Sie mehrere Aktionen auswählen, werden sie in der hier genannten Reihenfolge ausgeführt.</translation>
+<translation>Wählen Sie zunächst den/die Fotobearbeitungsschritt(e) aus, den/die Sie anwenden möchten. Wenn Sie mehrere Schritte auswählen, werden sie in der hier genannten Reihenfolge ausgeführt.</translation>
 </phrase>
 
 <phrase>
 <original>Note: a "macro" is simply a list of photo editing actions.  It can include any adjustment, filter, or effect in the main program.  You can create a new macro by using the "Tools -> Macros -> Record new macro" menu in the main PhotoDemon window.</original>
-<translation>Ach ja: ein "Makro" ist einfach eine Liste von Fotobearbeitungs-Aktionen. Das können irgendwelche Einstellungen, Filter oder Effekte aus dem Hauptprogramm sein. Ein neues Makro erzeugen Sie im Menü unter "Werkzeuge > Makros > Neues Makro aufnehmen" im Hauptfenster von PhotoDemon.</translation>
+<translation>Ach ja: ein "Makro" ist einfach eine Liste von Fotobearbeitungsschritten. Das können irgendwelche Einstellungen, Filter oder Effekte aus dem Hauptprogramm sein. Ein neues Makro erzeugen Sie im Menü unter "Werkzeuge > Makros > Neues Makro aufnehmen" im Hauptfenster von PhotoDemon.</translation>
 </phrase>
 
 <phrase>
@@ -8978,17 +8976,17 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>For your convenience, a number of standard renaming options are also provided.  Note that all items under "additional rename options" are optional.</original>
-<translation>Zunächst mal gibt es eine die Standard- Umbenennungsmöglichkeiten. Beachten Sie, dass alles unter "weitere Umbenennungsmöglichkeiten" nur optional ist!</translation>
+<translation>Zunächst mal gibt es einige Standard- Umbenennungsmöglichkeiten. Beachten Sie, dass Sie auf alle Einstellungen unter "weitere Umbenennungsmöglichkeiten" verzichten können!</translation>
 </phrase>
 
 <phrase>
 <original>Finally, if two or more images in the batch list have the same filename, and the "original filenames" option is selected, such files will automatically be given unique filenames upon saving (e.g. "original-filename (2)").</original>
-<translation>Zuletzt noch eins: wenn zwei oder mehr Bilder in der Batchliste den gleichen Dateinamen haben und die Einstellung "Ursprüngliche Dateinamen" ausgewählt ist, dann bekommen solche Dateien automatisch eindeutige Dateinamen beim Speichern, z. B. "Original-Dateinamen (2)".</translation>
+<translation>Zuletzt noch eins: Wenn zwei oder mehr Bilder in der Batchliste den gleichen Dateinamen haben und die Einstellung "Ursprüngliche Dateinamen" ausgewählt ist, dann bekommen solche Dateien automatisch eindeutige Dateinamen beim Speichern, z. B. "Original-Dateinamen (2)".</translation>
 </phrase>
 
 <phrase>
 <original>Step 5: wait for batch processing to finish</original>
-<translation></translation>
+<translation>Schritt 5: Nun warten Sie auf das Ende der Batchbearbeitung</translation>
 </phrase>
 
 <phrase>
@@ -9406,7 +9404,7 @@ In der Standardeinstellung wird Transparenz in der Mitte geteilt, oder Sie geben
 
 <phrase>
 <original>(encoding unknown)</original>
-<translation></translation>
+<translation>(unbekannte Kodierung)</translation>
 </phrase>
 
 <!-- VBP_FormMetadata.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -10078,7 +10076,7 @@ In der Standardeinstellung wird Transparenz in der Mitte geteilt, oder Sie geben
 
 <phrase>
 <original>This action requires an active selection.  Please create a selection before continuing.</original>
-<translation>Diese Aktion erfordert eine aktive Auswahl. Bitte legen Sie eine Auswahl an, bevor Sie fortfahren.</translation>
+<translation>Dieser Vorgang erfordert einen aktive Auswahlbereich. Bitte legen Sie eine Auswahl an, bevor Sie fortfahren.</translation>
 </phrase>
 
 <phrase>
@@ -10382,7 +10380,7 @@ In der Standardeinstellung wird Transparenz in der Mitte geteilt, oder Sie geben
 
 <phrase>
 <original>Apply this action to the current image.</original>
-<translation>Diese Aktion auf das aktuelle Bild anwenden.</translation>
+<translation>Diesen Vorgang auf das aktuelle Bild anwenden.</translation>
 </phrase>
 
 <phrase>
@@ -10402,7 +10400,7 @@ In der Standardeinstellung wird Transparenz in der Mitte geteilt, oder Sie geben
 
 <phrase>
 <original>Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.</original>
-<translation>Zufällige Einstellungen für dieses Werkzeug wählen. Das hilft Ihnen herauszufinden, wie sich verschiedene Einstellungen auf das Bild auswirken.</translation>
+<translation>Zufällige Werte für dieses Werkzeug wählen. Das hilft Ihnen herauszufinden, wie sich verschiedene Einstellungen auf das Bild auswirken.</translation>
 </phrase>
 
 <phrase>
@@ -10412,7 +10410,7 @@ In der Standardeinstellung wird Transparenz in der Mitte geteilt, oder Sie geben
 
 <phrase>
 <original>Save the current settings as a new preset.</original>
-<translation></translation>
+<translation>Diese Werte als neue Voreinstellung speichern.</translation>
 </phrase>
 
 <phrase>
@@ -10574,7 +10572,7 @@ In der Standardeinstellung wird Transparenz in der Mitte geteilt, oder Sie geben
 
 <phrase>
 <original>start a new language file from scratch</original>
-<translation>Völlig neue Sprach-Datei erstellen</translation>
+<translation>Völlig neue Sprachdatei erstellen</translation>
 </phrase>
 
 <phrase>
@@ -10584,12 +10582,12 @@ In der Standardeinstellung wird Transparenz in der Mitte geteilt, oder Sie geben
 
 <phrase>
 <original>language files currently available</original>
-<translation>Sprachdateien derzeit verfügbar</translation>
+<translation>Zur Zeit vorhandene Sprachdateien</translation>
 </phrase>
 
 <phrase>
 <original>please wait</original>
-<translation>bitte warten</translation>
+<translation>Bitte warten</translation>
 </phrase>
 
 <phrase>
@@ -10674,12 +10672,12 @@ In der Standardeinstellung wird Transparenz in der Mitte geteilt, oder Sie geben
 
 <phrase>
 <original>Automatic translations were interrupted (the translation object stopped responding).  The existing work has been auto-saved.</original>
-<translation></translation>
+<translation>Die automatische Übersetzung wurde unterbrochen (keine Antwort mehr). Der bisher erreichte Stand wurde aber automatisch gespeichert.</translation>
 </phrase>
 
 <phrase>
 <original>Translations interrupted</original>
-<translation></translation>
+<translation>Übersetzung unterbrochen</translation>
 </phrase>
 
 <phrase>
@@ -10855,7 +10853,7 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 
 <phrase>
 <original>Every time a phrase is modified, an autosave will automatically be created in PhotoDemon's user language folder.  This means you can exit the program at any time without losing your work.</original>
-<translation>Jedes Mal, wenn ein Textstück geändert wurde, wird die Sprachdatei automatisch im PhotoDemon-Ordner "User Language" gesichert. Das heißt, Sie können das Programm jederzeit verlassen, ohne dass Ihre Arbeit verloren geht.</translation>
+<translation>Jedes Mal, wenn ein Textstück geändert wurde, wird die Sprachdatei automatisch in PhotoDemons Benutzerverzeichnis für Sprachdateien gesichert. Das heißt, Sie können das Programm jederzeit verlassen, ohne dass Ihre Arbeit verloren geht.</translation>
 </phrase>
 
 <phrase>
@@ -11167,7 +11165,7 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 
 <phrase>
 <original>curvature</original>
-<translation>Neigung</translation>
+<translation>Krümmung</translation>
 </phrase>
 
 <phrase>
@@ -11327,7 +11325,7 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 
 <phrase>
 <original>Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.</original>
-<translation>Schnelle Lösungen dauerhaft machen (was an sich nicht notwendig ist, aber die Leistung verbessern kann, wenn viele schnelle Lösungen aktiviert sind und Veränderungen im sichtbaren Bild nur sehr träge dargestellt werden)</translation>
+<translation>Schnelle Lösungen dauerhaft machen (was an sich nicht notwendig ist, aber die Leistung verbessern kann, wenn viele dieser schnellen Lösungen ausgewählt wurden und Veränderungen im sichtbaren Bild nur sehr träge dargestellt werden)</translation>
 </phrase>
 
 <phrase>
@@ -11342,7 +11340,7 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 
 <phrase>
 <original>These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.</original>
-<translation>Diese Einstellungen bestimmen, welcher Bereich von einer Auswahl betroffen wird. Die Auswahl kann noch auf der Leinwand geändert werden, während diese Einstellungen aktiv sind. Für genauere Anpassungen der Auswahl verwenden Sie bitte das Menü "Auswählen".</translation>
+<translation>Diese Einstellungen bestimmen, welcher Bereich von einer Auswahl betroffen wird. Der Auswahlbereich kann noch auf der Leinwand geändert werden, während diese Einstellungen aktiv sind. Für genauere Anpassungen der Auswahl verwenden Sie bitte das Menü "Auswählen".</translation>
 </phrase>
 
 <phrase>
@@ -11408,27 +11406,27 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 
 <phrase>
 <original>Open location in E&xplorer</original>
-<translation></translation>
+<translation>Speicherort im Explorer öffnen</translation>
 </phrase>
 
 <phrase>
 <original>Close all except this</original>
-<translation></translation>
+<translation>Alle anderen schließen</translation>
 </phrase>
 
 <phrase>
 <original>Once this image has been saved to disk, its filename will appear here.</original>
-<translation></translation>
+<translation>Wenn dieses Bild gespeichert wird, erscheint hier sein Dateiname.</translation>
 </phrase>
 
 <phrase>
 <original>This image does not have a filename.</original>
-<translation></translation>
+<translation>Dieses Bild hat noch keinen Dateinamen.</translation>
 </phrase>
 
 <phrase>
 <original>Hover an image thumbnail to see its name and current file location.</original>
-<translation></translation>
+<translation>Bewegen Sie den Mauszeiger auf ein Vorschaubild - dann sehen Sie Namen und Speicherort des Bildes.</translation>
 </phrase>
 
 <!-- VBP_ToolbarImageTabs.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -11923,22 +11921,22 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 
 <phrase>
 <original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation></translation>
+<translation>Seitenverhältnis beibehalten (Proportionen bewahren). Bei dieser Einstellung können Sie gleichzeitig die Breite und Höhe eines Bilds - ohne Verzerrungseffekte - verändern.</translation>
 </phrase>
 
 <phrase>
 <original>Preserve aspect ratio</original>
-<translation></translation>
+<translation>Seitenverhältnis beibehalten</translation>
 </phrase>
 
 <phrase>
 <original>Change the unit of measurement used to resize the image.</original>
-<translation></translation>
+<translation>Maßeinheit für die Bildgrößenänderung einstellen</translation>
 </phrase>
 
 <phrase>
 <original>Change the unit of measurement used for image resolution (pixel density).</original>
-<translation></translation>
+<translation>Maßeinheit für die Bildauflösung (Pixeldichte) einstellen.</translation>
 </phrase>
 
 <phrase>
@@ -12044,8 +12042,8 @@ You can also use the Open Image button on the left,
 or the File > Open and File > Import menus.</original>
 <translation>Ziehen Sie eine Bilddatei auf diese Fläche.
 
-Sie können aber auch den Button 'Bilddatei öffnen' oben links oder
-Datei>Öffnen bzw. Datei>Importieren aus dem Menü verwenden.</translation>
+Sie können aber auch den Button "Bild öffnen" oben links oder
+"Datei > Öffnen" bzw. "Datei > Importieren" aus dem Menü verwenden.</translation>
 </phrase>
 
 <phrase>
@@ -12587,17 +12585,17 @@ Datei>Öffnen bzw. Datei>Importieren aus dem Menü verwenden.</translation>
 
 <phrase>
 <original>synchronize intensity</original>
-<translation></translation>
+<translation>Intensität synchronisieren</translation>
 </phrase>
 
 <phrase>
 <original>secondary intensity</original>
-<translation></translation>
+<translation>zweitrangige Intensität</translation>
 </phrase>
 
 <phrase>
 <original>tertiary intensity</original>
-<translation></translation>
+<translation>drittrangige Intensität</translation>
 </phrase>
 
 <phrase>
@@ -12777,7 +12775,7 @@ Datei>Öffnen bzw. Datei>Importieren aus dem Menü verwenden.</translation>
 
 <phrase>
 <original>Fading previous action (%1)</original>
-<translation>Vorherige Bearbeitung (%1) ausblenden</translation>
+<translation>Vorherigen Bearbeitungsschritt (%1) ausblenden</translation>
 </phrase>
 
 <phrase>
@@ -12935,11 +12933,11 @@ Datei>Öffnen bzw. Datei>Importieren aus dem Menü verwenden.</translation>
 
 <!-- END text for VBP_FormComicBook.frm-->
 
-<!-- BEGIN text for pdButtonToolbox.ctl -->
+<!-- BEGIN text for buttonStrip.ctl -->
 
-<!-- pdButtonToolbox.ctl contains 0 phrases. -->
+<!-- buttonStrip.ctl contains 0 phrases. -->
 
-<!-- END text for pdButtonToolbox.ctl-->
+<!-- END text for buttonStrip.ctl-->
 
 <!-- BEGIN text for pdInputMouse.cls -->
 
@@ -12964,6 +12962,12 @@ Datei>Öffnen bzw. Datei>Importieren aus dem Menü verwenden.</translation>
 <!-- pdGraphicsPath.cls contains 0 phrases. -->
 
 <!-- END text for pdGraphicsPath.cls-->
+
+<!-- BEGIN text for pdButtonToolbox.ctl -->
+
+<!-- pdButtonToolbox.ctl contains 0 phrases. -->
+
+<!-- END text for pdButtonToolbox.ctl-->
 
 <!-- BEGIN text for pdWindowPainter.cls -->
 
@@ -13170,57 +13174,57 @@ Datei>Öffnen bzw. Datei>Importieren aus dem Menü verwenden.</translation>
 
 <phrase>
 <original>Update ready</original>
-<translation></translation>
+<translation>Ein Update steht bereit</translation>
 </phrase>
 
 <phrase>
 <original>in the future, do not notify me of updates</original>
-<translation></translation>
+<translation>Bitte in Zukunft keine Update-Benachrichtigungen mehr!</translation>
 </phrase>
 
 <phrase>
 <original>Keep working</original>
-<translation></translation>
+<translation>Bitte einfach weiterarbeiten</translation>
 </phrase>
 
 <phrase>
 <original>Restart PhotoDemon</original>
-<translation></translation>
+<translation>Bitte PhotoDemon neustarten</translation>
 </phrase>
 
 <phrase>
 <original>Learn more about the new features in %1</original>
-<translation></translation>
+<translation>Was gibt es Neues in %1</translation>
 </phrase>
 
 <phrase>
 <original>(Sorry, but automatic restarts don't work inside the IDE.)</original>
-<translation></translation>
+<translation>(Automatische Neustarts sind in der IDE leider nicht möglich.)</translation>
 </phrase>
 
 <phrase>
 <original>A new version of PhotoDemon is available.  Restart the program to complete the update process.</original>
-<translation></translation>
+<translation>Es gibt eine neue Version von PhotoDemon. Bitte starten Sie das Programm neu, um das Update vollständig durchzuführen.</translation>
 </phrase>
 
 <phrase>
 <original>Restart now to access to the latest version of the program.</original>
-<translation></translation>
+<translation>Starten Sie neu, um die neueste Programmversion verwenden zu können.</translation>
 </phrase>
 
 <phrase>
 <original>Apply update now</original>
-<translation></translation>
+<translation>Update jetzt durchführen</translation>
 </phrase>
 
 <phrase>
 <original>If you're in the middle of something, feel free to keep working.  The update process will automatically complete whenever you next use the program.</original>
-<translation></translation>
+<translation>Wenn Sie gerade mit irgendetwas beschäftigt sind, machen Sie ruhig erst mal weiter. Das Update wird vollständig durchgeführt sein, wenn Sie das Programm wieder benutzen.</translation>
 </phrase>
 
 <phrase>
 <original>Apply update later</original>
-<translation></translation>
+<translation>Update später durchführen</translation>
 </phrase>
 
 <!-- VBP_FormUpdateNotify.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -13243,12 +13247,12 @@ Datei>Öffnen bzw. Datei>Importieren aus dem Menü verwenden.</translation>
 
 <phrase>
 <original>Add new preset</original>
-<translation></translation>
+<translation>Neue Voreinstellung hinzufügen</translation>
 </phrase>
 
 <phrase>
 <original>enter a name for this preset</original>
-<translation></translation>
+<translation>Wie soll die Voreinstellung heißen?</translation>
 </phrase>
 
 <phrase>
@@ -13263,7 +13267,7 @@ Datei>Öffnen bzw. Datei>Importieren aus dem Menü verwenden.</translation>
 
 <phrase>
 <original>Please enter a name for this preset.</original>
-<translation></translation>
+<translation>Bitte geben Sie dieser Voreinstellung einen Namen.</translation>
 </phrase>
 
 <phrase>
@@ -13285,8 +13289,8 @@ Datei>Öffnen bzw. Datei>Importieren aus dem Menü verwenden.</translation>
 
 <phrasecount>2316</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3937 phrases. -->
-<!-- 1621 are duplicates, so only 2316 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 3945 phrases. -->
+<!-- 1629 are duplicates, so only 2316 unique phrases have been written to file. -->
 <!-- These 2316 phrases contain approximately 13334 total words. -->
 
 </pdData>
