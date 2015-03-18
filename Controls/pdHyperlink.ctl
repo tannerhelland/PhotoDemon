@@ -29,8 +29,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Unicode Hyperlink (clickable label) control
 'Copyright 2014-2015 by Tanner Helland
 'Created: 28/October/14
-'Last updated: 26/February/15
-'Last update: split off from pdLabel into its own control, to keep pdLabel as light as possible
+'Last updated: 18/March/15
+'Last update: add support for non-URL behavior
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -43,8 +43,11 @@ Attribute VB_Exposed = False
 '
 ' 1) Unlike pdLabel, pdHyperlink does not support word-wrapping in any form.
 ' 2) High-DPI settings are handled automatically.
-' 3) By design, this control does not accept focus, and it does not raise any input-related events.  Clicks are
-'    handled internally, and they simply shell the associated URL property.  This may be revisited in the future.
+' 3) By design, this control does not accept focus.
+' 4) In its default configuration, this control does not raise any input-related events.  (Clicks are handled
+'    internally, and they simply shell the associated URL property.)
+' 5) As of March '15, this control exposes properties that allow it to expose a Click event, so the caller can handle
+'    the event manually.
 ' 4) Coloration is automatically handled by PD's internal theming engine.
 ' 5) RTL language support is a work in progress.  I've designed the control so that RTL support can be added simply by
 '    fixing some layout issues in this control, without the need to modify any control instances throughout PD.
@@ -58,7 +61,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This control raises no events, by design.
+'In its default configuration, this control raises no events.  However, if default "shell URL behavior" is not desired,
+' properties can be modified so that a Click() event is raised instead.
+Public Event Click()
 
 'Rather than handle autosize and wordwrap separately, this control combines them into a single "Layout" property.
 ' All four possible layout approaches are covered by this enum.
@@ -129,6 +134,9 @@ Private m_UseCustomBackColor As Boolean
 
 Private m_ForeColor As OLE_COLOR
 Private m_UseCustomForeColor As Boolean
+
+'If the caller desires click events, this will be set to TRUE
+Private m_RaiseClickEvents As Boolean
 
 'On certain layouts, this control will try to shrink the caption to fit within the control.  If it cannot physically do it
 ' (because we run out of font sizes), this failure state will be set to TRUE.  When that happens, ellipses will be added to
@@ -293,6 +301,15 @@ Public Property Get PixelHeight() As Long
     If Not (m_BackBuffer Is Nothing) Then PixelHeight = m_BackBuffer.getDIBHeight Else PixelHeight = 0
 End Property
 
+'As of March '15, Click events can be raised in place of an automatic URL shell
+Public Property Get RaiseClickEvent() As Boolean
+    RaiseClickEvent = m_RaiseClickEvents
+End Property
+
+Public Property Let RaiseClickEvent(newSetting As Boolean)
+    m_RaiseClickEvents = newSetting
+End Property
+
 Public Property Get URL() As String
     URL = m_URL
 End Property
@@ -324,7 +341,17 @@ Public Property Let UseCustomForeColor(ByVal newSetting As Boolean)
 End Property
 
 Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    If Len(m_URL) <> 0 Then ShellExecute containerHwnd, "Open", m_URL, "", 0, SW_SHOWNORMAL
+    
+    'If the user wants click events, raise one now
+    If m_RaiseClickEvents Then
+    
+        RaiseEvent Click
+    
+    'In its default configuration, URLs are shelled automatically
+    Else
+        If Len(m_URL) <> 0 Then ShellExecute containerHwnd, "Open", m_URL, "", 0, SW_SHOWNORMAL
+    End If
+    
 End Sub
 
 'When the mouse leaves the UC, we must repaint the caption (as it's no longer hovered)
@@ -475,6 +502,8 @@ Private Sub UserControl_InitProperties()
     
     m_URL = ""
     
+    m_RaiseClickEvents = False
+    
 End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -500,6 +529,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         URL = .ReadProperty("URL", "")
         UseCustomBackColor = .ReadProperty("UseCustomBackColor", False)
         UseCustomForeColor = .ReadProperty("UseCustomForeColor", False)
+        RaiseClickEvent = .ReadProperty("RaiseClickEvent", False)
     End With
 
 End Sub
@@ -697,6 +727,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "URL", m_URL, ""
         .WriteProperty "UseCustomBackColor", m_UseCustomBackColor, False
         .WriteProperty "UseCustomForeColor", m_UseCustomForeColor, False
+        .WriteProperty "RaiseClickEvent", m_RaiseClickEvents, False
     End With
     
 End Sub
