@@ -542,6 +542,7 @@ Private Sub UserControl_Initialize()
     'Initialize the internal font object
     Set curFont = New pdFont
     curFont.setTextAlignment vbLeftJustify
+    refreshFont
     
     'When not in design mode, initialize a tracker for mouse events
     If g_IsProgramRunning Then
@@ -818,28 +819,32 @@ Private Sub redrawBackBuffer()
     Dim fontColorActive As Long, fontColorInactive As Long, fontColorHover As Long
     Dim curColor As Long
     
-    If Me.Enabled Then
+    'All colors are determined by PD's central themer
+    If Not g_Themer Is Nothing Then
     
-        'All colors are determined by PD's central themer
-        btnColorInactiveBorder = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
-        btnColorInactiveFill = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-        btnColorActiveBorder = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
-        btnColorActiveFill = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-        
-        fontColorInactive = g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
-        fontColorActive = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
-        fontColorHover = g_Themer.getThemeColor(PDTC_TEXT_HYPERLINK)
-        
-    Else
+        If Me.Enabled Then
     
-        btnColorInactiveBorder = g_Themer.getThemeColor(PDTC_DISABLED)
-        btnColorInactiveFill = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-        btnColorActiveBorder = g_Themer.getThemeColor(PDTC_DISABLED)
-        btnColorActiveFill = g_Themer.getThemeColor(PDTC_DISABLED)
+            btnColorInactiveBorder = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
+            btnColorInactiveFill = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+            btnColorActiveBorder = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+            btnColorActiveFill = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+            
+            fontColorInactive = g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
+            fontColorActive = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
+            fontColorHover = g_Themer.getThemeColor(PDTC_TEXT_HYPERLINK)
         
-        fontColorInactive = g_Themer.getThemeColor(PDTC_DISABLED)
-        fontColorActive = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
-        fontColorHover = g_Themer.getThemeColor(PDTC_DISABLED)
+        Else
+        
+            btnColorInactiveBorder = g_Themer.getThemeColor(PDTC_DISABLED)
+            btnColorInactiveFill = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+            btnColorActiveBorder = g_Themer.getThemeColor(PDTC_DISABLED)
+            btnColorActiveFill = g_Themer.getThemeColor(PDTC_DISABLED)
+            
+            fontColorInactive = g_Themer.getThemeColor(PDTC_DISABLED)
+            fontColorActive = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
+            fontColorHover = g_Themer.getThemeColor(PDTC_DISABLED)
+            
+        End If
         
     End If
     
@@ -958,7 +963,7 @@ Private Sub redrawBackBuffer()
     End If
     
     'Paint the buffer to the screen
-    If g_IsProgramRunning Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    If g_IsProgramRunning And (Not cPainter Is Nothing) Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
 
 End Sub
 
