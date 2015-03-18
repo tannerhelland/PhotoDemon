@@ -3,7 +3,7 @@ Begin VB.Form dialog_ExportJPEG
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " JPEG Export Options"
-   ClientHeight    =   6585
+   ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   13110
@@ -19,16 +19,26 @@ Begin VB.Form dialog_ExportJPEG
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   439
+   ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   874
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.buttonStrip btsCategory 
+      Height          =   615
+      Left            =   5880
+      TabIndex        =   1
+      Top             =   120
+      Width           =   7095
+      _ExtentX        =   12515
+      _ExtentY        =   1085
+      FontSize        =   11
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   5835
+      Top             =   5790
       Width           =   13110
       _ExtentX        =   23125
       _ExtentY        =   1323
@@ -41,83 +51,17 @@ Begin VB.Form dialog_ExportJPEG
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
       dontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
-   End
-   Begin PhotoDemon.jcbutton cmdCategory 
-      Height          =   780
-      Index           =   0
-      Left            =   5880
-      TabIndex        =   2
-      Top             =   120
-      Width           =   2280
-      _ExtentX        =   4022
-      _ExtentY        =   1376
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "Quality  "
-      ForeColor       =   4210752
-      ForeColorHover  =   4194304
-      Mode            =   1
-      Value           =   -1  'True
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormExportJPEG.frx":0000
-      PictureAlign    =   0
-      PictureEffectOnDown=   0
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      TooltipTitle    =   "Interface Options"
-      ColorScheme     =   3
-   End
-   Begin PhotoDemon.jcbutton cmdCategory 
-      Height          =   780
-      Index           =   1
-      Left            =   8160
-      TabIndex        =   3
-      Top             =   120
-      Width           =   2280
-      _ExtentX        =   4022
-      _ExtentY        =   1376
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   "Metadata  "
-      ForeColor       =   4210752
-      ForeColorHover  =   4194304
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormExportJPEG.frx":1452
-      PictureAlign    =   0
-      PictureEffectOnDown=   0
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      TooltipTitle    =   "Load (Import) Options"
-      ColorScheme     =   3
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -130,45 +74,26 @@ Begin VB.Form dialog_ExportJPEG
       ScaleHeight     =   313
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   481
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   1080
       Width           =   7215
-      Begin VB.ComboBox cmbSaveQuality 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
+      Begin PhotoDemon.pdComboBox cboSaveQuality 
+         Height          =   375
          Left            =   120
-         Style           =   2  'Dropdown List
-         TabIndex        =   8
+         TabIndex        =   14
          Top             =   240
-         Width           =   2775
+         Width           =   2730
+         _ExtentX        =   4815
+         _ExtentY        =   661
       End
-      Begin VB.ComboBox cmbSubsample 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
+      Begin PhotoDemon.pdComboBox cboSubsample 
+         Height          =   375
          Left            =   720
-         Style           =   2  'Dropdown List
-         TabIndex        =   7
-         ToolTipText     =   "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
-         Top             =   4230
+         TabIndex        =   13
+         Top             =   2910
          Width           =   6375
+         _ExtentX        =   11245
+         _ExtentY        =   661
       End
       Begin VB.ComboBox cmbAutoQuality 
          BeginProperty Font 
@@ -184,71 +109,45 @@ Begin VB.Form dialog_ExportJPEG
          Height          =   360
          Left            =   360
          Style           =   2  'Dropdown List
-         TabIndex        =   5
-         Top             =   1245
+         TabIndex        =   4
+         Top             =   4005
+         Visible         =   0   'False
          Width           =   6735
       End
       Begin PhotoDemon.smartCheckBox chkOptimize 
          Height          =   330
          Left            =   360
-         TabIndex        =   6
-         Top             =   2670
+         TabIndex        =   5
+         Top             =   1350
          Width           =   6690
          _ExtentX        =   11800
          _ExtentY        =   582
          Caption         =   "optimize compression tables"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin PhotoDemon.smartCheckBox chkProgressive 
          Height          =   330
          Left            =   360
-         TabIndex        =   9
-         Top             =   3150
+         TabIndex        =   6
+         Top             =   1830
          Width           =   6690
          _ExtentX        =   11800
          _ExtentY        =   582
          Caption         =   "use progressive encoding"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin PhotoDemon.smartCheckBox chkSubsample 
          Height          =   330
          Left            =   360
-         TabIndex        =   10
-         Top             =   3630
+         TabIndex        =   7
+         Top             =   2310
          Width           =   6690
          _ExtentX        =   11800
          _ExtentY        =   582
          Caption         =   "use specific subsampling:"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin PhotoDemon.sliderTextCombo sltQuality 
          Height          =   495
          Left            =   2880
-         TabIndex        =   11
+         TabIndex        =   8
          Top             =   180
          Width           =   4335
          _ExtentX        =   7223
@@ -261,63 +160,38 @@ Begin VB.Form dialog_ExportJPEG
       Begin PhotoDemon.smartCheckBox chkColorMatching 
          Height          =   300
          Left            =   360
-         TabIndex        =   12
-         Top             =   1665
+         TabIndex        =   9
+         Top             =   4440
+         Visible         =   0   'False
          Width           =   6690
          _ExtentX        =   11800
          _ExtentY        =   582
          Caption         =   "use perceptive color matching (slower, more accurate)"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "automatic quality detection:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   3
          Left            =   120
-         TabIndex        =   21
-         Top             =   810
-         Width           =   2940
+         Top             =   3570
+         Visible         =   0   'False
+         Width           =   6900
+         _ExtentX        =   0
+         _ExtentY        =   503
+         Caption         =   "automatic quality detection:"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "advanced quality settings:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   1
          Left            =   120
-         TabIndex        =   13
-         Top             =   2310
-         Width           =   2745
+         Top             =   900
+         Width           =   6945
+         _ExtentX        =   0
+         _ExtentY        =   503
+         Caption         =   "advanced quality settings:"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
    End
    Begin VB.PictureBox picContainer 
@@ -331,132 +205,72 @@ Begin VB.Form dialog_ExportJPEG
       ScaleHeight     =   313
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   481
-      TabIndex        =   14
+      TabIndex        =   10
       Top             =   1080
       Width           =   7215
-      Begin VB.ComboBox cmbMetadata 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
+      Begin PhotoDemon.pdComboBox cboMetadata 
+         Height          =   375
          Left            =   360
-         Style           =   2  'Dropdown List
-         TabIndex        =   19
+         TabIndex        =   12
          Top             =   1020
          Width           =   6735
+         _ExtentX        =   11880
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdHyperlink lblReviewMetadata 
+         Height          =   255
+         Left            =   240
+         Top             =   30
+         Width           =   6780
+         _ExtentX        =   11959
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "click here to review the image's metadata"
+         RaiseClickEvent =   -1  'True
       End
       Begin PhotoDemon.smartCheckBox chkThumbnail 
          Height          =   330
          Left            =   360
-         TabIndex        =   15
+         TabIndex        =   11
          Top             =   3240
          Width           =   6690
          _ExtentX        =   11800
          _ExtentY        =   582
          Caption         =   "embed thumbnail image"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
-      Begin VB.Label lblViewMetadata 
-         Alignment       =   1  'Right Justify
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "click here to review the image's metadata"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   -1  'True
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H8000000D&
-         Height          =   240
-         Left            =   3435
-         MouseIcon       =   "VBP_FormExportJPEG.frx":24A4
-         MousePointer    =   99  'Custom
-         TabIndex        =   20
-         Top             =   135
-         Width           =   3585
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "other metadata options:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   2
          Left            =   120
-         TabIndex        =   18
-         Top             =   2880
-         Width           =   2550
+         Top             =   2820
+         Width           =   6975
+         _ExtentX        =   12303
+         _ExtentY        =   503
+         Caption         =   "other metadata options:"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
-      Begin VB.Label lblCurMetadata 
-         BackStyle       =   0  'Transparent
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblCurMetadata 
          Height          =   1080
          Left            =   360
-         TabIndex        =   17
          Top             =   1560
-         UseMnemonic     =   0   'False
          Width           =   6615
-         WordWrap        =   -1  'True
+         _ExtentX        =   0
+         _ExtentY        =   503
+         ForeColor       =   4210752
+         Layout          =   1
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "general metadata setting for this image:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   0
          Left            =   120
-         TabIndex        =   16
-         Top             =   600
-         Width           =   4245
+         Top             =   540
+         Width           =   6885
+         _ExtentX        =   12144
+         _ExtentY        =   503
+         Caption         =   "general metadata setting for this image:"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
    End
 End
@@ -489,17 +303,28 @@ Private userAnswer As VbMsgBoxResult
 'This form can be notified of the image being exported.  This may be used in the future to provide a preview.
 Public imageBeingExported As pdImage
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
-
 'The quality checkboxes work as toggles.  To prevent infinite looping while they update each other, a module-level
 ' variable is used to control access to the toggle code.
-Dim m_CheckBoxUpdatingDisabled As Boolean
+Private m_CheckBoxUpdatingDisabled As Boolean
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
 End Property
+
+Private Sub btsCategory_Click(ByVal buttonIndex As Long)
+
+    Dim i As Long
+    
+    For i = 0 To btsCategory.ListCount - 1
+        If i = buttonIndex Then
+            picContainer(i).Visible = True
+        Else
+            picContainer(i).Visible = False
+        End If
+    Next i
+
+End Sub
 
 Private Sub chkColorMatching_Click()
     updatePreview
@@ -514,11 +339,11 @@ End Sub
 Private Sub cmbAutoQuality_Click()
     
     If cmbAutoQuality.ListIndex > 0 Then
-        CmbSaveQuality.Enabled = False
+        cboSaveQuality.Enabled = False
         sltQuality.Enabled = False
         chkColorMatching.Enabled = True
     Else
-        CmbSaveQuality.Enabled = True
+        cboSaveQuality.Enabled = True
         sltQuality.Enabled = True
         chkColorMatching.Enabled = False
     End If
@@ -528,11 +353,11 @@ Private Sub cmbAutoQuality_Click()
 End Sub
 
 'QUALITY combo box - when adjusted, change the scroll bar to match
-Private Sub CmbSaveQuality_Click()
+Private Sub cboSaveQuality_Click()
     
     If Not m_CheckBoxUpdatingDisabled Then
     
-        Select Case CmbSaveQuality.ListIndex
+        Select Case cboSaveQuality.ListIndex
             
             Case 0
                 sltQuality.Value = 99
@@ -555,7 +380,7 @@ Private Sub CmbSaveQuality_Click()
     
 End Sub
 
-Private Sub cmbSubsample_Click()
+Private Sub cboSubsample_Click()
     
     'Update the specific subsampling box to match
     If Not CBool(chkSubsample) Then chkSubsample.Value = vbChecked
@@ -599,7 +424,7 @@ Private Sub cmdBar_OKClick()
     g_JPEGAdvancedColorMatching = CBool(chkColorMatching)
     
     'Metadata handling is stored inside the image object itself.  Set that value now.
-    imageBeingExported.imgMetadata.setMetadataExportPreference cmbMetadata.ListIndex
+    imageBeingExported.imgMetadata.setMetadataExportPreference cboMetadata.ListIndex
     
     userAnswer = vbOK
     Me.Hide
@@ -616,7 +441,7 @@ Private Sub cmdBar_ResetClick()
     cmbAutoQuality.ListIndex = 0
     
     'Default save quality is "Excellent"
-    CmbSaveQuality.ListIndex = 1
+    cboSaveQuality.ListIndex = 1
     
     'By default, the only advanced setting is Optimize compression tables
     chkOptimize.Value = vbChecked
@@ -628,23 +453,7 @@ Private Sub cmdBar_ResetClick()
     chkColorMatching.Value = vbUnchecked
     
     'By default, the global metadata setting is used
-    cmbMetadata.ListIndex = 0
-    
-End Sub
-
-Private Sub cmdCategory_Click(Index As Integer)
-    
-    Dim i As Long
-    
-    For i = 0 To cmdCategory.Count - 1
-        If i = Index Then
-            cmdCategory(i).Value = True
-            picContainer(i).Visible = True
-        Else
-            cmdCategory(i).Value = False
-            picContainer(i).Visible = False
-        End If
-    Next i
+    cboMetadata.ListIndex = 0
     
 End Sub
 
@@ -663,22 +472,22 @@ Private Sub updateComboBox()
     Select Case sltQuality.Value
         
         Case 40
-            If CmbSaveQuality.ListIndex <> 4 Then CmbSaveQuality.ListIndex = 4
+            If cboSaveQuality.ListIndex <> 4 Then cboSaveQuality.ListIndex = 4
                             
         Case 65
-            If CmbSaveQuality.ListIndex <> 3 Then CmbSaveQuality.ListIndex = 3
+            If cboSaveQuality.ListIndex <> 3 Then cboSaveQuality.ListIndex = 3
                 
         Case 80
-            If CmbSaveQuality.ListIndex <> 2 Then CmbSaveQuality.ListIndex = 2
+            If cboSaveQuality.ListIndex <> 2 Then cboSaveQuality.ListIndex = 2
                 
         Case 92
-            If CmbSaveQuality.ListIndex <> 1 Then CmbSaveQuality.ListIndex = 1
+            If cboSaveQuality.ListIndex <> 1 Then cboSaveQuality.ListIndex = 1
                 
         Case 99
-            If CmbSaveQuality.ListIndex <> 0 Then CmbSaveQuality.ListIndex = 0
+            If cboSaveQuality.ListIndex <> 0 Then cboSaveQuality.ListIndex = 0
                 
         Case Else
-            If CmbSaveQuality.ListIndex <> 5 Then CmbSaveQuality.ListIndex = 5
+            If cboSaveQuality.ListIndex <> 5 Then cboSaveQuality.ListIndex = 5
                 
     End Select
     
@@ -695,15 +504,19 @@ Public Sub showDialog()
     'Make sure that the proper cursor is set
     Screen.MousePointer = 0
     
+    'Populate the category button strip
+    btsCategory.AddItem "Quality", 0
+    btsCategory.AddItem "Metadata", 1
+    
     'Populate the quality drop-down box with presets corresponding to the JPEG format
-    CmbSaveQuality.Clear
-    CmbSaveQuality.AddItem " Perfect (99)", 0
-    CmbSaveQuality.AddItem " Excellent (92)", 1
-    CmbSaveQuality.AddItem " Good (80)", 2
-    CmbSaveQuality.AddItem " Average (65)", 3
-    CmbSaveQuality.AddItem " Low (40)", 4
-    CmbSaveQuality.AddItem " Custom value", 5
-    CmbSaveQuality.ListIndex = 1
+    cboSaveQuality.Clear
+    cboSaveQuality.AddItem " Perfect (99)", 0
+    cboSaveQuality.AddItem " Excellent (92)", 1
+    cboSaveQuality.AddItem " Good (80)", 2
+    cboSaveQuality.AddItem " Average (65)", 3
+    cboSaveQuality.AddItem " Low (40)", 4
+    cboSaveQuality.AddItem " Custom value", 5
+    cboSaveQuality.ListIndex = 1
     Message "Waiting for user to specify JPEG export options... "
     
     'Populate the "auto quality" drop-down next
@@ -719,25 +532,25 @@ Public Sub showDialog()
     cmbAutoQuality.ToolTipText = g_Language.TranslateMessage("PhotoDemon can automatically choose a JPEG quality setting for you.  The statistical analyses it uses are designed around photographs; synthetic images or images with large regions of solid color may not work as well.")
     
     chkColorMatching.Value = vbUnchecked
-    chkColorMatching.ToolTipText = g_Language.TranslateMessage("Perceptive color matching uses the CIE L*a*b* color space for highly accurate color modeling.  Enabling this setting may increase processing time by several seconds.")
+    chkColorMatching.assignTooltip "Perceptive color matching uses the CIE L*a*b* color space for highly accurate color modeling.  Enabling this setting may increase processing time by several seconds."
     
     'Populate the custom subsampling combo box as well
-    cmbSubsample.Clear
-    cmbSubsample.AddItem " 4:4:4 (best quality)", 0
-    cmbSubsample.AddItem " 4:2:2 (good quality)", 1
-    cmbSubsample.AddItem " 4:2:0 (moderate quality)", 2
-    cmbSubsample.AddItem " 4:1:1 (low quality)", 3
-    cmbSubsample.ListIndex = 2
+    cboSubsample.Clear
+    cboSubsample.AddItem " 4:4:4 (best quality)", 0
+    cboSubsample.AddItem " 4:2:2 (good quality)", 1
+    cboSubsample.AddItem " 4:2:0 (moderate quality)", 2
+    cboSubsample.AddItem " 4:1:1 (low quality)", 3
+    cboSubsample.ListIndex = 2
     
     'Next, prepare various controls on the metadata panel
     
     'Populate the metadata handling combo box
-    cmbMetadata.Clear
-    cmbMetadata.AddItem " use program-wide setting (default)", 0
-    cmbMetadata.AddItem " preserve all relevant metadata", 1
-    cmbMetadata.AddItem " preserve all relevant metadata, but remove personal tags", 2
-    cmbMetadata.AddItem " do not preserve metadata", 3
-    cmbMetadata.ListIndex = 0
+    cboMetadata.Clear
+    cboMetadata.AddItem " use program-wide setting (default)", 0
+    cboMetadata.AddItem " preserve all relevant metadata", 1
+    cboMetadata.AddItem " preserve all relevant metadata, but remove personal tags", 2
+    cboMetadata.AddItem " do not preserve metadata", 3
+    cboMetadata.ListIndex = 0
     
     'As a convenience to the user, let them know what their current metadata setting is.
     Dim curMDString As String
@@ -759,10 +572,9 @@ Public Sub showDialog()
     curMDString = curMDString & """. "
     curMDString = curMDString & g_Language.TranslateMessage("You can change the program-wide setting from the Tools -> Options menu.")
     
-    lblCurMetadata = curMDString
-    lblCurMetadata.Refresh
+    lblCurMetadata.Caption = curMDString
     
-    cmbMetadata.ToolTipText = g_Language.TranslateMessage("Image metadata is extra data placed in an image file by a camera or photo software.  This data can include things like the make and model of the camera, the GPS coordinates where a photo was taken, or many other items.  To view an image's metadata, use the Image -> Metadata menu.")
+    cboMetadata.assignTooltip "Image metadata is extra data placed in an image file by a camera or photo software.  This data can include things like the make and model of the camera, the GPS coordinates where a photo was taken, or many other items.  To view an image's metadata, use the Image -> Metadata menu."
     
     'If the image being saved is the primary image in the main PhotoDemon window, the user can choose to review the image's metadata
     If imageBeingExported.imageID = g_CurrentImage Then
@@ -772,13 +584,12 @@ Public Sub showDialog()
     End If
     
     'By default, the quality panel is always shown.
+    btsCategory.ListIndex = 0
     Dim i As Long
-    For i = 0 To cmdCategory.Count - 1
+    For i = 0 To btsCategory.ListCount - 1
         If i = 0 Then
-            cmdCategory(i).Value = True
             picContainer(i).Visible = True
         Else
-            cmdCategory(i).Value = False
             picContainer(i).Visible = False
         End If
     Next i
@@ -789,16 +600,17 @@ Public Sub showDialog()
         chkProgressive.Enabled = False
         chkSubsample.Enabled = False
         chkThumbnail.Enabled = False
-        cmbSubsample.AddItem "n/a", 4
-        cmbSubsample.ListIndex = 4
-        cmbSubsample.Enabled = False
-        lblTitle(1).Caption = g_Language.TranslateMessage("advanced settings require the FreeImage plugin")
+        cboSubsample.AddItem "n/a", 4
+        cboSubsample.ListIndex = 4
+        cboSubsample.Enabled = False
+        lblTitle(1).Caption = "advanced settings require the FreeImage plugin"
     End If
         
     'Apply some checkbox tooltips manually (so the translation engine can find them)
-    chkOptimize.ToolTipText = g_Language.TranslateMessage("Optimization is highly recommended.  This option allows the JPEG encoder to compute an optimal Huffman coding table for the file.  It does not affect image quality - only file size.")
-    chkProgressive.ToolTipText = g_Language.TranslateMessage("Progressive encoding is sometimes used for JPEG files that will be used on the Internet.  It saves the image in three steps, which can be used to gradually fade-in the image on a slow Internet connection.")
-    chkThumbnail.ToolTipText = g_Language.TranslateMessage("Embedded thumbnails increase file size, but they help previews of the image appear more quickly in other software (e.g. Windows Explorer).")
+    chkOptimize.assignTooltip "Optimization is highly recommended.  This option allows the JPEG encoder to compute an optimal Huffman coding table for the file.  It does not affect image quality - only file size."
+    chkProgressive.assignTooltip "Progressive encoding is sometimes used for JPEG files that will be used on the Internet.  It saves the image in three steps, which can be used to gradually fade-in the image on a slow Internet connection."
+    chkThumbnail.assignTooltip "Embedded thumbnails increase file size, but they help previews of the image appear more quickly in other software (e.g. Windows Explorer)."
+    chkSubsample.assignTooltip "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
     
     'FreeImage is required to perform the JPEG transformation.  We could use GDI+, but FreeImage is
     ' much easier to interface with.  If FreeImage is not available, warn the user.
@@ -827,8 +639,7 @@ Public Sub showDialog()
     End If
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    makeFormPretty Me
     
     'Update the preview
     updatePreview
@@ -843,7 +654,7 @@ Private Sub fxPreview_ViewportChanged()
 End Sub
 
 'When clicked, allow the user to view metadata for the current image
-Private Sub lblViewMetadata_Click()
+Private Sub lblReviewMetadata_Click()
 
     'If the current image does not have metadata, warn the user and exit.
     If Not imageBeingExported.imgMetadata.hasXMLMetadata Then
@@ -900,7 +711,7 @@ End Sub
 
 Private Function getSubsampleConstantFromComboBox() As Long
     
-    Select Case cmbSubsample.ListIndex
+    Select Case cboSubsample.ListIndex
             
         Case 0
             getSubsampleConstantFromComboBox = JPEG_SUBSAMPLING_444
@@ -914,3 +725,4 @@ Private Function getSubsampleConstantFromComboBox() As Long
     End Select
     
 End Function
+
