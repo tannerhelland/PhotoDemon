@@ -29,8 +29,8 @@ Begin VB.Form FormPreferences
       Left            =   120
       TabIndex        =   65
       Top             =   120
-      Width           =   2700
-      _ExtentX        =   4763
+      Width           =   2625
+      _ExtentX        =   4630
       _ExtentY        =   11774
    End
    Begin VB.CommandButton cmdReset 
@@ -98,7 +98,7 @@ Begin VB.Form FormPreferences
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
       TabIndex        =   7
-      Top             =   240
+      Top             =   120
       Width           =   8295
       Begin PhotoDemon.pdLabel lblExplanation 
          Height          =   2535
@@ -211,7 +211,7 @@ Begin VB.Form FormPreferences
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
       TabIndex        =   2
-      Top             =   240
+      Top             =   120
       Width           =   8295
       Begin PhotoDemon.pdComboBox cboMRUCaption 
          Height          =   330
@@ -374,7 +374,7 @@ Begin VB.Form FormPreferences
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
       TabIndex        =   11
-      Top             =   240
+      Top             =   120
       Width           =   8295
       Begin PhotoDemon.pdComboBox cboAlphaCheckSize 
          Height          =   330
@@ -573,7 +573,7 @@ Begin VB.Form FormPreferences
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
       TabIndex        =   26
-      Top             =   240
+      Top             =   120
       Width           =   8295
       Begin PhotoDemon.pdComboBox cboFiletype 
          Height          =   330
@@ -908,7 +908,7 @@ Begin VB.Form FormPreferences
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
       TabIndex        =   25
-      Top             =   240
+      Top             =   120
       Width           =   8295
       Begin PhotoDemon.pdComboBox cboExportColorDepth 
          Height          =   330
@@ -1074,7 +1074,7 @@ Begin VB.Form FormPreferences
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
       TabIndex        =   16
-      Top             =   240
+      Top             =   120
       Width           =   8295
       Begin PhotoDemon.smartCheckBox chkInitialColorDepth 
          Height          =   330
@@ -1198,7 +1198,7 @@ Begin VB.Form FormPreferences
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
       TabIndex        =   5
-      Top             =   240
+      Top             =   120
       Width           =   8295
       Begin PhotoDemon.sliderTextCombo sltUndoCompression 
          Height          =   495
@@ -1406,7 +1406,7 @@ Begin VB.Form FormPreferences
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   553
       TabIndex        =   9
-      Top             =   240
+      Top             =   120
       Width           =   8295
       Begin PhotoDemon.pdButtonToolbox cmdCopyReportClipboard 
          Height          =   570
