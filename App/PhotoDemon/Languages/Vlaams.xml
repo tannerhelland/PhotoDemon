@@ -11547,11 +11547,6 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 </phrase>
 
 <phrase>
-<original>Select color from screen</original>
-<translation>Selecteer kleur van het scherm</translation>
-</phrase>
-
-<phrase>
 <original>recent colors</original>
 <translation>recente kleuren</translation>
 </phrase>
@@ -11581,7 +11576,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 <translation>Klik op deze knop om de kleur te kunnen vast te leggen van overal op het scherm.</translation>
 </phrase>
 
-<!-- VBP_FormColorSelector.frm contains 16 phrases. 8 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- VBP_FormColorSelector.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for VBP_FormColorSelector.frm-->
 
@@ -13282,10 +13277,10 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2316</phrasecount>
+<phrasecount>2315</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3937 phrases. -->
-<!-- 1621 are duplicates, so only 2316 unique phrases have been written to file. -->
-<!-- These 2316 phrases contain approximately 13334 total words. -->
+<!-- As of this build, PhotoDemon contains 3935 phrases. -->
+<!-- 1620 are duplicates, so only 2315 unique phrases have been written to file. -->
+<!-- These 2315 phrases contain approximately 13330 total words. -->
 
 </pdData>
