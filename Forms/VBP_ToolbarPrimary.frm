@@ -332,7 +332,11 @@ Private Const BTS_HEIGHT_LARGE As Long = 48
 Private m_ButtonWidth As Long, m_ButtonHeight As Long
 
 Private Sub cmdFile_Click(Index As Integer)
-    
+        
+    'If the user is dragging the mouse in from the right, and the toolbox has been shrunk from its default setting, the class cursor
+    ' for forms may get stuck on the west/east "resize" cursor.  To avoid this, reset it after any button click.
+    setArrowCursor Me
+        
     Select Case Index
     
         Case FILE_NEW
@@ -408,6 +412,10 @@ Private Sub Form_Load()
     'As a final step, redraw everything against the current theme.
     updateAgainstCurrentTheme
     
+End Sub
+
+Private Sub Form_LostFocus()
+    setArrowCursor Me
 End Sub
 
 Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
@@ -842,7 +850,11 @@ Public Sub resetToolButtonStates()
 End Sub
 
 Private Sub cmdTools_Click(Index As Integer)
-    
+        
+    'If the user is dragging the mouse in from the right, and the toolbox has been shrunk from its default setting, the class cursor
+    ' for forms may get stuck on the west/east "resize" cursor.  To avoid this, reset it after any button click.
+    setArrowCursor Me
+        
     'Before changing to the new tool, see if the previously active layer has had any non-destructive changes made.
     If Processor.evaluateImageCheckpoint() Then syncInterfaceToCurrentImage
     
