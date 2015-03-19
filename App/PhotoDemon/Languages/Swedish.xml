@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.5.7</langversion>
+<langversion>6.5.8</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -8173,7 +8173,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 
 <phrase>
 <original>Applying surface blur</original>
-<translation></translation>
+<translation>Tillämpa Ytoskärpa</translation>
 </phrase>
 
 <phrase>

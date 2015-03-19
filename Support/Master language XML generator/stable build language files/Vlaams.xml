@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.5.8</langversion>
+<langversion>6.5.9</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -27,17 +27,17 @@
 
 <phrase>
 <original>Decrease speed</original>
-<translation></translation>
+<translation>afname snelheid</translation>
 </phrase>
 
 <phrase>
 <original>Increase speed</original>
-<translation></translation>
+<translation>snelheid verhogen</translation>
 </phrase>
 
 <phrase>
 <original>Pause scrolling</original>
-<translation></translation>
+<translation>Pauze scrollen</translation>
 </phrase>
 
 <phrase>
@@ -4292,7 +4292,7 @@ Om de scannerondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (b
 
 <phrase>
 <original>notify me when an update is ready</original>
-<translation></translation>
+<translation>waarschuwing weergeven wanneer er een update is klaar</translation>
 </phrase>
 
 <phrase>
@@ -5166,7 +5166,7 @@ Weet u zeker dat u wilt doorgaan?</translation>
 
 <phrase>
 <original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
-<translation></translation>
+<translation>PhotoDemon kunt u op de hoogte wanneer het klaar om een update toe te passen. Hierdoor kunt u de bijgewerkte versie direct gebruiken.</translation>
 </phrase>
 
 <phrase>
@@ -6281,7 +6281,7 @@ Sta het programma toe om deze gratis, open-source insteekmodule(s) automatisch t
 
 <phrase>
 <original>%1.%2 Beta %3</original>
-<translation></translation>
+<translation> %1.%2 Beta %3</translation>
 </phrase>
 
 <!-- VBP_SoftwareUpdater.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -8172,7 +8172,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <phrase>
 <original>Applying surface blur</original>
-<translation></translation>
+<translation>Toepassing oppervlak onscherpte</translation>
 </phrase>
 
 <phrase>
@@ -10411,7 +10411,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 
 <phrase>
 <original>Save the current settings as a new preset.</original>
-<translation></translation>
+<translation>Sla de huidige instellingen als een nieuwe voorinstelling.</translation>
 </phrase>
 
 <phrase>
@@ -11547,11 +11547,6 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 </phrase>
 
 <phrase>
-<original>Select color from screen</original>
-<translation>Selecteer kleur van het scherm</translation>
-</phrase>
-
-<phrase>
 <original>recent colors</original>
 <translation>recente kleuren</translation>
 </phrase>
@@ -11581,7 +11576,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 <translation>Klik op deze knop om de kleur te kunnen vast te leggen van overal op het scherm.</translation>
 </phrase>
 
-<!-- VBP_FormColorSelector.frm contains 16 phrases. 8 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- VBP_FormColorSelector.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for VBP_FormColorSelector.frm-->
 
@@ -13174,7 +13169,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <phrase>
 <original>in the future, do not notify me of updates</original>
-<translation></translation>
+<translation>in de toekomst, doe mij over de status niet op de hoogte</translation>
 </phrase>
 
 <phrase>
@@ -13189,7 +13184,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <phrase>
 <original>Learn more about the new features in %1</original>
-<translation></translation>
+<translation>Meer informatie over de nieuwe functies leren in %1</translation>
 </phrase>
 
 <phrase>
@@ -13242,12 +13237,12 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <phrase>
 <original>Add new preset</original>
-<translation></translation>
+<translation>Voeg nieuwe vooraf ingestelde</translation>
 </phrase>
 
 <phrase>
 <original>enter a name for this preset</original>
-<translation></translation>
+<translation>voer een naam voor deze preset</translation>
 </phrase>
 
 <phrase>
@@ -13262,7 +13257,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <phrase>
 <original>Please enter a name for this preset.</original>
-<translation></translation>
+<translation>Vul een naam in voor deze preset.</translation>
 </phrase>
 
 <phrase>
@@ -13282,10 +13277,10 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2316</phrasecount>
+<phrasecount>2315</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3937 phrases. -->
-<!-- 1621 are duplicates, so only 2316 unique phrases have been written to file. -->
-<!-- These 2316 phrases contain approximately 13334 total words. -->
+<!-- As of this build, PhotoDemon contains 3935 phrases. -->
+<!-- 1620 are duplicates, so only 2315 unique phrases have been written to file. -->
+<!-- These 2315 phrases contain approximately 13330 total words. -->
 
 </pdData>
