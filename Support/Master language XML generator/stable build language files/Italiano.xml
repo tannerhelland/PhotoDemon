@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.5.9</langversion>
+<langversion>6.5.10</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -27,17 +27,17 @@
 
 <phrase>
 <original>Decrease speed</original>
-<translation></translation>
+<translation>Diminuire la velocità</translation>
 </phrase>
 
 <phrase>
 <original>Increase speed</original>
-<translation></translation>
+<translation>Aumentare la velocità</translation>
 </phrase>
 
 <phrase>
 <original>Pause scrolling</original>
-<translation></translation>
+<translation>Pausa scorrimento</translation>
 </phrase>
 
 <phrase>
@@ -281,22 +281,22 @@ Per favore utilizza un altro programma per salvarla in un formato generico (come
 
 <phrase>
 <original>frame %1</original>
-<translation></translation>
+<translation>Telaio %1</translation>
 </phrase>
 
 <phrase>
 <original>icon (%1x%2)</original>
-<translation></translation>
+<translation>icona ( %1x %2)</translation>
 </phrase>
 
 <phrase>
 <original>icon (%1x%2, %3 bpp)</original>
-<translation></translation>
+<translation>icona ( %1x %2, %3 bpp)</translation>
 </phrase>
 
 <phrase>
 <original>page %1</original>
-<translation></translation>
+<translation>Pagina %1</translation>
 </phrase>
 
 <phrase>
@@ -2829,7 +2829,7 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 
 <phrase>
 <original>Cross-screen</original>
-<translation></translation>
+<translation>Cross-schermo</translation>
 </phrase>
 
 <phrase>
@@ -3034,17 +3034,17 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 
 <phrase>
 <original>Record macro</original>
-<translation></translation>
+<translation>Record macro</translation>
 </phrase>
 
 <phrase>
 <original>Start recording</original>
-<translation></translation>
+<translation>Inizia la registrazione</translation>
 </phrase>
 
 <phrase>
 <original>Stop recording</original>
-<translation></translation>
+<translation>Interrompere la registrazione</translation>
 </phrase>
 
 <phrase>
@@ -3054,12 +3054,12 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 
 <phrase>
 <original>Recent macros</original>
-<translation></translation>
+<translation>macro recenti</translation>
 </phrase>
 
 <phrase>
 <original>Clear recent macro list</original>
-<translation></translation>
+<translation>Lista recente macro Cancella</translation>
 </phrase>
 
 <phrase>
@@ -3234,7 +3234,7 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 
 <phrase>
 <original>A new version of PhotoDemon is available.  The update is automatically processing in the background</original>
-<translation></translation>
+<translation>Una nuova versione di PhotoDemon è disponibile. L'aggiornamento sta elaborando automaticamente in background</translation>
 </phrase>
 
 <phrase>
@@ -3246,7 +3246,9 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 <original>A new version of PhotoDemon is available!
 
 The update is automatically processing in the background.  You will receive a new notification when it completes.</original>
-<translation></translation>
+<translation>Una nuova versione di PhotoDemon è disponibile! Aggiornamento 
+
+The elabora automaticamente in background. Riceverai una nuova notifica quando completa.</translation>
 </phrase>
 
 <phrase>
@@ -4263,22 +4265,22 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 
 <phrase>
 <original>update language files independently</original>
-<translation></translation>
+<translation>lingua file di aggiornamento indipendente</translation>
 </phrase>
 
 <phrase>
 <original>automatically check for updates</original>
-<translation></translation>
+<translation>controllare automaticamente gli aggiornamenti</translation>
 </phrase>
 
 <phrase>
 <original>update plugins independently</original>
-<translation></translation>
+<translation>aggiornamento plugins indipendente</translation>
 </phrase>
 
 <phrase>
 <original>allow updates from these tracks</original>
-<translation></translation>
+<translation>consentire gli aggiornamenti da queste tracce</translation>
 </phrase>
 
 <phrase>
@@ -4288,17 +4290,17 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 
 <phrase>
 <original>notify me when an update is ready</original>
-<translation></translation>
+<translation>mi avvisa quando un aggiornamento è pronto</translation>
 </phrase>
 
 <phrase>
 <original>use high-resolution input tracking</original>
-<translation></translation>
+<translation>utilizzare il monitoraggio di ingresso ad alta risoluzione</translation>
 </phrase>
 
 <phrase>
 <original>mouse and pen input</original>
-<translation></translation>
+<translation>mouse e di input penna</translation>
 </phrase>
 
 <phrase>
@@ -4737,7 +4739,7 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>High-resolution tracking allows PhotoDemon to more accurately reproduce mouse and pen movement.  On some older PCs, the system may struggle to keep up with the extra tracking data, so you can disable this if necessary.</original>
-<translation></translation>
+<translation>Ad alta risoluzione di tracking permette PhotoDemon di riprodurre con maggiore precisione del mouse e il movimento della penna. Su alcuni vecchi PC, il sistema può lottare per tenere il passo con i dati di tracciamento in più, in modo da poter disabilitare questa, se necessario.</translation>
 </phrase>
 
 <phrase>
@@ -5107,69 +5109,71 @@ Sei sicuro di voler continuare?</translation>
 
 <phrase>
 <original>each session</original>
-<translation></translation>
+<translation>ogni sessione</translation>
 </phrase>
 
 <phrase>
 <original>weekly</original>
-<translation></translation>
+<translation>settimanale</translation>
 </phrase>
 
 <phrase>
 <original>monthly</original>
-<translation></translation>
+<translation>mensile</translation>
 </phrase>
 
 <phrase>
 <original>never (not recommended)</original>
-<translation></translation>
+<translation>mai (non raccomandato)</translation>
 </phrase>
 
 <phrase>
 <original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
-<translation></translation>
+<translation>Perché PhotoDemon è un'applicazione portatile, si può verificare solo per aggiornamenti quando il programma è in esecuzione. Per impostazione predefinita, PhotoDemon sarà controllare gli aggiornamenti ogni volta che viene lanciato il programma, ma è possibile ridurre questa frequenza se lo si desidera.</translation>
 </phrase>
 
 <phrase>
 <original>stable releases</original>
-<translation></translation>
+<translation>versioni stabili</translation>
 </phrase>
 
 <phrase>
 <original>stable and beta releases</original>
-<translation></translation>
+<translation>versioni stabili e beta</translation>
 </phrase>
 
 <phrase>
 <original>stable, beta, and developer releases</original>
-<translation></translation>
+<translation>stabili, release beta, e di sviluppo</translation>
 </phrase>
 
 <phrase>
 <original>One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)</original>
-<translation></translation>
+<translation>Uno dei modi migliori per sostenere PhotoDemon è quello di aiutare a testare le nuove versioni. Per impostazione predefinita, PhotoDemon suggerirà versioni sia stabili e beta, ma i veri avventurosi possono anche provare versioni per sviluppatori. (Versioni Developer consentono l'accesso immediato agli ultimi miglioramenti del programma, ma si potrebbe incontrare qualche bug.)</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon's volunteer translators regularly update the program's language files.  PhotoDemon can automatically download these updates separate from the main program, ensuring that you always have the most up-to-date language files.</original>
-<translation></translation>
+<translation>Traduttori volontari di PhotoDemon aggiornano regolarmente file di lingua del programma. PhotoDemon può scaricare automaticamente questi aggiornamenti separati dal programma principale, assicurando di avere sempre i file più up-to-date di lingua.</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon uses some 3rd-party plugins.  Sometimes, the authors of these plugins fix bugs or add new features.  Instead of waiting for the next PhotoDemon release, you can receive plugin updates as soon as they become available.</original>
-<translation></translation>
+<translation>PhotoDemon utilizza alcuni plugin 3rd-party. A volte, di questi plugin autori correggere i bug o aggiungere nuove funzionalità. Invece di aspettare la prossima versione PhotoDemon, è possibile ricevere gli aggiornamenti di plugin non appena saranno disponibili.</translation>
 </phrase>
 
 <phrase>
 <original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
-<translation></translation>
+<translation>PhotoDemon può notificare quando è pronto per applicare un aggiornamento. Ciò consente di utilizzare immediatamente la versione aggiornata.</translation>
 </phrase>
 
 <phrase>
 <original>The developers of PhotoDemon take privacy very seriously, so no information - statistical or otherwise - is uploaded during the update process.  Updates simply involve downloading several small XML files from photodemon.org. These files contain the latest software, plugin, and language version numbers. If updated versions are found, and user preferences allow, the updated files are then downloaded and patched automatically.
 
 If you still choose to disable updates, don't forget to visit photodemon.org from time to time to check for new versions.</original>
-<translation></translation>
+<translation>Gli sviluppatori di PhotoDemon prendono privacy molto sul serio, quindi nessuna informazione - statistico e di altro - viene caricato durante il processo di aggiornamento. Aggiornamenti semplicemente coinvolgono il download di diversi file XML piccoli da photodemon.org. Questi file contengono gli ultimi numeri del software, plug, e la versione linguistica. Se le versioni aggiornate si trovano, e le preferenze degli utenti consentono, i file aggiornati vengono poi scaricati e patchati automatically.
+
+If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitare photodemon.org di tanto in tanto per verificare la presenza di nuove versioni.</translation>
 </phrase>
 
 <phrase>
@@ -5284,12 +5288,12 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <phrase>
 <original>Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.</original>
-<translation></translation>
+<translation>Opzioni prestazioni consentono di controllare se PhotoDemon enfatizza la velocità o la qualità quando si eseguono determinati compiti.</translation>
 </phrase>
 
 <phrase>
 <original>Performance Options</original>
-<translation></translation>
+<translation>Opzioni prestazioni</translation>
 </phrase>
 
 <phrase>
@@ -6157,7 +6161,7 @@ Per migliorare l'esperienza dell'utente, si prega di lasciare che il programma s
 
 <phrase>
 <original>Verifying plugin URL</original>
-<translation></translation>
+<translation>Verifica plugin di URL</translation>
 </phrase>
 
 <phrase>
@@ -6269,12 +6273,12 @@ Per migliorare l'esperienza dell'utente, si prega di lasciare che il programma s
 
 <phrase>
 <original>Update check postponed (a check has been performed recently)</original>
-<translation></translation>
+<translation>Aggiornamento di controllo rinviato (da una verifica è stato eseguito recentemente)</translation>
 </phrase>
 
 <phrase>
 <original>%1.%2 Beta %3</original>
-<translation></translation>
+<translation>%1.%2 Beta %3</translation>
 </phrase>
 
 <!-- VBP_SoftwareUpdater.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -8026,7 +8030,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>show original image (alt+t)</original>
-<translation></translation>
+<translation>mostrare l'immagine originale (alt t)</translation>
 </phrase>
 
 <!-- fxPreview.ctl contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -8165,7 +8169,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>Applying surface blur</original>
-<translation></translation>
+<translation>Applicando sfocatura superficie</translation>
 </phrase>
 
 <phrase>
@@ -8260,7 +8264,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 
 <phrase>
 <original>caption</original>
-<translation></translation>
+<translation>didascalia</translation>
 </phrase>
 
 <!-- smartOptionButton.ctl contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
@@ -8980,7 +8984,7 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 
 <phrase>
 <original>Step 5: wait for batch processing to finish</original>
-<translation></translation>
+<translation>Fase 5: aspettare per l'elaborazione batch per finire</translation>
 </phrase>
 
 <phrase>
@@ -9398,7 +9402,7 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare u
 
 <phrase>
 <original>(encoding unknown)</original>
-<translation></translation>
+<translation>(sconosciuto encoding)</translation>
 </phrase>
 
 <!-- VBP_FormMetadata.frm contains 22 phrases. 10 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -10404,7 +10408,7 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare u
 
 <phrase>
 <original>Save the current settings as a new preset.</original>
-<translation></translation>
+<translation>Salvare le impostazioni correnti come nuovo predefinito.</translation>
 </phrase>
 
 <phrase>
@@ -10666,12 +10670,12 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare u
 
 <phrase>
 <original>Automatic translations were interrupted (the translation object stopped responding).  The existing work has been auto-saved.</original>
-<translation></translation>
+<translation>Traduzioni automatiche sono stati interrotti (l'oggetto traduzione smesso di rispondere). Il lavoro esistente è stato salvato automaticamente.</translation>
 </phrase>
 
 <phrase>
 <original>Translations interrupted</original>
-<translation></translation>
+<translation>Traduzioni interrotti</translation>
 </phrase>
 
 <phrase>
@@ -11400,27 +11404,27 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 
 <phrase>
 <original>Open location in E&xplorer</original>
-<translation></translation>
+<translation>Aprire posizione in Explorer</translation>
 </phrase>
 
 <phrase>
 <original>Close all except this</original>
-<translation></translation>
+<translation>Chiudi tutto tranne questo</translation>
 </phrase>
 
 <phrase>
 <original>Once this image has been saved to disk, its filename will appear here.</original>
-<translation></translation>
+<translation>Una volta che l'immagine è stata salvata su disco, il suo nome appare qui.</translation>
 </phrase>
 
 <phrase>
 <original>This image does not have a filename.</original>
-<translation></translation>
+<translation>Questa immagine non ha un nome di file.</translation>
 </phrase>
 
 <phrase>
 <original>Hover an image thumbnail to see its name and current file location.</original>
-<translation></translation>
+<translation>Passare una miniatura dell'immagine per vedere il suo nome e la posizione del file corrente.</translation>
 </phrase>
 
 <!-- VBP_ToolbarImageTabs.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -11540,11 +11544,6 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 </phrase>
 
 <phrase>
-<original>Select color from screen</original>
-<translation>Scegli il colore dallo schermo</translation>
-</phrase>
-
-<phrase>
 <original>recent colors</original>
 <translation>colori recenti</translation>
 </phrase>
@@ -11574,7 +11573,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <translation>Clicca su questo pulsante per abilitare la cattura del colore da qualsiasi punto dello schermo.</translation>
 </phrase>
 
-<!-- VBP_FormColorSelector.frm contains 16 phrases. 8 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- VBP_FormColorSelector.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for VBP_FormColorSelector.frm-->
 
@@ -11915,22 +11914,22 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 
 <phrase>
 <original>Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.</original>
-<translation></translation>
+<translation>Mantieni proporzioni (a volte chiamato Mantieni proporzioni). Utilizzare questa opzione per ridimensionare l'immagine mantenendo la larghezza e l'altezza in sincronia.</translation>
 </phrase>
 
 <phrase>
 <original>Preserve aspect ratio</original>
-<translation></translation>
+<translation>Mantieni proporzioni</translation>
 </phrase>
 
 <phrase>
 <original>Change the unit of measurement used to resize the image.</original>
-<translation></translation>
+<translation>Modificare l'unità di misura utilizzata per ridimensionare l'immagine.</translation>
 </phrase>
 
 <phrase>
 <original>Change the unit of measurement used for image resolution (pixel density).</original>
-<translation></translation>
+<translation>Modificare l'unità di misura utilizzata per la risoluzione dell'immagine (densità di pixel).</translation>
 </phrase>
 
 <phrase>
@@ -13093,17 +13092,17 @@ o il menù File > Apri e File > Importa.</translation>
 
 <phrase>
 <original>Cross-screen (stars)</original>
-<translation></translation>
+<translation>Cross-screen (stelle)</translation>
 </phrase>
 
 <phrase>
 <original>spokes</original>
-<translation></translation>
+<translation>raggi</translation>
 </phrase>
 
 <phrase>
 <original>Applying cross-screen filter</original>
-<translation></translation>
+<translation>L'applicazione del filtro cross-screen</translation>
 </phrase>
 
 <!-- VBP_FormCrossScreen.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -13162,57 +13161,57 @@ o il menù File > Apri e File > Importa.</translation>
 
 <phrase>
 <original>Update ready</original>
-<translation></translation>
+<translation>aggiornare pronto</translation>
 </phrase>
 
 <phrase>
 <original>in the future, do not notify me of updates</original>
-<translation></translation>
+<translation>in futuro, non gli aggiornamenti notificano</translation>
 </phrase>
 
 <phrase>
 <original>Keep working</original>
-<translation></translation>
+<translation>Continuare a lavorare</translation>
 </phrase>
 
 <phrase>
 <original>Restart PhotoDemon</original>
-<translation></translation>
+<translation>Restart PhotoDemon</translation>
 </phrase>
 
 <phrase>
 <original>Learn more about the new features in %1</original>
-<translation></translation>
+<translation>Per saperne di più sulle nuove funzionalità in %1</translation>
 </phrase>
 
 <phrase>
 <original>(Sorry, but automatic restarts don't work inside the IDE.)</original>
-<translation></translation>
+<translation>(Ci dispiace, ma riavvii automatici non funzionano all'interno dell'IDE.)</translation>
 </phrase>
 
 <phrase>
 <original>A new version of PhotoDemon is available.  Restart the program to complete the update process.</original>
-<translation></translation>
+<translation>Una nuova versione di PhotoDemon è disponibile. Riavviare il programma per completare il processo di aggiornamento.</translation>
 </phrase>
 
 <phrase>
 <original>Restart now to access to the latest version of the program.</original>
-<translation></translation>
+<translation>Riavvia ora per accedere alla versione più recente del programma.</translation>
 </phrase>
 
 <phrase>
 <original>Apply update now</original>
-<translation></translation>
+<translation>Applica aggiornamento ora</translation>
 </phrase>
 
 <phrase>
 <original>If you're in the middle of something, feel free to keep working.  The update process will automatically complete whenever you next use the program.</original>
-<translation></translation>
+<translation>Se siete nel bel mezzo di qualcosa, sentitevi liberi di continuare a lavorare. Il processo di aggiornamento si completerà automaticamente ogni volta che si utilizza il programma successivo.</translation>
 </phrase>
 
 <phrase>
 <original>Apply update later</original>
-<translation></translation>
+<translation>Applica aggiornamento successivo</translation>
 </phrase>
 
 <!-- VBP_FormUpdateNotify.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
@@ -13235,12 +13234,12 @@ o il menù File > Apri e File > Importa.</translation>
 
 <phrase>
 <original>Add new preset</original>
-<translation></translation>
+<translation>Aggiungi nuovo preset</translation>
 </phrase>
 
 <phrase>
 <original>enter a name for this preset</original>
-<translation></translation>
+<translation>inserire un nome per la preimpostazione</translation>
 </phrase>
 
 <phrase>
@@ -13255,7 +13254,7 @@ o il menù File > Apri e File > Importa.</translation>
 
 <phrase>
 <original>Please enter a name for this preset.</original>
-<translation></translation>
+<translation>Si prega di inserire un nome per la preimpostazione.</translation>
 </phrase>
 
 <phrase>
@@ -13275,10 +13274,10 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2316</phrasecount>
+<phrasecount>2315</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3937 phrases. -->
-<!-- 1621 are duplicates, so only 2316 unique phrases have been written to file. -->
-<!-- These 2316 phrases contain approximately 13334 total words. -->
+<!-- As of this build, PhotoDemon contains 3935 phrases. -->
+<!-- 1620 are duplicates, so only 2315 unique phrases have been written to file. -->
+<!-- These 2315 phrases contain approximately 13330 total words. -->
 
 </pdData>

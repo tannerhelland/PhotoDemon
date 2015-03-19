@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.5.9</langversion>
+<langversion>6.5.10</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -27,17 +27,17 @@
 
 <phrase>
 <original>Decrease speed</original>
-<translation></translation>
+<translation>Réduire la vitesse</translation>
 </phrase>
 
 <phrase>
 <original>Increase speed</original>
-<translation></translation>
+<translation>augmentation de la vitesse</translation>
 </phrase>
 
 <phrase>
 <original>Pause scrolling</original>
-<translation></translation>
+<translation>Mettre en pause le défilement</translation>
 </phrase>
 
 <phrase>
@@ -4292,7 +4292,7 @@ Pour activer le support du scanner, s'il vous plaît copiez le fichier EZTW32.dl
 
 <phrase>
 <original>notify me when an update is ready</original>
-<translation></translation>
+<translation>informez-moi lorsqu'une mise à jour est prête</translation>
 </phrase>
 
 <phrase>
@@ -5166,7 +5166,7 @@ Are you sure you want to continue?</original>
 
 <phrase>
 <original>PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately.</original>
-<translation></translation>
+<translation>PhotoDemon peut vous avertir quand il est prêt à appliquer une mise à jour. Cela vous permet d'utiliser la version mise à jour immédiatement.</translation>
 </phrase>
 
 <phrase>
@@ -6281,7 +6281,7 @@ To améliorer votre expérience utilisateur, s'il vous plaît laissez le program
 
 <phrase>
 <original>%1.%2 Beta %3</original>
-<translation></translation>
+<translation> %1.%2 Beta %3</translation>
 </phrase>
 
 <!-- VBP_SoftwareUpdater.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
@@ -8172,7 +8172,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying surface blur</original>
-<translation></translation>
+<translation>On applique un flou de surface</translation>
 </phrase>
 
 <phrase>
@@ -10411,7 +10411,7 @@ Par défaut, transparence sera scindé en deux, ou vous pouvez spécifier une va
 
 <phrase>
 <original>Save the current settings as a new preset.</original>
-<translation></translation>
+<translation>Enregistrer les paramètres actuels en tant que nouveau paramètre prédéfini.</translation>
 </phrase>
 
 <phrase>
@@ -11548,11 +11548,6 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 </phrase>
 
 <phrase>
-<original>Select color from screen</original>
-<translation>Choisir la couleur de l'écran</translation>
-</phrase>
-
-<phrase>
 <original>recent colors</original>
 <translation>couleurs récentes</translation>
 </phrase>
@@ -11582,7 +11577,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 <translation>Cliquez sur ce bouton pour activer les couleurs de la capture depuis n'importe où sur l'écran.</translation>
 </phrase>
 
-<!-- VBP_FormColorSelector.frm contains 16 phrases. 8 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- VBP_FormColorSelector.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for VBP_FormColorSelector.frm-->
 
@@ -13175,7 +13170,7 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrase>
 <original>in the future, do not notify me of updates</original>
-<translation></translation>
+<translation>à l'avenir, ne me notifier des mises à jour pas</translation>
 </phrase>
 
 <phrase>
@@ -13190,7 +13185,7 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrase>
 <original>Learn more about the new features in %1</original>
-<translation></translation>
+<translation>En savoir plus sur les nouvelles fonctionnalités de 1%</translation>
 </phrase>
 
 <phrase>
@@ -13243,12 +13238,12 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrase>
 <original>Add new preset</original>
-<translation></translation>
+<translation>Ajouter nouvelle présélection</translation>
 </phrase>
 
 <phrase>
 <original>enter a name for this preset</original>
-<translation></translation>
+<translation>entrez un nom pour ce preset</translation>
 </phrase>
 
 <phrase>
@@ -13263,7 +13258,7 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrase>
 <original>Please enter a name for this preset.</original>
-<translation></translation>
+<translation>Se il vous plaît entrez un nom pour ce préréglage.</translation>
 </phrase>
 
 <phrase>
@@ -13283,10 +13278,10 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2316</phrasecount>
+<phrasecount>2315</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3937 phrases. -->
-<!-- 1621 are duplicates, so only 2316 unique phrases have been written to file. -->
-<!-- These 2316 phrases contain approximately 13334 total words. -->
+<!-- As of this build, PhotoDemon contains 3935 phrases. -->
+<!-- 1620 are duplicates, so only 2315 unique phrases have been written to file. -->
+<!-- These 2315 phrases contain approximately 13330 total words. -->
 
 </pdData>
