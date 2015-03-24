@@ -383,8 +383,88 @@ Public Function isNewVersionHigher(ByVal oldVersion As String, ByVal newVersion 
         Dim newIsNewer As Boolean
         newIsNewer = False
         
+        'For each version, we will be comparing entries in turn, starting with the major version and working
+        ' our way down.  We only check subsequent values if all preceding ones are equal.  (This ensures that
+        ' e.g. 6.6.0 does not update to 6.5.1.)
+        Dim majorIsEqual As Boolean, minorIsEqual As Boolean, revIsEqual As Boolean, buildIsEqual As Boolean
+                
         For i = 0 To 3
-            If CLng(newV(i)) > CLng(oldV(i)) Then newIsNewer = True
+            
+            Select Case i
+            
+                'Major version updates always trigger an update
+                Case 0
+                
+                    If CLng(newV(i)) > CLng(oldV(i)) Then
+                        newIsNewer = True
+                        Exit For
+                        
+                    Else
+                        
+                        If CLng(newV(i)) = CLng(oldV(i)) Then
+                            majorIsEqual = True
+                        Else
+                            majorIsEqual = False
+                        End If
+                    
+                    End If
+                
+                'Minor version updates trigger an update only if the major version matches
+                Case 1
+                
+                    If majorIsEqual Then
+                        
+                        If CLng(newV(i)) > CLng(oldV(i)) Then
+                            newIsNewer = True
+                            Exit For
+                        Else
+                        
+                            If CLng(newV(i)) = CLng(oldV(i)) Then
+                                minorIsEqual = True
+                            Else
+                                minorIsEqual = False
+                            End If
+                        
+                        End If
+                        
+                    End If
+                
+                'Build and revision updates follow the pattern above
+                Case 2
+                
+                    If minorIsEqual Then
+                        
+                        If CLng(newV(i)) > CLng(oldV(i)) Then
+                            newIsNewer = True
+                            Exit For
+                        Else
+                        
+                            If CLng(newV(i)) = CLng(oldV(i)) Then
+                                revIsEqual = True
+                            Else
+                                revIsEqual = False
+                            End If
+                        
+                        End If
+                        
+                    End If
+                
+                Case Else
+                
+                    If revIsEqual Then
+                        
+                        If CLng(newV(i)) > CLng(oldV(i)) Then
+                            newIsNewer = True
+                            Exit For
+                        Else
+                            newIsNewer = False
+                            Exit For
+                        End If
+                        
+                    End If
+                
+            End Select
+            
         Next i
         
         isNewVersionHigher = newIsNewer
