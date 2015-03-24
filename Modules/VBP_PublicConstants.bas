@@ -21,7 +21,7 @@ End Enum
 ' segments through the program, including the bulk of PD's debugging code.
 '
 ' Obvious corollary: ALWAYS SET DEBUGMODE TO 0 IN PRODUCTION BUILDS!
-Public Const PD_BUILD_QUALITY As Long = PD_BETA
+Public Const PD_BUILD_QUALITY As Long = PD_PRODUCTION
 
 'Identifier for various PD-specific file types
 Public Const PD_IMAGE_IDENTIFIER As Long = &H44494450   'pdImage data (ASCII characters "PDID", as hex, little-endian)
@@ -38,7 +38,7 @@ Public Const EXPECTED_FREEIMAGE_VERSION As String = "3.17.0"
 Public Const EXPECTED_ZLIB_VERSION As String = "1.2.8"
 Public Const EXPECTED_EZTWAIN_VERSION As String = "1.18.0"
 Public Const EXPECTED_PNGQUANT_VERSION As String = "2.3.1"
-Public Const EXPECTED_EXIFTOOL_VERSION As String = "9.84"
+Public Const EXPECTED_EXIFTOOL_VERSION As String = "9.90"
 
 'Some constants used for general program changes (better to leave them as constants here, then to
 ' have to manually change them when I think up better or more appropriate ones)
