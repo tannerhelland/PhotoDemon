@@ -102,7 +102,7 @@ End Enum
 ' here, so the entire project can access the type.
 Public Type pdLanguageFile
     Author As String
-    fileName As String
+    FileName As String
     langID As String
     langName As String
     langType As String

@@ -1,10 +1,10 @@
-# PhotoDemon 6.6 beta 1
+# PhotoDemon 6.6
 
 ![PhotoDemon Screenshot] (http://photodemon.org/images/PD_66_b1.jpg)
 
 ### PhotoDemon is a portable photo editor focused on performance and usability.  
 
-It provides a comprehensive selection of photo editing tools in an 8 MB download.  It runs on any Windows machine (XP through Win 10) and *does not* require installation.  It can easily be run from a USB stick or SD card.  Translations are currently provided for English and eight other languages.
+It provides a comprehensive selection of photo editing tools in an 8 MB download.  It runs on any Windows machine (XP through Win 10 TP) and *does not* require installation.  It can easily be run from a USB stick or SD card.  Translations are currently provided for English and eight other languages.
 
 PhotoDemon is completely open-source and available under a permissive BSD license.  Outside contributions from coders, designers, translators, and enthusiasts are always welcome.
 
@@ -39,10 +39,10 @@ Most free, open-source image editors are usability nightmares. PhotoDemon tries 
 
 ### What doesn't PhotoDemon do?
 
-* The current release (6.6b) does not support text layers.  Text layers are planned for the next release.
-* The current release (6.6b) includes partial Unicode support.  Some features may not work with Unicode filenames, but work on this is ongoing.
-* The current release (6.6b) does not provide any on-canvas painting tools.  On-canvas paint tools are planned for the next release.
-* The current release (6.6b) may not integrate well with high-contrast Windows themes, or non-standard Windows themes.  Improvements to theming are planned for the next release.
+* The current release (6.6) does not support text layers.  Text layers are planned for the next release.
+* The current release (6.6) includes partial Unicode support.  Some features may not work with Unicode filenames, but work on this is ongoing.
+* The current release (6.6) does not provide any on-canvas painting tools.  On-canvas paint tools are planned for the next release.
+* The current release (6.6) may not integrate well with high-contrast Windows themes, or non-standard Windows themes.  Improvements to theming are planned for the next release.
 * PhotoDemon isn't designed for OSes other than Microsoft Windows.  A compatibility layer like Wine (http://www.winehq.org/) may allow PhotoDemon to work on OSX, Linux, BSD, Solaris, or Maemo systems, but program stability and performance may suffer.
 
 ### How can I get involved? 
@@ -84,6 +84,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 PhotoDemon would not be possible without the help of many talented contributors, including...
 
 * Helmut Kuerbiss for maintaining (and hand-editing!) the German language file
+* Roy K for additional help with the German language file
 * Dirk Hartmann for additional help with the German language file
 (http://www.taichi-zentrum-heidelberg.de)
 * Raj Chaudhuri for multiple patches (including fixes for a number of long-standing issues) and a great deal of bug-testing 
