@@ -42,6 +42,7 @@ Begin VB.Form FormRotate
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.smartOptionButton optRotate 
       Height          =   360
@@ -51,18 +52,9 @@ Begin VB.Form FormRotate
       Top             =   3330
       Width           =   5715
       _ExtentX        =   10081
-      _ExtentY        =   635
+      _ExtentY        =   582
       Caption         =   "adjust size to fit rotated image"
       Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -82,17 +74,8 @@ Begin VB.Form FormRotate
       Top             =   3720
       Width           =   5715
       _ExtentX        =   10081
-      _ExtentY        =   635
+      _ExtentY        =   582
       Caption         =   "keep image at its present size"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
       Height          =   495
@@ -188,7 +171,7 @@ Dim smallDIB As pdDIB
 Private m_RotateTarget As PD_ACTION_TARGET
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Public Property Let RotateTarget(newTarget As PD_ACTION_TARGET)
     m_RotateTarget = newTarget
@@ -329,7 +312,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
                 Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
                 
                 'Remove premultiplied alpha, if any
-                tmpLayerRef.layerDIB.fixPremultipliedAlpha False
+                tmpLayerRef.layerDIB.setAlphaPremultiplication False
                 
                 'If we are only resizing a single layer, make a copy of the layer's current offset.  We will use these
                 ' to re-center the layer after it has been resized.
@@ -508,14 +491,14 @@ Private Sub Form_Activate()
     End If
         
     'Remove premultiplied alpha from the small DIB copy
-    smallDIB.fixPremultipliedAlpha False
+    smallDIB.setAlphaPremultiplication False
     
     'Give the preview object a copy of this image data so it can show it to the user if requested
     fxPreview.setOriginalImage smallDIB
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
         
     'Render a preview
     cmdBar.markPreviewStatus True

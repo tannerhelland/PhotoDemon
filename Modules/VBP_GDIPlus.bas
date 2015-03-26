@@ -354,7 +354,7 @@ Private Declare Function GdiplusStartup Lib "gdiplus" (ByRef Token As Long, ByRe
 Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal Token As Long) As GDIPlusStatus
 
 'Load image from file, process said file, etc.
-Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal fileName As Long, ByRef gpImage As Long) As Long
+Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, ByRef gpImage As Long) As Long
 Private Declare Function GdipLoadImageFromFileICM Lib "gdiplus" (ByVal srcFilename As String, ByRef gpImage As Long) As Long
 Private Declare Function GdipGetImageFlags Lib "gdiplus" (ByVal gpBitmap As Long, ByRef gpFlags As Long) As Long
 Private Declare Function GdipCloneBitmapAreaI Lib "gdiplus" (ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal iPixelFormat As Long, ByVal srcBitmap As Long, ByRef dstBitmap As Long) As GDIPlusStatus
@@ -697,6 +697,9 @@ Public Function GDIPlusResizeDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
     'Release both the destination graphics object and the source bitmap object
     GdipDeleteGraphics iGraphics
     GdipDisposeImage tBitmap
+    
+    'If alpha is present, copy the alpha parameters between DIBs, as it will not have changed
+    dstDIB.setInitialAlphaPremultiplicationState srcDIB.getAlphaPremultiplication
     
     'Uncomment the line below to receive timing reports
     'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
@@ -1557,6 +1560,9 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
         
         'Make sure the image is in 32bpp premultiplied ARGB format
         If iPixelFormat <> PixelFormat32bppPARGB Then GdipCloneBitmapAreaI 0, 0, imgWidth, imgHeight, PixelFormat32bppPARGB, hImage, hImage
+        
+        'Mark the target DIB premultiplication state accordingly
+        dstDIB.setInitialAlphaPremultiplicationState True
         
         'We are now going to copy the image's data directly into our destination DIB by using LockBits.  Very fast, and not much code!
         

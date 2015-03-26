@@ -42,6 +42,7 @@ Begin VB.Form dialog_ToneMapping
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
       dontAutoUnloadParent=   -1  'True
    End
    Begin VB.PictureBox picPreview 
@@ -68,15 +69,6 @@ Begin VB.Form dialog_ToneMapping
       _ExtentY        =   582
       Caption         =   "in the future, automatically apply these settings"
       Value           =   0
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.buttonStrip btsMethod 
       Height          =   720
@@ -86,15 +78,6 @@ Begin VB.Form dialog_ToneMapping
       Width           =   6615
       _ExtentX        =   9790
       _ExtentY        =   1058
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -419,15 +402,6 @@ Begin VB.Form dialog_ToneMapping
          _ExtentY        =   582
          Caption         =   "none"
          Value           =   -1  'True
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin PhotoDemon.smartOptionButton optNormalize 
          Height          =   330
@@ -439,15 +413,6 @@ Begin VB.Form dialog_ToneMapping
          _ExtentX        =   11033
          _ExtentY        =   582
          Caption         =   "visible spectrum"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin PhotoDemon.smartOptionButton optNormalize 
          Height          =   330
@@ -459,15 +424,6 @@ Begin VB.Form dialog_ToneMapping
          _ExtentX        =   11033
          _ExtentY        =   582
          Caption         =   "full spectrum"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
    End
    Begin VB.Label lblWarning 
@@ -551,7 +507,7 @@ Private cParams As pdParamString
 Private m_curToneMapMode As Long
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'The user's dialog answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -609,8 +565,8 @@ Public Sub showDialog()
     Message "Waiting for tone mapping instructions..."
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Display the dialog
     showPDDialog vbModal, Me, True
@@ -641,7 +597,7 @@ Private Sub updatePreview()
         If Plugin_FreeImage_Expanded_Interface.getPDDibFromFreeImageHandle(tmp_FIHandle, tmpDIB) Then
             
             'Premultiply as necessary
-            If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.fixPremultipliedAlpha True
+            If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.setAlphaPremultiplication True
             tmpDIB.renderToPictureBox picPreview
             
             'Release our DIB

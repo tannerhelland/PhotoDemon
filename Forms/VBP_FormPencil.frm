@@ -60,6 +60,7 @@ Begin VB.Form FormPencil
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -204,7 +205,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Apply a "colored pencil" effect to an image
 'Inputs:
@@ -330,8 +331,8 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
         
         'Apply premultiplication to the layers prior to compositing
-        blurDIB.fixPremultipliedAlpha True
-        workingDIB.fixPremultipliedAlpha True
+        blurDIB.setAlphaPremultiplication True
+        workingDIB.setAlphaPremultiplication True
         
         'A pdCompositor class will help us blend the invert+blur image back onto the original image
         Dim cComposite As pdCompositor
@@ -361,7 +362,7 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         workingDIB.createFromExistingDIB tmpLayerBottom.layerDIB
         
         'Remove premultiplied alpha
-        workingDIB.fixPremultipliedAlpha False
+        workingDIB.setAlphaPremultiplication False
         
         'Release our temporary layers and DIBs
         Set blurDIB = Nothing
@@ -482,8 +483,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'If the program is not compiled, display a special warning for this tool
     If Not g_IsProgramCompiled Then

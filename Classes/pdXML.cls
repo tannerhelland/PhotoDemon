@@ -716,7 +716,7 @@ Public Function getUniqueTag_Long(ByVal tagName As String, Optional ByVal defaul
     
 End Function
 
-Public Function getUniqueTag_Boolean(ByVal tagName As String, Optional ByVal defaultReturn As Long = False, Optional ByVal searchLocation As Long = 1) As Boolean
+Public Function getUniqueTag_Boolean(ByVal tagName As String, Optional ByVal defaultReturn As Boolean = False, Optional ByVal searchLocation As Long = 1) As Boolean
     
     Dim tmpString As String
     tmpString = getTextBetweenTags(tagName, searchLocation)

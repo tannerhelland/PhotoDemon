@@ -1134,14 +1134,14 @@ Private Sub redrawInternalGradientDIB()
     GDI_Plus.GDIPlusDrawLineToDC alphaMask.getDIBDC, trackRadius, m_GradientDIB.getDIBHeight \ 2, m_GradientDIB.getDIBWidth - trackRadius, m_GradientDIB.getDIBHeight \ 2, 0, 255, m_trackDiameter - 1, True, LineCapRound
     
     'Transfer the alpha from the alpha mask to the gradient DIB itself
-    'alphaMask.fixPremultipliedAlpha False
+    'alphaMask.setAlphaPremultiplication False
     m_GradientDIB.copyAlphaFromExistingDIB alphaMask
     
     'Release the alpha-mask
     Set alphaMask = Nothing
     
     'Premultiply the gradient DIB, so we can successfully alpha-blend it later
-    m_GradientDIB.fixPremultipliedAlpha True
+    m_GradientDIB.setAlphaPremultiplication True
     
     'The gradient mask is now complete!
     

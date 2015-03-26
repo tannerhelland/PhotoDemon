@@ -42,6 +42,7 @@ Begin VB.Form FormStraighten
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -125,7 +126,7 @@ Dim smallDIB As pdDIB
 Private m_StraightenTarget As PD_ACTION_TARGET
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Public Property Let StraightenTarget(newTarget As PD_ACTION_TARGET)
     m_StraightenTarget = newTarget
@@ -301,7 +302,7 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
                 Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
                 
                 'Remove premultiplied alpha, if any
-                tmpLayerRef.layerDIB.fixPremultipliedAlpha False
+                tmpLayerRef.layerDIB.setAlphaPremultiplication False
                 
                 'Null-pad the layer
                 If thingToRotate = PD_AT_WHOLEIMAGE Then tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
@@ -477,14 +478,14 @@ Private Sub Form_Activate()
     End If
         
     'Remove premultiplied alpha from the small DIB copy
-    smallDIB.fixPremultipliedAlpha False
+    smallDIB.setAlphaPremultiplication False
     
     'Give the preview object a copy of this image data so it can show it to the user if requested
     fxPreview.setOriginalImage smallDIB
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
         
     'Render a preview
     cmdBar.markPreviewStatus True

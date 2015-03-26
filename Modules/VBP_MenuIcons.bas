@@ -836,7 +836,7 @@ Public Function createCursorFromResource(ByVal resTitle As String, Optional ByVa
         '       I'm not making the change now is because PD's current cursor are not implemented uniformly, so I
         '       need to standardize their size and layout before implementing a universal "resize per DPI" check.
         '       The proper way to do this would be to retrieve cursor size from the system, then resize anything
-        '       that isn't already that size - I've made a note to do this soon.
+        '       that isn't already that size - I've made a note to do this eventually.
         If fixDPI(96) <> 96 Then
         
             'Create a temporary copy of the image
@@ -1032,111 +1032,91 @@ End Function
 
 'Given an image in the .exe's resource section (typically a PNG image), load it to a pdDIB object.
 ' The calling function is responsible for deleting the DIB once they are done with it.
-Public Function loadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDIB, Optional ByVal vbSupportedFormat As Boolean = False) As Boolean
+Public Function loadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDIB) As Boolean
     
-    'If the requested image is in a VB-compatible format (e.g. BMP), we don't need to use GDI+
-    If vbSupportedFormat Then
+    'Start by extracting the resource data (typically a PNG) into a bytestream
+    Dim ImageData() As Byte
+    ImageData() = LoadResData(resTitle, "CUSTOM")
     
-        'Load the requested image into a temporary StdPicture object
-        Dim tmppic As StdPicture
-        Set tmppic = New StdPicture
-        Set tmppic = LoadResPicture(resTitle, 0)
+    Dim IStream As IUnknown
+    Dim tmpRect As RECTF
+    Dim gdiBitmap As Long, hBitmap As Long
         
-        'Copy that image into the supplied DIB
-        If dstDIB.CreateFromPicture(tmppic) Then
-            loadResourceToDIB = True
-        Else
-            loadResourceToDIB = False
-        End If
-        
-        Exit Function
-        
-    Else
+    CreateStreamOnHGlobal ImageData(0), 0&, IStream
     
-        'Start by extracting the PNG data into a bytestream
-        Dim ImageData() As Byte
-        ImageData() = LoadResData(resTitle, "CUSTOM")
+    If Not IStream Is Nothing Then
         
-        Dim IStream As IUnknown
-        Dim tmpRect As RECTF
-        Dim gdiBitmap As Long, hBitmap As Long
-            
-        CreateStreamOnHGlobal ImageData(0), 0&, IStream
+        'Use GDI+ to convert the bytestream into a usable image
+        ' (Note that GDI+ will have been initialized already, as part of the core PhotoDemon startup routine)
+        If GdipLoadImageFromStream(IStream, gdiBitmap) = 0 Then
         
-        If Not IStream Is Nothing Then
+            'Retrieve the image's size and pixel format
+            GdipGetImageBounds gdiBitmap, tmpRect, UnitPixel
             
-            'Use GDI+ to convert the bytestream into a usable image
-            ' (Note that GDI+ will have been initialized already, as part of the core PhotoDemon startup routine)
-            If GdipLoadImageFromStream(IStream, gdiBitmap) = 0 Then
+            Dim gdiPixelFormat As Long
+            GdipGetImagePixelFormat gdiBitmap, gdiPixelFormat
             
-                'Retrieve the image's size and pixel format
-                GdipGetImageBounds gdiBitmap, tmpRect, UnitPixel
-                
-                Dim gdiPixelFormat As Long
-                GdipGetImagePixelFormat gdiBitmap, gdiPixelFormat
-                
-                'Create the DIB anew as necessary
-                If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
-                
-                'If the image has an alpha channel, create a 32bpp DIB to receive it
-                If (gdiPixelFormat And PixelFormatAlpha <> 0) Or (gdiPixelFormat And PixelFormatPAlpha <> 0) Then
-                    dstDIB.createBlank tmpRect.Width, tmpRect.Height, 32
-                Else
-                    dstDIB.createBlank tmpRect.Width, tmpRect.Height, 24
-                End If
-                
-                'Convert the GDI+ bitmap to a standard Windows hBitmap
-                If GdipCreateHBITMAPFromBitmap(gdiBitmap, hBitmap, vbBlack) = 0 Then
-                
-                    'Select the hBitmap into a new DC so we can BitBlt it into the DIB
-                    Dim gdiDC As Long
-                    gdiDC = CreateCompatibleDC(0)
-                    SelectObject gdiDC, hBitmap
-                    
-                    'Copy the GDI+ bitmap into the DIB
-                    BitBlt dstDIB.getDIBDC, 0, 0, tmpRect.Width, tmpRect.Height, gdiDC, 0, 0, vbSrcCopy
-                    
-                    'Verify the alpha channel
-                    If Not dstDIB.verifyAlphaChannel Then dstDIB.convertTo24bpp
-                    
-                    'Release the Windows-format bitmap and temporary device context
-                    DeleteObject hBitmap
-                    DeleteDC gdiDC
-                    
-                    'Release the GDI+ bitmap as well
-                    GdipDisposeImage gdiBitmap
-                    
-                    'Free the memory stream
-                    Set IStream = Nothing
-                    
-                    loadResourceToDIB = True
-                    Exit Function
-                
-                Else
-                    Debug.Print "GDI+ failed to create an HBITMAP for requested resource " & resTitle & " stream."
-                End If
-                
-                'Release the GDI+ bitmap and mark the load as failed
-                GdipDisposeImage gdiBitmap
-                loadResourceToDIB = False
-                Exit Function
-                    
+            'Create the DIB anew as necessary
+            If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+            
+            'If the image has an alpha channel, create a 32bpp DIB to receive it
+            If (gdiPixelFormat And PixelFormatAlpha <> 0) Or (gdiPixelFormat And PixelFormatPAlpha <> 0) Then
+                dstDIB.createBlank tmpRect.Width, tmpRect.Height, 32
+                dstDIB.setInitialAlphaPremultiplicationState True
             Else
-                Debug.Print "GDI+ failed to load requested resource " & resTitle & " stream."
+                dstDIB.createBlank tmpRect.Width, tmpRect.Height, 24
             End If
-        
-            'Free the memory stream
-            Set IStream = Nothing
+            
+            'Convert the GDI+ bitmap to a standard Windows hBitmap
+            If GdipCreateHBITMAPFromBitmap(gdiBitmap, hBitmap, vbBlack) = 0 Then
+            
+                'Select the hBitmap into a new DC so we can BitBlt it into the DIB
+                Dim gdiDC As Long
+                gdiDC = CreateCompatibleDC(0)
+                SelectObject gdiDC, hBitmap
+                
+                'Copy the GDI+ bitmap into the DIB
+                BitBlt dstDIB.getDIBDC, 0, 0, tmpRect.Width, tmpRect.Height, gdiDC, 0, 0, vbSrcCopy
+                
+                'Verify the alpha channel; if it's unnecessary, downsample to 24-bpp.
+                If Not dstDIB.verifyAlphaChannel Then dstDIB.convertTo24bpp
+                
+                'Release the Windows-format bitmap and temporary device context
+                DeleteObject hBitmap
+                DeleteDC gdiDC
+                
+                'Release the GDI+ bitmap as well
+                GdipDisposeImage gdiBitmap
+                
+                'Free the memory stream
+                Set IStream = Nothing
+                
+                loadResourceToDIB = True
+                Exit Function
+            
+            Else
+                Debug.Print "GDI+ failed to create an HBITMAP for requested resource " & resTitle & " stream."
+            End If
+            
+            'Release the GDI+ bitmap and mark the load as failed
+            GdipDisposeImage gdiBitmap
             loadResourceToDIB = False
             Exit Function
-        
+                
         Else
-            Debug.Print "Could not load requested resource " & resTitle & " from file."
+            Debug.Print "GDI+ failed to load requested resource " & resTitle & " stream."
         End If
-        
+    
+        'Free the memory stream
+        Set IStream = Nothing
         loadResourceToDIB = False
         Exit Function
     
+    Else
+        Debug.Print "Could not load requested resource " & resTitle & " from file."
     End If
+    
+    loadResourceToDIB = False
+    Exit Function
         
 End Function

@@ -42,6 +42,7 @@ Begin VB.Form FormFindEdges
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.smartCheckBox chkInvert 
       Height          =   330
@@ -52,15 +53,6 @@ Begin VB.Form FormFindEdges
       _ExtentX        =   9895
       _ExtentY        =   582
       Caption         =   "use black background"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.ListBox LstEdgeOptions 
       BeginProperty Font 
@@ -96,17 +88,8 @@ Begin VB.Form FormFindEdges
       Top             =   3360
       Width           =   5625
       _ExtentX        =   9922
-      _ExtentY        =   635
+      _ExtentY        =   582
       Caption         =   "horizontal"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkDirection 
       Height          =   360
@@ -116,17 +99,8 @@ Begin VB.Form FormFindEdges
       Top             =   3840
       Width           =   5625
       _ExtentX        =   9922
-      _ExtentY        =   635
+      _ExtentY        =   582
       Caption         =   "vertical"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -218,7 +192,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'To prevent recursion when setting checkbox state, this value is used to notify the function that a state change
 ' is already underway
@@ -261,8 +235,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Update the descriptions (this will also draw a preview of the selected edge-detection algorithm)
     cmdBar.markPreviewStatus True
@@ -353,8 +327,8 @@ Public Sub ApplyEdgeDetection(ByVal edgeDetectionType As PD_EDGE_DETECTION, Opti
     Set srcDIB = Nothing
     
     'The compositor requires premultiplied alpha, so convert both top and bottom layers now
-    workingDIB.fixPremultipliedAlpha True
-    secondDstDIB.fixPremultipliedAlpha True
+    workingDIB.setAlphaPremultiplication True
+    secondDstDIB.setAlphaPremultiplication True
     
     'Last step is to blend the two result arrays together.  Use the pdCompositor class to do this.
     Dim cComposite As pdCompositor

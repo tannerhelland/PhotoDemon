@@ -348,15 +348,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Image bit-depth of " & fi_BPP & " and data type " & fi_DataType & " detected."
     #End If
-    
-    'If a high bit-depth image is incoming, we need to use a temporary DIB to hold the image's alpha data (which will
-    ' be erased by the tone-mapping algorithm we'll use).  This is that object
-    Dim tmpAlphaRequired As Boolean, tmpAlphaCopySuccess As Boolean
-    tmpAlphaRequired = False
-    tmpAlphaCopySuccess = False
-    
-    Dim tmpAlphaDIB As pdDIB
-    
+        
     'A number of other variables may be required as we adjust the bit-depth of the image to match PhotoDemon's internal requirements.
     Dim new_hDIB As Long
     
@@ -689,6 +681,9 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     'Copy the bits from the FreeImage DIB to our DIB
     SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
     
+    'If the image is 32-bits, mark premultiplication accordingly
+    If fi_BPP = 32 Then dstDIB.setInitialAlphaPremultiplicationState True
+    
     'Debug.Print fi_hDIB, fi_multi_hDIB
     
     '****************************************************************************
@@ -707,29 +702,6 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         pdDebug.LogAction "Image load successful.  FreeImage released."
     #End If
     
-    
-    '****************************************************************************
-    ' If necessary, restore any lost alpha data
-    '****************************************************************************
-    
-    'We are almost done.  The last thing we need to do is restore the alpha values if this was a high-bit-depth image
-    ' whose alpha data was lost during the tone-mapping phase.
-    If tmpAlphaRequired Then
-    
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Restoring alpha data..."
-        #End If
-        
-        dstDIB.copyAlphaFromExistingDIB tmpAlphaDIB
-        dstDIB.fixPremultipliedAlpha True
-        tmpAlphaDIB.eraseDIB
-        Set tmpAlphaDIB = Nothing
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Alpha data restored successfully."
-        #End If
-        
-    End If
     
     '****************************************************************************
     ' Load complete
@@ -813,7 +785,9 @@ End Function
 '
 'NOTE!  This function requires the FreeImage DIB to already be in 24 or 32bpp format.  It will fail if another bit-depth is used.
 '
-'ALSO NOTE!  This function does not free the incoming FreeImage handle.
+'ALSO NOTE!  This function does not set alpha premultiplication.  It's assumed that the caller knows that value in advance.
+'
+'ALSO NOTE!  This function does not free the incoming FreeImage handle, by design.
 Public Function getPDDibFromFreeImageHandle(ByVal srcFI_Handle As Long, ByRef dstDIB As pdDIB) As Boolean
     
     Dim fiHandleBackup As Long
@@ -1724,6 +1698,9 @@ Public Function FreeImageResizeDIBFast(ByRef dstDIB As pdDIB, ByVal dstX As Long
         FreeImageResizeDIBFast = False
     End If
     
+    'If alpha is present, copy the alpha parameters between DIBs, as it will not have changed
+    dstDIB.setInitialAlphaPremultiplicationState srcDIB.getAlphaPremultiplication
+    
     'Uncomment the line below to receive timing reports
     'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
     
@@ -1804,6 +1781,9 @@ Public Function FreeImageRotateDIBFast(ByRef srcDIB As pdDIB, ByRef dstDIB As pd
     Else
         FreeImageRotateDIBFast = False
     End If
+    
+    'If alpha is present, copy the alpha parameters between DIBs, as it will not have changed
+    dstDIB.setInitialAlphaPremultiplicationState srcDIB.getAlphaPremultiplication
     
     'Uncomment the line below to receive timing reports
     'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")

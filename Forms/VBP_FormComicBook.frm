@@ -41,6 +41,7 @@ Begin VB.Form FormComicBook
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -143,7 +144,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Apply a "comic book" effect to an image
 'Inputs:
@@ -220,8 +221,8 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, Opti
     ConvolveDIB finalParamString, workingDIB, inkDIBv, toPreview, workingDIB.getDIBWidth * 3, workingDIB.getDIBWidth
     
     'Apply premultiplication prior to compositing
-    inkDIBv.fixPremultipliedAlpha True
-    inkDIBh.fixPremultipliedAlpha True
+    inkDIBv.setAlphaPremultiplication True
+    inkDIBh.setAlphaPremultiplication True
     
     'With both ink images now available, we can composite the two into a single bidirectional ink image, using
     ' PD's central compositor class.
@@ -234,7 +235,7 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, Opti
     Set inkDIBv = Nothing
     
     'Remove premultiplication from the horizontal ink dib
-    inkDIBh.fixPremultipliedAlpha False
+    inkDIBh.setAlphaPremultiplication False
     
     'Convert the ink DIB to grayscale
     GrayscaleDIB inkDIBh, True
@@ -250,8 +251,8 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, Opti
     End If
     
     'Apply premultiplication to the DIBs prior to compositing
-    inkDIBh.fixPremultipliedAlpha True
-    workingDIB.fixPremultipliedAlpha True
+    inkDIBh.setAlphaPremultiplication True
+    workingDIB.setAlphaPremultiplication True
     
     'Finally, composite the ink over the color smudge, using the opacity supplied by the user.  To make the composite
     ' operation easier, we're going to place our DIBs inside temporary layers.  This allows us to use existing layer
@@ -297,8 +298,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
         
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
