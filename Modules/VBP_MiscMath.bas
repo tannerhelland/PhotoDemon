@@ -18,7 +18,7 @@ Option Explicit
 
 Private Declare Function PtInRect Lib "user32" (ByRef lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
 
-'See if a point lies inside a rect
+'See if a point lies inside a rect (integer)
 Public Function isPointInRect(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RECT) As Boolean
 
     If PtInRect(srcRect, ptX, ptY) = 0 Then
@@ -26,6 +26,30 @@ Public Function isPointInRect(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRec
     Else
         isPointInRect = True
     End If
+
+End Function
+
+'See if a point lies inside a rect (float)
+Public Function isPointInRectF(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RECTF) As Boolean
+
+    'There's no GDI function for floating-point rects, so we must do this manually
+    With srcRect
+    
+        'Check x boundaries
+        If (ptX >= .Left) And (ptX <= (.Left + .Width)) Then
+        
+            'Check y boundaries
+            If (ptY >= .Top) And (ptY <= (.Top + .Height)) Then
+                isPointInRectF = True
+            Else
+                isPointInRectF = False
+            End If
+        
+        Else
+            isPointInRectF = False
+        End If
+    
+    End With
 
 End Function
 
@@ -48,9 +72,9 @@ Public Sub convertToFraction(ByVal v As Double, w As Double, n As Double, d As D
     Const MaxError As Double = 1E-50        'How close is enough
     Dim f As Double                         'Fraction being converted
     Dim a As Double     'Current term in continued fraction
-    Dim N1 As Double    'Numerator, denominator of last approx
+    Dim n1 As Double    'Numerator, denominator of last approx
     Dim D1 As Double
-    Dim N2 As Double    'Numerator, denominator of previous approx
+    Dim n2 As Double    'Numerator, denominator of previous approx
     Dim D2 As Double
     Dim i As Integer
     Dim t As Double
@@ -73,20 +97,20 @@ Public Sub convertToFraction(ByVal v As Double, w As Double, n As Double, d As D
     
     f = v                       'Initialize fraction being converted
     
-    N1 = 1                      'Initialize fractions with 1/0, 0/1
+    n1 = 1                      'Initialize fractions with 1/0, 0/1
     D1 = 0
-    N2 = 0
+    n2 = 0
     D2 = 1
 
     On Error GoTo RtnResult
     For i = 0 To MaxTerms
         a = Fix(f)              'Get next term
         f = f - a               'Get new divisor
-        n = N1 * a + N2         'Calculate new fraction
+        n = n1 * a + n2         'Calculate new fraction
         d = D1 * a + D2
-        N2 = N1                 'Save last two fractions
+        n2 = n1                 'Save last two fractions
         D2 = D1
-        N1 = n
+        n1 = n
         D1 = d
                                 'Quit if dividing by zero
         If f < MinDivisor Then Exit For
@@ -109,11 +133,11 @@ RtnResult:
     If Err Or d > maxDenom Then
         ' in above case, use the previous best N & D
         If D2 = 0 Then
-            n = N1
+            n = n1
             d = D1
         Else
             d = D2
-            n = N2
+            n = n2
         End If
     End If
     

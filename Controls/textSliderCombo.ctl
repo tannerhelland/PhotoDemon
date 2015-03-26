@@ -111,7 +111,7 @@ Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect A
 Private origForecolor As Long
 
 'Special classes are used to render themed and multiline tooltips
-Private m_ToolTip As clsToolTip
+Private m_Tooltip As clsToolTip
 Private m_ToolString As String
 
 'Used to internally track value, min, and max values as floating-points
@@ -192,6 +192,10 @@ End Enum
 'Current notch positioning.  If CustomPosition is set, the corresponding NotchCustomValue will be used.
 Private curNotchPosition As SLIDER_NOTCH_POSITION
 Private customNotchValue As Double
+
+'When the slider track is drawn, this rect will be filled with its relevant coordinates.  We use this to track Mouse_Over behavior,
+' so we can change the cursor to a hand.
+Private m_SliderTrackRect As RECTF
 
 'Internal gradient DIB.  This is recreated as necessary to reflect the gradient colors and positions.
 Private m_GradientDIB As pdDIB
@@ -377,15 +381,26 @@ End Sub
 
 Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
-    If ((Button And pdLeftButton) <> 0) And isMouseOverSlider(x, y) Then
+    If ((Button And pdLeftButton) <> 0) Then
     
-        m_MouseDown = True
+        'Check to see if the mouse is over a) the slider control button, or b) the background track
+        If isMouseOverSlider(x, y) Then
         
-        'Retrieve the current slider x/y values, and store the mouse position relative to those values
-        Dim sliderX As Single, sliderY As Single
-        getSliderCoordinates sliderX, sliderY
-        m_InitX = x - sliderX
-        m_InitY = y - sliderY
+            m_MouseDown = True
+            
+            'Calculate a new control value.  This will cause the slider to "jump" to the current position.
+            Value = (controlMax - controlMin) * ((x - getTrackMinPos) / (getTrackMaxPos - getTrackMinPos)) + controlMin
+            
+            'Retrieve the current slider x/y values, and store the mouse position relative to those values
+            Dim sliderX As Single, sliderY As Single
+            getSliderCoordinates sliderX, sliderY
+            m_InitX = x - sliderX
+            m_InitY = y - sliderY
+            
+            'Force an immediate redraw (instead of waiting for WM_PAINT to process)
+            BitBlt picScroll.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+            
+        End If
     
     End If
     
@@ -433,7 +448,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
     
 End Sub
 
-Private Function isMouseOverSlider(ByVal mouseX As Single, ByVal mouseY As Single) As Boolean
+Private Function isMouseOverSlider(ByVal mouseX As Single, ByVal mouseY As Single, Optional ByVal alsoCheckBackgroundTrack As Boolean = True) As Boolean
 
     'Retrieve the current x/y position of the slider's CENTER
     Dim sliderX As Single, sliderY As Single
@@ -443,7 +458,13 @@ Private Function isMouseOverSlider(ByVal mouseX As Single, ByVal mouseY As Singl
     If distanceTwoPoints(sliderX, sliderY, mouseX, mouseY) < fixDPI(SLIDER_DIAMETER) \ 2 Then
         isMouseOverSlider = True
     Else
-        isMouseOverSlider = False
+        
+        'If the mouse is not over the slider itself, check the background track as well
+        If isPointInRectF(mouseX, mouseY, m_SliderTrackRect) And alsoCheckBackgroundTrack Then
+            isMouseOverSlider = True
+        Else
+            isMouseOverSlider = False
+        End If
     End If
 
 End Function
@@ -789,8 +810,6 @@ Private Sub redrawSlider()
     
     If g_IsProgramRunning Then
         GDI_Plus.GDIPlusFillDIBRect m_SliderBackgroundDIB, 0, 0, m_SliderBackgroundDIB.getDIBWidth, m_SliderBackgroundDIB.getDIBHeight, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT), 255
-    Else
-        m_SliderBackgroundDIB.createBlank m_SliderBackgroundDIB.getDIBWidth, m_SliderBackgroundDIB.getDIBHeight, 24, RGB(255, 255, 255)
     End If
     
     'Initialize the back buffer as well
@@ -860,6 +879,15 @@ Private Sub redrawSlider()
     Else
         GDI_Plus.GDIPlusDrawLineToDC m_SliderBackgroundDIB.getDIBDC, getTrackMinPos, m_SliderAreaHeight \ 2, getTrackMaxPos, m_SliderAreaHeight \ 2, trackColor, 255, m_trackDiameter + 1, True, LineCapRound
     End If
+    
+    'Store the calculated position of the slider background.  Mouse hit detection code can make use of this, so we don't have to
+    ' constantly re-calculate it during mouse events.
+    With m_SliderTrackRect
+        .Left = getTrackMinPos
+        .Width = getTrackMaxPos - .Left
+        .Top = (m_SliderAreaHeight / 2) - ((m_trackDiameter + 1) / 2)
+        .Height = m_trackDiameter + 1
+    End With
     
     'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
     If Not g_IsProgramRunning Then
@@ -1130,12 +1158,12 @@ End Sub
 ' call this sub to have it automatically fixed.
 Public Sub refreshTooltipObject()
     
-    If Not (m_ToolTip Is Nothing) Then
-        m_ToolTip.RemoveTool picScroll
+    If Not (m_Tooltip Is Nothing) Then
+        m_Tooltip.RemoveTool picScroll
     End If
     
-    Set m_ToolTip = New clsToolTip
-    With m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    With m_Tooltip
         .Create Me
         .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
         .DelayTime(ttDelayShow) = 10000
