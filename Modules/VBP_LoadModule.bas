@@ -355,7 +355,7 @@ Public Sub LoadTheProgram()
     
     LoadMessage "Initializing window manager..."
     Set g_WindowManager = New pdWindowManager
-        
+    
     'Register the main form
     g_WindowManager.registerParentForm FormMain
     

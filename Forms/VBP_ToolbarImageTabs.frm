@@ -443,14 +443,18 @@ Private Function getThumbWithCloseIconAtPosition(ByVal x As Long, ByVal y As Lon
     Dim clickboundaryX As Long
     Dim clickBoundaryY As Long
     
+    Dim thumbScrollOffset As Long
+    thumbScrollOffset = hsThumbnails.Value
+    
     getThumbWithCloseIconAtPosition = -1
     thumbnailNumber = getThumbAtPosition(x, y)
+    
     If thumbnailNumber <> -1 Then
         If verticalLayout Then
             thumbnailStartOffsetX = 0
-            thumbnailStartOffsetY = thumbHeight * thumbnailNumber
+            thumbnailStartOffsetY = thumbHeight * thumbnailNumber - thumbScrollOffset
         Else
-            thumbnailStartOffsetX = thumbWidth * thumbnailNumber
+            thumbnailStartOffsetX = thumbWidth * thumbnailNumber - thumbScrollOffset
             thumbnailStartOffsetY = 0
         End If
         
