@@ -908,7 +908,7 @@ Private Sub Form_Load()
     quickBlurDIB m_CloseIconShadow, fixDPI(2), False
     cFilter.applyLUTToAllColorChannels m_CloseIconShadow, tmpLUT, True
     
-    m_CloseIconShadow.fixPremultipliedAlpha True
+    m_CloseIconShadow.setAlphaPremultiplication True
     
     ' Track the last thumbnail whose close icon has been clicked.
     ' -1 means no close icon has been clicked yet
@@ -1199,7 +1199,7 @@ Private Sub updateShadowDIB(ByVal imgThumbnailIndex As Long)
     quickBlurDIB imgThumbnails(imgThumbnailIndex).thumbShadow, shadowBlurRadius
     
     'Apply premultiplied alpha (so we can more quickly AlphaBlend the resulting image to the tabstrip)
-    imgThumbnails(imgThumbnailIndex).thumbShadow.fixPremultipliedAlpha True
+    imgThumbnails(imgThumbnailIndex).thumbShadow.setAlphaPremultiplication True
     
 End Sub
 

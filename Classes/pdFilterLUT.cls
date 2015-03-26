@@ -500,7 +500,7 @@ End Sub
 Public Function applyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte, ByRef gLUT() As Byte, ByRef bLUT() As Byte, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Unpremultiply the source DIB, as necessary
-    If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha False
+    If srcDIB.getDIBColorDepth = 32 Then srcDIB.setAlphaPremultiplication False
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -564,7 +564,7 @@ Public Function applyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte
     Erase ImageData
     
     'Premultiply the source DIB, as necessary
-    If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha True
+    If srcDIB.getDIBColorDepth = 32 Then srcDIB.setAlphaPremultiplication True
     
     If cancelCurrentAction Then applyLUTsToDIB_Color = 0 Else applyLUTsToDIB_Color = 1
     
@@ -576,7 +576,7 @@ End Function
 Public Function applyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Unpremultiply the source DIB, as necessary
-    If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha False
+    If srcDIB.getDIBColorDepth = 32 Then srcDIB.setAlphaPremultiplication False
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -645,7 +645,7 @@ Public Function applyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte,
     Erase ImageData
     
     'Premultiply the source DIB, as necessary
-    If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha True
+    If srcDIB.getDIBColorDepth = 32 Then srcDIB.setAlphaPremultiplication True
     
     If cancelCurrentAction Then applyLUTsToDIB_Gray = 0 Else applyLUTsToDIB_Gray = 1
     
@@ -659,7 +659,7 @@ End Function
 Public Function applyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLUT() As Byte, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Unpremultiply the source DIB, as necessary
-    If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha False
+    If srcDIB.getDIBColorDepth = 32 Then srcDIB.setAlphaPremultiplication False
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -723,7 +723,7 @@ Public Function applyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLUT() A
     Erase ImageData
     
     'Premultiply the source DIB, as necessary
-    If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha True
+    If srcDIB.getDIBColorDepth = 32 Then srcDIB.setAlphaPremultiplication True
     
     If cancelCurrentAction Then applyLUTToAllColorChannels = 0 Else applyLUTToAllColorChannels = 1
     

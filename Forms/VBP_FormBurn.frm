@@ -65,6 +65,7 @@ Begin VB.Form FormIgnite
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   495
@@ -187,7 +188,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Apply the "burn" fire effect filter
 'Input: strength of the filter (min 1, no real max - but above 7 it becomes increasingly blown-out)
@@ -343,8 +344,8 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     Erase ImageData
     
     'Apply premultiplication prior to compositing
-    edgeDIB.fixPremultipliedAlpha True
-    workingDIB.fixPremultipliedAlpha True
+    edgeDIB.setAlphaPremultiplication True
+    workingDIB.setAlphaPremultiplication True
     
     'A pdCompositor class will help us selectively blend the flame results back onto the main image
     Dim cComposite As pdCompositor
@@ -393,8 +394,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Draw a preview of the effect
     updatePreview

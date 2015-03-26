@@ -542,6 +542,7 @@ Public Function getLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean 
         .writeTag "DIB_Width", layerDIB.getDIBWidth
         .writeTag "DIB_Height", layerDIB.getDIBHeight
         .writeTag "DIB_ArrayWidth", layerDIB.getDIBArrayWidth
+        .writeTag "DIB_AlphaPremultiplication", layerDIB.getAlphaPremultiplication
     End With
     
     'Note: we obviously do not write out the layer's DIB contents.  It must be handled via separate binary methods.
@@ -671,6 +672,10 @@ Public Function CreateNewImageLayerFromXML(ByRef xmlString As String, Optional B
             Set layerDIB = New pdDIB
             With xmlEngine
                 layerDIB.createBlank .getUniqueTag_Long("DIB_Width", 1), .getUniqueTag_Long("DIB_Height", 1), .getUniqueTag_Long("DIB_ColorDepth", 32)
+                
+                'Mark alpha premultiplication in advance
+                layerDIB.setInitialAlphaPremultiplicationState .getUniqueTag_Boolean("DIB_AlphaPremultiplication", True)
+            
             End With
             
             'Note that the layer thumbnail is no longer valid

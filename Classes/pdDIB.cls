@@ -178,6 +178,7 @@ Private dibColorDepth As Long
 'Used when writing/reading DIB data to/from a file
 Private Const DIB_IDENTIFIER As String * 4 = "PDlr"
 Private Const DIB_FILE_VERSION_2012 As Long = &H1000
+Private Const DIB_FILE_VERSION_2015 As Long = &H1001
 
 'When converting a 32bpp DIB to 8bpp with transparency, we need to know the location of a transparent pixel.
 ' This location is passed to FreeImage, and it designates the palette index at that location as the transparent index.
@@ -209,6 +210,22 @@ Private originalColorDepth As Long
 ' While I don't really make use of this value at present, it could be helpful in the future, for example when editing icons (which contain
 ' multiple icons at varying sizes and original color depths).
 Private originalFreeImageColorDepth As Long
+
+'If the alpha is currently premultiplied, this will be set to TRUE
+Private m_IsAlphaPremultiplied As Boolean
+
+'Get/set alpha premultiplication.
+' IMPORTANT NOTE!  To make it explicitly clear that modifying this property DOES NOT ACTUALLY MODIFY THE IMAGE, the Set instruction is
+' labeled differently.  It is only meant to be used by DIB creation functions, where the premultiplication state is explicitly known prior
+' to writing DIB bits.  The counterpart setAlphaPremultiplication function (which is found further down in this file) will actually
+' modify image bits as necessary to create the desired premultiplication state.
+Public Function getAlphaPremultiplication() As Boolean
+    getAlphaPremultiplication = m_IsAlphaPremultiplied
+End Function
+
+Public Sub setInitialAlphaPremultiplicationState(ByVal newState As Boolean)
+    m_IsAlphaPremultiplied = newState
+End Sub
 
 'Get/set original color depth.  Note that this is set after tone-mapping and other actions have been applied
 Public Function getOriginalColorDepth() As Long
@@ -435,7 +452,8 @@ Public Function getDIBHeader() As Long
     getDIBHeader = VarPtr(dibHeader)
 End Function
 
-'Copy the current DIB's contents to the clipboard
+'Copy the current DIB's contents to the clipboard.
+' TODO: handle alpha un-premultiplication automatically...?
 Public Sub copyDIBToClipboard()
     
     'Make sure the DIB actually contains an image before copying it to the clipboard
@@ -540,6 +558,10 @@ Public Function createFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
             
                 'Copy the image data without modification
                 BitBlt dibDC, 0, 0, dibWidth, dibHeight, srcDIB.getDIBDC, 0, 0, vbSrcCopy
+                
+                'Reset alpha premultiplication to match
+                m_IsAlphaPremultiplied = srcDIB.getAlphaPremultiplication
+                
                 createFromExistingDIB = True
                 Exit Function
             
@@ -550,6 +572,10 @@ Public Function createFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
                     
                     'Copy the image data without modification
                     BitBlt dibDC, 0, 0, dibWidth, dibHeight, srcDIB.getDIBDC, 0, 0, vbSrcCopy
+                    
+                    'Reset alpha premultiplication to match
+                    m_IsAlphaPremultiplied = srcDIB.getAlphaPremultiplication
+                    
                     createFromExistingDIB = True
                     Exit Function
                     
@@ -587,6 +613,9 @@ Public Function createFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
                     End If
                 
                 End If
+                
+                'Reset alpha premultiplication to match
+                m_IsAlphaPremultiplied = srcDIB.getAlphaPremultiplication
                 
                 createFromExistingDIB = True
                 Exit Function
@@ -663,8 +692,8 @@ Public Function convertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
 
         If Me.getDIBColorDepth = 32 Then
             
-            'If we are already 32bpp, unpremultiply the temporary DIB now
-            Me.fixPremultipliedAlpha False
+            'If we are already 32bpp, with premultiplied alpha, unpremultiply the temporary DIB now
+            If Me.getAlphaPremultiplication Then Me.setAlphaPremultiplication False
             
             'Finally, we need to loop through the image and set all alpha values to 255. Otherwise the image will
             ' be completely transparent (and we don't want that!)
@@ -684,8 +713,8 @@ Public Function convertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
             'With our alpha channel complete, point iData() away from the DIB and deallocate it
             CopyMemory ByVal VarPtrArray(iData), 0&, 4
             
-            'If the alpha value is not 255, or if we started with a 32bpp image, apply premultiplication now
-            Me.fixPremultipliedAlpha True
+            'Per PD-convention, re-apply premultiplication now
+            Me.setAlphaPremultiplication True
             
             'Exit
             convertTo32bpp = True
@@ -726,7 +755,7 @@ Public Function convertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
                 CopyMemory ByVal VarPtrArray(iData), 0&, 4
                 
                 'If the alpha value is not 255, or if we started with a 32bpp image, apply premultiplication now
-                If (newTransparency <> 255) Then Me.fixPremultipliedAlpha True
+                If (newTransparency <> 255) Then Me.setAlphaPremultiplication True
                 
                 'Exit
                 convertTo32bpp = True
@@ -1083,10 +1112,16 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
                 FillRect dibDC, dibRect, hBrush
                 DeleteObject hBrush
                 
+                'Also, reset alpha premultiplication to false
+                m_IsAlphaPremultiplied = False
+                
             Else
             
                 'Finally, set the backColor and/or transparency
                 GDIPlusFillDIBRect Me, 0, 0, iWidth, iHeight, BackColor, dibAlpha
+                
+                'Because alpha premultiplication is unknown, we'll assume it is FALSE
+                m_IsAlphaPremultiplied = False
                 
             End If
             
@@ -1137,6 +1172,9 @@ Public Sub eraseDIB()
     dibWidth = 0
     dibHeight = 0
     
+    'Reset alpha premultiplication
+    m_IsAlphaPremultiplied = False
+    
 End Sub
 
 'Maintain the DIB's dimensions, but reset all bytes to 0.  This is done using FillMemory for maximum performance.
@@ -1148,7 +1186,7 @@ Public Sub resetDIB()
     
     'Erase everything
     FillMemory tmpDibPointer, tmpDibSize, 0
-
+    
 End Sub
 
 'INITIALIZE class
@@ -1273,10 +1311,25 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
     'Now check to make sure that the version number is supported (not implemented right now, because there's only one version)
     Dim DIBVersionCheck As Long
     Get #fileNum, , DIBVersionCheck
-                    
+    
     'Get color depth
     Dim fColorDepth As Long
     Get #fileNum, , fColorDepth
+    
+    'The newest, 2015 version of PD DIBs retrieves alpha premultiplication as well
+    If DIBVersionCheck = DIB_FILE_VERSION_2015 Then
+        Get #fileNum, , m_IsAlphaPremultiplied
+    
+    'If alpha premultiplication state is not stored, make a best guess based on color depth
+    Else
+        
+        If fColorDepth = 24 Then
+            m_IsAlphaPremultiplied = False
+        Else
+            m_IsAlphaPremultiplied = True
+        End If
+        
+    End If
     
     'Get size
     Dim fWidth As Long, fHeight As Long, fArrayWidth As Long
@@ -1400,10 +1453,13 @@ Public Function writeToFile(ByRef dstFilename As String, Optional ByVal toCompre
     
     'Identifiers
     Put #fileNum, , DIB_IDENTIFIER
-    Put #fileNum, , DIB_FILE_VERSION_2012
+    Put #fileNum, , DIB_FILE_VERSION_2015
     
     'Color depth
     Put #fileNum, , dibColorDepth
+    
+    'Alpha premultiplication (yes, this is stored even for 24-bit images)
+    Put #fileNum, , m_IsAlphaPremultiplied
     
     'Size
     Put #fileNum, , dibWidth
@@ -1596,7 +1652,7 @@ End Sub
 
 'Pre-composite an image with an alpha-channel against a background color. Until PhotoDemon is capable of rendering transparent
 ' images itself, this is necessary to give transparent images a white background.
-Public Sub compositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional ByVal newG As Byte = 255, Optional ByVal newB As Byte = 255, Optional ByVal parentIsPremultiplied As Boolean = False)
+Public Sub compositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional ByVal newG As Byte = 255, Optional ByVal newB As Byte = 255)
 
     'This is only useful for images with alpha channels. Exit if no alpha channel is present.
     If dibColorDepth <> 32 Then Exit Sub
@@ -1641,7 +1697,7 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
         If checkAlpha <> 255 Then
             
             'Use that alpha value to blend the current colors with the newly requested color
-            If parentIsPremultiplied Then
+            If m_IsAlphaPremultiplied Then
             
                 iData(QuickX + 3, y) = 255
                 iData(QuickX + 2, y) = iData(QuickX + 2, y) + rLookup(checkAlpha)
@@ -1750,6 +1806,10 @@ End Function
 'Copy the alpha values from another pdDIB object to this one. This is useful when the alpha channel for this DIB must be lost
 ' during a transformation (typically something involving FreeImage or GDI+), and a temporary DIB was made to preserve the alpha
 ' data. If the image is currently 24bpp, this function will first convert it to 32bpp before copying the alpha data.
+'
+'IMPORTANT NOTE: this function does not deal with premultiplied alpha whatsoever.  It simply copies alpha data as-is.
+' You must manually set the alpha premultiplication property yourself, and you must also make sure that any number of
+' un/premultiply steps are applied to both DIBs to keep the alpha values properly in sync.
 
 'IMPORTANT NOTE: to keep this function fast, NO ARRAY BOUNDS CHECKING IS DONE. Make sure that the passed pdDIB object is
 ' THE SAME SIZE (or larger) than this DIB, or you will experience critical errors.
@@ -1793,11 +1853,16 @@ End Sub
 
 'DIBs created from GDI+ contain pre-multiplied alpha values. These are great for high-performance blting, but terrible for
 ' photo editing. This routine can be used to either apply or remove premultiplied alpha from an image.
-Public Sub fixPremultipliedAlpha(Optional ByVal applyPremultiplication As Boolean = False)
+Public Sub setAlphaPremultiplication(Optional ByVal applyPremultiplication As Boolean = False)
 
     'This function doesn't matter if the image isn't 32bpp
     If dibColorDepth <> 32 Then Exit Sub
-
+    
+    'If alpha premultiplication already matches the requested state, exit now
+    If m_IsAlphaPremultiplied = applyPremultiplication Then
+        Debug.Print "Alpha premultiplication = " & applyPremultiplication & " is pointless, as image is already in that state."
+    End If
+    
     'Prepare a SAFEARRAY, which allows us to access the DIB data directly
     Dim iData() As Byte
     Dim tmpSA As SAFEARRAY2D
@@ -1814,9 +1879,10 @@ Public Sub fixPremultipliedAlpha(Optional ByVal applyPremultiplication As Boolea
         QuickX = x * 4
     For y = 0 To dibHeight - 1
         
+        'Retrieve alpha for the current pixel
         tmpAlpha = iData(QuickX + 3, y)
         
-        
+        'Branch according to applying or removing premultiplication
         If applyPremultiplication Then
         
             'When applying premultiplication, we can ignore fully opaque pixels
@@ -1884,7 +1950,10 @@ Public Sub fixPremultipliedAlpha(Optional ByVal applyPremultiplication As Boolea
     'With our alpha channel complete, point iData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
     Erase iData
-
+    
+    'Mark the new premultiplication state
+    m_IsAlphaPremultiplied = applyPremultiplication
+    
 End Sub
 
 'Note that this function is simply a wrapper to the AlphaBlend API call, meaning it expects premultiplied image data
@@ -1898,6 +1967,11 @@ Public Sub alphaBlendToDC(ByVal dstDC As Long, Optional ByVal customAlpha As Lon
     Else
         'Ignore alpha channel, and only use the supplied customAlpha value
         bfParams = (customAlpha * &H10000)
+    End If
+    
+    'Raise a warning if premultiplication is not set
+    If Not m_IsAlphaPremultiplied Then
+        Debug.Print "WARNING!  Premultiplied alpha state is unmarked, but the AlphaBlend API is being called (via alphaBlendToDC)!"
     End If
     
     AlphaBlend dstDC, dstX, dstY, IIf(newWidth = 0, dibWidth, newWidth), IIf(newHeight = 0, dibHeight, newHeight), dibDC, 0, 0, dibWidth, dibHeight, bfParams
@@ -1915,6 +1989,11 @@ Public Sub alphaBlendToDCEx(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY 
     Else
         'Ignore alpha channel, and only use the supplied customAlpha value
         bfParams = (customAlpha * &H10000)
+    End If
+    
+    'Raise a warning if premultiplication is not set
+    If Not m_IsAlphaPremultiplied Then
+        Debug.Print "WARNING!  Premultiplied alpha state is unmarked, but the AlphaBlend API is being called (via alphaBlendToDCEx)!"
     End If
     
     AlphaBlend dstDC, dstX, dstY, dstWidth, dstHeight, dibDC, srcX, srcY, srcWidth, srcHeight, bfParams

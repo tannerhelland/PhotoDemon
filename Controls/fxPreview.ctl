@@ -289,7 +289,7 @@ Public Sub setOriginalImage(ByRef srcDIB As pdDIB)
     originalImage.eraseDIB
     originalImage.createFromExistingDIB srcDIB
     
-    If originalImage.getDIBColorDepth = 32 Then originalImage.fixPremultipliedAlpha True
+    If originalImage.getDIBColorDepth = 32 Then originalImage.setAlphaPremultiplication True
     
 End Sub
 

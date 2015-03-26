@@ -42,6 +42,7 @@ Begin VB.Form FormEdgeEnhance
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin VB.ListBox LstEdgeOptions 
       BeginProperty Font 
@@ -77,17 +78,8 @@ Begin VB.Form FormEdgeEnhance
       Top             =   3360
       Width           =   5625
       _ExtentX        =   9922
-      _ExtentY        =   635
+      _ExtentY        =   582
       Caption         =   "horizontal"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkDirection 
       Height          =   360
@@ -97,17 +89,8 @@ Begin VB.Form FormEdgeEnhance
       Top             =   3840
       Width           =   5625
       _ExtentX        =   9922
-      _ExtentY        =   635
+      _ExtentY        =   582
       Caption         =   "vertical"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltStrength 
       Height          =   495
@@ -209,7 +192,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'To prevent recursion when setting checkbox state, this value is used to notify the function that a state change
 ' is already underway
@@ -248,8 +231,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Update the descriptions (this will also draw a preview of the selected edge-detection algorithm)
     cmdBar.markPreviewStatus True
@@ -342,14 +325,14 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
         ConvolveDIB tmpParamString, workingDIB, tmpEdgeDIB, toPreview, workingDIB.getDIBWidth * numPassesRequired, workingDIB.getDIBWidth
         
         'The compositor requires premultiplied alpha, so convert both top and bottom layers now
-        edgeDIB.fixPremultipliedAlpha True
-        tmpEdgeDIB.fixPremultipliedAlpha True
+        edgeDIB.setAlphaPremultiplication True
+        tmpEdgeDIB.setAlphaPremultiplication True
         
         'Use the pdCompositor class to blend the results of the second edge detection pass with the first pass.
         cComposite.compositeDIBs edgeDIB, tmpEdgeDIB, BL_SCREEN, 0, 0
         
         'Remove premultiplication
-        edgeDIB.fixPremultipliedAlpha False
+        edgeDIB.setAlphaPremultiplication False
         
         Set tmpEdgeDIB = Nothing
         
@@ -361,8 +344,8 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
     If Not toPreview Then Message "Applying pass %1 of %2 for %3 filter...", numPassesRequired, numPassesRequired, getNameOfEdgeDetector(edgeDetectionType)
     
     'Apply premultiplication prior to compositing
-    edgeDIB.fixPremultipliedAlpha True
-    workingDIB.fixPremultipliedAlpha True
+    edgeDIB.setAlphaPremultiplication True
+    workingDIB.setAlphaPremultiplication True
     
     'To make the merge operation easier, we're going to place our DIBs inside temporary layers.  This allows us to use existing
     ' layer code to handle the merge.

@@ -46,7 +46,7 @@ Public Sub ClipboardCut(ByVal cutMerged As Boolean)
             tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveLayer.layerDIB
             
             'Layers are always premultiplied, so we must unpremultiply it now if 32bpp
-            If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.fixPremultipliedAlpha False
+            If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.setAlphaPremultiplication False
             
         End If
         
@@ -125,7 +125,7 @@ Public Sub ClipboardCopy(ByVal copyMerged As Boolean)
             tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveLayer.layerDIB
             
             'Layers are always premultiplied, so we must unpremultiply it now if 32bpp
-            If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.fixPremultipliedAlpha False
+            If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.setAlphaPremultiplication False
             
         End If
         

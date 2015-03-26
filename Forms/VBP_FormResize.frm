@@ -59,6 +59,7 @@ Begin VB.Form FormResize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.smartResize ucResize 
       Height          =   2850
@@ -87,15 +88,6 @@ Begin VB.Form FormResize
       _ExtentX        =   13944
       _ExtentY        =   582
       Caption         =   "show technical names"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   495
@@ -511,7 +503,7 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
     If g_ImageFormats.FreeImageEnabled Then
         
         'If the original image is 32bpp, remove premultiplication now
-        If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha
+        If srcDIB.getDIBColorDepth = 32 Then srcDIB.setAlphaPremultiplication
         
         'Convert the current image to a FreeImage-type DIB
         Dim fi_DIB As Long
@@ -535,7 +527,7 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
         End If
         
         'If the original image is 32bpp, add back in premultiplication now
-        If srcDIB.getDIBColorDepth = 32 Then dstDIB.fixPremultipliedAlpha True
+        If srcDIB.getDIBColorDepth = 32 Then dstDIB.setAlphaPremultiplication True
         
     End If
     

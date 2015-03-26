@@ -59,6 +59,7 @@ Begin VB.Form FormFog
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltScale 
       Height          =   495
@@ -246,7 +247,7 @@ Option Explicit
 Dim m_zOffset As Double
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub cmbEdges_Click()
     updatePreview
@@ -390,8 +391,8 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     Erase dstImageData
     
     'Apply premultiplication prior to compositing
-    tmpFogDIB.fixPremultipliedAlpha True
-    workingDIB.fixPremultipliedAlpha True
+    tmpFogDIB.setAlphaPremultiplication True
+    workingDIB.setAlphaPremultiplication True
     
     'A pdCompositor class will help us selectively blend the fog results back onto the main image
     Dim cComposite As pdCompositor
@@ -459,8 +460,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Create the preview
     cmdBar.markPreviewStatus True

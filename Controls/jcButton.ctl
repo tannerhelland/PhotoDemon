@@ -515,7 +515,7 @@ Private Const CW_USEDEFAULT As Long = &H80000000
 
 ''Tooltip Window Constants
 Private Const TTS_NOPREFIX As Long = &H2
-Private Const TTF_IDIShWnd As Long = &H1
+Private Const TTF_IDISHWND As Long = &H1
 Private Const WS_EX_LAYOUTRTL As Long = &H400000
 Private Const TTF_CENTERTIP As Long = &H2
 Private Const TTM_ADDTOOLA As Long = (WM_USER + 4)
@@ -955,7 +955,7 @@ Dim a1               As Long
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
     srcDIB.CreateFromPicture SrcPic
-    'If (Not g_IsVistaOrLater) Then srcDIB.fixPremultipliedAlpha False
+    'If (Not g_IsVistaOrLater) Then srcDIB.setAlphaPremultiplication False
     
     tObj = SelectObject(srcDC, SrcPic)
 
@@ -987,12 +987,12 @@ Dim a1               As Long
     If g_IsVistaOrLater Then
         GDIPlusResizeDIB dstDIB, 0, 0, DstW, DstH, srcDIB, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, InterpolationModeHighQualityBicubic
     Else
-        srcDIB.fixPremultipliedAlpha True
+        srcDIB.setAlphaPremultiplication True
         GDIPlusResizeDIB dstDIB, 0, 0, DstW, DstH, srcDIB, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, InterpolationModeNearestNeighbor
-        'dstDIB.fixPremultipliedAlpha False
+        'dstDIB.setAlphaPremultiplication False
     End If
     
-    'If (Not g_IsVistaOrLater) Then dstDIB.fixPremultipliedAlpha False
+    'If (Not g_IsVistaOrLater) Then dstDIB.setAlphaPremultiplication False
     
     BitBlt TmpDC, 0, 0, DstW, DstH, dstDC, dstX, dstY, vbSrcCopy
     'StretchBlt TmpDC, 0, 0, DstW, DstH, dstDC, dstX, dstY, UserControl.ScaleX(SrcPic.Width, 8, UserControl.ScaleMode), UserControl.ScaleY(SrcPic.Height, 8, UserControl.ScaleMode), vbSrcCopy
@@ -2934,9 +2934,9 @@ Const GCL_STYLE         As Long = (-26)
         With ttipW
             ' --if we want it centered, then set that flag
             If m_lttCentered Then
-                .lFlags = TTF_SUBCLASS Or TTF_CENTERTIP Or TTF_IDIShWnd
+                .lFlags = TTF_SUBCLASS Or TTF_CENTERTIP Or TTF_IDISHWND
             Else
-                .lFlags = TTF_SUBCLASS Or TTF_IDIShWnd
+                .lFlags = TTF_SUBCLASS Or TTF_IDISHWND
             End If
 
             ' --set the hWnd prop to our parent control's hWnd
@@ -4112,9 +4112,9 @@ Public Property Let TooltipBackColor(ByVal New_Color As OLE_COLOR)
 
 End Property
 
-Public Property Let ToolTipIcon(lTooltipIcon As enumIconType)
-Attribute ToolTipIcon.VB_Description = "Returns/Sets an icon value to be displayed in the tooltip."
-Attribute ToolTipIcon.VB_ProcData.VB_Invoke_PropertyPut = ";Appearance"
+Public Property Let toolTipIcon(lTooltipIcon As enumIconType)
+Attribute toolTipIcon.VB_Description = "Returns/Sets an icon value to be displayed in the tooltip."
+Attribute toolTipIcon.VB_ProcData.VB_Invoke_PropertyPut = ";Appearance"
 
     m_lToolTipIcon = lTooltipIcon
     RedrawButton
@@ -4122,9 +4122,9 @@ Attribute ToolTipIcon.VB_ProcData.VB_Invoke_PropertyPut = ";Appearance"
 
 End Property
 
-Public Property Get ToolTipIcon() As enumIconType
+Public Property Get toolTipIcon() As enumIconType
 
-    ToolTipIcon = m_lToolTipIcon
+    toolTipIcon = m_lToolTipIcon
 
 End Property
 

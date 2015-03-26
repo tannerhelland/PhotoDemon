@@ -2751,7 +2751,7 @@ End Function
 Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmount As Long = 0, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Unpremultiply the source DIB, as necessary
-    If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha False
+    If srcDIB.getDIBColorDepth = 32 Then srcDIB.setAlphaPremultiplication False
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -2826,7 +2826,7 @@ Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmo
     Erase ImageData
     
     'Premultiply the source DIB, as necessary
-    If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha True
+    If srcDIB.getDIBColorDepth = 32 Then srcDIB.setAlphaPremultiplication True
     
     If cancelCurrentAction Then ScaleDIBRGBValues = 0 Else ScaleDIBRGBValues = 1
     
@@ -2911,7 +2911,7 @@ Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double,
     End If
     
     'Unpremultiply the source DIB, as necessary
-    If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha False
+    If srcDIB.getDIBColorDepth = 32 Then srcDIB.setAlphaPremultiplication False
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -2994,7 +2994,7 @@ Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double,
     Erase ImageData
     
     'Premultiply the source DIB, as necessary
-    If srcDIB.getDIBColorDepth = 32 Then srcDIB.fixPremultipliedAlpha True
+    If srcDIB.getDIBColorDepth = 32 Then srcDIB.setAlphaPremultiplication True
     
     If cancelCurrentAction Then GammaCorrectDIB = 0 Else GammaCorrectDIB = 1
     

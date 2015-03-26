@@ -561,7 +561,7 @@ Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
     If premultiplicationStatus Then
         
     Else
-        If dstDIB.getDIBColorDepth = 32 Then dstDIB.fixPremultipliedAlpha False
+        If dstDIB.getDIBColorDepth = 32 Then dstDIB.setAlphaPremultiplication False
     End If
     
 End Sub
@@ -689,6 +689,7 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                     dibHeightCalc = dstRect.Height + 0.999 + (dstRect.Top - Int(dstRect.Top))
                     If (m_tmpDIB.getDIBWidth <> dibWidthCalc) Or (m_tmpDIB.getDIBHeight < dibHeightCalc) Then
                         m_tmpDIB.createBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
+                        m_tmpDIB.setInitialAlphaPremultiplicationState True
                     Else
                         m_tmpDIB.resetDIB
                     End If
@@ -831,6 +832,9 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
         GDIPlus_StretchBlt dstDIB, Int(dstX), Int(dstY), dstWidth + Int(dstX - Int(dstX) + 0.99), dstHeight + Int(dstY - Int(dstY) + 0.99), m_dstLayer.layerDIB, 0, 0, dstWidth, dstHeight, 1, InterpolationModeHighQualityBicubic
     End If
     
+    'The composited rect is always premultiplied, by design
+    dstDIB.setInitialAlphaPremultiplicationState True
+    
 End Sub
 
 'Given a layer containing one or more non-destructive effect parameters, and a target DIB, apply the layer's specified FX against
@@ -839,7 +843,7 @@ End Sub
 Public Sub applyNDFXToDIB(ByRef parentLayer As pdLayer, ByRef targetDIB As pdDIB)
 
     'Start by unpremultiplying the layer alpha
-    If targetDIB.getDIBColorDepth = 32 Then targetDIB.fixPremultipliedAlpha False
+    If targetDIB.getDIBColorDepth = 32 Then targetDIB.setAlphaPremultiplication False
 
     'Calculate each non-destructive FX in turn
     
@@ -854,7 +858,7 @@ Public Sub applyNDFXToDIB(ByRef parentLayer As pdLayer, ByRef targetDIB As pdDIB
     End If
     
     'Re-premultiply alpha
-    If targetDIB.getDIBColorDepth = 32 Then targetDIB.fixPremultipliedAlpha True
+    If targetDIB.getDIBColorDepth = 32 Then targetDIB.setAlphaPremultiplication True
 
 End Sub
 

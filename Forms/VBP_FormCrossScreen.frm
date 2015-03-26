@@ -372,7 +372,7 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     ' mbDIB serves as the "master" spoke DIB, and we will also be merging subsequent spokes onto it as we go.
     mbDIB.createFromExistingDIB thresholdDIB
     getMotionBlurredDIB thresholdDIB, mbDIB, csAngle, csDistance, True, ((csSpokes Mod 2) = 0)
-    If alphaIsRelevant Then mbDIB.fixPremultipliedAlpha True
+    If alphaIsRelevant Then mbDIB.setAlphaPremultiplication True
     
     If Not toPreview Then
         If userPressedESC() Then GoTo PrematureCrossScreenExit
@@ -402,7 +402,7 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
                 End If
                 
                 'Premultiply alpha (as required by the compositor)
-                If alphaIsRelevant Then mbDIBTemp.fixPremultipliedAlpha True
+                If alphaIsRelevant Then mbDIBTemp.setAlphaPremultiplication True
                 
                 'Composite our two motion-blurred images together.  This blend mode is somewhat like alpha-blending, but it
                 ' over-emphasizes bright areas, which gives a nice "bloom" effect.
@@ -441,7 +441,7 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
                 End If
                 
                 'Premultiply alpha (as required by the compositor)
-                If alphaIsRelevant Then mbDIBTemp.fixPremultipliedAlpha True
+                If alphaIsRelevant Then mbDIBTemp.setAlphaPremultiplication True
                 
                 'Composite our two motion-blurred images together.  This blend mode is somewhat like alpha-blending, but it
                 ' over-emphasizes bright areas, which gives a nice "bloom" effect.
@@ -460,7 +460,7 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     
     'Remove premultipled alpha from the final, fully composited DIB, and release any temporary DIBs that
     ' are no longer needed.
-    If alphaIsRelevant Then mbDIB.fixPremultipliedAlpha False
+    If alphaIsRelevant Then mbDIB.setAlphaPremultiplication False
     thresholdDIB.eraseDIB
     Set mbDIBTemp = Nothing
     
@@ -497,8 +497,8 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     ' underlying image.
     thresholdDIB.createFromExistingDIB workingDIB
     If alphaIsRelevant Then
-        thresholdDIB.fixPremultipliedAlpha True
-        mbDIB.fixPremultipliedAlpha True
+        thresholdDIB.setAlphaPremultiplication True
+        mbDIB.setAlphaPremultiplication True
     End If
     cComposite.quickMergeTwoDibsOfEqualSize thresholdDIB, mbDIB, BL_HARDLIGHT, 100
     
@@ -510,13 +510,13 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     
     'The final step is to merge the light effect onto the original image, using the Strength input parameter
     ' to control opacity of the merge.
-    If alphaIsRelevant Then workingDIB.fixPremultipliedAlpha True
+    If alphaIsRelevant Then workingDIB.setAlphaPremultiplication True
     cComposite.quickMergeTwoDibsOfEqualSize workingDIB, thresholdDIB, BL_LINEARDODGE, 100
     
     If alphaIsRelevant Then
-        workingDIB.fixPremultipliedAlpha False
+        workingDIB.setAlphaPremultiplication False
         workingDIB.copyAlphaFromExistingDIB alphaBackupDIB
-        workingDIB.fixPremultipliedAlpha True
+        workingDIB.setAlphaPremultiplication True
     End If
     
     If Not toPreview Then

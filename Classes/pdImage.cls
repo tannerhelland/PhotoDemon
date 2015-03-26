@@ -1040,7 +1040,7 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     Erase selData
     
     'If the calling function requested un-premultiplied alpha, apply it now
-    If Not preMultipliedAlphaState Then dstDIB.fixPremultipliedAlpha False
+    If Not preMultipliedAlphaState Then dstDIB.setAlphaPremultiplication False
         
     retrieveProcessedSelection = True
 
