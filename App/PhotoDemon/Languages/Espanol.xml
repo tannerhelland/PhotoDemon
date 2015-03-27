@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.6.0</langversion>
+<langversion>6.7.1</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -7189,16 +7189,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 </phrase>
 
 <phrase>
-<original>Quality</original>
-<translation>Calidad</translation>
-</phrase>
-
-<phrase>
-<original>Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value.</original>
-<translation>El submuestreo afecta a la forma en que el codificador JPEG comprime la imagen de luminancia. 04:02:00 (moderado) es el valor predeterminado.</translation>
-</phrase>
-
-<phrase>
 <original>optimize compression tables</original>
 <translation>optimizar las tablas de compresión</translation>
 </phrase>
@@ -7229,13 +7219,13 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 </phrase>
 
 <phrase>
-<original>embed thumbnail image</original>
-<translation>miniatura embed</translation>
+<original>click here to review the image's metadata</original>
+<translation>haga clic aquí para revisar los metadatos de la imagen</translation>
 </phrase>
 
 <phrase>
-<original>click here to review the image's metadata</original>
-<translation>haga clic aquí para revisar los metadatos de la imagen</translation>
+<original>embed thumbnail image</original>
+<translation>miniatura embed</translation>
 </phrase>
 
 <phrase>
@@ -7246,6 +7236,11 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <phrase>
 <original>general metadata setting for this image</original>
 <translation>configuración de metadatos general para esta imagen</translation>
+</phrase>
+
+<phrase>
+<original>Quality</original>
+<translation>Calidad</translation>
 </phrase>
 
 <phrase>
@@ -7384,11 +7379,16 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 </phrase>
 
 <phrase>
+<original>Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value.</original>
+<translation>El submuestreo afecta a la forma en que el codificador JPEG comprime la imagen de luminancia. 04:02:00 (moderado) es el valor predeterminado.</translation>
+</phrase>
+
+<phrase>
 <original>JPEG previews require the FreeImage plugin.</original>
 <translation>Previsualizaciones JPEG requieren el plugin FreeImage.</translation>
 </phrase>
 
-<!-- VBP_FormExportJPEG.frm contains 65 phrases. 24 were duplicates of existing phrases, so only 41 new phrases were written to file. -->
+<!-- VBP_FormExportJPEG.frm contains 57 phrases. 16 were duplicates of existing phrases, so only 41 new phrases were written to file. -->
 
 <!-- END text for VBP_FormExportJPEG.frm-->
 
@@ -13276,12 +13276,18 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <!-- END text for pdToolPreset.cls-->
 
+<!-- BEGIN text for VBP_DIBHandler.bas -->
+
+<!-- VBP_DIBHandler.bas contains 0 phrases. -->
+
+<!-- END text for VBP_DIBHandler.bas-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2315</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3935 phrases. -->
-<!-- 1620 are duplicates, so only 2315 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 3927 phrases. -->
+<!-- 1612 are duplicates, so only 2315 unique phrases have been written to file. -->
 <!-- These 2315 phrases contain approximately 13330 total words. -->
 
 </pdData>

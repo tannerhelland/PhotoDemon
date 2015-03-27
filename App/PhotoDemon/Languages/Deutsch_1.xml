@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.6.0</langversion>
+<langversion>6.7.1</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -7187,16 +7187,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>Quality</original>
-<translation>Qualität</translation>
-</phrase>
-
-<phrase>
-<original>Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value.</original>
-<translation>Subsampling beeinflusst die Art, wie der JPEG-Encoder die Bildhelligkeit komprimiert. 4:2:0 (mäßig) ist der Standardwert.</translation>
-</phrase>
-
-<phrase>
 <original>optimize compression tables</original>
 <translation>Komprimierungstabellen optimieren</translation>
 </phrase>
@@ -7227,13 +7217,13 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>embed thumbnail image</original>
-<translation>Thumbnail (Miniaturansicht) einbetten</translation>
+<original>click here to review the image's metadata</original>
+<translation>Klicken Sie hier, um die Metadaten des Bildes überprüfen</translation>
 </phrase>
 
 <phrase>
-<original>click here to review the image's metadata</original>
-<translation>Klicken Sie hier, um die Metadaten des Bildes überprüfen</translation>
+<original>embed thumbnail image</original>
+<translation>Thumbnail (Miniaturansicht) einbetten</translation>
 </phrase>
 
 <phrase>
@@ -7244,6 +7234,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>general metadata setting for this image</original>
 <translation>allgemeine Metadaten-Einstellung zu diesem Bild</translation>
+</phrase>
+
+<phrase>
+<original>Quality</original>
+<translation>Qualität</translation>
 </phrase>
 
 <phrase>
@@ -7382,11 +7377,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value.</original>
+<translation>Subsampling beeinflusst die Art, wie der JPEG-Encoder die Bildhelligkeit komprimiert. 4:2:0 (mäßig) ist der Standardwert.</translation>
+</phrase>
+
+<phrase>
 <original>JPEG previews require the FreeImage plugin.</original>
 <translation>für die JPEG-Vorschau brauchen Sie das FreeImage-Plugin.</translation>
 </phrase>
 
-<!-- VBP_FormExportJPEG.frm contains 65 phrases. 24 were duplicates of existing phrases, so only 41 new phrases were written to file. -->
+<!-- VBP_FormExportJPEG.frm contains 57 phrases. 16 were duplicates of existing phrases, so only 41 new phrases were written to file. -->
 
 <!-- END text for VBP_FormExportJPEG.frm-->
 
@@ -13274,12 +13274,18 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 
 <!-- END text for pdToolPreset.cls-->
 
+<!-- BEGIN text for VBP_DIBHandler.bas -->
+
+<!-- VBP_DIBHandler.bas contains 0 phrases. -->
+
+<!-- END text for VBP_DIBHandler.bas-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2315</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3935 phrases. -->
-<!-- 1620 are duplicates, so only 2315 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 3927 phrases. -->
+<!-- 1612 are duplicates, so only 2315 unique phrases have been written to file. -->
 <!-- These 2315 phrases contain approximately 13330 total words. -->
 
 </pdData>
