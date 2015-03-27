@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.6.0</langversion>
+<langversion>6.7.1</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -7185,16 +7185,6 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>Quality</original>
-<translation>Qualità</translation>
-</phrase>
-
-<phrase>
-<original>Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value.</original>
-<translation>Il sottocampionamento si riflette nel modo in cui JPEG comprime la luminanza dell'immagine.  4:2:0 (moderata) è il valore predefinito.</translation>
-</phrase>
-
-<phrase>
 <original>optimize compression tables</original>
 <translation>ottimizza la tavola di compressione</translation>
 </phrase>
@@ -7225,13 +7215,13 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
-<original>embed thumbnail image</original>
-<translation>incorpora le miniature</translation>
+<original>click here to review the image's metadata</original>
+<translation>clicca qui per esaminare i metadati dell'immagine</translation>
 </phrase>
 
 <phrase>
-<original>click here to review the image's metadata</original>
-<translation>clicca qui per esaminare i metadati dell'immagine</translation>
+<original>embed thumbnail image</original>
+<translation>incorpora le miniature</translation>
 </phrase>
 
 <phrase>
@@ -7242,6 +7232,11 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <phrase>
 <original>general metadata setting for this image</original>
 <translation>impostazione metadati generale per questa immagine</translation>
+</phrase>
+
+<phrase>
+<original>Quality</original>
+<translation>Qualità</translation>
 </phrase>
 
 <phrase>
@@ -7380,11 +7375,16 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 </phrase>
 
 <phrase>
+<original>Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value.</original>
+<translation>Il sottocampionamento si riflette nel modo in cui JPEG comprime la luminanza dell'immagine.  4:2:0 (moderata) è il valore predefinito.</translation>
+</phrase>
+
+<phrase>
 <original>JPEG previews require the FreeImage plugin.</original>
 <translation>Anteprime JPEG richiedono il plugin FreeImage.</translation>
 </phrase>
 
-<!-- VBP_FormExportJPEG.frm contains 65 phrases. 24 were duplicates of existing phrases, so only 41 new phrases were written to file. -->
+<!-- VBP_FormExportJPEG.frm contains 57 phrases. 16 were duplicates of existing phrases, so only 41 new phrases were written to file. -->
 
 <!-- END text for VBP_FormExportJPEG.frm-->
 
@@ -13272,12 +13272,18 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- END text for pdToolPreset.cls-->
 
+<!-- BEGIN text for VBP_DIBHandler.bas -->
+
+<!-- VBP_DIBHandler.bas contains 0 phrases. -->
+
+<!-- END text for VBP_DIBHandler.bas-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2315</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3935 phrases. -->
-<!-- 1620 are duplicates, so only 2315 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 3927 phrases. -->
+<!-- 1612 are duplicates, so only 2315 unique phrases have been written to file. -->
 <!-- These 2315 phrases contain approximately 13330 total words. -->
 
 </pdData>
