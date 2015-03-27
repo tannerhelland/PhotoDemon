@@ -1079,7 +1079,7 @@ Public Function loadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
                 BitBlt dstDIB.getDIBDC, 0, 0, tmpRect.Width, tmpRect.Height, gdiDC, 0, 0, vbSrcCopy
                 
                 'Verify the alpha channel; if it's unnecessary, downsample to 24-bpp.
-                If Not dstDIB.verifyAlphaChannel Then dstDIB.convertTo24bpp
+                If Not DIB_Handler.verifyDIBAlphaChannel(dstDIB) Then dstDIB.convertTo24bpp
                 
                 'Release the Windows-format bitmap and temporary device context
                 DeleteObject hBitmap

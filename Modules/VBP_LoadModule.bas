@@ -1717,9 +1717,8 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         If g_UserPreferences.GetPref_Boolean("Transparency", "Validate Alpha Channels", True) Then
             
             'Verify the alpha channel.  If this function returns FALSE, the current alpha channel is unnecessary.
-            If Not targetDIB.verifyAlphaChannel Then targetDIB.convertTo24bpp
+            If Not DIB_Handler.verifyDIBAlphaChannel(targetDIB) Then targetDIB.convertTo24bpp
             
-        
         End If
         
     End If

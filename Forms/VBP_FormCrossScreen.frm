@@ -322,7 +322,7 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     
     'We can save a lot of time by avoiding alpha handling.  Query the base image to see if we need to deal with alpha.
     Dim alphaIsRelevant As Boolean
-    alphaIsRelevant = Not workingDIB.isAlphaBinary(False)
+    alphaIsRelevant = Not DIB_Handler.isDIBAlphaBinary(workingDIB, False)
     
     'If alpha is relevant, we need to make a copy of the current image's alpha channel, so we can restore it when we're done
     Dim alphaBackupDIB As pdDIB

@@ -32,17 +32,8 @@ Begin VB.Form dialog_ExportColorDepth
       Top             =   960
       Width           =   5655
       _ExtentX        =   9975
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "1 bpp (monochrome)"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&OK"
@@ -89,17 +80,8 @@ Begin VB.Form dialog_ExportColorDepth
       Top             =   1440
       Width           =   5655
       _ExtentX        =   9975
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "4 bpp (16 shades of gray)"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton optColorDepth 
       CausesValidation=   0   'False
@@ -110,17 +92,8 @@ Begin VB.Form dialog_ExportColorDepth
       Top             =   1920
       Width           =   5655
       _ExtentX        =   9975
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "8 bpp (256 colors or full grayscale)"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton optColorDepth 
       CausesValidation=   0   'False
@@ -131,17 +104,8 @@ Begin VB.Form dialog_ExportColorDepth
       Top             =   2400
       Width           =   5655
       _ExtentX        =   9975
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "24 bpp (16 million colors)"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton optColorDepth 
       CausesValidation=   0   'False
@@ -152,17 +116,8 @@ Begin VB.Form dialog_ExportColorDepth
       Top             =   2880
       Width           =   5655
       _ExtentX        =   9975
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "32 bpp (16 million colors + full transparency)"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -226,7 +181,7 @@ Private outputFormat As Long
 Private restoreCursor As Boolean
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -304,7 +259,7 @@ Public Sub showDialog()
     End If
     
     'If the image has a useless alpha channel, blank it out now.
-    If Not tmpDIB.verifyAlphaChannel Then tmpDIB.convertTo24bpp
+    If Not DIB_Handler.verifyDIBAlphaChannel(tmpDIB) Then tmpDIB.convertTo24bpp
     
     'Select 24bpp or 32bpp by default, depending on the alpha channel status of the composited DIB.
     If (tmpDIB.getDIBColorDepth = 24) And (optColorDepth(3).Enabled) Then
@@ -326,8 +281,8 @@ Public Sub showDialog()
     Message "Waiting for user to specify color depth... "
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Display the dialog
     showPDDialog vbModal, Me, True
