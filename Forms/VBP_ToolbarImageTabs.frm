@@ -900,6 +900,7 @@ Private Sub Form_Load()
     'Generate a drop-shadow for the X.  (We can use the same one for both red and gray, obviously.)
     Set m_CloseIconShadow = New pdDIB
     Filters_Layers.createShadowDIB m_CloseIconGray, m_CloseIconShadow
+    m_CloseIconShadow.setAlphaPremultiplication False
     
     'Pad and blur the drop-shadow
     Dim tmpLUT() As Byte

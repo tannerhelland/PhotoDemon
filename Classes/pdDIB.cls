@@ -223,8 +223,8 @@ Public Function getAlphaPremultiplication() As Boolean
     getAlphaPremultiplication = m_IsAlphaPremultiplied
 End Function
 
-Public Sub setInitialAlphaPremultiplicationState(ByVal newState As Boolean)
-    m_IsAlphaPremultiplied = newState
+Public Sub setInitialAlphaPremultiplicationState(ByVal NewState As Boolean)
+    m_IsAlphaPremultiplied = NewState
 End Sub
 
 'Get/set original color depth.  Note that this is set after tone-mapping and other actions have been applied
@@ -1860,7 +1860,7 @@ Public Sub setAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
     
     'If alpha premultiplication already matches the requested state, exit now
     If m_IsAlphaPremultiplied = applyPremultiplication Then
-        Debug.Print "Alpha premultiplication = " & applyPremultiplication & " is pointless, as image is already in that state."
+        Debug.Print "WARNING! Alpha premultiplication = " & applyPremultiplication & " is pointless, as image is already in that state.  (" & dibWidth & "x" & dibHeight & "x" & dibColorDepth & ")"
     End If
     
     'Prepare a SAFEARRAY, which allows us to access the DIB data directly

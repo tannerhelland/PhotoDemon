@@ -556,10 +556,10 @@ Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
     Set tmpLayer.layerDIB = Nothing
     
     'If the user requested non-premultiplied alpha, calculate it now.
-    'TODO: how we handle premultiplication will depend on how I implement compositing, above, so this needs to be revisited
-    '       after actual compositing has been written.
+    '
+    ' (By default, this always returns a premultiplied image, because that's what the compositor returns.)
     If premultiplicationStatus Then
-        
+        dstDIB.setInitialAlphaPremultiplicationState True
     Else
         If dstDIB.getDIBColorDepth = 32 Then dstDIB.setAlphaPremultiplication False
     End If
@@ -789,6 +789,7 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                         If srcRect.Width > tmpLayerRef.layerDIB.getDIBWidth Then srcRect.Width = tmpLayerRef.layerDIB.getDIBWidth
                         If srcRect.Height > tmpLayerRef.layerDIB.getDIBHeight Then srcRect.Height = tmpLayerRef.layerDIB.getDIBHeight
                         tmpLayerRef.layerDIB.alphaBlendToDCEx m_dstLayer.layerDIB.getDIBDC, dstRect.Left - dstX, dstRect.Top - dstY, dstRect.Width, dstRect.Height, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, tmpLayerRef.getLayerOpacity * 2.55
+                        m_dstLayer.layerDIB.setInitialAlphaPremultiplicationState True
                         
                     Else
                         

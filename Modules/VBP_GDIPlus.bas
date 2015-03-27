@@ -2249,6 +2249,9 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
         'Reset alpha in the master identity matrix
         If newAlpha <> 1 Then m_AttributesMatrix(3, 3) = 1
         
+        'Update premultiplication status in the target
+        dstDIB.setInitialAlphaPremultiplicationState srcDIB.getAlphaPremultiplication
+        
     End If
     
     'Release both the destination graphics object and the source bitmap object
