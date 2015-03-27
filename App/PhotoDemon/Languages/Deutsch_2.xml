@@ -42,7 +42,7 @@
 
 <phrase>
 <original>click to visit</original>
-<translation>Klicken zum Besuchen</translation>
+<translation>Hier zum Besuchen klicken</translation>
 </phrase>
 
 <phrase>
@@ -387,7 +387,7 @@ Verwenden Sie bitte Sie ein anderes Programm, um diese Bilder in einem generisch
 To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.</original>
 <translation>Die PDI-Datei '%1' enthält komprimierte Daten, aber das zLib-Plugin fehlt oder ist deaktiviert.
 
-Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hilfe > Nach Updates suchen". Erlauben Sie PhotoDemon bei Aufforderung den Download aller empfohlenen Plugins.</translation>
+Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hilfe > Auf Updates prüfen". Erlauben Sie PhotoDemon bei Aufforderung den Download aller empfohlenen Plugins.</translation>
 </phrase>
 
 <phrase>
@@ -1157,7 +1157,7 @@ Verlustfreie Kopien werden im gleichen Ordner wie dieses initiale Bild gespeiche
 
 <phrase>
 <original>Pixelate Options</original>
-<translation>Verpixel-Optionen</translation>
+<translation>Verpixeln-Optionen</translation>
 </phrase>
 
 <phrase>
@@ -1177,7 +1177,7 @@ Verlustfreie Kopien werden im gleichen Ordner wie dieses initiale Bild gespeiche
 
 <phrase>
 <original>Applying pixellation</original>
-<translation>Jetzt wird verpixelt</translation>
+<translation>Verpixelung wird angewendet</translation>
 </phrase>
 
 <phrase>
@@ -1198,7 +1198,7 @@ Verlustfreie Kopien werden im gleichen Ordner wie dieses initiale Bild gespeiche
 
 <phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.</original>
-<translation>Es ist nicht genügend Speicher verfügbar, um mit dieser Operation fortzufahren. Bitte machen Sie Arbeitsspeicher (RAM) frei und versuchen Sie es noch mal. Wenn das Problem weiterhin besteht, reduzieren Sie den Zoom-Wert und versuchen Sie es dann noch einmal.</translation>
+<translation>Es ist nicht genügend Speicher verfügbar, um mit dieser Operation fortzufahren. Bitte machen Sie Arbeitsspeicher (RAM) frei und versuchen es erneut. Wenn das Problem weiterhin besteht, reduzieren Sie den Zoom-Wert und versuchen Sie es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -1229,7 +1229,7 @@ Verlustfreie Kopien werden im gleichen Ordner wie dieses initiale Bild gespeiche
 
 <phrase>
 <original>monochromatic noise only</original>
-<translation>Nur einfarbiges Rauschen</translation>
+<translation>Nur monochromatisches Rauschen</translation>
 </phrase>
 
 <phrase>
@@ -1289,7 +1289,7 @@ Melden Sie bitte dies via Menü "Hilfe > Fehlerbericht senden".</translation>
 
 <phrase>
 <original>There is not enough memory available to continue this operation.  Please free up system memory (RAM) by shutting down unneeded programs - especially your web browser, if it is open - then try the action again.</original>
-<translation>Es ist nicht genügend Speicher verfügbar, um mit dieser Operation fortzufahren. Bitte machen Sie mehr Arbeitsspeicher (RAM) frei durch Beenden von nicht benötigten Programmen. Schließen Sie vor allem den Web-Browser. Versuchen Sie es danach nochmal.</translation>
+<translation>Es ist nicht genügend Speicher verfügbar, um mit dieser Operation fortzufahren. Bitte machen Sie mehr Arbeitsspeicher (RAM) frei durch Beenden von nicht benötigten Programmen. Schließen Sie vor allem den Web-Browser. Dann versuchen Sie die Aktion erneut.</translation>
 </phrase>
 
 <phrase>
@@ -1303,7 +1303,7 @@ Melden Sie bitte dies via Menü "Hilfe > Fehlerbericht senden".</translation>
 - If you downloaded this image from the Internet, the download may have terminated prematurely.  Please try downloading the image again.
 
 - If this image file came from a digital camera, scanner, or other image editing program, it's possible that PhotoDemon simply doesn't understand this particular file format.  Please save the image in a generic format (such as JPEG or PNG), then reload it.</original>
-<translation>Leider scheint diese Bilddatei ungültig zu sein. Dies kann passieren, wenn eine Datei keine Bilddaten enthält oder Bilddaten in einem nicht unterstütztem Format enthält.
+<translation>Leider scheint diese Bilddatei ungültig zu sein. Dies kann passieren, wenn eine Datei keine Bilddaten enthält oder sie Bilddaten in einem nicht unterstütztem Format enthält.
 
  - Wenn Sie dieses Bild aus dem Internet heruntergeladen haben, könnte der Download vorzeitig beendet worden sein. Bitte versuchen Sie, das Bild erneut herunterzuladen.
 
@@ -1340,7 +1340,7 @@ Melden Sie bitte dies via Menü "Hilfe > Fehlerbericht senden".</translation>
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
 <translation>PhotoDemon kann für diesen Fehler keine weiteren Informationen finden. Das bedeutet wahrscheinlich, dass es ein echter Programmfehler ist und repariert werden muss!
 
-Möchten Sie einen Fehlerbericht senden? (Das dauert weniger als eine Minute, und es hilft allen, die dieses Programm verwenden.)</translation>
+Möchten Sie einen Fehlerbericht senden? (Das dauert unter einer Minute, und es hilft allen, die die Software verwenden.)</translation>
 </phrase>
 
 <phrase>
@@ -1530,7 +1530,7 @@ Wenn Sie fertig sind, klicken Sie bitte auf "Senden". Danke!</translation>
 
 <phrase>
 <original>Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
-<translation>Leider kann Windows® die Anzahl der von Ihnen ausgewählten Bilder nicht gleichzeitig laden. Wählen Sie bitte einen kleineren Satz von Bildern aus und versuchen es erneut.</translation>
+<translation>Leider kann Windows® die Anzahl der von Ihnen ausgewählten Bilder nicht gleichzeitig laden. Versuchen Sie es bitte erneut mit einem kleineren Satz von ausgewählten Bildern.</translation>
 </phrase>
 
 <phrase>
@@ -1637,7 +1637,7 @@ Wenn Sie fertig sind, klicken Sie bitte auf "Senden". Danke!</translation>
 
 <phrase>
 <original>(Note: move the mouse over the histogram to calculate these values)</original>
-<translation>(Hinweis: Bewegen Sie den Mauszeiger über das Histogramm, um diese Werte zu berechnen)</translation>
+<translation>(Hinweis: Bewegen Sie die Maus über das Histogramm, um diese Werte zu berechnen)</translation>
 </phrase>
 
 <phrase>
@@ -1720,9 +1720,9 @@ Wenn Sie fertig sind, klicken Sie bitte auf "Senden". Danke!</translation>
 <original>If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?
 
 (Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)</original>
-<translation>Wenn Sie dieses Makro nicht speichern, gehen alle während dieser Sitzung aufgenommenen Aktionen permanent verloren. Sind Sie sicher, dass Sie abbrechen wollen?
+<translation>Wenn Sie dieses Makro nicht speichern, gehen alle während dieser Sit- zung aufgenommenen Aktionen permanent verloren. Sind Sie sicher, dass Sie abbrechen wollen?
 
-(Drücken Sie "Nein", um zum Dialog "Makro speichern" zurückzukehren. Beachten Sie, dass Sie dieses Makro später immer noch löschen können, wenn Sie es nicht behalten wollen.)</translation>
+(Drücken Sie "Nein", um zum Dialog "Makro speichern" zurückzukeh- ren. Beachten Sie, dass Sie dieses Makro später immer noch löschen können, wenn Sie es nicht behalten wollen.)</translation>
 </phrase>
 
 <phrase>
@@ -1752,7 +1752,7 @@ Wenn Sie fertig sind, klicken Sie bitte auf "Senden". Danke!</translation>
 
 <phrase>
 <original>Macro load canceled.</original>
-<translation>Makro Laden abgebrochen.</translation>
+<translation>Laden des Makros abgebrochen.</translation>
 </phrase>
 
 <phrase>
@@ -1766,9 +1766,9 @@ Wenn Sie fertig sind, klicken Sie bitte auf "Senden". Danke!</translation>
 In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch.
 
 (Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)</original>
-<translation>Leider passt die Makrodatei nicht mehr zu dieser Version von PhotoDemon.
+<translation>Leider wird diese Makrodatei nicht mehr durch die aktuelle Version von PhotoDemon unterstützt.
 
-In Version 6.0 wurden das Format der PhotoDemon-Makrodateien überarbeitet, um neue Funktionen einzubauen, die Performance zu verbessern und einige langjährige Probleme mit der Zuverlässigkeit zu lösen. Leider sind Makros aus der Zeit vor Version 6.0 deshalb nicht mehr kompatibel. Sie müssen diese Makros ganz neu aufnehmen.
+In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Funktionen zu unterstützen, die Performance zu verbessern und einige langjährige Probleme mit der Zuverlässigkeit zu lösen. Leider bedeutet dies, dass vor Version 6.0 aufgenommene Makros nicht mehr kompatibel sind. Sie müssen diese Makros von Grund auf neu aufnehmen.
 
 (Beachten Sie: die alten Makrodateien arbeiten immer noch in alten Versionen von PhotoDemon, wenn Sie gar nicht darauf verzichten können.)</translation>
 </phrase>
@@ -2097,12 +2097,12 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Zoom &in</original>
-<translation>Hineinzoomen</translation>
+<translation>Vergrößern</translation>
 </phrase>
 
 <phrase>
 <original>Zoom &out</original>
-<translation>Herauszoomen</translation>
+<translation>Verkleinern</translation>
 </phrase>
 
 <phrase>
@@ -2127,7 +2127,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Content-aware resize</original>
-<translation>Inhaltsabhängige Größnveränerung</translation>
+<translation>Inhaltsabhängige Größenveränderung</translation>
 </phrase>
 
 <phrase>
@@ -2362,7 +2362,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>&Select</original>
-<translation>Auswählen</translation>
+<translation>Auswahl</translation>
 </phrase>
 
 <phrase>
@@ -2922,7 +2922,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Unsharp masking</original>
-<translation>Unscharf maskieren</translation>
+<translation>Unscharfe Maskierung</translation>
 </phrase>
 
 <phrase>
@@ -3202,7 +3202,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Check for &updates</original>
-<translation>Nach Updates suchen</translation>
+<translation>Auf Updates prüfen</translation>
 </phrase>
 
 <phrase>
@@ -3420,17 +3420,17 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Checking for old autosave data</original>
-<translation>Auf alte autom. gespeicherte Daten prüfen</translation>
+<translation>Auf alte Autosave-Daten wird geprüft</translation>
 </phrase>
 
 <phrase>
 <original>Previous shutdown was clean (no autosave data found).</original>
-<translation>Beim letzten Programmende wurden keine Autosave-Daten hinterlassen.</translation>
+<translation>Vorheriges Herunterfahren war eindwandfrei (keine Autosave-Daten gefunden).</translation>
 </phrase>
 
 <phrase>
 <original>Multiple PhotoDemon sessions active; autosave check abandoned.</original>
-<translation>Mehrere PhotoDemon-Sitzungen sind aktiv; Prüfung der Autosave-Daten abgebrochen.</translation>
+<translation>Mehrere PhotoDemon-Sitzungen aktiv; Autosave-Prüfung abgebrochen.</translation>
 </phrase>
 
 <phrase>
@@ -3560,7 +3560,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Checking for software updates</original>
-<translation>Nach Software-Updates suchen</translation>
+<translation>Auf Software-Updates wird geprüft</translation>
 </phrase>
 
 <phrase>
@@ -3708,7 +3708,7 @@ Hinweis: Einige kleinere Programmtexte können nicht live aktualisiert werden. S
 
 <phrase>
 <original>Median</original>
-<translation>Mittlere</translation>
+<translation>Median</translation>
 </phrase>
 
 <phrase>
@@ -3748,7 +3748,7 @@ Hinweis: Einige kleinere Programmtexte können nicht live aktualisiert werden. S
 
 <phrase>
 <original>Select all</original>
-<translation>Alle auswählen</translation>
+<translation>Alles auswählen</translation>
 </phrase>
 
 <phrase>
@@ -3773,7 +3773,7 @@ Hinweis: Einige kleinere Programmtexte können nicht live aktualisiert werden. S
 
 <phrase>
 <original>Feather selection</original>
-<translation>weiche Auswahl</translation>
+<translation>Weiche Auswahl</translation>
 </phrase>
 
 <phrase>
@@ -3793,12 +3793,12 @@ Hinweis: Einige kleinere Programmtexte können nicht live aktualisiert werden. S
 
 <phrase>
 <original>Export selection mask as image</original>
-<translation>Ausgewählte Maske als Bild exportieren</translation>
+<translation>Auswahlmaske als Bild exportieren</translation>
 </phrase>
 
 <phrase>
 <original>Select scanner or camera</original>
-<translation>Scanner / Kamera wählen</translation>
+<translation>Scanner oder Kamera auswählen</translation>
 </phrase>
 
 <phrase>
@@ -3897,7 +3897,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Unable to acquire DIB lock.  Please make sure no other programs are accessing the scanner.  If the problem persists, reboot and try again.</original>
-<translation>Kann DIB Sperre nicht erhalten. Bitte prüfen Sie, ob andere Programme Zugriff auf den Scanner haben. Wenn das Problem weiterhin besteht, starten Sie Ihren PC neu und versuchen es nochmal.</translation>
+<translation>Kann DIB Sperre nicht erhalten. Bitte prüfen Sie, ob andere Programme Zugriff auf den Scanner haben. Wenn das Problem weiterhin besteht, starten Sie Ihren PC neu und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -4181,12 +4181,12 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>File compressed from %1 bytes to %2 bytes.  Ratio: %3 %</original>
-<translation>Datei von %1 Bytes auf %2 Bytes gepackt; Gewinn: %3 %</translation>
+<translation>Datei von %1 Bytes auf %2 Bytes komprimiert. Verhältnis: %3 %</translation>
 </phrase>
 
 <phrase>
 <original>Compression results</original>
-<translation>Kompressionsergebnis</translation>
+<translation>Kompressionsresultate</translation>
 </phrase>
 
 <phrase>
@@ -4273,7 +4273,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>automatically check for updates</original>
-<translation>Automatisch nach Updates suchen</translation>
+<translation>Automatisch auf Updates prüfen</translation>
 </phrase>
 
 <phrase>
@@ -4792,7 +4792,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>Any photo larger than 2 megapixels is too big to fit on an average computer monitor.  PhotoDemon can automatically zoom out on large photographs so that the entire image is viewable.</original>
-<translation>Jedes Foto über 2 Megapixel ist zu groß, um auf einen durchschnittlichen Computermonitor zu passen. PhotoDemon kann großformatige Fotos automatisch kleiner darstellen, damit das gesamte Bild sichtbar wird.</translation>
+<translation>Jedes Foto größer als 2 Megapixel ist zu groß, um auf einen durchschnittlichen Computermonitor zu passen. PhotoDemon kann große Fotos automatisch verkleinern, sodass das gesamte Bild sichtbar wird.</translation>
 </phrase>
 
 <phrase>
@@ -4842,7 +4842,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>In most photo editors, the "Save" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a "safer" option, where each save results in a new copy of the file.</original>
-<translation>In den meisten Foto-Bearbeitungsprogrammen überschreibt der Befehl "Speichern" das Bild in seiner Originalversion; dabei wird das Original komplett gelöscht. PhotoDemon bietet eine "sicherere" Speichermöglichkeit, wo bei jedem Speichervorgang eine neue Kopie der Datei geschrieben wird.</translation>
+<translation>In den meisten Foto-Bearbeitungsprogrammen überschreibt der Befehl "Speichern" das Bild in seiner Originalversion; dabei wird das Original komplett gelöscht. PhotoDemon bietet eine "sicherere" Option, wobei jedes Resultat in eine neue Kopie der Datei gespeichert wird.</translation>
 </phrase>
 
 <phrase>
@@ -4892,12 +4892,12 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>Some image file types support additional parameters when importing and exporting.  By default, PhotoDemon will manage these for you, but you can specify different parameters if necessary.</original>
-<translation>Einige Bild-Dateitypen ermöglichen zusätzliche Parameter beim Import / Export. Standardmäßig wird PhotoDemon diese für Sie verwalten, aber Sie können andere Parameter angeben, wenn nötig.</translation>
+<translation>Einige Bild-Dateitypen unterstützen zusätzliche Parameter beim Import und Export. Standardmäßig wird PhotoDemon diese für Sie verwalten, aber Sie können andere Parameter angeben, wenn nötig.</translation>
 </phrase>
 
 <phrase>
 <original>Bitmap files only support one type of compression, and they only support it for certain color depths.  PhotoDemon can apply simple RLE compression when saving 8bpp images.</original>
-<translation>Bitmap-Dateien lassen nur eine Art der Komprimierung zu, und das auch nur für bestimmte Farbtiefen. PhotoDemon kann die einfache RLE-Kodierung beim Speichern von 8bpp-Bildern anwenden.</translation>
+<translation>Bitmap-Dateien unterstützen nur eine Art der Kompression und das auch nur für bestimmte Farbtiefen. PhotoDemon kann die einfache RLE-Kodierung beim Speichern von 8bpp-Bildern anwenden.</translation>
 </phrase>
 
 <phrase>
@@ -4972,7 +4972,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>TIFFs support a variety of compression techniques.  Some of these techniques are limited to specific color depths, so make sure you pick one that matches the images you plan on saving.</original>
-<translation>TIFFs lassen eine Vielzahl von Kompressionsverfahren zu. Einige sind auf bestimmte Farbtiefen beschränkt, also suchen Sie ein Verfahren aus, das zu Ihren Bildern passt.</translation>
+<translation>TIFFs unterstützen eine Vielzahl von Kompressionsverfahren. Einige von diesen sind auf bestimmte Farbtiefen beschränkt, also wählen Sie ein Verfahren aus, das zu Ihren Bildern passt.</translation>
 </phrase>
 
 <phrase>
@@ -5132,7 +5132,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired.</original>
-<translation>PhotoDemon ist ein portables Programm. Deshalb können Updates nur im laufenden Betrieb gesucht werden - standardmäßig bei jedem Programmstart. Auf Wunsch können Sie die Häufigkeit aber reduzieren.</translation>
+<translation>PhotoDemon ist ein portables Programm, es kann nur bei laufendem Betrieb auf Updates geprüft werden. Standardmäßig bei jedem Programmstart. Auf Wunsch können Sie die Häufigkeit aber reduzieren.</translation>
 </phrase>
 
 <phrase>
@@ -5652,7 +5652,7 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <phrase>
 <original>Print previewing requires the FreeImage plugin, which could not be located on this computer. To enable previewing, please go to Edit -> Preferences and select "check for missing plugins on program start."  The next time you load PhotoDemon, it will offer to download this plugin for you.</original>
-<translation>Die Druckvorschau erfordert das FreeImage-Plugin, das auf diesem Computer nicht gefunden werden konnte. Zum Aktivieren der Vorschau gehen Sie bitte zu "Bearbeiten > Einstellungen" und wählen "Auf fehlende Plugins beim Start überprüfen" aus. Beim nächsten Start von PhotoDemon wird Ihnen die Möglichkeit zum Download dieser Plugins geboten.</translation>
+<translation>Die Druckvorschau erfordert das FreeImage-Plugin, das auf diesem Computer nicht gefunden werden konnte. Zum Aktivieren der Vorschau gehen Sie bitte zu "Bearbeiten > Einstellungen" und wählen "Auf fehlende Plugins beim Start prüfen" aus. Beim nächsten Start von PhotoDemon wird Ihnen die Möglichkeit zum Download dieser Plugins geboten.</translation>
 </phrase>
 
 <phrase>
@@ -5785,7 +5785,7 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <phrase>
 <original>color to apply</original>
-<translation>Farbe, die angwendet werden soll</translation>
+<translation>Farbe zum Anwenden</translation>
 </phrase>
 
 <phrase>
@@ -6170,7 +6170,7 @@ Sie werden mit PhotoDemon zufriedener sein, wenn Sie das Programm diese kostenlo
 
 <phrase>
 <original>%1 could not locate the plugin server.  Please double-check your Internet connection.  If the problem persists, please try again at another time.</original>
-<translation>%1 konnte den Pluginserver nicht finden. Prüfen Sie bitte Ihre Internetverbindung gegen. Wenn das Problem weiterhin besteht, versuchen Sie es später wieder.</translation>
+<translation>%1 konnte den Pluginserver nicht finden. Prüfen Sie bitte Ihre Internetverbindung gegen. Wenn das Problem weiterhin besteht, versuchen Sie es zu einem anderen Zeitpunkt ernuet.</translation>
 </phrase>
 
 <phrase>
@@ -6190,7 +6190,7 @@ Sie werden mit PhotoDemon zufriedener sein, wenn Sie das Programm diese kostenlo
 
 <phrase>
 <original>%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, please try the download again at a later time.</original>
-<translation>%1 hat den Zugriff auf das Internet verloren. Prüfen Sie bitte Ihre Internetverbindung gegen. Wenn das Problem weiterhin besteht, versuchen Sie den Download später noch ein Mal.</translation>
+<translation>%1 hat den Zugriff auf das Internet verloren. Prüfen Sie bitte Ihre Internetverbindung gegen. Wenn das Problem weiterhin besteht, versuchen Sie den Download zu einem späteren Zeitpunkt erneut.</translation>
 </phrase>
 
 <phrase>
@@ -6343,17 +6343,17 @@ Sie werden mit PhotoDemon zufriedener sein, wenn Sie das Programm diese kostenlo
 
 <phrase>
 <original>custom image size (in pixels)</original>
-<translation>Benutzerdefinierte Bildgröße (in Pixeln)</translation>
+<translation>Benutzerdefinierte Bildgröße (in Pixel)</translation>
 </phrase>
 
 <phrase>
 <original>specific number of tiles</original>
-<translation>Bestimmte Anzahl von Kacheln</translation>
+<translation>Spezifische Anzahl der Kacheln</translation>
 </phrase>
 
 <phrase>
 <original>the new image will be %1 %3 wide by %2 %3 tall</original>
-<translation>Das fertige Bild wird %1 %3 breit und %2 %3 hoch sein.</translation>
+<translation>Das neue Bild wird %1 %3 breit x %2 %3 hoch sein.</translation>
 </phrase>
 
 <!-- VBP_FormTile.frm contains 35 phrases. 22 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
@@ -6483,12 +6483,12 @@ Sie werden mit PhotoDemon zufriedener sein, wenn Sie das Programm diese kostenlo
 
 <phrase>
 <original>Equalize Histogram</original>
-<translation>Histogramm angleichen</translation>
+<translation>Histogramm ausgleichen</translation>
 </phrase>
 
 <phrase>
 <original>equalize</original>
-<translation>Angleichen</translation>
+<translation>Ausgleichen</translation>
 </phrase>
 
 <phrase>
@@ -6498,7 +6498,7 @@ Sie werden mit PhotoDemon zufriedener sein, wenn Sie das Programm diese kostenlo
 
 <phrase>
 <original>Equalizing image</original>
-<translation>Bild angleichen</translation>
+<translation>Bild wird ausgeglichen</translation>
 </phrase>
 
 <!-- VBP_FormEqualize.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -6623,7 +6623,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Fade last action</original>
-<translation>Letzten Vorgang ausblenden</translation>
+<translation>Letzte Aktion ausblenden</translation>
 </phrase>
 
 <phrase>
@@ -6638,7 +6638,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Fade: %1</original>
-<translation>%1 ausblenden</translation>
+<translation>Ausblenden: %1</translation>
 </phrase>
 
 <phrase>
@@ -6663,17 +6663,17 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>clamp them to the nearest available pixel</original>
-<translation>an den nächstliegenden Bildpunkt heften</translation>
+<translation>Diese an den nächstgelegenen Pixel heften</translation>
 </phrase>
 
 <phrase>
 <original>reflect them across the nearest edge</original>
-<translation>an der nächstliegenden Kante spiegeln</translation>
+<translation>Diese an der nächstgelegenen Kante reflektieren</translation>
 </phrase>
 
 <phrase>
 <original>wrap them around the image</original>
-<translation>um das Bild wickeln</translation>
+<translation>Rund um das Bild wickeln</translation>
 </phrase>
 
 <phrase>
@@ -7047,12 +7047,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Final results</original>
-<translation>Endergebnisse</translation>
+<translation>Endresultate</translation>
 </phrase>
 
 <phrase>
 <original>Disclaimer: all hardware acceleration data is provided by the operating system.  It specifically represents GDI acceleration, which is independent from DirectX and OpenGL.  OS version and desktop mode also affect support capabilities.  For best results, please run PhotoDemon on Windows 7 or 8, on an Aero-enabled desktop.</original>
-<translation>Hinweis: Alle Hardware-Beschleunigungsdaten werden durch das Betriebssystem bereitgestellt. Insbesondere die GDI-Beschleunigung, die von DirectX und OpenGL unabhängig ist. OS-Version und Desktopmodus beeinflussen auch die Supportmöglichkeiten. Die besten Ergebnisse liefert PhotoDemon auf Windows 7 oder 8 mit aktiviertem Aero-Desktop.</translation>
+<translation>Hinweis: Alle Hardware-Beschleunigungsdaten werden durch das Betriebssystem bereitgestellt. Speziell die GDI-Beschleunigung, die von DirectX und OpenGL unabhängig ist. OS-Version und Desktopmodus beeinflussen auch die Supportmöglichkeiten. Für beste Resulatet liefert PhotoDemon auf Windows 7 oder 8 mit aktiviertem Aero-Desktop.</translation>
 </phrase>
 
 <phrase>
@@ -7305,7 +7305,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>PhotoDemon can automatically choose a JPEG quality setting for you.  The statistical analyses it uses are designed around photographs; synthetic images or images with large regions of solid color may not work as well.</original>
-<translation>PhotoDemon kann automatisch eine JPEG-Qualitätseinstellung für Sie wählen. Die verwendeten statistischen Analysen eignen sich gut für Fotos; synthetische Bilder oder Bilder mit großen einfarbigen Flächen dürften nicht so gut funktionieren.</translation>
+<translation>PhotoDemon kann automatisch eine JPEG-Qualitätseinstellung für Sie wählen. Die verwendeten statistischen Analysen eignen sich gut für Fotos; synthetische Bilder oder Bilder mit großen einfarbigen Regionen dürften nicht so gut funktionieren.</translation>
 </phrase>
 
 <phrase>
@@ -8127,12 +8127,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying gaussian blur</original>
-<translation>Gaußsche Unschärfe anwenden</translation>
+<translation>Gaußsche Unschärfe wirdangewendet</translation>
 </phrase>
 
 <phrase>
 <original>WARNING! This tool is very slow when used inside the IDE. Please compile for best results.</original>
-<translation>WARNUNG! Dieses Werkzeug ist sehr langsam, wenn es innerhalb der IDE verwendet wird. Für beste Ergebnisse bitte kompilieren.</translation>
+<translation>WARNUNG! Dieses Werkzeug ist sehr langsam, wenn es innerhalb der IDE verwendet wird. Für beste Resulate bitte kompilieren.</translation>
 </phrase>
 
 <phrase>
@@ -8220,7 +8220,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying unsharp mask (step %1 of %2)</original>
-<translation>Unscharfe Maske anwenden (Schritt %1 von %2)</translation>
+<translation>Unscharfe Maske wird angewendet (Schritt %1 von %2)</translation>
 </phrase>
 
 <!-- VBP_FormUnsharpMask.frm contains 13 phrases. 11 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8460,7 +8460,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>advice from the experts</original>
-<translation>Ratschläge von Experten</translation>
+<translation>Rat von Experten</translation>
 </phrase>
 
 <phrase>
@@ -8475,7 +8475,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)</original>
-<translation>Wie alle Monochrom-nach-Graustufen-Wandler wird dieses Werkzeug ein verschwommenes Bild erzeugen. Sie können im Menü "Effekte > Schärfen > Unscharf maskieren" benutzen, um das zu beheben. (Die besten Ergebnisse gibt es, wenn der Radius bei "Unscharf maskieren" mindestens so groß ist wie der Radius hier.)</translation>
+<translation>Wie alle Monochrom-nach-Graustufen-Werkzeuge wird dieses Werk- zeug ein verschwommenes Bild erzeugen. Sie können im Menü "Effekte > Schärfen > Unscharfe Maskierung" benutzen, um dies zu beheben. (Für beste Resultate verwenden Sie einen Radius bei "Unscharf maskieren" mindestens so groß wie dieser Radius.)</translation>
 </phrase>
 
 <!-- VBP_FormMonoToColor.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -8828,7 +8828,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>This is not a valid list of images. Please try a different file.</original>
-<translation>Diese Bilderliste ist ungültig. Versuchen Sie bitte eine andere Datei.</translation>
+<translation>Dies ist keine gültige Bilderliste. Versuchen Sie bitte eine andere Datei.</translation>
 </phrase>
 
 <phrase>
@@ -8953,7 +8953,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>If "keep images in their original format" is selected, PhotoDemon will attempt to save each image in its original format.  If the original format is not supported, a standard format (JPEG or PNG, depending on color depth) will be used.</original>
-<translation>Wenn Sie "Bilder in deren Originalformat beibehalten" ausgewählt ist, wird PhotoDemon versuchen, jedes Bild in seinem Originalformat zu speichern. Wenn das Originalformat aber nicht bekannt ist, wird ein Standardformat (JPEG oder PNG, je nach Farbtiefe) verwendet.</translation>
+<translation>Wenn Sie "Bilder in deren Originalformat beibehalten" ausgewählt ist, wird PhotoDemon versuchen, jedes Bild in seinem Originalformat zu speichern. Wenn das Originalformat nicht unterstützt wird, wird ein Standardformat (JPEG oder PNG, je nach Farbtiefe) verwendet.</translation>
 </phrase>
 
 <phrase>
@@ -9040,7 +9040,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 <original>GIF images only support simple transparency, meaning each pixel in a GIF image must be fully transparent or fully opaque.  If your batch list includes 32bpp images with complex alpha channels, PhotoDemon must simplify them before saving to GIF format.
 
 By default, transparency will be split down the middle, or you can specify a custom cut-off value.</original>
-<translation>GIF-Bilder ermöglichen nur einfache Transparenz, was bedeutet, dass jedes Pixel in einem GIF-Bild entweder vollständig transparent oder vollständig deckend sein muss. Wenn Ihre Batchliste 32bpp-Bilder mit komplexen Alphakanälen enthält, muss PhotoDemon sie vor dem Speichern ins GIF-Format vereinfachen.
+<translation>GIF-Bilder unterstützen nur einfache Transparenz, was bedeutet, dass jedes Pixel in einem GIF-Bild entweder vollständig transparent oder vollständig opak sein muss. Wenn Ihre Batchliste 32bpp-Bilder mit komplexen Alphakanälen enthält, muss PhotoDemon sie vor dem Speichern ins GIF-Format vereinfachen.
 
 Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren einen benutzerdefinierten Cut-Off-Wert.</translation>
 </phrase>
@@ -9062,12 +9062,12 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>if PhotoDemon does not support an image's original format, a standard format will be used</original>
-<translation>Wenn PhotoDemon das Originalformat eines Bildes nicht unterstützt, wird stattdessen ein Standardformat verwendet</translation>
+<translation>Wenn PhotoDemon das Originalformat eines Bildes nicht unterstützt, wird ein Standardformat verwendet</translation>
 </phrase>
 
 <phrase>
 <original>( specifically, JPEG at 92% quality for photographs, and lossless PNG for non-photographs )</original>
-<translation>(genauer: JPEG mit 92% Qualität für Fotos bzw. verlustfreies PNG für Nicht-Fotos)</translation>
+<translation>(speziell: JPEG mit 92% Qualität für Fotos und verlustfreies PNG für Nicht-Fotos)</translation>
 </phrase>
 
 <phrase>
@@ -9274,12 +9274,12 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>ICC Profile</original>
-<translation>ICC Profil</translation>
+<translation>ICC-Profil</translation>
 </phrase>
 
 <phrase>
 <original>Composite</original>
-<translation>Zusammengesetzt-</translation>
+<translation>Zusammengesetzt</translation>
 </phrase>
 
 <phrase>
@@ -9351,7 +9351,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>Generate full metadata report (HTML)</original>
-<translation>Vollständigen Metadatenbereicht generieren (HTML)</translation>
+<translation>Vollst. Metadatenbericht generieren (HTML)</translation>
 </phrase>
 
 <phrase>
@@ -9386,7 +9386,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>%1 tags in this category</original>
-<translation>%1 Tag in dieser Kategorie</translation>
+<translation>%1 Tag(s) in dieser Kategorie</translation>
 </phrase>
 
 <phrase>
@@ -9491,12 +9491,12 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>Apply Photo Filter</original>
-<translation>PhotoFilter verwenden</translation>
+<translation>Fotofilter anwenden</translation>
 </phrase>
 
 <phrase>
 <original>available filters</original>
-<translation>verfügbaren Filter</translation>
+<translation>Verfügbare Filter</translation>
 </phrase>
 
 <phrase>
@@ -9506,17 +9506,17 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>skylight (pale pink)</original>
-<translation>Oberlicht (hellrosa)</translation>
+<translation>Himmelslicht (blassrosa)</translation>
 </phrase>
 
 <phrase>
 <original>reduce haze in landscape photography</original>
-<translation>Dunst in der Landschaftsfotografie reduzieren</translation>
+<translation>Dunst in Landschaftsfotografie reduzieren</translation>
 </phrase>
 
 <phrase>
 <original>pale yellow</original>
-<translation>blassgelb</translation>
+<translation>Blassgelb</translation>
 </phrase>
 
 <phrase>
@@ -9526,17 +9526,17 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>absorb UV radiation (slightly less than 2A)</original>
-<translation>UV-Strahlung absorbieren (etwas weniger als bei 2A)</translation>
+<translation>UV-Strahlung absorbieren (etwas unter 2A)</translation>
 </phrase>
 
 <phrase>
 <original>absorb UV radiation (slightly more than 2A)</original>
-<translation>UV-Strahlung absorbieren (etwas mehr als bei 2A)</translation>
+<translation>UV-Strahlung absorbieren (etwas über 2A)</translation>
 </phrase>
 
 <phrase>
 <original>light yellow</original>
-<translation>hellgelb</translation>
+<translation>Hellgelb</translation>
 </phrase>
 
 <phrase>
@@ -9556,7 +9556,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>deep yellow</original>
-<translation>Dunkelgelb</translation>
+<translation>Tiefgelb</translation>
 </phrase>
 
 <phrase>
@@ -9566,7 +9566,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>yellow-green</original>
-<translation>Gelb-grün</translation>
+<translation>Gelbgrün</translation>
 </phrase>
 
 <phrase>
@@ -9576,7 +9576,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>minus blue; reduce haze in aerial photos</original>
-<translation>Blau wegnehmen; Dunst in Luftbildaufnahmen reduzieren</translation>
+<translation>Weniger blau; Dunst in Luftbildaufnahmen reduzieren</translation>
 </phrase>
 
 <phrase>
@@ -9601,12 +9601,12 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>contrast filter for blue and blue-green absorption</original>
-<translation>Kontrastfilter für blaue und blau-grüne Absorption</translation>
+<translation>Kontrastfilter für blaue und blaugrüne Absorption</translation>
 </phrase>
 
 <phrase>
 <original>deep orange</original>
-<translation>Tief orange</translation>
+<translation>Tieforange</translation>
 </phrase>
 
 <phrase>
@@ -9631,12 +9631,12 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>tricolor red; contrast effects in outdoor scenes</original>
-<translation>Tricolor-Rot; Kontrasteffekte bei Außenaufnahmen</translation>
+<translation>Dreifarbiges Rot; Kontrasteffekte bei Außenaufnahmen</translation>
 </phrase>
 
 <phrase>
 <original>stereo red; cuts haze, useful for storm or moonlight settings</original>
-<translation>Stereo-Rot; durchdringt Dunst, hilfreich bei Sturm- oder Mondlichteinstellungen</translation>
+<translation>Stereo rot; durchdringt Dunst, hilfreich bei Sturm- oder Mondlichteinstellungen</translation>
 </phrase>
 
 <phrase>
@@ -9676,7 +9676,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>red absorption; useful for contrast in microscopy</original>
-<translation>Rotabsorption; hilfreich für Kontrast in Mikroskopie</translation>
+<translation>Rotabsorption; sinnvoll für Kontrast in Mikroskopie</translation>
 </phrase>
 
 <phrase>
@@ -9686,12 +9686,12 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>minus-red, two-color general viewing</original>
-<translation>Minus-rot, zweifarbige allgemeine Betrachtung</translation>
+<translation>Minus rot, zweifarbige allgemeine Betrachtung</translation>
 </phrase>
 
 <phrase>
 <original>minus-red, variant on 44</original>
-<translation>Minus-rot, Variante von 44</translation>
+<translation>Minus rot, Variante von 44</translation>
 </phrase>
 
 <phrase>
@@ -9711,7 +9711,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>enhance blue and purple objects; useful for fluorescent dyes</original>
-<translation>blaue und lila Objekte verstärken; nützlich für Fluoreszenzfarbstoffe</translation>
+<translation>Blaue und lila Objekte verstärken; sinnvoll für fluoreszierende Farbstoffe</translation>
 </phrase>
 
 <phrase>
@@ -9741,7 +9741,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>used for color separation; improves definition of foliage</original>
-<translation>Verwendet für Farbseparation; verbessert die Definition von Laub</translation>
+<translation>Verwendet für Farbseparation; verbessert Definition von Laub</translation>
 </phrase>
 
 <phrase>
@@ -9761,7 +9761,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>infrared photography longpass filter blocking</original>
-<translation>Langpassfilter-Blockade für Infrarotfotos</translation>
+<translation>Langpassfilter-Blockade für Infrarotfotografie</translation>
 </phrase>
 
 <phrase>
@@ -9771,27 +9771,27 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>variant of 80A, 3400K to 5500K</original>
-<translation>Variante von 80A, für 3400K bis 5500K</translation>
+<translation>Variante von 80A, 3400K bis 5500K</translation>
 </phrase>
 
 <phrase>
 <original>variant of 80A, 3800K to 5500K</original>
-<translation>Variante von 80A, für 3800K bis 5500K</translation>
+<translation>Variante von 80A, 3800K bis 5500K</translation>
 </phrase>
 
 <phrase>
 <original>variant of 80A, 4200K to 5500K</original>
-<translation>Variante von 80A, für 4200K bis 5500K</translation>
+<translation>Variante von 80A, 4200K bis 5500K</translation>
 </phrase>
 
 <phrase>
 <original>pale orange</original>
-<translation>blassorange</translation>
+<translation>Blassorange</translation>
 </phrase>
 
 <phrase>
 <original>warming filter (lowers color temperature), 3400 K to 3200 K</original>
-<translation>Warmfilter (senkt die Farbtemperatur), 3400K bis 3200K</translation>
+<translation>Warmfilter (senkt Farbtemperatur), 3400K bis 3200K</translation>
 </phrase>
 
 <phrase>
@@ -9816,12 +9816,12 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>cooling filter; raises color temperature 100K</original>
-<translation>Kaltfilter; erhöht die Farbtemperatur um 100K</translation>
+<translation>Kaltfilter; erhöht Farbtemperatur 100K</translation>
 </phrase>
 
 <phrase>
 <original>pale blue</original>
-<translation>hellblau</translation>
+<translation>Blassblau</translation>
 </phrase>
 
 <phrase>
@@ -9861,12 +9861,12 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>dark gray amber</original>
-<translation>dunkel-bernsteinfarben</translation>
+<translation>Dunkelgrau-amber</translation>
 </phrase>
 
 <phrase>
 <original>remove color before photographing; rarely used for actual photos</original>
-<translation>Farbe vor Fotografieren entfernen; selten für echte Fotos verwendet</translation>
+<translation>Farbe vor Fotografieren entfernen; selten verwendet für tatsächliche Fotos</translation>
 </phrase>
 
 <phrase>
@@ -9917,17 +9917,17 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>inside-out</original>
-<translation>umkrempeln</translation>
+<translation>Links herum</translation>
 </phrase>
 
 <phrase>
 <original>pull in</original>
-<translation>reinziehen</translation>
+<translation>Einziehen</translation>
 </phrase>
 
 <phrase>
 <original>push out</original>
-<translation>rausschieben</translation>
+<translation>Herausdrücken</translation>
 </phrase>
 
 <phrase>
@@ -9953,12 +9953,12 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>monochrome</original>
-<translation>einfarbig</translation>
+<translation>Monochrom</translation>
 </phrase>
 
 <phrase>
 <original>input channel(s)</original>
-<translation>Eingabekanal/-kanäle</translation>
+<translation>Eingabekanal bzw. -kanäle</translation>
 </phrase>
 
 <phrase>
@@ -10073,7 +10073,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>Unknown error occurred.  Selection was not saved.  Please try again.</original>
-<translation>Unbekannter Fehler aufgetreten; Auswahl wurde nicht gespeichert. Bitte versuchen Sie es nochmal.</translation>
+<translation>Unbekannter Fehler aufgetreten; Auswahl wurde nicht gespeichert. Versuchen Sie es bitte erneut.</translation>
 </phrase>
 
 <phrase>
@@ -10165,12 +10165,12 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>grow by this many pixels</original>
-<translation>so viele Pixel größer machen</translation>
+<translation>Um diese vielen Pixel erweitern</translation>
 </phrase>
 
 <phrase>
 <original>shrink by this many pixels</original>
-<translation>so viele Pixel kleiner machen</translation>
+<translation>Um diese vielen Pixel reduzieren</translation>
 </phrase>
 
 <phrase>
@@ -10206,7 +10206,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>histogram overlay</original>
-<translation>Histogramm-Überlagerung</translation>
+<translation>Histogramm-Overlay</translation>
 </phrase>
 
 <phrase>
@@ -10226,12 +10226,12 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>left-click to add new nodes or drag existing nodes</original>
-<translation>Linksklick, um neue Knoten hinzuzufügen oder vorhandene Knoten zu verschieben</translation>
+<translation>Linke Maustaste, um neue Knoten hinzuzufügen oder vorhandene Knoten zu verschieben</translation>
 </phrase>
 
 <phrase>
 <original>right-click to remove nodes</original>
-<translation>Rechtsklick, um Knoten zu entfernen</translation>
+<translation>Rechte Maustaste, um Knoten zu entfernen</translation>
 </phrase>
 
 <phrase>
@@ -10241,17 +10241,17 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>logarithmic</original>
-<translation>logarithmisch</translation>
+<translation>Logarithmisch</translation>
 </phrase>
 
 <phrase>
 <original>on</original>
-<translation>ein</translation>
+<translation>Ein</translation>
 </phrase>
 
 <phrase>
 <original>off</original>
-<translation>aus</translation>
+<translation>Aus</translation>
 </phrase>
 
 <phrase>
@@ -10277,7 +10277,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>new exposure curve</original>
-<translation>neue Belichtungskurve</translation>
+<translation>Neue Belichtungskurve</translation>
 </phrase>
 
 <phrase>
@@ -10287,7 +10287,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>Adjusting image exposure</original>
-<translation>Belichtung korrigieren</translation>
+<translation>Bildbelichtung wird angepasst</translation>
 </phrase>
 
 <!-- VBP_FormExposure.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -10304,7 +10304,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>sharpen</original>
-<translation>schärfen</translation>
+<translation>Schärfen</translation>
 </phrase>
 
 <!-- VBP_FormSharpen.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -10336,12 +10336,12 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>fully opaque</original>
-<translation>völlig undurchsichtig</translation>
+<translation>Vollständig opak</translation>
 </phrase>
 
 <phrase>
 <original>fully transparent</original>
-<translation>völlig transparent</translation>
+<translation>Vollständig transparent</translation>
 </phrase>
 
 <phrase>
@@ -10444,12 +10444,12 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>erase threshold</original>
-<translation>Schwellenwert für Transparenz</translation>
+<translation>Schwellenwert löschen</translation>
 </phrase>
 
 <phrase>
 <original>color to erase (right-click preview to select)</original>
-<translation>Transparenzfarbe (mit Rechtsklick auswählen)</translation>
+<translation>Farbe zum Löschen (Rechtsklick auf Vorschau zum Auswählen)</translation>
 </phrase>
 
 <!-- VBP_FormColorToTransparency.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -10476,12 +10476,12 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>blur symmetrically</original>
-<translation>symmetrisch verwischen</translation>
+<translation>Symmetrisch verwischen</translation>
 </phrase>
 
 <phrase>
 <original>Applying radial blur</original>
-<translation>Radiale Unschärfe anwenden</translation>
+<translation>Radiale Unschärfe wird angewendet</translation>
 </phrase>
 
 <!-- VBP_FormRadialBlur.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10497,7 +10497,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>Applying motion blur</original>
-<translation>Bewegungsunschärfe anwenden</translation>
+<translation>Bewegungsunschärfe wird angewendet</translation>
 </phrase>
 
 <!-- VBP_FormMotionBlur.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10508,7 +10508,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>Applying zoom blur</original>
-<translation>Zoomunschärfe anwenden</translation>
+<translation>Zoomunschärfe wird angewendet</translation>
 </phrase>
 
 <phrase>
@@ -10559,7 +10559,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>phrases to display</original>
-<translation>Angezeigte Textpassagen</translation>
+<translation>Textpassagen zum Anzeigen</translation>
 </phrase>
 
 <phrase>
@@ -10815,7 +10815,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>(For best results, do not use this editor in the IDE!)</original>
-<translation>(Für beste Ergebnisse verwenden Sie den Editor nicht in der IDE!)</translation>
+<translation>(Für beste Resultate verwenden Sie diesen Editor nicht in der IDE!)</translation>
 </phrase>
 
 <phrase>
@@ -10855,12 +10855,12 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>Every time a phrase is modified, an autosave will automatically be created in PhotoDemon's user language folder.  This means you can exit the program at any time without losing your work.</original>
-<translation>Jedes Mal, wenn eine Textpassage modifiziert wird, wird automatisch eine Sprachdatei im PhotoDemon-Ordner "User Language" erstellt. Dies bedeutet, Sie können das Programm jederzeit verlassen, ohne  Ihre Arbeit zu verlieren.</translation>
+<translation>Jedes Mal, wenn eine Textpassage modifiziert wird, wird automatisch ein Autosave im PhotoDemon-Ordner "User Language" erstellt. Dies bedeutet, Sie können das Programm jederzeit verlassen, ohne  Ihre Arbeit zu verlieren.</translation>
 </phrase>
 
 <phrase>
 <original>When you are done translating, you may use the Save and Exit button to save your work to a file of your choosing.  (Note that autosave data will be preserved either way.)</original>
-<translation>Wenn Sie mit die Übersetzung fertiggestellt haben, können Sie die Schaltfläche "Speichern und Beenden" verwenden, um Ihre Arbeit in einer Datei Ihrer Wahl zu speichern. (Beachten Sie, dass automatisch gespeicherte Daten so oder so erhalten bleiben.)</translation>
+<translation>Wenn Sie mit die Übersetzung fertiggestellt haben, können Sie die Schaltfläche "Speichern und Beenden" verwenden, um Ihre Arbeit in einer Datei Ihrer Wahl zu speichern. (Beachten Sie, dass Autosave-Daten so oder so erhalten bleiben.)</translation>
 </phrase>
 
 <phrase>
@@ -10990,7 +10990,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>non-destructive</original>
-<translation>Zerstörungsfrei</translation>
+<translation>Nicht-destruktiv</translation>
 </phrase>
 
 <phrase>
@@ -11000,12 +11000,12 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>macro recording in progress</original>
-<translation>Makro-Aufnahme im Gange</translation>
+<translation>Makroaufnahme im Gange</translation>
 </phrase>
 
 <phrase>
 <original>This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.</original>
-<translation>Diese Option wird ein neues und leeres Bild erstellen. Andere Möglichkeiten zur Erstellung neuer Bilder finden Sie unter dem Menüpunkt "Datei > Importieren".</translation>
+<translation>Diese Option wird ein leeres Bild erstellen. Andere Möglichkeiten zur Erstellung neuer Bilder finden Sie unter dem Menüpunkt "Datei > Importieren".</translation>
 </phrase>
 
 <phrase>
@@ -11070,7 +11070,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>Apply non-destructive lighting adjustments</original>
-<translation>Zerstörungsfreie Beleuchtungsanpassungen anwenden</translation>
+<translation>Nicht-destruktive Beleuchtungsanpassungen anwenden</translation>
 </phrase>
 
 <phrase>
@@ -11222,7 +11222,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>automatically activate layer beneath mouse</original>
-<translation>Ebene unter Mauszeiger autom. aktivieren</translation>
+<translation>Ebene unter Maus automatisch aktivieren</translation>
 </phrase>
 
 <phrase>
@@ -11342,7 +11342,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.</original>
-<translation>Diese Optionen steuern, den durch eine Auswahl beeinflussten Bereich. Die Auswahl kann auf der Leinwand modifiziert werden, während diese Einstellungen aktiv sind. Für genauere Auswahlanpassungen verwenden Sie bitte das Menü "Auswählen".</translation>
+<translation>Diese Optionen steuern, den durch eine Auswahl beeinflussten Bereich. Die Auswahl kann auf der Leinwand modifiziert werden, während jegliche dieser Einstellungen aktiv sind. Für genauere Auswahlanpassungen verwenden Sie das Auswahlmenü.</translation>
 </phrase>
 
 <phrase>
@@ -11352,7 +11352,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu.</original>
-<translation>Der Schieberegler "Weiche Auswahlkante" ermöglicht sofortige Anpassungen der Kante. Aus Performance-Gründen ist es auf kleine Radien beschränkt. Für größere Radien benutzen Sie bitte im Menü "Auswahl > Weiche Auswahlkante".</translation>
+<translation>Der Schieberegler "Weiche Auswahlkante" ermöglicht sofortige Anpassungen der Kante. Aus Performance-Gründen ist es auf kleine Radien beschränkt. Für größere Radien verwenden Sie bitte im Menü "Auswahl > Weiche Auswahlkante".</translation>
 </phrase>
 
 <phrase>
@@ -11372,27 +11372,27 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>This option increases the smoothness of a hand-drawn lasso selection.</original>
-<translation>Diese Option erhöht die Glättung der freihändigen Lasso-Auswahl.</translation>
+<translation>Diese Option erhöht die Glättung einer freihändigen Lasso-Auswahl.</translation>
 </phrase>
 
 <phrase>
 <original>Tolerance controls how similar two pixels must be before adding them to a magic wand selection.</original>
-<translation>Von der Toleranz-Eistellung hängt ab, wie ähnlich zwei Bildpunkte sein müssen, damit sie zu einer Zauberstab-Auswahl gehören.</translation>
+<translation>Toleranz steuert, wie ähnlich sich zwei Pixel sein müssen, bevor sie zu einer Zauberstab-Auswahl hinzugefügt werden.</translation>
 </phrase>
 
 <phrase>
 <original>The magic wand can operate on the entire image, or just the active layer.</original>
-<translation>Der Zauberstab kann mit dem ganzen Bild oder nur mit der aktiv geschalteten Ebene arbeiten.</translation>
+<translation>Der Zauberstab kann mit dem ganzen Bild oder nur mit der aktiven Ebene arbeiten.</translation>
 </phrase>
 
 <phrase>
 <original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuity.</original>
-<translation>Normalerweise beginnt der Zauberstab beim angeklickten Bildpunkt und fügt der Auswahl Schritt für Schritt passende benachbarte Pixel hinzu. Alternativ können Sie bestimmen, dass im ganzen Bild passende Punkte ausgewählt werden, ohne Empfehlungen zur Kontinuität.</translation>
+<translation>Normalerweise beginnt der Zauberstab beim angeklickten Pixel und fügt der Auswahl Schritt für Schritt passende benachbarte Pixel hinzu. Alternativ können Sie bestimmen, dass im ganzen Bild passende Punkte ausgewählt werden, ohne Empfehlungen zur Kontinuität.</translation>
 </phrase>
 
 <phrase>
 <original>This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection.</original>
-<translation>Hiermit legen Sie fest, nach welchen Regeln der Zauberstab Bildpunkte in die Auswahl aufnimmt.</translation>
+<translation>Diese Option steuert, welche Kriterien der Zauberstab zur Bestimmung verwendet, ob ein Pixel der aktuellen Auswahl hinzugefügt werden sollte.</translation>
 </phrase>
 
 <!-- VBP_ToolbarTools.frm contains 72 phrases. 16 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
@@ -11471,7 +11471,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>color to replace (right-click preview to select)</original>
-<translation>Farbe, die ersetzt werden soll (mit Rechtsklick auswählen)</translation>
+<translation>Farbe zum Ersetzen (Rechtsklick auf Vorschau zum Auswählen)</translation>
 </phrase>
 
 <phrase>
@@ -11811,17 +11811,17 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>Purging old autosave data</original>
-<translation>Alte Autosave-Daten werden gelöscht</translation>
+<translation>Alte Autosave-Daten werden bereinigt</translation>
 </phrase>
 
 <phrase>
 <original>Autosave reconstruction complete for %1</original>
-<translation>%1 ist durch Autosave wieder auf dem alten Stand</translation>
+<translation>Autosave-Rekonstruktion komplett für %1</translation>
 </phrase>
 
 <phrase>
 <original>Autosave could not be fully reconstructed.  Partial reconstruction attempted instead.</original>
-<translation>Der Autosave-Zustand konnte nicht vollständig, sondern nur teilweise erreicht werden.</translation>
+<translation>Autosave konnte nicht vollständig rekonstruiert werden. Teilweise Rekonstruktion stattdessen versucht.</translation>
 </phrase>
 
 <!-- VBP_AutosaveHandler.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
@@ -11857,12 +11857,12 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>A previous PhotoDemon session terminated unexpectedly.  Would you like to automatically recover the following autosaved images?</original>
-<translation>Eine frühere PhotoDemon-Sitzung wurde unerwartet beendet. Möchten Sie folgende autom. gespeicherten Bilder automatisch wiederherstellen?</translation>
+<translation>Eine frühere PhotoDemon-Sitzung wurde unerwartet beendet. Möchten Sie die folgenden autom. gesicherten Bilder automatisch wiederherstellen?</translation>
 </phrase>
 
 <phrase>
 <original>If you exit now, this autosave data will be lost forever.  Are you sure you want to exit?</original>
-<translation>Wenn Sie das Programm jetzt beenden, werden diese automatisch gespeicherte Daten für immer verloren gehen. Sind Sie sicher?</translation>
+<translation>Wenn Sie das Programm jetzt beenden, werden diese Autosave-Daten für immer verloren gehen. Sind Sie sicher?</translation>
 </phrase>
 
 <phrase>
@@ -11969,12 +11969,12 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>Zoom in</original>
-<translation>Hineinzoomen</translation>
+<translation>Vergrößern</translation>
 </phrase>
 
 <phrase>
 <original>Zoom out</original>
-<translation>Herauszoomen</translation>
+<translation>Verkleinern</translation>
 </phrase>
 
 <phrase>
@@ -12037,9 +12037,10 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 You can also use the Open Image button on the left,
 or the File > Open and File > Import menus.</original>
-<translation>Ziehen Sie ein Bild auf diese Fläche, um die Bearbeitung zu beginnen.
+<translation>Ziehen Sie ein Bild auf diese Fläche, um mit der Bearbeitung zu beginnen.
 
-Sie können auch die Schaltfläche "Bild öffnen" oben links verwenden oder die Menüs "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
+Sie können auch oben links die Schaltfläche "Bild öffnen" verwenden
+oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 </phrase>
 
 <phrase>
@@ -13283,4 +13284,4 @@ Sie können auch die Schaltfläche "Bild öffnen" oben links verwenden oder die 
 <!-- 1612 are duplicates, so only 2315 unique phrases have been written to file. -->
 <!-- These 2315 phrases contain approximately 13330 total words. -->
 
-</pdData>
+</pdData>>
