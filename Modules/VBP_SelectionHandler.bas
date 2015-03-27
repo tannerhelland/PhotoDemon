@@ -250,7 +250,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB, False, True
     
     'If the selected area has a blank alpha channel, convert it to 24bpp
-    If Not tmpDIB.verifyAlphaChannel Then tmpDIB.convertTo24bpp
+    If Not DIB_Handler.verifyDIBAlphaChannel(tmpDIB) Then tmpDIB.convertTo24bpp
     
     'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
     Dim newLayerID As Long

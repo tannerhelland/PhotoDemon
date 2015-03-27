@@ -110,7 +110,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     srcPDImage.getCompositedImage tmpCompositeDIB, False
                     
                     'Validate the composited image's alpha channel; if it is pointless, we can request 24bpp output depth.
-                    If Not tmpCompositeDIB.verifyAlphaChannel Then tmpCompositeDIB.convertTo24bpp
+                    If Not DIB_Handler.verifyDIBAlphaChannel(tmpCompositeDIB) Then tmpCompositeDIB.convertTo24bpp
                     
                     'Count the number of colors in the image.  (The function will automatically cease if it hits 257 colors,
                     ' as anything above 256 colors is treated as 24bpp.)
@@ -131,7 +131,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                     ' images to be exported as 32bpp.
                     If (outputColorDepth <= 8) And (tmpCompositeDIB.getDIBColorDepth = 32) Then
                         
-                        If (Not tmpCompositeDIB.isAlphaBinary) Then
+                        If Not DIB_Handler.isDIBAlphaBinary(tmpCompositeDIB) Then
                             outputColorDepth = 32
                         
                         'PNG and GIF can write 8bpp images with a binary alpha channel.  Other formats (e.g. BMP) require 32bpp
@@ -901,7 +901,7 @@ Public Function SaveGIFImage(ByRef srcPDImage As pdImage, ByVal GIFPath As Strin
     If handleAlpha Then
     
         'Does this DIB contain binary transparency?  If so, mark all transparent pixels with magic magenta.
-        If tmpDIB.isAlphaBinary Then
+        If DIB_Handler.isDIBAlphaBinary(tmpDIB) Then
             tmpDIB.applyAlphaCutoff
         Else
             If forceAlphaConvert = -1 Then
@@ -1060,7 +1060,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
         If Not g_ImageFormats.pngQuantEnabled Then
         
             'Does this DIB contain binary transparency?  If so, mark all transparent pixels with magic magenta.
-            If tmpDIB.isAlphaBinary Then
+            If DIB_Handler.isDIBAlphaBinary(tmpDIB) Then
                 tmpDIB.applyAlphaCutoff
             Else
             
@@ -1388,7 +1388,7 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
     If handleAlpha Then
         
         'Does this DIB contain binary transparency?  If so, mark all transparent pixels with magic magenta.
-        If tmpDIB.isAlphaBinary Then
+        If DIB_Handler.isDIBAlphaBinary(tmpDIB) Then
             tmpDIB.applyAlphaCutoff
         Else
         
@@ -1590,7 +1590,7 @@ Public Function SaveJPEGImage(ByRef srcPDImage As pdImage, ByVal JPEGPath As Str
     Dim outputColorDepth As Long
     Message "Analyzing image color content..."
     
-    If tmpDIB.isDIBGrayscale Then
+    If DIB_Handler.isDIBGrayscale(tmpDIB) Then
     
         Message "No color found.  Saving 8bpp grayscale JPEG."
         outputColorDepth = 8
@@ -1719,7 +1719,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
     If handleAlpha Then
         
         'Does this DIB contain binary transparency?  If so, mark all transparent pixels with magic magenta.
-        If tmpDIB.isAlphaBinary Then
+        If DIB_Handler.isDIBAlphaBinary(tmpDIB) Then
             tmpDIB.applyAlphaCutoff
         Else
             
