@@ -41,6 +41,7 @@ Begin VB.Form FormShadowHighlight
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -61,15 +62,6 @@ Begin VB.Form FormShadowHighlight
       _ExtentX        =   10054
       _ExtentY        =   582
       Caption         =   "use the median midtone for this image"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltShadow 
       Height          =   495
@@ -79,9 +71,9 @@ Begin VB.Form FormShadowHighlight
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Max             =   30
-      SigDigits       =   2
-      Value           =   0.05
+      Min             =   -50
+      Max             =   50
+      SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltHighlight 
       Height          =   495
@@ -91,9 +83,9 @@ Begin VB.Form FormShadowHighlight
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
-      Max             =   30
-      SigDigits       =   2
-      Value           =   0.05
+      Min             =   -50
+      Max             =   50
+      SigDigits       =   1
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   495
@@ -181,26 +173,17 @@ Attribute VB_Exposed = False
 'Shadow / Midtone / Highlight Adjustment Tool
 'Copyright 2013-2015 by Tanner Helland
 'Created: 17/February/13
-'Last updated: 24/August/13
-'Last update: add command bar
+'Last updated: 28/March/15
+'Last update: total overhaul of the shadow/highlight adjustment strategy
 '
-'Shadow / Midtone / Highlight recovery and correction tool.
+'This tool is based heavily on the logic on PhotoDemon's Curves tool.  The Shadow and Highlight parameters control
+' an auto-generated S-curve, which allows the function to adjust regions of the image intelligently, while still
+' maintaining a smooth transition between shadow and highlight regions.
 '
-'This tool is based heavily on the logic on PhotoDemon's "white balance" tool.  The Shadow and Highlight parameters
-' refer to the amount of pixels in the image which will be ignored at either end of the spectrum, prior to stretching
-' the histogram.  By ignoring more pixels at the bottom, shadows are emphasized.  By ignoring more pixels at the
-' top, highlights are emphasized.
-'
-'Midtones are a separate beast.  The new midtone color functions as the midpoint of the image's new histogram.
-' Pixels will be spread so that half fall below the midtone, and half fall above it.  Midtones are calculated
-' separately for each of red, green, and blue, so this tool can be used to apply a particular color cast to an image.
-' (Though the results are difficult to predict, so use with caution.)
-'
-'The automatic midtone detection algorithm works by finding the actual midpoint of the original image's histogram, and
-' centering the new histogram using that midpoint as (127, 127, 127). This results in a theoretically "perfect"
-' exposure, but as with most "theoretically perfect" color algorithms (e.g. histogram equalization), it is unlikely to
-' offer ideal results.  Rather, think of it as a starting point from which you can more easily find your ideal midtone
-' point.
+'Midtones work similarly.  The midtone color selector is used to calculate a midpoint for the image's new luminance
+' curve.  When automatic midtone calculation is active, pixels will be roughly spread so that half fall below the
+' midtone, and half fall above it.  Midtones are calculated separately for each channel, so this tool is now capable
+' of adjusting shadows and/or highlights without disturbing an image's color distribution.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -210,7 +193,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub chkAutoThreshold_Click()
     If CBool(chkAutoThreshold) Then
@@ -230,6 +213,10 @@ Private Sub cmdBar_RandomizeClick()
     chkAutoThreshold.Value = vbUnchecked
 End Sub
 
+Private Sub cmdBar_ReadCustomPresetData()
+    If CBool(chkAutoThreshold) Then CalculateOptimalMidtone
+End Sub
+
 Private Sub cmdBar_RequestPreviewUpdate()
     updatePreview
 End Sub
@@ -246,8 +233,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Render a preview
     updatePreview
