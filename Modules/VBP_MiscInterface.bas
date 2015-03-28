@@ -1621,7 +1621,9 @@ Public Sub populateBlendModeComboBox(ByRef dstCombo As pdComboBox, Optional ByVa
     dstCombo.AddItem "Hue"
     dstCombo.AddItem "Saturation"
     dstCombo.AddItem "Color"
-    dstCombo.AddItem "Luminosity"
+    dstCombo.AddItem "Luminosity", , True
+    dstCombo.AddItem "Grain extract"
+    dstCombo.AddItem "Grain merge"
     
     dstCombo.ListIndex = blendIndex
     

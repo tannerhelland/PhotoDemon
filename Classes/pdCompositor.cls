@@ -302,6 +302,28 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
                         topV = fMax3(topR, topG, topB)
                         fastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
                         fHSVtoRGB bottomH, bottomS, topV, newR, newG, newB
+                        
+                    Case BL_GRAINEXTRACT
+                        newR = bottomR - topR + 0.5
+                        newG = bottomG - topG + 0.5
+                        newB = bottomB - topB + 0.5
+                        If newR > 1 Then newR = 1
+                        If newG > 1 Then newG = 1
+                        If newB > 1 Then newB = 1
+                        If newR < 0 Then newR = 0
+                        If newG < 0 Then newG = 0
+                        If newB < 0 Then newB = 0
+                    
+                    Case BL_GRAINMERGE
+                        newR = bottomR + topR - 0.5
+                        newG = bottomG + topG - 0.5
+                        newB = bottomB + topB - 0.5
+                        If newR > 1 Then newR = 1
+                        If newG > 1 Then newG = 1
+                        If newB > 1 Then newB = 1
+                        If newR < 0 Then newR = 0
+                        If newG < 0 Then newG = 0
+                        If newB < 0 Then newB = 0
                     
                     Case Else
                         newR = topR
