@@ -17,6 +17,23 @@ Attribute VB_Name = "DIB_Handler"
 
 Option Explicit
 
+'DC API functions
+Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
+
+'Object API functions
+Private Const OBJ_BITMAP As Long = 7
+Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
+Private Declare Function GetObjectType Lib "gdi32" (ByVal hgdiobj As Long) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
+
+'Clipboard interaction
+Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
+Private Declare Function GetDesktopWindow Lib "user32" () As Long
+Private Const CLIPBOARD_FORMAT_BMP As Long = 2
+
 'Check to see if a 32bpp DIB is really 32bpp. (Basically, scan all pixels in the alpha channel. If all values are set to
 ' 255 or all values are set to 0, the caller can opt to rebuild the DIB in 24bpp mode.)
 Public Function verifyDIBAlphaChannel(ByRef srcDIB As pdDIB) As Boolean
@@ -241,3 +258,199 @@ Public Function isDIBGrayscale(ByRef srcDIB As pdDIB) As Boolean
 
 End Function
 
+'Copy a given DIB to the clipboard.  If FreeImage is available, PD will also copy the image in PNG format, so things like
+' transparency are preserved.
+Public Function copyDIBToClipboard(ByRef srcDIB As pdDIB) As Boolean
+    
+    'Make sure the DIB exists
+    If srcDIB Is Nothing Then Exit Function
+    
+    'Make sure the DIB actually contains an image
+    If (srcDIB.getDIBHandle <> 0) And (srcDIB.getDIBWidth <> 0) And (srcDIB.getDIBHeight <> 0) Then
+    
+        'We are going to copy the image data to the clipboard twice - once in PNG format, then again in standard BMP format.
+        ' This maxmimizes operability between major software packages.
+        
+        'Start by using the vbAccelerator clipboard class, which makes this whole process a bit easier.
+        Dim clpObject As cCustomClipboard
+        Set clpObject = New cCustomClipboard
+        If clpObject.ClipboardOpen(FormMain.hWnd) Then
+        
+            clpObject.ClearClipboard
+        
+            'FreeImage is required to perform the PNG transformation.  We could use GDI+, but FreeImage is easier.
+            If g_ImageFormats.FreeImageEnabled And srcDIB.getDIBColorDepth = 32 Then
+                
+                'Most systems willl already have PNG available as a setting; the AddFormat function will detect this
+                Dim PNGID As Long
+                PNGID = clpObject.AddFormat("PNG")
+                
+                'Convert our current DIB to a FreeImage-type DIB
+                Dim fi_DIB As Long
+                fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+                
+                'Convert the bitmap to PNG format, save it to an array, and release the original bitmap from memory
+                Dim pngArray() As Byte
+                Dim fi_Check As Long
+                fi_Check = FreeImage_SaveToMemoryEx(FIF_PNG, fi_DIB, pngArray, FISO_PNG_Z_DEFAULT_COMPRESSION, True)
+                
+                'If the save was successful, hand the new PNG byte array to the clipboard
+                If fi_Check Then
+                    copyDIBToClipboard = True
+                    clpObject.SetBinaryData PNGID, pngArray
+                End If
+                
+            End If
+            
+            'With a PNG copy successfully saved, proceed to copy a standard 24bpp bitmap to the clipboard
+            
+            'Get a handle to the current desktop, and create a compatible clipboard device context in it
+            Dim desktophWnd As Long
+            desktophWnd = GetDesktopWindow
+            
+            Dim desktopDC As Long, clipboardDC As Long
+            desktopDC = GetDC(desktophWnd)
+            clipboardDC = CreateCompatibleDC(desktopDC)
+            
+            'If our temporary DC was created successfully, use it to create a temporary bitmap for the clipboard
+            If (clipboardDC <> 0) Then
+            
+                'Create a bitmap compatible with the current desktop. This will receive the actual pixel data of the current DIB.
+                Dim clipboardBMP As Long
+                clipboardBMP = CreateCompatibleBitmap(desktopDC, srcDIB.getDIBWidth, srcDIB.getDIBHeight)
+                
+                If (clipboardBMP <> 0) Then
+                    
+                    'Place the compatible bitmap within the clipboard device context
+                    Dim clipboardOldBMP As Long
+                    clipboardOldBMP = SelectObject(clipboardDC, clipboardBMP)
+                    
+                    '24-bit images can be copied as-is
+                    If srcDIB.getDIBColorDepth = 24 Then
+                        BitBlt clipboardDC, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, srcDIB.getDIBDC, 0, 0, vbSrcCopy
+                    
+                    '32-bit images must be composited against a white background first
+                    Else
+                    
+                        Dim tmpDIB As pdDIB
+                        Set tmpDIB = New pdDIB
+                        
+                        tmpDIB.createFromExistingDIB srcDIB
+                        tmpDIB.convertTo24bpp
+                        
+                        BitBlt clipboardDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+                        
+                        Set tmpDIB = Nothing
+                        
+                    End If
+                    
+                    'Remove the clipboard bitmap from the clipboard DC to leave room for the copy
+                    SelectObject clipboardDC, clipboardOldBMP
+        
+                    'Copy the bitmap to the clipboard, then close and exit
+                    clpObject.SetClipboardMemoryHandle CLIPBOARD_FORMAT_BMP, clipboardBMP
+                    DeleteDC clipboardDC
+                    
+                    copyDIBToClipboard = True
+                    
+                Else
+                    copyDIBToClipboard = False
+                End If
+                
+            Else
+                copyDIBToClipboard = False
+            End If
+            
+            'Release (DON'T DELETE!) our control of the current desktop device context
+            ReleaseDC desktophWnd, desktopDC
+            
+            'Release our hold on the clipboard
+            clpObject.ClipboardClose
+            
+        Else
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  CopyDIBToClipboard could not open the clipboard."
+            #End If
+            copyDIBToClipboard = False
+        End If
+        
+    Else
+        copyDIBToClipboard = False
+    End If
+
+End Function
+
+'Convert a source DIB to a 32-bit CMYK DIB.
+' TODO: Use an ICC profile for this step, to improve quality.
+Public Function createCMYKDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Boolean
+
+    'Make sure the source DIB exists
+    If srcDIB Is Nothing Then Exit Function
+    
+    'Make sure the source DIB isn't empty
+    If (srcDIB.getDIBDC <> 0) And (srcDIB.getDIBWidth <> 0) And (srcDIB.getDIBHeight <> 0) Then
+    
+        'Create the destination DIB as necessary
+        If dstDIB Is Nothing Then Set dstDIB = New pdDIB
+        
+        'Create a 32-bit destination DIB with identical size to the source DIB
+        dstDIB.createBlank srcDIB.getDIBWidth, srcDIB.getDIBHeight, 32, 0, 0
+        
+        'Prepare direct access to the source and destination DIB data
+        Dim srcData() As Byte, dstData() As Byte
+        Dim srcSA As SAFEARRAY2D, dstSA As SAFEARRAY2D
+        prepSafeArray srcSA, srcDIB
+        CopyMemory ByVal VarPtrArray(srcData()), VarPtr(srcSA), 4
+        
+        prepSafeArray dstSA, dstDIB
+        CopyMemory ByVal VarPtrArray(dstData()), VarPtr(dstSA), 4
+        
+        Dim x As Long, y As Long, QuickXSrc As Long, QuickXDst As Long
+        Dim cyan As Long, magenta As Long, yellow As Long, k As Long
+        
+        Dim srcQVDepth As Long
+        srcQVDepth = srcDIB.getDIBColorDepth \ 8
+                        
+        'Loop through the image, checking alphas as we go
+        For x = 0 To srcDIB.getDIBWidth - 1
+            QuickXSrc = x * srcQVDepth
+            QuickXDst = x * 4
+        For y = 0 To srcDIB.getDIBHeight - 1
+                        
+            'Cyan
+            cyan = 255 - srcData(QuickXSrc + 2, y)
+            
+            'Magenta
+            magenta = 255 - srcData(QuickXSrc + 1, y)
+            
+            'Yellow
+            yellow = 255 - srcData(QuickXSrc, y)
+            
+            'Key
+            k = CByte(Min3Int(cyan, magenta, yellow))
+            dstData(QuickXDst + 3, y) = k
+            
+            If k = 255 Then
+                dstData(QuickXDst, y) = 0
+                dstData(QuickXDst + 1, y) = 0
+                dstData(QuickXDst + 2, y) = 0
+            Else
+                dstData(QuickXDst, y) = cyan - k
+                dstData(QuickXDst + 1, y) = magenta - k
+                dstData(QuickXDst + 2, y) = yellow - k
+            End If
+                            
+        Next y
+        Next x
+    
+        'With our alpha channel complete, point both arrays away from their respective DIBs
+        CopyMemory ByVal VarPtrArray(srcData), 0&, 4
+        CopyMemory ByVal VarPtrArray(dstData), 0&, 4
+        
+        createCMYKDIB = True
+        
+    Else
+        createCMYKDIB = False
+    End If
+
+End Function

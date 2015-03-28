@@ -53,7 +53,7 @@ Public Sub ClipboardCut(ByVal cutMerged As Boolean)
     End If
     
     'Copy the temporary DIB to the clipboard, then erase it
-    tmpDIB.copyDIBToClipboard
+    DIB_Handler.copyDIBToClipboard tmpDIB
     Set tmpDIB = Nothing
     
     'Now, we have the added step of erasing the selected area from the screen.  "Cut merged" requires us to delete the selected
@@ -132,7 +132,7 @@ Public Sub ClipboardCopy(ByVal copyMerged As Boolean)
     End If
     
     'Copy the temporary DIB to the clipboard, then erase it
-    tmpDIB.copyDIBToClipboard
+    DIB_Handler.copyDIBToClipboard tmpDIB
     tmpDIB.eraseDIB
     
 End Sub

@@ -1841,8 +1841,15 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
             outputColorDepth = 32
             TIFFFlags = (TIFFFlags Or TIFF_CMYK)
             FreeImage_UnloadEx fi_DIB
-            tmpDIB.convertToCMYK32
-            fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+            
+            Dim tmpCMYKDIB As pdDIB
+            Set tmpCMYKDIB = New pdDIB
+            
+            DIB_Handler.createCMYKDIB tmpDIB, tmpCMYKDIB
+            fi_DIB = FreeImage_CreateFromDC(tmpCMYKDIB.getDIBDC)
+            
+            'Release our temporary DIB
+            Set tmpCMYKDIB = Nothing
             
         End If
         
