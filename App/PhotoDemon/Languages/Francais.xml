@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.1</langversion>
+<langversion>6.7.2</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -6800,7 +6800,17 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <translation>Luminosité </translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 59 phrases. 22 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
+<phrase>
+<original>Grain extract</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Grain merge</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_MiscInterface.bas contains 61 phrases. 22 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -13284,10 +13294,10 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2315</phrasecount>
+<phrasecount>2317</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3927 phrases. -->
-<!-- 1612 are duplicates, so only 2315 unique phrases have been written to file. -->
-<!-- These 2315 phrases contain approximately 13330 total words. -->
+<!-- As of this build, PhotoDemon contains 3929 phrases. -->
+<!-- 1612 are duplicates, so only 2317 unique phrases have been written to file. -->
+<!-- These 2317 phrases contain approximately 13334 total words. -->
 
 </pdData>
