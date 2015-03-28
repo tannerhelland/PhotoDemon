@@ -992,267 +992,137 @@ End Function
 'Make shadows, midtone, and/or highlight adjustments to a given DIB.
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
 Public Function AdjustDIBShadowHighlight(ByVal shadowClipping As Double, ByVal highlightClipping As Double, ByVal targetMidtone As Long, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
-
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    prepSafeArray tmpSA, srcDIB
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    
+    'As of March 2015, this function has been entirely rewritten against a new, curve-based adjustment system.
+    ' This makes it much more useful, with much more accurate results, and much faster, too!  Wins all around.
+    
+    'A pdFilterLUT instance will be handling most the heavy lifting for this task.
+    Dim cLUT As pdFilterLUT
+    Set cLUT = New pdFilterLUT
+    
+    'Shadow/highlight correction works by creating a smart, auto-generated S-curve, using the passed values to automatically shift
+    ' the various curve node positions.
+    Dim sLowR As POINTFLOAT, sMidR As POINTFLOAT, sHighR As POINTFLOAT
+    Dim sLowG As POINTFLOAT, sMidG As POINTFLOAT, sHighG As POINTFLOAT
+    Dim sLowB As POINTFLOAT, sMidB As POINTFLOAT, sHighB As POINTFLOAT
+    
+    'Start by validating the requested midtone values.  These nodes are only used to calculate the initial shadow and highlight
+    ' node positions, and they must lie within [2, 253] so that there's room for two nodes on either side (the shadow/highlight node,
+    ' and a final (0, 0) or (255, 255) node).
+    Dim midR As Long, midG As Long, midB As Long
+    midR = ExtractR(targetMidtone)
+    midG = ExtractG(targetMidtone)
+    midB = ExtractB(targetMidtone)
+    
+    If midR < 2 Then midR = 2
+    If midR > 253 Then midR = 253
+    
+    If midG < 2 Then midG = 2
+    If midG > 253 Then midG = 253
+    
+    If midB < 2 Then midB = 2
+    If midB > 253 Then midB = 253
+    
+    'Convert the calculated midtone values into curve positions.
+    sMidR.x = midR
+    sMidR.y = sMidR.x
+    
+    sMidG.x = midG
+    sMidG.y = sMidG.x
+    
+    sMidB.x = midB
+    sMidB.y = sMidB.x
+    
+    'Next, calculate default shadow node positions.  (The shadow nodes sit halfway between 0 and the midpoint nodes.)
+    sLowR.x = sMidR.x / 2
+    sLowR.y = sLowR.x
+    
+    sLowG.x = sMidG.x / 2
+    sLowG.y = sLowG.x
+    
+    sLowB.x = sMidB.x / 2
+    sLowB.y = sLowB.x
+    
+    'Next, calculate default highlight node positions. (Highlight nodes sit halfway between the midpoint nodes and 255.)
+    sHighR.x = sMidR.x + (255 - sMidR.x) / 2
+    sHighR.y = sHighR.x
+    
+    sHighG.x = sMidG.x + (255 - sMidG.x) / 2
+    sHighG.y = sHighG.x
+    
+    sHighB.x = sMidB.x + (255 - sMidB.x) / 2
+    sHighB.y = sHighB.x
+    
+    'Next, we are going to "bend" the shadow node positions according to the shadow modification value.
+    ' (This effectively creates an S-curve, where the shadow node is "pulled" in the direction of the shadow modification.)
+    sLowR.x = sLowR.x - shadowClipping / 3
+    sLowR.y = sLowR.y + shadowClipping
+    
+    sLowG.x = sLowG.x - shadowClipping / 3
+    sLowG.y = sLowG.y + shadowClipping
+    
+    sLowB.x = sLowB.x - shadowClipping / 3
+    sLowB.y = sLowB.y + shadowClipping
+    
+    'Make sure the newly calculated points are within bounds.
+    ' (The shadow nodes must sit above (0, 0), and below the midpoint node.)
+    If sLowR.x < 1 Then sLowR.x = 1
+    If sLowR.y < 1 Then sLowR.y = 1
+    If sLowG.x < 1 Then sLowG.x = 1
+    If sLowG.y < 1 Then sLowG.y = 1
+    If sLowB.x < 1 Then sLowB.x = 1
+    If sLowB.y < 1 Then sLowB.y = 1
+    
+    If sLowR.x > sMidR.x - 1 Then sLowR.x = sMidR.x - 1
+    If sLowR.y > sMidR.y - 1 Then sLowR.y = sMidR.y - 1
+    If sLowG.x > sMidG.x - 1 Then sLowG.x = sMidG.x - 1
+    If sLowG.y > sMidG.y - 1 Then sLowG.y = sMidG.y - 1
+    If sLowB.x > sMidB.x - 1 Then sLowB.x = sMidB.x - 1
+    If sLowB.y > sMidB.y - 1 Then sLowB.y = sMidB.y - 1
+    
+    'Next, repeat the "bend" process for the highlight values.
+    sHighR.x = sHighR.x - highlightClipping / 3
+    sHighR.y = sHighR.y + highlightClipping
+    
+    sHighG.x = sHighG.x - highlightClipping / 3
+    sHighG.y = sHighG.y + highlightClipping
+    
+    sHighB.x = sHighB.x - highlightClipping / 3
+    sHighB.y = sHighB.y + highlightClipping
+    
+    'And again, make sure the points are within bounds
+    If sHighR.x > 253 Then sHighR.x = 253
+    If sHighR.y > 253 Then sHighR.y = 253
+    If sHighG.x > 253 Then sHighG.x = 253
+    If sHighG.y > 253 Then sHighG.y = 253
+    If sHighB.x > 253 Then sHighB.x = 253
+    If sHighB.y > 253 Then sHighB.y = 253
+    
+    If sHighR.x < sMidR.x + 1 Then sHighR.x = sMidR.x + 1
+    If sHighR.y < sMidR.y + 1 Then sHighR.y = sMidR.y + 1
+    If sHighG.x < sMidG.x + 1 Then sHighG.x = sMidG.x + 1
+    If sHighG.y < sMidG.y + 1 Then sHighG.y = sMidG.y + 1
+    If sHighB.x < sMidB.x + 1 Then sHighB.x = sMidB.x + 1
+    If sHighB.y < sMidB.y + 1 Then sHighB.y = sMidB.y + 1
+    
+    'We are now ready to calculate curves for each color channel.  Note that we only include the shadow and highlight nodes here;
+    ' the midtone nodes were used only for initial positioning of the shadow and highlight nodes.  They are not actually included
+    ' in the curve.  (Including them makes the curve more prone to unwanted solarization; to see this, use PD's Curve tool and
+    ' create a 5-node curve, then pull the 2nd and 4th nodes in opposite directions to see the ugly result.)
+    Dim curvePointsR() As POINTFLOAT, curvePointsG() As POINTFLOAT, curvePointsB() As POINTFLOAT
+    cLUT.helper_QuickCreateCurveArray curvePointsR, 0, 0, sLowR.x, sLowR.y, sHighR.x, sHighR.y, 255, 255
+    cLUT.helper_QuickCreateCurveArray curvePointsG, 0, 0, sLowG.x, sLowG.y, sHighG.x, sHighG.y, 255, 255
+    cLUT.helper_QuickCreateCurveArray curvePointsB, 0, 0, sLowB.x, sLowB.y, sHighB.x, sHighB.y, 255, 255
+    
+    'Next, we convert the curve positions to RGB lookup tables
+    Dim lookupR() As Byte, lookupG() As Byte, lookupB() As Byte
+    cLUT.fillLUT_Curve lookupR, curvePointsR
+    cLUT.fillLUT_Curve lookupG, curvePointsG
+    cLUT.fillLUT_Curve lookupB, curvePointsB
         
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = 0
-    initY = 0
-    finalX = srcDIB.getDIBWidth - 1
-    finalY = srcDIB.getDIBHeight - 1
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
-        progBarCheck = findBestProgBarValue()
-    End If
-    
-    'Color values
-    Dim r As Long, g As Long, b As Long
-    
-    'Maximum and minimum values, which will be detected by our initial histogram run
-    Dim rMax As Byte, gMax As Byte, bMax As Byte
-    Dim rMin As Byte, gMin As Byte, bMin As Byte
-    rMax = 0: gMax = 0: bMax = 0
-    rMin = 255: gMin = 255: bMin = 255
-    
-    'Shrink the percentIgnore value down to 1% of the value we are passed (you'll see why in a moment)
-    shadowClipping = shadowClipping / 100
-    highlightClipping = highlightClipping / 100
-    
-    'Prepare histogram arrays
-    Dim rCount(0 To 255) As Long, gCount(0 To 255) As Long, bCount(0 To 255) As Long
-    For x = 0 To 255
-        rCount(x) = 0
-        gCount(x) = 0
-        bCount(x) = 0
-    Next x
-    
-    'Build the image histogram
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        rCount(r) = rCount(r) + 1
-        gCount(g) = gCount(g) + 1
-        bCount(b) = bCount(b) + 1
-    Next y
-    Next x
-    
-     'With the histogram complete, we can now figure out how to stretch the RGB channels. We do this by calculating a min/max
-    ' ratio where the top and bottom 0.05% (or user-specified value) of pixels are ignored.
-    
-    Dim foundYet As Boolean
-    foundYet = False
-    
-    Dim NumOfPixels As Long
-    NumOfPixels = (finalX + 1) * (finalY + 1)
-    
-    Dim shadowThreshold As Long
-    shadowThreshold = NumOfPixels * shadowClipping
-    
-    Dim highlightThreshold As Long
-    highlightThreshold = NumOfPixels * highlightClipping
-    
-    r = 0: g = 0: b = 0
-    
-    Dim rTally As Long, gTally As Long, bTally As Long
-    rTally = 0: gTally = 0: bTally = 0
-    
-    'Find minimum values of red, green, and blue
-    Do
-        If rCount(r) + rTally < shadowThreshold Then
-            r = r + 1
-            rTally = rTally + rCount(r)
-        Else
-            rMin = r
-            foundYet = True
-        End If
-    Loop While foundYet = False
-        
-    foundYet = False
-        
-    Do
-        If gCount(g) + gTally < shadowThreshold Then
-            g = g + 1
-            gTally = gTally + gCount(g)
-        Else
-            gMin = g
-            foundYet = True
-        End If
-    Loop While foundYet = False
-    
-    foundYet = False
-    
-    Do
-        If bCount(b) + bTally < shadowThreshold Then
-            b = b + 1
-            bTally = bTally + bCount(b)
-        Else
-            bMin = b
-            foundYet = True
-        End If
-    Loop While foundYet = False
-    
-    'Now, find maximum values of red, green, and blue
-    foundYet = False
-    
-    r = 255: g = 255: b = 255
-    rTally = 0: gTally = 0: bTally = 0
-    
-    Do
-        If rCount(r) + rTally < highlightThreshold Then
-            r = r - 1
-            rTally = rTally + rCount(r)
-        Else
-            rMax = r
-            foundYet = True
-        End If
-    Loop While foundYet = False
-        
-    foundYet = False
-        
-    Do
-        If gCount(g) + gTally < highlightThreshold Then
-            g = g - 1
-            gTally = gTally + gCount(g)
-        Else
-            gMax = g
-            foundYet = True
-        End If
-    Loop While foundYet = False
-    
-    foundYet = False
-    
-    Do
-        If bCount(b) + bTally < highlightThreshold Then
-            b = b - 1
-            bTally = bTally + bCount(b)
-        Else
-            bMax = b
-            foundYet = True
-        End If
-    Loop While foundYet = False
-    
-    'Finally, calculate the difference between max and min for each color
-    Dim rDif As Long, gDif As Long, bDif As Long
-    rDif = CLng(rMax) - CLng(rMin)
-    gDif = CLng(gMax) - CLng(gMin)
-    bDif = CLng(bMax) - CLng(bMin)
-    
-    'We can now build a final set of look-up tables that contain the results of every possible color transformation
-    Dim rFinal(0 To 255) As Byte, gFinal(0 To 255) As Byte, bFinal(0 To 255) As Byte
-    
-    For x = 0 To 255
-        If rDif <> 0 Then r = 255 * ((x - rMin) / rDif) Else r = x
-        If gDif <> 0 Then g = 255 * ((x - gMin) / gDif) Else g = x
-        If bDif <> 0 Then b = 255 * ((x - bMin) / bDif) Else b = x
-        If r > 255 Then r = 255
-        If r < 0 Then r = 0
-        If g > 255 Then g = 255
-        If g < 0 Then g = 0
-        If b > 255 Then b = 255
-        If b < 0 Then b = 0
-        rFinal(x) = r
-        gFinal(x) = g
-        bFinal(x) = b
-    Next x
-    
-    'Now it is time to handle the target midtone calculation.  Start by extracting the red, green, and blue components
-    Dim targetRed As Long, targetGreen As Long, targetBlue As Long
-    targetRed = 255 - ExtractR(targetMidtone)
-    targetGreen = 255 - ExtractG(targetMidtone)
-    targetBlue = 255 - ExtractB(targetMidtone)
-    
-    'We now re-use some logic from the Levels tool to remap midtones according to the target color we've been given.
-    
-    'Look-up tables for the midtone (gamma) leveled values
-    Dim lValues(0 To 255) As Double
-    
-    'WARNING: This next chunk of code is a lot of messy math.  Don't worry too much
-    ' if you can't make sense of it ;)
-    
-    'Fill the gamma table with appropriate gamma values (from 10 to .1, ranged quadratically)
-    ' NOTE: This table is constant, and could theoretically be loaded from file instead of generated
-    ' every time we run this function.
-    Dim gStep As Double
-    gStep = (MAXGAMMA + MIDGAMMA) / 127
-    For x = 0 To 127
-        lValues(x) = (CDbl(x) / 127) * MIDGAMMA
-    Next x
-    For x = 128 To 255
-        lValues(x) = MIDGAMMA + (CDbl(x - 127) * gStep)
-    Next x
-    For x = 0 To 255
-        lValues(x) = 1 / ((lValues(x) + 1 / ROOT10) ^ 2)
-    Next x
-    
-    'Calculate a look-up table of gamma-corrected values based on the midtones scrollbar
-    Dim rValues(0 To 255) As Byte, gValues(0 To 255) As Byte, bValues(0 To 255) As Byte
-    Dim tmpRed As Double, tmpGreen As Double, tmpBlue As Double
-    For x = 0 To 255
-        tmpRed = CDbl(x) / 255
-        tmpGreen = CDbl(x) / 255
-        tmpBlue = CDbl(x) / 255
-        tmpRed = tmpRed ^ (1 / lValues(targetRed))
-        tmpGreen = tmpGreen ^ (1 / lValues(targetGreen))
-        tmpBlue = tmpBlue ^ (1 / lValues(targetBlue))
-        tmpRed = tmpRed * 255
-        tmpGreen = tmpGreen * 255
-        tmpBlue = tmpBlue * 255
-        If tmpRed > 255 Then tmpRed = 255
-        If tmpRed < 0 Then tmpRed = 0
-        If tmpGreen > 255 Then tmpGreen = 255
-        If tmpGreen < 0 Then tmpGreen = 0
-        If tmpBlue > 255 Then tmpBlue = 255
-        If tmpBlue < 0 Then tmpBlue = 0
-        rValues(x) = tmpRed
-        gValues(x) = tmpGreen
-        bValues(x) = tmpBlue
-    Next x
-    
-    'Now we can loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
-            
-        'Adjust white balance in a single pass (thanks to the magic of look-up tables)
-        ImageData(QuickVal + 2, y) = rValues(rFinal(ImageData(QuickVal + 2, y)))
-        ImageData(QuickVal + 1, y) = gValues(gFinal(ImageData(QuickVal + 1, y)))
-        ImageData(QuickVal, y) = bValues(bFinal(ImageData(QuickVal, y)))
-        
-    Next y
-        If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
-                SetProgBarVal x + modifyProgBarOffset
-            End If
-        End If
-    Next x
-    
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
-    
-    If cancelCurrentAction Then AdjustDIBShadowHighlight = 0 Else AdjustDIBShadowHighlight = 1
+    'And finally, we apply the lookup tables to the DIB.  This allows the function to run in constant-time, regardless of the source
+    ' image or modification values.
+    AdjustDIBShadowHighlight = cLUT.applyLUTsToDIB_Color(srcDIB, lookupR, lookupG, lookupB, suppressMessages, modifyProgBarMax, modifyProgBarOffset)
     
 End Function
 
