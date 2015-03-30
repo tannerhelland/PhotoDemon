@@ -23,6 +23,131 @@ Begin VB.Form FormShadowHighlight
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   808
    ShowInTaskbar   =   0   'False
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4575
+      Index           =   0
+      Left            =   5880
+      ScaleHeight     =   305
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   409
+      TabIndex        =   4
+      Top             =   120
+      Width           =   6135
+      Begin PhotoDemon.sliderTextCombo sltShadow 
+         Height          =   495
+         Left            =   120
+         TabIndex        =   6
+         Top             =   480
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   873
+         Min             =   -50
+         Max             =   50
+         SigDigits       =   1
+      End
+      Begin PhotoDemon.sliderTextCombo sltHighlight 
+         Height          =   495
+         Left            =   120
+         TabIndex        =   7
+         Top             =   2970
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   873
+         Min             =   -50
+         Max             =   50
+         SigDigits       =   1
+      End
+      Begin PhotoDemon.smartCheckBox chkAutoThreshold 
+         Height          =   330
+         Left            =   120
+         TabIndex        =   11
+         Top             =   2160
+         Width           =   5700
+         _ExtentX        =   10054
+         _ExtentY        =   582
+         Caption         =   "use the median midtone for this image"
+      End
+      Begin PhotoDemon.colorSelector colorPicker 
+         Height          =   495
+         Left            =   120
+         TabIndex        =   12
+         Top             =   1560
+         Width           =   5655
+         _ExtentX        =   9975
+         _ExtentY        =   873
+         curColor        =   8421504
+      End
+      Begin VB.Label lblMidtone 
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "midtone target color (right-click preview to change):"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Left            =   120
+         TabIndex        =   10
+         Top             =   1200
+         Width           =   5550
+      End
+      Begin VB.Label lblShadow 
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "shadows:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Left            =   120
+         TabIndex        =   9
+         Top             =   120
+         Width           =   1005
+      End
+      Begin VB.Label Label1 
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "highlights:"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Left            =   120
+         TabIndex        =   8
+         Top             =   2640
+         Width           =   1125
+      End
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -46,63 +171,41 @@ Begin VB.Form FormShadowHighlight
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
       ColorSelection  =   -1  'True
    End
-   Begin PhotoDemon.smartCheckBox chkAutoThreshold 
-      Height          =   330
-      Left            =   6120
+   Begin PhotoDemon.buttonStrip btsOptions 
+      Height          =   600
+      Left            =   6240
+      TabIndex        =   2
+      Top             =   5040
+      Width           =   5595
+      _ExtentX        =   9869
+      _ExtentY        =   1058
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4575
+      Index           =   1
+      Left            =   5880
+      ScaleHeight     =   305
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   409
       TabIndex        =   5
-      Top             =   3240
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   582
-      Caption         =   "use the median midtone for this image"
+      Top             =   120
+      Width           =   6135
    End
-   Begin PhotoDemon.sliderTextCombo sltShadow 
-      Height          =   495
-      Left            =   6000
-      TabIndex        =   6
-      Top             =   1680
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Min             =   -50
-      Max             =   50
-      SigDigits       =   1
-   End
-   Begin PhotoDemon.sliderTextCombo sltHighlight 
-      Height          =   495
-      Left            =   6000
-      TabIndex        =   7
-      Top             =   4170
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      Min             =   -50
-      Max             =   50
-      SigDigits       =   1
-   End
-   Begin PhotoDemon.colorSelector colorPicker 
-      Height          =   495
-      Left            =   6120
-      TabIndex        =   8
-      Top             =   2640
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   873
-      curColor        =   8421504
-   End
-   Begin VB.Label lblMidtone 
-      Appearance      =   0  'Flat
+   Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "midtone target color (right-click preview to change):"
+      Caption         =   "options:"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -114,54 +217,11 @@ Begin VB.Form FormShadowHighlight
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   6000
-      TabIndex        =   4
-      Top             =   2280
-      Width           =   5550
-   End
-   Begin VB.Label Label1 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "highlights:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
+      Index           =   6
       Left            =   6000
       TabIndex        =   3
-      Top             =   3840
-      Width           =   1125
-   End
-   Begin VB.Label lblShadow 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "shadows:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   1320
-      Width           =   1005
+      Top             =   4680
+      Width           =   870
    End
 End
 Attribute VB_Name = "FormShadowHighlight"
@@ -194,6 +254,11 @@ Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_Tooltip As clsToolTip
+
+Private Sub btsOptions_Click(ByVal buttonIndex As Long)
+    picContainer(buttonIndex).Visible = True
+    picContainer(1 - buttonIndex).Visible = False
+End Sub
 
 Private Sub chkAutoThreshold_Click()
     If CBool(chkAutoThreshold) Then
@@ -254,6 +319,15 @@ Public Sub ApplyShadowHighlight(Optional ByVal shadowClipping As Double = 0.05, 
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     finalizeImageData toPreview, dstPic
+    
+End Sub
+
+Private Sub Form_Load()
+    
+    'Set up the basic/advanced panels
+    btsOptions.AddItem "basic", 0
+    btsOptions.AddItem "advanced", 1
+    btsOptions.ListIndex = 0
     
 End Sub
 
