@@ -432,6 +432,7 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                     
                     workingDIB.createBlank newWidth, newHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
                     BitBlt workingDIB.getDIBDC, 0, 0, dstWidth, dstHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBDC, hOffset, vOffset, vbSrcCopy
+                    workingDIB.setAlphaPremultiplication pdImages(g_CurrentImage).getActiveDIB().getAlphaPremultiplication
                     
                 End If
                 
