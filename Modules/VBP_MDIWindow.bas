@@ -158,7 +158,7 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
 
     Debug.Print "(Image #" & imageID & " received a Query_Unload trigger)"
     
-    'Failsafe to make sure the image was properly initialized; if it was not, ignore this request entirely.
+    'Failsafe to make sure the image was properly initialized; if it wasn't, ignore this request entirely.
     If imageID <= UBound(pdImages) Then
         If pdImages(imageID) Is Nothing Then Exit Function
     Else

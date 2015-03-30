@@ -61,6 +61,7 @@ Begin VB.Form dialog_UnsavedChanges
       _ExtentX        =   9049
       _ExtentY        =   582
       Caption         =   "Repeat this action for all unsaved images (X in total)"
+      Value           =   0
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
@@ -244,7 +245,7 @@ Public Sub showDialog(ByRef ownerForm As Form)
         chkRepeat.Left = fixDPI(8)
         chkRepeat.Width = Me.ScaleWidth - fixDPI(16)
     End If
-
+    
     'Apply any custom styles to the form
     makeFormPretty Me, m_Tooltip, True
 
@@ -256,7 +257,7 @@ End Sub
 'Before this dialog closes, this routine is called to update the user's preference for applying this action to all unsaved images
 Private Sub updateRepeatToAllUnsavedImages(ByVal actionToApply As VbMsgBoxResult)
     
-    If chkRepeat.Value = vbChecked Then
+    If chkRepeat.Visible And chkRepeat.Value = vbChecked Then
         g_DealWithAllUnsavedImages = True
         g_HowToDealWithAllUnsavedImages = actionToApply
     Else
