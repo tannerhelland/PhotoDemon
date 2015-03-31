@@ -857,11 +857,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormLevels.MapImageLevels cParams.getParamString
             End If
             
-        Case "Shadows and highlights"
+        Case "Shadow and highlight"
             If showDialog Then
                 showPDDialog vbModal, FormShadowHighlight
             Else
-                FormShadowHighlight.ApplyShadowHighlight cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetLong(3)
+                FormShadowHighlight.ApplyShadowHighlight cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetDouble(5), cParams.GetLong(6), cParams.GetDouble(7)
             End If
             
         Case "White balance"

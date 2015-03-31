@@ -358,6 +358,7 @@ Private Sub Form_Load()
     GenerateThankyou "Mohammad Reza Karimi"
     GenerateThankyou "Olaf Schmidt", "http://www.vbrichclient.com/#/en/About/", True
     GenerateThankyou "Paul Bourke", "http://paulbourke.net/miscellaneous/", True
+    GenerateThankyou "Peter Burn"
     GenerateThankyou "Phil Fresle", "http://www.frez.co.uk/vb6.aspx", True
     GenerateThankyou "Phil Harvey", "http://www.sno.phy.queensu.ca/~phil/exiftool/", True
     GenerateThankyou "PortableFreeware.com team", "http://www.portablefreeware.com/forums/viewtopic.php?t=21652", True

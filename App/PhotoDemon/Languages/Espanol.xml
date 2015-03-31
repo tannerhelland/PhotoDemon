@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.2</langversion>
+<langversion>6.7.4</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -3657,6 +3657,11 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 </phrase>
 
 <phrase>
+<original>Shadow and highlight</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>No metadata available.</original>
 <translation>No hay metadatos disponibles.</translation>
 </phrase>
@@ -3821,7 +3826,7 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 <translation>Retire canal alfa</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 538 phrases. 159 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 538 phrases. 158 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -8522,13 +8527,13 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 </phrase>
 
 <phrase>
-<original>use the median midtone for this image</original>
-<translation>utilizar el medio tono mediana para esta imagen</translation>
+<original>midtone contrast</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>midtone target color (right-click preview to change)</original>
-<translation>medios tonos de color blanco (botón derecho del ratón de vista previa para cambiar)</translation>
+<original>tonal width</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -8536,7 +8541,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>Sombras de ajuste, los medios tonos y luces</translation>
 </phrase>
 
-<!-- VBP_FormShadowHighlight.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- VBP_FormShadowHighlight.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for VBP_FormShadowHighlight.frm-->
 
@@ -13294,10 +13299,10 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2317</phrasecount>
+<phrasecount>2318</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3929 phrases. -->
-<!-- 1612 are duplicates, so only 2317 unique phrases have been written to file. -->
-<!-- These 2317 phrases contain approximately 13334 total words. -->
+<!-- As of this build, PhotoDemon contains 3937 phrases. -->
+<!-- 1619 are duplicates, so only 2318 unique phrases have been written to file. -->
+<!-- These 2318 phrases contain approximately 13327 total words. -->
 
 </pdData>
