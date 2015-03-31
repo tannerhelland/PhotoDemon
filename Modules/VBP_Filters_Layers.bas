@@ -991,389 +991,417 @@ End Function
 
 'Make shadows, midtone, and/or highlight adjustments to a given DIB.
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
-Public Function AdjustDIBShadowHighlight(ByVal shadowClipping As Double, ByVal highlightClipping As Double, ByVal targetMidtone As Long, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal midtoneAmount As Double, ByVal highlightAmount As Double, ByVal shadowWidth As Long, ByVal shadowRadius As Double, ByVal highlightWidth As Long, ByVal highlightRadius As Double, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
-    'As of March 2015, this function has been entirely rewritten against a new, curve-based adjustment system.
-    ' This makes it much more useful, with much more accurate results, and much faster, too!  Wins all around.
+    'As of March 2015, this function has been entirely rewritten, using a system similar to PhotoShop's (I think...
+    ' but it's impossible to know for sure, since I don't have a copy for testing!  Theoretically it should be very close.)
+    '
+    'This overhaul greatly improved the usefulness of this tool, but because it completed changed the input parameters, ranges, and UI
+    ' of the associated form, it is incompatible with past versions of the tool.  As such, the processor call that wraps this function
+    ' has been changed to prevent conflicts with old macros.
+        
+    'Start by converting input parameters to desired ranges.
+    shadowAmount = shadowAmount / 100
+    highlightAmount = -1 * (highlightAmount / 100)
+    midtoneAmount = -1 * (midtoneAmount / 100)
     
-    'A pdFilterLUT instance will be handling most the heavy lifting for this task.
-    Dim cLUT As pdFilterLUT
-    Set cLUT = New pdFilterLUT
+    'Also, make absolute-value copies of the amount input.  (This is faster than constantly re-calculating absolute values
+    ' inside the per-pixel adjustment loops.)
+    Dim absShadowAmount As Double, absHighlightAmount As Double, absMidtoneAmount As Double
+    absShadowAmount = Abs(shadowAmount)
+    absHighlightAmount = Abs(highlightAmount)
+    absMidtoneAmount = Abs(midtoneAmount)
     
-    'Shadow/highlight correction works by creating a smart, auto-generated S-curve, using the passed values to automatically shift
-    ' the various curve node positions.
-    Dim sLowR As POINTFLOAT, sMidR As POINTFLOAT, sHighR As POINTFLOAT
-    Dim sLowG As POINTFLOAT, sMidG As POINTFLOAT, sHighG As POINTFLOAT
-    Dim sLowB As POINTFLOAT, sMidB As POINTFLOAT, sHighB As POINTFLOAT
-    
-    'Start by validating the requested midtone values.  These nodes are only used to calculate the initial shadow and highlight
-    ' node positions, and they must lie within [2, 253] so that there's room for two nodes on either side (the shadow/highlight node,
-    ' and a final (0, 0) or (255, 255) node).
-    Dim midValues() As Long
-    ReDim midValues(0 To 2) As Long
-    
-    Dim midR As Long, midG As Long, midB As Long
-    midValues(0) = ExtractR(targetMidtone)
-    midValues(1) = ExtractG(targetMidtone)
-    midValues(2) = ExtractB(targetMidtone)
-    
-    Dim i As Long
-    For i = 0 To 2
-        If midValues(i) < 3 Then
-            midValues(i) = 3
-        ElseIf midValues(i) > 252 Then
-            midValues(i) = 252
+    'From here, processing becomes more intensive.  Prep the progress bar as necessary.
+    If Not suppressMessages Then
+        If modifyProgBarMax = -1 Then
+            SetProgBarMax 6
+        Else
+            SetProgBarMax modifyProgBarMax
         End If
-    Next i
+    End If
     
-    'Convert the calculated midtone values into curve positions.
-    Dim midNodes() As POINTFLOAT
-    ReDim midNodes(0 To 2) As POINTFLOAT
+    SetProgBarVal 0
     
-    For i = 0 To 2
-        With midNodes(i)
-            .x = midValues(i)
-            .y = .x
-        End With
-    Next i
+    'Next we will create shadow, midtone, and highlight lookup tables.  These will simplify the process of identifying luminance regions
+    ' in the base image.
     
-    'Next, we are going to calculate "safety nodes".  These nodes sit between the midpoint nodes and the shadow/highlight nodes,
-    ' and they exist solely to limit the curve's bending in the region around the midtone.
-    Dim midNodeLow() As POINTFLOAT, midNodeHigh() As POINTFLOAT
-    ReDim midNodeLow(0 To 2) As POINTFLOAT
-    ReDim midNodeHigh(0 To 2) As POINTFLOAT
+    'These lookup tables will be Single-type, and they will contain a value on the range [0, 1] for each 8-bit channel value [0, 255].
+    ' 0 signifies a lookup entry outside that range, while 1 indicates a value fully within the target range.  Some feathering is
+    ' used to make the transition between ranges appear more natural.  (The feathering used is a place where it would be really
+    ' nice to have PhotoShop for comparisons, as I'm curious how they blend between shadow/midtone/highlight ranges...)
+    Dim sLookup() As Single, mLookup() As Single, hLookup() As Single
+    ReDim sLookup(0 To 255) As Single
+    ReDim mLookup(0 To 255) As Single
+    ReDim hLookup(0 To 255) As Single
     
-    For i = 0 To 2
-        
-        With midNodeLow(i)
-            .x = midNodes(i).x - 1
-            .y = .x
-        End With
-        
-        With midNodeHigh(i)
-            .x = midNodes(i).x + 1
-            .y = .x
-        End With
-        
-    Next i
+    'Before generating the tables, generate shadow and highlight cut-offs, using the values supplied by the user.
+    Dim sCutoff As Long, hCutoff As Long
+    sCutoff = shadowWidth
+    If sCutoff = 0 Then sCutoff = 1
     
-    'Next, calculate default shadow node positions.  (The shadow nodes sit halfway between 0 and the midpoint nodes.)
-    Dim shadowNodes() As POINTFLOAT
-    ReDim shadowNodes(0 To 2) As POINTFLOAT
+    hCutoff = 255 - highlightWidth
+    If hCutoff = 255 Then hCutoff = 254
     
-    For i = 0 To 2
-        
-        With shadowNodes(i)
-            .x = midNodes(i).x * 0.5
-            .y = .x
-        End With
-        
-    Next i
-        
-    'Next, calculate default highlight node positions. (Highlight nodes sit halfway between the midpoint nodes and 255.)
-    Dim highlightNodes() As POINTFLOAT
-    ReDim highlightNodes(0 To 2) As POINTFLOAT
+    'Next, automatically determine midtone cut-offs, using the supplied shadow/highlight values as our guide
+    Dim mCutoffLow As Long, mCutoffHigh As Long, mRange As Long, mMidpoint As Long
+    mCutoffLow = sCutoff
+    mCutoffHigh = hCutoff
     
-    For i = 0 To 2
-        
-        With highlightNodes(i)
-            .x = midNodes(i).x + (255 - midNodes(i).x) * 0.5
-        End With
-        
-    Next i
+    'If artificially low shadow/highlight ranges are used, shrink midtones accordingly
+    If mCutoffLow < 64 Then mCutoffLow = 64
+    If mCutoffHigh > 192 Then mCutoffHigh = 192
+    mRange = mCutoffHigh - mCutoffLow
+    mMidpoint = (mRange \ 2)
     
-    'Next, we are going to "bend" the shadow node positions according to the shadow modification value.
-    ' (This effectively creates an S-curve, where the shadow node is "pulled" in the direction of the shadow modification.)
-    For i = 0 To 2
+    Dim tmpCalc As Double
     
-        With shadowNodes(i)
-            .x = .x - shadowClipping / 3
-            .y = .y + shadowClipping
-        
-            'Make sure the newly calculated points are within bounds.
-            ' (The shadow nodes must sit above (0, 0), and below the midpoint safety node.)
-            If .x < 1 Then .x = 1
-            If .y < 1 Then .y = 1
-            
-            If .x > midNodeLow(i).x - 1 Then .x = midNodeLow(i).x - 1
-            If .y > midNodeLow(i).y - 1 Then .y = midNodeLow(i).y - 1
-        
-        End With
-        
-    Next i
-    
-    'Next, repeat the "bend" process for the highlight values.
-    For i = 0 To 2
-    
-        With highlightNodes(i)
-            .x = .x - highlightClipping / 3
-            .y = .y + highlightClipping
-        
-            'And again, make sure the points are within bounds
-            If .x > 253 Then .x = 253
-            If .y > 253 Then .y = 253
-            
-            If .x < midNodeHigh(i).x + 1 Then .x = midNodeHigh(i).x + 1
-            If .y < midNodeHigh(i).y + 1 Then .y = midNodeHigh(i).y + 1
-        
-        End With
-        
-    Next i
-    
-    'We are now ready to calculate curves for each color channel.  Note that we only include the shadow and highlight nodes here;
-    ' the midtone nodes were used only for initial positioning of the shadow and highlight nodes.  They are not actually included
-    ' in the curve.  (Including them makes the curve more prone to unwanted solarization; to see this, use PD's Curve tool and
-    ' create a 5-node curve, then pull the 2nd and 4th nodes in opposite directions to see the ugly result.)
-    'Dim curvePointsR() As POINTFLOAT, curvePointsG() As POINTFLOAT, curvePointsB() As POINTFLOAT
-    'cLUT.helper_QuickCreateCurveArray curvePointsR, 0, 0, sLowR.x, sLowR.y, sHighR.x, sHighR.y, 255, 255
-    'cLUT.helper_QuickCreateCurveArray curvePointsG, 0, 0, sLowG.x, sLowG.y, sHighG.x, sHighG.y, 255, 255
-    'cLUT.helper_QuickCreateCurveArray curvePointsB, 0, 0, sLowB.x, sLowB.y, sHighB.x, sHighB.y, 255, 255
-    
-    Dim curvePointsR() As POINTFLOAT, curvePointsG() As POINTFLOAT, curvePointsB() As POINTFLOAT
-    
-    For i = 0 To 2
-    
-        Select Case i
-        
-            Case 0
-                cLUT.helper_QuickCreateCurveArray curvePointsR, 0, 0, shadowNodes(i).x, shadowNodes(i).y, midNodeLow(i).x, midNodeLow(i).y, midNodes(i).x, midNodes(i).y, midNodeHigh(i).x, midNodeHigh(i).y, highlightNodes(i).x, highlightNodes(i).y, 255, 255
-                
-            Case 1
-                cLUT.helper_QuickCreateCurveArray curvePointsG, 0, 0, shadowNodes(i).x, shadowNodes(i).y, midNodeLow(i).x, midNodeLow(i).y, midNodes(i).x, midNodes(i).y, midNodeHigh(i).x, midNodeHigh(i).y, highlightNodes(i).x, highlightNodes(i).y, 255, 255
-            
-            Case 2
-                cLUT.helper_QuickCreateCurveArray curvePointsB, 0, 0, shadowNodes(i).x, shadowNodes(i).y, midNodeLow(i).x, midNodeLow(i).y, midNodes(i).x, midNodes(i).y, midNodeHigh(i).x, midNodeHigh(i).y, highlightNodes(i).x, highlightNodes(i).y, 255, 255
-        
-        End Select
-    
-    Next i
-    
-    'Next, we convert the curve positions to RGB lookup tables
-    Dim lookupR() As Byte, lookupG() As Byte, lookupB() As Byte
-    cLUT.fillLUT_Curve lookupR, curvePointsR
-    cLUT.fillLUT_Curve lookupG, curvePointsG
-    cLUT.fillLUT_Curve lookupB, curvePointsB
-        
-    'And finally, we apply the lookup tables to the DIB.  This allows the function to run in constant-time, regardless of the source
-    ' image or modification values.
-    AdjustDIBShadowHighlight = cLUT.applyLUTsToDIB_Color(srcDIB, lookupR, lookupG, lookupB, suppressMessages, modifyProgBarMax, modifyProgBarOffset)
-    
-End Function
-
-'Make shadows, midtone, and/or highlight adjustments to a given DIB.
-' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
-Public Function AdjustDIBShadowHighlight2(ByVal shadowClipping As Double, ByVal highlightClipping As Double, ByVal targetMidtone As Long, ByRef srcDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
-    
-    'As of March 2015, this function has been entirely rewritten against a new, curve-based adjustment system.
-    ' This makes it much more useful, with much more accurate results, and much faster, too!  Wins all around.
-    
-    'A pdFilterLUT instance will be handling most the heavy lifting for this task.
-    Dim cLUT As pdFilterLUT
-    Set cLUT = New pdFilterLUT
-    
-    'Shadow/highlight correction works by creating a smart, auto-generated S-curve, using the passed values to automatically shift
-    ' the various curve node positions.
-    Dim sLowR As POINTFLOAT, sMidR As POINTFLOAT, sHighR As POINTFLOAT
-    Dim sLowG As POINTFLOAT, sMidG As POINTFLOAT, sHighG As POINTFLOAT
-    Dim sLowB As POINTFLOAT, sMidB As POINTFLOAT, sHighB As POINTFLOAT
-    
-    'Start by validating the requested midtone values.  These nodes are only used to calculate the initial shadow and highlight
-    ' node positions, and they must lie within [2, 253] so that there's room for two nodes on either side (the shadow/highlight node,
-    ' and a final (0, 0) or (255, 255) node).
-    Dim midR As Long, midG As Long, midB As Long
-    midR = ExtractR(targetMidtone)
-    midG = ExtractG(targetMidtone)
-    midB = ExtractB(targetMidtone)
-    
-    If midR < 2 Then midR = 2
-    If midR > 253 Then midR = 253
-    
-    If midG < 2 Then midG = 2
-    If midG > 253 Then midG = 253
-    
-    If midB < 2 Then midB = 2
-    If midB > 253 Then midB = 253
-    
-    'Convert the calculated midtone values into curve positions.
-    sMidR.x = midR
-    sMidR.y = sMidR.x
-    
-    sMidG.x = midG
-    sMidG.y = sMidG.x
-    
-    sMidB.x = midB
-    sMidB.y = sMidB.x
-    
-    'Next, calculate default shadow node positions.  (The shadow nodes sit halfway between 0 and the midpoint nodes.)
-    sLowR.x = sMidR.x / 2
-    sLowR.y = sLowR.x
-    
-    sLowG.x = sMidG.x / 2
-    sLowG.y = sLowG.x
-    
-    sLowB.x = sMidB.x / 2
-    sLowB.y = sLowB.x
-    
-    'Next, calculate default highlight node positions. (Highlight nodes sit halfway between the midpoint nodes and 255.)
-    sHighR.x = sMidR.x + (255 - sMidR.x) / 2
-    sHighR.y = sHighR.x
-    
-    sHighG.x = sMidG.x + (255 - sMidG.x) / 2
-    sHighG.y = sHighG.x
-    
-    sHighB.x = sMidB.x + (255 - sMidB.x) / 2
-    sHighB.y = sHighB.x
-    
-    'We are now going to create two look-up tables per channel: one for shadows, and one for highlights.
-    Dim rShadow() As Single, gShadow() As Single, bShadow() As Single
-    Dim rHighlight() As Single, gHighlight() As Single, bHighlight() As Single
-    
-    ReDim rShadow(0 To 255) As Single
-    ReDim gShadow(0 To 255) As Single
-    ReDim bShadow(0 To 255) As Single
-    
-    ReDim rHighlight(0 To 255) As Single
-    ReDim gHighlight(0 To 255) As Single
-    ReDim bHighlight(0 To 255) As Single
-    
-    'Fill the lookup tables with a basic gradient that extends from 0 (shadows) or 255 (highlights) to the calculated node position.
-    ' This table will be used to identify pixels as "shadow pixels" or "highlight pixels", and the strength of their correction will
-    ' vary according to the [0, 1] correction strength in this table.
+    'Now we can generate lookup tables
     Dim i As Long
     For i = 0 To 255
     
-        'Map shadow gradients
-        If i < sLowR.x Then rShadow(i) = (sLowR.x - i) / (sLowR.x)
-        If i < sLowG.x Then gShadow(i) = (sLowG.x - i) / (sLowG.x)
-        If i < sLowB.x Then bShadow(i) = (sLowB.x - i) / (sLowB.x)
+        'Shadows use a power curve maximized at 0, and descending toward the cutoff point
+        If i < sCutoff Then
+            tmpCalc = i / sCutoff
+            tmpCalc = tmpCalc * tmpCalc
+            sLookup(i) = 1 - tmpCalc
+        End If
         
-        'Map highlight gradients
-        If i > sHighR.x Then rHighlight(i) = (i - sHighR.x) / (255 - sHighR.x)
-        If i > sHighG.x Then gHighlight(i) = (i - sHighG.x) / (255 - sHighG.x)
-        If i > sHighB.x Then bHighlight(i) = (i - sHighB.x) / (255 - sHighB.x)
+        'Highlights use a power curve maximized at 255, and descending toward the cutoff point
+        If i > hCutoff Then
+            tmpCalc = (255 - i) / (255 - hCutoff)
+            tmpCalc = tmpCalc * tmpCalc
+            hLookup(i) = 1 - tmpCalc
+        End If
+        
+        'Midtones use a bell curve stretching between mCutoffLow and mCutoffHigh
+        If (i > mCutoffLow) And (i < mCutoffHigh) Then
+            tmpCalc = (i - mCutoffLow)
+            tmpCalc = 1 - (tmpCalc / mMidpoint)
+            tmpCalc = tmpCalc * tmpCalc
+            mLookup(i) = 1 - tmpCalc
+        End If
     
     Next i
     
-    'We now have handy tables for determining whether a pixel is a shadow or a highlight pixel.
+    'With shadow, midtone, and highlight ranges now established, we can start applying the user's changes.
     
-    'Next, we need a blurred copy of the image.  This blurred copy is helpful for identifying shadow and highlight regions in the image.
-    Dim blurRadius As Long
-    If srcDIB.getDIBWidth < srcDIB.getDIBHeight Then
-        blurRadius = srcDIB.getDIBWidth / 4
-    Else
-        blurRadius = srcDIB.getDIBHeight / 4
+    SetProgBarVal 1
+    
+    'First, if the shadow and highlight regions have different radius values, we need to make a backup copy of the current DIB.
+    Dim backupDIB As pdDIB
+    
+    If shadowRadius <> highlightRadius Then
+        Set backupDIB = New pdDIB
+        backupDIB.createFromExistingDIB srcDIB
     End If
     
-    Dim blurCopy As pdDIB
-    Set blurCopy = New pdDIB
-    blurCopy.createFromExistingDIB srcDIB
-    quickBlurDIB blurCopy, blurRadius
+    'Next, we need to make a duplicate copy of the source image.  To improve output, this copy will be blurred, and we will use it to
+    ' identify shadow/highlight regions.  (The blur naturally creates smoother transitions between light and dark parts of the image.)
+    Dim blurDIB As pdDIB
+    Set blurDIB = New pdDIB
+    blurDIB.createFromExistingDIB srcDIB
     
-    'Create a local array and point it at the pixel data of the current image
-    Dim dstImageData() As Byte
-    Dim dstSA As SAFEARRAY2D
-    prepSafeArray dstSA, srcDIB
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    'Shadows are handled first.  If the user requested a radius > 0, blur the reference image now.
+    If (shadowAmount <> 0) And (shadowRadius > 0) Then quickBlurDIB blurDIB, shadowRadius, False
+        
+    'Unfortunately, the next step of the operation requires manual pixel-by-pixel blending.  Prep all required loop objects now.
     
-    'Create a second local array and point it at the blurred copy of the image.
-    Dim blurImageData() As Byte
-    Dim blurSA As SAFEARRAY2D
-    prepSafeArray blurSA, blurCopy
+    SetProgBarVal 2
+    
+    'Create local arrays and point them at the source DIB and blurred DIB
+    Dim srcImageData() As Byte, blurImageData() As Byte
+    Dim srcSA As SAFEARRAY2D, blurSA As SAFEARRAY2D
+    
+    prepSafeArray srcSA, srcDIB
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+    prepSafeArray blurSA, blurDIB
     CopyMemory ByVal VarPtrArray(blurImageData()), VarPtr(blurSA), 4
         
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    'Prep local loop variables
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
     initY = 0
     finalX = srcDIB.getDIBWidth - 1
     finalY = srcDIB.getDIBHeight - 1
-        
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+            
+    'Prep stride ofsets.  (This is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickX As Long, qvDepth As Long
     qvDepth = srcDIB.getDIBColorDepth \ 8
     
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    If Not suppressMessages Then
-        If modifyProgBarMax = -1 Then
-            SetProgBarMax finalX
-        Else
-            SetProgBarMax modifyProgBarMax
-        End If
-        progBarCheck = findBestProgBarValue()
+    'Prep color retrieval variables (Long-type, because intermediate calculates may exceed byte range)
+    Dim rSrc As Double, gSrc As Double, bSrc As Double
+    Dim rDst As Long, gDst As Long, bDst As Long
+    Dim rBlur As Double, gBlur As Double, bBlur As Double
+    Dim srcBlur As Long, grayBlur As Long
+    Dim pxShadowCorrection As Double, pxHighlightCorrection As Double, pxMidtoneCorrection As Double
+        
+    'Start processing shadow pixels
+    If shadowAmount <> 0 Then
+    
+        For x = initX To finalX
+            QuickX = x * qvDepth
+        For y = initY To finalY
+            
+            'Calculate luminance for this pixel in the *blurred* image.  (We use the blurred copy for luminance detection, to improve
+            ' transitions between light and dark regions in the image.)
+            bBlur = blurImageData(QuickX, y)
+            gBlur = blurImageData(QuickX + 1, y)
+            rBlur = blurImageData(QuickX + 2, y)
+            
+            grayBlur = (213 * rBlur + 715 * gBlur + 72 * bBlur) \ 1000
+            If grayBlur > 255 Then grayBlur = 255
+            
+            'If the luminance of this pixel falls within the shadow range, continue processing; otherwise, ignore it and
+            ' move on to the next pixel.
+            If sLookup(grayBlur) > 0 Then
+                
+                'Invert the blur pixel values, and convert to the range [0, 1]
+                If shadowAmount > 0 Then
+                    rBlur = 1 - (rBlur / 255)
+                    gBlur = 1 - (gBlur / 255)
+                    bBlur = 1 - (bBlur / 255)
+                Else
+                    rBlur = (rBlur / 255)
+                    gBlur = (gBlur / 255)
+                    bBlur = (bBlur / 255)
+                End If
+                
+                'Retrieve source pixel values and convert to the range [0, 1]
+                bSrc = srcImageData(QuickX, y)
+                gSrc = srcImageData(QuickX + 1, y)
+                rSrc = srcImageData(QuickX + 2, y)
+                
+                rSrc = rSrc / 255
+                gSrc = gSrc / 255
+                bSrc = bSrc / 255
+                
+                'Calculate a maximum strength adjustment value.
+                ' (This code is actually just the Overlay compositor formula.)
+                If rSrc < 0.5 Then rBlur = 2 * rSrc * rBlur Else rBlur = 1 - 2 * (1 - rSrc) * (1 - rBlur)
+                If gSrc < 0.5 Then gBlur = 2 * gSrc * gBlur Else gBlur = 1 - 2 * (1 - gSrc) * (1 - gBlur)
+                If bSrc < 0.5 Then bBlur = 2 * bSrc * bBlur Else bBlur = 1 - 2 * (1 - bSrc) * (1 - bBlur)
+                
+                'Calculate a final shadow correction amount, which is a combination of...
+                ' 1) The user-supplied shadow correction amount
+                ' 2) The shadow lookup table for this value
+                pxShadowCorrection = absShadowAmount * sLookup(grayBlur)
+                
+                'Modify the maximum strength adjustment value by the user-supplied shadow correction amount
+                bDst = 255 * ((pxShadowCorrection * bBlur) + ((1 - pxShadowCorrection) * bSrc))
+                gDst = 255 * ((pxShadowCorrection * gBlur) + ((1 - pxShadowCorrection) * gSrc))
+                rDst = 255 * ((pxShadowCorrection * rBlur) + ((1 - pxShadowCorrection) * rSrc))
+                
+                'Save the modified values into the source image
+                srcImageData(QuickX, y) = bDst
+                srcImageData(QuickX + 1, y) = gDst
+                srcImageData(QuickX + 2, y) = rDst
+                
+            End If
+            
+        Next y
+            If Not suppressMessages Then
+                If (x And 63) = 0 Then
+                    If userPressedESC() Then Exit For
+                End If
+            End If
+        Next x
+        
     End If
     
-    Dim srcR As Long, srcG As Long, srcB As Long
-    Dim dstR As Long, dstG As Long, dstB As Long
-    
-    'Loop through each pixel in the image, converting values as we go
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
-        
-        'For each channel, determine if the channel is in a shadow or highlight region
-        srcR = blurImageData(QuickVal + 2, y)
-        If rShadow(srcR) > 0 Then
-        
-            'Merge the pixel with black, for testing only
-            dstR = dstImageData(QuickVal + 2, y) * (1 - rShadow(srcR))
-            dstImageData(QuickVal + 2, y) = dstR
-        
-        ElseIf rHighlight(srcR) > 0 Then
-        
-            'Merge the pixel with black, for testing only
-            dstR = dstImageData(QuickVal + 2, y) * (1 + (1 - rHighlight(srcR)))
-            dstImageData(QuickVal + 2, y) = dstR
-        
-        End If
-        
-        srcG = blurImageData(QuickVal + 1, y)
-        If gShadow(srcG) > 0 Then
-        
-            'Merge the pixel with black, for testing only
-            dstG = dstImageData(QuickVal + 1, y) * (1 - gShadow(srcG))
-            dstImageData(QuickVal + 1, y) = dstG
-        
-        ElseIf gHighlight(srcG) > 0 Then
-        
-            'Merge the pixel with black, for testing only
-            dstG = dstImageData(QuickVal + 1, y) * (1 + (1 - gHighlight(srcG)))
-            dstImageData(QuickVal + 1, y) = dstG
-        
-        End If
-        
-        srcB = blurImageData(QuickVal, y)
-        If bShadow(srcB) > 0 Then
-        
-            'Merge the pixel with black, for testing only
-            dstB = dstImageData(QuickVal, y) * (1 - bShadow(srcB))
-            dstImageData(QuickVal, y) = dstB
-        
-        ElseIf bHighlight(srcB) > 0 Then
-        
-            'Merge the pixel with black, for testing only
-            dstB = dstImageData(QuickVal, y) * (1 + (1 - bHighlight(srcB)))
-            dstImageData(QuickVal, y) = dstB
-        
-        End If
-        
-    Next y
-        If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
-                SetProgBarVal x + modifyProgBarOffset
-            End If
-        End If
-    Next x
-    
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
+    'With our shadow work complete, point all local arrays away from their respective DIBs
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
     CopyMemory ByVal VarPtrArray(blurImageData), 0&, 4
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     
-    If cancelCurrentAction Then AdjustDIBShadowHighlight2 = 0 Else AdjustDIBShadowHighlight2 = 1
+    SetProgBarVal 3
+    
+    'Next, it's time to operate on highlights.  The steps involved are pretty much identical to shadows, but we obviously
+    ' use the highlight lookup table to determine valid correction candidates.
+    If (highlightAmount <> 0) And (Not cancelCurrentAction) Then
+    
+        'Before starting per-pixel processing, see if a highlight radius was specified.  If it was, and the radius differs
+        ' from the shadow radius, calculate a new blur DIB now.
+        If (highlightRadius <> shadowRadius) Then
+            
+            blurDIB.createFromExistingDIB backupDIB
+            If (highlightRadius <> 0) Then quickBlurDIB blurDIB, highlightRadius, False
+            
+            'Note that we can now free our backup DIB, as it's no longer needed
+            Set backupDIB = Nothing
+            
+        End If
         
+        SetProgBarVal 4
+        
+        'Once again, point arrays at both the source and blur DIBs
+        prepSafeArray srcSA, srcDIB
+        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+            
+        prepSafeArray blurSA, blurDIB
+        CopyMemory ByVal VarPtrArray(blurImageData()), VarPtr(blurSA), 4
+        
+        'Start per-pixel highlight processing!
+        For x = initX To finalX
+            QuickX = x * qvDepth
+        For y = initY To finalY
+            
+            'Calculate luminance for this pixel in the *blurred* image.  (We use the blurred copy for luminance detection, to improve
+            ' transitions between light and dark regions in the image.)
+            bBlur = blurImageData(QuickX, y)
+            gBlur = blurImageData(QuickX + 1, y)
+            rBlur = blurImageData(QuickX + 2, y)
+            
+            grayBlur = (213 * rBlur + 715 * gBlur + 72 * bBlur) \ 1000
+            If grayBlur > 255 Then grayBlur = 255
+            
+            'If the luminance of this pixel falls within the highlight range, continue processing; otherwise, ignore it and
+            ' move on to the next pixel.
+            If hLookup(grayBlur) > 0 Then
+                
+                'Invert the blur pixel values, and convert to the range [0, 1]
+                If highlightAmount > 0 Then
+                    rBlur = 1 - (rBlur / 255)
+                    gBlur = 1 - (gBlur / 255)
+                    bBlur = 1 - (bBlur / 255)
+                Else
+                    rBlur = (rBlur / 255)
+                    gBlur = (gBlur / 255)
+                    bBlur = (bBlur / 255)
+                End If
+                
+                'Retrieve source pixel values and convert to the range [0, 1]
+                bSrc = srcImageData(QuickX, y)
+                gSrc = srcImageData(QuickX + 1, y)
+                rSrc = srcImageData(QuickX + 2, y)
+                
+                rSrc = rSrc / 255
+                gSrc = gSrc / 255
+                bSrc = bSrc / 255
+                
+                'Calculate a maximum strength adjustment value.
+                ' (This code is actually just the Overlay compositor formula.)
+                If rSrc < 0.5 Then rBlur = 2 * rSrc * rBlur Else rBlur = 1 - 2 * (1 - rSrc) * (1 - rBlur)
+                If gSrc < 0.5 Then gBlur = 2 * gSrc * gBlur Else gBlur = 1 - 2 * (1 - gSrc) * (1 - gBlur)
+                If bSrc < 0.5 Then bBlur = 2 * bSrc * bBlur Else bBlur = 1 - 2 * (1 - bSrc) * (1 - bBlur)
+                
+                'Calculate a final highlight correction amount, which is a combination of...
+                ' 1) The user-supplied highlight correction amount
+                ' 2) The highlight lookup table for this value
+                pxHighlightCorrection = absHighlightAmount * hLookup(grayBlur)
+                
+                'Modify the maximum strength adjustment value by the user-supplied highlight correction amount
+                bDst = 255 * ((pxHighlightCorrection * bBlur) + ((1 - pxHighlightCorrection) * bSrc))
+                gDst = 255 * ((pxHighlightCorrection * gBlur) + ((1 - pxHighlightCorrection) * gSrc))
+                rDst = 255 * ((pxHighlightCorrection * rBlur) + ((1 - pxHighlightCorrection) * rSrc))
+                
+                'Save the modified values into the source image
+                srcImageData(QuickX, y) = bDst
+                srcImageData(QuickX + 1, y) = gDst
+                srcImageData(QuickX + 2, y) = rDst
+                
+            End If
+            
+        Next y
+            If Not suppressMessages Then
+                If (x And 63) = 0 Then
+                    If userPressedESC() Then Exit For
+                End If
+            End If
+        Next x
+        
+        'With our highlight work complete, point all local arrays away from their respective DIBs
+        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        CopyMemory ByVal VarPtrArray(blurImageData), 0&, 4
+    
+    End If
+    
+    SetProgBarVal 5
+    
+    'We are now done with the blur DIB, so let's free it regardless of what comes next
+    Set blurDIB = Nothing
+    
+    'Last up is midtone correction.  The steps involved are pretty much identical to shadow and highlight correction, but we obviously
+    ' use the midtone lookup table to determine valid correction candidates.  (Also, we do not use a blurred copy of the DIB.)
+    If (midtoneAmount <> 0) And (Not cancelCurrentAction) Then
+        
+        'Once again, point an array at the source DIB
+        prepSafeArray srcSA, srcDIB
+        CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+        
+        'Start per-pixel midtone processing!
+        For x = initX To finalX
+            QuickX = x * qvDepth
+        For y = initY To finalY
+            
+            'Calculate luminance for this pixel in the *source* image.
+            bSrc = srcImageData(QuickX, y)
+            gSrc = srcImageData(QuickX + 1, y)
+            rSrc = srcImageData(QuickX + 2, y)
+            
+            srcBlur = (213 * rSrc + 715 * gSrc + 72 * bSrc) \ 1000
+            If srcBlur > 255 Then srcBlur = 255
+            
+            'If the luminance of this pixel falls within the highlight range, continue processing; otherwise, ignore it and
+            ' move on to the next pixel.
+            If mLookup(srcBlur) > 0 Then
+                
+                'Convert the source pixel values to the range [0, 1]
+                bSrc = bSrc / 255
+                gSrc = gSrc / 255
+                rSrc = rSrc / 255
+                
+                'To cut down on the need for additional local variables, we're going to simply re-use the blur variable names here.
+                If midtoneAmount > 0 Then
+                    rBlur = 1 - rSrc
+                    gBlur = 1 - gSrc
+                    bBlur = 1 - bSrc
+                Else
+                    rBlur = rSrc
+                    gBlur = gSrc
+                    bBlur = bSrc
+                End If
+                
+                'Calculate a maximum strength adjustment value.
+                ' (This code is actually just the Overlay compositor formula.)
+                If rSrc < 0.5 Then rBlur = 2 * rSrc * rBlur Else rBlur = 1 - 2 * (1 - rSrc) * (1 - rBlur)
+                If gSrc < 0.5 Then gBlur = 2 * gSrc * gBlur Else gBlur = 1 - 2 * (1 - gSrc) * (1 - gBlur)
+                If bSrc < 0.5 Then bBlur = 2 * bSrc * bBlur Else bBlur = 1 - 2 * (1 - bSrc) * (1 - bBlur)
+                
+                'Calculate a final midtone correction amount, which is a combination of...
+                ' 1) The user-supplied midtone correction amount
+                ' 2) The midtone lookup table for this value
+                pxMidtoneCorrection = absMidtoneAmount * mLookup(srcBlur)
+                
+                'Modify the maximum strength adjustment value by the user-supplied midtone correction amount
+                bDst = 255 * ((pxMidtoneCorrection * bBlur) + ((1 - pxMidtoneCorrection) * bSrc))
+                gDst = 255 * ((pxMidtoneCorrection * gBlur) + ((1 - pxMidtoneCorrection) * gSrc))
+                rDst = 255 * ((pxMidtoneCorrection * rBlur) + ((1 - pxMidtoneCorrection) * rSrc))
+                
+                'Save the modified values into the source image
+                srcImageData(QuickX, y) = bDst
+                srcImageData(QuickX + 1, y) = gDst
+                srcImageData(QuickX + 2, y) = rDst
+                
+            End If
+            
+        Next y
+            If Not suppressMessages Then
+                If (x And 63) = 0 Then
+                    If userPressedESC() Then Exit For
+                End If
+            End If
+        Next x
+        
+        'With our highlight work complete, point all local arrays away from their respective DIBs
+        CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+        
+    End If
+    
+    SetProgBarVal 6
+    
+    If cancelCurrentAction Then AdjustDIBShadowHighlight = 0 Else AdjustDIBShadowHighlight = 1
+    
 End Function
 
 'Given two DIBs, fill one with an approximated gaussian-blur version of the other.

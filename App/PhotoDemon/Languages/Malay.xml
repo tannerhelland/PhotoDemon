@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.2</langversion>
+<langversion>6.7.4</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -3657,6 +3657,11 @@ Note: beberapa teks program minor tidak boleh hidup dikemaskini. Teks tersebut a
 </phrase>
 
 <phrase>
+<original>Shadow and highlight</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>No metadata available.</original>
 <translation>Tiada metadata yang ada.</translation>
 </phrase>
@@ -3821,7 +3826,7 @@ Note: beberapa teks program minor tidak boleh hidup dikemaskini. Teks tersebut a
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 538 phrases. 159 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 538 phrases. 158 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -8522,13 +8527,13 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
-<original>use the median midtone for this image</original>
-<translation>menggunakan midtone median bagi imej ini</translation>
+<original>midtone contrast</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>midtone target color (right-click preview to change)</original>
-<translation>warna sasaran midtone (klik kanan pratonton kepada perubahan)</translation>
+<original>tonal width</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -8536,7 +8541,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Melaraskan bayang-bayang, midtones, dan sorotan</translation>
 </phrase>
 
-<!-- VBP_FormShadowHighlight.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- VBP_FormShadowHighlight.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for VBP_FormShadowHighlight.frm-->
 
@@ -13294,10 +13299,10 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2317</phrasecount>
+<phrasecount>2318</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3929 phrases. -->
-<!-- 1612 are duplicates, so only 2317 unique phrases have been written to file. -->
-<!-- These 2317 phrases contain approximately 13334 total words. -->
+<!-- As of this build, PhotoDemon contains 3937 phrases. -->
+<!-- 1619 are duplicates, so only 2318 unique phrases have been written to file. -->
+<!-- These 2318 phrases contain approximately 13327 total words. -->
 
 </pdData>

@@ -3831,7 +3831,7 @@ Private Sub MnuLighting_Click(Index As Integer)
 
         'Shadows/Midtones/Highlights
         Case 4
-            Process "Shadows and highlights", True
+            Process "Shadow and highlight", True
             
     End Select
 
