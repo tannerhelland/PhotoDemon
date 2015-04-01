@@ -1480,6 +1480,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Antique"
             MenuAntique
         
+        Case "Color halftone"
+            If showDialog Then
+                showPDDialog vbModal, FormColorHalftone
+            Else
+                FormColorHalftone.ColorHalftoneFilter cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetDouble(5)
+            End If
+            
         Case "Diffuse"
             If showDialog Then
                 showPDDialog vbModal, FormDiffuse

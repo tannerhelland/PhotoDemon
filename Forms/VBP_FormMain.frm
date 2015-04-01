@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _extentx        =   873
-      _extenty        =   873
+      _ExtentX        =   873
+      _ExtentY        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
@@ -1209,20 +1209,24 @@ Begin VB.Form FormMain
             Index           =   0
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Diffuse..."
+            Caption         =   "Color halftone..."
             Index           =   1
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Solarize..."
+            Caption         =   "Diffuse..."
             Index           =   2
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Twins..."
+            Caption         =   "Solarize..."
             Index           =   3
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Vignetting..."
+            Caption         =   "Twins..."
             Index           =   4
+         End
+         Begin VB.Menu MnuStylize 
+            Caption         =   "Vignetting..."
+            Index           =   5
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -4258,20 +4262,24 @@ Private Sub MnuStylize_Click(Index As Integer)
         Case 0
             Process "Antique", , , UNDO_LAYER
     
-        'Diffuse
+        'Color halftone
         Case 1
+            Process "Color halftone", True
+        
+        'Diffuse
+        Case 2
             Process "Diffuse", True
         
         'Solarize
-        Case 2
+        Case 3
             Process "Solarize", True
 
         'Twins
-        Case 3
+        Case 4
             Process "Twins", True
             
         'Vignetting
-        Case 4
+        Case 5
             Process "Vignetting", True
     
     End Select
