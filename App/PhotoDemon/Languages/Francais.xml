@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.4</langversion>
+<langversion>6.7.5</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -2460,6 +2460,11 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 </phrase>
 
 <phrase>
+<original>Shadows and highlights</original>
+<translation>Ombres et des saillants</translation>
+</phrase>
+
+<phrase>
 <original>Auto enhance</original>
 <translation>Améliorer automatique</translation>
 </phrase>
@@ -2592,11 +2597,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <phrase>
 <original>Compound invert</original>
 <translation>Composé Inverser</translation>
-</phrase>
-
-<phrase>
-<original>Shadows and highlights</original>
-<translation>Ombres et des saillants</translation>
 </phrase>
 
 <phrase>
@@ -3288,6 +3288,11 @@ The mise à jour est traitement automatiquement en arrière-plan. Vous recevrez 
 </phrase>
 
 <phrase>
+<original>Auto correct shadows and highlights</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Auto enhance color</original>
 <translation>Améliorer couleur automatique</translation>
 </phrase>
@@ -3300,6 +3305,11 @@ The mise à jour est traitement automatiquement en arrière-plan. Vous recevrez 
 <phrase>
 <original>Auto enhance lighting</original>
 <translation>Améliorer éclairage automatique</translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance shadows and highlights</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3825,7 +3835,7 @@ Note: mineur texte de programme ne peut pas être mise à jour en direct. Ce tex
 <translation>Retirer canal alpha</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 538 phrases. 158 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 542 phrases. 160 were duplicates of existing phrases, so only 382 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -13299,10 +13309,10 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2318</phrasecount>
+<phrasecount>2320</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3937 phrases. -->
-<!-- 1619 are duplicates, so only 2318 unique phrases have been written to file. -->
-<!-- These 2318 phrases contain approximately 13327 total words. -->
+<!-- As of this build, PhotoDemon contains 3941 phrases. -->
+<!-- 1621 are duplicates, so only 2320 unique phrases have been written to file. -->
+<!-- These 2320 phrases contain approximately 13337 total words. -->
 
 </pdData>

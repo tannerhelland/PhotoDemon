@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.4</langversion>
+<langversion>6.7.5</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -2461,6 +2461,11 @@ You puede utilizar el MenuTest () sub en el módulo Filters_Miscellaneous para p
 </phrase>
 
 <phrase>
+<original>Shadows and highlights</original>
+<translation>Sombras y luces</translation>
+</phrase>
+
+<phrase>
 <original>Auto enhance</original>
 <translation>mejorar Auto</translation>
 </phrase>
@@ -2593,11 +2598,6 @@ You puede utilizar el MenuTest () sub en el módulo Filters_Miscellaneous para p
 <phrase>
 <original>Compound invert</original>
 <translation>invertido Compuesto</translation>
-</phrase>
-
-<phrase>
-<original>Shadows and highlights</original>
-<translation>Sombras y luces</translation>
 </phrase>
 
 <phrase>
@@ -3289,6 +3289,11 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 </phrase>
 
 <phrase>
+<original>Auto correct shadows and highlights</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Auto enhance color</original>
 <translation>Auto mejorar el color</translation>
 </phrase>
@@ -3301,6 +3306,11 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 <phrase>
 <original>Auto enhance lighting</original>
 <translation>Auto mejorar la iluminación</translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance shadows and highlights</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3826,7 +3836,7 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 <translation>Retire canal alfa</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 538 phrases. 158 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 542 phrases. 160 were duplicates of existing phrases, so only 382 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -13299,10 +13309,10 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2318</phrasecount>
+<phrasecount>2320</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3937 phrases. -->
-<!-- 1619 are duplicates, so only 2318 unique phrases have been written to file. -->
-<!-- These 2318 phrases contain approximately 13327 total words. -->
+<!-- As of this build, PhotoDemon contains 3941 phrases. -->
+<!-- 1621 are duplicates, so only 2320 unique phrases have been written to file. -->
+<!-- These 2320 phrases contain approximately 13337 total words. -->
 
 </pdData>

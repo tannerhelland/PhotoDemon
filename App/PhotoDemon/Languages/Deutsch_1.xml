@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.4</langversion>
+<langversion>6.7.5</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -2459,6 +2459,11 @@ Sie können das Unterprogramm MenuTest () im Modul Filters_Miscellaneous verwend
 </phrase>
 
 <phrase>
+<original>Shadows and highlights</original>
+<translation>Schatten und Glanzlichter</translation>
+</phrase>
+
+<phrase>
 <original>Auto enhance</original>
 <translation>automatische Verbesserung</translation>
 </phrase>
@@ -2591,11 +2596,6 @@ Sie können das Unterprogramm MenuTest () im Modul Filters_Miscellaneous verwend
 <phrase>
 <original>Compound invert</original>
 <translation>Compound invertieren</translation>
-</phrase>
-
-<phrase>
-<original>Shadows and highlights</original>
-<translation>Schatten und Glanzlichter</translation>
 </phrase>
 
 <phrase>
@@ -3287,6 +3287,11 @@ Das Update wird automatisch im Hintergrund durchgeführt. Sie werden benachricht
 </phrase>
 
 <phrase>
+<original>Auto correct shadows and highlights</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Auto enhance color</original>
 <translation>Automatische Farbverbesserung</translation>
 </phrase>
@@ -3299,6 +3304,11 @@ Das Update wird automatisch im Hintergrund durchgeführt. Sie werden benachricht
 <phrase>
 <original>Auto enhance lighting</original>
 <translation>Automatische Helligkeitsverbesserung</translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance shadows and highlights</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3824,7 +3834,7 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 538 phrases. 158 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 542 phrases. 160 were duplicates of existing phrases, so only 382 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -13297,10 +13307,10 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2318</phrasecount>
+<phrasecount>2320</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3937 phrases. -->
-<!-- 1619 are duplicates, so only 2318 unique phrases have been written to file. -->
-<!-- These 2318 phrases contain approximately 13327 total words. -->
+<!-- As of this build, PhotoDemon contains 3941 phrases. -->
+<!-- 1621 are duplicates, so only 2320 unique phrases have been written to file. -->
+<!-- These 2320 phrases contain approximately 13337 total words. -->
 
 </pdData>

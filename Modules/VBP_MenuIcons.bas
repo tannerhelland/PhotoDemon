@@ -309,12 +309,14 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "HSL", 6, 0, 0          'Color
         addMenuIcon "BRIGHT", 6, 0, 1       'Contrast
         addMenuIcon "LIGHTING", 6, 0, 2     'Lighting
+        addMenuIcon "SHDWHGHLGHT", 6, 0, 3  'Shadow/Highlight
         
     'Auto enhance
     addMenuIcon "AUTOENHANCE", 6, 1     'Auto-enhance (top-level)
         addMenuIcon "HSL", 6, 1, 0          'Color
         addMenuIcon "BRIGHT", 6, 1, 1       'Contrast
         addMenuIcon "LIGHTING", 6, 1, 2     'Lighting
+        addMenuIcon "SHDWHGHLGHT", 6, 1, 3  'Shadow/Highlight
         
     'Adjustment shortcuts (top-level menu items)
     addMenuIcon "GRAYSCALE", 6, 3       'Black and white
