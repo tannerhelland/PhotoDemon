@@ -2398,6 +2398,11 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 		</phrase>
 
 		<phrase>
+			<original>Shadows and highlights</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
 			<original>Auto enhance</original>
 			<translation></translation>
 		</phrase>
@@ -2529,11 +2534,6 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 
 		<phrase>
 			<original>Compound invert</original>
-			<translation></translation>
-		</phrase>
-
-		<phrase>
-			<original>Shadows and highlights</original>
 			<translation></translation>
 		</phrase>
 
@@ -3222,6 +3222,11 @@ The update is automatically processing in the background.  You will receive a ne
 		</phrase>
 
 		<phrase>
+			<original>Auto correct shadows and highlights</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
 			<original>Auto enhance color</original>
 			<translation></translation>
 		</phrase>
@@ -3233,6 +3238,11 @@ The update is automatically processing in the background.  You will receive a ne
 
 		<phrase>
 			<original>Auto enhance lighting</original>
+			<translation></translation>
+		</phrase>
+
+		<phrase>
+			<original>Auto enhance shadows and highlights</original>
 			<translation></translation>
 		</phrase>
 
@@ -3755,7 +3765,7 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 			<translation></translation>
 		</phrase>
 
-		<!-- VBP_FormMain.frm contains 538 phrases. 158 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
+		<!-- VBP_FormMain.frm contains 542 phrases. 160 were duplicates of existing phrases, so only 382 new phrases were written to file. -->
 
 		<!-- END text for VBP_FormMain.frm-->
 
@@ -13193,10 +13203,10 @@ or the File > Open and File > Import menus.</original>
 
 		<!-- Automatic text extraction complete. -->
 
-		<phrasecount>2318</phrasecount>
+		<phrasecount>2320</phrasecount>
 
-	<!-- As of this build, PhotoDemon contains 3937 phrases. -->
-	<!-- 1619 are duplicates, so only 2318 unique phrases have been written to file. -->
-	<!-- These 2318 phrases contain approximately 13327 total words. -->
+	<!-- As of this build, PhotoDemon contains 3941 phrases. -->
+	<!-- 1621 are duplicates, so only 2320 unique phrases have been written to file. -->
+	<!-- These 2320 phrases contain approximately 13337 total words. -->
 
 	</pdData>

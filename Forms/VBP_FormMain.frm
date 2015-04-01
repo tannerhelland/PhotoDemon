@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _ExtentX        =   873
-      _ExtentY        =   873
+      _extentx        =   873
+      _extenty        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
@@ -690,6 +690,10 @@ Begin VB.Form FormMain
             Caption         =   "Lighting"
             Index           =   2
          End
+         Begin VB.Menu MnuAutoCorrect 
+            Caption         =   "Shadows and highlights"
+            Index           =   3
+         End
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Auto enhance"
@@ -705,6 +709,10 @@ Begin VB.Form FormMain
          Begin VB.Menu MnuAutoEnhance 
             Caption         =   "Lighting"
             Index           =   2
+         End
+         Begin VB.Menu MnuAutoEnhance 
+            Caption         =   "Shadows and highlights"
+            Index           =   3
          End
       End
       Begin VB.Menu MnuAdjustments 
@@ -1846,6 +1854,10 @@ Private Sub MnuAutoCorrect_Click(Index As Integer)
         'Lighting
         Case 2
             Process "Auto correct lighting", , , UNDO_LAYER
+            
+        'Shadows and highlights
+        Case 3
+            Process "Auto correct shadows and highlights", , , UNDO_LAYER
         
     End Select
 
@@ -1866,6 +1878,10 @@ Private Sub MnuAutoEnhance_Click(Index As Integer)
         'Lighting
         Case 2
             Process "Auto enhance lighting", , , UNDO_LAYER
+            
+        'Shadows and highlights
+        Case 3
+            Process "Auto enhance shadows and highlights", , , UNDO_LAYER
         
     End Select
     

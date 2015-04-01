@@ -468,9 +468,9 @@ Public Sub fxAutoEnhanceColors()
         gray = (213 * r + 715 * g + 72 * b) \ 1000
         
         'Move each channel away from the gray point
-        r = r + (r - gray) \ 2
-        g = g + (g - gray) \ 2
-        b = b + (b - gray) \ 2
+        r = r + (r - gray) \ 3
+        g = g + (g - gray) \ 3
+        b = b + (b - gray) \ 3
         
         If r > 255 Then r = 255
         If r < 0 Then r = 0
@@ -576,7 +576,6 @@ Public Sub fxAutoEnhanceContrast()
 
 End Sub
 
-
 'Automatically enhance image lighting.  Basically, push each pixel's luminance away from the 127 gray point at a
 ' strength inverse to its distance.  This function bears strong similarity to the "clarity" quick-fix adjustment.
 Public Sub fxAutoEnhanceLighting()
@@ -665,7 +664,41 @@ Public Sub fxAutoEnhanceLighting()
 
 End Sub
 
-'Isolate the maximum or minimum channel.  Derived from the "Maximum RGB" tool concept in GIMP.
+'Automatically correct shadows and highlights in an image.
+Public Sub fxAutoCorrectShadowsAndHighlights()
+    
+    Message "Adjusting shadows and highlights..."
+    
+    'Make a copy of the current image
+    Dim dstSA As SAFEARRAY2D
+    prepImageData dstSA
+    
+    'To minimize the chance of harm, use a particularly wide gamut for both shadows and highlights
+    Filters_Layers.AdjustDIBShadowHighlight 75, 10, -60, 100, 20, 100, 20, workingDIB
+    
+    'Finalize and render the adjusted image
+    finalizeImageData
+
+End Sub
+
+'Automatically enhance shadows and highlights in an image.
+Public Sub fxAutoEnhanceShadowsAndHighlights()
+
+    Message "Enhancing shadows and highlights..."
+    
+    'Make a copy of the current image
+    Dim dstSA As SAFEARRAY2D
+    prepImageData dstSA
+    
+    'To minimize the chance of harm, use a particularly wide gamut for both shadows and highlights
+    Filters_Layers.AdjustDIBShadowHighlight 100, 33, -100, 75, 30, 100, 30, workingDIB
+    
+    'Finalize and render the adjusted image
+    finalizeImageData
+    
+End Sub
+
+'Given an RGBQuad, replace all instances with a different RGBQuad
 Public Sub ReplaceColorInDIB(ByRef srcDIB As pdDIB, ByRef oldQuad As RGBQUAD, ByRef newQuad As RGBQUAD)
     
     'Create a local array and point it at the pixel data we want to operate on

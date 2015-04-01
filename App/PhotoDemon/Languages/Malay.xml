@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.4</langversion>
+<langversion>6.7.5</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -2461,6 +2461,11 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 </phrase>
 
 <phrase>
+<original>Shadows and highlights</original>
+<translation>Bayang-bayang dan sorotan</translation>
+</phrase>
+
+<phrase>
 <original>Auto enhance</original>
 <translation>Auto meningkatkan</translation>
 </phrase>
@@ -2593,11 +2598,6 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 <phrase>
 <original>Compound invert</original>
 <translation>kompaun terbalikkan</translation>
-</phrase>
-
-<phrase>
-<original>Shadows and highlights</original>
-<translation>Bayang-bayang dan sorotan</translation>
 </phrase>
 
 <phrase>
@@ -3289,6 +3289,11 @@ terbaru (versi semasa: %1 %2 %3)</translation>
 </phrase>
 
 <phrase>
+<original>Auto correct shadows and highlights</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Auto enhance color</original>
 <translation>Auto meningkatkan warna</translation>
 </phrase>
@@ -3301,6 +3306,11 @@ terbaru (versi semasa: %1 %2 %3)</translation>
 <phrase>
 <original>Auto enhance lighting</original>
 <translation>Auto meningkatkan pencahayaan</translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance shadows and highlights</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3826,7 +3836,7 @@ Note: beberapa teks program minor tidak boleh hidup dikemaskini. Teks tersebut a
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 538 phrases. 158 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 542 phrases. 160 were duplicates of existing phrases, so only 382 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -13299,10 +13309,10 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2318</phrasecount>
+<phrasecount>2320</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3937 phrases. -->
-<!-- 1619 are duplicates, so only 2318 unique phrases have been written to file. -->
-<!-- These 2318 phrases contain approximately 13327 total words. -->
+<!-- As of this build, PhotoDemon contains 3941 phrases. -->
+<!-- 1621 are duplicates, so only 2320 unique phrases have been written to file. -->
+<!-- These 2320 phrases contain approximately 13337 total words. -->
 
 </pdData>

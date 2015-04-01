@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.4</langversion>
+<langversion>6.7.5</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -2461,6 +2461,11 @@ You kan använda MenuTest () sub i Filters_Miscellaneous modulen för att testa 
 </phrase>
 
 <phrase>
+<original>Shadows and highlights</original>
+<translation>Skuggor och högdagrar</translation>
+</phrase>
+
+<phrase>
 <original>Auto enhance</original>
 <translation>Auto förbättra</translation>
 </phrase>
@@ -2593,11 +2598,6 @@ You kan använda MenuTest () sub i Filters_Miscellaneous modulen för att testa 
 <phrase>
 <original>Compound invert</original>
 <translation>Förening invert</translation>
-</phrase>
-
-<phrase>
-<original>Shadows and highlights</original>
-<translation>Skuggor och högdagrar</translation>
 </phrase>
 
 <phrase>
@@ -3289,6 +3289,11 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 </phrase>
 
 <phrase>
+<original>Auto correct shadows and highlights</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Auto enhance color</original>
 <translation>Auto förbättra färg</translation>
 </phrase>
@@ -3301,6 +3306,11 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 <phrase>
 <original>Auto enhance lighting</original>
 <translation>Auto förbättra belysning</translation>
+</phrase>
+
+<phrase>
+<original>Auto enhance shadows and highlights</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3826,7 +3836,7 @@ Note förändrats framgångsrikt: några mindre program kan inte vara levande up
 <translation>Ta bort alfakanal</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 538 phrases. 158 were duplicates of existing phrases, so only 380 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 542 phrases. 160 were duplicates of existing phrases, so only 382 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -13299,10 +13309,10 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2318</phrasecount>
+<phrasecount>2320</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3937 phrases. -->
-<!-- 1619 are duplicates, so only 2318 unique phrases have been written to file. -->
-<!-- These 2318 phrases contain approximately 13327 total words. -->
+<!-- As of this build, PhotoDemon contains 3941 phrases. -->
+<!-- 1621 are duplicates, so only 2320 unique phrases have been written to file. -->
+<!-- These 2320 phrases contain approximately 13337 total words. -->
 
 </pdData>
