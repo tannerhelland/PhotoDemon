@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.5</langversion>
+<langversion>6.7.6</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -2936,6 +2936,11 @@ You kan använda MenuTest () sub i Filters_Miscellaneous modulen för att testa 
 </phrase>
 
 <phrase>
+<original>Color halftone</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Vignetting</original>
 <translation>vinjette</translation>
 </phrase>
@@ -3836,7 +3841,7 @@ Note förändrats framgångsrikt: några mindre program kan inte vara levande up
 <translation>Ta bort alfakanal</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 542 phrases. 160 were duplicates of existing phrases, so only 382 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 544 phrases. 161 were duplicates of existing phrases, so only 383 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -5472,7 +5477,17 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <translation>Förbättrad belysning</translation>
 </phrase>
 
-<!-- VBP_Filters_Color_Effects.bas contains 11 phrases.  All 11 were unique, so 11 new phrases were written to file. -->
+<phrase>
+<original>Adjusting shadows and highlights</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Enhancing shadows and highlights</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_Filters_Color_Effects.bas contains 13 phrases.  All 13 were unique, so 13 new phrases were written to file. -->
 
 <!-- END text for VBP_Filters_Color_Effects.bas-->
 
@@ -13307,12 +13322,44 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <!-- END text for VBP_DIBHandler.bas-->
 
+<!-- BEGIN text for VBP_FormColorHalftone.frm (FormColorHalftone) -->
+
+<phrase>
+<original>yellow angle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>magenta angle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>cyan angle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Printing image to digital halftone surface</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormColorHalftone.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<!-- END text for VBP_FormColorHalftone.frm-->
+
+<!-- BEGIN text for VBP_FiltersStylize.bas -->
+
+<!-- VBP_FiltersStylize.bas contains 0 phrases. -->
+
+<!-- END text for VBP_FiltersStylize.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2320</phrasecount>
+<phrasecount>2327</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3941 phrases. -->
-<!-- 1621 are duplicates, so only 2320 unique phrases have been written to file. -->
-<!-- These 2320 phrases contain approximately 13337 total words. -->
+<!-- As of this build, PhotoDemon contains 3953 phrases. -->
+<!-- 1626 are duplicates, so only 2327 unique phrases have been written to file. -->
+<!-- These 2327 phrases contain approximately 13359 total words. -->
 
 </pdData>
