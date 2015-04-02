@@ -1213,6 +1213,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormLensCorrect.ApplyLensCorrection cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetLong(5)
             End If
         
+        Case "Donut"
+            If showDialog Then
+                showPDDialog vbModal, FormDonut
+            Else
+                FormDonut.ApplyDonutDistortion cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetLong(5), cParams.GetLong(6), cParams.GetDouble(7), cParams.GetDouble(8)
+            End If
+        
         Case "Miscellaneous distort"
             If showDialog Then
                 showPDDialog vbModal, FormMiscDistorts
