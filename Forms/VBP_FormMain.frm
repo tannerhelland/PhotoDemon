@@ -1161,7 +1161,7 @@ Begin VB.Form FormMain
             Index           =   4
          End
          Begin VB.Menu MnuNatureFilter 
-            Caption         =   "Steel"
+            Caption         =   "Metal..."
             Index           =   5
          End
          Begin VB.Menu MnuNatureFilter 
@@ -4009,9 +4009,9 @@ Private Sub MnuNatureFilter_Click(Index As Integer)
         Case 4
             Process "Lava", , , UNDO_LAYER
         
-        'Steel
+        'Metal (formerly "steel")
         Case 5
-            Process "Steel", , , UNDO_LAYER
+            Process "Metal", True
         
         'Water
         Case 6
