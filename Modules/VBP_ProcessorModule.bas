@@ -1421,8 +1421,12 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Lava"
             MenuLava
                     
-        Case "Steel"
-            MenuSteel
+        Case "Metal"
+            If showDialog Then
+                showPDDialog vbModal, FormMetal
+            Else
+                FormMetal.ApplyMetalFilter cParams.GetLong(1), cParams.GetDouble(2)
+            End If
             
         Case "Water"
             MenuWater
