@@ -3,8 +3,8 @@ Attribute VB_Name = "Filters_Stylize"
 'Stylize Filter Collection
 'Copyright 2002-2015 by Tanner Helland
 'Created: 8/April/02
-'Last updated: 01/April/15
-'Last update: start migrating stylize filters to this module, and rewriting them as DIB-independent
+'Last updated: 02/April/15
+'Last update: finish optimizing new Color Halftone filter
 '
 'Container module for PD's stylize filter collection.
 '
@@ -74,7 +74,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
     ' of the grid "block".  This is a distance of Sqr(2) * (grid block size / 2).  We multiply our density value
     ' - in advance - by this value, which simplifies dot calculations in the inner loop.
     dotDensity = dotDensity * Sqr(2) * pxRadiusHalf
-    
+        
     'Convert the various input rotation angles to radians
     cyanAngle = cyanAngle * (PI / 180)
     yellowAngle = yellowAngle * (PI / 180)
@@ -87,17 +87,19 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
     Dim dstX As Double, dstY As Double
     Dim clampX As Long, clampY As Long
     Dim r As Long, g As Long, b As Long, a As Long
-    Dim target As Long, newTarget As Long
-    Dim fTarget As Double
+    Dim target As Long, newTarget As Long, fTarget As Double
     Dim dX As Double, dY As Double
     Dim tmpRadius As Double, f2 As Double, f3 As Double
     Dim overlapCheck As Long
     
-    'Because dotscan overlap (see details in the inner loop comments), we will occasionally need to check neighboring grid
+    'Because dots can overlap (see details in the inner loop comments), we will occasionally need to check neighboring grid
     ' blocks to determine proper overlap colors.  To simplify calculations in the performance-sensitive inner loop, we cache
     ' all neighboring grid offsets in advance.  (Note that additional heuristics are used inside the loop, so these tables
     ' are not needed for all pixels.)
-    Dim xCheck(0 To 3) As Double, yCheck(0 To 3) As Double
+    Dim xCheck() As Double, yCheck() As Double
+    ReDim xCheck(0 To 3) As Double
+    ReDim yCheck(0 To 3) As Double
+    
     xCheck(0) = -1 * pxRadius
     yCheck(0) = 0
     xCheck(1) = 0
@@ -106,7 +108,25 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
     yCheck(2) = 0
     xCheck(3) = 0
     yCheck(3) = pxRadius
+    
+    'We can also pre-calculate a lookup table between pixel values and density, since density is hard-coded according to
+    ' luminance and dot size.  This spares additional calculations on the inner loop.
+    Dim densityLookup() As Single
+    ReDim densityLookup(0 To 255) As Single
+    
+    For x = 0 To 255
         
+        'Convert the color value to floating-point CMY, then square it (which yields better luminance control)
+        fTarget = x / 255
+        fTarget = 1 - (fTarget * fTarget)
+            
+        'Modify the radius to match the density requested by the user
+        fTarget = fTarget * dotDensity
+        
+        densityLookup(x) = fTarget
+        
+    Next x
+    
     'We are now ready to loop through each pixel in the image, converting values as we go.
     
     'Unique to this filter is separate handling for each channel.  Because each channel can be independently rotated, this proves
@@ -181,22 +201,15 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
             
             'Retrieve the relevant channel color at this position
             target = srcImageData(clampX * qvDepth + curChannel, clampY)
-            
-            'Convert the color value to floating-point CMY, then square it (which yields better luminance control)
-            fTarget = target / 255
-            fTarget = 1 - (fTarget * fTarget)
-            
-            'Modify the radius to match the density requested by the user
-            fTarget = fTarget * dotDensity
-            
-            'Convert that density to a dot size, relative to the underlying grid control point
+                        
+            'Calculate a dot size, relative to the underlying grid control point
             dX = x - dstX
             dY = y - dstY
             tmpRadius = Sqr(dX * dX + dY * dY) + 1
             
             'With a circle radius calculated for this intensity value, apply some basic antialiasing if the pixel
             ' lies along the circle edge.
-            f2 = 1 - basicAA(tmpRadius - 1, tmpRadius, fTarget)
+            f2 = 1 - basicAA(tmpRadius - 1, tmpRadius, densityLookup(target))
             
             'If this dot's calculated radius density is greater than a grid block's half-width, this "dot" extends outside
             ' its underlying grid block.  This means it overlaps a neighboring grid, which may have a *different* maximum
@@ -233,18 +246,18 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
                         clampY = finalY
                     End If
                     
-                    'Calculate an intensity for this overlapped point
-                    target = srcImageData(clampX * qvDepth + curChannel, clampY)
-                    fTarget = target / 255
-                    fTarget = 1 - (fTarget * fTarget)
-                    fTarget = fTarget * dotDensity
+                    'Calculate an intensity and radius for this overlapped point
+                    newTarget = srcImageData(clampX * qvDepth + curChannel, clampY)
                     dX = x - dstX
                     dY = y - dstY
                     tmpRadius = Sqr(dX * dX + dY * dY)
-                    f3 = 1 - basicAA(tmpRadius, tmpRadius + 1, fTarget)
+                    f3 = 1 - basicAA(tmpRadius, tmpRadius + 1, densityLookup(newTarget))
                     
                     'Store the *minimum* calculated value (e.g. the darkest color in this area of overlap)
-                    If f3 < f2 Then f2 = f3
+                    If f3 < f2 Then
+                        f2 = f3
+                        target = newTarget
+                    End If
                 
                 'Proceed to the next overlapping pixel
                 Next overlapCheck
@@ -280,15 +293,18 @@ End Function
 
 'This function - courtesy of Jerry Huxtable and jhlabs.com - provides nice, cheap antialiasing along a 1px border
 ' between two double-type values.
-Private Function basicAA(ByVal a As Double, ByVal b As Double, ByVal x As Double) As Double
+Private Function basicAA(ByRef a As Double, ByRef b As Double, ByRef x As Single) As Double
 
     If (x < a) Then
         basicAA = 0
     ElseIf (x >= b) Then
         basicAA = 1
     Else
-        x = (x - a) / (b - a)
-        basicAA = x * x * (3 - 2 * x)
+        basicAA = (x - a) / (b - a)
+        
+        'In his original code, Jerry used a more complicated AA approach, but it seems overkill for a function like this
+        ' (especially where the quality trade-off is so minimal):
+        'basicAA = x * x * (3 - 2 * x)
     End If
 
 End Function
