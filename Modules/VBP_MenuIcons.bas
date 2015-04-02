@@ -415,14 +415,15 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "LENSDISTORT", 7, 2, 0    'Apply lens distortion
         addMenuIcon "FIXLENS", 7, 2, 1        'Remove or correct existing lens distortion
         
-        addMenuIcon "PINCHWHIRL", 7, 2, 3     'Pinch and whirl
-        addMenuIcon "POKE", 7, 2, 4           'Poke
-        addMenuIcon "RIPPLE", 7, 2, 5         'Ripple
-        addMenuIcon "SQUISH", 7, 2, 6         'Squish (formerly Fixed Perspective)
-        addMenuIcon "SWIRL", 7, 2, 7          'Swirl
-        addMenuIcon "WAVES", 7, 2, 8          'Waves
+        'addMenuIcon "DONUT", 7, 2, 3          'Donut (TODO)
+        addMenuIcon "PINCHWHIRL", 7, 2, 4     'Pinch and whirl
+        addMenuIcon "POKE", 7, 2, 5           'Poke
+        addMenuIcon "RIPPLE", 7, 2, 6         'Ripple
+        addMenuIcon "SQUISH", 7, 2, 7         'Squish (formerly Fixed Perspective)
+        addMenuIcon "SWIRL", 7, 2, 8          'Swirl
+        addMenuIcon "WAVES", 7, 2, 9          'Waves
         
-        addMenuIcon "MISCDISTORT", 7, 2, 10   'Miscellaneous distort functions
+        addMenuIcon "MISCDISTORT", 7, 2, 11   'Miscellaneous distort functions
                 
     addMenuIcon "EDGES", 7, 3           'Edges
         '--> Edges sub-menu

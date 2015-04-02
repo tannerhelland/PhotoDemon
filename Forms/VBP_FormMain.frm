@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _ExtentX        =   873
-      _ExtentY        =   873
+      _extentx        =   873
+      _extenty        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
@@ -1045,36 +1045,40 @@ Begin VB.Form FormMain
             Index           =   2
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Pinch and whirl..."
+            Caption         =   "Donut..."
             Index           =   3
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Poke..."
+            Caption         =   "Pinch and whirl..."
             Index           =   4
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Ripple..."
+            Caption         =   "Poke..."
             Index           =   5
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Squish..."
+            Caption         =   "Ripple..."
             Index           =   6
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Swirl..."
+            Caption         =   "Squish..."
             Index           =   7
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Waves..."
+            Caption         =   "Swirl..."
             Index           =   8
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "-"
+            Caption         =   "Waves..."
             Index           =   9
          End
          Begin VB.Menu MnuDistortEffects 
-            Caption         =   "Miscellaneous..."
+            Caption         =   "-"
             Index           =   10
+         End
+         Begin VB.Menu MnuDistortEffects 
+            Caption         =   "Miscellaneous..."
+            Index           =   11
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -3383,36 +3387,40 @@ Private Sub MnuDistortEffects_Click(Index As Integer)
         
         '<separator>
         Case 2
+        
+        'Donut
+        Case 3
+            Process "Donut", True
             
         'Pinch and whirl
-        Case 3
+        Case 4
             Process "Pinch and whirl", True
         
         'Poke
-        Case 4
+        Case 5
             Process "Poke", True
         
         'Ripple
-        Case 5
+        Case 6
             Process "Ripple", True
         
         'Squish (formerly Fixed Perspective)
-        Case 6
+        Case 7
             Process "Squish", True
         
         'Swirl
-        Case 7
+        Case 8
             Process "Swirl", True
         
         'Waves
-        Case 8
+        Case 9
             Process "Waves", True
             
         '<separator>
-        Case 9
+        Case 10
         
         'Miscellaneous
-        Case 10
+        Case 11
             Process "Miscellaneous distort", True
         
     End Select
