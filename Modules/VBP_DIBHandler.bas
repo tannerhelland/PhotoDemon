@@ -454,3 +454,103 @@ Public Function createCMYKDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As B
     End If
 
 End Function
+
+'Given a DIB, return a 2D Byte array of the DIB's luminance values.  An optional preNormalize parameter will guarantee that the output
+' stretches from 0 to 255.  (Also note: this function does not support progress bar reports.)
+Public Function getDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() As Byte, Optional ByVal toNormalize As Boolean = True) As Boolean
+    
+    'Make sure the DIB exists
+    If srcDIB Is Nothing Then Exit Function
+    
+    'Make sure the source DIB isn't empty
+    If (srcDIB.getDIBDC <> 0) And (srcDIB.getDIBWidth <> 0) And (srcDIB.getDIBHeight <> 0) Then
+    
+        'Create a local array and point it at the pixel data we want to operate on
+        Dim ImageData() As Byte
+        Dim tmpSA As SAFEARRAY2D
+        prepSafeArray tmpSA, srcDIB
+        CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+            
+        'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+        Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+        initX = 0
+        initY = 0
+        finalX = srcDIB.getDIBWidth - 1
+        finalY = srcDIB.getDIBHeight - 1
+        
+        'Prep the destination array
+        ReDim dstGrayArray(initX To finalX, initY To finalY) As Byte
+        
+        'These values will help us access locations in the array more quickly.
+        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+        Dim QuickVal As Long, qvDepth As Long
+        qvDepth = srcDIB.getDIBColorDepth \ 8
+        
+        Dim r As Long, g As Long, b As Long, grayVal As Long
+        Dim minVal As Long, maxVal As Long
+        minVal = 255
+        maxVal = 0
+            
+        'Now we can loop through each pixel in the image, converting values as we go
+        For x = initX To finalX
+            QuickVal = x * qvDepth
+        For y = initY To finalY
+                
+            'Get the source pixel color values
+            r = ImageData(QuickVal + 2, y)
+            g = ImageData(QuickVal + 1, y)
+            b = ImageData(QuickVal, y)
+            
+            'Calculate a grayscale value using the original ITU-R recommended formula (BT.709, specifically)
+            grayVal = (213 * r + 715 * g + 72 * b) \ 1000
+            If grayVal > 255 Then grayVal = 255
+            
+            'Cache the value
+            dstGrayArray(x, y) = grayVal
+            
+            'If normalization has been requested, check max/min values now
+            If toNormalize Then
+                If grayVal < minVal Then
+                    minVal = grayVal
+                ElseIf grayVal > maxVal Then
+                    maxVal = grayVal
+                End If
+            End If
+            
+        Next y
+        Next x
+        
+        'With our work complete, point ImageData() away from the DIB and deallocate it
+        CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+        Erase ImageData
+        
+        'If normalization was requested, and the data isn't already normalized, normalize it now
+        If toNormalize And ((minVal > 0) Or (maxVal < 255)) Then
+            
+            Dim curRange As Long
+            curRange = maxVal - minVal
+            
+            'Build a normalization lookup table
+            Dim normalizedLookup() As Byte
+            ReDim normalizedLookup(0 To 255) As Byte
+            
+            For x = 0 To 255
+                normalizedLookup(x) = (CDbl(grayVal - minVal) / curRange) * 255
+            Next x
+            
+            For x = initX To finalX
+            For y = initY To finalY
+                dstGrayArray(x, y) = normalizedLookup(dstGrayArray(x, y))
+            Next y
+            Next x
+        
+        End If
+                
+        getDIBGrayscaleMap = True
+        
+    Else
+        Debug.Print "WARNING! Non-existent DIB passed to getDIBGrayscaleMap."
+        getDIBGrayscaleMap = False
+    End If
+
+End Function
