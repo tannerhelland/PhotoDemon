@@ -527,10 +527,7 @@ Public Sub ApplyDonutDistortion(ByVal initialAngle As Double, ByVal donutSpread 
     midY = midY + initY
     
     'Pinch variables
-    Dim theta As Double, radius As Double, sRadius2 As Double, sDistance As Double
-    
-    'Whirl variables
-    Dim whirlCalc As Double, whirlSin As Double, whirlCos As Double
+    Dim theta As Double, radius As Double
     
     'Convert the initial angle and spread to radians
     initialAngle = initialAngle * (PI / 180)
