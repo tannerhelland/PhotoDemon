@@ -47,7 +47,7 @@ Begin VB.Form FormMetal
       Height          =   495
       Left            =   6000
       TabIndex        =   3
-      Top             =   3000
+      Top             =   2040
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -68,7 +68,7 @@ Begin VB.Form FormMetal
       Height          =   495
       Left            =   6000
       TabIndex        =   5
-      Top             =   2040
+      Top             =   960
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   873
@@ -76,6 +76,68 @@ Begin VB.Form FormMetal
       Value           =   4
       NotchPosition   =   2
       NotchValueCustom=   4
+   End
+   Begin PhotoDemon.colorSelector csHighlight 
+      Height          =   615
+      Left            =   6120
+      TabIndex        =   6
+      Top             =   3120
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   1085
+      curColor        =   14737632
+   End
+   Begin PhotoDemon.colorSelector csShadow 
+      Height          =   615
+      Left            =   6120
+      TabIndex        =   9
+      Top             =   4320
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   1085
+      curColor        =   4210752
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "shadow color:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   3
+      Left            =   6000
+      TabIndex        =   8
+      Top             =   3960
+      Width           =   1500
+   End
+   Begin VB.Label lblTitle 
+      AutoSize        =   -1  'True
+      BackStyle       =   0  'Transparent
+      Caption         =   "highlight color:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   12
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00404040&
+      Height          =   285
+      Index           =   2
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   2760
+      Width           =   1620
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -95,7 +157,7 @@ Begin VB.Form FormMetal
       Index           =   1
       Left            =   6000
       TabIndex        =   4
-      Top             =   1650
+      Top             =   570
       Width           =   660
    End
    Begin VB.Label lblTitle 
@@ -116,7 +178,7 @@ Begin VB.Form FormMetal
       Index           =   0
       Left            =   6000
       TabIndex        =   1
-      Top             =   2640
+      Top             =   1680
       Width           =   1350
    End
 End
@@ -149,7 +211,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Apply a metallic "shimmer" to an image
-Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As Double, Optional ByVal shadowColor As Long = 0, Optional ByVal highlightColor As Long = vbWhite, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Pouring smoldering metal onto image..."
     
@@ -159,6 +221,18 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
     
     'If this is a preview, we need to adjust the smoothness (kernel radius) to match the size of the preview box
     If toPreview Then steelSmoothness = steelSmoothness * curDIBValues.previewModifier
+    
+    'Decompose the shadow and highlight colors into their individual color components
+    Dim rShadow As Long, gShadow As Long, bShadow As Long
+    Dim rHighlight As Long, gHighlight As Long, bHighlight As Long
+    
+    rShadow = ExtractR(shadowColor)
+    gShadow = ExtractG(shadowColor)
+    bShadow = ExtractB(shadowColor)
+    
+    rHighlight = ExtractR(highlightColor)
+    gHighlight = ExtractG(highlightColor)
+    bHighlight = ExtractB(highlightColor)
     
     'Retrieve a normalized luminance map of the current image
     Dim grayMap() As Byte
@@ -176,45 +250,43 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
     'Detail cannot be lower than 2, but it is presented to the user as [0, (arbitrary upper bound)], so add two to the total now
     steelDetail = steelDetail + 2
     
-    'We will be using pdFilterLUT to generate the corresponding lookup table, which means we need to use a POINTFLOAT array
-    Dim curvePoints() As POINTFLOAT
-    ReDim curvePoints(0 To steelDetail) As POINTFLOAT
+    'We will be using pdFilterLUT to generate corresponding RGB lookup tables, which means we need to use POINTFLOAT arrays
+    Dim rCurve() As POINTFLOAT, gCurve() As POINTFLOAT, bCurve() As POINTFLOAT
+    ReDim rCurve(0 To steelDetail) As POINTFLOAT
+    ReDim gCurve(0 To steelDetail) As POINTFLOAT
+    ReDim bCurve(0 To steelDetail) As POINTFLOAT
     
-    'X values are evenly distributed from 0 to 255
+    'For all channels, X values are evenly distributed from 0 to 255
     Dim i As Long
     For i = 0 To steelDetail
-        curvePoints(i).x = CDbl(i / steelDetail) * 255
+        rCurve(i).x = CDbl(i / steelDetail) * 255
+        gCurve(i).x = CDbl(i / steelDetail) * 255
+        bCurve(i).x = CDbl(i / steelDetail) * 255
     Next i
     
-    'Y values alternate between 0 and 255
+    'Y values alternate between the shadow and highlight colors; these are calculated on a per-channel basis
     For i = 0 To steelDetail
         
         If i Mod 2 = 0 Then
-            
-            If i = 0 Then
-                curvePoints(i).y = 0
-            Else
-                curvePoints(i).y = 25
-            End If
-            
+            rCurve(i).y = rShadow
+            gCurve(i).y = gShadow
+            bCurve(i).y = bShadow
         Else
-        
-            If i = steelDetail Then
-                curvePoints(i).y = 255
-            Else
-                curvePoints(i).y = 230
-            End If
-            
+            rCurve(i).y = rHighlight
+            gCurve(i).y = gHighlight
+            bCurve(i).y = bHighlight
         End If
         
     Next i
     
-    'Convert our point array into a luminance curve
-    Dim luminanceLookup() As Byte
+    'Convert our point array into color curves
+    Dim rLookup() As Byte, gLookup() As Byte, bLookup() As Byte
     
     Dim cLUT As pdFilterLUT
     Set cLUT = New pdFilterLUT
-    cLUT.fillLUT_Curve luminanceLookup, curvePoints
+    cLUT.fillLUT_Curve rLookup, rCurve
+    cLUT.fillLUT_Curve gLookup, gCurve
+    cLUT.fillLUT_Curve bLookup, bCurve
     
     'We are now ready to apply the final curve to the image!
     
@@ -246,11 +318,11 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
         QuickVal = x * qvDepth
     For y = initY To finalY
         
-        grayVal = luminanceLookup(grayMap(x, y))
+        grayVal = grayMap(x, y)
         
-        ImageData(QuickVal + 2, y) = grayVal
-        ImageData(QuickVal + 1, y) = grayVal
-        ImageData(QuickVal, y) = grayVal
+        ImageData(QuickVal, y) = bLookup(grayVal)
+        ImageData(QuickVal + 1, y) = gLookup(grayVal)
+        ImageData(QuickVal + 2, y) = rLookup(grayVal)
         
     Next y
         If (x And progBarCheck) = 0 Then
@@ -270,7 +342,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Metal", , buildParams(sltDetail, sltRadius), UNDO_LAYER
+    Process "Metal", , buildParams(sltDetail, sltRadius, csShadow.Color, csHighlight.Color), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -280,6 +352,16 @@ End Sub
 Private Sub cmdBar_ResetClick()
     sltRadius.Value = 20
     sltDetail.Value = 4
+    csShadow.Color = RGB(30, 30, 30)
+    csHighlight.Color = RGB(230, 230, 230)
+End Sub
+
+Private Sub csHighlight_ColorChanged()
+    updatePreview
+End Sub
+
+Private Sub csShadow_ColorChanged()
+    updatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -297,7 +379,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ApplyMetalFilter sltDetail.Value, sltRadius.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyMetalFilter sltDetail.Value, sltRadius.Value, csShadow.Color, csHighlight.Color, True, fxPreview
 End Sub
 
 Private Sub sltDetail_Change()
