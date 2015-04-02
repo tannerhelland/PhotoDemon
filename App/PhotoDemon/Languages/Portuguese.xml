@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.6</langversion>
+<langversion>6.7.8</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -2766,6 +2766,11 @@ You pode usar o MenuTest () sub no módulo Filters_Miscellaneous para testar seu
 </phrase>
 
 <phrase>
+<original>Donut</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Pinch and whirl</original>
 <translation>Pitada e giro</translation>
 </phrase>
@@ -2891,8 +2896,8 @@ You pode usar o MenuTest () sub no módulo Filters_Miscellaneous para testar seu
 </phrase>
 
 <phrase>
-<original>Steel</original>
-<translation>aço</translation>
+<original>Metal</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3841,7 +3846,7 @@ Note Idioma alterado com sucesso: algum texto programa menor não pode ser live-
 <translation>Remover canal alfa</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 544 phrases. 161 were duplicates of existing phrases, so only 383 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 546 phrases. 162 were duplicates of existing phrases, so only 384 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -4178,12 +4183,7 @@ To habilitar o suporte do scanner, por favor, copie o arquivo EZTW32.dll (dispon
 <translation>Explosão de vulcão imaginário</translation>
 </phrase>
 
-<phrase>
-<original>Pouring smoldering steel onto image</original>
-<translation>Aço latente derramando sobre imagem</translation>
-</phrase>
-
-<!-- VBP_Filters_Natural.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- VBP_Filters_Natural.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <!-- END text for VBP_Filters_Natural.bas-->
 
@@ -13354,12 +13354,60 @@ or os menus File> Open e File> Import.</translation>
 
 <!-- END text for VBP_FiltersStylize.bas-->
 
+<!-- BEGIN text for VBP_FormDonut.frm (FormDonut) -->
+
+<phrase>
+<original>interior radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>spread</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>initial angle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Deep-frying image</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormDonut.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<!-- END text for VBP_FormDonut.frm-->
+
+<!-- BEGIN text for VBP_FormSteel.frm (FormMetal) -->
+
+<phrase>
+<original>smoothness</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pouring smoldering metal onto image</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormSteel.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for VBP_FormSteel.frm-->
+
+<!-- BEGIN text for VBP_FiltersByteArray.bas -->
+
+<!-- VBP_FiltersByteArray.bas contains 0 phrases. -->
+
+<!-- END text for VBP_FiltersByteArray.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2327</phrasecount>
+<phrasecount>2333</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3953 phrases. -->
-<!-- 1626 are duplicates, so only 2327 unique phrases have been written to file. -->
-<!-- These 2327 phrases contain approximately 13359 total words. -->
+<!-- As of this build, PhotoDemon contains 3973 phrases. -->
+<!-- 1640 are duplicates, so only 2333 unique phrases have been written to file. -->
+<!-- These 2333 phrases contain approximately 13368 total words. -->
 
 </pdData>
