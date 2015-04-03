@@ -6,10 +6,10 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.8</langversion>
-<langstatus>raw machine translation</langstatus>
+<langversion>6.7.11</langversion>
+<langstatus>completo</langstatus>
 
-<author>Google Translate</author>
+<author>Plinio C Garcia</author>
 
 <!-- BEGIN AUTOMATIC TEXT GENERATION -->
 
@@ -1987,17 +1987,17 @@ You puede utilizar el MenuTest () sub en el módulo Filters_Miscellaneous para p
 
 <phrase>
 <original>&Save</original>
-<translation>guardar</translation>
+<translation>Guardar</translation>
 </phrase>
 
 <phrase>
 <original>Save copy (&lossless)</original>
-<translation>Guardar copia (sin pérdida)</translation>
+<translation> copia (sin pérdida)</translation>
 </phrase>
 
 <phrase>
 <original>Save &as</original>
-<translation>guardar como</translation>
+<translation>Guardar como</translation>
 </phrase>
 
 <phrase>
@@ -2022,7 +2022,7 @@ You puede utilizar el MenuTest () sub en el módulo Filters_Miscellaneous para p
 
 <phrase>
 <original>&Edit</original>
-<translation>editar</translation>
+<translation>Editar</translation>
 </phrase>
 
 <phrase>
@@ -2087,7 +2087,7 @@ You puede utilizar el MenuTest () sub en el módulo Filters_Miscellaneous para p
 
 <phrase>
 <original>&View</original>
-<translation>vista</translation>
+<translation>Vista</translation>
 </phrase>
 
 <phrase>
@@ -2112,7 +2112,7 @@ You puede utilizar el MenuTest () sub en el módulo Filters_Miscellaneous para p
 
 <phrase>
 <original>&Image</original>
-<translation>imagen</translation>
+<translation>Imagen</translation>
 </phrase>
 
 <phrase>
@@ -2362,7 +2362,7 @@ You puede utilizar el MenuTest () sub en el módulo Filters_Miscellaneous para p
 
 <phrase>
 <original>&Select</original>
-<translation>seleccionar</translation>
+<translation>Seleccionar</translation>
 </phrase>
 
 <phrase>
@@ -3027,7 +3027,7 @@ You puede utilizar el MenuTest () sub en el módulo Filters_Miscellaneous para p
 
 <phrase>
 <original>&Tools</original>
-<translation>instrumentos</translation>
+<translation>Herramientas</translation>
 </phrase>
 
 <phrase>
@@ -3102,7 +3102,7 @@ You puede utilizar el MenuTest () sub en el módulo Filters_Miscellaneous para p
 
 <phrase>
 <original>&Window</original>
-<translation>ventana</translation>
+<translation>Ventanas</translation>
 </phrase>
 
 <phrase>
@@ -3197,12 +3197,12 @@ You puede utilizar el MenuTest () sub en el módulo Filters_Miscellaneous para p
 
 <phrase>
 <original>Previous image</original>
-<translation>imagen Anterior</translation>
+<translation>Imagen anterior</translation>
 </phrase>
 
 <phrase>
 <original>&Help</original>
-<translation>ayudar</translation>
+<translation>Ayuda</translation>
 </phrase>
 
 <phrase>
@@ -3550,7 +3550,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 
 <phrase>
 <original>Save</original>
-<translation>guardar</translation>
+<translation>Guardar</translation>
 </phrase>
 
 <phrase>
@@ -3560,7 +3560,7 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 
 <phrase>
 <original>Save as</original>
-<translation>guardar como</translation>
+<translation>Guardar como</translation>
 </phrase>
 
 <phrase>
@@ -3808,7 +3808,7 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 
 <phrase>
 <original>Save selection</original>
-<translation>guardar selección</translation>
+<translation>Guardar selección</translation>
 </phrase>
 
 <phrase>
@@ -4423,7 +4423,7 @@ To habilitar el soporte de escáner, por favor copie el archivo EZTW32.dll (disp
 
 <phrase>
 <original>save TIFFs as separated CMYK (for printing)</original>
-<translation>guardar archivos TIFF como CMYK separados (para imprimir)</translation>
+<translation>Guardar archivos TIFF como CMYK separados (para imprimir)</translation>
 </phrase>
 
 <phrase>
@@ -4433,7 +4433,7 @@ To habilitar el soporte de escáner, por favor copie el archivo EZTW32.dll (disp
 
 <phrase>
 <original>when saving, compress TIFFs using</original>
-<translation>al guardar, comprimir TIFF utilizando</translation>
+<translation>al Guardar, comprimir TIFF utilizando</translation>
 </phrase>
 
 <phrase>
@@ -4468,7 +4468,7 @@ To habilitar el soporte de escáner, por favor copie el archivo EZTW32.dll (disp
 
 <phrase>
 <original>when saving, compress PNG files at the following level</original>
-<translation>al guardar, comprimir archivos PNG al siguiente nivel</translation>
+<translation>Al guardar, comprimir archivos PNG al siguiente nivel</translation>
 </phrase>
 
 <phrase>
@@ -4528,7 +4528,7 @@ To habilitar el soporte de escáner, por favor copie el archivo EZTW32.dll (disp
 
 <phrase>
 <original>when "Save" is used</original>
-<translation>cuando "Guardar" se utiliza</translation>
+<translation>Al "guardar" se utiliza</translation>
 </phrase>
 
 <phrase>
@@ -11322,7 +11322,7 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 
 <phrase>
 <original>layer</original>
-<translation>capa</translation>
+<translation>Capa</translation>
 </phrase>
 
 <phrase>

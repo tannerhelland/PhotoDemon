@@ -85,7 +85,8 @@ PhotoDemon would not be possible without the help of many talented contributors,
 
 * Helmut Kuerbiss for maintaining (and hand-editing!) the German language file
 * Roy K for additional help with the German language file
-* Peter Burn for help overhauling the Shadow/Highlight adjustment tool
+* Peter Burn for help overhauling the Shadow/Highlight adjustment tool and many other helpful suggestions
+* Plinio C Garcia for editing and improving the Spanish language file, and suggesting the Color Halftone filter
 * Dirk Hartmann for additional help with the German language file
 (http://www.taichi-zentrum-heidelberg.de)
 * Raj Chaudhuri for multiple patches (including fixes for a number of long-standing issues) and a great deal of bug-testing 
