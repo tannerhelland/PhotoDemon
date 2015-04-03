@@ -79,7 +79,7 @@ Begin VB.Form FormShadowHighlight
          Height          =   495
          Left            =   120
          TabIndex        =   6
-         Top             =   840
+         Top             =   1020
          Width           =   5895
          _ExtentX        =   10398
          _ExtentY        =   873
@@ -101,7 +101,7 @@ Begin VB.Form FormShadowHighlight
          Height          =   495
          Left            =   120
          TabIndex        =   11
-         Top             =   2040
+         Top             =   2190
          Width           =   5895
          _ExtentX        =   10398
          _ExtentY        =   873
@@ -128,7 +128,7 @@ Begin VB.Form FormShadowHighlight
          Index           =   1
          Left            =   120
          TabIndex        =   10
-         Top             =   1680
+         Top             =   1830
          Width           =   1875
       End
       Begin VB.Label lblTitle 
@@ -151,7 +151,7 @@ Begin VB.Form FormShadowHighlight
          Index           =   0
          Left            =   120
          TabIndex        =   9
-         Top             =   480
+         Top             =   660
          Width           =   1005
       End
       Begin VB.Label lblTitle 
