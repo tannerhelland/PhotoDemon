@@ -529,6 +529,7 @@ Public Function getDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
             
             Dim curRange As Long
             curRange = maxVal - minVal
+            If curRange = 0 Then curRange = 1
             
             'Build a normalization lookup table
             Dim normalizedLookup() As Byte
