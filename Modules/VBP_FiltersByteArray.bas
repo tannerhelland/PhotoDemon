@@ -203,6 +203,8 @@ Public Function normalizeByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As
         Dim curRange As Long
         curRange = maxVal - minVal
         
+        If curRange = 0 Then curRange = 1
+        
         'Build a normalization lookup table
         Dim normalizedLookup() As Byte
         ReDim normalizedLookup(0 To 255) As Byte
@@ -211,7 +213,7 @@ Public Function normalizeByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As
         
         For x = 0 To 255
         
-            newValue = (CDbl(x - minVal) / curRange) * 255
+            newValue = (CDbl(x - minVal) / CDbl(curRange)) * 255
             
             If newValue < 0 Then
                 newValue = 0

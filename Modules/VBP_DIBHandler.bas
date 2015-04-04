@@ -522,13 +522,14 @@ Public Function getDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
         
         'With our work complete, point ImageData() away from the DIB and deallocate it
         CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-        Erase ImageData
         
         'If normalization was requested, and the data isn't already normalized, normalize it now
         If toNormalize And ((minVal > 0) Or (maxVal < 255)) Then
             
             Dim curRange As Long
             curRange = maxVal - minVal
+            
+            'Prevent DBZ errors
             If curRange = 0 Then curRange = 1
             
             'Build a normalization lookup table
@@ -536,7 +537,17 @@ Public Function getDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
             ReDim normalizedLookup(0 To 255) As Byte
             
             For x = 0 To 255
-                normalizedLookup(x) = (CDbl(grayVal - minVal) / curRange) * 255
+                
+                grayVal = (CDbl(x - minVal) / CDbl(curRange)) * 255
+                
+                If grayVal < 0 Then
+                    grayVal = 0
+                ElseIf grayVal > 255 Then
+                    grayVal = 255
+                End If
+                
+                normalizedLookup(x) = grayVal
+                
             Next x
             
             For x = initX To finalX
