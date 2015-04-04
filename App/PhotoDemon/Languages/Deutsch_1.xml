@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.8</langversion>
+<langversion>6.7.9</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -13390,7 +13390,7 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <translation></translation>
 </phrase>
 
-<!-- VBP_FormSteel.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- VBP_FormSteel.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormSteel.frm-->
 
@@ -13400,12 +13400,23 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 
 <!-- END text for VBP_FiltersByteArray.bas-->
 
+<!-- BEGIN text for VBP_FormMezzotint.frm (FormMezzotint) -->
+
+<phrase>
+<original>Mezzotint</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormMezzotint.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for VBP_FormMezzotint.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2333</phrasecount>
+<phrasecount>2334</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3973 phrases. -->
-<!-- 1640 are duplicates, so only 2333 unique phrases have been written to file. -->
-<!-- These 2333 phrases contain approximately 13368 total words. -->
+<!-- As of this build, PhotoDemon contains 3982 phrases. -->
+<!-- 1648 are duplicates, so only 2334 unique phrases have been written to file. -->
+<!-- These 2334 phrases contain approximately 13369 total words. -->
 
 </pdData>

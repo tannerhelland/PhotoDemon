@@ -422,7 +422,7 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 
 <phrase>
 <original>Shift</original>
-<translation>Umschalt</translation>
+<translation>Shift</translation>
 </phrase>
 
 <phrase>
@@ -986,12 +986,12 @@ Verlustfreie Kopien werden im gleichen Ordner wie dieses initiale Bild gespeiche
 
 <phrase>
 <original>Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia.</original>
-<translation>Resampling beeinflusst die Qualität eines in der Größe veränderten Bildes. Für eine gute Zusammenfassung zu den Resampling-Techniken schauen Sie sich den Artikel "Image Resampling" auf Wikipedia an.</translation>
+<translation>Resampling beeinflusst die Qualität eines in der Größe veränderten Bildes. Für eine gute Zusammenfassung zu den Resampling-Verfahren schauen Sie sich den Artikel "Image Resampling" auf Wikipedia an.</translation>
 </phrase>
 
 <phrase>
 <original>By default, descriptive names are used in place of technical ones.  Advanced users can toggle this option to expose more resampling techniques.</original>
-<translation>Standardmäßig werden hier beschreibende anstelle technischer Bezeichnungen verwendet. Fortgeschrittene Benutzer können diese Option umschalten, um weitere Resamplingverfahren aufzulisten.</translation>
+<translation>Standardmäßig werden hier beschreibende anstelle technischer Bezeichnungen verwendet. Fortgeschrittene Benutzer können diese Option umschalten, um weitere Resampling-Verfahren aufzulisten.</translation>
 </phrase>
 
 <phrase>
@@ -1068,7 +1068,7 @@ Verlustfreie Kopien werden im gleichen Ordner wie dieses initiale Bild gespeiche
 
 <phrase>
 <original>Applying grid blur</original>
-<translation>Raster-Weichzeichner wird angewendet</translation>
+<translation>Rasterunschärfe wird angewendet</translation>
 </phrase>
 
 <!-- VBP_Filters_Area.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
@@ -1324,9 +1324,9 @@ Melden Sie bitte dies via Menü "Hilfe > Fehlerbericht senden".</translation>
 <original>The specified file could not be located.  If it was located on removable media, please re-insert the proper floppy disk, CD, or portable drive.  If the file is not located on portable media, make sure that:
 1) the file hasn't been deleted, and...
 2) the file location provided to PhotoDemon is correct.</original>
-<translation>Die spezifizierte Datei konnte nicht gefunden werden. Wenn sie auf einem Wechseldatenträger gespeichert ist, verwenden Sie bitte wieder die richtige Diskette, CD, USB-Stick oder tragbares Laufwerk. Wenn sie nicht auf einem Wechseldatenträger gespeichert wurde, stellen Sie fest, ...
-1) ob die Datei nicht inzwischen gelöscht wurde und ...
-2) ob Sie den Speicherort der Datei korrekt eingegeben haben.</translation>
+<translation>Die spezifizierte Datei konnte nicht gefunden werden. Wenn sie auf einem Wechseldatenträger gespeichert ist, verwenden Sie bitte wieder die richtige Diskette, CD, USB-Stick oder tragbares Laufwerk. Wenn die Datei sich nicht auf einem Wechseldatenträger befindet, stellen Sie sicher, dass:
+1) die Datei nicht inzwischen gelöscht wurde und ...
+2) der Speicherort der Datei korrekt eingegeben wurde.</translation>
 </phrase>
 
 <phrase>
@@ -1426,22 +1426,22 @@ Wenn Sie fertig sind, klicken Sie bitte auf "Senden". Danke!</translation>
 
 <phrase>
 <original>Custom Diffuse</original>
-<translation>Benutzerdef. diffus</translation>
+<translation>Diffus benutzerdef.</translation>
 </phrase>
 
 <phrase>
 <original>wrap edge values</original>
-<translation>Stärke der Ecken-Abrundung</translation>
+<translation>Kantenwerte umhüllen</translation>
 </phrase>
 
 <phrase>
 <original>vertical strength</original>
-<translation>vertikale Stärke</translation>
+<translation>Vertikale Stärke</translation>
 </phrase>
 
 <phrase>
 <original>horizontal strength</original>
-<translation>horizontale Stärke</translation>
+<translation>Horizontale Stärke</translation>
 </phrase>
 
 <phrase>
@@ -1530,7 +1530,7 @@ Wenn Sie fertig sind, klicken Sie bitte auf "Senden". Danke!</translation>
 
 <phrase>
 <original>Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
-<translation>Leider kann Windows® die Anzahl der von Ihnen ausgewählten Bilder nicht gleichzeitig laden. Versuchen Sie es bitte erneut mit einem kleineren Satz von ausgewählten Bildern.</translation>
+<translation>Leider kann Windows® die Anzahl der von Ihnen ausgewählten Bilder nicht gleichzeitig laden. Versuchen Sie es bitte erneut mit einem kleineren Set von ausgewählten Bildern.</translation>
 </phrase>
 
 <phrase>
@@ -2582,7 +2582,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Invert CMYK (film negative)</original>
-<translation>CMYK invertieren (Negativfilm)</translation>
+<translation>CMYK invertieren (Filmnegativ)</translation>
 </phrase>
 
 <phrase>
@@ -2637,7 +2637,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Split toning</original>
-<translation>Farbtrennung</translation>
+<translation>Splittönung</translation>
 </phrase>
 
 <phrase>
@@ -2662,7 +2662,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Figured glass (dents)</original>
-<translation>Profilglas /Dellen)</translation>
+<translation>Profilglas (Dellen)</translation>
 </phrase>
 
 <phrase>
@@ -2707,12 +2707,12 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Blur</original>
-<translation>Verwischen</translation>
+<translation>Unschärfe</translation>
 </phrase>
 
 <phrase>
 <original>Box blur</original>
-<translation>Feld-Weichzeichner</translation>
+<translation>Feld weichzeichnen</translation>
 </phrase>
 
 <phrase>
@@ -2732,12 +2732,12 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Radial blur</original>
-<translation>Radiale Unschärfe</translation>
+<translation>Radialer Weichzeichner</translation>
 </phrase>
 
 <phrase>
 <original>Zoom blur</original>
-<translation>Zoom-Weichzeichner</translation>
+<translation>Zoomunschärfe</translation>
 </phrase>
 
 <phrase>
@@ -2757,12 +2757,12 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Apply lens distortion</original>
-<translation>Linsenverzerrung anwenden</translation>
+<translation>Linsenverzeichnung anwenden</translation>
 </phrase>
 
 <phrase>
 <original>Correct existing lens distortion</original>
-<translation>Vorhandene Linsenverzerrung korrigieren</translation>
+<translation>Vorhandene Linsenverzeichnung korrigieren</translation>
 </phrase>
 
 <phrase>
@@ -2782,7 +2782,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Ripple</original>
-<translation>Riffeln</translation>
+<translation>Kräuseln</translation>
 </phrase>
 
 <phrase>
@@ -2792,7 +2792,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Swirl</original>
-<translation>Wirbeln</translation>
+<translation>Verwirbeln</translation>
 </phrase>
 
 <phrase>
@@ -2977,7 +2977,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Spherize</original>
-<translation>In Kugelform bringen</translation>
+<translation>Wölben</translation>
 </phrase>
 
 <phrase>
@@ -2997,7 +2997,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>New freeze effect</original>
-<translation>Neuer Frosteffekt</translation>
+<translation>Neuer Einfrieren-Effekt</translation>
 </phrase>
 
 <phrase>
@@ -3097,7 +3097,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Theme editor</original>
-<translation>Themen-Editor</translation>
+<translation>Theme-Editor</translation>
 </phrase>
 
 <phrase>
@@ -3107,7 +3107,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Toolbox</original>
-<translation>Werkzeugkasten</translation>
+<translation>Werkzeugbox</translation>
 </phrase>
 
 <phrase>
@@ -3187,7 +3187,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Floating toolboxes</original>
-<translation>Schwebende Werkzeugkästen</translation>
+<translation>Schwebende Werkzeugboxen</translation>
 </phrase>
 
 <phrase>
@@ -3500,7 +3500,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Correct lens distortion</original>
-<translation>Linsenverzerrung korrigieren</translation>
+<translation>Linsenverzeichnung korrigieren</translation>
 </phrase>
 
 <phrase>
@@ -3778,7 +3778,7 @@ Hinweis: Einige kleinere Programmtexte können nicht live aktualisiert werden. S
 
 <phrase>
 <original>Invert selection</original>
-<translation>Auswahl umkehren</translation>
+<translation>Auswahl invertieren</translation>
 </phrase>
 
 <phrase>
@@ -3854,16 +3854,16 @@ Hinweis: Einige kleinere Programmtexte können nicht live aktualisiert werden. S
 
 <phrase>
 <original>Scanner successfully enabled</original>
-<translation>Der Scanner erfolgreich aktiviert</translation>
+<translation>Scanner erfolgreich aktiviert</translation>
 </phrase>
 
 <phrase>
 <original>The selected scanner or digital camera isn't responding.
 
 Please make sure the device is turned on and ready for use.</original>
-<translation>Scanner / Digitalkamera reagiert nicht.
+<translation>Ausgewählter Scanner oder ausgewählte Digitalkamera reagieren nicht.
 
-Bitte prüfen Sie, ob das Gerät eingeschaltet und einsatzbereit ist.</translation>
+Stellen Sie bitte sicher, dass das Gerät eingeschaltet und zur Verwendung bereit ist.</translation>
 </phrase>
 
 <phrase>
@@ -3912,7 +3912,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Unknown error occurred.  Please make sure your scanner is turned on and ready for use.</original>
-<translation>Ein unbekannter Fehler ist aufgetreten. Prüfen Sie bitte, ob Ihr Scanner eingeschaltet und einsatzbereit ist.</translation>
+<translation>Ein unbekannter Fehler ist aufgetreten. Stellen Sie bitte sicher, dass Ihr Scanner eingeschaltet und zur Verwendung bereit ist.</translation>
 </phrase>
 
 <phrase>
@@ -3922,7 +3922,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Unable to acquire DIB lock.  Please make sure no other programs are accessing the scanner.  If the problem persists, reboot and try again.</original>
-<translation>Kann DIB Sperre nicht erhalten. Bitte prüfen Sie, ob andere Programme Zugriff auf den Scanner haben. Wenn das Problem weiterhin besteht, starten Sie Ihren PC neu und versuchen es erneut.</translation>
+<translation>Kann DIB Sperre nicht erhalten. Stellen Sie bitte sicher, dass andere Programme Zugriff auf den Scanner haben. Wenn das Problem weiterhin besteht, starten Sie Ihren PC neu und versuchen es erneut.</translation>
 </phrase>
 
 <phrase>
@@ -4079,7 +4079,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>edge detection technique</original>
-<translation>Kantenerkennungsmethode</translation>
+<translation>Kantenerkennungsverfahren</translation>
 </phrase>
 
 <phrase>
@@ -4232,12 +4232,12 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>colors to use (click boxes to change)</original>
-<translation>Welche Farben verwenden? (Felder anklicken)</translation>
+<translation>Welche Farben verwenden? (zum Ändern in Felder klicken)</translation>
 </phrase>
 
 <phrase>
 <original>dithering technique</original>
-<translation>Dithering-Methode</translation>
+<translation>Dithering-Verfahren</translation>
 </phrase>
 
 <phrase>
@@ -4368,7 +4368,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>automatically validate all incoming alpha channels</original>
-<translation>Automatisch alle eingehenden Alphakanäle validieren</translation>
+<translation>Alle eingehenden Alphakanäle automatisch validieren</translation>
 </phrase>
 
 <phrase>
@@ -4418,12 +4418,12 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>file format options</original>
-<translation>Dateiformatoptionen</translation>
+<translation>Dateiformat-Optionen</translation>
 </phrase>
 
 <phrase>
 <original>save TIFFs as separated CMYK (for printing)</original>
-<translation>TIFFs als getrenntes CMYK (für Druck) speichern</translation>
+<translation>TIFFs als separates CMYK (für Druck) speichern</translation>
 </phrase>
 
 <phrase>
@@ -4653,7 +4653,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>memory usage will be displayed here</original>
-<translation>Speicherverbrauch wird hier angezeigt</translation>
+<translation>Speicherverbrauch wird hier angezeigt werden</translation>
 </phrase>
 
 <phrase>
@@ -4698,7 +4698,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.</original>
-<translation>Sie haben die Speicher-Aufforderung abgeschaltet (via Bearbeiten > Einstellungen). Deshalb erhalten Sie KEINE Aufforderung, dieses Bild vor dem Schließen zu speichern.</translation>
+<translation>Da Sie die Speicher-Aufforderung abgeschaltet haben (via Bearbeiten > Einstellungen), erhalten Sie KEINE Aufforderung, um dieses Bild vor dem Schließen zu speichern.</translation>
 </phrase>
 
 <phrase>
@@ -4757,12 +4757,12 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>Image windows tend to be large, so feel free to display each image's full location in the image window title bars.</original>
-<translation>Bildfenster sind ja eher groß - also können Sie sich den vollständigen Speicherort jedes Bildes in der Titelleiste anzeigen lassen.</translation>
+<translation>Bildfenster sind eher groß - also können Sie sich den vollständigen Speicherort jedes Bildes in der Titelleiste anzeigen lassen.</translation>
 </phrase>
 
 <phrase>
 <original>High-resolution tracking allows PhotoDemon to more accurately reproduce mouse and pen movement.  On some older PCs, the system may struggle to keep up with the extra tracking data, so you can disable this if necessary.</original>
-<translation>Hoch auflösende Verfolgung ernöglicht PhotoDemon, die Bewegung der Maus bzw. des Stiftes genauer zu reproduzieren. Auf älteren PC´s könnte das System mit den extra Verfolgungsdaten überfordert sein, sodass Sie diese Funktion bei Notwendigkeit deaktivieren können.</translation>
+<translation>Hoch auflösende Verfolgung ermöglicht PhotoDemon, die Bewegung der Maus bzw. des Stiftes genauer zu reproduzieren. Auf älteren PC´s könnte das System mit den extra Verfolgungsdaten überfordert sein, sodass Sie diese Funktion bei Notwendigkeit deaktivieren können.</translation>
 </phrase>
 
 <phrase>
@@ -4992,7 +4992,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>TIFFs support a variety of compression techniques.  Some of these techniques are limited to specific color depths, so make sure you pick one that matches the images you plan on saving.</original>
-<translation>TIFFs unterstützen eine Vielzahl von Kompressionsverfahren. Einige von diesen sind auf bestimmte Farbtiefen beschränkt, also wählen Sie ein Verfahren aus, das zu Ihren Bildern passt.</translation>
+<translation>TIFFs unterstützen eine Vielzahl von Kompressionsverfahren. Einige von diesen Verfahren sind auf bestimmte Farbtiefen beschränkt. Stellen Sie sicher, dass Sie ein Verfahren wählen, das zu den von Ihnen zu speichernden Bildern passt.</translation>
 </phrase>
 
 <phrase>
@@ -5057,7 +5057,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>To configure custom color profiles on a per-monitor basis, please use this setting.</original>
-<translation>Um für jeden einzelnen Monitor benutzerdefinierte Farbprofile einzurichten, verwenden Sie bitte diese Einstellung.</translation>
+<translation>Um benutzerdefinierte Farbprofile pro Monitor einzurichten, verwenden Sie bitte diese Einstellung.</translation>
 </phrase>
 
 <phrase>
@@ -5177,7 +5177,7 @@ Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 
 <phrase>
 <original>PhotoDemon's volunteer translators regularly update the program's language files.  PhotoDemon can automatically download these updates separate from the main program, ensuring that you always have the most up-to-date language files.</original>
-<translation>Die Texte in PhotoDemon werden von einigen Freiwilligen regelmäßig in mehrere Sprachen übersetzt. Auf Wunsch kann die neueste Sprachdatei getrennt vom gesamten Programmpaket auf den neuesten Stand gebracht werden.</translation>
+<translation>PhotoDemon´s freiwillige Übersetzer aktualisieren regelmäßig die Sprachdateien des Programms. Photodemon kann automatisch diese Updates separat aus dem Hauptprogramm herunterladen. Das stellt sicher, dass Sie immer die aktuellsten Sprachdateien haben.</translation>
 </phrase>
 
 <phrase>
@@ -5201,7 +5201,7 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <phrase>
 <original>Copy the report to the system clipboard</original>
-<translation>Den Bericht in die Zwischenablage kopieren</translation>
+<translation>Den Bericht in die Systemzwischenablage kopieren</translation>
 </phrase>
 
 <phrase>
@@ -5449,7 +5449,7 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <phrase>
 <original>Performing compound inversion</original>
-<translation>Verbund-Inversion wird durchgeführt</translation>
+<translation>Verbundinversion wird durchgeführt</translation>
 </phrase>
 
 <phrase>
@@ -5682,7 +5682,7 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <phrase>
 <original>Print previewing requires the FreeImage plugin, which could not be located on this computer. To enable previewing, please go to Edit -> Preferences and select "check for missing plugins on program start."  The next time you load PhotoDemon, it will offer to download this plugin for you.</original>
-<translation>Die Druckvorschau erfordert das FreeImage-Plugin, das auf diesem Computer nicht gefunden werden konnte. Zum Aktivieren der Vorschau gehen Sie bitte zu "Bearbeiten > Einstellungen" und wählen "Auf fehlende Plugins beim Start prüfen" aus. Beim nächsten Start von PhotoDemon wird Ihnen die Möglichkeit zum Download dieser Plugins geboten.</translation>
+<translation>Die Druckvorschau erfordert das FreeImage-Plugin, das auf diesem Computer nicht gefunden werden konnte. Zum Aktivieren der Vorschau gehen Sie bitte zu "Bearbeiten > Einstellungen" und wählen "Auf fehlende Plugins beim Programmstart prüfen" aus. Beim nächsten Start von PhotoDemon wird Ihnen die Möglichkeit zum Download dieser Plugins geboten.</translation>
 </phrase>
 
 <phrase>
@@ -5951,7 +5951,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>This URL is not valid.  Please make sure the URL begins with "http://" or "ftp://".</original>
-<translation>Diese URL ist ungültig. Bitte achten Sie darauf, dass die URL mit " http:// " oder " ftp://" beginnt.</translation>
+<translation>Diese URL ist ungültig. Stellen Sie bitte sicher, dass die URL mit " http:// " oder " ftp://" beginnt.</translation>
 </phrase>
 
 <phrase>
@@ -6703,7 +6703,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>wrap them around the image</original>
-<translation>Rund um das Bild wickeln</translation>
+<translation>Diese rund um das Bild hüllen</translation>
 </phrase>
 
 <phrase>
@@ -7004,7 +7004,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.</original>
 <translation>HINWEIS: Wenn Sie auf "Speichern" klicken, speichert PhotoDemon dieses Bild unter Verwendung seines aktuellen Dateinamens.
 
- Wenn Sie es unter einem anderen Namen speichern möchten, wählen Sie bitte "Abbrechen", dann verwenden Sie das Menüelement "Datei > Speichern unter".</translation>
+ Wenn Sie es unter einem anderen Namen speichern wollen, wählen Sie bitte "Abbrechen" aus, dann verwenden Sie das Menüelement "Datei > Speichern unter".</translation>
 </phrase>
 
 <phrase>
@@ -7178,7 +7178,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Load each icon as a separate image</original>
-<translation>Jedes Icon als einzelnes Bild laden</translation>
+<translation>Jedes Icon als separates Bild laden</translation>
 </phrase>
 
 <phrase>
@@ -7345,7 +7345,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>PhotoDemon can automatically choose a JPEG quality setting for you.  The statistical analyses it uses are designed around photographs; synthetic images or images with large regions of solid color may not work as well.</original>
-<translation>PhotoDemon kann automatisch eine JPEG-Qualitätseinstellung für Sie wählen. Die verwendeten statistischen Analysen eignen sich gut für Fotos; synthetische Bilder oder Bilder mit großen einfarbigen Regionen dürften nicht so gut funktionieren.</translation>
+<translation>PhotoDemon kann automatisch eine JPEG-Qualitätseinstellung für Sie wählen. Die verwendeten statistischen Analysen sind rund um Fotos ausgelegt; synthetische Bilder oder Bilder mit großen einfarbigen Regionen dürften nicht so gut funktionieren.</translation>
 </phrase>
 
 <phrase>
@@ -7410,7 +7410,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Progressive encoding is sometimes used for JPEG files that will be used on the Internet.  It saves the image in three steps, which can be used to gradually fade-in the image on a slow Internet connection.</original>
-<translation>Progressive Kodierung wird manchmal für JPEG-Dateien verwendet, die im Internet benutzt werden. Das Bild wird in drei Schritten gespeichert, damit das Bild bei einer langsamen Internetverbindung nach und nach eingeblendet werden kann .</translation>
+<translation>Progressive Kodierung wird manchmal für JPEG-Dateien verwendet, die im Internet verwendet werden. Das Bild wird in drei Schritten gespeichert, damit das Bild bei einer langsamen Internetverbindung schrittweise eingeblendet werden kann .</translation>
 </phrase>
 
 <phrase>
@@ -7609,7 +7609,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button.</original>
-<translation>Kompilieren Sie bitte PhotoDemon, bevor Sie es verwenden. Viele Funktionen, die auf Subklassen beruhen, werden in der IDE deaktiviert, aber einige - wie benutzerdefinierte Schaltflächen - können nicht ohne gravierende Auswirkungen auf die Funktionalität des Programms deaktiviert werden. Sie müssen mit IDE-Instabilität und Abstürzen rechnen, besonders wenn Sie das Programm mit der Schaltfläche "IDE-Stop" beenden.</translation>
+<translation>Kompilieren Sie bitte PhotoDemon, bevor Sie es verwenden. Viele Funktionen, die auf Subklassen beruhen, werden in der IDE deaktiviert, aber einige - wie benutzerdefinierte Befehlsschaltflächen - können nicht ohne gravierende Auswirkungen auf die Funktionalität des Programms deaktiviert werden. Sie müssen mit IDE-Instabilität und Abstürzen rechnen, besonders wenn Sie das Programm mit der Schaltfläche "IDE-Stop" beenden.</translation>
 </phrase>
 
 <phrase>
@@ -7619,7 +7619,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>If you insist on running PhotoDemon in the IDE, please do not submit bugs regarding IDE crashes or freezes.  PhotoDemon's developers can only address issues and bugs that affect the compiled .exe.</original>
-<translation>Wenn Sie darauf bestehen, PhotoDemon in der IDE auszuführen, senden Sie mir bitte keine Fehlermeldungen bezüglich IDE-Absturz oder -Einfrieren. Die PhotoDemon-Entwickler können sich nur um Probleme und Fehler der kompilierten Anwendung kümmern.</translation>
+<translation>Wenn Sie darauf bestehen, PhotoDemon in der IDE auszuführen, senden Sie mir bitte keine Fehlermeldungen bezüglich IDE-Abstürzen oder -Einfrieren. Die PhotoDemon-Entwickler können sich nur mit Problemen und Fehlern befassen, welche die kompilierte und ausführbare Datei betreffen.</translation>
 </phrase>
 
 <!-- VBP_FormIDEWarning.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -7897,7 +7897,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Note: you can also set a center position by clicking the preview window.</original>
-<translation>Hinweis: Sie können auch eine Mittelposition festlegen, indem sie auf die Vorschaufenster klicken.</translation>
+<translation>Hinweis: Sie können auch eine Mittelposition festlegen, indem sie auf das Vorschaufenster klicken.</translation>
 </phrase>
 
 <phrase>
@@ -7917,7 +7917,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Swirling image round and round</original>
-<translation>Bild rundherum wirbeln</translation>
+<translation>Bild wird rundherum verwirbelt</translation>
 </phrase>
 
 <!-- VBP_FormSwirl.frm contains 9 phrases. 3 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
@@ -7933,7 +7933,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Projecting image through simulated lens</original>
-<translation>Bild durch simulierte Linsen projizieren</translation>
+<translation>Bild wird durch simulierte Linse projiziert</translation>
 </phrase>
 
 <!-- VBP_FormLens.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -7944,12 +7944,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>length of ripples (wavelength)</original>
-<translation>Länge der Ripples (Wellenlänge)</translation>
+<translation>Länge der Wellen (Wellenlänge)</translation>
 </phrase>
 
 <phrase>
 <original>height of ripples (amplitude)</original>
-<translation>Höhe der Ripples (Amplitude)</translation>
+<translation>Höhe der Wellen (Amplitude)</translation>
 </phrase>
 
 <phrase>
@@ -7964,7 +7964,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Simulating ripples across image surface</original>
-<translation>Wellen auf Bildoberfläche simulieren</translation>
+<translation>Wellen werden auf Bildoberfläche simuliert</translation>
 </phrase>
 
 <phrase>
@@ -8131,7 +8131,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>conversion technique</original>
-<translation>Konvertierungsmethode</translation>
+<translation>Konvertierungsverfahren</translation>
 </phrase>
 
 <phrase>
@@ -8167,7 +8167,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying gaussian blur</original>
-<translation>Gaußsche Unschärfe wirdangewendet</translation>
+<translation>Gaußscher Weichzeichner wird angewendet</translation>
 </phrase>
 
 <phrase>
@@ -8208,12 +8208,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Analyzing image in preparation for surface blur</original>
-<translation>Bild analysieren in Vorbereitung für Oberflächenunschärfe</translation>
+<translation>Bild wird in Vorbereitung für Oberflächenunschärfe analysiert</translation>
 </phrase>
 
 <phrase>
 <original>Applying surface blur</original>
-<translation></translation>
+<translation>Oberflächenunschärfe wird angewendet</translation>
 </phrase>
 
 <phrase>
@@ -8234,17 +8234,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>box height</original>
-<translation>Boxhöhe</translation>
+<translation>Feldhöhe</translation>
 </phrase>
 
 <phrase>
 <original>box width</original>
-<translation>Boxbreite</translation>
+<translation>Feldbreite</translation>
 </phrase>
 
 <phrase>
 <original>Applying box blur to image</original>
-<translation>Boxunschärfe auf Bild anwenden</translation>
+<translation>Feld weichzeichnen wird auf Bild angewendet</translation>
 </phrase>
 
 <!-- VBP_FormBoxBlur.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -8271,7 +8271,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Correct or Fix Lens Distortion</original>
-<translation>Objektivverzerrung korrigieren oder reparieren</translation>
+<translation>Linsenverzeichnung korrigieren oder beheben</translation>
 </phrase>
 
 <phrase>
@@ -8291,7 +8291,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Correcting image distortion</original>
-<translation>Bildverzerrung korrigieren</translation>
+<translation>Bildverzerrung wird korrigiert</translation>
 </phrase>
 
 <!-- VBP_FormLensCorrect.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -8422,7 +8422,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>vignetting color (click box to change)</original>
-<translation>Vignettierungsfarbe (Klick-Box zu ändern)</translation>
+<translation>Vignettierungsfarbe (zum Ändern in Feld klicken)</translation>
 </phrase>
 
 <phrase>
@@ -8484,7 +8484,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>Applying modern art techniques</original>
-<translation>Verfahren der modernen Kunst anwenden</translation>
+<translation>Verfahren der modernen Kunst wird angewendet</translation>
 </phrase>
 
 <!-- VBP_FormModernArt.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -8679,7 +8679,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>force each filename, including extension, to the following case</original>
-<translation>jeden Dateinamen (einschließl. Dateierweiterung!) umwandeln in</translation>
+<translation>Jeden Dateinamen zwingen (einschließl. Dateierweiterung) in folgendem Fall</translation>
 </phrase>
 
 <phrase>
@@ -8973,7 +8973,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>Each of these methods supports use of the Ctrl and Shift keys to select multiple files at once.</original>
-<translation>Jede dieser Methoden unterstützt die Verwendung der Strg- bzw. Umschalt- taste, um mehrere Dateien auf einmal auszuwählen.</translation>
+<translation>Jede dieser Methoden unterstützt die Verwendung der Strg- bzw. Shift- taste, um mehrere Dateien auf einmal auszuwählen.</translation>
 </phrase>
 
 <phrase>
@@ -8998,7 +8998,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>If you choose to save images to a new format, please make sure the format you have selected is appropriate for all images in your list.  (For example, images with transparency should be saved to a format that supports transparency!)</original>
-<translation>Wenn Sie Bilder in einem neuen Format speichern möchten, achten Sie bitte darauf, dass das gewählte Format für alle Bilder in Ihrer Liste geeignet ist. (Zum Beispiel sollten Bilder mit Transparenz sinnvollerweise in einem Format gespeichert werden, das Transparenz unterstützt!)</translation>
+<translation>Wenn Sie Bilder in einem neuen Format speichern möchten, stellen Sie bitte sicher, dass das von Ihnen ausgewählte Format für alle Bilder in Ihrer Liste geeignet ist. (Zum Beispiel sollten Bilder mit Transparenz sinnvollerweise in einem Format gespeichert werden, das Transparenz unterstützt!)</translation>
 </phrase>
 
 <phrase>
@@ -9053,7 +9053,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>You haven't selected any image files.  Please add one or more files to the batch list before saving.</original>
-<translation>Sie haben keine Bilddateien ausgewählt. Fügen Sie bitte der Batchliste eine oder mehrere Dateien hinzu, bevor Sie speichern.</translation>
+<translation>Sie haben keine Bilddateien ausgewählt. Fügen Sie bitte eine oder mehrere Dateien der Batchliste hinzu, bevor Sie speichern.</translation>
 </phrase>
 
 <phrase>
@@ -9467,7 +9467,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>Applying pan and zoom (Ken Burns) effect</original>
-<translation>Schwenk- und Zoomeffekt (Ken Burns)</translation>
+<translation>Schwenk- und Zoomeffekt (Ken Burns) wird angewendet</translation>
 </phrase>
 
 <!-- VBP_FormPanZoom.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -9495,22 +9495,22 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>area outside sphere</original>
-<translation>Bildbereich außerhalb der Kugel</translation>
+<translation>Bereich außerhalb Kugel</translation>
 </phrase>
 
 <phrase>
 <original>horizontal offset</original>
-<translation>horizontaler Versatz</translation>
+<translation>Horizontaler Offset</translation>
 </phrase>
 
 <phrase>
 <original>vertical offset</original>
-<translation>vertikaler Versatz</translation>
+<translation>Vertikaler Offset</translation>
 </phrase>
 
 <phrase>
 <original>Wrapping image around sphere</original>
-<translation>Bild um eine Kugel wickeln</translation>
+<translation>Bild wird rund um Kugel gehüllt</translation>
 </phrase>
 
 <phrase>
@@ -10078,12 +10078,12 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>Load a previously saved selection</original>
-<translation>Gespeicherte Auswahl laden</translation>
+<translation>Eine zuvor gespeicherte Auswahl laden</translation>
 </phrase>
 
 <phrase>
 <original>An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.</original>
-<translation>Fehler beim Versuch, %1 zu laden. Verifizieren Sie bitte, ob die Datei eine gültige PhotoDemon-Auswahl-Datei ist.</translation>
+<translation>Ein Fehler beim Versuch, %1 zu laden, ist aufgetreten. Verifizieren Sie bitte, dass die Datei eine gültige PhotoDemon-Auswahldatei ist.</translation>
 </phrase>
 
 <phrase>
@@ -10103,7 +10103,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>Save the current selection</original>
-<translation>Aktuelle Auswahl speichern</translation>
+<translation>Die aktuelle Auswahl speichern</translation>
 </phrase>
 
 <phrase>
@@ -10113,7 +10113,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>Unknown error occurred.  Selection was not saved.  Please try again.</original>
-<translation>Unbekannter Fehler aufgetreten; Auswahl wurde nicht gespeichert. Versuchen Sie es bitte erneut.</translation>
+<translation>Unbekannter Fehler aufgetreten. Auswahl wurde nicht gespeichert. Versuchen Sie es bitte erneut.</translation>
 </phrase>
 
 <phrase>
@@ -10133,12 +10133,12 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>Inverting selection</original>
-<translation>Auswahl invertieren</translation>
+<translation>Auswahl wird invertiert</translation>
 </phrase>
 
 <phrase>
 <original>Selection inversion complete.</original>
-<translation>Auswahl vollständig invertiert.</translation>
+<translation>Auswahlinversion vollständig.</translation>
 </phrase>
 
 <phrase>
@@ -10148,7 +10148,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>Sharpening selection</original>
-<translation>Auswahl schärfen</translation>
+<translation>Auswahl wird geschärft</translation>
 </phrase>
 
 <phrase>
@@ -10462,7 +10462,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right.</original>
-<translation>Frühere gespeicherte Presets können hier ausgewählt werden. Sie können die aktuellen Einstellungen als neues Preset speichern, indem Sie auf die Schaltfläche "Preset speichern" auf der rechten Seite klicken.</translation>
+<translation>Zuvor gespeicherte Presets können hier ausgewählt werden. Sie können die aktuellen Einstellungen als neues Preset speichern, indem Sie auf die Schaltfläche "Preset speichern" auf der rechten Seite klicken.</translation>
 </phrase>
 
 <!-- commandBar.ctl contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
@@ -10521,7 +10521,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>Applying radial blur</original>
-<translation>Radiale Unschärfe wird angewendet</translation>
+<translation>Radialer Weichzeichner wird angewendet</translation>
 </phrase>
 
 <!-- VBP_FormRadialBlur.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -10840,7 +10840,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>Please start by selecting a base language file.  If the selected file already contains translation data, you will be able to edit any existing translations, as well as add translations that may be missing.</original>
-<translation>Starten Sie bitte mit der Auswahl einer Basis-Sprachdatei. Wenn die ausgewählte Datei bereits Übersetzungsdaten enthält, können Sie alle vorhandenen Übersetzungen bearbeiten sowie möglicherweise fehlende Übersetzungen hinzufügent.</translation>
+<translation>Starten Sie, indem Sie eine Basis-Sprachdatei auswählen. Wenn die ausgewählte Datei bereits Übersetzungsdaten enthält, können Sie alle vorhandenen Übersetzungen bearbeiten sowie möglicherweise fehlende Übersetzungen hinzufügent.</translation>
 </phrase>
 
 <phrase>
@@ -10895,7 +10895,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>Every time a phrase is modified, an autosave will automatically be created in PhotoDemon's user language folder.  This means you can exit the program at any time without losing your work.</original>
-<translation>Jedes Mal, wenn eine Textpassage modifiziert wird, wird automatisch ein Autosave im PhotoDemon-Ordner "User Language" erstellt. Dies bedeutet, Sie können das Programm jederzeit verlassen, ohne  Ihre Arbeit zu verlieren.</translation>
+<translation>Jedes Mal, wenn eine Textpassage modifiziert wird, wird automatisch ein Autosave im PhotoDemon-Ordner "User Language" erstellt. Dies bedeutet, Sie können das Programm jederzeit verlassen, ohne Ihre Arbeit zu verlieren.</translation>
 </phrase>
 
 <phrase>
@@ -11267,7 +11267,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>ignore transparent pixels when auto-activating layers</original>
-<translation>Transparente Pixel bei automatischer Aktivierung von Ebenen ignorieren</translation>
+<translation>Transparente Pixel bei autom. Aktivierung von Ebenen ignorieren</translation>
 </phrase>
 
 <phrase>
@@ -11392,7 +11392,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu.</original>
-<translation>Der Schieberegler "Weiche Auswahlkante" ermöglicht sofortige Anpassungen der Kante. Aus Performance-Gründen ist es auf kleine Radien beschränkt. Für größere Radien verwenden Sie bitte im Menü "Auswahl > Weiche Auswahlkante".</translation>
+<translation>Der Schieberegler "Weiche Auswahlkante" ermöglicht sofortige Anpassungen der Kante. Aus Performance-Gründen ist es auf kleine Radien beschränkt. Für größere Radien verwenden Sie bitte das Menü "Auswahl > Weiche Auswahlkante".</translation>
 </phrase>
 
 <phrase>
@@ -11840,7 +11840,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>Merging luminance and chroma into final image</original>
-<translation>Leuchtdichte und Chroma werden in das finale Bild zusammengeführt</translation>
+<translation>Leuchtdichte und Chroma werden in finales Bild zusammengeführt</translation>
 </phrase>
 
 <!-- VBP_FormChromaBlur.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -12034,7 +12034,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>Shift key: preserve layer aspect ratio</original>
-<translation>Umschalttaste: Seitenverhältnis der Ebene erhalten</translation>
+<translation>Shifttaste: Seitenverhältnis der Ebene erhalten</translation>
 </phrase>
 
 <phrase>
@@ -12069,7 +12069,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM</original>
-<translation>Mausrad = VERTIKAL SCROLLEN, Umschalt+Mausrad = HORIZONTAL SCROLLEN - Strg+Mausrad =ZOOMEN</translation>
+<translation>Mausrad = VERTIKAL SCROLLEN, Shift+Mausrad = HORIZONTAL SCROLLEN - Strg+Mausrad =ZOOMEN</translation>
 </phrase>
 
 <phrase>
@@ -12248,22 +12248,22 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Click to merge this layer with the layer beneath it.</original>
-<translation>Klicken, um diese Ebene mit der darunter liegenden zusammenzuführen.</translation>
+<translation>Klicken, um diese Ebene mit der Ebene unterhalb dieser zusammenzuführen.</translation>
 </phrase>
 
 <phrase>
 <original>This layer can't merge down, because there are no visible layers beneath it.</original>
-<translation>Diese Ebene kann mit der darunter liegenden nicht zusammengeführt werden, da es keine sichtbaren Ebenen unter ihr gibt.</translation>
+<translation>Diese Ebene kann nicht nach unten zusammengeführt werden, da es keine sichtbaren Ebenen unterhalb dieser gibt.</translation>
 </phrase>
 
 <phrase>
 <original>Click to merge this layer with the layer above it.</original>
-<translation>Klicken, um diese Ebene mit der darüber liegenden zusammenzuführen.</translation>
+<translation>Klicken, um diese Ebene mit der Ebene oberhalb dieser zusammenzuführen.</translation>
 </phrase>
 
 <phrase>
 <original>This layer can't merge up, because there are no visible layers above it.</original>
-<translation>Diese Ebene kann mit der darüber liegenden nicht zusammengeführt werden, da es keine sichtbaren Ebenen über ihr gibt.</translation>
+<translation>Diese Ebene kann nicht nach oben zusammengeführt werden, da es keine sichtbaren Ebenen oberhalb dieser gibt.</translation>
 </phrase>
 
 <phrase>
@@ -12422,7 +12422,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Split-toning image</original>
-<translation>Bild teil-tönen</translation>
+<translation>Splittönung des Bildes</translation>
 </phrase>
 
 <!-- VBP_FormSplitTone.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -12438,7 +12438,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Applying beer goggles</original>
-<translation>Gleich wird's wackeln!</translation>
+<translation>Bierschutzbrille wird angewendet</translation>
 </phrase>
 
 <!-- VBP_FormFragment.frm contains 10 phrases. 8 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -12449,17 +12449,17 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>straightening angle</original>
-<translation>Ausrichtungswinkel</translation>
+<translation>Winkel wird ausgerichtet</translation>
 </phrase>
 
 <phrase>
 <original>Straightening image</original>
-<translation>Bild ausrichten</translation>
+<translation>Bild wird ausgerichtet</translation>
 </phrase>
 
 <phrase>
 <original>Straightening layer</original>
-<translation>Ebene ausrichten</translation>
+<translation>Ebene wird ausgerichtet</translation>
 </phrase>
 
 <phrase>
@@ -12475,7 +12475,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Generating glass tiles</original>
-<translation>Glasbausteine generieren</translation>
+<translation>Glasbausteine werden generiert</translation>
 </phrase>
 
 <!-- VBP_FormGlassTiles.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -12569,12 +12569,12 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>default (above current layer)</original>
-<translation>Standard (über aktueller Ebene)</translation>
+<translation>Standard (oberhalb aktueller Ebene)</translation>
 </phrase>
 
 <phrase>
 <original>below current layer</original>
-<translation>Unter aktueller Ebene</translation>
+<translation>Unterhalb aktueller Ebene</translation>
 </phrase>
 
 <phrase>
@@ -12838,7 +12838,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>selection shape shown</original>
-<translation>Angezeigte Auswahlform</translation>
+<translation>Gezeigte Auswahlform</translation>
 </phrase>
 
 <!-- VBP_FormUndoHistory.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -13392,7 +13392,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_FormSteel.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- VBP_FormSteel.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormSteel.frm-->
 
@@ -13402,12 +13402,23 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <!-- END text for VBP_FiltersByteArray.bas-->
 
+<!-- BEGIN text for VBP_FormMezzotint.frm (FormMezzotint) -->
+
+<phrase>
+<original>Mezzotint</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormMezzotint.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for VBP_FormMezzotint.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2333</phrasecount>
+<phrasecount>2334</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3973 phrases. -->
-<!-- 1640 are duplicates, so only 2333 unique phrases have been written to file. -->
-<!-- These 2333 phrases contain approximately 13368 total words. -->
+<!-- As of this build, PhotoDemon contains 3982 phrases. -->
+<!-- 1648 are duplicates, so only 2334 unique phrases have been written to file. -->
+<!-- These 2334 phrases contain approximately 13369 total words. -->
 
 </pdData>
