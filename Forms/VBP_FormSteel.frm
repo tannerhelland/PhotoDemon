@@ -191,7 +191,7 @@ Attribute VB_Exposed = False
 '"Metal" or "Chrome" Image effect
 'Copyright 2002-2015 by Tanner Helland
 'Created: sometime 2002
-'Last updated: 02/April/15
+'Last updated: 04/April/15
 'Last update: rewrite function from scratch
 '
 'PhotoDemon's "Metal" filter is the rough equivalent of "Chrome" in Photoshop.  Our implementation is relatively
@@ -240,8 +240,8 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
     
     'If the user specified a non-zero smoothness, apply it now
     If steelSmoothness > 0 Then Filters_ByteArray.GaussianBlur_IIR_ByteArray grayMap, workingDIB.getDIBWidth, workingDIB.getDIBHeight, steelSmoothness, 3
-    
-    'Re-normalize the data
+        
+    'Re-normalize the data (this ends up not being necessary, but it could be exposed to the user in a future update)
     'Filters_ByteArray.normalizeByteArray grayMap, workingDIB.getDIBWidth, workingDIB.getDIBHeight
     
     'Next, we need to generate a sinusoidal octave lookup table for the graymap.  This causes the luminance of the map to
@@ -280,14 +280,14 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
     Next i
     
     'Convert our point array into color curves
-    Dim rLookup() As Byte, gLookup() As Byte, bLookup() As Byte
+    Dim rLookup() As Byte, gLookUp() As Byte, bLookup() As Byte
     
     Dim cLUT As pdFilterLUT
     Set cLUT = New pdFilterLUT
     cLUT.fillLUT_Curve rLookup, rCurve
-    cLUT.fillLUT_Curve gLookup, gCurve
+    cLUT.fillLUT_Curve gLookUp, gCurve
     cLUT.fillLUT_Curve bLookup, bCurve
-    
+        
     'We are now ready to apply the final curve to the image!
     
     'Create a local array and point it at the pixel data we want to operate on
@@ -321,7 +321,7 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
         grayVal = grayMap(x, y)
         
         ImageData(QuickVal, y) = bLookup(grayVal)
-        ImageData(QuickVal + 1, y) = gLookup(grayVal)
+        ImageData(QuickVal + 1, y) = gLookUp(grayVal)
         ImageData(QuickVal + 2, y) = rLookup(grayVal)
         
     Next y
