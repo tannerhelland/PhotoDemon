@@ -1171,13 +1171,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormChromaBlur.ChromaBlurFilter cParams.GetDouble(1), cParams.GetLong(2)
             End If
-        
-        Case "Fragment"
-            If showDialog Then
-                showPDDialog vbModal, FormFragment
-            Else
-                FormFragment.Fragment cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
-            End If
             
         Case "Kuwahara filter"
             If showDialog Then
@@ -1188,13 +1181,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         Case "Grid blur"
             FilterGridBlur
-            
-        Case "Pixelate"
-            If showDialog Then
-                showPDDialog vbModal, FormPixelate
-            Else
-                FormPixelate.PixelateFilter cParams.GetLong(1), cParams.GetLong(2)
-            End If
             
         
         'Distort filters
@@ -1468,7 +1454,38 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
             End If
             
-            
+        
+        'Pixelate
+        
+        Case "Color halftone"
+            If showDialog Then
+                showPDDialog vbModal, FormColorHalftone
+            Else
+                FormColorHalftone.ColorHalftoneFilter cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetDouble(5)
+            End If
+        
+        Case "Fragment"
+            If showDialog Then
+                showPDDialog vbModal, FormFragment
+            Else
+                FormFragment.Fragment cParams.GetLong(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetLong(4), cParams.GetBool(5)
+            End If
+        
+        Case "Mezzotint"
+            If showDialog Then
+                showPDDialog vbModal, FormMezzotint
+            Else
+                FormMezzotint.ApplyMezzotintEffect cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4)
+            End If
+        
+        Case "Mosaic"
+            If showDialog Then
+                showPDDialog vbModal, FormMosaic
+            Else
+                FormMosaic.MosaicFilter cParams.GetLong(1), cParams.GetLong(2)
+            End If
+        
+        
         'Sharpen
         
         Case "Sharpen"
@@ -1490,14 +1507,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
         Case "Antique"
             MenuAntique
-        
-        Case "Color halftone"
-            If showDialog Then
-                showPDDialog vbModal, FormColorHalftone
-            Else
-                FormColorHalftone.ColorHalftoneFilter cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetDouble(5)
-            End If
-            
+                    
         Case "Diffuse"
             If showDialog Then
                 showPDDialog vbModal, FormDiffuse

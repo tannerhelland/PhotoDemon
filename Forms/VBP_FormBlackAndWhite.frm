@@ -47,15 +47,6 @@ Begin VB.Form FormMonochrome
       _ExtentY        =   582
       Caption         =   "automatically calculate threshold"
       Value           =   0
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.ComboBox cboDither 
       BackColor       =   &H00FFFFFF&
@@ -124,6 +115,7 @@ Begin VB.Form FormMonochrome
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -209,7 +201,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub cboDither_Click()
     If CBool(chkAutoThreshold.Value) Then sltThreshold = calculateOptimalThreshold()
@@ -260,8 +252,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Draw the preview
     updatePreview
@@ -376,7 +368,7 @@ End Function
 'Convert an image to black and white (1-bit image)
 Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal DitherMethod As Long = 0, Optional ByVal lowColor As Long = &H0, Optional ByVal highColor As Long = &HFFFFFF, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
-    If toPreview = False Then Message "Converting image to two colors..."
+    If Not toPreview Then Message "Converting image to two colors..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte

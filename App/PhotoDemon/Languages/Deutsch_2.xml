@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (rk)</langname>
-<langversion>6.7.8</langversion>
+<langversion>6.7.9</langversion>
 <langstatus>Nicht abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1153,11 +1153,11 @@ Verlustfreie Kopien werden im gleichen Ordner wie dieses initiale Bild gespeiche
 
 <!-- END text for VBP_FormBrightnessContrast.frm-->
 
-<!-- BEGIN text for VBP_FormMosaic.frm (FormPixelate) -->
+<!-- BEGIN text for VBP_FormMosaic.frm (FormMosaic) -->
 
 <phrase>
-<original>Pixelate Options</original>
-<translation>Verpixeln-Optionen</translation>
+<original>Mosaic</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1176,16 +1176,11 @@ Verlustfreie Kopien werden im gleichen Ordner wie dieses initiale Bild gespeiche
 </phrase>
 
 <phrase>
-<original>Applying pixellation</original>
-<translation>Verpixelung wird angewendet</translation>
+<original>Applying mosaic</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Pixelate</original>
-<translation>Verpixeln</translation>
-</phrase>
-
-<!-- VBP_FormMosaic.frm contains 6 phrases.  All 6 were unique, so 6 new phrases were written to file. -->
+<!-- VBP_FormMosaic.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMosaic.frm-->
 
@@ -2741,11 +2736,6 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 </phrase>
 
 <phrase>
-<original>Fragment</original>
-<translation>Fragment</translation>
-</phrase>
-
-<phrase>
 <original>Kuwahara filter</original>
 <translation>Kuwahara-Filter</translation>
 </phrase>
@@ -2926,6 +2916,26 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 </phrase>
 
 <phrase>
+<original>Pixelate</original>
+<translation>Verpixeln</translation>
+</phrase>
+
+<phrase>
+<original>Color halftone</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Fragment</original>
+<translation>Fragment</translation>
+</phrase>
+
+<phrase>
+<original>Mezzotint</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Unsharp masking</original>
 <translation>Unscharfe Maskierung</translation>
 </phrase>
@@ -2938,11 +2948,6 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 <phrase>
 <original>Antique</original>
 <translation>Antik</translation>
-</phrase>
-
-<phrase>
-<original>Color halftone</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -3846,7 +3851,7 @@ Hinweis: Einige kleinere Programmtexte können nicht live aktualisiert werden. S
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 546 phrases. 162 were duplicates of existing phrases, so only 384 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 549 phrases. 163 were duplicates of existing phrases, so only 386 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -13405,20 +13410,60 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <!-- BEGIN text for VBP_FormMezzotint.frm (FormMezzotint) -->
 
 <phrase>
-<original>Mezzotint</original>
+<original>stippling</original>
 <translation></translation>
 </phrase>
 
-<!-- VBP_FormMezzotint.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>randomness</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Mezzotinting image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dot</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>horizontal stroke</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical stroke</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>coarse</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fine</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormMezzotint.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMezzotint.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2334</phrasecount>
+<phrasecount>2343</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3982 phrases. -->
-<!-- 1648 are duplicates, so only 2334 unique phrases have been written to file. -->
-<!-- These 2334 phrases contain approximately 13369 total words. -->
+<!-- As of this build, PhotoDemon contains 3991 phrases. -->
+<!-- 1648 are duplicates, so only 2343 unique phrases have been written to file. -->
+<!-- These 2343 phrases contain approximately 13380 total words. -->
 
 </pdData>

@@ -678,8 +678,15 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         
         'If a selection is not active, replace the entire DIB with the contents of the working DIB
         Else
-            If (workingDIB.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then workingDIB.setAlphaPremultiplication True
+            
+            If (workingDIB.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then
+                workingDIB.setAlphaPremultiplication True
+            Else
+                workingDIB.setInitialAlphaPremultiplicationState True
+            End If
+            
             pdImages(g_CurrentImage).getActiveDIB().createFromExistingDIB workingDIB
+            
         End If
         
         'workingDIB and its backup have served their purposes, so erase them from memory
@@ -702,11 +709,23 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         
         'If a selection is active, use the contents of workingDIBBackup instead of workingDIB to render the preview
         If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.isLockedIn Then
-            If (workingDIBBackup.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then workingDIBBackup.setAlphaPremultiplication True
+            
+            If (workingDIBBackup.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then
+                workingDIBBackup.setAlphaPremultiplication True
+            Else
+                workingDIBBackup.setInitialAlphaPremultiplicationState True
+            End If
+            
             previewTarget.setFXImage workingDIBBackup
         
         Else
-            If (workingDIB.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then workingDIB.setAlphaPremultiplication True
+            
+            If (workingDIB.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then
+                workingDIB.setAlphaPremultiplication True
+            Else
+                workingDIB.setInitialAlphaPremultiplicationState True
+            End If
+            
             previewTarget.setFXImage workingDIB
         
         End If
