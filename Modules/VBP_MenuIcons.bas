@@ -459,10 +459,11 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     
     addMenuIcon "PIXELATE", 7, 7        'Pixelate
         '--> Pixelate sub-menu
-        'addMenuIcon "DIFFUSE", 7, 7, 0      'Color halftone (TODO)
-        addMenuIcon "FRAGMENT", 7, 7, 1      'Fragment
-        'addMenuIcon "MEZZOTINT", 7, 7, 2     'Mezzotint
-        addMenuIcon "PIXELATE", 7, 7, 3      'Mosaic (formerly Pixelate)
+        'addMenuIcon "CLRHALFTONE", 7, 7, 0   'Color halftone (TODO)
+        'addMenuIcon "CRYTALLIZE", 7, 7, 1    'Crystallize (TODO)
+        addMenuIcon "FRAGMENT", 7, 7, 2      'Fragment
+        'addMenuIcon "MEZZOTINT", 7, 7, 3     'Mezzotint (TODO)
+        addMenuIcon "PIXELATE", 7, 7, 4      'Mosaic (formerly Pixelate)
     
     addMenuIcon "SHARPEN", 7, 8         'Sharpen
         '--> Sharpen sub-menu

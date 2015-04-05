@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.10</langversion>
+<langversion>6.7.11</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -2926,6 +2926,11 @@ You kan använda MenuTest () sub i Filters_Miscellaneous modulen för att testa 
 </phrase>
 
 <phrase>
+<original>Crystallize</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Fragment</original>
 <translation>Fragment</translation>
 </phrase>
@@ -3851,7 +3856,7 @@ Note förändrats framgångsrikt: några mindre program kan inte vara levande up
 <translation>Ta bort alfakanal</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 549 phrases. 163 were duplicates of existing phrases, so only 386 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 551 phrases. 164 were duplicates of existing phrases, so only 387 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -13458,12 +13463,23 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <!-- END text for VBP_FormMezzotint.frm-->
 
+<!-- BEGIN text for VBP_FormCrystallize.frm (FormCrystallize) -->
+
+<phrase>
+<original>Crystallizing image</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormCrystallize.frm contains 12 phrases. 11 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for VBP_FormCrystallize.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2343</phrasecount>
+<phrasecount>2345</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3991 phrases. -->
-<!-- 1648 are duplicates, so only 2343 unique phrases have been written to file. -->
-<!-- These 2343 phrases contain approximately 13380 total words. -->
+<!-- As of this build, PhotoDemon contains 4005 phrases. -->
+<!-- 1660 are duplicates, so only 2345 unique phrases have been written to file. -->
+<!-- These 2345 phrases contain approximately 13383 total words. -->
 
 </pdData>
