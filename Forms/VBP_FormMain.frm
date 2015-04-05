@@ -57,7 +57,7 @@ Begin VB.Form FormMain
       Top             =   120
       _extentx        =   1191
       _extenty        =   1058
-      enabled         =   0   'False
+      enabled         =   0
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
@@ -1193,16 +1193,20 @@ Begin VB.Form FormMain
             Index           =   0
          End
          Begin VB.Menu MnuPixelate 
-            Caption         =   "Fragment..."
+            Caption         =   "Crystallize..."
             Index           =   1
          End
          Begin VB.Menu MnuPixelate 
-            Caption         =   "Mezzotint..."
+            Caption         =   "Fragment..."
             Index           =   2
          End
          Begin VB.Menu MnuPixelate 
-            Caption         =   "Mosaic..."
+            Caption         =   "Mezzotint..."
             Index           =   3
+         End
+         Begin VB.Menu MnuPixelate 
+            Caption         =   "Mosaic..."
+            Index           =   4
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -2207,17 +2211,21 @@ Private Sub MnuPixelate_Click(Index As Integer)
         'Color halftone
         Case 0
             Process "Color halftone", True
+            
+        'Crystallize
+        Case 1
+            Process "Crystallize", True
         
         'Fragment
-        Case 1
+        Case 2
             Process "Fragment", True
             
         'Mezzotint
-        Case 2
+        Case 3
             Process "Mezzotint", True
             
         'Mosaic (pixelate)
-        Case 3
+        Case 4
             Process "Mosaic", True
         
     End Select
