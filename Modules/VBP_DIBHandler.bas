@@ -566,3 +566,55 @@ Public Function getDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
     End If
 
 End Function
+
+'Given a grayscale map (2D byte array), create a matching grayscale DIB from it.
+' (Note: this function does not support progress bar reports, by design.)
+Public Function createDIBFromGrayscaleMap(ByRef dstDIB As pdDIB, ByRef srcGrayArray() As Byte, ByVal arrayWidth As Long, ByVal arrayHeight As Long) As Boolean
+    
+    'Create the DIB
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+    
+    If dstDIB.createBlank(arrayWidth, arrayHeight, 32, 0, 255) Then
+    
+        'Point a local array at the DIB
+        Dim dstImageData() As Byte
+        Dim tmpSA As SAFEARRAY2D
+        prepSafeArray tmpSA, dstDIB
+        CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(tmpSA), 4
+        
+        'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+        Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+        initX = 0
+        initY = 0
+        finalX = dstDIB.getDIBWidth - 1
+        finalY = dstDIB.getDIBHeight - 1
+        
+        'These values will help us access locations in the array more quickly.
+        ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+        Dim QuickVal As Long, qvDepth As Long
+        qvDepth = dstDIB.getDIBColorDepth \ 8
+        
+        'Now we can loop through each pixel in the image, converting values as we go
+        For x = initX To finalX
+            QuickVal = x * qvDepth
+        For y = initY To finalY
+            
+            dstImageData(QuickVal, y) = srcGrayArray(x, y)
+            dstImageData(QuickVal + 1, y) = srcGrayArray(x, y)
+            dstImageData(QuickVal + 2, y) = srcGrayArray(x, y)
+            
+        Next y
+        Next x
+        
+        'With our work complete, point ImageData() away from the DIB and deallocate it
+        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+                
+        createDIBFromGrayscaleMap = True
+        
+    Else
+        Debug.Print "WARNING! Could not create blank DIB inside createDIBFromGrayscaleMap."
+        createDIBFromGrayscaleMap = False
+    End If
+
+End Function
+

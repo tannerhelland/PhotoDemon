@@ -41,6 +41,7 @@ Begin VB.Form FormNoise
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.smartCheckBox chkM 
       Height          =   330
@@ -51,15 +52,6 @@ Begin VB.Form FormNoise
       _ExtentX        =   10107
       _ExtentY        =   582
       Caption         =   "monochromatic noise only"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -125,9 +117,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
-
 Private Sub ChkM_Click()
     updatePreview
 End Sub
@@ -136,7 +125,7 @@ End Sub
 ' Inputs: Amount of noise, monochromatic or not, preview settings
 Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Increasing image noise..."
+    If Not toPreview Then Message "Increasing image noise..."
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -185,17 +174,17 @@ Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toP
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        If MC = True Then
+        'Monochromatic noise - same amount for each color
+        If MC Then
             
-            'Monochromatic noise - same amount for each color
             nColor = (dNoise * Rnd) - Noise
             r = r + nColor
             g = g + nColor
             b = b + nColor
-            
+        
+        'Colored noise - each color generated randomly
         Else
             
-            'Colored noise - each color generated randomly
             r = r + (dNoise * Rnd) - Noise
             g = g + (dNoise * Rnd) - Noise
             b = b + (dNoise * Rnd) - Noise
@@ -215,7 +204,7 @@ Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toP
         ImageData(QuickVal, y) = b
         
     Next y
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
@@ -243,9 +232,8 @@ End Sub
 
 Private Sub Form_Activate()
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    'Apply translations and visual themes
+    makeFormPretty Me
     
     'Render a preview
     updatePreview

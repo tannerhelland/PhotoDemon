@@ -406,9 +406,7 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "MOTIONBLUR", 7, 1, 4     'Motion Blur
         addMenuIcon "RADIALBLUR", 7, 1, 5     'Radial Blur
         addMenuIcon "ZOOMBLUR", 7, 1, 6       'Zoom Blur
-        addMenuIcon "FRAGMENT", 7, 1, 8       'Fragment
-        addMenuIcon "CHROMABLUR", 7, 1, 9     'Kuwahara
-        addMenuIcon "PIXELATE", 7, 1, 10      'Pixelate (formerly Mosaic)
+        addMenuIcon "CHROMABLUR", 7, 1, 8     'Kuwahara
         
     addMenuIcon "DISTORT", 7, 2         'Distort
         '--> Distort sub-menu
@@ -458,33 +456,39 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "ADDNOISE", 7, 6, 1       'Add Noise
         addMenuIcon "BILATERAL", 7, 6, 3      'Bilateral smoothing
         addMenuIcon "MEDIAN", 7, 6, 4         'Median
-        
-    addMenuIcon "SHARPEN", 7, 7         'Sharpen
-        '--> Sharpen sub-menu
-        addMenuIcon "SHARPEN", 7, 7, 0       'Sharpen
-        addMenuIcon "UNSHARP", 7, 7, 1       'Unsharp
-        
-    addMenuIcon "STYLIZE", 7, 8        'Stylize
-        '--> Stylize sub-menu
-        addMenuIcon "ANTIQUE", 7, 8, 0       'Antique (Sepia)
-        'addMenuIcon "DIFFUSE", 7, 8, 1       'Color halftone (TODO)
-        addMenuIcon "DIFFUSE", 7, 8, 2       'Diffuse
-        addMenuIcon "SOLARIZE", 7, 8, 3      'Solarize
-        addMenuIcon "TWINS", 7, 8, 4         'Twins
-        addMenuIcon "VIGNETTE", 7, 8, 5      'Vignetting
-        
-    addMenuIcon "PANANDZOOM", 7, 9        'Transform
-        '--> Transform sub-menu
-        addMenuIcon "PANANDZOOM", 7, 9, 0    'Pan and zoom
-        addMenuIcon "PERSPECTIVE", 7, 9, 1   'Perspective (free)
-        addMenuIcon "POLAR", 7, 9, 2         'Polar conversion
-        addMenuIcon "ROTATECW", 7, 9, 3      'Rotate
-        addMenuIcon "SHEAR", 7, 9, 4         'Shear
-        addMenuIcon "SPHERIZE", 7, 9, 5      'Spherize
-        
-    addMenuIcon "CUSTFILTER", 7, 11     'Custom Filter
     
-    addMenuIcon "OTHER", 7, 13           'Experimental
+    addMenuIcon "PIXELATE", 7, 7        'Pixelate
+        '--> Pixelate sub-menu
+        'addMenuIcon "DIFFUSE", 7, 7, 0      'Color halftone (TODO)
+        addMenuIcon "FRAGMENT", 7, 7, 1      'Fragment
+        'addMenuIcon "MEZZOTINT", 7, 7, 2     'Mezzotint
+        addMenuIcon "PIXELATE", 7, 7, 3      'Mosaic (formerly Pixelate)
+    
+    addMenuIcon "SHARPEN", 7, 8         'Sharpen
+        '--> Sharpen sub-menu
+        addMenuIcon "SHARPEN", 7, 8, 0       'Sharpen
+        addMenuIcon "UNSHARP", 7, 8, 1       'Unsharp
+        
+    addMenuIcon "STYLIZE", 7, 9        'Stylize
+        '--> Stylize sub-menu
+        addMenuIcon "ANTIQUE", 7, 9, 0       'Antique (Sepia)
+        addMenuIcon "DIFFUSE", 7, 9, 1       'Diffuse
+        addMenuIcon "SOLARIZE", 7, 9, 2      'Solarize
+        addMenuIcon "TWINS", 7, 9, 3         'Twins
+        addMenuIcon "VIGNETTE", 7, 9, 4      'Vignetting
+        
+    addMenuIcon "PANANDZOOM", 7, 10        'Transform
+        '--> Transform sub-menu
+        addMenuIcon "PANANDZOOM", 7, 10, 0    'Pan and zoom
+        addMenuIcon "PERSPECTIVE", 7, 10, 1   'Perspective (free)
+        addMenuIcon "POLAR", 7, 10, 2         'Polar conversion
+        addMenuIcon "ROTATECW", 7, 10, 3      'Rotate
+        addMenuIcon "SHEAR", 7, 10, 4         'Shear
+        addMenuIcon "SPHERIZE", 7, 10, 5      'Spherize
+        
+    addMenuIcon "CUSTFILTER", 7, 12     'Custom Filter
+    
+    'addMenuIcon "OTHER", 7, 14           'Experimental
         '--> Experimental sub-menu
         'addMenuIcon "ALIEN", 7, 14, 0          'Alien
         'addMenuIcon "DREAM", 7, 14, 1          'Dream

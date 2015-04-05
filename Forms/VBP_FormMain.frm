@@ -57,7 +57,7 @@ Begin VB.Form FormMain
       Top             =   120
       _extentx        =   1191
       _extenty        =   1058
-      enabled         =   0
+      enabled         =   0   'False
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
@@ -1017,16 +1017,8 @@ Begin VB.Form FormMain
             Index           =   7
          End
          Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Fragment..."
-            Index           =   8
-         End
-         Begin VB.Menu MnuBlurFilter 
             Caption         =   "Kuwahara filter..."
-            Index           =   9
-         End
-         Begin VB.Menu MnuBlurFilter 
-            Caption         =   "Pixelate..."
-            Index           =   10
+            Index           =   8
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1194,6 +1186,26 @@ Begin VB.Form FormMain
          End
       End
       Begin VB.Menu MnuEffectUpper 
+         Caption         =   "Pixelate"
+         Index           =   7
+         Begin VB.Menu MnuPixelate 
+            Caption         =   "Color halftone..."
+            Index           =   0
+         End
+         Begin VB.Menu MnuPixelate 
+            Caption         =   "Fragment..."
+            Index           =   1
+         End
+         Begin VB.Menu MnuPixelate 
+            Caption         =   "Mezzotint..."
+            Index           =   2
+         End
+         Begin VB.Menu MnuPixelate 
+            Caption         =   "Mosaic..."
+            Index           =   3
+         End
+      End
+      Begin VB.Menu MnuEffectUpper 
          Caption         =   "Sharpen"
          Index           =   8
          Begin VB.Menu MnuSharpen 
@@ -1213,24 +1225,20 @@ Begin VB.Form FormMain
             Index           =   0
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Color halftone..."
+            Caption         =   "Diffuse..."
             Index           =   1
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Diffuse..."
+            Caption         =   "Solarize..."
             Index           =   2
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Solarize..."
+            Caption         =   "Twins..."
             Index           =   3
          End
          Begin VB.Menu MnuStylize 
-            Caption         =   "Twins..."
-            Index           =   4
-         End
-         Begin VB.Menu MnuStylize 
             Caption         =   "Vignetting..."
-            Index           =   5
+            Index           =   4
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -2190,6 +2198,30 @@ End Sub
 
 Private Sub MnuNatureTest_Click()
     'showPDDialog vbModal, FormFreeze2
+End Sub
+
+Private Sub MnuPixelate_Click(Index As Integer)
+    
+    Select Case Index
+    
+        'Color halftone
+        Case 0
+            Process "Color halftone", True
+        
+        'Fragment
+        Case 1
+            Process "Fragment", True
+            
+        'Mezzotint
+        Case 2
+            Process "Mezzotint", True
+            
+        'Mosaic (pixelate)
+        Case 3
+            Process "Mosaic", True
+        
+    End Select
+    
 End Sub
 
 Private Sub mnuRecentMacros_Click(Index As Integer)
@@ -3239,18 +3271,10 @@ Private Sub MnuBlurFilter_Click(Index As Integer)
             
         '<separator>
         Case 7
-        
-        'Fragment
-        Case 8
-            Process "Fragment", True
                 
         'Kuwahara
-        Case 9
+        Case 8
             Process "Kuwahara filter", True
-            
-        'Pixelate (mosaic)
-        Case 10
-            Process "Pixelate", True
             
         'Currently unused:
         
@@ -4269,25 +4293,21 @@ Private Sub MnuStylize_Click(Index As Integer)
         'Antique
         Case 0
             Process "Antique", , , UNDO_LAYER
-    
-        'Color halftone
-        Case 1
-            Process "Color halftone", True
         
         'Diffuse
-        Case 2
+        Case 1
             Process "Diffuse", True
         
         'Solarize
-        Case 3
+        Case 2
             Process "Solarize", True
 
         'Twins
-        Case 4
+        Case 3
             Process "Twins", True
             
         'Vignetting
-        Case 5
+        Case 4
             Process "Vignetting", True
     
     End Select

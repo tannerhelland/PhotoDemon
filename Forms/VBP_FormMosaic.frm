@@ -1,8 +1,8 @@
 VERSION 5.00
-Begin VB.Form FormPixelate 
+Begin VB.Form FormMosaic 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Pixelate Options"
+   Caption         =   " Mosaic"
    ClientHeight    =   6510
    ClientLeft      =   45
    ClientTop       =   285
@@ -42,6 +42,7 @@ Begin VB.Form FormPixelate
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.smartCheckBox chkUnison 
       Height          =   330
@@ -52,15 +53,6 @@ Begin VB.Form FormPixelate
       _ExtentX        =   10213
       _ExtentY        =   582
       Caption         =   "keep both dimensions in sync"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -136,7 +128,7 @@ Begin VB.Form FormPixelate
       Width           =   1380
    End
 End
-Attribute VB_Name = "FormPixelate"
+Attribute VB_Name = "FormMosaic"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
@@ -167,9 +159,9 @@ End Sub
 
 'Apply a pixelate effect (sometimes called "mosaic") to an image
 ' Inputs: width and height of the desired pixelation tiles (in pixels), optional preview settings
-Public Sub PixelateFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If Not toPreview Then Message "Applying pixellation..."
+    If Not toPreview Then Message "Applying mosaic..."
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -328,7 +320,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Pixelate", , buildParams(sltWidth.Value, sltHeight.Value), UNDO_LAYER
+    Process "Mosaic", , buildParams(sltWidth.Value, sltHeight.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -391,7 +383,7 @@ End Sub
 
 'Redraw the effect preview
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then PixelateFilter sltWidth.Value, sltHeight.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then MosaicFilter sltWidth.Value, sltHeight.Value, True, fxPreview
 End Sub
 
 Private Sub sltHeight_Change()
