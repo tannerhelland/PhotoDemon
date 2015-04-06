@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.11</langversion>
+<langversion>6.7.12</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -3344,6 +3344,11 @@ terbaru (versi semasa: %1 %2 %3)</translation>
 </phrase>
 
 <phrase>
+<original>Crop layer to selection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Delete layer</original>
 <translation>Padam lapisan</translation>
 </phrase>
@@ -3856,7 +3861,7 @@ Note: beberapa teks program minor tidak boleh hidup dikemaskini. Teks tersebut a
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 551 phrases. 164 were duplicates of existing phrases, so only 387 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 553 phrases. 165 were duplicates of existing phrases, so only 388 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -12225,7 +12230,12 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <translation>lapisan yang digabungkan</translation>
 </phrase>
 
-<!-- VBP_LayerHandler.bas contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>Cropping layer to selected area</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_LayerHandler.bas contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_LayerHandler.bas-->
 
@@ -13476,10 +13486,10 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2345</phrasecount>
+<phrasecount>2347</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4005 phrases. -->
-<!-- 1660 are duplicates, so only 2345 unique phrases have been written to file. -->
-<!-- These 2345 phrases contain approximately 13383 total words. -->
+<!-- As of this build, PhotoDemon contains 4009 phrases. -->
+<!-- 1662 are duplicates, so only 2347 unique phrases have been written to file. -->
+<!-- These 2347 phrases contain approximately 13392 total words. -->
 
 </pdData>

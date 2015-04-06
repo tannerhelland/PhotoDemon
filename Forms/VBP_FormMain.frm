@@ -57,7 +57,7 @@ Begin VB.Form FormMain
       Top             =   120
       _extentx        =   1191
       _extenty        =   1058
-      enabled         =   0
+      enabled         =   0   'False
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
@@ -566,12 +566,16 @@ Begin VB.Form FormMain
          End
       End
       Begin VB.Menu MnuLayer 
-         Caption         =   "-"
+         Caption         =   "Crop to selection"
          Index           =   9
       End
       Begin VB.Menu MnuLayer 
-         Caption         =   "Transparency"
+         Caption         =   "-"
          Index           =   10
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "Transparency"
+         Index           =   11
          Begin VB.Menu MnuLayerTransparency 
             Caption         =   "Add basic transparency..."
             Index           =   0
@@ -591,15 +595,15 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "-"
-         Index           =   11
-      End
-      Begin VB.Menu MnuLayer 
-         Caption         =   "Flatten image"
          Index           =   12
       End
       Begin VB.Menu MnuLayer 
-         Caption         =   "Merge visible layers"
+         Caption         =   "Flatten image"
          Index           =   13
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "Merge visible layers"
+         Index           =   14
       End
    End
    Begin VB.Menu MnuSelectTop 
@@ -2000,21 +2004,25 @@ Private Sub MnuLayer_Click(Index As Integer)
         'Size (top-level)
         Case 8
         
-        '<separator>
+        'Crop to selection
         Case 9
+            Process "Crop layer to selection", , , UNDO_LAYER
         
-        'Transparency (top-level)
+        '<separator>
         Case 10
         
-        '<separator>
+        'Transparency (top-level)
         Case 11
         
-        'Flatten layers
+        '<separator>
         Case 12
+        
+        'Flatten layers
+        Case 13
             Process "Flatten image", , , UNDO_IMAGE
         
         'Merge visible layers
-        Case 13
+        Case 14
             Process "Merge visible layers", , , UNDO_IMAGE
         
     End Select

@@ -277,13 +277,14 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "RESETSIZE", 4, 8, 0        'Reset to original size
         addMenuIcon "RESIZE", 4, 8, 2        'Resize
         addMenuIcon "SMRTRESIZE", 4, 8, 3    'Content-aware resize
-    addMenuIcon "TRANSPARENCY", 4, 10    'Layer Transparency
+    addMenuIcon "CROPSEL", 4, 9          'Crop to Selection
+    addMenuIcon "TRANSPARENCY", 4, 11    'Layer Transparency
         '--> Transparency sub-menu
-        addMenuIcon "ADDTRANS", 4, 10, 0     'Add alpha channel
-        addMenuIcon "GREENSCREEN", 4, 10, 1  'Color to alpha
-        addMenuIcon "REMOVETRANS", 4, 10, 3  'Remove alpha channel
-    addMenuIcon "FLATTEN", 4, 12         'Flatten image
-    addMenuIcon "MERGEVISIBLE", 4, 13   'Merge visible layers
+        addMenuIcon "ADDTRANS", 4, 11, 0     'Add alpha channel
+        addMenuIcon "GREENSCREEN", 4, 11, 1  'Color to alpha
+        addMenuIcon "REMOVETRANS", 4, 11, 3  'Remove alpha channel
+    addMenuIcon "FLATTEN", 4, 13         'Flatten image
+    addMenuIcon "MERGEVISIBLE", 4, 14   'Merge visible layers
     
     'Select Menu
     addMenuIcon "SELECTALL", 5, 0       'Select all

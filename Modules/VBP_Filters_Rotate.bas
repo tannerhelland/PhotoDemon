@@ -389,7 +389,7 @@ Public Sub MenuCropToSelection()
     pdImages(g_CurrentImage).selectionActive = False
     pdImages(g_CurrentImage).mainSelection.eraseCustomTrackers
     syncTextToCurrentSelection g_CurrentImage
-        
+    
     'Update the viewport
     pdImages(g_CurrentImage).updateSize False, selectionWidth, selectionHeight
     DisplaySize pdImages(g_CurrentImage)

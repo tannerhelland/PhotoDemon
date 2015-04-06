@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.11</langversion>
+<langversion>6.7.12</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -3342,6 +3342,11 @@ Das Update wird automatisch im Hintergrund durchgeführt. Sie werden benachricht
 </phrase>
 
 <phrase>
+<original>Crop layer to selection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Delete layer</original>
 <translation>Ebene löschen</translation>
 </phrase>
@@ -3854,7 +3859,7 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 551 phrases. 164 were duplicates of existing phrases, so only 387 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 553 phrases. 165 were duplicates of existing phrases, so only 388 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -12223,7 +12228,12 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <translation>Zusammengeführte Ebenen</translation>
 </phrase>
 
-<!-- VBP_LayerHandler.bas contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>Cropping layer to selected area</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_LayerHandler.bas contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_LayerHandler.bas-->
 
@@ -13474,10 +13484,10 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2345</phrasecount>
+<phrasecount>2347</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4005 phrases. -->
-<!-- 1660 are duplicates, so only 2345 unique phrases have been written to file. -->
-<!-- These 2345 phrases contain approximately 13383 total words. -->
+<!-- As of this build, PhotoDemon contains 4009 phrases. -->
+<!-- 1662 are duplicates, so only 2347 unique phrases have been written to file. -->
+<!-- These 2347 phrases contain approximately 13392 total words. -->
 
 </pdData>
