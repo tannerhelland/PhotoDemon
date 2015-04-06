@@ -926,3 +926,26 @@ Public Function getLayerUnderMouse(ByVal curX As Long, ByVal curY As Long, Optio
     getLayerUnderMouse = -1
 
 End Function
+
+'Crop a given layer to the current selection.
+Public Sub CropLayerToSelection(ByVal layerIndex As Long)
+    
+    'First, make sure there is an active selection
+    If Not pdImages(g_CurrentImage).selectionActive Then
+        Message "No active selection found.  Crop abandoned."
+        Exit Sub
+    End If
+    
+    Message "Cropping layer to selected area..."
+    
+    'Because PD is awesome, we already have a function capable of doing this!
+    If g_CurrentImage <= UBound(pdImages) Then
+        If Not pdImages(g_CurrentImage) Is Nothing Then
+            pdImages(g_CurrentImage).eraseProcessedSelection layerIndex
+        End If
+    End If
+    
+    'Update the viewport
+    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Crop layer to selection"
+    
+End Sub

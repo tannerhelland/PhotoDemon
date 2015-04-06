@@ -672,6 +672,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormResizeContentAware.SmartResizeImage cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3, MU_PIXELS), cParams.GetLong(4, 96), PD_AT_SINGLELAYER
             End If
+            
+        Case "Crop layer to selection"
+            Layer_Handler.CropLayerToSelection pdImages(g_CurrentImage).getActiveLayerIndex
         
         'Change layer alpha
         Case "Add alpha channel"
