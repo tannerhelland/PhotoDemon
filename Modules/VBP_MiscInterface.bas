@@ -318,10 +318,10 @@ Public Sub syncInterfaceToCurrentImage()
                     FormMain.MnuLayer(5).Enabled = False
                     
                     'Flatten
-                    FormMain.MnuLayer(12).Enabled = False
+                    FormMain.MnuLayer(13).Enabled = False
                     
                     'Merge visible
-                    FormMain.MnuLayer(13).Enabled = False
+                    FormMain.MnuLayer(14).Enabled = False
                     
                 'This image contains multiple layers.  Enable many menu items (if they aren't already).
                 Else
@@ -383,16 +383,16 @@ Public Sub syncInterfaceToCurrentImage()
                     
                     'Flatten is only available if one or more layers are visible
                     If pdImages(g_CurrentImage).getNumOfVisibleLayers > 0 Then
-                        If Not FormMain.MnuLayer(12).Enabled Then FormMain.MnuLayer(12).Enabled = True
+                        If Not FormMain.MnuLayer(13).Enabled Then FormMain.MnuLayer(13).Enabled = True
                     Else
-                        FormMain.MnuLayer(12).Enabled = False
+                        FormMain.MnuLayer(13).Enabled = False
                     End If
                     
                     'Merge visible is only available if two or more layers are visible
                     If pdImages(g_CurrentImage).getNumOfVisibleLayers > 1 Then
-                        If Not FormMain.MnuLayer(13).Enabled Then FormMain.MnuLayer(13).Enabled = True
+                        If Not FormMain.MnuLayer(14).Enabled Then FormMain.MnuLayer(14).Enabled = True
                     Else
-                        FormMain.MnuLayer(13).Enabled = False
+                        FormMain.MnuLayer(14).Enabled = False
                     End If
                     
                 End If
@@ -400,7 +400,7 @@ Public Sub syncInterfaceToCurrentImage()
                 'If at least one layer is available, enable a number of layer options
                 If Not FormMain.MnuLayer(7).Enabled Then FormMain.MnuLayer(7).Enabled = True
                 If Not FormMain.MnuLayer(8).Enabled Then FormMain.MnuLayer(8).Enabled = True
-                If Not FormMain.MnuLayer(10).Enabled Then FormMain.MnuLayer(10).Enabled = True
+                If Not FormMain.MnuLayer(11).Enabled Then FormMain.MnuLayer(11).Enabled = True
             
             Else
             
@@ -412,9 +412,10 @@ Public Sub syncInterfaceToCurrentImage()
                 FormMain.MnuLayer(5).Enabled = False
                 FormMain.MnuLayer(7).Enabled = False
                 FormMain.MnuLayer(8).Enabled = False
-                FormMain.MnuLayer(10).Enabled = False
-                FormMain.MnuLayer(12).Enabled = False
+                FormMain.MnuLayer(9).Enabled = False
+                FormMain.MnuLayer(11).Enabled = False
                 FormMain.MnuLayer(13).Enabled = False
+                FormMain.MnuLayer(14).Enabled = False
                 metaToggle tNonDestructiveFX, False
             
             End If
