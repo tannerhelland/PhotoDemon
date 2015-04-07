@@ -486,6 +486,7 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     
     'Create a new entry in the pdImages() array.  This will update g_CurrentImage as well.
     CreateNewPDImage
+    pdImages(g_CurrentImage).loadedSuccessfully = True
     
     'We can now address our new image via pdImages(g_CurrentImage).  Create a blank layer.
     Dim newLayerID As Long
