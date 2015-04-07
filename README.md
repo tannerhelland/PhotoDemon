@@ -1,4 +1,4 @@
-# PhotoDemon 6.6
+# PhotoDemon 6.8 pre-alpha
 
 ![PhotoDemon Screenshot] (http://photodemon.org/images/PD_66_b1.jpg)
 
@@ -87,6 +87,8 @@ PhotoDemon would not be possible without the help of many talented contributors,
 * Roy K for additional help with the German language file
 * Peter Burn for help overhauling the Shadow/Highlight adjustment tool and many other helpful suggestions
 * Plinio C Garcia for editing and improving the Spanish language file, and suggesting the Color Halftone filter
+* Boban Gjerasimoski for catching and reporting many bugs
+(https://www.behance.net/Boban_Gjerasimoski)
 * Dirk Hartmann for additional help with the German language file
 (http://www.taichi-zentrum-heidelberg.de)
 * Raj Chaudhuri for multiple patches (including fixes for a number of long-standing issues) and a great deal of bug-testing 
