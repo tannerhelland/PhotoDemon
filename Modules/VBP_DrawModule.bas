@@ -552,8 +552,10 @@ Public Sub getCanvasRectForLayer(ByVal layerIndex As Long, ByRef dstRect As RECT
         Else
             convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX + .layerDIB.getDIBWidth, .getLayerOffsetY + .layerDIB.getDIBHeight, tmpX, tmpY
         End If
-        dstRect.Right = tmpX
-        dstRect.Bottom = tmpY
+        
+        'Because layers support sub-pixel positioning, but the canvas rect renderer *does not*, we must manually align the right/bottom coords
+        dstRect.Right = Int(tmpX + 0.99)
+        dstRect.Bottom = Int(tmpY + 0.99)
         
     End With
 
