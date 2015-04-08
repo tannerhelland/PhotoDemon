@@ -64,12 +64,13 @@ Public Enum metaInitializer
      tSelection
      tSelectionTransform
      tZoom
+     tLayerTools
      tNonDestructiveFX
 End Enum
 
 #If False Then
-    Private Const tSave = 0, tSaveAs = 0, tClose = 0, tUndo = 0, tRedo = 0, tCopy = 0, tPaste = 0, tView = 0, tImageOps = 0
-    Private Const tMetadata = 0, tGPSMetadata = 0, tMacro = 0, tSelection = 0, tSelectionTransform = 0, tZoom = 0, tNonDestructiveFX = 0
+    Private Const tSave = 0, tSaveAs = 0, tClose = 0, tUndo = 0, tRedo = 0, tCopy = 0, tPaste = 0, tView = 0, tImageOps = 0, tMetadata = 0, tGPSMetadata = 0
+    Private Const tMacro = 0, tSelection = 0, tSelectionTransform = 0, tZoom = 0, tLayerTools = 0, tNonDestructiveFX = 0
 #End If
 
 'If PhotoDemon enabled font smoothing where there was none previously, it will restore the original setting upon exit.  This variable
@@ -118,6 +119,7 @@ Public Sub syncInterfaceToCurrentImage()
         metaToggle tSelection, False
         metaToggle tMacro, False
         metaToggle tZoom, False
+        metaToggle tLayerTools, False
         metaToggle tNonDestructiveFX, False
         
         'Undo history is disabled when no images are loaded
@@ -190,6 +192,7 @@ Public Sub syncInterfaceToCurrentImage()
             metaToggle tZoom, True
             metaToggle tImageOps, True
             metaToggle tMacro, True
+            metaToggle tLayerTools, True
             
             'Paste as new layer is always available if one (or more) images are loaded
             If Not FormMain.MnuEdit(9).Enabled Then FormMain.MnuEdit(9).Enabled = True
@@ -421,6 +424,10 @@ Public Sub syncInterfaceToCurrentImage()
             End If
                     
         End If
+        
+        'Finally, synchronize various tool settings.  I've optimized this so that only the settings relative to the current tool
+        ' are updated; others will be modified if/when the active tool is changed.
+        Tool_Support.syncToolOptionsUIToCurrentLayer
         
         'Finally, if the histogram window is open, redraw it.  (This isn't needed at present, but could be useful in the future)
         'If FormHistogram.Visible And pdImages(g_CurrentImage).loadedSuccessfully Then
@@ -684,7 +691,62 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             
             'When disabling zoom controls, reset the zoom drop-down to 100%
             If Not NewState Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getZoom100Index
+        
+        'Various layer-related tools (move, etc) are exposed on the tool options dialog.  For consistency, we disable those UI elements
+        ' when no images are loaded.
+        Case tLayerTools
             
+            'Because we're dealing with text up/downs, we need to set hard limits relative to the current image's size.
+            ' I'm currently using the "rule of three" - max/min values are the current dimensions of the image, x3.
+            Dim minLayerUIValue_Width As Long, maxLayerUIValue_Width As Long
+            Dim minLayerUIValue_Height As Long, maxLayerUIValue_Height As Long
+            
+            If NewState Then
+                maxLayerUIValue_Width = pdImages(g_CurrentImage).Width * 3
+                maxLayerUIValue_Height = pdImages(g_CurrentImage).Height * 3
+            Else
+                maxLayerUIValue_Width = 0
+                maxLayerUIValue_Height = 0
+            End If
+            
+            'Make sure width/height values are non-zero
+            If maxLayerUIValue_Width = 0 Then maxLayerUIValue_Width = 1
+            If maxLayerUIValue_Height = 0 Then maxLayerUIValue_Height = 1
+            
+            'Minimum values are simply the negative of the max values
+            minLayerUIValue_Width = -1 * maxLayerUIValue_Width
+            minLayerUIValue_Height = -1 * maxLayerUIValue_Height
+            
+            'Enable/disable all UI elements as necessary
+            For i = 0 To toolbar_Options.tudLayerMove.Count - 1
+                If toolbar_Options.tudLayerMove(i).Enabled <> NewState Then toolbar_Options.tudLayerMove(i).Enabled = NewState
+            Next i
+            
+            'Also update control bounds
+            If NewState Then
+            
+                For i = 0 To toolbar_Options.tudLayerMove.Count - 1
+                    
+                    'Even-numbered indices correspond to width; odd-numbered to height
+                    If i Mod 2 = 0 Then
+                        
+                        If toolbar_Options.tudLayerMove(i).Min <> minLayerUIValue_Width Then
+                            toolbar_Options.tudLayerMove(i).Min = minLayerUIValue_Width
+                            toolbar_Options.tudLayerMove(i).Max = maxLayerUIValue_Width
+                        End If
+                        
+                    Else
+                    
+                        If toolbar_Options.tudLayerMove(i).Min <> minLayerUIValue_Height Then
+                            toolbar_Options.tudLayerMove(i).Min = minLayerUIValue_Height
+                            toolbar_Options.tudLayerMove(i).Max = maxLayerUIValue_Height
+                        End If
+                    
+                    End If
+                Next i
+            
+            End If
+        
         'Non-destructive FX are effects that the user can apply to a layer, without permanently modifying the layer
         Case tNonDestructiveFX
         

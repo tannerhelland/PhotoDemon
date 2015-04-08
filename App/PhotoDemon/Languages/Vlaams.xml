@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.12</langversion>
+<langversion>6.7.13</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -11175,6 +11175,46 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 </phrase>
 
 <phrase>
+<original>layer position (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interaction options</original>
+<translation>interactie opties</translation>
+</phrase>
+
+<phrase>
+<original>automatically activate layer beneath mouse</original>
+<translation>automatisch geactiveerde laag onder de muis</translation>
+</phrase>
+
+<phrase>
+<original>ignore transparent pixels when auto-activating layers</original>
+<translation>negeer transparante pixels bij automatisch activeren van lagen</translation>
+</phrase>
+
+<phrase>
+<original>show layer borders</original>
+<translation>toon laaggrenzen</translation>
+</phrase>
+
+<phrase>
+<original>show layer transform nodes</original>
+<translation>Toon laag transformeren knooppunten</translation>
+</phrase>
+
+<phrase>
+<original>display options</original>
+<translation>weergaveopties</translation>
+</phrase>
+
+<phrase>
 <original>smoothing</original>
 <translation>vergladden</translation>
 </phrase>
@@ -11257,36 +11297,6 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 <phrase>
 <original>exposure</original>
 <translation>blootstelling</translation>
-</phrase>
-
-<phrase>
-<original>interaction options</original>
-<translation>interactie opties</translation>
-</phrase>
-
-<phrase>
-<original>show layer borders</original>
-<translation>toon laaggrenzen</translation>
-</phrase>
-
-<phrase>
-<original>show layer transform nodes</original>
-<translation>Toon laag transformeren knooppunten</translation>
-</phrase>
-
-<phrase>
-<original>automatically activate layer beneath mouse</original>
-<translation>automatisch geactiveerde laag onder de muis</translation>
-</phrase>
-
-<phrase>
-<original>ignore transparent pixels when auto-activating layers</original>
-<translation>negeer transparante pixels bij automatisch activeren van lagen</translation>
-</phrase>
-
-<phrase>
-<original>display options</original>
-<translation>weergaveopties</translation>
 </phrase>
 
 <phrase>
@@ -11449,7 +11459,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 <translation>Deze optie controleerd welke criteria de toverstaf gebruikt om te bepalen of een pixel moet toegevoegd worden aan de huidige selectie.</translation>
 </phrase>
 
-<!-- VBP_ToolbarTools.frm contains 72 phrases. 16 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 77 phrases. 19 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -13485,10 +13495,10 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2347</phrasecount>
+<phrasecount>2349</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4009 phrases. -->
-<!-- 1662 are duplicates, so only 2347 unique phrases have been written to file. -->
-<!-- These 2347 phrases contain approximately 13392 total words. -->
+<!-- As of this build, PhotoDemon contains 4014 phrases. -->
+<!-- 1665 are duplicates, so only 2349 unique phrases have been written to file. -->
+<!-- These 2349 phrases contain approximately 13400 total words. -->
 
 </pdData>

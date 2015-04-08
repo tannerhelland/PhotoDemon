@@ -29,6 +29,19 @@ Private m_InitCanvasXMod As Double, m_InitCanvasYMod As Double
 ' (to -1, which means "no point of interest") when you are finished with it (typically after MouseUp).
 Private curPOI As Long
 
+'Some tools require complicated synchronization between UI elements (e.g. text up/downs that display coordinates), and PD internals
+' (e.g. layer positions).  To prevent infinite update loops (UI change > internal change > UI change > ...), tools can mark their
+' current state as "busy".  Subsequent UI refreshes will be rejected until the "busy" state is reset.
+Private m_ToolIsBusy As Boolean
+
+Public Function getToolBusyState() As Boolean
+    getToolBusyState = m_ToolIsBusy
+End Function
+
+Public Sub setToolBusyState(ByVal NewState As Boolean)
+    m_ToolIsBusy = NewState
+End Sub
+
 'When a tool is finished processing, it can call this function to release all tool tracking variables
 Public Sub terminateGenericToolTracking()
     
@@ -137,6 +150,9 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
     ' (This prevents juddery movement.)
     srcCanvas.setRedrawSuspension True
     
+    'Also, mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+    
     'Start by converting the mouse coordinates we were passed from screen units to image units
     Dim initImgX As Double, initImgY As Double, curImgX As Double, curImgY As Double
     convertCanvasCoordsToImageCoords srcCanvas, srcImage, initX, initY, initImgX, initImgY
@@ -233,6 +249,12 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
         
     End With
     
+    'Manually synchronize the new values against their on-screen UI elements
+    Tool_Support.syncToolOptionsUIToCurrentLayer
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
     'Reinstate canvas redraws
     srcCanvas.setRedrawSuspension False
     
@@ -283,5 +305,78 @@ Public Sub makeQuickFixesPermanent()
     For i = 0 To toolbar_Options.sltQuickFix.Count - 1
         pdImages(g_CurrentImage).getActiveLayer.setLayerNonDestructiveFXState i, 0
     Next i
+    
+End Sub
+
+'Are on-canvas tools currently allowed?  This master function will evaluate all relevant program states for allowing on-canvas
+' tool operations (e.g. "no open images", "main form locked").
+Public Function canvasToolsAllowed(Optional ByVal alsoCheckBusyState As Boolean = True) As Boolean
+
+    'Start with a few failsafe checks
+    
+    'Make sure an image is loaded and active
+    If g_OpenImageCount > 0 Then
+    
+        'Make sure the main form has not been disabled by a modal dialog
+        If FormMain.Enabled Then
+        
+            'Finally, make sure another process hasn't locked the active canvas.  Note that the caller can disable this behavior
+            ' if they don't need it.
+            If alsoCheckBusyState Then
+                
+                If (Not Processor.Processing) And (Not getToolBusyState) Then
+                    canvasToolsAllowed = True
+                Else
+                    canvasToolsAllowed = False
+                End If
+            
+            Else
+                canvasToolsAllowed = True
+            End If
+            
+        Else
+            canvasToolsAllowed = False
+        End If
+    Else
+        canvasToolsAllowed = False
+    End If
+    
+End Function
+
+'When the active layer changes, call this function.  It synchronizes various layer-specific tool panels against the
+' currently active layer.
+Public Sub syncToolOptionsUIToCurrentLayer()
+    
+    'Before doing anything else, make sure canvas tool operations are allowed
+    If Not canvasToolsAllowed(False) Then Exit Sub
+    
+    'To improve performance, we'll only sync the UI if a layer-specific tool is active, and the tool options panel is currently
+    ' set to VISIBLE.
+    If Not toolbar_Options.Visible Then Exit Sub
+    
+    Dim layerToolActive As Boolean
+    
+    Select Case g_CurrentTool
+        
+        'At present, the only layer-specific tool is the move tool.  In the future, additional transform tools may be added.
+        Case NAV_MOVE
+            layerToolActive = True
+            
+        Case Else
+            layerToolActive = False
+        
+    End Select
+    
+    If layerToolActive Then
+    
+        'Start iterating various layer properties, and reflecting them across their corresponding UI elements
+        
+        'The Layer Move tool has four text up/downs: two for layer position (x, y) and two for layer size (w, y)
+        toolbar_Options.tudLayerMove(0).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerOffsetX
+        toolbar_Options.tudLayerMove(1).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerOffsetY
+        toolbar_Options.tudLayerMove(2).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerWidth
+        toolbar_Options.tudLayerMove(3).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerHeight
+    
+    End If
     
 End Sub

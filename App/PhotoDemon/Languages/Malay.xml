@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.12</langversion>
+<langversion>6.7.13</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -11176,6 +11176,46 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
+<original>layer position (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interaction options</original>
+<translation>pilihan interaksi</translation>
+</phrase>
+
+<phrase>
+<original>automatically activate layer beneath mouse</original>
+<translation>secara automatik mengaktifkan lapisan bawah tetikus</translation>
+</phrase>
+
+<phrase>
+<original>ignore transparent pixels when auto-activating layers</original>
+<translation>mengabaikan piksel telus apabila auto-mengaktifkan lapisan</translation>
+</phrase>
+
+<phrase>
+<original>show layer borders</original>
+<translation>sempadan lapisan persembahan</translation>
+</phrase>
+
+<phrase>
+<original>show layer transform nodes</original>
+<translation>lapisan persembahan mengubah nod</translation>
+</phrase>
+
+<phrase>
+<original>display options</original>
+<translation>pilihan paparan</translation>
+</phrase>
+
+<phrase>
 <original>smoothing</original>
 <translation>pelicinan</translation>
 </phrase>
@@ -11258,36 +11298,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <phrase>
 <original>exposure</original>
 <translation>pendedahan</translation>
-</phrase>
-
-<phrase>
-<original>interaction options</original>
-<translation>pilihan interaksi</translation>
-</phrase>
-
-<phrase>
-<original>show layer borders</original>
-<translation>sempadan lapisan persembahan</translation>
-</phrase>
-
-<phrase>
-<original>show layer transform nodes</original>
-<translation>lapisan persembahan mengubah nod</translation>
-</phrase>
-
-<phrase>
-<original>automatically activate layer beneath mouse</original>
-<translation>secara automatik mengaktifkan lapisan bawah tetikus</translation>
-</phrase>
-
-<phrase>
-<original>ignore transparent pixels when auto-activating layers</original>
-<translation>mengabaikan piksel telus apabila auto-mengaktifkan lapisan</translation>
-</phrase>
-
-<phrase>
-<original>display options</original>
-<translation>pilihan paparan</translation>
 </phrase>
 
 <phrase>
@@ -11450,7 +11460,7 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <translation>Opsyen ini mengawal kriteria yang tongkat sihir digunakan untuk menentukan sama ada piksel yang perlu ditambah kepada pilihan semasa.</translation>
 </phrase>
 
-<!-- VBP_ToolbarTools.frm contains 72 phrases. 16 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 77 phrases. 19 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -13486,10 +13496,10 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2347</phrasecount>
+<phrasecount>2349</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4009 phrases. -->
-<!-- 1662 are duplicates, so only 2347 unique phrases have been written to file. -->
-<!-- These 2347 phrases contain approximately 13392 total words. -->
+<!-- As of this build, PhotoDemon contains 4014 phrases. -->
+<!-- 1665 are duplicates, so only 2349 unique phrases have been written to file. -->
+<!-- These 2349 phrases contain approximately 13400 total words. -->
 
 </pdData>
