@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.15</langversion>
+<langversion>6.7.16</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -11176,6 +11176,46 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 </phrase>
 
 <phrase>
+<original>layer position (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interaction options</original>
+<translation>opciones de interacción</translation>
+</phrase>
+
+<phrase>
+<original>automatically activate layer beneath mouse</original>
+<translation>activar automáticamente capa debajo del ratón</translation>
+</phrase>
+
+<phrase>
+<original>ignore transparent pixels when auto-activating layers</original>
+<translation>ignorar píxeles transparentes cuando las capas de auto-activación</translation>
+</phrase>
+
+<phrase>
+<original>show layer borders</original>
+<translation>fronteras espectáculo de capa</translation>
+</phrase>
+
+<phrase>
+<original>show layer transform nodes</original>
+<translation>espectáculo de capa transformar nodos</translation>
+</phrase>
+
+<phrase>
+<original>display options</original>
+<translation>opciones de visualización</translation>
+</phrase>
+
+<phrase>
 <original>smoothing</original>
 <translation>suavizado</translation>
 </phrase>
@@ -11258,36 +11298,6 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 <phrase>
 <original>exposure</original>
 <translation>exposición</translation>
-</phrase>
-
-<phrase>
-<original>interaction options</original>
-<translation>opciones de interacción</translation>
-</phrase>
-
-<phrase>
-<original>show layer borders</original>
-<translation>fronteras espectáculo de capa</translation>
-</phrase>
-
-<phrase>
-<original>show layer transform nodes</original>
-<translation>espectáculo de capa transformar nodos</translation>
-</phrase>
-
-<phrase>
-<original>automatically activate layer beneath mouse</original>
-<translation>activar automáticamente capa debajo del ratón</translation>
-</phrase>
-
-<phrase>
-<original>ignore transparent pixels when auto-activating layers</original>
-<translation>ignorar píxeles transparentes cuando las capas de auto-activación</translation>
-</phrase>
-
-<phrase>
-<original>display options</original>
-<translation>opciones de visualización</translation>
 </phrase>
 
 <phrase>
@@ -11450,7 +11460,7 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 <translation>Esta opción controla qué criterios utiliza la varita mágica para determinar si un píxel se debe agregar a la selección actual.</translation>
 </phrase>
 
-<!-- VBP_ToolbarTools.frm contains 72 phrases. 16 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 77 phrases. 19 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -13486,10 +13496,10 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2347</phrasecount>
+<phrasecount>2349</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4009 phrases. -->
-<!-- 1662 are duplicates, so only 2347 unique phrases have been written to file. -->
-<!-- These 2347 phrases contain approximately 13392 total words. -->
+<!-- As of this build, PhotoDemon contains 4014 phrases. -->
+<!-- 1665 are duplicates, so only 2349 unique phrases have been written to file. -->
+<!-- These 2349 phrases contain approximately 13400 total words. -->
 
 </pdData>

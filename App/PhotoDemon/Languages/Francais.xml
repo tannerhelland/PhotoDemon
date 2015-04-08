@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.12</langversion>
+<langversion>6.7.13</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -11176,6 +11176,46 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 </phrase>
 
 <phrase>
+<original>layer position (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interaction options</original>
+<translation>possibilités d'interaction </translation>
+</phrase>
+
+<phrase>
+<original>automatically activate layer beneath mouse</original>
+<translation>activer automatiquement couche sous la souris </translation>
+</phrase>
+
+<phrase>
+<original>ignore transparent pixels when auto-activating layers</original>
+<translation>ignorer les pixels transparents lorsque les couches de l'activation automatique</translation>
+</phrase>
+
+<phrase>
+<original>show layer borders</original>
+<translation>montrer les frontières de la couche </translation>
+</phrase>
+
+<phrase>
+<original>show layer transform nodes</original>
+<translation>montre les nœuds couche transformer </translation>
+</phrase>
+
+<phrase>
+<original>display options</original>
+<translation>options d'affichage</translation>
+</phrase>
+
+<phrase>
 <original>smoothing</original>
 <translation>lissage</translation>
 </phrase>
@@ -11258,36 +11298,6 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 <phrase>
 <original>exposure</original>
 <translation>exposition</translation>
-</phrase>
-
-<phrase>
-<original>interaction options</original>
-<translation>possibilités d'interaction </translation>
-</phrase>
-
-<phrase>
-<original>show layer borders</original>
-<translation>montrer les frontières de la couche </translation>
-</phrase>
-
-<phrase>
-<original>show layer transform nodes</original>
-<translation>montre les nœuds couche transformer </translation>
-</phrase>
-
-<phrase>
-<original>automatically activate layer beneath mouse</original>
-<translation>activer automatiquement couche sous la souris </translation>
-</phrase>
-
-<phrase>
-<original>ignore transparent pixels when auto-activating layers</original>
-<translation>ignorer les pixels transparents lorsque les couches de l'activation automatique</translation>
-</phrase>
-
-<phrase>
-<original>display options</original>
-<translation>options d'affichage</translation>
 </phrase>
 
 <phrase>
@@ -11450,7 +11460,7 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 <translation>Cette option contrôle quels critères utilise la baguette magique pour déterminer si un pixel doit être ajoutée à la sélection actuelle.</translation>
 </phrase>
 
-<!-- VBP_ToolbarTools.frm contains 72 phrases. 16 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 77 phrases. 19 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -13486,10 +13496,10 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2347</phrasecount>
+<phrasecount>2349</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4009 phrases. -->
-<!-- 1662 are duplicates, so only 2347 unique phrases have been written to file. -->
-<!-- These 2347 phrases contain approximately 13392 total words. -->
+<!-- As of this build, PhotoDemon contains 4014 phrases. -->
+<!-- 1665 are duplicates, so only 2349 unique phrases have been written to file. -->
+<!-- These 2349 phrases contain approximately 13400 total words. -->
 
 </pdData>

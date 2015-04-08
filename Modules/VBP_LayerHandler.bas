@@ -825,12 +825,17 @@ Public Function getRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal x As Long,
         Dim QuickX As Long
         QuickX = x * (tmpLayerRef.layerDIB.getDIBColorDepth \ 8)
         
-        With dstQuad
-            .Red = tmpData(QuickX + 2, y)
-            .Green = tmpData(QuickX + 1, y)
-            .Blue = tmpData(QuickX, y)
-            If tmpLayerRef.layerDIB.getDIBColorDepth = 32 Then .Alpha = tmpData(QuickX + 3, y)
-        End With
+        'Failsafe bounds check
+        If ((QuickX + 3) < tmpLayerRef.layerDIB.getDIBArrayWidth) And (y < tmpLayerRef.layerDIB.getDIBHeight) Then
+        
+            With dstQuad
+                .Red = tmpData(QuickX + 2, y)
+                .Green = tmpData(QuickX + 1, y)
+                .Blue = tmpData(QuickX, y)
+                If tmpLayerRef.layerDIB.getDIBColorDepth = 32 Then .Alpha = tmpData(QuickX + 3, y)
+            End With
+            
+        End If
         
         CopyMemory ByVal VarPtrArray(tmpData), 0&, 4
     

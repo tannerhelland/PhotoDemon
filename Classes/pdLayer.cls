@@ -279,6 +279,39 @@ Public Sub setLayerOffsetY(ByVal newOffsetY As Double)
     myLayerData.l_OffsetY = newOffsetY
 End Sub
 
+'Get layer size.  Note that there is no corresponding "set size" function; because size changes are destructive, they must be handled manually.
+' (The exception, of course, being the non-destructive X/Y canvas modifier values.)
+'
+'Also, at present, these values are not stored persistently.  They are simply generated on-the-fly by taking the layerDIB object's dimensions,
+' and multiplying them by the current canvas x/y modifiers.  The caller can override the canvas modifier calculation by passing FALSE to the function.
+Public Function getLayerWidth(Optional ByVal applyCanvasModifier As Boolean = True) As Double
+    If Not (layerDIB Is Nothing) Then
+        
+        If applyCanvasModifier Then
+            getLayerWidth = layerDIB.getDIBWidth * getLayerCanvasXModifier
+        Else
+            getLayerWidth = layerDIB.getDIBWidth
+        End If
+        
+    Else
+        getLayerWidth = 0
+    End If
+End Function
+
+Public Function getLayerHeight(Optional ByVal applyCanvasModifier As Boolean = True) As Double
+    If Not (layerDIB Is Nothing) Then
+        
+        If applyCanvasModifier Then
+            getLayerHeight = layerDIB.getDIBHeight * getLayerCanvasYModifier
+        Else
+            getLayerHeight = layerDIB.getDIBHeight
+        End If
+        
+    Else
+        getLayerHeight = 0
+    End If
+End Function
+
 'Get/set layer canvas modifiers (necessary for non-destructive on-canvas resizing)
 Public Function getLayerCanvasXModifier() As Double
     getLayerCanvasXModifier = myLayerData.l_CanvasXModifier

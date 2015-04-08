@@ -72,25 +72,65 @@ Begin VB.Form toolbar_Options
          TabIndex        =   58
          Top             =   0
          Width           =   12015
+         Begin PhotoDemon.textUpDown tudLayerMove 
+            Height          =   345
+            Index           =   0
+            Left            =   120
+            TabIndex        =   59
+            Top             =   420
+            Width           =   2055
+            _ExtentX        =   3625
+            _ExtentY        =   609
+         End
          Begin PhotoDemon.pdLabel lblOptions 
             Height          =   240
             Index           =   9
             Left            =   120
             Top             =   60
-            Width           =   5370
-            _ExtentX        =   9472
+            Width           =   2370
+            _ExtentX        =   4180
             _ExtentY        =   503
-            Caption         =   "layer position:"
+            Caption         =   "layer position (x, y):"
          End
          Begin PhotoDemon.pdLabel lblOptions 
             Height          =   240
             Index           =   10
-            Left            =   5640
+            Left            =   2640
             Top             =   60
-            Width           =   5370
-            _ExtentX        =   9472
+            Width           =   2730
+            _ExtentX        =   4815
             _ExtentY        =   503
-            Caption         =   "layer size:"
+            Caption         =   "layer size (w, h):"
+         End
+         Begin PhotoDemon.textUpDown tudLayerMove 
+            Height          =   345
+            Index           =   1
+            Left            =   120
+            TabIndex        =   60
+            Top             =   840
+            Width           =   2055
+            _ExtentX        =   3625
+            _ExtentY        =   609
+         End
+         Begin PhotoDemon.textUpDown tudLayerMove 
+            Height          =   345
+            Index           =   2
+            Left            =   2640
+            TabIndex        =   61
+            Top             =   420
+            Width           =   2055
+            _ExtentX        =   3625
+            _ExtentY        =   609
+         End
+         Begin PhotoDemon.textUpDown tudLayerMove 
+            Height          =   345
+            Index           =   3
+            Left            =   2640
+            TabIndex        =   62
+            Top             =   840
+            Width           =   2055
+            _ExtentX        =   3625
+            _ExtentY        =   609
          End
       End
       Begin VB.PictureBox picMoveContainer 
@@ -1572,6 +1612,43 @@ Private Sub sltWandTolerance_Change()
         pdImages(g_CurrentImage).mainSelection.setSelectionProperty SP_WAND_TOLERANCE, sltWandTolerance.Value
         Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
+End Sub
+
+Private Sub tudLayerMove_Change(Index As Integer)
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+    
+    Select Case Index
+    
+        'Layer position (x)
+        Case 0
+            pdImages(g_CurrentImage).getActiveLayer.setLayerOffsetX tudLayerMove(Index).Value
+        
+        'Layer position (y)
+        Case 1
+            pdImages(g_CurrentImage).getActiveLayer.setLayerOffsetY tudLayerMove(Index).Value
+        
+        'Layer width
+        Case 2
+            pdImages(g_CurrentImage).getActiveLayer.setLayerCanvasXModifier tudLayerMove(Index).Value / pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False)
+        
+        'Layer height
+        Case 3
+            pdImages(g_CurrentImage).getActiveLayer.setLayerCanvasYModifier tudLayerMove(Index).Value / pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False)
+        
+    End Select
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
 End Sub
 
 'When the selection text boxes are updated, change the scrollbars to match
