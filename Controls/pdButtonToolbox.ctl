@@ -109,7 +109,7 @@ Private m_StickyToggle As Boolean
 ' highlight state when a button is depressed.
 Private m_DontHighlightDownState As Boolean
 
-'Additional helpers for rendering themed and multiline tooltips
+'Additional helper for rendering themed and multiline tooltips
 Private toolTipManager As pdToolTip
 
 'This toolbox button control is designed to be used in a "radio button"-like system, where buttons exist in a group, and the
@@ -142,8 +142,8 @@ Public Property Get DontHighlightDownState() As Boolean
     DontHighlightDownState = m_DontHighlightDownState
 End Property
 
-Public Property Let DontHighlightDownState(ByVal newState As Boolean)
-    m_DontHighlightDownState = newState
+Public Property Let DontHighlightDownState(ByVal NewState As Boolean)
+    m_DontHighlightDownState = NewState
     If Value Then redrawBackBuffer
 End Property
 
@@ -646,9 +646,9 @@ End Sub
 
 'The color selector dialog has the unique need of capturing colors from anywhere on the screen, using a custom hook solution.  For it to work,
 ' the pdInputMouse class inside this button control must forcibly release its capture.
-Public Sub overrideMouseCapture(ByVal newState As Boolean)
-    cMouseEvents.setCaptureOverride newState
-    cMouseEvents.setCursorOverrideState newState
+Public Sub overrideMouseCapture(ByVal NewState As Boolean)
+    cMouseEvents.setCaptureOverride NewState
+    cMouseEvents.setCursorOverrideState NewState
 End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.

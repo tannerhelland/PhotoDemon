@@ -104,14 +104,18 @@ Option Explicit
 'This object can raise a Change (which triggers when the Value property is changed by ANY means)
 Public Event Change()
 
+'For performance reasons, this object can always raise an event I call "FinalChange".  This triggers under the same conditions as Change,
+' *EXCEPT* when the mouse button is held down.  FinalChange will not fire until the mouse button is released, which makes it ideal
+' for things like syncing time-consuming UI elements.
+Public Event FinalChange()
+
 'The only exposed font setting is size.  All other settings are handled automatically, by the themer.
 Private m_FontSize As Single
 
 Private origForecolor As Long
 
-'Used to render themed and multiline tooltips
-Private m_ToolTip As clsToolTip
-Private m_ToolString As String
+'Additional helper for rendering themed and multiline tooltips
+Private toolTipManager As pdToolTip
 
 'Used to track value, min, and max values as floating-points
 Private controlVal As Double, controlMin As Double, controlMax As Double
@@ -501,6 +505,9 @@ Private Sub UserControl_Initialize()
     'Prepare an input handler for the spin button area
     Set cMouseEvents = New pdInputMouse
     If g_IsProgramRunning Then cMouseEvents.addInputTracker picScroll.hWnd, True, True, False, True, False
+    
+    'Create a tooltip engine
+    Set toolTipManager = New pdToolTip
                     
 End Sub
 
@@ -705,24 +712,6 @@ End Sub
 
 Private Sub UserControl_Show()
         
-    'When the control is first made visible, remove the control's tooltip property and reassign it to the checkbox
-    ' using a custom solution (which allows for linebreaks and theming).
-    m_ToolString = Extender.ToolTipText
-    
-    If m_ToolString <> "" Then
-    
-        Set m_ToolTip = New clsToolTip
-        With m_ToolTip
-        
-            .Create Me
-            .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool picScroll, m_ToolString
-            .AddTool txtPrimary, m_ToolString
-            
-        End With
-        
-    End If
-        
     'Also, force a resize to modify its layout
     If g_IsProgramRunning Then UserControl_Resize
         
@@ -812,7 +801,17 @@ Public Sub updateAgainstCurrentTheme()
     'Text boxes handle their own updating
     If g_IsProgramRunning Then txtPrimary.updateAgainstCurrentTheme
     
+    'Our tooltip object must also be refreshed (in case the language has changed)
+    If g_IsProgramRunning Then toolTipManager.updateAgainstCurrentTheme
+    
     'Request a repaint
     If Not cPainter Is Nothing Then cPainter.requestRepaint
     
+End Sub
+
+'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
+' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
+Public Sub assignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+    toolTipManager.setTooltip Me.hWnd, UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    toolTipManager.setTooltip picScroll.hWnd, UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
