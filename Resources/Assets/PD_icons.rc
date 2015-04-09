@@ -372,6 +372,9 @@ T_SELPOLYGON CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_polygon_24.p
 T_SELLASSO   CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_lasso_24.png
 T_SELWAND    CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_wand_24.png
 
+//Tool options area icons
+TO_APPLY     CUSTOM  MOVEABLE        LOADONCALL      apply_changes.png
+
 //Layer toolbox (note that other layer toolbox entries are in the Layer Menu section, above
 EYE_OPEN     CUSTOM  MOVEABLE        LOADONCALL      eye.png
 EYE_CLOSE    CUSTOM  MOVEABLE        LOADONCALL      eye_close.png

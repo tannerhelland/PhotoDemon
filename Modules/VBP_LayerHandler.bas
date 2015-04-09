@@ -689,6 +689,20 @@ Public Sub resetLayerSize(ByVal srcLayerIndex As Long)
 
 End Sub
 
+'If a layer has been transformed using the on-canvas tools, this will make those transforms permanent.
+Public Sub MakeLayerSizePermanent(ByVal srcLayerIndex As Long)
+    
+    'Layers are capable of making this change internally
+    pdImages(g_CurrentImage).getLayerByIndex(srcLayerIndex).makeCanvasTransformsPermanent
+    
+    'Re-sync the interface
+    syncInterfaceToCurrentImage
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
+
 'Resize a layer non-destructively, e.g. by only changing its position and on-canvas x/y modifiers
 Public Sub resizeLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizeParams As String)
 

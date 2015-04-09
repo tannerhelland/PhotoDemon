@@ -464,6 +464,9 @@ Public Sub makeCanvasTransformsPermanent()
     'Reset the width/height modifiers for this layer
     myLayerData.l_CanvasXModifier = 1
     myLayerData.l_CanvasYModifier = 1
+    
+    'Mark this layer as dirty
+    Me.notifyLayerModified
 
 End Sub
 

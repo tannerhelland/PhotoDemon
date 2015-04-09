@@ -659,6 +659,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Reset layer size"
             Layer_Handler.resetLayerSize cParams.GetLong(1)
             
+        Case "Make layer size permanent"
+            Layer_Handler.MakeLayerSizePermanent cParams.GetLong(1)
+            
         Case "Resize layer"
             If showDialog Then
                 showResizeDialog PD_AT_SINGLELAYER

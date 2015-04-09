@@ -30,197 +30,6 @@ Begin VB.Form toolbar_Options
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   1575
-      Index           =   2
-      Left            =   0
-      ScaleHeight     =   105
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   1006
-      TabIndex        =   2
-      Top             =   15
-      Visible         =   0   'False
-      Width           =   15090
-      Begin PhotoDemon.pdButtonToolbox cmdQuickFix 
-         Height          =   570
-         Index           =   0
-         Left            =   90
-         TabIndex        =   61
-         Top             =   105
-         Width           =   660
-         _ExtentX        =   1164
-         _ExtentY        =   1005
-      End
-      Begin PhotoDemon.sliderTextCombo sltQuickFix 
-         CausesValidation=   0   'False
-         Height          =   495
-         Index           =   0
-         Left            =   2010
-         TabIndex        =   4
-         Top             =   165
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         Min             =   -2
-         Max             =   2
-         SigDigits       =   2
-         SliderTrackStyle=   2
-      End
-      Begin PhotoDemon.sliderTextCombo sltQuickFix 
-         CausesValidation=   0   'False
-         Height          =   495
-         Index           =   1
-         Left            =   2010
-         TabIndex        =   5
-         Top             =   780
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         Min             =   -100
-         Max             =   100
-      End
-      Begin PhotoDemon.sliderTextCombo sltQuickFix 
-         CausesValidation=   0   'False
-         Height          =   495
-         Index           =   2
-         Left            =   6150
-         TabIndex        =   7
-         Top             =   165
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         Min             =   -100
-         Max             =   100
-      End
-      Begin PhotoDemon.sliderTextCombo sltQuickFix 
-         CausesValidation=   0   'False
-         Height          =   495
-         Index           =   3
-         Left            =   6150
-         TabIndex        =   9
-         Top             =   780
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         Min             =   -100
-         Max             =   100
-      End
-      Begin PhotoDemon.sliderTextCombo sltQuickFix 
-         CausesValidation=   0   'False
-         Height          =   495
-         Index           =   4
-         Left            =   10290
-         TabIndex        =   11
-         Top             =   165
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         Min             =   -100
-         Max             =   100
-         SliderTrackStyle=   3
-         GradientColorLeft=   16752699
-         GradientColorRight=   2990335
-         GradientColorMiddle=   16777215
-      End
-      Begin PhotoDemon.sliderTextCombo sltQuickFix 
-         CausesValidation=   0   'False
-         Height          =   495
-         Index           =   5
-         Left            =   10290
-         TabIndex        =   12
-         Top             =   780
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         Min             =   -100
-         Max             =   100
-         SliderTrackStyle=   3
-         GradientColorLeft=   15102446
-         GradientColorRight=   8253041
-         GradientColorMiddle=   16777215
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   7
-         Left            =   8835
-         Top             =   270
-         Width           =   1335
-         _ExtentX        =   2355
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "temperature:"
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   6
-         Left            =   8835
-         Top             =   885
-         Width           =   1335
-         _ExtentX        =   2355
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "tint:"
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   5
-         Left            =   4680
-         Top             =   885
-         Width           =   1335
-         _ExtentX        =   2355
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "vibrance:"
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   4
-         Left            =   4680
-         Top             =   270
-         Width           =   1335
-         _ExtentX        =   2355
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "clarity:"
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   3
-         Left            =   750
-         Top             =   885
-         Width           =   1155
-         _ExtentX        =   2037
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "contrast:"
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   2
-         Left            =   750
-         Top             =   270
-         Width           =   1155
-         _ExtentX        =   2037
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "exposure:"
-      End
-      Begin PhotoDemon.pdButtonToolbox cmdQuickFix 
-         Height          =   570
-         Index           =   1
-         Left            =   90
-         TabIndex        =   62
-         Top             =   765
-         Width           =   660
-         _ExtentX        =   1164
-         _ExtentY        =   1005
-      End
-   End
-   Begin VB.PictureBox picTools 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   1575
       Index           =   1
       Left            =   0
       ScaleHeight     =   105
@@ -288,9 +97,9 @@ Begin VB.Form toolbar_Options
             Index           =   10
             Left            =   2640
             Top             =   60
-            Width           =   2730
-            _ExtentX        =   4815
-            _ExtentY        =   503
+            Width           =   2370
+            _ExtentX        =   4180
+            _ExtentY        =   423
             Caption         =   "layer size (w, h):"
          End
          Begin PhotoDemon.textUpDown tudLayerMove 
@@ -322,6 +131,28 @@ Begin VB.Form toolbar_Options
             Width           =   2055
             _ExtentX        =   3625
             _ExtentY        =   609
+         End
+         Begin PhotoDemon.pdButtonToolbox cmdLayerMove 
+            Height          =   570
+            Index           =   0
+            Left            =   5250
+            TabIndex        =   63
+            Top             =   120
+            Width           =   660
+            _ExtentX        =   1164
+            _ExtentY        =   1005
+            AutoToggle      =   -1  'True
+         End
+         Begin PhotoDemon.pdButtonToolbox cmdLayerMove 
+            Height          =   570
+            Index           =   1
+            Left            =   5250
+            TabIndex        =   64
+            Top             =   780
+            Width           =   660
+            _ExtentX        =   1164
+            _ExtentY        =   1005
+            AutoToggle      =   -1  'True
          End
       End
       Begin VB.PictureBox picMoveContainer 
@@ -1119,6 +950,197 @@ Begin VB.Form toolbar_Options
       Visible         =   0   'False
       Width           =   18450
    End
+   Begin VB.PictureBox picTools 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   1575
+      Index           =   2
+      Left            =   0
+      ScaleHeight     =   105
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   1006
+      TabIndex        =   2
+      Top             =   15
+      Visible         =   0   'False
+      Width           =   15090
+      Begin PhotoDemon.pdButtonToolbox cmdQuickFix 
+         Height          =   570
+         Index           =   0
+         Left            =   90
+         TabIndex        =   61
+         Top             =   105
+         Width           =   660
+         _ExtentX        =   1164
+         _ExtentY        =   1005
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   0
+         Left            =   2010
+         TabIndex        =   4
+         Top             =   165
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   -2
+         Max             =   2
+         SigDigits       =   2
+         SliderTrackStyle=   2
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   1
+         Left            =   2010
+         TabIndex        =   5
+         Top             =   780
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   -100
+         Max             =   100
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   2
+         Left            =   6150
+         TabIndex        =   7
+         Top             =   165
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   -100
+         Max             =   100
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   3
+         Left            =   6150
+         TabIndex        =   9
+         Top             =   780
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   -100
+         Max             =   100
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   4
+         Left            =   10290
+         TabIndex        =   11
+         Top             =   165
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   -100
+         Max             =   100
+         SliderTrackStyle=   3
+         GradientColorLeft=   16752699
+         GradientColorRight=   2990335
+         GradientColorMiddle=   16777215
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   5
+         Left            =   10290
+         TabIndex        =   12
+         Top             =   780
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   -100
+         Max             =   100
+         SliderTrackStyle=   3
+         GradientColorLeft=   15102446
+         GradientColorRight=   8253041
+         GradientColorMiddle=   16777215
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   7
+         Left            =   8835
+         Top             =   270
+         Width           =   1335
+         _ExtentX        =   2355
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "temperature:"
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   6
+         Left            =   8835
+         Top             =   885
+         Width           =   1335
+         _ExtentX        =   2355
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "tint:"
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   5
+         Left            =   4680
+         Top             =   885
+         Width           =   1335
+         _ExtentX        =   2355
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "vibrance:"
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   4
+         Left            =   4680
+         Top             =   270
+         Width           =   1335
+         _ExtentX        =   2355
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "clarity:"
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   3
+         Left            =   750
+         Top             =   885
+         Width           =   1155
+         _ExtentX        =   2037
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "contrast:"
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   2
+         Left            =   750
+         Top             =   270
+         Width           =   1155
+         _ExtentX        =   2037
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "exposure:"
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdQuickFix 
+         Height          =   570
+         Index           =   1
+         Left            =   90
+         TabIndex        =   62
+         Top             =   765
+         Width           =   660
+         _ExtentX        =   1164
+         _ExtentY        =   1005
+      End
+   End
    Begin VB.Line lnSeparatorTop 
       BorderColor     =   &H80000002&
       X1              =   0
@@ -1266,6 +1288,22 @@ Private Sub chkLayerNodes_Click()
     Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Layer nodes toggle"
 End Sub
 
+Private Sub cmdLayerMove_Click(Index As Integer)
+    
+    Select Case Index
+    
+        'Reset layer to original size
+        Case 0
+            Process "Reset layer size", , buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_LAYERHEADER
+        
+        'Make non-destructive resize permanent
+        Case 1
+            Process "Make layer size permanent", , buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_LAYER
+    
+    End Select
+    
+End Sub
+
 Private Sub cmdQuickFix_Click(Index As Integer)
 
     'Do nothing unless an image has been loaded
@@ -1348,6 +1386,12 @@ Private Sub Form_Load()
         btsMoveOptions.AddItem "options", 1
         btsMoveOptions.ListIndex = 0
         btsMoveOptions_Click 0
+        
+        cmdLayerMove(0).AssignImage "CMDBAR_RESET", , 50
+        cmdLayerMove(1).AssignImage "TO_APPLY", , 50
+        
+        cmdLayerMove(0).assignTooltip "Reset layer to original size"
+        cmdLayerMove(1).assignTooltip "Make new layer size permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
         
         'Quick-fix tools
         cmdQuickFix(0).AssignImage "CMDBAR_RESET", , 50
@@ -1604,7 +1648,7 @@ Private Sub tudLayerMove_Change(Index As Integer)
         'Layer width
         Case 2
             pdImages(g_CurrentImage).getActiveLayer.setLayerCanvasXModifier tudLayerMove(Index).Value / pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False)
-        
+            
         'Layer height
         Case 3
             pdImages(g_CurrentImage).getActiveLayer.setLayerCanvasYModifier tudLayerMove(Index).Value / pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False)
@@ -1617,6 +1661,25 @@ Private Sub tudLayerMove_Change(Index As Integer)
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
+End Sub
+
+'Non-destructive resizing requires the synchronization of several menus, as well.  Because it's time-consuming to invoke
+' syncInterfaceToCurrentImage, we only call it when the user releases the mouse.
+Private Sub tudLayerMove_FinalChange(Index As Integer)
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    Select Case Index
+        
+        Case 2, 3
+            syncInterfaceToCurrentImage
+        
+        Case Else
+        
+    End Select
+    
 End Sub
 
 'When the selection text boxes are updated, change the scrollbars to match

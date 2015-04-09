@@ -278,7 +278,11 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
         m_MouseDownDownButton = False
         tmrUpButton.Enabled = False
         tmrDownButton.Enabled = False
-    
+        
+        'When the mouse is release, raise a "FinalChange" event, which lets the caller know that they can perform any
+        ' long-running actions now.
+        RaiseEvent FinalChange
+        
         'Request a button redraw
         RedrawButton
         
@@ -401,6 +405,9 @@ Public Property Let Value(ByVal newValue As Double)
         'Mark the value property as being changed, and raise the corresponding event.
         PropertyChanged "Value"
         RaiseEvent Change
+        
+        'If the mouse button is *not* currently down, raise the "FinalChange" event too
+        If (Not m_MouseDownUpButton) And (Not m_MouseDownDownButton) Then RaiseEvent FinalChange
         
     End If
                 
