@@ -30,6 +30,197 @@ Begin VB.Form toolbar_Options
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   1575
+      Index           =   2
+      Left            =   0
+      ScaleHeight     =   105
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   1006
+      TabIndex        =   2
+      Top             =   15
+      Visible         =   0   'False
+      Width           =   15090
+      Begin PhotoDemon.pdButtonToolbox cmdQuickFix 
+         Height          =   570
+         Index           =   0
+         Left            =   90
+         TabIndex        =   61
+         Top             =   105
+         Width           =   660
+         _ExtentX        =   1164
+         _ExtentY        =   1005
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   0
+         Left            =   2010
+         TabIndex        =   4
+         Top             =   165
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   -2
+         Max             =   2
+         SigDigits       =   2
+         SliderTrackStyle=   2
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   1
+         Left            =   2010
+         TabIndex        =   5
+         Top             =   780
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   -100
+         Max             =   100
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   2
+         Left            =   6150
+         TabIndex        =   7
+         Top             =   165
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   -100
+         Max             =   100
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   3
+         Left            =   6150
+         TabIndex        =   9
+         Top             =   780
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   -100
+         Max             =   100
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   4
+         Left            =   10290
+         TabIndex        =   11
+         Top             =   165
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   -100
+         Max             =   100
+         SliderTrackStyle=   3
+         GradientColorLeft=   16752699
+         GradientColorRight=   2990335
+         GradientColorMiddle=   16777215
+      End
+      Begin PhotoDemon.sliderTextCombo sltQuickFix 
+         CausesValidation=   0   'False
+         Height          =   495
+         Index           =   5
+         Left            =   10290
+         TabIndex        =   12
+         Top             =   780
+         Width           =   2670
+         _ExtentX        =   4710
+         _ExtentY        =   873
+         Min             =   -100
+         Max             =   100
+         SliderTrackStyle=   3
+         GradientColorLeft=   15102446
+         GradientColorRight=   8253041
+         GradientColorMiddle=   16777215
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   7
+         Left            =   8835
+         Top             =   270
+         Width           =   1335
+         _ExtentX        =   2355
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "temperature:"
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   6
+         Left            =   8835
+         Top             =   885
+         Width           =   1335
+         _ExtentX        =   2355
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "tint:"
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   5
+         Left            =   4680
+         Top             =   885
+         Width           =   1335
+         _ExtentX        =   2355
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "vibrance:"
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   4
+         Left            =   4680
+         Top             =   270
+         Width           =   1335
+         _ExtentX        =   2355
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "clarity:"
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   3
+         Left            =   750
+         Top             =   885
+         Width           =   1155
+         _ExtentX        =   2037
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "contrast:"
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   2
+         Left            =   750
+         Top             =   270
+         Width           =   1155
+         _ExtentX        =   2037
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "exposure:"
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdQuickFix 
+         Height          =   570
+         Index           =   1
+         Left            =   90
+         TabIndex        =   62
+         Top             =   765
+         Width           =   660
+         _ExtentX        =   1164
+         _ExtentY        =   1005
+      End
+   End
+   Begin VB.PictureBox picTools 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   1575
       Index           =   1
       Left            =   0
       ScaleHeight     =   105
@@ -42,7 +233,7 @@ Begin VB.Form toolbar_Options
       Begin PhotoDemon.buttonStrip btsMoveOptions 
          Height          =   855
          Left            =   120
-         TabIndex        =   52
+         TabIndex        =   50
          Top             =   420
          Width           =   2415
          _ExtentX        =   4895
@@ -69,14 +260,14 @@ Begin VB.Form toolbar_Options
          ScaleHeight     =   97
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   801
-         TabIndex        =   58
+         TabIndex        =   56
          Top             =   0
          Width           =   12015
          Begin PhotoDemon.textUpDown tudLayerMove 
             Height          =   345
             Index           =   0
             Left            =   120
-            TabIndex        =   59
+            TabIndex        =   57
             Top             =   420
             Width           =   2055
             _ExtentX        =   3625
@@ -106,7 +297,7 @@ Begin VB.Form toolbar_Options
             Height          =   345
             Index           =   1
             Left            =   120
-            TabIndex        =   60
+            TabIndex        =   58
             Top             =   840
             Width           =   2055
             _ExtentX        =   3625
@@ -116,7 +307,7 @@ Begin VB.Form toolbar_Options
             Height          =   345
             Index           =   2
             Left            =   2640
-            TabIndex        =   61
+            TabIndex        =   59
             Top             =   420
             Width           =   2055
             _ExtentX        =   3625
@@ -126,7 +317,7 @@ Begin VB.Form toolbar_Options
             Height          =   345
             Index           =   3
             Left            =   2640
-            TabIndex        =   62
+            TabIndex        =   60
             Top             =   840
             Width           =   2055
             _ExtentX        =   3625
@@ -144,7 +335,7 @@ Begin VB.Form toolbar_Options
          ScaleHeight     =   97
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   801
-         TabIndex        =   53
+         TabIndex        =   51
          Top             =   0
          Width           =   12015
          Begin PhotoDemon.pdLabel lblOptions 
@@ -160,7 +351,7 @@ Begin VB.Form toolbar_Options
          Begin PhotoDemon.smartCheckBox chkAutoActivateLayer 
             Height          =   330
             Left            =   120
-            TabIndex        =   54
+            TabIndex        =   52
             Top             =   450
             Width           =   5370
             _ExtentX        =   9472
@@ -170,7 +361,7 @@ Begin VB.Form toolbar_Options
          Begin PhotoDemon.smartCheckBox chkIgnoreTransparent 
             Height          =   330
             Left            =   120
-            TabIndex        =   55
+            TabIndex        =   53
             Top             =   900
             Width           =   5370
             _ExtentX        =   9472
@@ -180,7 +371,7 @@ Begin VB.Form toolbar_Options
          Begin PhotoDemon.smartCheckBox chkLayerBorder 
             Height          =   330
             Left            =   5640
-            TabIndex        =   56
+            TabIndex        =   54
             Top             =   450
             Width           =   5370
             _ExtentX        =   9472
@@ -190,7 +381,7 @@ Begin VB.Form toolbar_Options
          Begin PhotoDemon.smartCheckBox chkLayerNodes 
             Height          =   330
             Left            =   5640
-            TabIndex        =   57
+            TabIndex        =   55
             Top             =   900
             Width           =   5370
             _ExtentX        =   9472
@@ -221,7 +412,7 @@ Begin VB.Form toolbar_Options
       ScaleHeight     =   97
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   1230
-      TabIndex        =   17
+      TabIndex        =   15
       TabStop         =   0   'False
       Top             =   15
       Visible         =   0   'False
@@ -247,7 +438,7 @@ Begin VB.Form toolbar_Options
       Begin PhotoDemon.colorSelector csSelectionHighlight 
          Height          =   375
          Left            =   120
-         TabIndex        =   18
+         TabIndex        =   16
          Top             =   840
          Width           =   2445
          _ExtentX        =   3916
@@ -257,7 +448,7 @@ Begin VB.Form toolbar_Options
          CausesValidation=   0   'False
          Height          =   495
          Left            =   2640
-         TabIndex        =   19
+         TabIndex        =   17
          Top             =   840
          Visible         =   0   'False
          Width           =   2670
@@ -296,14 +487,14 @@ Begin VB.Form toolbar_Options
          ScaleHeight     =   98
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   665
-         TabIndex        =   22
+         TabIndex        =   20
          Top             =   0
          Width           =   9975
          Begin PhotoDemon.pdComboBox cboSelArea 
             Height          =   375
             Index           =   0
             Left            =   120
-            TabIndex        =   48
+            TabIndex        =   46
             Top             =   390
             Width           =   2415
             _ExtentX        =   4260
@@ -314,7 +505,7 @@ Begin VB.Form toolbar_Options
             Height          =   495
             Index           =   0
             Left            =   0
-            TabIndex        =   23
+            TabIndex        =   21
             Top             =   840
             Width           =   2670
             _ExtentX        =   4710
@@ -327,7 +518,7 @@ Begin VB.Form toolbar_Options
             Height          =   345
             Index           =   0
             Left            =   2820
-            TabIndex        =   25
+            TabIndex        =   23
             Top             =   375
             Width           =   1320
             _ExtentX        =   2328
@@ -339,7 +530,7 @@ Begin VB.Form toolbar_Options
             Height          =   345
             Index           =   1
             Left            =   2820
-            TabIndex        =   26
+            TabIndex        =   24
             Top             =   885
             Width           =   1320
             _ExtentX        =   2328
@@ -351,7 +542,7 @@ Begin VB.Form toolbar_Options
             Height          =   345
             Index           =   2
             Left            =   4380
-            TabIndex        =   27
+            TabIndex        =   25
             Top             =   375
             Width           =   1320
             _ExtentX        =   2328
@@ -363,7 +554,7 @@ Begin VB.Form toolbar_Options
             Height          =   345
             Index           =   3
             Left            =   4380
-            TabIndex        =   28
+            TabIndex        =   26
             Top             =   885
             Width           =   1320
             _ExtentX        =   2328
@@ -375,7 +566,7 @@ Begin VB.Form toolbar_Options
             CausesValidation=   0   'False
             Height          =   495
             Left            =   5760
-            TabIndex        =   51
+            TabIndex        =   49
             Top             =   345
             Width           =   2670
             _ExtentX        =   4710
@@ -449,7 +640,7 @@ Begin VB.Form toolbar_Options
          Begin PhotoDemon.buttonStrip btsWandArea 
             Height          =   825
             Left            =   120
-            TabIndex        =   15
+            TabIndex        =   13
             Top             =   405
             Width           =   2895
             _ExtentX        =   4366
@@ -459,7 +650,7 @@ Begin VB.Form toolbar_Options
             CausesValidation=   0   'False
             Height          =   495
             Left            =   3120
-            TabIndex        =   16
+            TabIndex        =   14
             Top             =   360
             Width           =   2670
             _ExtentX        =   4710
@@ -470,7 +661,7 @@ Begin VB.Form toolbar_Options
          Begin PhotoDemon.buttonStrip btsWandMerge 
             Height          =   825
             Left            =   6120
-            TabIndex        =   20
+            TabIndex        =   18
             Top             =   405
             Width           =   2895
             _ExtentX        =   5106
@@ -518,14 +709,14 @@ Begin VB.Form toolbar_Options
          ScaleHeight     =   98
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   665
-         TabIndex        =   21
+         TabIndex        =   19
          Top             =   0
          Width           =   9975
          Begin PhotoDemon.pdComboBox cboSelArea 
             Height          =   375
             Index           =   4
             Left            =   120
-            TabIndex        =   24
+            TabIndex        =   22
             Top             =   390
             Width           =   2415
             _ExtentX        =   4260
@@ -536,7 +727,7 @@ Begin VB.Form toolbar_Options
             Height          =   495
             Index           =   4
             Left            =   0
-            TabIndex        =   29
+            TabIndex        =   27
             Top             =   840
             Width           =   2670
             _ExtentX        =   4710
@@ -549,7 +740,7 @@ Begin VB.Form toolbar_Options
             CausesValidation=   0   'False
             Height          =   495
             Left            =   2760
-            TabIndex        =   30
+            TabIndex        =   28
             Top             =   360
             Visible         =   0   'False
             Width           =   2670
@@ -591,14 +782,14 @@ Begin VB.Form toolbar_Options
          ScaleHeight     =   98
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   665
-         TabIndex        =   49
+         TabIndex        =   47
          Top             =   0
          Width           =   9975
          Begin PhotoDemon.pdComboBox cboSelArea 
             Height          =   375
             Index           =   3
             Left            =   120
-            TabIndex        =   37
+            TabIndex        =   35
             Top             =   390
             Width           =   2415
             _ExtentX        =   4260
@@ -609,7 +800,7 @@ Begin VB.Form toolbar_Options
             Height          =   495
             Index           =   3
             Left            =   0
-            TabIndex        =   50
+            TabIndex        =   48
             Top             =   840
             Width           =   2670
             _ExtentX        =   4710
@@ -622,7 +813,7 @@ Begin VB.Form toolbar_Options
             CausesValidation=   0   'False
             Height          =   495
             Left            =   2760
-            TabIndex        =   38
+            TabIndex        =   36
             Top             =   360
             Width           =   2670
             _ExtentX        =   4710
@@ -662,14 +853,14 @@ Begin VB.Form toolbar_Options
          ScaleHeight     =   98
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   665
-         TabIndex        =   40
+         TabIndex        =   38
          Top             =   0
          Width           =   9975
          Begin PhotoDemon.pdComboBox cboSelArea 
             Height          =   375
             Index           =   2
             Left            =   120
-            TabIndex        =   39
+            TabIndex        =   37
             Top             =   390
             Width           =   2415
             _ExtentX        =   4260
@@ -680,7 +871,7 @@ Begin VB.Form toolbar_Options
             Height          =   495
             Index           =   2
             Left            =   0
-            TabIndex        =   41
+            TabIndex        =   39
             Top             =   840
             Width           =   2670
             _ExtentX        =   4710
@@ -693,7 +884,7 @@ Begin VB.Form toolbar_Options
             Height          =   345
             Index           =   8
             Left            =   2820
-            TabIndex        =   42
+            TabIndex        =   40
             Top             =   375
             Width           =   1320
             _ExtentX        =   2328
@@ -705,7 +896,7 @@ Begin VB.Form toolbar_Options
             Height          =   345
             Index           =   9
             Left            =   2820
-            TabIndex        =   43
+            TabIndex        =   41
             Top             =   885
             Width           =   1320
             _ExtentX        =   2328
@@ -717,7 +908,7 @@ Begin VB.Form toolbar_Options
             Height          =   345
             Index           =   10
             Left            =   4380
-            TabIndex        =   44
+            TabIndex        =   42
             Top             =   375
             Width           =   1320
             _ExtentX        =   2328
@@ -729,7 +920,7 @@ Begin VB.Form toolbar_Options
             Height          =   345
             Index           =   11
             Left            =   4380
-            TabIndex        =   45
+            TabIndex        =   43
             Top             =   885
             Width           =   1320
             _ExtentX        =   2328
@@ -741,7 +932,7 @@ Begin VB.Form toolbar_Options
             CausesValidation=   0   'False
             Height          =   495
             Left            =   5880
-            TabIndex        =   46
+            TabIndex        =   44
             Top             =   360
             Width           =   2670
             _ExtentX        =   4710
@@ -802,14 +993,14 @@ Begin VB.Form toolbar_Options
          ScaleHeight     =   98
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   665
-         TabIndex        =   31
+         TabIndex        =   29
          Top             =   0
          Width           =   9975
          Begin PhotoDemon.pdComboBox cboSelArea 
             Height          =   375
             Index           =   1
             Left            =   120
-            TabIndex        =   47
+            TabIndex        =   45
             Top             =   390
             Width           =   2415
             _ExtentX        =   4260
@@ -820,7 +1011,7 @@ Begin VB.Form toolbar_Options
             Height          =   495
             Index           =   1
             Left            =   0
-            TabIndex        =   32
+            TabIndex        =   30
             Top             =   840
             Width           =   2670
             _ExtentX        =   4710
@@ -833,7 +1024,7 @@ Begin VB.Form toolbar_Options
             Height          =   345
             Index           =   4
             Left            =   2820
-            TabIndex        =   33
+            TabIndex        =   31
             Top             =   375
             Width           =   1320
             _ExtentX        =   2328
@@ -845,7 +1036,7 @@ Begin VB.Form toolbar_Options
             Height          =   345
             Index           =   5
             Left            =   2820
-            TabIndex        =   34
+            TabIndex        =   32
             Top             =   885
             Width           =   1320
             _ExtentX        =   2328
@@ -857,7 +1048,7 @@ Begin VB.Form toolbar_Options
             Height          =   345
             Index           =   6
             Left            =   4380
-            TabIndex        =   35
+            TabIndex        =   33
             Top             =   375
             Width           =   1320
             _ExtentX        =   2328
@@ -869,7 +1060,7 @@ Begin VB.Form toolbar_Options
             Height          =   345
             Index           =   7
             Left            =   4380
-            TabIndex        =   36
+            TabIndex        =   34
             Top             =   885
             Width           =   1320
             _ExtentX        =   2328
@@ -927,231 +1118,6 @@ Begin VB.Form toolbar_Options
       Top             =   15
       Visible         =   0   'False
       Width           =   18450
-   End
-   Begin VB.PictureBox picTools 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   1575
-      Index           =   2
-      Left            =   0
-      ScaleHeight     =   105
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   1006
-      TabIndex        =   2
-      Top             =   15
-      Visible         =   0   'False
-      Width           =   15090
-      Begin PhotoDemon.sliderTextCombo sltQuickFix 
-         CausesValidation=   0   'False
-         Height          =   495
-         Index           =   0
-         Left            =   1380
-         TabIndex        =   4
-         Top             =   90
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         Min             =   -2
-         Max             =   2
-         SigDigits       =   2
-         SliderTrackStyle=   2
-      End
-      Begin PhotoDemon.sliderTextCombo sltQuickFix 
-         CausesValidation=   0   'False
-         Height          =   495
-         Index           =   1
-         Left            =   1380
-         TabIndex        =   5
-         Top             =   705
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         Min             =   -100
-         Max             =   100
-      End
-      Begin PhotoDemon.sliderTextCombo sltQuickFix 
-         CausesValidation=   0   'False
-         Height          =   495
-         Index           =   2
-         Left            =   5640
-         TabIndex        =   7
-         Top             =   90
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         Min             =   -100
-         Max             =   100
-      End
-      Begin PhotoDemon.sliderTextCombo sltQuickFix 
-         CausesValidation=   0   'False
-         Height          =   495
-         Index           =   3
-         Left            =   5640
-         TabIndex        =   9
-         Top             =   705
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         Min             =   -100
-         Max             =   100
-      End
-      Begin PhotoDemon.jcbutton cmdQuickFix 
-         Height          =   570
-         Index           =   0
-         Left            =   13080
-         TabIndex        =   11
-         Top             =   75
-         Width           =   660
-         _ExtentX        =   1164
-         _ExtentY        =   1005
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   -2147483643
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarTools.frx":0000
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ColorScheme     =   3
-      End
-      Begin PhotoDemon.jcbutton cmdQuickFix 
-         Height          =   570
-         Index           =   1
-         Left            =   13080
-         TabIndex        =   12
-         Top             =   705
-         Width           =   660
-         _ExtentX        =   1164
-         _ExtentY        =   1005
-         ButtonStyle     =   13
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         BackColor       =   -2147483643
-         Caption         =   ""
-         HandPointer     =   -1  'True
-         PictureNormal   =   "VBP_ToolbarTools.frx":0D52
-         PictureEffectOnDown=   0
-         CaptionEffects  =   0
-         ColorScheme     =   3
-      End
-      Begin PhotoDemon.sliderTextCombo sltQuickFix 
-         CausesValidation=   0   'False
-         Height          =   495
-         Index           =   4
-         Left            =   9960
-         TabIndex        =   13
-         Top             =   90
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         Min             =   -100
-         Max             =   100
-         SliderTrackStyle=   3
-         GradientColorLeft=   16752699
-         GradientColorRight=   2990335
-         GradientColorMiddle=   16777215
-      End
-      Begin PhotoDemon.sliderTextCombo sltQuickFix 
-         CausesValidation=   0   'False
-         Height          =   495
-         Index           =   5
-         Left            =   9960
-         TabIndex        =   14
-         Top             =   705
-         Width           =   2670
-         _ExtentX        =   4710
-         _ExtentY        =   873
-         Min             =   -100
-         Max             =   100
-         SliderTrackStyle=   3
-         GradientColorLeft=   15102446
-         GradientColorRight=   8253041
-         GradientColorMiddle=   16777215
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   7
-         Left            =   8235
-         Top             =   195
-         Width           =   1500
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "temperature:"
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   6
-         Left            =   8190
-         Top             =   810
-         Width           =   1545
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "tint:"
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   5
-         Left            =   4020
-         Top             =   810
-         Width           =   1395
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "vibrance:"
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   4
-         Left            =   3990
-         Top             =   195
-         Width           =   1425
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "clarity:"
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   3
-         Left            =   -180
-         Top             =   810
-         Width           =   1335
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "contrast:"
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   2
-         Left            =   -180
-         Top             =   195
-         Width           =   1335
-         _ExtentX        =   0
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "exposure:"
-      End
    End
    Begin VB.Line lnSeparatorTop 
       BorderColor     =   &H80000002&
@@ -1383,6 +1349,13 @@ Private Sub Form_Load()
         btsMoveOptions.ListIndex = 0
         btsMoveOptions_Click 0
         
+        'Quick-fix tools
+        cmdQuickFix(0).AssignImage "CMDBAR_RESET", , 50
+        cmdQuickFix(1).AssignImage "TO_APPLY", , 50
+        
+        cmdQuickFix(0).assignTooltip "Reset all quick-fix adjustment values"
+        cmdQuickFix(1).assignTooltip "Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance."
+        
         'Selection visual styles (Highlight, Lightbox, or Outline)
         toolbar_Options.cboSelRender.Clear
         toolbar_Options.cboSelRender.AddItem " Highlight", 0
@@ -1426,11 +1399,6 @@ Private Sub Form_Load()
         cboWandCompare.AddItem " Blue", 5
         cboWandCompare.AddItem " Alpha", 6
         cboWandCompare.ListIndex = 1
-        
-        'Quick-fix tools
-        ' TODO: swap these to custom PD buttons that self-manage translations
-        cmdQuickFix(0).ToolTip = g_Language.TranslateMessage("Reset all quick-fix adjustment values")
-        cmdQuickFix(1).ToolTip = g_Language.TranslateMessage("Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.")
         
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
