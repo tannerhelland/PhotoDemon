@@ -368,7 +368,10 @@ Public Sub syncToolOptionsUIToCurrentLayer()
     End Select
     
     If layerToolActive Then
-    
+        
+        'Mark the tool engine as busy; this prevents each change from triggering viewport redraws
+        Tool_Support.setToolBusyState True
+        
         'Start iterating various layer properties, and reflecting them across their corresponding UI elements
         
         'The Layer Move tool has four text up/downs: two for layer position (x, y) and two for layer size (w, y)
@@ -376,6 +379,12 @@ Public Sub syncToolOptionsUIToCurrentLayer()
         toolbar_Options.tudLayerMove(1).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerOffsetY
         toolbar_Options.tudLayerMove(2).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerWidth
         toolbar_Options.tudLayerMove(3).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerHeight
+        
+        'The layer resize quality combo box also needs to be synched
+        toolbar_Options.cboLayerResizeQuality.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getLayerResizeQuality
+        
+        'Free the tool engine
+        Tool_Support.setToolBusyState False
     
     End If
     
