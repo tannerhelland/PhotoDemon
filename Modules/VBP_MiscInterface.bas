@@ -122,6 +122,11 @@ Public Sub syncInterfaceToCurrentImage()
         metaToggle tLayerTools, False
         metaToggle tNonDestructiveFX, False
         
+        'Disable various layer-related commands as well
+        FormMain.MnuLayerSize(0).Enabled = False
+        toolbar_Options.cmdLayerMove(0).Enabled = False
+        toolbar_Options.cmdLayerMove(1).Enabled = False
+        
         'Undo history is disabled when no images are loaded
         FormMain.MnuEdit(2).Enabled = False
         
@@ -133,7 +138,7 @@ Public Sub syncInterfaceToCurrentImage()
         FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
         FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
         toolbar_Toolbox.cmdFile(FILE_FADE).assignTooltip g_Language.TranslateMessage("Fade last action")
-        
+                
         'All relevant menu icons can now be redrawn.  (This must be redone after menu captions change, as icons are associated
         ' with captions.)
         resetMenuIcons
@@ -301,12 +306,26 @@ Public Sub syncInterfaceToCurrentImage()
             'Update all layer menus; some will be disabled depending on just how many layers are available, how many layers
             ' are visible, and other criteria.
             If pdImages(g_CurrentImage).getNumOfLayers > 0 Then
-            
-                'If non-destructive FX are active on the current layer, update the non-destructive tools to match
+                
+                'First, set some parameters contingent on the current layer's options
                 If Not pdImages(g_CurrentImage).getActiveLayer Is Nothing Then
+                
+                    'First, determine if the current layer is using any form of non-destructive resizing
+                    Dim nonDestructiveResizeActive As Boolean
+                    nonDestructiveResizeActive = False
+                    If (pdImages(g_CurrentImage).getActiveLayer.getLayerCanvasXModifier <> 1) Then nonDestructiveResizeActive = True
+                    If (pdImages(g_CurrentImage).getActiveLayer.getLayerCanvasYModifier <> 1) Then nonDestructiveResizeActive = True
+                    
+                    'If non-destructive resizing is active, the "reset layer size" menu (and corresponding Move Tool button) must be enabled.
+                    FormMain.MnuLayerSize(0).Enabled = nonDestructiveResizeActive
+                    toolbar_Options.cmdLayerMove(0).Enabled = nonDestructiveResizeActive
+                    toolbar_Options.cmdLayerMove(1).Enabled = nonDestructiveResizeActive
+                    
+                    'If non-destructive FX are active on the current layer, update the non-destructive tool enablement to match
                     metaToggle tNonDestructiveFX, True
+                    
                 End If
-            
+                
                 'If only one layer is present, a number of layer menu items (Delete, Flatten, Merge, Order) will be disabled.
                 If pdImages(g_CurrentImage).getNumOfLayers = 1 Then
                 

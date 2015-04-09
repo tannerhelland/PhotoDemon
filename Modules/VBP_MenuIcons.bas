@@ -602,20 +602,24 @@ Public Sub resetMenuIcons()
     addMenuIcon "PREVIMAGE", 9, 8       'Previous image
     
     'Dynamically calculate the position of the Clear Recent Files menu item and update its icon
-    Dim numOfMRUFiles As Long
-    numOfMRUFiles = g_RecentFiles.MRU_ReturnCount()
+    If Not (g_RecentFiles Is Nothing) Then
     
-    'Vista+ gets nice, large icons added later in the process.  XP is stuck with 16x16 ones, which we add now.
-    If Not g_IsVistaOrLater Then
-        addMenuIcon "LOADALL", 0, 2, numOfMRUFiles + 1
-        addMenuIcon "CLEARRECENT", 0, 2, numOfMRUFiles + 2
+        Dim numOfMRUFiles As Long
+        numOfMRUFiles = g_RecentFiles.MRU_ReturnCount()
+        
+        'Vista+ gets nice, large icons added later in the process.  XP is stuck with 16x16 ones, which we add now.
+        If Not g_IsVistaOrLater Then
+            addMenuIcon "LOADALL", 0, 2, numOfMRUFiles + 1
+            addMenuIcon "CLEARRECENT", 0, 2, numOfMRUFiles + 2
+        End If
+        
+        'Repeat the same steps for the Recent Macro list.  Note that a larger icon is never used for this list, because we don't have
+        ' large thumbnail images present.
+        Dim numOfMRUFiles_Macro As Long
+        numOfMRUFiles_Macro = g_RecentMacros.MRU_ReturnCount
+        addMenuIcon "CLEARRECENT", 8, 5, numOfMRUFiles_Macro + 1
+        
     End If
-    
-    'Repeat the same steps for the Recent Macro list.  Note that a larger icon is never used for this list, because we don't have
-    ' large thumbnail images present.
-    Dim numOfMRUFiles_Macro As Long
-    numOfMRUFiles_Macro = g_RecentMacros.MRU_ReturnCount
-    addMenuIcon "CLEARRECENT", 8, 5, numOfMRUFiles_Macro + 1
     
     'Clear the current MRU icon cache.
     ' (Note added 01 Jan 2014 - RR has reported an IDE error on the following line, which means this function is somehow being
