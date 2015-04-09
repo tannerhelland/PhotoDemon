@@ -72,6 +72,15 @@ Begin VB.Form toolbar_Options
          TabIndex        =   56
          Top             =   0
          Width           =   12015
+         Begin PhotoDemon.pdComboBox cboLayerResizeQuality 
+            Height          =   300
+            Left            =   5190
+            TabIndex        =   65
+            Top             =   420
+            Width           =   2775
+            _ExtentX        =   4895
+            _ExtentY        =   529
+         End
          Begin PhotoDemon.textUpDown tudLayerMove 
             Height          =   345
             Index           =   0
@@ -99,7 +108,7 @@ Begin VB.Form toolbar_Options
             Top             =   60
             Width           =   2370
             _ExtentX        =   4180
-            _ExtentY        =   423
+            _ExtentY        =   503
             Caption         =   "layer size (w, h):"
          End
          Begin PhotoDemon.textUpDown tudLayerMove 
@@ -135,9 +144,9 @@ Begin VB.Form toolbar_Options
          Begin PhotoDemon.pdButtonToolbox cmdLayerMove 
             Height          =   570
             Index           =   0
-            Left            =   5250
+            Left            =   8400
             TabIndex        =   63
-            Top             =   120
+            Top             =   420
             Width           =   660
             _ExtentX        =   1164
             _ExtentY        =   1005
@@ -146,13 +155,33 @@ Begin VB.Form toolbar_Options
          Begin PhotoDemon.pdButtonToolbox cmdLayerMove 
             Height          =   570
             Index           =   1
-            Left            =   5250
+            Left            =   9240
             TabIndex        =   64
-            Top             =   780
+            Top             =   420
             Width           =   660
             _ExtentX        =   1164
             _ExtentY        =   1005
             AutoToggle      =   -1  'True
+         End
+         Begin PhotoDemon.pdLabel lblOptions 
+            Height          =   240
+            Index           =   11
+            Left            =   5190
+            Top             =   60
+            Width           =   3090
+            _ExtentX        =   5450
+            _ExtentY        =   503
+            Caption         =   "non-destructive resize quality:"
+         End
+         Begin PhotoDemon.pdLabel lblOptions 
+            Height          =   240
+            Index           =   12
+            Left            =   8400
+            Top             =   60
+            Width           =   3360
+            _ExtentX        =   5927
+            _ExtentY        =   503
+            Caption         =   "non-destructive resize options:"
          End
       End
       Begin VB.PictureBox picMoveContainer 
@@ -961,17 +990,17 @@ Begin VB.Form toolbar_Options
       Left            =   0
       ScaleHeight     =   105
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   1006
+      ScaleWidth      =   1230
       TabIndex        =   2
       Top             =   15
       Visible         =   0   'False
-      Width           =   15090
+      Width           =   18450
       Begin PhotoDemon.pdButtonToolbox cmdQuickFix 
          Height          =   570
          Index           =   0
-         Left            =   90
+         Left            =   13290
          TabIndex        =   61
-         Top             =   105
+         Top             =   120
          Width           =   660
          _ExtentX        =   1164
          _ExtentY        =   1005
@@ -980,7 +1009,7 @@ Begin VB.Form toolbar_Options
          CausesValidation=   0   'False
          Height          =   495
          Index           =   0
-         Left            =   2010
+         Left            =   1530
          TabIndex        =   4
          Top             =   165
          Width           =   2670
@@ -995,7 +1024,7 @@ Begin VB.Form toolbar_Options
          CausesValidation=   0   'False
          Height          =   495
          Index           =   1
-         Left            =   2010
+         Left            =   1530
          TabIndex        =   5
          Top             =   780
          Width           =   2670
@@ -1008,7 +1037,7 @@ Begin VB.Form toolbar_Options
          CausesValidation=   0   'False
          Height          =   495
          Index           =   2
-         Left            =   6150
+         Left            =   5520
          TabIndex        =   7
          Top             =   165
          Width           =   2670
@@ -1021,7 +1050,7 @@ Begin VB.Form toolbar_Options
          CausesValidation=   0   'False
          Height          =   495
          Index           =   3
-         Left            =   6150
+         Left            =   5520
          TabIndex        =   9
          Top             =   780
          Width           =   2670
@@ -1034,7 +1063,7 @@ Begin VB.Form toolbar_Options
          CausesValidation=   0   'False
          Height          =   495
          Index           =   4
-         Left            =   10290
+         Left            =   9660
          TabIndex        =   11
          Top             =   165
          Width           =   2670
@@ -1051,7 +1080,7 @@ Begin VB.Form toolbar_Options
          CausesValidation=   0   'False
          Height          =   495
          Index           =   5
-         Left            =   10290
+         Left            =   9660
          TabIndex        =   12
          Top             =   780
          Width           =   2670
@@ -1067,7 +1096,7 @@ Begin VB.Form toolbar_Options
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   7
-         Left            =   8835
+         Left            =   8190
          Top             =   270
          Width           =   1335
          _ExtentX        =   2355
@@ -1078,7 +1107,7 @@ Begin VB.Form toolbar_Options
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   6
-         Left            =   8835
+         Left            =   8190
          Top             =   885
          Width           =   1335
          _ExtentX        =   2355
@@ -1089,7 +1118,7 @@ Begin VB.Form toolbar_Options
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   5
-         Left            =   4680
+         Left            =   4050
          Top             =   885
          Width           =   1335
          _ExtentX        =   2355
@@ -1100,7 +1129,7 @@ Begin VB.Form toolbar_Options
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   4
-         Left            =   4680
+         Left            =   4050
          Top             =   270
          Width           =   1335
          _ExtentX        =   2355
@@ -1111,7 +1140,7 @@ Begin VB.Form toolbar_Options
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   3
-         Left            =   750
+         Left            =   120
          Top             =   885
          Width           =   1155
          _ExtentX        =   2037
@@ -1122,7 +1151,7 @@ Begin VB.Form toolbar_Options
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   2
-         Left            =   750
+         Left            =   120
          Top             =   270
          Width           =   1155
          _ExtentX        =   2037
@@ -1133,12 +1162,23 @@ Begin VB.Form toolbar_Options
       Begin PhotoDemon.pdButtonToolbox cmdQuickFix 
          Height          =   570
          Index           =   1
-         Left            =   90
+         Left            =   13290
          TabIndex        =   62
-         Top             =   765
+         Top             =   720
          Width           =   660
          _ExtentX        =   1164
          _ExtentY        =   1005
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   13
+         Left            =   12360
+         Top             =   270
+         Width           =   795
+         _ExtentX        =   1402
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "all:"
       End
    End
    Begin VB.Line lnSeparatorTop 
@@ -1207,6 +1247,26 @@ Private Sub btsWandMerge_Click(ByVal buttonIndex As Long)
         Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 
+End Sub
+
+Private Sub cboLayerResizeQuality_Click()
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+    
+    'Apply the new quality mode
+    pdImages(g_CurrentImage).getActiveLayer.setLayerResizeQuality cboLayerResizeQuality.ListIndex
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
 End Sub
 
 Private Sub cboSelArea_Click(Index As Integer)
@@ -1391,7 +1451,13 @@ Private Sub Form_Load()
         cmdLayerMove(1).AssignImage "TO_APPLY", , 50
         
         cmdLayerMove(0).assignTooltip "Reset layer to original size"
-        cmdLayerMove(1).assignTooltip "Make new layer size permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
+        cmdLayerMove(1).assignTooltip "Make current layer size permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
+        
+        cboLayerResizeQuality.Clear
+        cboLayerResizeQuality.AddItem "Nearest neighbor", 0
+        cboLayerResizeQuality.AddItem "Bilinear", 1
+        cboLayerResizeQuality.AddItem "Bicubic", 2
+        cboLayerResizeQuality.ListIndex = 2
         
         'Quick-fix tools
         cmdQuickFix(0).AssignImage "CMDBAR_RESET", , 50

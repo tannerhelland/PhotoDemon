@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.16</langversion>
+<langversion>6.7.17</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -11186,6 +11186,16 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 </phrase>
 
 <phrase>
+<original>non-destructive resize quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>interaction options</original>
 <translation>opciones de interacción</translation>
 </phrase>
@@ -11301,8 +11311,43 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 </phrase>
 
 <phrase>
+<original>all</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Make layer size permanent</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Make quick-fixes permanent</original>
 <translation>Haga soluciones rápidas permanente</translation>
+</phrase>
+
+<phrase>
+<original>Reset layer to original size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Make current layer size permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Nearest neighbor</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reset all quick-fix adjustment values</original>
+<translation>Restablecer todos los valores de ajuste de solución rápida</translation>
+</phrase>
+
+<phrase>
+<original>Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.</original>
+<translation>Haga los ajustes de solución rápida permanente. Esta acción no es necesaria, pero si la prestación viewport es ajustes de solución rápida lentos y muchos están activas, puede mejorar el rendimiento.</translation>
 </phrase>
 
 <phrase>
@@ -11386,16 +11431,6 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 </phrase>
 
 <phrase>
-<original>Reset all quick-fix adjustment values</original>
-<translation>Restablecer todos los valores de ajuste de solución rápida</translation>
-</phrase>
-
-<phrase>
-<original>Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.</original>
-<translation>Haga los ajustes de solución rápida permanente. Esta acción no es necesaria, pero si la prestación viewport es ajustes de solución rápida lentos y muchos están activas, puede mejorar el rendimiento.</translation>
-</phrase>
-
-<phrase>
 <original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
 <translation>Haga clic para cambiar la forma en selecciones son prestados en el lienzo de la imagen. Esto no tiene nada que ver con el contenido de selección - sólo la forma en que aparecen durante la edición.</translation>
 </phrase>
@@ -11460,7 +11495,7 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 <translation>Esta opción controla qué criterios utiliza la varita mágica para determinar si un píxel se debe agregar a la selección actual.</translation>
 </phrase>
 
-<!-- VBP_ToolbarTools.frm contains 77 phrases. 19 were duplicates of existing phrases, so only 58 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 85 phrases. 20 were duplicates of existing phrases, so only 65 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -13496,10 +13531,10 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2349</phrasecount>
+<phrasecount>2356</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4014 phrases. -->
-<!-- 1665 are duplicates, so only 2349 unique phrases have been written to file. -->
-<!-- These 2349 phrases contain approximately 13400 total words. -->
+<!-- As of this build, PhotoDemon contains 4022 phrases. -->
+<!-- 1666 are duplicates, so only 2356 unique phrases have been written to file. -->
+<!-- These 2356 phrases contain approximately 13439 total words. -->
 
 </pdData>

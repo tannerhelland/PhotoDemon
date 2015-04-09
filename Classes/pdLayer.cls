@@ -95,6 +95,17 @@ End Enum
     Const BL_HUE = 20, BL_SATURATION = 21, BL_COLOR = 22, BL_LUMINOSITY = 23, BL_GRAINEXTRACT = 24, BL_GRAINMERGE = 25
 #End If
 
+'Layer resize quality is defined different from other resample places in the project.  (Only a subset of options are exposed, for performance reasons.)
+Public Enum LAYER_RESIZE_QUALITY
+    LRQ_NEAREST_NEIGHBOR = 0
+    LRQ_BILINEAR_NORMAL = 1
+    LRQ_BICUBIC_NORMAL = 2
+End Enum
+
+#If False Then
+    Const LRQ_NEAREST_NEIGHBOR = 0, LRQ_BILINEAR_NORMAL = 1, LRQ_BICUBIC_NORMAL = 2
+#End If
+
 'Canonical ID value for this layer.  This value is set once, at layer creation time, and can never be changed again.  It is
 ' persistent for the life of the layer, the life of the parent pdImage object (meaning no other layer in that image will
 ' ever be assigned this ID value), and the life of any copies of the parent pdImage saved to file.
@@ -117,6 +128,7 @@ Private Type LayerData
     l_Angle As Double                   'Layer angle.  (A long-term goal is to support non-destructive rotation of layers.)
     l_Visibility As Boolean             'Layer visibility
     l_NonDestructiveFXActive As Boolean 'Are any non-destructive edits or other FX active?
+    l_ResizeQuality As LAYER_RESIZE_QUALITY   'Resampling algorithm used when non-destructive resizes are active
 End Type
 
 'Local instance of layer data for this layer
@@ -337,6 +349,34 @@ Public Sub setLayerCanvasYModifier(ByVal newYModifier As Double)
     End If
 End Sub
 
+'Get/set non-destructive resize algorithm.  Note that there are two GET functions:
+' - One that uses PD's internal LAYER_RESIZE_QUALITY enum
+' - One that converts the internal LAYER_RESIZE_QUALITY value into a GDI+ resize constant
+Public Function getLayerResizeQuality() As LAYER_RESIZE_QUALITY
+    getLayerResizeQuality = myLayerData.l_ResizeQuality
+End Function
+
+Public Function getLayerResizeQuality_GDIPlus() As Long
+    
+    Select Case myLayerData.l_ResizeQuality
+        
+        Case LRQ_NEAREST_NEIGHBOR
+            getLayerResizeQuality_GDIPlus = InterpolationModeNearestNeighbor
+        
+        Case LRQ_BILINEAR_NORMAL
+            getLayerResizeQuality_GDIPlus = InterpolationModeHighQualityBilinear
+        
+        Case LRQ_BICUBIC_NORMAL
+            getLayerResizeQuality_GDIPlus = InterpolationModeHighQualityBicubic
+        
+    End Select
+    
+End Function
+
+Public Sub setLayerResizeQuality(ByVal newQuality As LAYER_RESIZE_QUALITY)
+    myLayerData.l_ResizeQuality = newQuality
+End Sub
+
 'Get/set non-destructive FX status.  Note that these functions work a little differently than other get/set functions.  Get() works
 ' normally, but Set() requires the user to activate or deactivate a specific
 Public Function getLayerNonDestructiveFXState() As Boolean
@@ -456,7 +496,7 @@ Public Sub makeCanvasTransformsPermanent()
     Set tmpDIB = New pdDIB
     
     tmpDIB.createBlank getLayerCanvasWidthModified, getLayerCanvasHeightModified, 32, 0
-    GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, layerDIB, 0, 0, layerDIB.getDIBWidth, layerDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+    GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, layerDIB, 0, 0, layerDIB.getDIBWidth, layerDIB.getDIBHeight, Me.getLayerResizeQuality_GDIPlus
     
     layerDIB.createFromExistingDIB tmpDIB
     Set tmpDIB = Nothing
@@ -494,6 +534,7 @@ Private Sub Class_Initialize()
         .l_Angle = 0
         .l_Visibility = True
         .l_NonDestructiveFXActive = False
+        .l_ResizeQuality = LRQ_BICUBIC_NORMAL
     End With
     
     With myNonDestructiveFX
@@ -561,6 +602,7 @@ Public Function getLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean 
         xmlEngine.writeTag "Angle", .l_Angle
         xmlEngine.writeTag "Visibility", .l_Visibility
         xmlEngine.writeTag "NonDestructiveFXActive", .l_NonDestructiveFXActive
+        xmlEngine.writeTag "ResizeQuality", .l_ResizeQuality
     End With
     
     'Next, write out any non-destructive FX parameters
@@ -598,7 +640,7 @@ Public Function getLayerHeaderAsParamString() As String
 
     'Start by compiling a layer header
     With myLayerData
-        getLayerHeaderAsParamString = buildParams(.l_Name, .l_GroupID, .l_Opacity, .l_BlendMode, .l_OffsetX, .l_OffsetY, .l_CanvasXModifier, .l_CanvasYModifier, .l_Angle, .l_Visibility, .l_NonDestructiveFXActive)
+        getLayerHeaderAsParamString = buildParams(.l_Name, .l_GroupID, .l_Opacity, .l_BlendMode, .l_OffsetX, .l_OffsetY, .l_CanvasXModifier, .l_CanvasYModifier, .l_Angle, .l_Visibility, .l_NonDestructiveFXActive, .l_ResizeQuality)
     End With
     
     'Next, add any non-destructive FX parameters
@@ -630,17 +672,18 @@ Public Sub setLayerHeaderFromParamString(ByVal srcParamString As String)
         .l_Angle = cParams.GetDouble(9)
         .l_Visibility = cParams.GetBool(10)
         .l_NonDestructiveFXActive = cParams.GetBool(11)
+        .l_ResizeQuality = cParams.GetLong(12)
     End With
     
     'After the layer header comes non-destructive FX settings.  Make sure to adjust these indices if new values get added to
     ' myLayerData, above!
     With myNonDestructiveFX
-        .fx_Exposure = cParams.GetDouble(12)
-        .fx_Contrast = cParams.GetLong(13)
-        .fx_Clarity = cParams.GetLong(14)
-        .fx_Vibrance = cParams.GetLong(15)
-        .fx_Temperature = cParams.GetLong(16)
-        .fx_Tint = cParams.GetLong(17)
+        .fx_Exposure = cParams.GetDouble(13)
+        .fx_Contrast = cParams.GetLong(14)
+        .fx_Clarity = cParams.GetLong(15)
+        .fx_Vibrance = cParams.GetLong(16)
+        .fx_Temperature = cParams.GetLong(17)
+        .fx_Tint = cParams.GetLong(18)
     End With
         
     'Per PD convention, this class has no way to notify outsiders of updates, so the calling function must handle any
@@ -686,6 +729,7 @@ Public Function CreateNewImageLayerFromXML(ByRef xmlString As String, Optional B
             .l_Angle = xmlEngine.getUniqueTag_Double("Angle")
             .l_Visibility = xmlEngine.getUniqueTag_Boolean("Visibility")
             .l_NonDestructiveFXActive = xmlEngine.getUniqueTag_Boolean("NonDestructiveFXActive", False)
+            .l_ResizeQuality = xmlEngine.getUniqueTag_Long("ResizeQuality", LRQ_BICUBIC_NORMAL)
         End With
         
         'Read in the contents of the non-destructive FX chunk
@@ -750,6 +794,7 @@ Public Sub CreateNewImageLayer(ByRef srcDIB As pdDIB, Optional ByRef parentImage
         .l_BlendMode = BL_NORMAL
         .l_Visibility = True
         .l_NonDestructiveFXActive = False
+        .l_ResizeQuality = LRQ_BICUBIC_NORMAL
     End With
     
     'Reset any non-destructive fx parameters
@@ -806,6 +851,7 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
         .l_Angle = srcLayer.getLayerAngle
         .l_Visibility = srcLayer.getLayerVisibility
         .l_NonDestructiveFXActive = srcLayer.getLayerNonDestructiveFXState
+        .l_ResizeQuality = srcLayer.getLayerResizeQuality
     End With
     
     'Next, copy any non-destructive FX parameters
@@ -1234,6 +1280,7 @@ Public Sub resetLayerParameters()
         .l_Angle = 0
         .l_Visibility = True
         .l_NonDestructiveFXActive = False
+        .l_ResizeQuality = LRQ_BICUBIC_NORMAL
     End With
     
     'Assign default values to the non-destructive FX params

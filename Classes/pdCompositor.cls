@@ -420,7 +420,7 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         If (bottomLayer.getLayerCanvasXModifier = 1) And (bottomLayer.getLayerCanvasYModifier = 1) Then
             BitBlt tmpDIB.getDIBDC, xOffset, yOffset, bottomLayer.layerDIB.getDIBWidth, bottomLayer.layerDIB.getDIBHeight, bottomLayer.layerDIB.getDIBDC, 0, 0, vbSrcCopy
         Else
-            GDIPlusResizeDIB tmpDIB, xOffset, yOffset, bottomLayer.getLayerCanvasWidthModified, bottomLayer.getLayerCanvasHeightModified, bottomLayer.layerDIB, 0, 0, bottomLayer.layerDIB.getDIBWidth, bottomLayer.layerDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+            GDIPlusResizeDIB tmpDIB, xOffset, yOffset, bottomLayer.getLayerCanvasWidthModified, bottomLayer.getLayerCanvasHeightModified, bottomLayer.layerDIB, 0, 0, bottomLayer.layerDIB.getDIBWidth, bottomLayer.layerDIB.getDIBHeight, bottomLayer.getLayerResizeQuality_GDIPlus
             
             'Also, reset the canvas modifiers for the bottom layer now, as we have effectively nullified them by this resize
             bottomLayer.setLayerCanvasXModifier 1
@@ -462,7 +462,7 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
             tmpDIB.createFromExistingDIB topLayer.layerDIB
         Else
             tmpDIB.createBlank topLayer.getLayerCanvasWidthModified, topLayer.getLayerCanvasHeightModified, 32, 0
-            GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, topLayer.layerDIB, 0, 0, topLayer.layerDIB.getDIBWidth, topLayer.layerDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+            GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, topLayer.layerDIB, 0, 0, topLayer.layerDIB.getDIBWidth, topLayer.layerDIB.getDIBHeight, topLayer.getLayerResizeQuality_GDIPlus
         End If
         
         'tmpDIB now contains the chunk of this layer that appears on the viewport.  Before we can composite it against the base layer,
@@ -546,7 +546,7 @@ Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
             With tmpLayerRef
                 
                 tmpDIB.createBlank .getLayerCanvasWidthModified, .getLayerCanvasHeightModified, 32, 0
-                GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, .layerDIB, 0, 0, .layerDIB.getDIBWidth, .layerDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+                GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, .layerDIB, 0, 0, .layerDIB.getDIBWidth, .layerDIB.getDIBHeight, .getLayerResizeQuality_GDIPlus
                 
                 'Before we can composite this temporary DIB against other DIBs, we need to check for any non-destructive FX that may be active.
                 ' (TODO: check layer size vs non-destructive size, and apply the non-destructive effect to whichever version is smaller!
@@ -771,7 +771,7 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                                 If (tmpLayerRef.getLayerCanvasXModifier = 1) And (tmpLayerRef.getLayerCanvasYModifier = 1) Then
                                     StretchBlt m_tmpDIB.getDIBDC, 0, 0, m_tmpDIB.getDIBWidth, m_tmpDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBDC, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, vbSrcCopy
                                 Else
-                                    GDIPlusResizeDIB m_tmpDIB, dstRect.Left - Int(dstRect.Left), dstRect.Top - Int(dstRect.Top), dstRect.Width, dstRect.Height, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, InterpolationModeNearestNeighbor
+                                    GDIPlusResizeDIB m_tmpDIB, dstRect.Left - Int(dstRect.Left), dstRect.Top - Int(dstRect.Top), dstRect.Width, dstRect.Height, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, tmpLayerRef.getLayerResizeQuality_GDIPlus
                                 End If
                                 
                             End If
@@ -831,7 +831,14 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                             ' (such as text), it causes weird alignment issues.  Unfiltered bilinear resampling does not experience this
                             ' issue.  I'm leaving this comment here because once we have text layers, I want to conditionally enable
                             ' bilinear resampling for them.  This will keep text properly aligned, without hurting photographic layers.
-                            GDIPlus_StretchBlt m_dstLayer.layerDIB, dstRect.Left - dstX, dstRect.Top - dstY, dstRect.Width, dstRect.Height, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, tmpLayerRef.getLayerOpacity / 100, interpolationType
+                            
+                            'ALSO!  As of April 2016, the user can specify non-destructive resize algorithms on a per-layer basis.  We must
+                            ' also take this parameter into account when applying a resize, as it will override any existing values.
+                            If (tmpLayerRef.getLayerCanvasXModifier <> 1) Or (tmpLayerRef.getLayerCanvasYModifier <> 1) Then
+                                GDIPlus_StretchBlt m_dstLayer.layerDIB, dstRect.Left - dstX, dstRect.Top - dstY, dstRect.Width, dstRect.Height, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, tmpLayerRef.getLayerOpacity / 100, tmpLayerRef.getLayerResizeQuality_GDIPlus
+                            Else
+                                GDIPlus_StretchBlt m_dstLayer.layerDIB, dstRect.Left - dstX, dstRect.Top - dstY, dstRect.Width, dstRect.Height, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, tmpLayerRef.getLayerOpacity / 100, interpolationType
+                            End If
                             
                         End If
                                                 
@@ -1025,10 +1032,10 @@ Private Sub fastLayerVibranceTemperatureTint(ByRef targetLayer As pdLayer, ByRef
     Dim amtVal As Double, avgVal As Double
     
     'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
-    Dim grayLookUp() As Long
-    ReDim grayLookUp(0 To 765) As Long
+    Dim grayLookup() As Long
+    ReDim grayLookup(0 To 765) As Long
     For x = 0 To 765
-        grayLookUp(x) = x \ 3
+        grayLookup(x) = x \ 3
     Next x
     
     'To handle temperature and tint, we will also be preparing RGB lookup tables
@@ -1102,7 +1109,7 @@ Private Sub fastLayerVibranceTemperatureTint(ByRef targetLayer As pdLayer, ByRef
         If vibranceAdjustment <> 0 Then
         
             'Calculate the gray value using the look-up table
-            avgVal = grayLookUp(r + g + b)
+            avgVal = grayLookup(r + g + b)
             maxVal = Max3Int(r, g, b)
             
             'Get adjusted average

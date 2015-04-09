@@ -126,6 +126,8 @@ Public Sub syncInterfaceToCurrentImage()
         FormMain.MnuLayerSize(0).Enabled = False
         toolbar_Options.cmdLayerMove(0).Enabled = False
         toolbar_Options.cmdLayerMove(1).Enabled = False
+        toolbar_Options.cboLayerResizeQuality.Enabled = False
+        toolbar_Options.cboLayerResizeQuality.Enabled = False
         
         'Undo history is disabled when no images are loaded
         FormMain.MnuEdit(2).Enabled = False
@@ -320,7 +322,8 @@ Public Sub syncInterfaceToCurrentImage()
                     FormMain.MnuLayerSize(0).Enabled = nonDestructiveResizeActive
                     toolbar_Options.cmdLayerMove(0).Enabled = nonDestructiveResizeActive
                     toolbar_Options.cmdLayerMove(1).Enabled = nonDestructiveResizeActive
-                    
+                    toolbar_Options.cboLayerResizeQuality.Enabled = nonDestructiveResizeActive
+                                        
                     'If non-destructive FX are active on the current layer, update the non-destructive tool enablement to match
                     metaToggle tNonDestructiveFX, True
                     
@@ -736,12 +739,15 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             minLayerUIValue_Width = -1 * maxLayerUIValue_Width
             minLayerUIValue_Height = -1 * maxLayerUIValue_Height
             
+            'Mark the tool engine as busy; this prevents control changes from triggering viewport redraws
+            Tool_Support.setToolBusyState True
+            
             'Enable/disable all UI elements as necessary
             For i = 0 To toolbar_Options.tudLayerMove.Count - 1
                 If toolbar_Options.tudLayerMove(i).Enabled <> NewState Then toolbar_Options.tudLayerMove(i).Enabled = NewState
             Next i
             
-            'Also update control bounds
+            'Where relevant, also update control bounds
             If NewState Then
             
                 For i = 0 To toolbar_Options.tudLayerMove.Count - 1
@@ -765,6 +771,9 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
                 Next i
             
             End If
+            
+            'Free the tool engine
+            Tool_Support.setToolBusyState True
         
         'Non-destructive FX are effects that the user can apply to a layer, without permanently modifying the layer
         Case tNonDestructiveFX
