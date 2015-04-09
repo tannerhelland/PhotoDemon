@@ -517,6 +517,9 @@ Public Sub updateAgainstCurrentTheme()
         refreshFont
         
     End If
+    
+    'Update our tooltip object as well
+    If g_IsProgramRunning Then toolTipManager.updateAgainstCurrentTheme
         
     'Because translations will change text layout, we need to recalculate font metrics prior to redrawing the button
     updateControlSize

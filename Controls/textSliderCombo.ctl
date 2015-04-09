@@ -26,8 +26,8 @@ Begin VB.UserControl sliderTextCombo
       TabIndex        =   1
       Top             =   45
       Width           =   960
-      _ExtentX        =   1693
-      _ExtentY        =   741
+      _extentx        =   1693
+      _extenty        =   741
    End
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
@@ -110,9 +110,8 @@ Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect A
 'Forecolor handling is not currently handled, but it may be in the future
 Private origForecolor As Long
 
-'Special classes are used to render themed and multiline tooltips
-Private m_Tooltip As clsToolTip
-Private m_ToolString As String
+'Additional helper for rendering themed and multiline tooltips
+Private toolTipManager As pdToolTip
 
 'Used to internally track value, min, and max values as floating-points
 Private controlVal As Double, controlMin As Double, controlMax As Double
@@ -622,6 +621,9 @@ Private Sub UserControl_Initialize()
         'Set up keyboard events
         Set cKeyEvents = New pdInputKeyboard
         cKeyEvents.createKeyboardTracker "Slider/Text UC", picScroll.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN
+        
+        'Create a tooltip engine
+        Set toolTipManager = New pdToolTip
         
     End If
     
@@ -1147,35 +1149,6 @@ Private Sub redrawInternalGradientDIB()
     
 End Sub
 
-'To workaround a translation issue, the control's original English text can be manually backed up; this allows us
-' to change the language at run-time and still have translations work as expected.
-Public Sub assignTooltip(ByVal newTooltip As String)
-    m_ToolString = newTooltip
-    If Len(m_ToolString) <> 0 Then refreshTooltipObject
-End Sub
-
-'When the program language is changed, the object's tooltip must be retranslated to match.  External functions can
-' call this sub to have it automatically fixed.
-Public Sub refreshTooltipObject()
-    
-    If Not (m_Tooltip Is Nothing) Then
-        m_Tooltip.RemoveTool picScroll
-    End If
-    
-    Set m_Tooltip = New clsToolTip
-    With m_Tooltip
-        .Create Me
-        .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-        .DelayTime(ttDelayShow) = 10000
-        If g_Language.translationActive Then
-            .AddTool picScroll, g_Language.TranslateMessage(m_ToolString)
-        Else
-            .AddTool picScroll, m_ToolString
-        End If
-    End With
-        
-End Sub
-
 'Because this control can contain either decimal or float values, we want to make sure any entered strings adhere
 ' to strict formatting rules.
 Private Function getFormattedStringValue(ByVal srcValue As Double) As String
@@ -1272,9 +1245,21 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub updateAgainstCurrentTheme()
     
+    'The text up/down can redraw itself
     tudPrimary.updateAgainstCurrentTheme
+    
+    'Our tooltip object must also be refreshed (in case the language has changed)
+    If g_IsProgramRunning Then toolTipManager.updateAgainstCurrentTheme
     
     'Redraw the control to match any updated settings
     redrawSlider
     
+End Sub
+
+
+'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
+' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
+Public Sub assignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+    toolTipManager.setTooltip Me.hWnd, UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    toolTipManager.setTooltip picScroll.hWnd, UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub

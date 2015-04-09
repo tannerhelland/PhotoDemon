@@ -300,7 +300,7 @@ Public Function setTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
         
         'Set a uniform tooltip width and delay time
         SendMessage m_ToolCollection(toolIndex).toolHwnd, TTM_SETMAXTIPWIDTH, 0, ByVal PD_MAX_TOOLTIP_WIDTH
-        SendMessage m_ToolCollection(toolIndex).toolHwnd, TTM_SETDELAYTIME, (ttDelayShow And ttDelayMask), ByVal 10000&
+        SendMessage m_ToolCollection(toolIndex).toolHwnd, TTM_SETDELAYTIME, (ttDelayShow And ttDelayMask), ByVal 20000&
         
     'The tool does exist, so all we need to do is update the text and/or title parameters
     Else
