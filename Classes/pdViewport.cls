@@ -37,7 +37,7 @@ Option Explicit
 
 'These values track the size and position of the image, as seen from the viewport.  These values are...
 ' - SET by the Viewport_Engine.Stage1_InitializeBuffer function
-' - READ by the Viewport_Engine.Stage2_CompositeAllLayers and Viewport_Engine.Stage3_CompositeCanvas functions
+' - READ by the Viewport_Engine.Stage2_CompositeAllLayers and Viewport_Engine.Stage4_CompositeCanvas functions
 Public targetWidth As Double
 Public targetHeight As Double
 Public targetTop As Long
