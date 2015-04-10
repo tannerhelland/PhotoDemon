@@ -41,6 +41,7 @@ Begin VB.Form FormResizeContentAware
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
       AutoloadLastPreset=   -1  'True
    End
    Begin PhotoDemon.smartResize ucResize 
@@ -152,7 +153,7 @@ Option Explicit
 Private m_ResizeTarget As PD_ACTION_TARGET
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Public Property Let ResizeTarget(newTarget As PD_ACTION_TARGET)
     m_ResizeTarget = newTarget
@@ -271,8 +272,8 @@ Private Sub Form_Load()
     End If
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
 End Sub
 
@@ -316,8 +317,8 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
         pdImages(g_CurrentImage).getActiveLayer.layerDIB.createFromExistingDIB tmpDIB
         Set tmpDIB = Nothing
         
-        'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
-        pdImages(g_CurrentImage).getActiveLayer.notifyLayerModified
+        'Notify the parent of the change
+        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).getActiveLayerIndex
         
         'Update the main image's size and DPI values as necessary
         If thingToResize = PD_AT_WHOLEIMAGE Then

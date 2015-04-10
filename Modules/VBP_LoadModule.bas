@@ -1824,8 +1824,8 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
                 'Pass the raw bytes to the target layer's DIB, which will copy the bytes over its existing DIB data.
                 dstImage.getLayerByIndex(i).layerDIB.copyStreamOverImageArray retBytes
                 
-                'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
-                dstImage.getLayerByIndex(i).notifyLayerModified
+                'Notify the parent of the change
+                dstImage.notifyImageChanged UNDO_LAYER, i
                 
             Else
                 Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
@@ -2066,8 +2066,11 @@ Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer A
                 'Pass the raw bytes to the target layer's DIB, which will copy the bytes over its existing DIB data.
                 dstLayer.layerDIB.copyStreamOverImageArray retBytes
                 
-                'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
-                dstLayer.notifyLayerModified
+                'Notify the parent of the change target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+                ' WARNING!  Normally, this happens through the parent pdImage object, so the image can be recomposited.  Callers of this
+                ' function need to be aware of this behavior, so they can manually notify the parent of the change (as the parent is not
+                ' passed to this function, by design).
+                dstLayer.notifyOfDestructiveChanges
                 
             'Bytes could not be read, or alternately, checksums didn't match for the first node.
             Else
@@ -2156,7 +2159,7 @@ Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As p
                 dstLayer.layerDIB.copyStreamOverImageArray retBytes
                 
                 'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
-                dstLayer.notifyLayerModified
+                dstLayer.notifyOfDestructiveChanges
                 
             'Bytes could not be read, or alternately, checksums didn't match.  (Note that checksums are currently disabled
             ' for this function, for performance reasons, but I'm leaving this check in case we someday decide to re-enable them.)

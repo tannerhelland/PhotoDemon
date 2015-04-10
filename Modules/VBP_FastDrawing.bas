@@ -696,8 +696,8 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         'If we're setting data to the screen, we can reasonably assume that the progress bar should be reset
         releaseProgressBar
         
-        'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
-        pdImages(g_CurrentImage).getActiveLayer.notifyLayerModified
+        'Notify the parent of the target layer of our changes
+        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).getActiveLayerIndex
         
         'Pass control to the viewport renderer, which will perform the actual rendering
         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)

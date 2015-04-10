@@ -375,8 +375,8 @@ Public Sub MenuCropToSelection()
         'Remove any null-padding from the layer
         tmpLayerRef.cropNullPaddedLayer
         
-        'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
-        tmpLayerRef.notifyLayerModified
+        'Notify the parent of the change
+        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, i
         
     Next i
     
@@ -445,10 +445,13 @@ Public Sub MenuFlip(Optional ByVal targetLayerIndex As Long = -1)
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
         
-        'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
-        tmpLayerRef.notifyLayerModified
-    
+        'Notify the parent image of the change
+        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, i
+        
     Next i
+    
+    'Notify the parent image that the entire image now needs to be recomposited
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
     
     Message "Finished. "
     
@@ -501,10 +504,13 @@ Public Sub MenuMirror(Optional ByVal targetLayerIndex As Long = -1)
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
         
-        'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
-        tmpLayerRef.notifyLayerModified
-    
+        'Notify the parent image of the change
+        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, i
+        
     Next i
+    
+    'Notify the parent image that the entire image now needs to be recomposited
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
     
     Message "Finished."
     
@@ -586,8 +592,8 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
         
-        'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
-        tmpLayerRef.notifyLayerModified
+        'Notify the parent of the change
+        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, i
     
         'Update the progress bar (really only relevant if rotating the entire image)
         SetProgBarVal i
@@ -655,10 +661,13 @@ Public Sub MenuRotate180(Optional ByVal targetLayerIndex As Long = -1)
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
         
-        'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
-        tmpLayerRef.notifyLayerModified
-    
+        'Notify the parent image of the change
+        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, i
+        
     Next i
+    
+    'Notify the parent image that the entire image now needs to be recomposited
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
             
     Message "Finished. "
     
@@ -739,8 +748,8 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
         
-        'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
-        tmpLayerRef.notifyLayerModified
+        'Notify the parent image of the change
+        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, i
         
         'Update the progress bar (really only relevant if rotating the entire image)
         SetProgBarVal i

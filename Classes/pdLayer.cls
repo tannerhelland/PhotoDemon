@@ -186,14 +186,17 @@ Private m_IsThumbClean As Boolean
 
 
 'If an external function modifies this layer's DIB contents (or the vector data from which the DIB is generated),
-' *IT MUST CALL THIS FUNCTION AFTERWARD*.
+' it must call this function afterward.
 '
-'As part of new program-wide optimizations in v6.4, I am trying to limit the amount of data that PD has to generate on the fly.
-' For layers, we can reduce churn by caching things like the layer thumbnail, which should only be updated when the layer's
-' contents are updated (destructively).
+'IMPORTANT NOTE! As of v7.0, PD functions should not call this sub directly.  Instead, they must call notifyImageChanged on
+' the parent pdImage object, so the master object knows to recomposite itself.
 '
-'This notifyLayerModified() function will rebuild all caches for this layer, so use it only when absolutely necessary.
-Public Sub notifyLayerModified()
+'ANOTHER IMPORTANT NOTE!  This function only needs to be called if a change was destructive.  Non-destructive changes
+' - per the name, lol - do not require us to rebuild internal caches, because the effects and/or resizing will be
+' handled by a compositor object.
+'
+'Finally, function will mark all layer caches as dirty, causing a lot of subsequent work, so use it only when absolutely necessary.
+Public Sub notifyOfDestructiveChanges()
 
     'Mark the layer thumbnail as dirty
     m_IsThumbClean = False
@@ -506,7 +509,7 @@ Public Sub makeCanvasTransformsPermanent()
     myLayerData.l_CanvasYModifier = 1
     
     'Mark this layer as dirty
-    Me.notifyLayerModified
+    Me.notifyOfDestructiveChanges
 
 End Sub
 
@@ -1096,6 +1099,9 @@ Public Sub convertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parent
     'Reset our offset values
     myLayerData.l_OffsetX = 0
     myLayerData.l_OffsetY = 0
+    
+    'Mark the layer as dirty
+    Me.notifyOfDestructiveChanges
     
     'Release the temporary DIB
     Set tmpDIB = Nothing

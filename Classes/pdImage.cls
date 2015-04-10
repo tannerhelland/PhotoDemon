@@ -149,6 +149,11 @@ Option Explicit
     ' to move all compositing work to an external class (to keep pdImage from getting too bloated).
     Private imgCompositor As pdCompositor
     
+    'As of April 2015, each pdImage object now maintains a persistent copy of its fully composited layer stack (inside the
+    ' compositeBuffer pdDIB).  To avoid recompositing the image unless absolutely necessary, new trackers were required.
+    Private m_CompositeCacheClean As Boolean
+    
+    
 'Create a new, blank layer in this image.  Note that layer type is not provided - that is handled separately, via the
 ' layer object itself.  All this function does is create a new pdLayer object and rearrange the layer stack to fit.
 
@@ -198,6 +203,65 @@ Public Function createBlankLayer(Optional ByVal layerPosition As Long = -1) As L
 
 End Function
 
+Private Sub rebuildCompositeBuffer()
+
+    'If the buffer is already clean, ignore this request
+    If m_CompositeCacheClean Then
+        Debug.Print "WARNING!  pdImage.rebuildCompositeBuffer was called, but the compositeBuffer is marked as clean!"
+    Else
+        
+        'Rebuild the composite cache
+        imgCompositor.getCompositedImage Me, compositeBuffer
+        
+        'Mark the cache as clean
+        'm_CompositeCacheClean = True
+        
+    End If
+
+End Sub
+
+'If an outside function directly modifies something inside this image (e.g. a layer), it must notify us via this function.
+' The modification type mirrors PD's Undo types, to simply the work external functions have to do (as typically, they are
+' notifying the central processor of these changes, so Undo data is generated correctly).
+'
+'If the change involves a layer, an index *must* be specified, so the object can notify the layer of the change (allowing the
+' layer to rebuild any internal caches or buffers, like layer styles).
+Public Function notifyImageChanged(ByVal typeOfChange As PD_UNDO_TYPE, Optional ByVal layerIndex As Long = -1)
+
+    'Separate handling by type.
+    
+    'TODO: in the future, it would be awesome to store a partial composite up-to-but-NOT-including the current layer.
+    ' This would allow for faster recomposites when the current layer is modified.
+    ' However, until such time as that feature is implemented, I have no choice but to recomposite the entire image
+    ' after changes are made.
+    
+    Select Case typeOfChange
+    
+        Case UNDO_IMAGE
+            m_CompositeCacheClean = False
+        
+        Case UNDO_IMAGEHEADER
+            m_CompositeCacheClean = False
+        
+        Case UNDO_LAYER
+            m_CompositeCacheClean = False
+            
+            If layerIndex <> -1 Then
+                Me.getLayerByIndex(layerIndex).notifyOfDestructiveChanges
+            Else
+                Debug.Print "WARNING!  Invalid params passed to pdImage.notifyImageChanged (-1 layer index for a layer action)."
+            End If
+        
+        Case UNDO_LAYERHEADER
+            m_CompositeCacheClean = False
+        
+        Case Else
+            Debug.Print "WARNING!  pdImage.notifyImageChanged received an unknown change request: " & typeOfChange
+    
+    End Select
+
+End Function
+
 'Some functions (like saving the image) need to know whether to present the user with 24 or 32bpp options.  Because the composited
 ' image's color depth depends on a variety of factors, the calling function can simply rely on this function to determine the
 ' appropriate color depth for us.
@@ -226,7 +290,17 @@ End Sub
 ' particular premultiplication status of the composited DIB's alpha values.  (This is helpful for save functions, which
 ' require non-premultiplied alpha, vs viewport functions, which require premultiplied alpha).
 Public Sub getCompositedImage(ByRef dstDIB As pdDIB, Optional ByVal premultiplicationStatus As Boolean = True)
-    imgCompositor.getCompositedImage Me, dstDIB, premultiplicationStatus
+    
+    'If the current composite cache is dirty, rebuild it
+    If Not m_CompositeCacheClean Then rebuildCompositeBuffer
+    
+    'Give the caller a copy of the composited image
+    If dstDIB Is Nothing Then Set dstDIB = New pdDIB
+    dstDIB.createFromExistingDIB compositeBuffer
+    
+    'Change premultiplication, if requested by the caller.  (By default, the composite image is stored in premultiplied format.)
+    If dstDIB.getAlphaPremultiplication <> premultiplicationStatus Then dstDIB.setAlphaPremultiplication premultiplicationStatus
+    
 End Sub
 
 'Returns a subsection of the fully composited image (in pdDIB format, of course).  This is helpful for rendering the main viewport,
@@ -850,6 +924,9 @@ Public Function updateSize(Optional ByVal useBaseLayer As Boolean = True, Option
         Me.Height = newHeight
     End If
     
+    'Changes to image size require a rebuild of our composited image cache
+    Me.notifyImageChanged UNDO_IMAGE
+    
 End Function
 
 'INITIALIZE class
@@ -1164,8 +1241,8 @@ Public Function eraseProcessedSelection(ByVal targetLayerIndex As Long) As Boole
     'Shrink the layer to its maximum relevant size
     imgLayers(targetLayerIndex).cropNullPaddedLayer
     
-    'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
-    imgLayers(targetLayerIndex).notifyLayerModified
+    'Notify ourselves of the change
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, targetLayerIndex
     
     eraseProcessedSelection = True
 

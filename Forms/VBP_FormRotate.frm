@@ -368,8 +368,8 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
                     tmpLayerRef.setLayerOffsetY origOffsetY - (tmpLayerRef.layerDIB.getDIBHeight \ 2)
                 End If
                 
-                'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
-                tmpLayerRef.notifyLayerModified
+                'Notify the parent of the change
+                pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, i
                 
             'Continue with the next layer
             Next i
