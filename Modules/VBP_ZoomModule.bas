@@ -149,10 +149,10 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     'Create the front buffer as necessary
     If frontBuffer Is Nothing Then Set frontBuffer = New pdDIB
         
-    If (frontBuffer.getDIBWidth <> srcImage.backBuffer.getDIBWidth) Or (frontBuffer.getDIBHeight <> srcImage.backBuffer.getDIBHeight) Then
-        frontBuffer.createFromExistingDIB srcImage.backBuffer
+    If (frontBuffer.getDIBWidth <> srcImage.canvasBuffer.getDIBWidth) Or (frontBuffer.getDIBHeight <> srcImage.canvasBuffer.getDIBHeight) Then
+        frontBuffer.createFromExistingDIB srcImage.canvasBuffer
     Else
-        BitBlt frontBuffer.getDIBDC, 0, 0, srcImage.backBuffer.getDIBWidth, srcImage.backBuffer.getDIBHeight, srcImage.backBuffer.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt frontBuffer.getDIBDC, 0, 0, srcImage.canvasBuffer.getDIBWidth, srcImage.canvasBuffer.getDIBHeight, srcImage.canvasBuffer.getDIBDC, 0, 0, vbSrcCopy
     End If
         
     
@@ -288,7 +288,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
     'Before rendering the image, apply a checkerboard pattern to the viewport region of the source image's back buffer.
     ' TODO: cache g_CheckerboardPattern persistently, in GDI+ format, so we don't have to recreate it on every draw.
     With srcImage.imgViewport
-        GDI_Plus.GDIPlusFillDIBRect_Pattern srcImage.backBuffer, .targetLeft, .targetTop, .targetWidth, .targetHeight, g_CheckerboardPattern
+        GDI_Plus.GDIPlusFillDIBRect_Pattern srcImage.canvasBuffer, .targetLeft, .targetTop, .targetWidth, .targetHeight, g_CheckerboardPattern
     End With
     
     'As a failsafe, perform a GDI+ check.  PD probably won't work at all without GDI+, so I could look at dropping this check
@@ -302,13 +302,13 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         
         'When we've been asked to maximize performance, use nearest neighbor for all zoom modes
         If g_ViewportPerformance = PD_PERF_FASTEST Then
-            srcImage.getCompositedRect srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, InterpolationModeNearestNeighbor
+            srcImage.getCompositedRect srcImage.canvasBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, InterpolationModeNearestNeighbor
             
         'Otherwise, switch dynamically between high-quality and low-quality interpolation depending on the current zoom.
         ' Note that the compositor will perform some additional checks, and if the image is zoomed-in, it will switch to nearest-neighbor
         ' automatically (regardless of what method we request).
         Else
-            srcImage.getCompositedRect srcImage.backBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor)
+            srcImage.getCompositedRect srcImage.canvasBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor)
         End If
                 
     'This is an emergency fallback, only.  PD won't work without GDI+, so rendering the viewport is pointless.
@@ -401,12 +401,12 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     
     
     'We will be referencing the source pdImage object many times.  To improve performance, cache its ID value
-    Dim curImage As Long
-    curImage = srcImage.imageID
+    Dim curImageIndex As Long
+    curImageIndex = srcImage.imageID
     
     'Because this routine is time-consuming, I carefully track its usage to try and minimize how frequently it's called.
     ' Feel free to comment out this line if you don't find it helpful.
-    Debug.Print "Preparing viewport: " & reasonForRedraw & " | (" & curImage & ") "
+    Debug.Print "Preparing viewport: " & reasonForRedraw & " | (" & curImageIndex & ") "
     
     'This crucial value is the mathematical ratio of the current zoom value: 1 for 100%, 0.5 for 50%, 2 for 200%, etc.
     ' We can't generate this automatically, because specialty zoom values (like "fit to window") must be externally generated
@@ -533,7 +533,12 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
         
         'Resize the back buffer and store the relevant painting information into the passed pdImages() object.
         ' (TODO: roll the canvas color over to the central themer.)
-        srcImage.backBuffer.createBlank canvasWidth, canvasHeight, 24, g_CanvasBackground
+        If (srcImage.canvasBuffer.getDIBWidth <> canvasWidth) Or (srcImage.canvasBuffer.getDIBHeight <> canvasHeight) Then
+            srcImage.canvasBuffer.createBlank canvasWidth, canvasHeight, 24, g_CanvasBackground, 255
+        Else
+            GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, canvasWidth, canvasHeight, g_CanvasBackground, 255, CompositingModeSourceCopy
+        End If
+        
         srcImage.imgViewport.targetLeft = viewportLeft
         srcImage.imgViewport.targetTop = viewportTop
         srcImage.imgViewport.targetWidth = viewportWidth
@@ -673,13 +678,13 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
         If vScrollEnabled Then finalCanvasWidth = canvasWidth - dstCanvas.getScrollWidth(PD_VERTICAL) Else finalCanvasWidth = canvasWidth
         If hScrollEnabled Then finalCanvasHeight = canvasHeight - dstCanvas.getScrollHeight(PD_HORIZONTAL) Else finalCanvasHeight = canvasHeight
         
-        'Testing shows no measurable difference between a 32-bit or 24-bit back buffer.  I am going to try 24-bit for now,
-        ' but you can easily swap in the other if desired.  (NOTE!  32-bit screws up selection rendering, because it always assumes
+        'Testing shows no measurable difference between a 32-bit or 24-bit canvas buffer.  I am going to try 24-bit for now,
+        ' but you can easily swap in the other if desired.  (TODO:  32-bit screws up selection rendering, because it always assumes
         ' a 24-bit target for performance reasons.  Should revisit!)
-        If (srcImage.backBuffer.getDIBWidth <> finalCanvasWidth) Or (srcImage.backBuffer.getDIBHeight <> finalCanvasHeight) Then
-            srcImage.backBuffer.createBlank finalCanvasWidth, finalCanvasHeight, 24, g_CanvasBackground, 255
+        If (srcImage.canvasBuffer.getDIBWidth <> finalCanvasWidth) Or (srcImage.canvasBuffer.getDIBHeight <> finalCanvasHeight) Then
+            srcImage.canvasBuffer.createBlank finalCanvasWidth, finalCanvasHeight, 24, g_CanvasBackground, 255
         Else
-            GDI_Plus.GDIPlusFillDIBRect srcImage.backBuffer, 0, 0, finalCanvasWidth, finalCanvasHeight, g_CanvasBackground, 255, CompositingModeSourceCopy
+            GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, finalCanvasWidth, finalCanvasHeight, g_CanvasBackground, 255, CompositingModeSourceCopy
         End If
         
         'Cache our viewport position and measurements inside the source object.  Future pipeline stages need these values.

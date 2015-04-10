@@ -103,8 +103,13 @@ Option Explicit
     'If this image is simply being used for internal PhotoDemon processing, hide it from the user
     Public forInternalUseOnly As Boolean
     
-    'Image's back buffer (also a DIB; this is used to hold the final composite before everything is rendered on-screen
-    Public backBuffer As pdDIB
+    'Persistent buffer, for storing the fully composited image.  This composite is only updated when absolutely necessary;
+    ' otherwise, look at grabbing the dedicated canvasBuffer, below.
+    Public compositeBuffer As pdDIB
+    
+    'Image's canvas buffer.  This holds a composited version of the image, extracted and cropped to reflect the current viewport.
+    ' It is cached here to make viewport rendering faster and more reliable.
+    Public canvasBuffer As pdDIB
     
     'If this image is 32bpp then it requires a specialized compositing layer for rendering the transparency
     Public alphaFixDIB As pdDIB
@@ -748,10 +753,16 @@ End Function
 'When this DIB is no longer being used, we can deactivate it to save on resources.
 Public Sub deactivateImage()
     
-    'Erase the back buffer
-    If Not (backBuffer Is Nothing) Then
-        backBuffer.eraseDIB
-        Set backBuffer = Nothing
+    'Erase the composite buffer
+    If Not (compositeBuffer Is Nothing) Then
+        compositeBuffer.eraseDIB
+        Set compositeBuffer = Nothing
+    End If
+    
+    'Erase the canvas buffer
+    If Not (canvasBuffer Is Nothing) Then
+        canvasBuffer.eraseDIB
+        Set canvasBuffer = Nothing
     End If
     
     'If the alpha adjustment DIB exists, erase it too
@@ -864,8 +875,9 @@ Private Sub Class_Initialize()
         imgStorage.Add "hasSeenWebPPrompt", False
         imgStorage.Add "hasSeenJXRPrompt", False
         
-    'Initialize the back buffer
-    Set backBuffer = New pdDIB
+    'Initialize the composite and canvas buffers
+    Set compositeBuffer = New pdDIB
+    Set canvasBuffer = New pdDIB
     
     'Initialize the alpha composite layer
     Set alphaFixDIB = New pdDIB
