@@ -145,12 +145,12 @@ Public g_IsSystemColorProfileSRGB As Boolean
 Private Const MAX_PATH As Long = 260
 
 'Shorthand way to activate color management for anything with a DC
-Public Sub turnOnDefaultColorManagement(ByVal targetDC As Long, ByVal targetHWnd As Long)
+Public Sub turnOnDefaultColorManagement(ByVal targetDC As Long, ByVal targetHwnd As Long)
     
     'Perform a quick check to see if we the target DC is requesting sRGB management.  If it is, we can skip
     ' color management entirely, because PD stores all RGB data in sRGB anyway.
     If Not (g_UseSystemColorProfile And g_IsSystemColorProfileSRGB) Then
-        assignDefaultColorProfileToObject targetHWnd, targetDC
+        assignDefaultColorProfileToObject targetHwnd, targetDC
         turnOnColorManagementForDC targetDC
     End If
     
@@ -641,7 +641,7 @@ Public Sub checkParentMonitor(Optional ByVal suspendRedraw As Boolean = False, O
         
         'If an image has been loaded, and it is valid, redraw it now
         If (pdImages(g_CurrentImage).Width > 0) And (pdImages(g_CurrentImage).Height > 0) And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.getClientWidth(FormMain.hWnd) > 0) And pdImages(g_CurrentImage).loadedSuccessfully Then
-            Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+            Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         End If
         
         'Note that the image tabstrip is also color-managed, so it needs to be redrawn as well
@@ -1041,7 +1041,7 @@ Private Function invert3x3Matrix(ByRef newMatrix() As Double, ByRef srcMatrix() 
     intMatrix(2, 5) = 1
     
     'Start performing row operations that move us toward an identity matrix on the left
-    Dim k As Long, n As Long, M As Long, nonZeroLine As Long, tmpValue As Double
+    Dim k As Long, n As Long, m As Long, nonZeroLine As Long, tmpValue As Double
     
     For k = 0 To 2
         
@@ -1057,11 +1057,11 @@ Private Function invert3x3Matrix(ByRef newMatrix() As Double, ByRef srcMatrix() 
             Next n
             
             'Swap line k and nonZeroLine
-            For M = k To 5
-                tmpValue = intMatrix(k, M)
-                intMatrix(k, M) = intMatrix(nonZeroLine, M)
-                intMatrix(nonZeroLine, M) = tmpValue
-            Next M
+            For m = k To 5
+                tmpValue = intMatrix(k, m)
+                intMatrix(k, m) = intMatrix(nonZeroLine, m)
+                intMatrix(nonZeroLine, m) = tmpValue
+            Next m
             
         End If
             
@@ -1087,9 +1087,9 @@ Private Function invert3x3Matrix(ByRef newMatrix() As Double, ByRef srcMatrix() 
                 If intMatrix(k, k) <> 0 Then
                     
                     tmpValue = intMatrix(n, k) / intMatrix(k, k)
-                    For M = k To 5
-                        intMatrix(n, M) = intMatrix(n, M) - intMatrix(k, M) * tmpValue
-                    Next M
+                    For m = k To 5
+                        intMatrix(n, m) = intMatrix(n, m) - intMatrix(k, m) * tmpValue
+                    Next m
                     
                 'Failed determinant; exit function
                 Else

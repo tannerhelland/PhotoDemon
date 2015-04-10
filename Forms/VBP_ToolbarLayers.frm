@@ -456,7 +456,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                 pdImages(g_CurrentImage).setActiveLayerByIndex curLayerIndex
                 
                 'Redraw the viewport and interface to match
-                Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 syncInterfaceToCurrentImage
                 
                 'All that interface stuff may have messed up focus; retain it on the layer box
@@ -563,7 +563,7 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
             ' the active layer.
             Else
                 Layer_Handler.setActiveLayerByIndex clickedLayer, False
-                Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             End If
             
             'Redraw the layer box to represent any changes from this interaction.

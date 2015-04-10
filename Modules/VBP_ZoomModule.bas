@@ -3,13 +3,16 @@ Attribute VB_Name = "Viewport_Engine"
 'Viewport Handler - builds and draws the image viewport and associated scroll bars
 'Copyright 2001-2015 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 30/May/14
-'Last update: add support for "preserve relative canvas position under cursor while mousewheel zooming"
+'Last updated: 10/April/15
+'Last update: extend pipeline by an additional stage, to prep for paint tools
 '
 'Module for handling the image viewport.  The render pipeline works as follows:
-' - Viewport_Engine.Stage1_InitializeBuffer: for recalculating all viewport variables and controls (done only when the zoom value is changed or a new picture is loaded)
-' - Viewport_Engine.Stage2_CompositeAllLayers: when the viewport is scrolled (minimal redrawing is done, since the zoom value hasn't changed)
-' - Viewport_Engine.Stage3_CompositeCanvas: perform any final compositing, such as the Selection Tool effect, then draw the viewport on-screen
+' - Viewport_Engine.Stage1_InitializeBuffer: for recalculating all viewport variables and controls (done only when the zoom value is changed,
+'                                             or the user switches to a different image or loads a new picture)
+' - Viewport_Engine.Stage2_CompositeAllLayers: reassemble the layered image, with all non-destructive changes taken into account
+' - Viewport_Engine.Stage3_ExtractRelevantRegion: copy the relevant portion of the image out of the composite and into its own buffer
+' - Viewport_Engine.Stage4_CompositeCanvas: blend the image and any canvas UI elements together
+' - Viewport_Engine.Stage5_FlipBufferAndDrawUI: render the finalized image+canvas, and overlay any final UI elements (transform nodes, etc)
 '
 'PhotoDemon is intelligent about calling the lowest routine in the pipeline, which helps it render the viewport quickly
 ' regardless of zoom or scroll values.
@@ -47,13 +50,13 @@ Private frontBuffer As pdDIB
 'cornerFix holds a small gray box that is copied over the corner between the horizontal and vertical scrollbars, if they exist
 Private cornerFix As pdDIB
 
-'Stage4_FlipBufferAndDrawUI is the final stage of the viewport pipeline.  It will flip the composited canvas image to the
+'Stage5_FlipBufferAndDrawUI is the final stage of the viewport pipeline.  It will flip the composited canvas image to the
 ' destination pdCanvas object, and apply any final UI elements as well - control nodes, custom cursors, etc.  This step is
 ' very fast, and should be used whenever full compositing is unnecessary.
 '
 'As part of the buffer flip, this stage will also activate and apply color management to the completed front buffer.
 ' (Still TODO is fixing the canvas to not rely on AutoRedraw, which will spare us having to re-activate color management on every draw.)
-Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
+Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
 
     'If no images have been loaded, clear the canvas and exit
     If g_OpenImageCount = 0 Then
@@ -118,7 +121,7 @@ Public Sub Stage4_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
 
 End Sub
 
-'Stage3_CompositeCanvas takes the current canvas (which has a checkerboard and fully layered image drawn atop it) and applies a few
+'Stage4_CompositeCanvas takes the current canvas (which has a checkerboard and fully layered image drawn atop it) and applies a few
 ' other frills to it, including things like canvas decorations (e.g. drop-shadows, a fix for the space between scroll bars), and the
 ' current selection, if one is active.  This stage is the final stage before color-management is applied, so it's important to render
 ' any color-specific bits now, as the next stage will apply color-management processing to whatever is contained in the front buffer.
@@ -129,7 +132,7 @@ End Sub
 '
 'After this stage, the only things that should be rendered onto the canvas are uncolored UI elements, like custom-drawn cursors or
 ' control nodes.
-Public Sub Stage3_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
+Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
 
     'If no images have been loaded, clear the canvas and exit
     If g_OpenImageCount = 0 Then
@@ -222,15 +225,26 @@ Public Sub Stage3_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
         
     'Pass the completed front buffer to the final stage of the pipeline, which will flip everything to the screen and render any
     ' remaining UI elements!
-    Stage4_FlipBufferAndDrawUI srcImage, dstCanvas
+    Stage5_FlipBufferAndDrawUI srcImage, dstCanvas
     
     
 End Sub
 
-'Stage2_CompositeAllLayers is used to composite the current image onto the source pdImage's back buffer.  This function does not
+'Stage3_ExtractRelevantRegion is used to composite the current image onto the source pdImage's back buffer.  This function does not
 ' perform any initialization or pre-rendering checks, so you cannot use it if zoom is changed, or if the viewport area has changed.
 ' (Stage1_InitializeBuffer is used for that.)  The most common use-case for this function is the use of scrollbars, or non-destructive
 ' layer changes that require a recomposite of the image, but not a full recreation calculation of the viewport and canvas buffers.
+Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
+
+End Sub
+
+'Stage2_CompositeAllLayers is used to composite the current layer stack (while accounting for all non-destructive modifications)
+' into a single, final image.  This image is stored in the source pdImage's back buffer.  This function does not perform any
+' initialization or pre-rendering checks, so you cannot use it if zoom is changed, or if the viewport area has changed.
+' (Stage1_InitializeBuffer is used for that.)  Similarly, depending on the active render mode, this stage may be redundant for
+' things like viewport scrollbars, as those only require Stage3_ExtractRelevantRegion, as the image has already been assembled.
+' The most common use-case for this function is changes made to individual layers, including non-destructive layer changes that
+' require a recomposite of the image, but not a full recreation calculation of the viewport and canvas buffers.
 Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
         
     'Like the previous stage of the pipeline, we start by performing a number of "do not render the viewport at all" checks.
@@ -303,7 +317,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
     End If
     
     'Pass control to the next stage of the pipeline.
-    Stage3_CompositeCanvas srcImage, dstCanvas
+    Stage4_CompositeCanvas srcImage, dstCanvas
     
     'If timing reports are enabled, we report them after the rest of the pipeline has finished.
     If g_DisplayTimingReports Then Debug.Print "Viewport render timing: " & Format(CStr((Timer - startTime) * 1000), "0000.00") & " ms"

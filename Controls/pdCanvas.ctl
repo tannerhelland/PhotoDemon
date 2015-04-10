@@ -865,7 +865,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                         pdImages(g_CurrentImage).setActiveLayerByIndex curLayerIndex
                         
                         'Redraw the viewport and interface to match
-                        Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
+                        Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
                         syncInterfaceToCurrentImage
                         
                     End If
@@ -928,7 +928,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                             
                             End If
                             
-                            Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                            Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                             
                         End If
                     
@@ -1011,7 +1011,7 @@ Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
                     End If
                     
                     'Redraw the screen to reflect this new change.
-                    Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                    Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 
                 End If
             
@@ -1173,7 +1173,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                         'If the layer under the mouse is not already active, activate it now
                         If layerUnderMouse <> pdImages(g_CurrentImage).getActiveLayerIndex Then
                             Layer_Handler.setActiveLayerByIndex layerUnderMouse, False
-                            Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
+                            Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
                         End If
                     
                     End If
@@ -1246,7 +1246,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                                     pdImages(g_CurrentImage).mainSelection.overrideTransformMode True
                                     
                                     'Redraw the screen
-                                    Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
+                                    Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
                                     
                                 End If
                             
@@ -1275,7 +1275,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
             'Magic wand selections are easy.  They never transform - they only generate anew
             Case SELECT_WAND
                 Selection_Handler.initSelectionByPoint imgX, imgY
-                Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
+                Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
                 
             'In the future, other tools can be handled here
             Case Else
@@ -1362,7 +1362,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                 End If
                 
                 'Force a redraw of the viewport
-                If hasMouseMoved > 1 Then Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
+                If hasMouseMoved > 1 Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
             
             'Lasso selections are handled specially, because mouse move events control the drawing of the lasso
             Case SELECT_LASSO
@@ -1384,13 +1384,13 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                 #End If
                 
                 'Force a redraw of the viewport
-                If hasMouseMoved > 1 Then Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
+                If hasMouseMoved > 1 Then Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
             
             'Wand selections are easier than other selection types, because they don't support any special transforms
             Case SELECT_WAND
                 If pdImages(g_CurrentImage).selectionActive Then
                     pdImages(g_CurrentImage).mainSelection.setAdditionalCoordinates imgX, imgY
-                    Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
+                    Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
                 End If
             
         End Select
@@ -1564,7 +1564,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     End If
                     
                     'Force a redraw of the screen
-                    Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
+                    Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
                     
                 Else
                     'If the selection is not active, make sure it stays that way
@@ -1645,7 +1645,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     End If
                     
                     'Force a redraw of the screen
-                    Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
+                    Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
                 
                 Else
                     'If the selection is not active, make sure it stays that way
@@ -1671,7 +1671,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     End If
                     
                     'Force a redraw of the screen
-                    Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), Me
+                    Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
                     
                 Else
                     'If the selection is not active, make sure it stays that way

@@ -70,7 +70,7 @@ Public Sub CreateNewSelection(ByVal paramString As String)
     syncTextToCurrentSelection g_CurrentImage
     
     'Draw the new selection to the screen
-    Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -88,7 +88,7 @@ Public Sub RemoveCurrentSelection()
     syncTextToCurrentSelection g_CurrentImage
         
     'Redraw the image (with selection removed)
-    Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -110,7 +110,7 @@ Public Sub SelectWholeImage()
     syncTextToCurrentSelection g_CurrentImage
     
     'Draw the new selection to the screen
-    Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -180,7 +180,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         syncTextToCurrentSelection g_CurrentImage
                 
         'Draw the new selection to the screen
-        Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         Message "Selection loaded successfully"
     
     End If
@@ -739,7 +739,7 @@ Public Sub invertCurrentSelection()
     pdImages(g_CurrentImage).selectionActive = True
         
     'Draw the new selection to the screen
-    Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
@@ -779,7 +779,7 @@ Public Sub featherCurrentSelection(ByVal showDialog As Boolean, Optional ByVal f
         Message "Feathering complete."
         
         'Draw the new selection to the screen
-        Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     End If
 
@@ -922,7 +922,7 @@ Public Sub sharpenCurrentSelection(ByVal showDialog As Boolean, Optional ByVal s
         Message "Feathering complete."
         
         'Draw the new selection to the screen
-        Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     End If
 
@@ -969,7 +969,7 @@ Public Sub growCurrentSelection(ByVal showDialog As Boolean, Optional ByVal grow
         Message "Selection resize complete."
         
         'Draw the new selection to the screen
-        Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     End If
     
@@ -1017,7 +1017,7 @@ Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sh
         Message "Selection resize complete."
         
         'Draw the new selection to the screen
-        Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     End If
     
@@ -1080,7 +1080,7 @@ Public Sub borderCurrentSelection(ByVal showDialog As Boolean, Optional ByVal bo
         Message "Selection resize complete."
         
         'Draw the new selection to the screen
-        Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     End If
     
@@ -1267,7 +1267,7 @@ Public Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
     metaToggle tSelectionTransform, True
     
     'Redraw the screen
-    Viewport_Engine.Stage3_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                         
 End Sub
 
