@@ -2162,8 +2162,8 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     rightBound = imgLeft + imgWidth - 1
     bottomBound = imgTop + imgHeight - 1
             
-    If rightBound > srcImage.backBuffer.getDIBWidth - 1 Then rightBound = srcImage.backBuffer.getDIBWidth - 1
-    If bottomBound > srcImage.backBuffer.getDIBHeight - 1 Then bottomBound = srcImage.backBuffer.getDIBHeight - 1
+    If rightBound > srcImage.canvasBuffer.getDIBWidth - 1 Then rightBound = srcImage.canvasBuffer.getDIBWidth - 1
+    If bottomBound > srcImage.canvasBuffer.getDIBHeight - 1 Then bottomBound = srcImage.canvasBuffer.getDIBHeight - 1
     
     'Build look-up tables for both the x and y direction.  This is faster than constantly calculating new values for
     ' every pixel inside the loop.  Note also that this code is identical among various selection render methods.
