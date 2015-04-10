@@ -203,7 +203,7 @@ Public Function createBlankLayer(Optional ByVal layerPosition As Long = -1) As L
 
 End Function
 
-Private Sub rebuildCompositeBuffer()
+Public Sub rebuildCompositeBuffer()
 
     'If the buffer is already clean, ignore this request
     If m_CompositeCacheClean Then
