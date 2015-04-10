@@ -39,6 +39,9 @@ Public Sub addBlankLayer(ByVal dLayerIndex As Long)
     'Make the blank layer the new active layer
     pdImages(g_CurrentImage).setActiveLayerByID newLayerID
     
+    'Notify the parent of the change
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
+    
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.forceRedraw True
     
@@ -130,6 +133,9 @@ Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As Long, ByVa
         setActiveLayerByID prevActiveLayerID, False
     End If
     
+    'Notify the parent of the change
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
+    
     'Redraw the main viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
@@ -179,6 +185,9 @@ Public Sub loadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal image
             
             Debug.Print "Layer created successfully (ID# " & pdImages(g_CurrentImage).getLayerByID(newLayerID).getLayerName & ")"
             
+            'Notify the parent image that the entire image now needs to be recomposited
+            pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
+            
             'If the user wants us to manually create an Undo point (as required when pasting, for example), do so now
             If createUndo Then
                 pdImages(g_CurrentImage).undoManager.createUndoData "Add layer", "", UNDO_IMAGE, pdImages(g_CurrentImage).getActiveLayerID, -1
@@ -208,8 +217,10 @@ Public Sub eraseLayerByIndex(ByVal layerIndex As Long)
         'Create a blank layer at the current layer DIB's dimensions
         With pdImages(g_CurrentImage).getLayerByIndex(layerIndex)
             .layerDIB.createBlank .layerDIB.getDIBWidth, .layerDIB.getDIBHeight, 32, 0, 0
-            .notifyLayerModified
         End With
+        
+        'Notify the parent object of the change
+        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, layerIndex
     
     End If
 
@@ -268,6 +279,9 @@ Public Sub setLayerVisibilityByIndex(ByVal dLayerIndex As Long, ByVal layerVisib
     'Store the new visibility setting in the parent pdImage object
     pdImages(g_CurrentImage).getLayerByIndex(dLayerIndex).setLayerVisibility layerVisibility
     
+    'Notify the parent image of the change
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYERHEADER, dLayerIndex
+    
     'Redraw the layer box, but note that thumbnails don't need to be re-cached
     toolbar_Layers.forceRedraw False
     
@@ -305,6 +319,9 @@ Public Sub duplicateLayerByIndex(ByVal dLayerIndex As Long)
     'Make the duplicate layer the active layer
     pdImages(g_CurrentImage).setActiveLayerByID newLayerID
     
+    'Notify the parent image that the entire image now needs to be recomposited
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
+    
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.forceRedraw True
     
@@ -336,8 +353,8 @@ Public Sub mergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Bool
                 'Delete the now-merged layer
                 .deleteLayerByIndex dLayerIndex
                 
-                'Notify the newly merged layer that its contents have changed
-                .getLayerByIndex(mergeTarget).notifyLayerModified
+                'Notify the parent of the change
+                .notifyImageChanged UNDO_LAYER, mergeTarget
                 
                 'Set the newly merged layer as the active layer
                 .setActiveLayerByIndex mergeTarget
@@ -354,8 +371,8 @@ Public Sub mergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Bool
                 'Delete the now-merged layer
                 .deleteLayerByIndex mergeTarget
                 
-                'Notify the newly merged layer that its contents have changed
-                .getLayerByIndex(dLayerIndex).notifyLayerModified
+                'Notify the parent of the change
+                .notifyImageChanged UNDO_LAYER, dLayerIndex
                 
                 'Set the newly merged layer as the active layer
                 .setActiveLayerByIndex dLayerIndex
@@ -450,6 +467,9 @@ Public Sub deleteLayer(ByVal dLayerIndex As Long)
     If curLayerIndex < 0 Then curLayerIndex = 0
     setActiveLayerByIndex curLayerIndex, False
     
+    'Notify the parent image that the entire image now needs to be recomposited
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
+    
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.forceRedraw True
     
@@ -498,6 +518,9 @@ Public Sub deleteHiddenLayers()
         setActiveLayerByID activeLayerID
     End If
     
+    'Notify the parent image that the entire image now needs to be recomposited
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
+    
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.forceRedraw True
     
@@ -519,8 +542,11 @@ Public Sub moveLayerAdjacent(ByVal dLayerIndex As Long, ByVal directionIsUp As B
     'Restore the active layer
     setActiveLayerByID curActiveLayerID, False
     
-    If updateInterface Then
+    'Notify the parent image that the entire image now needs to be recomposited
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
     
+    If updateInterface Then
+        
         'Redraw the layer box, and note that thumbnails need to be re-cached
         toolbar_Layers.forceRedraw True
         
@@ -563,6 +589,9 @@ Public Sub moveLayerToEndOfStack(ByVal dLayerIndex As Long, ByVal moveToTopOfSta
     
     'Restore the active layer.  (This will also re-synchronize the interface against the new image.)
     setActiveLayerByID curActiveLayerID, False
+    
+    'Notify the parent image that the entire image now needs to be recomposited
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
     
     If updateInterface Then
     
@@ -607,6 +636,10 @@ Public Sub flattenImage()
     
     'Mark the only layer present as the active one.  (This will also re-synchronize the interface against the new image.)
     setActiveLayerByIndex 0, False
+    
+    'Notify the parent of the change
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, 0
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.forceRedraw True
@@ -667,6 +700,10 @@ Public Sub mergeVisibleLayers()
     'Mark the new merged layer as the active one.  (This will also re-synchronize the interface against the new image.)
     setActiveLayerByIndex 0, False
     
+    'Notify the parent image that the entire image now needs to be recomposited
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, 0
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
+    
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.forceRedraw True
     
@@ -681,6 +718,9 @@ Public Sub resetLayerSize(ByVal srcLayerIndex As Long)
     pdImages(g_CurrentImage).getLayerByIndex(srcLayerIndex).setLayerCanvasXModifier 1
     pdImages(g_CurrentImage).getLayerByIndex(srcLayerIndex).setLayerCanvasYModifier 1
     
+    'Notify the parent image of the change
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYERHEADER, srcLayerIndex
+    
     'Re-sync the interface
     syncInterfaceToCurrentImage
     
@@ -694,6 +734,9 @@ Public Sub MakeLayerSizePermanent(ByVal srcLayerIndex As Long)
     
     'Layers are capable of making this change internally
     pdImages(g_CurrentImage).getLayerByIndex(srcLayerIndex).makeCanvasTransformsPermanent
+    
+    'Notify the parent object of this change
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, srcLayerIndex
     
     'Re-sync the interface
     syncInterfaceToCurrentImage
@@ -719,6 +762,9 @@ Public Sub resizeLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizePa
         .setLayerCanvasYModifier cParams.GetDouble(4)
     End With
     
+    'Notify the parent image of the change
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYERHEADER, srcLayerIndex
+    
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
@@ -737,6 +783,9 @@ Public Sub moveLayerOnCanvas(ByVal srcLayerIndex As Long, ByVal resizeParams As 
         .setLayerOffsetX cParams.GetDouble(1)
         .setLayerOffsetY cParams.GetDouble(2)
     End With
+    
+    'Notify the parent of the change
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYERHEADER, srcLayerIndex
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -963,7 +1012,7 @@ Public Sub CropLayerToSelection(ByVal layerIndex As Long)
             pdImages(g_CurrentImage).eraseProcessedSelection layerIndex
         End If
     End If
-    
+        
     'Update the viewport
     Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Crop layer to selection"
     

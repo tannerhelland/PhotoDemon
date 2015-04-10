@@ -276,7 +276,9 @@ Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As L
     Else
         
         pdImages(g_CurrentImage).getLayerByID(m_relevantLayerID).layerDIB.createFromExistingDIB tmpLayerBottom.layerDIB
-        pdImages(g_CurrentImage).getLayerByID(m_relevantLayerID).notifyLayerModified
+        
+        'Notify the parent of the change
+        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).getLayerIndexFromID(m_relevantLayerID)
         
         syncInterfaceToCurrentImage
         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)

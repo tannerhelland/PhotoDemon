@@ -157,8 +157,8 @@ Public Sub ConvertImageColorDepth(ByVal newColorDepth As Long, Optional ByVal ne
     
     End If
     
-    'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
-    pdImages(g_CurrentImage).getActiveLayer.notifyLayerModified
+    'Notify the parent of the target layer of the change
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).getActiveLayerIndex
     
     Message "Finished."
     

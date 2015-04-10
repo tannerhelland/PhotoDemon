@@ -42,6 +42,7 @@ Begin VB.Form FormTile
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin VB.ComboBox cboTarget 
       BackColor       =   &H00FFFFFF&
@@ -285,7 +286,7 @@ Option Explicit
 Dim lastTargetMode As Long
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'When the combo box is changed, make the appropriate controls visible
 Private Sub cboTarget_Click()
@@ -457,8 +458,9 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
         SetProgBarVal 0
         releaseProgressBar
         
-        'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
-        pdImages(g_CurrentImage).getLayerByIndex(0).notifyLayerModified
+        'Notify the parent image of the change
+        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, 0
+        pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
         
         'Render the image on-screen at an automatically corrected zoom
         FitOnScreen
@@ -493,8 +495,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Render a preview
     cmdBar.markPreviewStatus True
