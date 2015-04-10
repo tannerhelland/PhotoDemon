@@ -236,6 +236,70 @@ End Sub
 ' layer changes that require a recomposite of the image, but not a full recreation calculation of the viewport and canvas buffers.
 Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
 
+    '(Temporary switch while working on new viewport engine)
+    If PD_USE_OLD_VIEWPORT_ENGINE Then
+    
+        'Proceed directly to the next pipeline stage, as the canvas buffer has already been assembled.
+        
+    Else
+        
+        'Stage 2 of the pipeline (Stage2_CompositeAllLayers) prepared srcImage.compositeBuffer for us.  In this stage,
+        ' we will be parsing out the portion of the compositeBuffer required by the current viewport.  As part of this process,
+        ' zoom and scroll parameters are calculated, so we know where to pull data from the master image.
+        
+        'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient.
+        ' Because rounding errors may occur with certain image sizes, we apply a special check when zoom = 100.
+        If srcImage.currentZoomValue = g_Zoom.getZoom100Index Then
+            srcWidth = srcImage.imgViewport.targetWidth
+            srcHeight = srcImage.imgViewport.targetHeight
+        Else
+            srcWidth = srcImage.imgViewport.targetWidth / m_ZoomRatio
+            srcHeight = srcImage.imgViewport.targetHeight / m_ZoomRatio
+        End If
+            
+        'These variables are the offset into the source image, as determined by the scroll bar's values.  PD supports partial
+        ' compositing of a given region of the image.  This allows for excellent performance when the image is larger than the
+        ' available screen real-estate (as we don't waste time compositing invisible regions).
+        If dstCanvas.getScrollVisibility(PD_HORIZONTAL) Then srcX = dstCanvas.getScrollValue(PD_HORIZONTAL) Else srcX = 0
+        If dstCanvas.getScrollVisibility(PD_VERTICAL) Then srcY = dstCanvas.getScrollValue(PD_VERTICAL) Else srcY = 0
+        
+        'Before rendering the image, apply a checkerboard pattern to the viewport region of the source image's back buffer.
+        ' TODO: cache g_CheckerboardPattern persistently, in GDI+ format, so we don't have to recreate it on every draw.
+        With srcImage.imgViewport
+            GDI_Plus.GDIPlusFillDIBRect_Pattern srcImage.canvasBuffer, .targetLeft, .targetTop, .targetWidth, .targetHeight, g_CheckerboardPattern
+        End With
+        
+        'As a failsafe, perform a GDI+ check.  PD probably won't work at all without GDI+, so I could look at dropping this check
+        ' in the future... but for now, we leave it, just in case.
+        If g_GDIPlusAvailable Then
+            
+            'We can now use PD's amazing rect-specific compositor to retrieve only the relevant section of the current viewport.
+            ' Note that we request our own interpolation mode, and we determine this based on the user's viewport performance preference.
+            ' (TODO: consider exposing bilinear interpolation as an option, which is blurrier, but doesn't suffer from the defects of
+            '        GDI+'s preprocessing, which screws up subpixel positioning.)
+            
+            'When we've been asked to maximize performance, use nearest neighbor for all zoom modes
+            If g_ViewportPerformance = PD_PERF_FASTEST Then
+                GDI_Plus.GDIPlus_StretchBlt srcImage.canvasBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcImage.compositeBuffer, srcX, srcY, srcWidth, srcHeight, 1, InterpolationModeNearestNeighbor
+                
+            'Otherwise, switch dynamically between high-quality and low-quality interpolation depending on the current zoom.
+            ' Note that the compositor will perform some additional checks, and if the image is zoomed-in, it will switch to nearest-neighbor
+            ' automatically (regardless of what method we request).
+            Else
+                GDI_Plus.GDIPlus_StretchBlt srcImage.canvasBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcImage.compositeBuffer, srcX, srcY, srcWidth, srcHeight, 1, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor)
+            End If
+                    
+        'This is an emergency fallback, only.  PD won't work without GDI+, so rendering the viewport is pointless.
+        Else
+            Message "WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)"
+        End If
+    
+    
+    End If
+    
+    'Pass control to the next stage of the pipeline.
+    Stage4_CompositeCanvas srcImage, dstCanvas
+
 End Sub
 
 'Stage2_CompositeAllLayers is used to composite the current layer stack (while accounting for all non-destructive modifications)
@@ -263,61 +327,75 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
     Dim startTime As Double
     If g_DisplayTimingReports Then startTime = Timer
     
-    'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared srcImage.BackBuffer for us.  The goal of this stage is two-fold:
-    ' 1) Fill the viewport area of the canvas with a checkerboard pattern
-    ' 2) Render the fully composited image atop the checkerboard pattern
+    'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared srcImage.compositeBuffer for us.  The goal of this stage
+    ' is simple: fill the compositeBuffer object with a fully composited copy of the current image.
     
-    'Note that the imgCompositor object will handle most of this stage for us, as it performs the actual compositing.
-    
-    'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient.
-    ' Because rounding errors may occur with certain image sizes, we apply a special check when zoom = 100.
-    If srcImage.currentZoomValue = g_Zoom.getZoom100Index Then
-        srcWidth = srcImage.imgViewport.targetWidth
-        srcHeight = srcImage.imgViewport.targetHeight
-    Else
-        srcWidth = srcImage.imgViewport.targetWidth / m_ZoomRatio
-        srcHeight = srcImage.imgViewport.targetHeight / m_ZoomRatio
-    End If
+    '(Temporary switch while working on new viewport engine)
+    If PD_USE_OLD_VIEWPORT_ENGINE Then
         
-    'These variables are the offset into the source image, as determined by the scroll bar's values.  PD supports partial
-    ' compositing of a given region of the image.  This allows for excellent performance when the image is larger than the
-    ' available screen real-estate (as we don't waste time compositing invisible regions).
-    If dstCanvas.getScrollVisibility(PD_HORIZONTAL) Then srcX = dstCanvas.getScrollValue(PD_HORIZONTAL) Else srcX = 0
-    If dstCanvas.getScrollVisibility(PD_VERTICAL) Then srcY = dstCanvas.getScrollValue(PD_VERTICAL) Else srcY = 0
+        'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared srcImage.BackBuffer for us.  The goal of this stage is two-fold:
+        ' 1) Fill the viewport area of the canvas with a checkerboard pattern
+        ' 2) Render the fully composited image atop the checkerboard pattern
         
-    'Before rendering the image, apply a checkerboard pattern to the viewport region of the source image's back buffer.
-    ' TODO: cache g_CheckerboardPattern persistently, in GDI+ format, so we don't have to recreate it on every draw.
-    With srcImage.imgViewport
-        GDI_Plus.GDIPlusFillDIBRect_Pattern srcImage.canvasBuffer, .targetLeft, .targetTop, .targetWidth, .targetHeight, g_CheckerboardPattern
-    End With
-    
-    'As a failsafe, perform a GDI+ check.  PD probably won't work at all without GDI+, so I could look at dropping this check
-    ' in the future... but for now, we leave it, just in case.
-    If g_GDIPlusAvailable Then
+        'Note that the imgCompositor object will handle most of this stage for us, as it performs the actual compositing.
         
-        'We can now use PD's amazing rect-specific compositor to retrieve only the relevant section of the current viewport.
-        ' Note that we request our own interpolation mode, and we determine this based on the user's viewport performance preference.
-        ' (TODO: consider exposing bilinear interpolation as an option, which is blurrier, but doesn't suffer from the defects of
-        '        GDI+'s preprocessing, which screws up subpixel positioning.)
-        
-        'When we've been asked to maximize performance, use nearest neighbor for all zoom modes
-        If g_ViewportPerformance = PD_PERF_FASTEST Then
-            srcImage.getCompositedRect srcImage.canvasBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, InterpolationModeNearestNeighbor
-            
-        'Otherwise, switch dynamically between high-quality and low-quality interpolation depending on the current zoom.
-        ' Note that the compositor will perform some additional checks, and if the image is zoomed-in, it will switch to nearest-neighbor
-        ' automatically (regardless of what method we request).
+        'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient.
+        ' Because rounding errors may occur with certain image sizes, we apply a special check when zoom = 100.
+        If srcImage.currentZoomValue = g_Zoom.getZoom100Index Then
+            srcWidth = srcImage.imgViewport.targetWidth
+            srcHeight = srcImage.imgViewport.targetHeight
         Else
-            srcImage.getCompositedRect srcImage.canvasBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor)
+            srcWidth = srcImage.imgViewport.targetWidth / m_ZoomRatio
+            srcHeight = srcImage.imgViewport.targetHeight / m_ZoomRatio
         End If
+            
+        'These variables are the offset into the source image, as determined by the scroll bar's values.  PD supports partial
+        ' compositing of a given region of the image.  This allows for excellent performance when the image is larger than the
+        ' available screen real-estate (as we don't waste time compositing invisible regions).
+        If dstCanvas.getScrollVisibility(PD_HORIZONTAL) Then srcX = dstCanvas.getScrollValue(PD_HORIZONTAL) Else srcX = 0
+        If dstCanvas.getScrollVisibility(PD_VERTICAL) Then srcY = dstCanvas.getScrollValue(PD_VERTICAL) Else srcY = 0
+        
+        'Before rendering the image, apply a checkerboard pattern to the viewport region of the source image's back buffer.
+        ' TODO: cache g_CheckerboardPattern persistently, in GDI+ format, so we don't have to recreate it on every draw.
+        With srcImage.imgViewport
+            GDI_Plus.GDIPlusFillDIBRect_Pattern srcImage.canvasBuffer, .targetLeft, .targetTop, .targetWidth, .targetHeight, g_CheckerboardPattern
+        End With
+        
+        'As a failsafe, perform a GDI+ check.  PD probably won't work at all without GDI+, so I could look at dropping this check
+        ' in the future... but for now, we leave it, just in case.
+        If g_GDIPlusAvailable Then
+            
+            'We can now use PD's amazing rect-specific compositor to retrieve only the relevant section of the current viewport.
+            ' Note that we request our own interpolation mode, and we determine this based on the user's viewport performance preference.
+            ' (TODO: consider exposing bilinear interpolation as an option, which is blurrier, but doesn't suffer from the defects of
+            '        GDI+'s preprocessing, which screws up subpixel positioning.)
+            
+            'When we've been asked to maximize performance, use nearest neighbor for all zoom modes
+            If g_ViewportPerformance = PD_PERF_FASTEST Then
+                srcImage.getCompositedRect srcImage.canvasBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, InterpolationModeNearestNeighbor
                 
-    'This is an emergency fallback, only.  PD won't work without GDI+, so rendering the viewport is pointless.
+            'Otherwise, switch dynamically between high-quality and low-quality interpolation depending on the current zoom.
+            ' Note that the compositor will perform some additional checks, and if the image is zoomed-in, it will switch to nearest-neighbor
+            ' automatically (regardless of what method we request).
+            Else
+                srcImage.getCompositedRect srcImage.canvasBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor)
+            End If
+                    
+        'This is an emergency fallback, only.  PD won't work without GDI+, so rendering the viewport is pointless.
+        Else
+            Message "WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)"
+        End If
+    
     Else
-        Message "WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)"
+    
+        'Notify the parent object that a prepared composite buffer is required.  If the buffer is dirty, the parent will regenerate
+        ' the composite for us.
+        srcImage.rebuildCompositeBuffer
+    
     End If
     
     'Pass control to the next stage of the pipeline.
-    Stage4_CompositeCanvas srcImage, dstCanvas
+    Stage3_ExtractRelevantRegion srcImage, dstCanvas
     
     'If timing reports are enabled, we report them after the rest of the pipeline has finished.
     If g_DisplayTimingReports Then Debug.Print "Viewport render timing: " & Format(CStr((Timer - startTime) * 1000), "0000.00") & " ms"

@@ -136,8 +136,14 @@ Public Sub panImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
     srcCanvas.setRedrawSuspension False
     
     'Manually request a canvas redraw
-    Viewport_Engine.Stage2_CompositeAllLayers srcImage, srcCanvas
-
+    
+    '(Temporary switch while working on new viewport engine)
+    If PD_USE_OLD_VIEWPORT_ENGINE Then
+        Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    Else
+        Viewport_Engine.Stage3_ExtractRelevantRegion pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    End If
+    
 End Sub
 
 'The nav tool uses this function to move and/or resize the current layer.
