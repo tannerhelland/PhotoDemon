@@ -533,8 +533,12 @@ Private Sub createNewPreferencesFile()
         'The current update track is set according to the hard-coded build ID of this .exe instance.
         Select Case PD_BUILD_QUALITY
         
+            'Technically, I would like to default to nightly updates for alpha versions.  However, I sometimes send casual users
+            ' to the nightly builds to fix a specific bug.  As they likely don't want to be bothered by so many updates, I am
+            ' changing this to default to beta builds only.
             Case PD_PRE_ALPHA, PD_ALPHA
-                xmlEngine.writeTag "UpdateTrack", PDUT_NIGHTLY
+                xmlEngine.writeTag "UpdateTrack", PDUT_BETA
+                'xmlEngine.writeTag "UpdateTrack", PDUT_NIGHTLY
                 
             Case PD_BETA
                 xmlEngine.writeTag "UpdateTrack", PDUT_BETA
