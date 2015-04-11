@@ -39,7 +39,7 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
-    
+
 'Some API functions are used to simplify the process of things like merging layers
 Private Declare Function UnionRect Lib "user32" (ByRef lpDestRect As RECT, ByRef lpSrc1Rect As RECT, ByRef lpSrc2Rect As RECT) As Long
 Private Declare Function IntersectRect Lib "user32" (ByRef lpDestRect As RECT, ByRef lpSrc1Rect As RECT, ByRef lpSrc2Rect As RECT) As Long
@@ -405,13 +405,13 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     Else
     
         'First, we need to find the union rect of the two layers.  This is the smallest rectangle that holds both layers.
-        Dim topRect As RECT, bottomRect As RECT, finalRect As RECT
-        Layer_Handler.fillRectForLayer bottomLayer, bottomRect, True
-        Layer_Handler.fillRectForLayer topLayer, topRect, True
-        UnionRect finalRect, topRect, bottomRect
+        Dim topRect As RECTF, bottomRect As RECTF, finalRect As RECTF
+        Layer_Handler.fillRectForLayerF bottomLayer, bottomRect, True
+        Layer_Handler.fillRectForLayerF topLayer, topRect, True
+        UnionRectF finalRect, topRect, bottomRect
         
         'finalRect now contains the coordinates of the union rect.  Create a blank DIB at those dimensions.
-        tmpDIB.createBlank finalRect.Right - finalRect.Left, finalRect.Bottom - finalRect.Top, 32, 0
+        tmpDIB.createBlank finalRect.Width, finalRect.Height, 32, 0
         
         'We now need to do a couple of things.  Let's start by copying the bottom DIB into this new temporary DIB.
         xOffset = bottomRect.Left - finalRect.Left
@@ -420,7 +420,7 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         If (bottomLayer.getLayerCanvasXModifier = 1) And (bottomLayer.getLayerCanvasYModifier = 1) Then
             BitBlt tmpDIB.getDIBDC, xOffset, yOffset, bottomLayer.layerDIB.getDIBWidth, bottomLayer.layerDIB.getDIBHeight, bottomLayer.layerDIB.getDIBDC, 0, 0, vbSrcCopy
         Else
-            GDIPlusResizeDIB tmpDIB, xOffset, yOffset, bottomLayer.getLayerCanvasWidthModified, bottomLayer.getLayerCanvasHeightModified, bottomLayer.layerDIB, 0, 0, bottomLayer.layerDIB.getDIBWidth, bottomLayer.layerDIB.getDIBHeight, bottomLayer.getLayerResizeQuality_GDIPlus
+            GDI_Plus.GDIPlus_StretchBlt tmpDIB, xOffset, yOffset, bottomLayer.getLayerCanvasWidthModified, bottomLayer.getLayerCanvasHeightModified, bottomLayer.layerDIB, 0, 0, bottomLayer.layerDIB.getDIBWidth, bottomLayer.layerDIB.getDIBHeight, 1, bottomLayer.getLayerResizeQuality_GDIPlus
             
             'Also, reset the canvas modifiers for the bottom layer now, as we have effectively nullified them by this resize
             bottomLayer.setLayerCanvasXModifier 1

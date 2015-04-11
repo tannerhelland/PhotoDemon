@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.17</langversion>
+<langversion>6.7.18</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -1211,7 +1211,7 @@ Lossless se guardarán en la misma carpeta que esta imagen inicial de ahorro.</t
 <translation>Prestación Viewport detuvo debido a un error inesperado (# %1)</translation>
 </phrase>
 
-<!-- VBP_ZoomModule.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- VBP_ZoomModule.bas contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_ZoomModule.bas-->
 
@@ -13533,8 +13533,8 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <phrasecount>2356</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4022 phrases. -->
-<!-- 1666 are duplicates, so only 2356 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4023 phrases. -->
+<!-- 1667 are duplicates, so only 2356 unique phrases have been written to file. -->
 <!-- These 2356 phrases contain approximately 13439 total words. -->
 
 </pdData>

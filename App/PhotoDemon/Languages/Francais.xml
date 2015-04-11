@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.14</langversion>
+<langversion>6.7.15</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -1211,7 +1211,7 @@ Copies sans pertecopies seront enregistrées dans le même dossier que cette ima
 <translation>Rendu Viewport suspendue en raison d'une erreur inattendue (#%1)</translation>
 </phrase>
 
-<!-- VBP_ZoomModule.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- VBP_ZoomModule.bas contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_ZoomModule.bas-->
 
@@ -13533,8 +13533,8 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrasecount>2356</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4022 phrases. -->
-<!-- 1666 are duplicates, so only 2356 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4023 phrases. -->
+<!-- 1667 are duplicates, so only 2356 unique phrases have been written to file. -->
 <!-- These 2356 phrases contain approximately 13439 total words. -->
 
 </pdData>

@@ -53,6 +53,69 @@ Public Function isPointInRectF(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRe
 
 End Function
 
+'Find the union rect of two floating-point rects.  (This is the smallest rect that contains both rects.)
+Public Sub UnionRectF(ByRef dstRect As RECTF, ByRef srcRect As RECTF, ByRef srcRect2 As RECTF, Optional ByVal widthAndHeightAreReallyRightAndBottom As Boolean = False)
+
+    'Union rects are easy: find the min top/left, and the max bottom/right
+    With dstRect
+        
+        If srcRect.Left < srcRect2.Left Then
+            .Left = srcRect.Left
+        Else
+            .Left = srcRect2.Left
+        End If
+        
+        If srcRect.Top < srcRect2.Top Then
+            .Top = srcRect.Top
+        Else
+            .Top = srcRect2.Top
+        End If
+        
+        'Next, determine right bounds.  Note that the caller can stuff right bounds into a floating-point rect, and this function will handle that
+        ' case contingent on the (very long-named) widthAndHeightAreReallyRightAndBottom parameter.
+        Dim srcRight As Single, srcRight2 As Single
+        
+        If widthAndHeightAreReallyRightAndBottom Then
+            srcRight = srcRect.Width
+            srcRight2 = srcRect2.Width
+        Else
+            srcRight = srcRect.Left + srcRect.Width
+            srcRight2 = srcRect2.Left + srcRect2.Width
+        End If
+        
+        'Find the max value and store it in srcRight
+        If srcRight < srcRight2 Then srcRight = srcRight2
+        
+        'Account for widthAndHeightAreReallyRightAndBottom (again)
+        If widthAndHeightAreReallyRightAndBottom Then
+            .Width = srcRight
+        Else
+            .Width = srcRight - .Left
+        End If
+        
+        'Repeat the above steps for the bottom bound
+        Dim srcBottom As Single, srcBottom2 As Single
+        
+        If widthAndHeightAreReallyRightAndBottom Then
+            srcBottom = srcRect.Height
+            srcBottom2 = srcRect2.Height
+        Else
+            srcBottom = srcRect.Top + srcRect.Height
+            srcBottom2 = srcRect2.Top + srcRect2.Height
+        End If
+        
+        If srcBottom < srcBottom2 Then srcBottom = srcBottom2
+        
+        If widthAndHeightAreReallyRightAndBottom Then
+            .Height = srcBottom
+        Else
+            .Height = srcBottom - .Top
+        End If
+        
+    End With
+
+End Sub
+
 'Given an arbitrary output range and input range, convert a value from the input range to the output range
 ' Thank you to expert coder audioglider for contributing this function.
 Public Function convertRange(ByVal originalStart As Double, ByVal originalEnd As Double, ByVal newStart As Double, ByVal newEnd As Double, ByVal Value As Double) As Double
