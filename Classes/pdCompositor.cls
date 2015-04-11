@@ -549,20 +549,18 @@ Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
             ' a temporary resize DIB.
             If (tmpLayerRef.getLayerCanvasXModifier = 1) And (tmpLayerRef.getLayerCanvasYModifier = 1) Then
                 
+                'Layer modifications are not necessary.  Use GDI's AlphaBlend for a performance boost.
+                With tmpLayerRef
+                    .layerDIB.alphaBlendToDC tmpLayer.layerDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
+                End With
+                
+            Else
+                
                 'Canvas size modifications are active.  GDI+ must be used to render the image.
                 With tmpLayerRef
                     GDI_Plus.GDIPlus_StretchBlt tmpLayer.layerDIB, .getLayerOffsetX, .getLayerOffsetY, .getLayerWidth(True), .getLayerHeight(True), .layerDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), .getLayerOpacity / 100, .getLayerResizeQuality_GDIPlus
                 End With
                 
-                'GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, .layerDIB, 0, 0, .layerDIB.getDIBWidth, .layerDIB.getDIBHeight, .getLayerResizeQuality_GDIPlus
-                
-            Else
-            
-                'Layer modifications are not necessary.  Use GDI's AlphaBlend for a performance boost.
-                With tmpLayerRef
-                    .layerDIB.alphaBlendToDC tmpLayer.layerDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
-                End With
-            
             End If
         
         'Non-destructive effects are active.  We must apply them prior to creating this layer.
@@ -603,8 +601,107 @@ Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
     
         Dim i As Long
         For i = 1 To srcImage.getNumOfLayers - 1
+        
             Set tmpLayerRef = srcImage.getLayerByIndex(i)
-            If tmpLayerRef.getLayerVisibility Then mergeLayers tmpLayerRef, tmpLayer, True
+            
+            'Make sure the layer is visible
+            If tmpLayerRef.getLayerVisibility Then
+                
+                'Note that 24-bpp layers are not currently handled.  They may be added back in the future.
+                If tmpLayerRef.layerDIB.getDIBColorDepth = 32 Then
+                    
+                    'As before, we now branch based on several criteria.  First, see if non-destructive FX are inactive
+                    If Not tmpLayerRef.getLayerNonDestructiveFXState Then
+                        
+                        'Next, check for custom blend modes.  These require an intermediate DIB copy of the image.
+                        If tmpLayerRef.getLayerBlendMode = BL_NORMAL Then
+                        
+                            'Custom blend modes are not active.
+                            
+                            'Check for non-destructive resizing.  If the layer is at its original size, we can use GDI's AlphaBlend for a
+                            ' performance boost.
+                            If (tmpLayerRef.getLayerCanvasXModifier = 1) And (tmpLayerRef.getLayerCanvasYModifier = 1) Then
+                            
+                                With tmpLayerRef
+                                    .layerDIB.alphaBlendToDC tmpLayer.layerDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
+                                End With
+                            
+                            Else
+                                
+                                'Non-destructive resizing has been activated.  Use GDI+ for the render.
+                                With tmpLayerRef
+                                    GDI_Plus.GDIPlus_StretchBlt tmpLayer.layerDIB, .getLayerOffsetX, .getLayerOffsetY, .getLayerWidth(True), .getLayerHeight(True), .layerDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), .getLayerOpacity / 100, .getLayerResizeQuality_GDIPlus
+                                End With
+                            
+                            End If
+                        
+                        Else
+                        
+                            'Custom blend modes are active.  We have no choice but to create a temporary compositing DIB.
+                            '
+                            'TODO: all-in-one compositor that handles NDFX and compositing and the final blend
+                            If (tmpLayerRef.getLayerCanvasXModifier = 1) And (tmpLayerRef.getLayerCanvasYModifier = 1) Then
+                                m_tmpDIB.createFromExistingDIB tmpLayerRef.layerDIB
+                            Else
+                            
+                                m_tmpDIB.createBlank tmpLayerRef.getLayerWidth, tmpLayerRef.getLayerHeight, 32, 0, 0
+                                GDI_Plus.GDIPlus_StretchBlt m_tmpDIB, 0, 0, tmpLayerRef.getLayerWidth, tmpLayerRef.getLayerHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.getLayerWidth(False), tmpLayerRef.getLayerHeight(False), 1, tmpLayerRef.getLayerResizeQuality_GDIPlus
+                            
+                            End If
+                            
+                            'Perform the composite
+                            With tmpLayerRef
+                                compositeDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY
+                            End With
+                            
+                            'Perform the final blend, accounting for layer opacity
+                            With tmpLayerRef
+                                m_tmpDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
+                            End With
+                            
+                        End If
+                        
+                    'Non-destructive effects are active.  More work is required (ugh)
+                    Else
+                    
+                        'POTENTIAL TODO: if non-destructive resizing makes the image larger, apply the NDFX first, then the resize
+                        If (tmpLayerRef.getLayerCanvasXModifier = 1) And (tmpLayerRef.getLayerCanvasYModifier = 1) Then
+                            m_tmpDIB.createFromExistingDIB tmpLayerRef.layerDIB
+                        Else
+                        
+                            m_tmpDIB.createBlank tmpLayerRef.getLayerWidth, tmpLayerRef.getLayerHeight, 32, 0, 0
+                            GDI_Plus.GDIPlus_StretchBlt m_tmpDIB, 0, 0, tmpLayerRef.getLayerWidth, tmpLayerRef.getLayerHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.getLayerWidth(False), tmpLayerRef.getLayerHeight(False), 1, tmpLayerRef.getLayerResizeQuality_GDIPlus
+                        
+                        End If
+                        
+                        'Apply the non-destructive effects
+                        applyNDFXToDIB tmpLayerRef, m_tmpDIB
+                        
+                        'Check blend mode; NORMAL blend mode can be handled by GDI's AlphaBlend
+                        ' TODO: all-in-one compositor solution
+                        If tmpLayerRef.getLayerBlendMode <> BL_NORMAL Then
+                            
+                            'Perform the composite
+                            With tmpLayerRef
+                                compositeDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY
+                            End With
+                            
+                        End If
+                        
+                        'Perform the final blend, accounting for layer opacity
+                        With tmpLayerRef
+                            m_tmpDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
+                        End With
+                        
+                    'End NDFX branching
+                    End If
+                        
+                'End 32-bpp check
+                End If
+            
+            'End layer visibility check
+            End If
+            
         Next i
     
     End If
