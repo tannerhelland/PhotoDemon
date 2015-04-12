@@ -891,7 +891,7 @@ End Sub
 ' require non-premultiplied alpha, vs viewport functions, which require premultiplied alpha).
 Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, Optional ByVal premultiplicationStatus As Boolean = True)
     
-    'TODO: perform special checks for 24bpp single-layer images.  For these, we can simply copy the current layer out,
+    'TODO: perform special pre-check for 24bpp single-layer images.  For these, we can simply copy the current layer out,
     '       saving a lot of time!
     
     'Start by creating the destination DIB, as necessary
@@ -904,43 +904,38 @@ Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
         dstDIB.resetDIB
     End If
     
-    'Next, we're going to use a temporary layer reference, which we update to point at each individual layer as we composite them
-    Dim tmpLayer As pdLayer
-    Set tmpLayer = New pdLayer
-    Set tmpLayer.layerDIB = dstDIB
+    'This function always starts by compositing the background layer manually.  It is impossible to paint "beneath" this layer, so it
+    ' always serves as our basis for compositing.  (I have also applied some special optimizations to background layer handling, so it
+    ' should be kept separate from the helper composite function used by additional layers.)
+    '
+    'To improve readability of the code in this section, I use a temporary layer reference called "backgroundLayer", which we point at
+    ' srcImage.getLayerByIndex(0).  This temporary reference is not reused after the background layer is created.
+    Dim backgroundLayer As pdLayer
+    Set backgroundLayer = srcImage.getLayerByIndex(0)
     
-    'We may need a temporary DIB to handle dynamic layer resizing (if non-destructive resizes are active)
-    'Dim tmpDIB As pdDIB
-    'Set tmpDIB = New pdDIB
-    
-    'We will be accessing all layers of the source image in turn.  Rather than re-requesting those layers through
-    ' functions, we will simply use a local reference.
-    Dim tmpLayerRef As pdLayer
-    
-    'Always start by rendering the bottom layer onto the (presently empty) destination DIB.  The bottom layer's blend mode
-    ' does not matter, so this is a straightforward operation.
-    Set tmpLayerRef = srcImage.getLayerByIndex(0)
-    If tmpLayerRef.getLayerVisibility Then
+    'Note that the bottom layer can technically be hidden.  (Some software doesn't allow this, but PD does, for better or worse.
+    ' We can skip this entire section if the background layer is invisible.
+    If backgroundLayer.getLayerVisibility Then
     
         'We now perform a few advance checks, to see if we can skip various compositing steps.
         
         'First: if the layer has no non-destructive effects active, merging it becomes much simpler!
-        If (Not tmpLayerRef.getLayerNonDestructiveFXState) Then
+        If (Not backgroundLayer.getLayerNonDestructiveFXState) Then
         
-            'Next, check for non-destructive resizing.  If the layer is at its original size, we can skip the creation of
-            ' a temporary resize DIB.
-            If (tmpLayerRef.getLayerCanvasXModifier = 1) And (tmpLayerRef.getLayerCanvasYModifier = 1) Then
+            'Next, check for non-destructive resizing.  If the layer is at its original size, we can avoid use of GDI+ and just blend
+            ' it "as-is" using GDI's AlphaBlend function.
+            If (backgroundLayer.getLayerCanvasXModifier = 1) And (backgroundLayer.getLayerCanvasYModifier = 1) Then
                 
                 'Layer modifications are not necessary.  Use GDI's AlphaBlend for a performance boost.
-                With tmpLayerRef
-                    .layerDIB.alphaBlendToDC tmpLayer.layerDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
+                With backgroundLayer
+                    .layerDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
                 End With
                 
             Else
                 
                 'Canvas size modifications are active.  GDI+ must be used to render the image.
-                With tmpLayerRef
-                    GDI_Plus.GDIPlus_StretchBlt tmpLayer.layerDIB, .getLayerOffsetX, .getLayerOffsetY, .getLayerWidth(True), .getLayerHeight(True), .layerDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), .getLayerOpacity / 100, .getLayerResizeQuality_GDIPlus
+                With backgroundLayer
+                    GDI_Plus.GDIPlus_StretchBlt dstDIB, .getLayerOffsetX, .getLayerOffsetY, .getLayerWidth(True), .getLayerHeight(True), .layerDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), .getLayerOpacity / 100, .getLayerResizeQuality_GDIPlus
                 End With
                 
             End If
@@ -951,24 +946,24 @@ Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
             'POTENTIAL TODO: if non-destructive resizing makes the image smaller, apply the resize first, then the NDFX
             
             'Using the temporary DIB, create a copy of the source image
-            m_tmpDIB.createFromExistingDIB tmpLayerRef.layerDIB
+            m_tmpDIB.createFromExistingDIB backgroundLayer.layerDIB
             
             'Apply any non-destructive effects
-            applyNDFXToDIB tmpLayerRef, m_tmpDIB
+            applyNDFXToDIB backgroundLayer, m_tmpDIB
             
             'Next, see if non-destructive resizing is also active.
-            If (tmpLayerRef.getLayerCanvasXModifier = 1) And (tmpLayerRef.getLayerCanvasYModifier = 1) Then
+            If (backgroundLayer.getLayerCanvasXModifier = 1) And (backgroundLayer.getLayerCanvasYModifier = 1) Then
             
                 'Non-destructive resizing is not active.  Use GDI's AlphaBlend for a speed boost.
-                With tmpLayerRef
-                    m_tmpDIB.alphaBlendToDC tmpLayer.layerDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
+                With backgroundLayer
+                    m_tmpDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
                 End With
             
             Else
             
                 'Non-destructive resizing *is* active.  GDI+ is required.
-                With tmpLayerRef
-                    GDI_Plus.GDIPlus_StretchBlt tmpLayer.layerDIB, .getLayerOffsetX, .getLayerOffsetY, .getLayerWidth(True), .getLayerHeight(True), m_tmpDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), .getLayerOpacity / 100, .getLayerResizeQuality
+                With backgroundLayer
+                    GDI_Plus.GDIPlus_StretchBlt dstDIB, .getLayerOffsetX, .getLayerOffsetY, .getLayerWidth(True), .getLayerHeight(True), m_tmpDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), .getLayerOpacity / 100, .getLayerResizeQuality
                 End With
             
             End If
@@ -977,6 +972,13 @@ Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
     
     End If
     
+    'We have now done the following:
+    ' 1) Created the destination DIB and initialized it to the proper size and bit-depth
+    ' 2) Painted the background layer (if any)
+    
+    'Subsequent steps are going to use a helper function.  This helper function makes it simple to "insert" paint operations
+    ' into the current layer stack, without fucking up the existing layer order.
+        
     'If the image has additional layers, proceed to merge the rest of them, starting from the bottom and working our way up.
     ' Note that if a layer is invisible, we simply skip it - this is the most performance-friendly way to handle them.
     If srcImage.getNumOfLayers > 1 Then
@@ -984,119 +986,11 @@ Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
         Dim i As Long
         For i = 1 To srcImage.getNumOfLayers - 1
         
-            Set tmpLayerRef = srcImage.getLayerByIndex(i)
-            
             'Make sure the layer is visible
-            If tmpLayerRef.getLayerVisibility Then
+            If srcImage.getLayerByIndex(i).getLayerVisibility Then
                 
-                'Note that 24-bpp layers are not currently handled.  They may be added back in the future.
-                If tmpLayerRef.layerDIB.getDIBColorDepth = 32 Then
-                    
-                    'As before, we now branch based on several criteria.  First, see if non-destructive FX are inactive
-                    If Not tmpLayerRef.getLayerNonDestructiveFXState Then
-                        
-                        'Next, check for custom blend modes.  These require an intermediate DIB copy of the image.
-                        If tmpLayerRef.getLayerBlendMode = BL_NORMAL Then
-                        
-                            'Custom blend modes are not active.
-                            
-                            'Check for non-destructive resizing.  If the layer is at its original size, we can use GDI's AlphaBlend for a
-                            ' performance boost.
-                            If (tmpLayerRef.getLayerCanvasXModifier = 1) And (tmpLayerRef.getLayerCanvasYModifier = 1) Then
-                            
-                                With tmpLayerRef
-                                    .layerDIB.alphaBlendToDC tmpLayer.layerDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
-                                End With
-                            
-                            Else
-                                
-                                'Non-destructive resizing has been activated.  Use GDI+ for the render.
-                                With tmpLayerRef
-                                    GDI_Plus.GDIPlus_StretchBlt tmpLayer.layerDIB, .getLayerOffsetX, .getLayerOffsetY, .getLayerWidth(True), .getLayerHeight(True), .layerDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), .getLayerOpacity / 100, .getLayerResizeQuality_GDIPlus
-                                End With
-                            
-                            End If
-                        
-                        Else
-                        
-                            'Custom blend modes are active.  We have no choice but to create a temporary compositing DIB.
-                            '
-                            'TODO: all-in-one compositor that handles NDFX and compositing and the final blend
-                            If (tmpLayerRef.getLayerCanvasXModifier = 1) And (tmpLayerRef.getLayerCanvasYModifier = 1) Then
-                                
-                                'Perform an all-in-one composite and blend using our awesome new all-in-one function
-                                With tmpLayerRef
-                                    compositeAndBlendDIBs tmpLayerRef.layerDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY, .getLayerOpacity / 100
-                                End With
-                                
-                            Else
-                                
-                                'First, create a blank, non-destructively resized DIB
-                                If (m_tmpDIB.getDIBWidth <> tmpLayerRef.getLayerWidth) Or (m_tmpDIB.getDIBHeight <> tmpLayerRef.getLayerHeight) Then
-                                    m_tmpDIB.createBlank tmpLayerRef.getLayerWidth, tmpLayerRef.getLayerHeight, 32, 0, 0
-                                    m_tmpDIB.setInitialAlphaPremultiplicationState True
-                                Else
-                                    m_tmpDIB.resetDIB
-                                End If
-                                
-                                GDI_Plus.GDIPlus_StretchBlt m_tmpDIB, 0, 0, tmpLayerRef.getLayerWidth, tmpLayerRef.getLayerHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.getLayerWidth(False), tmpLayerRef.getLayerHeight(False), 1, tmpLayerRef.getLayerResizeQuality_GDIPlus
-                                
-                                'Next, perform an all-in-one composite using our awesome new all-in-one function
-                                With tmpLayerRef
-                                    compositeAndBlendDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY, .getLayerOpacity / 100
-                                End With
-                            
-                            End If
-                            
-                            'Perform the composite
-                            'With tmpLayerRef
-                            '    compositeDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY
-                            'End With
-                            
-                            'Perform the final blend, accounting for layer opacity
-                            'With tmpLayerRef
-                            '    m_tmpDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
-                            'End With
-                            
-                        End If
-                        
-                    'Non-destructive effects are active.  More work is required (ugh)
-                    Else
-                    
-                        'POTENTIAL TODO: if non-destructive resizing makes the image larger, apply the NDFX first, then the resize
-                        If (tmpLayerRef.getLayerCanvasXModifier = 1) And (tmpLayerRef.getLayerCanvasYModifier = 1) Then
-                            m_tmpDIB.createFromExistingDIB tmpLayerRef.layerDIB
-                        Else
-                        
-                            m_tmpDIB.createBlank tmpLayerRef.getLayerWidth, tmpLayerRef.getLayerHeight, 32, 0, 0
-                            GDI_Plus.GDIPlus_StretchBlt m_tmpDIB, 0, 0, tmpLayerRef.getLayerWidth, tmpLayerRef.getLayerHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.getLayerWidth(False), tmpLayerRef.getLayerHeight(False), 1, tmpLayerRef.getLayerResizeQuality_GDIPlus
-                        
-                        End If
-                        
-                        'Apply the non-destructive effects
-                        applyNDFXToDIB tmpLayerRef, m_tmpDIB
-                        
-                        'Check blend mode; NORMAL blend mode can be handled by GDI's AlphaBlend
-                        ' TODO: all-in-one compositor solution
-                        If tmpLayerRef.getLayerBlendMode <> BL_NORMAL Then
-                            
-                            'Perform the composite
-                            With tmpLayerRef
-                                compositeDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY
-                            End With
-                            
-                        End If
-                        
-                        'Perform the final blend, accounting for layer opacity
-                        With tmpLayerRef
-                            m_tmpDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
-                        End With
-                        
-                    'End NDFX branching
-                    End If
-                        
-                'End 32-bpp check
-                End If
+                'Pass this layer to the helper function.  It will take care of the compositing step for us.
+                getCompositedImage_LayerHelper dstDIB, srcImage.getLayerByIndex(i)
             
             'End layer visibility check
             End If
@@ -1104,10 +998,7 @@ Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
         Next i
     
     End If
-    
-    'Release the temp layer's hold on the destination DIB
-    Set tmpLayer.layerDIB = Nothing
-    
+        
     'If the user requested non-premultiplied alpha, calculate it now.
     '
     ' (By default, this always returns a premultiplied image, because that's what the compositor returns.)
@@ -1117,6 +1008,141 @@ Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
         If dstDIB.getDIBColorDepth = 32 Then dstDIB.setAlphaPremultiplication False
     End If
     
+End Sub
+
+'This helper function is only used internally, by the getCompositedImage function.
+'
+'The purpose of this helper function is to take a source layer, and merge it onto a destination DIB (*not* a destination layer).
+' This logic is handled separately so that paint operations can be silently "inserted" into the existing layer stack, without requiring
+' any modifications of the parent pdImage object.
+'
+'For performance reasons, the module-level m_tmpDIB object is used.  This is by design, because images that have only one
+' special-treatment layer (e.g. non-destructive FX, resizing, custom blend modes, etc) can avoid the creation of multiple temporary DIBs.
+Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer As pdLayer)
+    
+    'Hypothetically, we could write special handling for 24-bpp DIBs in the future.  But at present, PD only operates on 32-bpp DIBs.
+        
+    'Start by separating our handling into "simple" and "complex" branches.  Basic layers with no non-destructive effects or much easier
+    ' to deal with.
+    If Not srcLayer.getLayerNonDestructiveFXState Then
+        
+        'Non-destructive effects are not active.  Yay!
+        
+        'Next, check for custom blend modes.  These require an intermediate DIB copy of the image, because PD must internally render the
+        ' blend modes (as GDI+ can't do it for us).
+        If srcLayer.getLayerBlendMode = BL_NORMAL Then
+        
+            'Custom blend modes are not active.  Yay!
+            
+            'Check for non-destructive resizing.  If the layer is at its original size, we can use GDI's AlphaBlend for a
+            ' performance boost.
+            If (srcLayer.getLayerCanvasXModifier = 1) And (srcLayer.getLayerCanvasYModifier = 1) Then
+            
+                With srcLayer
+                    .layerDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
+                End With
+            
+            Else
+                
+                'Non-destructive resizing is active for this layer.  Use GDI+ for the render.
+                With srcLayer
+                    GDI_Plus.GDIPlus_StretchBlt dstDIB, .getLayerOffsetX, .getLayerOffsetY, .getLayerWidth(True), .getLayerHeight(True), .layerDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), .getLayerOpacity / 100, .getLayerResizeQuality_GDIPlus
+                End With
+            
+            End If
+        
+        'This Else statement represents the case "If srcLayer.getLayerBlendMode <> BL_NORMAL..."
+        Else
+        
+            'Custom blend modes are active.  We have no choice but to create a temporary compositing DIB.
+            
+            '(Potential future TODO: all-in-one compositor that handles NDFX and compositing and the final blend...?)
+            '
+            'If non-destructive resizing is NOT active, pass the source layer to the all-in-one composite + blend function
+            If (srcLayer.getLayerCanvasXModifier = 1) And (srcLayer.getLayerCanvasYModifier = 1) Then
+                
+                'Perform an all-in-one composite and blend using our awesome new all-in-one function
+                With srcLayer
+                    compositeAndBlendDIBs srcLayer.layerDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY, .getLayerOpacity / 100
+                End With
+            
+            'Non-destructive resizing is active.  We have no choice but to create a temporary intermediate DIB, prior to full compositing.
+            Else
+                
+                'First, create a blank, non-destructively resized DIB.  If at all possible, we try to optimize this handling by reusing
+                ' the current temporary DIB as-is.
+                If (m_tmpDIB.getDIBWidth <> srcLayer.getLayerWidth) Or (m_tmpDIB.getDIBHeight <> srcLayer.getLayerHeight) Then
+                    m_tmpDIB.createBlank srcLayer.getLayerWidth, srcLayer.getLayerHeight, 32, 0, 0
+                    m_tmpDIB.setInitialAlphaPremultiplicationState True
+                Else
+                    m_tmpDIB.resetDIB
+                End If
+                
+                'Copy a resized chunk of the source image onto the temporary DIB
+                GDI_Plus.GDIPlus_StretchBlt m_tmpDIB, 0, 0, srcLayer.getLayerWidth, srcLayer.getLayerHeight, srcLayer.layerDIB, 0, 0, srcLayer.getLayerWidth(False), srcLayer.getLayerHeight(False), 1, srcLayer.getLayerResizeQuality_GDIPlus
+                
+                'Next, perform an all-in-one composite + blend using our awesome new compositeAndBlendDIBs function
+                With srcLayer
+                    compositeAndBlendDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY, .getLayerOpacity / 100
+                End With
+            
+            End If
+            
+        End If
+        
+    'Non-destructive effects are active.  This requires a fairly significant chunk of special processing (ugh).
+    Else
+    
+        'See if non-destructive resizing is active.  If it is, create a copy of the source DIB, *with* resizing applied.  This will be
+        ' passed to the non-destructive FX function.
+        
+        '(Potential future TODO: if non-destructive resizing makes the image larger, apply the NDFX first, then the resize)
+        If (srcLayer.getLayerCanvasXModifier = 1) And (srcLayer.getLayerCanvasYModifier = 1) Then
+            m_tmpDIB.createFromExistingDIB srcLayer.layerDIB
+        Else
+            
+            If (m_tmpDIB.getDIBWidth <> srcLayer.getLayerWidth) Or (m_tmpDIB.getDIBHeight <> srcLayer.getLayerHeight) Then
+                m_tmpDIB.createBlank srcLayer.getLayerWidth, srcLayer.getLayerHeight, 32, 0, 0
+                m_tmpDIB.setInitialAlphaPremultiplicationState True
+            Else
+                m_tmpDIB.resetDIB
+            End If
+            
+            GDI_Plus.GDIPlus_StretchBlt m_tmpDIB, 0, 0, srcLayer.getLayerWidth, srcLayer.getLayerHeight, srcLayer.layerDIB, 0, 0, srcLayer.getLayerWidth(False), srcLayer.getLayerHeight(False), 1, srcLayer.getLayerResizeQuality_GDIPlus
+        
+        End If
+        
+        'Apply any/all non-destructive effects to the temporary DIB
+        applyNDFXToDIB srcLayer, m_tmpDIB
+        
+        'Next, check the active blend mode.  Normal blend modes ; NORMAL blend mode can be handled by GDI's AlphaBlend
+        If srcLayer.getLayerBlendMode = BL_NORMAL Then
+        
+            With srcLayer
+                m_tmpDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
+            End With
+        
+        Else
+            
+            'Custom blend modes are active.  Perform a single pass composite + blend operation using our awesome new all-in-one function.
+            With srcLayer
+                compositeAndBlendDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY, .getLayerOpacity / 100
+            End With
+            
+        End If
+                
+        If srcLayer.getLayerBlendMode <> BL_NORMAL Then
+            
+            'Perform the composite
+            With srcLayer
+                compositeDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY
+            End With
+            
+        End If
+        
+    'End NDFX branching
+    End If
+        
 End Sub
 
 'Returns a subsection of the fully composited image (in pdDIB format, of course).  This is helpful for rendering the main viewport,
