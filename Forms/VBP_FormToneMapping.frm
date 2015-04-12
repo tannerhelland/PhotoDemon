@@ -506,9 +506,6 @@ Private cParams As pdParamString
 'Current tone-mapping mode (set by clicking an option button)
 Private m_curToneMapMode As Long
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 'The user's dialog answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
@@ -563,10 +560,9 @@ Public Sub showDialog()
     updatePreview
         
     Message "Waiting for tone mapping instructions..."
-        
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    
+    'Apply translations and visual themes
+    makeFormPretty Me
     
     'Display the dialog
     showPDDialog vbModal, Me, True

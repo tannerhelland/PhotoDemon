@@ -1113,7 +1113,7 @@ Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     
         'FreeImage DIBs are stored bottom-up; we invert them during processing
         iHeightInv = iHeight - y
-    
+        
         'Point a 1D VB array at this scanline
         With srcSA
             .cbElements = 4
