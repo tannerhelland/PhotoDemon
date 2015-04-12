@@ -71,7 +71,8 @@ Private m_NDFXDIB As pdDIB
 Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single)
 
     'We will be doing a lot of int/float conversions.  To speed things up, use a persistent look-up table.
-    Dim IntToFloat(0 To 255) As Single
+    Dim IntToFloat() As Single
+    ReDim IntToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
         IntToFloat(i) = i / 255
@@ -130,7 +131,7 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
         topA = IntToFloat(tImageData(QuickX + 3, y))
         
         'Ignore transparent pixels
-        If topA > 0 Then
+        If topA <> 0 Then
         
             topR = IntToFloat(tImageData(QuickX + 2, y))
             topG = IntToFloat(tImageData(QuickX + 1, y))
@@ -140,20 +141,24 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
             bottomA = IntToFloat(bImageData(quickBottomX + 3, quickBottomY))
             
             'Again, ignore transparent pixels
-            If bottomA > 0 Then
+            If bottomA <> 0 Then
             
                 bottomR = IntToFloat(bImageData(quickBottomX + 2, quickBottomY))
                 bottomG = IntToFloat(bImageData(quickBottomX + 1, quickBottomY))
                 bottomB = IntToFloat(bImageData(quickBottomX, quickBottomY))
                 
                 'Un-premultiply all RGB values
-                topR = topR / topA
-                topG = topG / topA
-                topB = topB / topA
+                If topA <> 1 Then
+                    topR = topR / topA
+                    topG = topG / topA
+                    topB = topB / topA
+                End If
                 
-                bottomR = bottomR / bottomA
-                bottomG = bottomG / bottomA
-                bottomB = bottomB / bottomA
+                If bottomA <> 1 Then
+                    bottomR = bottomR / bottomA
+                    bottomG = bottomG / bottomA
+                    bottomB = bottomB / bottomA
+                End If
                 
                 'Apply the requested blend mode
                 Select Case blendMode
@@ -353,9 +358,11 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
                 
                     'Alpha blend the original color with the new color, per the lower image's alpha.  (This way,
                     ' if the bottom image is transparent, the top image is unchanged.)
-                    newR = (newR * bottomA) + (topR * (1 - bottomA))
-                    newG = (newG * bottomA) + (topG * (1 - bottomA))
-                    newB = (newB * bottomA) + (topB * (1 - bottomA))
+                    If bottomA <> 1 Then
+                        newR = (newR * bottomA) + (topR * (1 - bottomA))
+                        newG = (newG * bottomA) + (topG * (1 - bottomA))
+                        newB = (newB * bottomA) + (topB * (1 - bottomA))
+                    End If
                     
                     'NOTE!  I've tried to write the compositor so that additional bounds checks are not needed.
                     ' If errors ever occur in the future, you can start debugging by enabling the checks below.
@@ -364,9 +371,10 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
                     'If newB > 1 Then newB = 1
                     
                     'Copy the new values into the bottom layer, and premultiply them
-                    tImageData(QuickX + 2, y) = (newR * 255) * topA
-                    tImageData(QuickX + 1, y) = (newG * 255) * topA
-                    tImageData(QuickX, y) = (newB * 255) * topA
+                    topA = topA * 255
+                    tImageData(QuickX + 2, y) = newR * topA
+                    tImageData(QuickX + 1, y) = newG * topA
+                    tImageData(QuickX, y) = newB * topA
                     
                 End If
                 
@@ -382,6 +390,380 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
     CopyMemory ByVal VarPtrArray(tImageData), 0&, 4
     
 End Sub
+
+'Perform a full composite and blend of two DIBs, using the requested blend mode.
+'
+'IMPORTANT NOTE: unlike compositeDIBs(), above, this function merges the result of the blend into the BOTTOM DIB, using the supplied
+'                 alpha modifier.  This means that the top layer remains UNTOUCHED, but the bottom layer IS MODIFIED.  The end result
+'                 of this function is a bottom layer representing a "merge" of the two layers.
+'
+'This function should not be used outside of getCompositedImage, because that function guarantees proper boundary checks.
+'
+'TODO: profile an integer-based implementation.
+Friend Sub compositeAndBlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaModifier As Double = 1#)
+
+    'We will be doing a lot of int/float conversions.  To speed things up, use a persistent look-up table.
+    Dim IntToFloat() As Single
+    ReDim IntToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        IntToFloat(i) = i / 255
+    Next i
+    
+    'Also create an integer version of the alpha-modifier value
+    Dim alphaModifierInt As Long
+    alphaModifierInt = alphaModifier * 255
+    
+    'Calculate bounds for the loop.  These are relative to the top layer, which may lay outside the bounds
+    ' of the bottom layer.
+    Dim initX As Long, initY As Long
+    Dim finalX As Long, finalY As Long
+    
+    If dstX < 0 Then initX = Abs(dstX)
+    If dstY < 0 Then initY = Abs(dstY)
+    
+    finalX = topDIB.getDIBWidth - 1
+    If dstX + finalX > bottomDIB.getDIBWidth - 1 Then finalX = (bottomDIB.getDIBWidth - dstX) - 1
+    
+    finalY = topDIB.getDIBHeight - 1
+    If dstY + finalY > bottomDIB.getDIBHeight - 1 Then finalY = (bottomDIB.getDIBHeight - dstY) - 1
+    
+    'Make sure our bounds are valid
+    If initX > finalX Then Exit Sub
+    If initY > finalY Then Exit Sub
+    
+    'Next, we need to point VB arrays at both the top and bottom DIBs.  Note that the top DIB is treated as
+    ' the "destination", because it will receive the full composite results.
+    Dim bImageData() As Byte
+    Dim bottomSA As SAFEARRAY2D
+    prepSafeArray bottomSA, bottomDIB
+    CopyMemory ByVal VarPtrArray(bImageData()), VarPtr(bottomSA), 4
+
+    Dim tImageData() As Byte
+    Dim topSA As SAFEARRAY2D
+    prepSafeArray topSA, topDIB
+    CopyMemory ByVal VarPtrArray(tImageData()), VarPtr(topSA), 4
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, QuickX As Long, quickBottomX As Long, quickBottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    'Extra variables for transforms that require HSL conversions.
+    Dim topH As Single, topS As Single, topV As Single
+    Dim bottomH As Single, bottomS As Single, bottomV As Single
+    
+    For x = initX To finalX
+        QuickX = x * 4
+        quickBottomX = (Int(dstX) + x) * 4
+    For y = initY To finalY
+    
+        quickBottomY = Int(dstY) + y
+        
+        'Retrieve top layer RGBA values
+        topA = tImageData(QuickX + 3, y)
+        
+        'Ignore transparent pixels
+        If topA <> 0 Then
+        
+            topR = tImageData(QuickX + 2, y)
+            topG = tImageData(QuickX + 1, y)
+            topB = tImageData(QuickX, y)
+            
+            'Retrieve bottom layer alpha
+            bottomA = bImageData(quickBottomX + 3, quickBottomY)
+            
+            'Again, ignore transparent pixels
+            If bottomA = 0 Then
+                bImageData(quickBottomX, quickBottomY) = topB
+                bImageData(quickBottomX + 1, quickBottomY) = topG
+                bImageData(quickBottomX + 2, quickBottomY) = topR
+                bImageData(quickBottomX + 3, quickBottomY) = topA
+            Else
+                
+                'Convert to floating-point
+                topR = IntToFloat(topR)
+                topG = IntToFloat(topG)
+                topB = IntToFloat(topB)
+                topA = IntToFloat(topA)
+                
+                'Retrieve bottom layer values
+                bottomA = IntToFloat(bottomA)
+                bottomR = IntToFloat(bImageData(quickBottomX + 2, quickBottomY))
+                bottomG = IntToFloat(bImageData(quickBottomX + 1, quickBottomY))
+                bottomB = IntToFloat(bImageData(quickBottomX, quickBottomY))
+                
+                'Un-premultiply all RGB values
+                If topA <> 1 Then
+                    topR = topR / topA
+                    topG = topG / topA
+                    topB = topB / topA
+                End If
+                
+                If bottomA <> 1 Then
+                    bottomR = bottomR / bottomA
+                    bottomG = bottomG / bottomA
+                    bottomB = bottomB / bottomA
+                End If
+                
+                'Apply the requested blend mode
+                Select Case blendMode
+                
+                    Case BL_DARKEN
+                        If bottomR < topR Then newR = bottomR Else newR = topR
+                        If bottomG < topG Then newG = bottomG Else newG = topG
+                        If bottomB < topB Then newB = bottomB Else newB = topB
+                
+                    Case BL_MULTIPLY
+                        newR = topR * bottomR
+                        newG = topG * bottomG
+                        newB = topB * bottomB
+                        
+                    Case BL_COLORBURN
+                        If topR = 0 Then newR = 0 Else newR = 1 - (1 - bottomR) / topR
+                        If topG = 0 Then newG = 0 Else newG = 1 - (1 - bottomG) / topG
+                        If topB = 0 Then newB = 0 Else newB = 1 - (1 - bottomB) / topB
+                        If newR < 0 Then newR = 0
+                        If newG < 0 Then newG = 0
+                        If newB < 0 Then newB = 0
+                    
+                    Case BL_LINEARBURN
+                        newR = topR + bottomR - 1
+                        newG = topG + bottomG - 1
+                        newB = topB + bottomB - 1
+                        If newR < 0 Then newR = 0
+                        If newG < 0 Then newG = 0
+                        If newB < 0 Then newB = 0
+                        
+                    Case BL_LIGHTEN
+                        If bottomR > topR Then newR = bottomR Else newR = topR
+                        If bottomG > topG Then newG = bottomG Else newG = topG
+                        If bottomB > topB Then newB = bottomB Else newB = topB
+                
+                    Case BL_SCREEN
+                        newR = 1 - (1 - bottomR) * (1 - topR)
+                        newG = 1 - (1 - bottomG) * (1 - topG)
+                        newB = 1 - (1 - bottomB) * (1 - topB)
+                    
+                    Case BL_COLORDODGE
+                        If topR = 1 Then newR = 1 Else newR = bottomR / (1 - topR)
+                        If topG = 1 Then newG = 1 Else newG = bottomG / (1 - topG)
+                        If topB = 1 Then newB = 1 Else newB = bottomB / (1 - topB)
+                        If newR > 1 Then newR = 1
+                        If newG > 1 Then newG = 1
+                        If newB > 1 Then newB = 1
+                        
+                    Case BL_LINEARDODGE
+                        newR = topR + bottomR
+                        newG = topG + bottomG
+                        newB = topB + bottomB
+                        If newR > 1 Then newR = 1
+                        If newG > 1 Then newG = 1
+                        If newB > 1 Then newB = 1
+                    
+                    Case BL_OVERLAY
+                        If bottomR < 0.5 Then newR = 2 * bottomR * topR Else newR = 1 - 2 * (1 - bottomR) * (1 - topR)
+                        If bottomG < 0.5 Then newG = 2 * bottomG * topG Else newG = 1 - 2 * (1 - bottomG) * (1 - topG)
+                        If bottomB < 0.5 Then newB = 2 * bottomB * topB Else newB = 1 - 2 * (1 - bottomB) * (1 - topB)
+                    
+                    Case BL_SOFTLIGHT
+                        newR = (1 - 2 * topR) * bottomR * bottomR + 2 * bottomR * topR
+                        newG = (1 - 2 * topG) * bottomG * bottomG + 2 * bottomG * topG
+                        newB = (1 - 2 * topB) * bottomB * bottomB + 2 * bottomB * topB
+                    
+                    Case BL_HARDLIGHT
+                        If topR < 0.5 Then newR = 2 * bottomR * topR Else newR = 1 - 2 * (1 - bottomR) * (1 - topR)
+                        If topG < 0.5 Then newG = 2 * bottomG * topG Else newG = 1 - 2 * (1 - bottomG) * (1 - topG)
+                        If topB < 0.5 Then newB = 2 * bottomB * topB Else newB = 1 - 2 * (1 - bottomB) * (1 - topB)
+                    
+                    Case BL_VIVIDLIGHT
+                        If topR > 0.5 Then newR = bottomR + 2 * (topR - 0.5) Else newR = bottomR + 2 * topR - 1
+                        If topB > 0.5 Then newG = bottomG + 2 * (topG - 0.5) Else newG = bottomG + 2 * topG - 1
+                        If topG > 0.5 Then newB = bottomB + 2 * (topB - 0.5) Else newB = bottomB + 2 * topB - 1
+                        If newR > 1 Then newR = 1
+                        If newG > 1 Then newG = 1
+                        If newB > 1 Then newB = 1
+                        If newR < 0 Then newR = 0
+                        If newG < 0 Then newG = 0
+                        If newB < 0 Then newB = 0
+                    
+                    Case BL_LINEARLIGHT
+                        newR = bottomR + (2 * topR) - 1
+                        newG = bottomG + (2 * topG) - 1
+                        newB = bottomB + (2 * topB) - 1
+                        If newR > 1 Then newR = 1
+                        If newG > 1 Then newG = 1
+                        If newB > 1 Then newB = 1
+                        If newR < 0 Then newR = 0
+                        If newG < 0 Then newG = 0
+                        If newB < 0 Then newB = 0
+                        
+                    Case BL_PINLIGHT
+                        If topR > 0.5 Then newR = fMax(bottomR, 2 * (topR - 0.5)) Else newR = fMin(bottomR, 2 * topR)
+                        If topG > 0.5 Then newG = fMax(bottomG, 2 * (topG - 0.5)) Else newG = fMin(bottomG, 2 * topG)
+                        If topB > 0.5 Then newB = fMax(bottomB, 2 * (topB - 0.5)) Else newB = fMin(bottomB, 2 * topB)
+                        
+                    Case BL_HARDMIX
+                        If topR < 1 - bottomR Then newR = 0 Else newR = 1
+                        If topG < 1 - bottomG Then newG = 0 Else newG = 1
+                        If topB < 1 - bottomB Then newB = 0 Else newB = 1
+                    
+                    Case BL_DIFFERENCE
+                        newR = Abs(bottomR - topR)
+                        newG = Abs(bottomG - topG)
+                        newB = Abs(bottomB - topB)
+                        
+                    Case BL_EXCLUSION
+                        newR = bottomR + topR - 2 * (bottomR * topR)
+                        newG = bottomG + topG - 2 * (bottomG * topG)
+                        newB = bottomB + topB - 2 * (bottomB * topB)
+                        
+                    Case BL_SUBTRACT
+                        newR = bottomR - topR
+                        newG = bottomG - topG
+                        newB = bottomB - topB
+                        If newR < 0 Then newR = 0
+                        If newG < 0 Then newG = 0
+                        If newB < 0 Then newB = 0
+                    
+                    Case BL_DIVIDE
+                        If topR = 0 Then newR = 1 Else newR = bottomR / topR
+                        If topG = 0 Then newG = 1 Else newG = bottomG / topG
+                        If topB = 0 Then newB = 1 Else newB = bottomB / topB
+                        If newR > 1 Then newR = 1
+                        If newG > 1 Then newG = 1
+                        If newB > 1 Then newB = 1
+                        
+                    Case BL_HUE
+                        fastRGBtoHSV topR, topG, topB, topH, topS, topV
+                        fastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
+                        fHSVtoRGB topH, bottomS, bottomV, newR, newG, newB
+                    
+                    Case BL_SATURATION
+                        fastRGBtoHSV topR, topG, topB, topH, topS, topV
+                        fastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
+                        fHSVtoRGB bottomH, topS, bottomV, newR, newG, newB
+                    
+                    Case BL_COLOR
+                        fastRGBtoHSV topR, topG, topB, topH, topS, topV
+                        bottomV = fMax3(bottomR, bottomG, bottomB)
+                        fHSVtoRGB topH, topS, bottomV, newR, newG, newB
+                    
+                    Case BL_LUMINOSITY
+                        topV = fMax3(topR, topG, topB)
+                        fastRGBtoHSV bottomR, bottomG, bottomB, bottomH, bottomS, bottomV
+                        fHSVtoRGB bottomH, bottomS, topV, newR, newG, newB
+                        
+                    Case BL_GRAINEXTRACT
+                        newR = bottomR - topR + 0.5
+                        newG = bottomG - topG + 0.5
+                        newB = bottomB - topB + 0.5
+                        If newR > 1 Then newR = 1
+                        If newG > 1 Then newG = 1
+                        If newB > 1 Then newB = 1
+                        If newR < 0 Then newR = 0
+                        If newG < 0 Then newG = 0
+                        If newB < 0 Then newB = 0
+                    
+                    Case BL_GRAINMERGE
+                        newR = bottomR + topR - 0.5
+                        newG = bottomG + topG - 0.5
+                        newB = bottomB + topB - 0.5
+                        If newR > 1 Then newR = 1
+                        If newG > 1 Then newG = 1
+                        If newB > 1 Then newB = 1
+                        If newR < 0 Then newR = 0
+                        If newG < 0 Then newG = 0
+                        If newB < 0 Then newB = 0
+                    
+                    Case Else
+                        newR = topR
+                        newG = topG
+                        newB = topB
+                
+                End Select
+                                
+                If topA = 1 Then
+                    
+                    'Top layer is opaque, so premultiplication is irrelevant
+                    
+                    'NOTE!  I've tried to write the compositor so that additional bounds checks are not needed.
+                    ' If errors ever occur in the future, you can start debugging by enabling the checks below.
+                        'If newR > 1 Then newR = 1
+                        'If newG > 1 Then newG = 1
+                        'If newB > 1 Then newB = 1
+                        'If newR < 0 Then newR = 0
+                        'If newG < 0 Then newG = 0
+                        'If newB < 0 Then newB = 0
+                    
+                    'tImageData(QuickX + 2, y) = (newR * 255)
+                    'tImageData(QuickX + 1, y) = (newG * 255)
+                    'tImageData(QuickX, y) = (newB * 255)
+                    
+                    bImageData(quickBottomX, quickBottomY) = newB * alphaModifierInt
+                    bImageData(quickBottomX + 1, quickBottomY) = newG * alphaModifierInt
+                    bImageData(quickBottomX + 2, quickBottomY) = newR * alphaModifierInt
+                    bImageData(quickBottomX + 3, quickBottomY) = 255
+                    
+                Else
+                
+                    'Calculate a new alpha for the top layer, using the supplied alpha modifier
+                    topA = topA * alphaModifier
+                    
+                    'If the bottom layer is not transparent, no amount of top transparency will change that
+                    If bottomA = 1 Then
+                        
+                        'Blend each color accordingly
+                        newR = newR * topA + bottomR * (1 - topA)
+                        newG = newG * topA + bottomG * (1 - topA)
+                        newB = newB * topA + bottomB * (1 - topA)
+                        
+                        'Perform an alpha-blend with the top and bottom colors, premultiplied
+                        bImageData(quickBottomX, quickBottomY) = newB * 255
+                        bImageData(quickBottomX + 1, quickBottomY) = newG * 255
+                        bImageData(quickBottomX + 2, quickBottomY) = newR * 255
+                    
+                    'Alpha blend the original color with the new color, per the lower image's alpha.  (This way,
+                    ' if the bottom image is transparent, the top image is unchanged.)
+                    Else
+                    
+                        'Calculate a new destination alpha value
+                        newA = topA + bottomA * (1 - topA)
+                        
+                        'Blend each color accordingly
+                        newR = newR * topA + bottomR * (1 - topA)
+                        newG = newG * topA + bottomG * (1 - topA)
+                        newB = newB * topA + bottomB * (1 - topA)
+                        
+                        'Perform an alpha-blend with the top and bottom colors, premultiplied
+                        bImageData(quickBottomX, quickBottomY) = newB * 255
+                        bImageData(quickBottomX + 1, quickBottomY) = newG * 255
+                        bImageData(quickBottomX + 2, quickBottomY) = newR * 255
+                        
+                        'Apply alpha as well
+                        bImageData(quickBottomX + 3, quickBottomY) = newA * 255
+                        
+                    End If
+                                        
+                'End topA = 1/not 1 check
+                End If
+                
+            End If
+            
+        End If
+    
+    Next y
+    Next x
+    
+    'Clear all array references
+    CopyMemory ByVal VarPtrArray(bImageData), 0&, 4
+    CopyMemory ByVal VarPtrArray(tImageData), 0&, 4
+    
+End Sub
+
 
 'Merge two layers together.  Note this can be used to merge any two arbitrary layers, with the bottom layer holding the result
 ' of the merge.  It is up to the caller to deal with any subsequent layer deletions, etc - this sub just performs the merge.
@@ -641,23 +1023,40 @@ Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
                             '
                             'TODO: all-in-one compositor that handles NDFX and compositing and the final blend
                             If (tmpLayerRef.getLayerCanvasXModifier = 1) And (tmpLayerRef.getLayerCanvasYModifier = 1) Then
-                                m_tmpDIB.createFromExistingDIB tmpLayerRef.layerDIB
+                                
+                                'Perform an all-in-one composite and blend using our awesome new all-in-one function
+                                With tmpLayerRef
+                                    compositeAndBlendDIBs tmpLayerRef.layerDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY, .getLayerOpacity / 100
+                                End With
+                                
                             Else
-                            
-                                m_tmpDIB.createBlank tmpLayerRef.getLayerWidth, tmpLayerRef.getLayerHeight, 32, 0, 0
+                                
+                                'First, create a blank, non-destructively resized DIB
+                                If (m_tmpDIB.getDIBWidth <> tmpLayerRef.getLayerWidth) Or (m_tmpDIB.getDIBHeight <> tmpLayerRef.getLayerHeight) Then
+                                    m_tmpDIB.createBlank tmpLayerRef.getLayerWidth, tmpLayerRef.getLayerHeight, 32, 0, 0
+                                    m_tmpDIB.setInitialAlphaPremultiplicationState True
+                                Else
+                                    m_tmpDIB.resetDIB
+                                End If
+                                
                                 GDI_Plus.GDIPlus_StretchBlt m_tmpDIB, 0, 0, tmpLayerRef.getLayerWidth, tmpLayerRef.getLayerHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.getLayerWidth(False), tmpLayerRef.getLayerHeight(False), 1, tmpLayerRef.getLayerResizeQuality_GDIPlus
+                                
+                                'Next, perform an all-in-one composite using our awesome new all-in-one function
+                                With tmpLayerRef
+                                    compositeAndBlendDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY, .getLayerOpacity / 100
+                                End With
                             
                             End If
                             
                             'Perform the composite
-                            With tmpLayerRef
-                                compositeDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY
-                            End With
+                            'With tmpLayerRef
+                            '    compositeDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY
+                            'End With
                             
                             'Perform the final blend, accounting for layer opacity
-                            With tmpLayerRef
-                                m_tmpDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
-                            End With
+                            'With tmpLayerRef
+                            '    m_tmpDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
+                            'End With
                             
                         End If
                         
@@ -929,7 +1328,7 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
                     End If
                     
                     m_tmpDIB.alphaBlendToDC m_dstLayer.layerDIB.getDIBDC, tmpLayerRef.getLayerOpacity * 2.55, Int(dstRect.Left) - Int(dstX), Int(dstRect.Top) - Int(dstY)
-                
+                    
                 'This is a simple layer, with no non-destructive effects or weird blend modes.  Composite it instantly, without using
                 ' a temporary placeholder layer.
                 Else
