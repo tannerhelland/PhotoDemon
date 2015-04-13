@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (rk)</langname>
-<langversion>6.7.14</langversion>
+<langversion>6.7.15</langversion>
 <langstatus>Nicht abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -254,7 +254,7 @@ Wenn dieses Bild ursprünglich auf einem Wechselmedium (DVD, USB-Laufwerk usw.) 
 
 <phrase>
 <original>GDI+ refused to load image.  Dropping back to internal routines and trying again</original>
-<translation>GDI+ verweigert das Laden des Bildes; Rückkehr zu internen Routinen und erneuter Versuch</translation>
+<translation>GDI+ verweigert Laden des Bildes. Rückkehr zu internen Routinen und erneuter Versuch</translation>
 </phrase>
 
 <phrase>
@@ -373,7 +373,7 @@ Verwenden Sie bitte Sie ein anderes Programm, um diese Bilder in einem generisch
 
 <phrase>
 <original>Layer import canceled.</original>
-<translation>Ebenen-Import abgebrochen.</translation>
+<translation>Import der Ebene abgebrochen.</translation>
 </phrase>
 
 <phrase>
@@ -458,7 +458,7 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 
 <phrase>
 <original>Original color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
-<translation>Die Original-Farbtiefe von %1 bpp wird von diesem Format NICHT unterstützt. Fortfahren mit Speichern als %2 bpp-Bild</translation>
+<translation>Originalfarbtiefe von %1 bpp wird von diesem Format NICHT unterstützt. Fortfahren mit Speichern als %2 bpp-Bild</translation>
 </phrase>
 
 <phrase>
@@ -473,12 +473,12 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 
 <phrase>
 <original>Recommended color depth of %1 bpp is supported by this format.  Proceeding with save</original>
-<translation>Die empfohlene Farbtiefe von %1 bpp wird von diesem Format unterstützt. Fortfahren mit Speichern</translation>
+<translation>Empfohlene Farbtiefe von %1 bpp wird von diesem Format unterstützt. Fortfahren mit Speichern</translation>
 </phrase>
 
 <phrase>
 <original>Recommended color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
-<translation>Die empfohlene Farbtiefe von %1 bpp wird von diesem Format NICHT unterstützt. Fortfahren mit Speichern als %2 bpp-Bild</translation>
+<translation>Empfohlene Farbtiefe von %1 bpp wird von diesem Format NICHT unterstützt. Fortfahren mit Speichern als %2 bpp-Bild</translation>
 </phrase>
 
 <phrase>
@@ -488,12 +488,12 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 
 <phrase>
 <original>Requested color depth of %1 bpp is supported by this format.  Proceeding with save</original>
-<translation>Die angeforderte Farbtiefe von %1 bpp wird von diesem Format unterstützt. Fortfahren mit Speichern</translation>
+<translation>Verlangte Farbtiefe von %1 bpp wird von diesem Format unterstützt. Fortfahren mit Speichern</translation>
 </phrase>
 
 <phrase>
 <original>Requested color depth of %1 bpp is not supported by this format.  Proceeding to save as %2 bpp</original>
-<translation>Die angeforderte Farbtiefe von %1 bpp wird von diesem Format NICHT unterstützt. Fortfahren mit Speichern als %2 bpp-Bild</translation>
+<translation>Verlangte Farbtiefe von %1 bpp wird von diesem Format NICHT unterstützt. Fortfahren mit Speichern als %2 bpp-Bild</translation>
 </phrase>
 
 <phrase>
@@ -505,7 +505,7 @@ Um den Support für komprimierte PDI-Dateien zu aktivieren, klicken Sie auf "Hil
 <original>The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization.
 
 To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.</original>
-<translation>Die zLib-Kompressionsbibliothek (zLibwapi.dll) wurde als fehlend markiert oder nach Programminitialisierung deaktiviert.
+<translation>Die zLib-Kompressions-Programmbibliothek (zLibwapi.dll) wurde als fehlend markiert oder nach Programminitialisierung deaktiviert.
 
 Um das PDI-Speichern zu aktivieren, erlauben Sie bitte %1 den Download von Plugin-Updates. Gehen Sie dafür in das Menü unter "Werkzeuge > Optionen" und wählen "Download von Core-Plugins zulassen" aus.</translation>
 </phrase>
@@ -517,7 +517,7 @@ Um das PDI-Speichern zu aktivieren, erlauben Sie bitte %1 den Download von Plugi
 
 <phrase>
 <original>Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident.</original>
-<translation>Ausgabeformat nicht erkannt. Speichern abgebrochen. Verwenden Sie bitte das Menüelement "Hilfe > Fehlerbericht senden", um dieses Ereignis zu melden.</translation>
+<translation>Ausgabeformat nicht erkannt. Speichern abgebrochen. Verwenden Sie bitte das Menüelement "Hilfe > Fehlerbericht einreichen", um dieses Ereignis zu melden.</translation>
 </phrase>
 
 <phrase>
@@ -535,7 +535,7 @@ In the meantime, please try saving the image to an alternate format.  You can al
 
 %1
 
-Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern. Sie können auch die Entwicklern von PhotoDemon via Menü "Hilfe > Fehlerbericht senden" darüber informieren.</translation>
+Versuchen Sie bitte inzwischen, das Bild in ein alternatives Format zu speichern. Sie können auch die Entwicklern von PhotoDemon via Menü "Hilfe > Fehlerbericht einreichen" darüber informieren.</translation>
 </phrase>
 
 <phrase>
@@ -574,12 +574,12 @@ Wenn das Problem bestehen bleibt, können sie die Entwickler von PhotoDemon via 
 
 <phrase>
 <original>%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Speichern von %1 fehlgeschlagen (FreeImage_SaveEx silent fail). Melden Sie bitte diesen Fehler unter dem Menüpunkt "Hilfe > Fehlerbericht senden".</translation>
+<translation>Speichern von %1 fehlgeschlagen (FreeImage_SaveEx silent fail). Melden Sie bitte diesen Fehler unter dem Menüpunkt "Hilfe > Fehlerbericht einreichen".</translation>
 </phrase>
 
 <phrase>
 <original>%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Speichern von %1 fehlgeschlagen (FreeImage hat ein leeres Handle zurückgegeben). Melden Sie bitte diesen Fehler unter dem Menüpunkt "Hilfe > Fehlerbericht senden".</translation>
+<translation>Speichern von %1 fehlgeschlagen (FreeImage hat blankes Handle zurückgegeben). Melden Sie bitte diesen Fehler unter dem Menüpunkt "Hilfe > Fehlerbericht einreichen".</translation>
 </phrase>
 
 <phrase>
@@ -633,7 +633,7 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>PPM save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Speichern von PPM fehlgeschlagen (FreeImage_SaveEx silent fail). Melden Sie bitte diesen Fehler unter dem Menüpunkt "Hilfe > Fehlerbericht senden".</translation>
+<translation>Speichern von PPM fehlgeschlagen (FreeImage_SaveEx silent fail). Melden Sie bitte diesen Fehler unter dem Menüpunkt "Hilfe > Fehlerbericht einreichen".</translation>
 </phrase>
 
 <phrase>
@@ -663,12 +663,12 @@ Um den Support für dieses Bildformat zu aktivieren, kopieren Sie bitte die Date
 
 <phrase>
 <original>Thumbnail save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Speichern von Thumbnail fehlgeschlagen (FreeImage_SaveEx silent fail). Melden Sie bitte diesen Fehler unter dem Menüpunkt "Hilfe > Fehlerbericht senden".</translation>
+<translation>Speichern von Thumbnail fehlgeschlagen (FreeImage_SaveEx silent fail). Melden Sie bitte diesen Fehler unter dem Menüpunkt "Hilfe > Fehlerbericht einreichen".</translation>
 </phrase>
 
 <phrase>
 <original>Thumbnail save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.</original>
-<translation>Speichern von Thumbnail fehlgeschlagen (FreeImage returned blank handle). Melden Sie bitte diesen Fehler unter dem Menüpunkt "Hilfe > Fehlerbericht senden".</translation>
+<translation>Speichern von Thumbnail fehlgeschlagen (FreeImage hat blankes Handle zurückgegeben). Melden Sie bitte diesen Fehler unter dem Menüpunkt "Hilfe > Fehlerbericht einreichen".</translation>
 </phrase>
 
 <phrase>
@@ -876,7 +876,7 @@ Verlustfreie Kopien werden im gleichen Ordner wie dieses initiale Bild gespeiche
 
 <phrase>
 <original>Click to change the color used for empty borders</original>
-<translation>Klicken, um die verwendete Farbe für leere Ränder zu ändern</translation>
+<translation>Hier klicken, um die verwendete Farbe für leere Begrenzungen zu ändern</translation>
 </phrase>
 
 <phrase>
@@ -971,12 +971,12 @@ Verlustfreie Kopien werden im gleichen Ordner wie dieses initiale Bild gespeiche
 
 <phrase>
 <original>fitting inclusively, with transparent borders as necessary</original>
-<translation>Einschließlich anpassen, falls erforderlich mit transparenten Rändern</translation>
+<translation>Einschließlich anpassen, falls erforderlich mit transparenten Begrenzungen</translation>
 </phrase>
 
 <phrase>
 <original>fitting inclusively, with colored borders as necessary</original>
-<translation>Einschließlich anpassen, falls erforderlich mit farbigen Rändern</translation>
+<translation>Einschließlich anpassen, falls erforderlich mit farbigen Begrenzungen</translation>
 </phrase>
 
 <phrase>
@@ -996,7 +996,7 @@ Verlustfreie Kopien werden im gleichen Ordner wie dieses initiale Bild gespeiche
 
 <phrase>
 <original>When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead.</original>
-<translation>Wenn das Seitenverhältnis eines Bildes geändert wird, kann eine unerwünschte Verzerrung auftreten. PhotoDemon kann dies durch Hinzufügen leerer Ränder oder durch Beschneiden vermeiden.</translation>
+<translation>Wenn das Seitenverhältnis eines Bildes geändert wird, kann eine unerwünschte Verzerrung auftreten. PhotoDemon kann dies durch Hinzufügen leerer Begrenzungen oder durch Beschneiden vermeiden.</translation>
 </phrase>
 
 <phrase>
@@ -1079,7 +1079,7 @@ Verlustfreie Kopien werden im gleichen Ordner wie dieses initiale Bild gespeiche
 
 <phrase>
 <original>Capturing screen</original>
-<translation>Capturing des Bildschirms</translation>
+<translation>Bildschirm wird aufgenommen</translation>
 </phrase>
 
 <phrase>
@@ -1089,12 +1089,12 @@ Verlustfreie Kopien werden im gleichen Ordner wie dieses initiale Bild gespeiche
 
 <phrase>
 <original>Screen Capture</original>
-<translation>Bildschirmkopie</translation>
+<translation>Bildschirmaufnahme</translation>
 </phrase>
 
 <phrase>
 <original>Screen capture complete.</original>
-<translation>Bildschirmkopie abgeschlossen</translation>
+<translation>Bildschirmaufnahme abgeschlossen.</translation>
 </phrase>
 
 <!-- VBP_ScreenCaptureModule.bas contains 5 phrases.  One was a duplicate of an existing phrase, so only 4 new phrases were written to file. -->
@@ -1153,11 +1153,11 @@ Verlustfreie Kopien werden im gleichen Ordner wie dieses initiale Bild gespeiche
 
 <!-- END text for VBP_FormBrightnessContrast.frm-->
 
-<!-- BEGIN text for VBP_FormMosaic.frm (FormMosaic) -->
+<!-- BEGIN text for VBP_FormMosaic.frm (FormPixelate) -->
 
 <phrase>
-<original>Mosaic</original>
-<translation></translation>
+<original>Pixelate Options</original>
+<translation>Verpixeln-Optionen</translation>
 </phrase>
 
 <phrase>
@@ -1176,11 +1176,16 @@ Verlustfreie Kopien werden im gleichen Ordner wie dieses initiale Bild gespeiche
 </phrase>
 
 <phrase>
-<original>Applying mosaic</original>
-<translation></translation>
+<original>Applying pixellation</original>
+<translation>Verpixelung wird angewendet</translation>
 </phrase>
 
-<!-- VBP_FormMosaic.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
+<phrase>
+<original>Pixelate</original>
+<translation>Verpixeln</translation>
+</phrase>
+
+<!-- VBP_FormMosaic.frm contains 6 phrases.  All 6 were unique, so 6 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMosaic.frm-->
 
@@ -1211,7 +1216,7 @@ Verlustfreie Kopien werden im gleichen Ordner wie dieses initiale Bild gespeiche
 <translation>Viewport-Rendering angehalten wegen eines unerwarteten Fehlers (Nr. %1)</translation>
 </phrase>
 
-<!-- VBP_ZoomModule.bas contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
+<!-- VBP_ZoomModule.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
 
 <!-- END text for VBP_ZoomModule.bas-->
 
@@ -1257,9 +1262,9 @@ Verlustfreie Kopien werden im gleichen Ordner wie dieses initiale Bild gespeiche
 <original>Unknown processor request submitted: %1
 
 Please report this bug via the Help -> Submit Bug Report menu.</original>
-<translation>Unbekannte Prozessor-Anfrage eingereicht: %1
+<translation>Unbekannte Prozessoranfrage eingereicht: %1
 
-Melden Sie bitte dies via Menü "Hilfe > Fehlerbericht senden".</translation>
+Melden Sie bitte dies via Menü "Hilfe > Fehlerbericht eireichen".</translation>
 </phrase>
 
 <phrase>
@@ -1333,9 +1338,9 @@ Melden Sie bitte dies via Menü "Hilfe > Fehlerbericht senden".</translation>
 <original>PhotoDemon cannot locate additional information for this error.  That probably means this error is a bug, and it needs to be fixed!
 
 Would you like to submit a bug report?  (It takes less than one minute, and it helps everyone who uses the software.)</original>
-<translation>PhotoDemon kann für diesen Fehler keine weiteren Informationen finden. Das bedeutet wahrscheinlich, dass es ein echter Programmfehler ist und repariert werden muss!
+<translation>PhotoDemon kann zu diesem Fehler keine weiteren Informationen lokalisieren. Das bedeutet wahrscheinlich, dass es ein echter Programmfehler ist und repariert werden muss!
 
-Möchten Sie einen Fehlerbericht senden? (Das dauert unter einer Minute, und es hilft allen, die die Software verwenden.)</translation>
+Möchten Sie einen Fehlerbericht einreichen? (Das dauert weiniger als eine Minute, und es hilft allen, die die Software verwenden.)</translation>
 </phrase>
 
 <phrase>
@@ -1367,7 +1372,7 @@ Beschreibung: %2
 <original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs you to answer one more question.
 
 Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Vielen Dank für Ihren Fehlerbericht! Damit der Fehler so schnell wie möglich bearbeitet wird, möchte PhotoDemon Ihnen noch eine Frage stellen:
+<translation>Danke für das Einreichen Ihres Fehlerberichts! Damit der Fehler so schnell wie möglich bearbeitet wird, möchte PhotoDemon Ihnen noch eine Frage stellen:
 
 Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, antworten Sie bitte mit "Nein")</translation>
 </phrase>
@@ -1383,11 +1388,11 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 Any additional details you can provide in the large text box, including the steps that led up to this error, will help it get fixed as quickly as possible.
 
 When finished, click the Submit New Issue button.  Thank you!</original>
-<translation>PhotoDemon hat automatisch eine GitHub-Fehlerberichtseite für Sie geöffnet. Bitte geben Sie im Titelfeld diese Fehlernummer und eine kurze Beschreibung des Problems ein: %1
+<translation>PhotoDemon hat automatisch eine GitHub-Fehlerberichtsseite für Sie geöffnet. Bitte geben Sie im Titelfeld diese Fehlernummer und eine kurze Beschreibung des Problems ein: %1
 
-Weitere Details können Sie in das große Textfeld schreiben, besonders die Schritte, die zu diesem Fehler geführt haben. Das sollte helfen, das Problem so schnell wie möglich zu beheben.
+Alle weiteren Details können Sie in das große Textfeld schreiben, einschließlich der Schritte, die zu diesem Fehler geführt haben. Das wird helfen, das Problem so schnell wie möglich zu beheben.
 
-Wenn Sie fertig sind, klicken Sie auf "Submit New Issue". Danke!</translation>
+Wenn Sie fertig sind, klicken Sie auf "Neues Problem einreichen". Danke!</translation>
 </phrase>
 
 <phrase>
@@ -1401,11 +1406,11 @@ Wenn Sie fertig sind, klicken Sie auf "Submit New Issue". Danke!</translation>
 Also in that box, please include the following error number: %1
 
 When finished, click the Submit button.  Thank you!</original>
-<translation>PhotoDemon hat automatisch einen Fehlerberichtseite für Sie geöffnet. Bitte beschreiben Sie im Feld "Kommentar", wie es zu diesem Fehler kam.
+<translation>PhotoDemon hat automatisch eine Fehlerberichtsseite für Sie geöffnet. Im Kommentarfeld beschreiben Sie bitte die Schritte, die zu diesem Fehler geführt haben.
 
 Geben Sie bitte im gleichen Feld diese Fehlernummer an: %1
 
-Wenn Sie fertig sind, klicken Sie bitte auf "Senden". Danke!</translation>
+Wenn Sie fertig sind, klicken Sie bitte auf "Einreichen". Vielen Dank!</translation>
 </phrase>
 
 <phrase>
@@ -1780,7 +1785,7 @@ In Version 6.0 wurden PhotoDemon-Makrodateien überarbeitet, um neue Funktionen 
 
 <phrase>
 <original>Macro complete!</original>
-<translation>Makro vollständig!</translation>
+<translation>Makro komplett!</translation>
 </phrase>
 
 <!-- VBP_BatchConversion.bas contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
@@ -2147,7 +2152,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Trim empty borders</original>
-<translation>Leere Ränder trimmen</translation>
+<translation>Leere Begrenzungen trimmen</translation>
 </phrase>
 
 <phrase>
@@ -2177,7 +2182,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Arbitrary</original>
-<translation>Zufällig</translation>
+<translation>Beliebig</translation>
 </phrase>
 
 <phrase>
@@ -2227,12 +2232,12 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Blank layer</original>
-<translation>Leere Ebene</translation>
+<translation>Blanke Ebene</translation>
 </phrase>
 
 <phrase>
 <original>Duplicate of current layer</original>
-<translation>Aktuelle Ebene duplizieren</translation>
+<translation>Duplikat der aktuellen Ebene</translation>
 </phrase>
 
 <phrase>
@@ -2252,7 +2257,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Hidden layers</original>
-<translation>Versteckte Ebenen</translation>
+<translation>Ausgeblendete Ebenen</translation>
 </phrase>
 
 <phrase>
@@ -2312,7 +2317,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Rotate arbitrary</original>
-<translation>Freie Drehung</translation>
+<translation>Beliebig drehen</translation>
 </phrase>
 
 <phrase>
@@ -2456,11 +2461,6 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 </phrase>
 
 <phrase>
-<original>Shadows and highlights</original>
-<translation>Schatten und Highlights</translation>
-</phrase>
-
-<phrase>
 <original>Auto enhance</original>
 <translation>Automatisch verbessern</translation>
 </phrase>
@@ -2593,6 +2593,11 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 <phrase>
 <original>Compound invert</original>
 <translation>Verbund invertieren</translation>
+</phrase>
+
+<phrase>
+<original>Shadows and highlights</original>
+<translation>Schatten und Highlights</translation>
 </phrase>
 
 <phrase>
@@ -2736,6 +2741,11 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 </phrase>
 
 <phrase>
+<original>Fragment</original>
+<translation>Fragment</translation>
+</phrase>
+
+<phrase>
 <original>Kuwahara filter</original>
 <translation>Kuwahara-Filter</translation>
 </phrase>
@@ -2753,11 +2763,6 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 <phrase>
 <original>Correct existing lens distortion</original>
 <translation>Vorhandene Linsenverzeichnung korrigieren</translation>
-</phrase>
-
-<phrase>
-<original>Donut</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -2807,7 +2812,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Enhance edges</original>
-<translation>Kanten verstärken</translation>
+<translation>Kanten verbessern</translation>
 </phrase>
 
 <phrase>
@@ -2817,7 +2822,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Trace contour</original>
-<translation>Kontur folgen</translation>
+<translation>Kontur nachzeichnen</translation>
 </phrase>
 
 <phrase>
@@ -2886,8 +2891,8 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 </phrase>
 
 <phrase>
-<original>Metal</original>
-<translation></translation>
+<original>Steel</original>
+<translation>Stahl</translation>
 </phrase>
 
 <phrase>
@@ -2913,31 +2918,6 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 <phrase>
 <original>Median smoothing</original>
 <translation>Median-Glättung</translation>
-</phrase>
-
-<phrase>
-<original>Pixelate</original>
-<translation>Verpixeln</translation>
-</phrase>
-
-<phrase>
-<original>Color halftone</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Crystallize</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Fragment</original>
-<translation>Fragment</translation>
-</phrase>
-
-<phrase>
-<original>Mezzotint</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -3167,7 +3147,7 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Show when multiple images are loaded</original>
-<translation>Zeigen, wenn mehrere Bilder geladen sind</translation>
+<translation>Zeigen, wenn mehrere Bilder geladen werden</translation>
 </phrase>
 
 <phrase>
@@ -3227,12 +3207,12 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 
 <phrase>
 <original>Submit feedback</original>
-<translation>Feedback geben</translation>
+<translation>Feedback einreichen</translation>
 </phrase>
 
 <phrase>
 <original>Submit bug report</original>
-<translation>Fehlerbericht senden</translation>
+<translation>Fehlerbericht einreichen</translation>
 </phrase>
 
 <phrase>
@@ -3309,11 +3289,6 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
-<original>Auto correct shadows and highlights</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Auto enhance color</original>
 <translation>Farbe autom. verbessern</translation>
 </phrase>
@@ -3329,11 +3304,6 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
-<original>Auto enhance shadows and highlights</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Merge layer up</original>
 <translation>Ebene nach oben zusammenführen</translation>
 </phrase>
@@ -3344,23 +3314,18 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
-<original>Crop layer to selection</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Delete layer</original>
 <translation>Ebene löschen</translation>
 </phrase>
 
 <phrase>
 <original>Delete hidden layers</original>
-<translation>Versteckte Ebenen löschen</translation>
+<translation>Ausgeblendete Ebenen löschen</translation>
 </phrase>
 
 <phrase>
 <original>Add blank layer</original>
-<translation>Leere Ebene hinzufügen</translation>
+<translation>Blanke Ebene hinzufügen</translation>
 </phrase>
 
 <phrase>
@@ -3450,7 +3415,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Asynchronous metadata check complete!  Updating metadata collection</original>
-<translation>Asynchrone Prüfung der Metadaten beendet! Aktualisierung der Metadaten-Sammlung</translation>
+<translation>Asynchrone Prüfung der Metadaten abgeschlossen! Aktualisierung der Metadaten-Sammlung</translation>
 </phrase>
 
 <phrase>
@@ -3475,7 +3440,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Loading requested images</original>
-<translation>Angeforderte Bilder werden laden</translation>
+<translation>Verlangte Bilder werden geladen</translation>
 </phrase>
 
 <phrase>
@@ -3485,12 +3450,12 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 
 <phrase>
 <original>Some core plugins could not be found. Preparing updater</original>
-<translation>Einige Core-Plugins können nicht gefunden werden. Updater wird vorbereitet</translation>
+<translation>Einige Core-Plugins konnten nicht gefunden werden. Updater wird vorbereitet</translation>
 </phrase>
 
 <phrase>
 <original>Ignoring plugin update request per user's saved preference</original>
-<translation>Update-Anfrage des Plugins wird ignoriert (entspr. gespeicherter Einstellungen des Benutzers)</translation>
+<translation>Update-Anfrage des Plugins wird ignoriert (entspr. gespeicherter Benutzereinstellungen)</translation>
 </phrase>
 
 <phrase>
@@ -3602,7 +3567,7 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <original>Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it.
 
 Do you have a GitHub account? (If you have no idea what this means, answer "No".)</original>
-<translation>Vielen Dank für Ihren Fehlerbericht. Damit der Fehler so schnell wie möglich behandelt wird, muss PhotoDemon wissen, wohin der Bericht gesendet werden soll.
+<translation>Danke für das Einreichen Ihres Fehlerberichts. Damit der Fehler so schnell wie möglich behandelt wird, muss PhotoDemon wissen, wohin der Bericht gesendet werden soll.
 
 Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, antworten Sie mit "Nein".)</translation>
 </phrase>
@@ -3692,11 +3657,6 @@ Hinweis: Einige kleinere Programmtexte können nicht live aktualisiert werden. S
 </phrase>
 
 <phrase>
-<original>Shadow and highlight</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>No metadata available.</original>
 <translation>Keine Metadaten verfügbar.</translation>
 </phrase>
@@ -3743,7 +3703,7 @@ Hinweis: Einige kleinere Programmtexte können nicht live aktualisiert werden. S
 
 <phrase>
 <original>Bilateral smoothing</original>
-<translation>Beidseitiges Glätten</translation>
+<translation>Beidseitige Glättung</translation>
 </phrase>
 
 <phrase>
@@ -3773,7 +3733,7 @@ Hinweis: Einige kleinere Programmtexte können nicht live aktualisiert werden. S
 
 <phrase>
 <original>Arbitrary image rotation</original>
-<translation>Bild frei drehen</translation>
+<translation>Beliebige Bildrotation</translation>
 </phrase>
 
 <phrase>
@@ -3783,7 +3743,7 @@ Hinweis: Einige kleinere Programmtexte können nicht live aktualisiert werden. S
 
 <phrase>
 <original>Screen capture</original>
-<translation>Bildschirmkopie</translation>
+<translation>Bildschirmaufnahme</translation>
 </phrase>
 
 <phrase>
@@ -3808,7 +3768,7 @@ Hinweis: Einige kleinere Programmtexte können nicht live aktualisiert werden. S
 
 <phrase>
 <original>Border selection</original>
-<translation>Rand-Auswahl</translation>
+<translation>Rahmenauswahl</translation>
 </phrase>
 
 <phrase>
@@ -3861,7 +3821,7 @@ Hinweis: Einige kleinere Programmtexte können nicht live aktualisiert werden. S
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 553 phrases. 165 were duplicates of existing phrases, so only 388 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 538 phrases. 159 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -3947,7 +3907,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Scan canceled at the user's request.</original>
-<translation>Scannen wird auf Wunsch des Benutzers abgebrochen.</translation>
+<translation>Scannen auf Wunsch des Benutzers abgebrochen.</translation>
 </phrase>
 
 <phrase>
@@ -3957,12 +3917,12 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>The scanner returned an error code that wasn't specified in the EZTW32.dll documentation (Error #%1).  Please visit http://www.eztwain.com for more information.</original>
-<translation>Der Scanner hat einen Fehlercode ausgegeben, der nicht in der EZTW32.dll Dokumentation spezifiziert ist (Fehlernummer %1). Besuchen Sie bitte http://www.eztwain.com für mehr Informationen.</translation>
+<translation>Der Scanner hat einen Fehlercode zurückgegeben, der nicht in der EZTW32.dll Dokumentation spezifiziert ist (Fehlernummer %1). Besuchen Sie bitte http://www.eztwain.com für mehr Informationen.</translation>
 </phrase>
 
 <phrase>
 <original>Scan Canceled</original>
-<translation>Scan abgebrochen</translation>
+<translation>Scannen abgebrochen</translation>
 </phrase>
 
 <!-- VBP_ScannerInterface.bas contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
@@ -4013,7 +3973,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Desaturate</original>
-<translation>Sättigung verringern</translation>
+<translation>Entsättigen</translation>
 </phrase>
 
 <phrase>
@@ -4028,7 +3988,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>False (Fast) Floyd-Steinberg</original>
-<translation>Unechter (Schneller) Floyd-Steinberg</translation>
+<translation>Unechter (Schnell) Floyd-Steinberg</translation>
 </phrase>
 
 <phrase>
@@ -4124,7 +4084,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Roberts cross edge detection</original>
-<translation>Roberts cross-Kantenerkennung</translation>
+<translation>Roberts Cross-Kantenerkennung</translation>
 </phrase>
 
 <phrase>
@@ -4164,7 +4124,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 
 <phrase>
 <original>Roberts cross</original>
-<translation>Roberts cross</translation>
+<translation>Roberts Cross</translation>
 </phrase>
 
 <phrase>
@@ -4198,7 +4158,12 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 <translation>Ein imaginärer Vulkan explodiert</translation>
 </phrase>
 
-<!-- VBP_Filters_Natural.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+<phrase>
+<original>Pouring smoldering steel onto image</original>
+<translation>Glühenden Stahl auf das Bild gießen</translation>
+</phrase>
+
+<!-- VBP_Filters_Natural.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
 
 <!-- END text for VBP_Filters_Natural.bas-->
 
@@ -5296,7 +5261,7 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <phrase>
 <original>Load options allow you to customize the way image files enter the application.</original>
-<translation>Optionen zum Laden ermöglichen Ihnen, , wie Bilddateien in die Anwendung anzupassen.</translation>
+<translation>Optionen zum Laden ermöglichen Ihnen, anzupassen, wie Bilddateien in die Anwendung gelangen.</translation>
 </phrase>
 
 <phrase>
@@ -5306,7 +5271,7 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <phrase>
 <original>Save options allow you to customize the way image files leave the application.</original>
-<translation>Speichern-Optionen können Sie festlegen, wie Bilddateien die Anwendung verlassen.</translation>
+<translation>Optionen zum Speichern ermöglichen Ihnen, anzupassen, wie Bilddateien die Anwendung verlassen.</translation>
 </phrase>
 
 <phrase>
@@ -5492,17 +5457,7 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 <translation>Helligkeit wird verbessert</translation>
 </phrase>
 
-<phrase>
-<original>Adjusting shadows and highlights</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Enhancing shadows and highlights</original>
-<translation></translation>
-</phrase>
-
-<!-- VBP_Filters_Color_Effects.bas contains 13 phrases.  All 13 were unique, so 13 new phrases were written to file. -->
+<!-- VBP_Filters_Color_Effects.bas contains 11 phrases.  All 11 were unique, so 11 new phrases were written to file. -->
 
 <!-- END text for VBP_Filters_Color_Effects.bas-->
 
@@ -5873,12 +5828,12 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <phrase>
 <original>Image download canceled.</original>
-<translation>Bild-Download abgebrochen.</translation>
+<translation>Download des Bildes abgebrochen.</translation>
 </phrase>
 
 <phrase>
 <original>Image download complete.</original>
-<translation>Bild-Download abgeschlossen.</translation>
+<translation>Download des Bildes abgeschlossen.</translation>
 </phrase>
 
 <phrase>
@@ -6032,7 +5987,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>free, open-source image metadata library (camera settings, GPS coordinates, etc)</original>
-<translation>Freie Open-Source Bildmetadaten-Bibliothek (Kameraeinstellungen, GPS-Koordinaten usw.)</translation>
+<translation>Freie Open-Source Bildmetadaten-Programmbibliothek (Kameraeinstellungen, GPS-Koordinaten usw.)</translation>
 </phrase>
 
 <phrase>
@@ -6042,7 +5997,7 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>free, open-source library for optimizing portable network graphics (PNG files)</original>
-<translation>Freie Open-Source Bibliothek zur Optimierung von Portable Network Graphics (PNG-Dateien)</translation>
+<translation>Freie Open-Source Programmbibliothek zur Optimierung von Portable Network Graphics (PNG-Dateien)</translation>
 </phrase>
 
 <phrase>
@@ -6052,12 +6007,12 @@ Für diese Unannehmlichkeit möchte ich mich wirklich entschuldigen; unglücklic
 
 <phrase>
 <original>free, open-source compression library; required to decompress all other plugins</original>
-<translation>Freie Open-Source Kompressionsbibliothek; erforderlich zum Dekomprimieren aller anderen Plugins</translation>
+<translation>Freie Open-Source Kompressions-Programmbibliothek; erforderlich zum Dekomprimieren aller anderen Plugins</translation>
 </phrase>
 
 <phrase>
 <original>free, open-source library for importing and exporting a variety of image formats</original>
-<translation>Freie Open-Source Bibliothek für den Import und Export einer Reihe von Bildformaten</translation>
+<translation>Freie Open-Source Programmbibliothek für Import und Export einer Reihe von Bildformaten</translation>
 </phrase>
 
 <phrase>
@@ -6283,7 +6238,7 @@ Sie werden mit PhotoDemon zufriedener sein, wenn Sie das Programm diese kostenlo
 
 <phrase>
 <original>Failed to initialize custom hotkey handler.</original>
-<translation>Die Verwaltung der benutzerdefinierten Hotkeys konnte nicht initialisiert werden.</translation>
+<translation>Initialiseren benutzerdefinierter Hotkey-Handler fehlgeschlagen.</translation>
 </phrase>
 
 <!-- vbalHookControl.ctl contains 13 phrases. 8 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
@@ -6424,7 +6379,7 @@ Sie werden mit PhotoDemon zufriedener sein, wenn Sie das Programm diese kostenlo
 
 <phrase>
 <original>Compression requested, but zLib plugin is disabled or missing.  Data will not be compressed.</original>
-<translation>Kompression angefordert, aber zLib-Plugin ist deaktiviert oder fehlt. Daten werden nicht komprimiert.</translation>
+<translation>Kompression verlangt, aber zLib-Plugin ist deaktiviert oder fehlt. Daten werden nicht komprimiert.</translation>
 </phrase>
 
 <phrase>
@@ -6559,7 +6514,7 @@ Sie werden mit PhotoDemon zufriedener sein, wenn Sie das Programm diese kostenlo
 
 <phrase>
 <original>Requested selection file could not be located.  Selection load abandoned.</original>
-<translation>Angeforderte Auswahldatei konnte nicht gefunden werden. Laden der Auswahl abgebrochen.</translation>
+<translation>Verlangte Auswahldatei konnte nicht gefunden werden. Laden der Auswahl abgebrochen.</translation>
 </phrase>
 
 <!-- pdSelection.cls contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -6846,17 +6801,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <translation>Luminanz</translation>
 </phrase>
 
-<phrase>
-<original>Grain extract</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Grain merge</original>
-<translation></translation>
-</phrase>
-
-<!-- VBP_MiscInterface.bas contains 61 phrases. 22 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 59 phrases. 22 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -6924,7 +6869,7 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>adjust size to fit rotated image</original>
-<translation>Größe an das gedrehte Bild anpassen</translation>
+<translation>Größe an gedrehtes Bild anpassen</translation>
 </phrase>
 
 <phrase>
@@ -6934,12 +6879,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>rotated image size</original>
-<translation>Größe des gedrehten Bildes</translation>
+<translation>Gedrehte Bildgröße</translation>
 </phrase>
 
 <phrase>
 <original>rotation angle</original>
-<translation>Drehwinkel</translation>
+<translation>Rotationswinkel</translation>
 </phrase>
 
 <phrase>
@@ -6949,12 +6894,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 
 <phrase>
 <original>Rotation complete.</original>
-<translation>Drehen beendet.</translation>
+<translation>Rotation abgeschlossen.</translation>
 </phrase>
 
 <phrase>
 <original>Arbitrary rotation requires the FreeImage plugin, which could not be located.  Rotation canceled.</original>
-<translation>Solch eine beliebige Drehung erfordert das FreeImage-Plugin; das wurde aber nicht gefunden. Keine Drehung durchgeführt.</translation>
+<translation>Eine beliebige Rotation erfordert das FreeImage-Plugin, das nicht gefunden werden konnte. Rotation abgebrochen.</translation>
 </phrase>
 
 <phrase>
@@ -7634,7 +7579,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>If you insist on running PhotoDemon in the IDE, please do not submit bugs regarding IDE crashes or freezes.  PhotoDemon's developers can only address issues and bugs that affect the compiled .exe.</original>
-<translation>Wenn Sie darauf bestehen, PhotoDemon in der IDE auszuführen, senden Sie mir bitte keine Fehlermeldungen bezüglich IDE-Abstürzen oder -Einfrieren. Die PhotoDemon-Entwickler können sich nur mit Problemen und Fehlern befassen, welche die kompilierte und ausführbare Datei betreffen.</translation>
+<translation>Wenn Sie darauf bestehen, PhotoDemon in der IDE auszuführen, reichen Sie bitte keine Fehlermeldungen bezüglich IDE-Abstürzen oder -Einfrieren ein. Die PhotoDemon-Entwickler können sich nur mit Problemen und Fehlern befassen, welche die kompilierte und ausführbare Datei betreffen.</translation>
 </phrase>
 
 <!-- VBP_FormIDEWarning.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
@@ -8089,7 +8034,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>show original image (alt+t)</original>
-<translation>Originalbild zeigen (Alt+t)</translation>
+<translation>Originalbild zeigen (Alt+T)</translation>
 </phrase>
 
 <!-- fxPreview.ctl contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -8541,12 +8486,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <phrase>
 <original>apply contour smoothing</original>
-<translation>Konturen glätten</translation>
+<translation>Konturglättung anwenden</translation>
 </phrase>
 
 <phrase>
 <original>Tracing image contour</original>
-<translation>Bildkontur wird untersucht</translation>
+<translation>Bildkontur wird nachgezeichnet</translation>
 </phrase>
 
 <!-- VBP_FormContour.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -8567,13 +8512,13 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>midtone contrast</original>
-<translation></translation>
+<original>use the median midtone for this image</original>
+<translation>Den Median-Mittelton für dieses Bildes verwenden</translation>
 </phrase>
 
 <phrase>
-<original>tonal width</original>
-<translation></translation>
+<original>midtone target color (right-click preview to change)</original>
+<translation>Mittelton-Zielfarbe (zum Ändern mit Rechtsklick in Vorschau)</translation>
 </phrase>
 
 <phrase>
@@ -8581,7 +8526,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Schatten, Mitteltöne und Highlights werden angepasst</translation>
 </phrase>
 
-<!-- VBP_FormShadowHighlight.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- VBP_FormShadowHighlight.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for VBP_FormShadowHighlight.frm-->
 
@@ -8903,7 +8848,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>You have requested that a macro be applied to each image, but no macro file has been selected.  Please select a valid macro file.</original>
-<translation>Sie möchten, dass ein Makro auf jedes Bild angewendet werden soll, aber es wurde kein Makro ausgewählt. Wählen Sie bitte eine gültige Makrodatei aus.</translation>
+<translation>Sie haben verlangt, dass ein Makro auf jedes Bild angewendet wird, aber es wurde kein Makro ausgewählt. Wählen Sie bitte eine gültige Makrodatei aus.</translation>
 </phrase>
 
 <phrase>
@@ -8923,7 +8868,7 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 
 <phrase>
 <original>PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.</original>
-<translation>PhotoDemon kann nicht auf den erwünschten Ausgabeordner zugreifen. Wählen Sie bitte einen Ordner (keinen Systemordner!) mit unbeschränkter Zugangsmöglichkeit für den Batch-Prozess aus.</translation>
+<translation>PhotoDemon kann nicht auf den verlangten Ausgabeordner zugreifen. Wählen Sie bitte einen Ordner (keinen Systemordner!) mit unbeschränkter Zugangsmöglichkeit für den Batch-Prozess aus.</translation>
 </phrase>
 
 <phrase>
@@ -9202,7 +9147,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>processed before cancelation. Last processed image was "%1".</original>
-<translation>verarbeitet werden vor dem Abbruch. Das zuletzt verarbeitete Bild war Nummer %1.</translation>
+<translation>Verarbeitet vor Abbruch. Letzte verarbeitete Bild war "%1".</translation>
 </phrase>
 
 <!-- VBP_FormBatchWizard.frm contains 260 phrases. 138 were duplicates of existing phrases, so only 122 new phrases were written to file. -->
@@ -9365,7 +9310,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>ExifTool could not be started.  Metadata unavailable for this session.</original>
-<translation>ExifTool konnte nicht gestartet werden. Metadaten in dieser Sitzung nicht verfügbar.</translation>
+<translation>ExifTool konnte nicht gestartet werden. Metadaten für diese Sitzung nicht verfügbar.</translation>
 </phrase>
 
 <phrase>
@@ -9766,7 +9711,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>enhance blue and purple objects; useful for fluorescent dyes</original>
-<translation>Blaue und lila Objekte verstärken; sinnvoll für fluoreszierende Farbstoffe</translation>
+<translation>Blaue und lila Objekte verbessern; sinnvoll für fluoreszierende Farbstoffe</translation>
 </phrase>
 
 <phrase>
@@ -9816,7 +9761,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>infrared photography longpass filter blocking</original>
-<translation>Langpassfilter-Blockade für Infrarotfotografie</translation>
+<translation>Langpassfilter-Sperrung für Infrarotfotografie</translation>
 </phrase>
 
 <phrase>
@@ -10153,7 +10098,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>Selection inversion complete.</original>
-<translation>Auswahlinversion vollständig.</translation>
+<translation>Auswahlinversion abgeschlossen.</translation>
 </phrase>
 
 <phrase>
@@ -10173,7 +10118,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>Selection resize complete.</original>
-<translation>Größenänderung der Auswahl abgeschlossen.</translation>
+<translation>Größenveränderung der Auswahl abgeschlossen.</translation>
 </phrase>
 
 <phrase>
@@ -10183,7 +10128,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>Finding selection border</original>
-<translation>Rand der Auswahl finden</translation>
+<translation>Auswahlrahmen finden</translation>
 </phrase>
 
 <!-- VBP_SelectionHandler.bas contains 44 phrases. 24 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
@@ -10235,7 +10180,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>feather radius</original>
-<translation>Radius der weichen Kante</translation>
+<translation>Radius weicher Kante</translation>
 </phrase>
 
 <phrase>
@@ -10709,7 +10654,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>This action can take a very long time to complete.  Once started, it cannot be canceled.  Are you sure you want to continue?</original>
-<translation>Diese Aktion kann eine sehr lange Zeit in Anspruch nehmen. Einmal gestartet, kann sie nicht abgebrochen werden. Sind Sie sicher, dass Sie fortfahren wollen?</translation>
+<translation>Diese Aktion kann zum Abschließen eine sehr lange Zeit in Anspruch nehmen. Einmal gestartet, kann sie nicht abgebrochen werden. Sind Sie sicher, dass Sie fortfahren wollen?</translation>
 </phrase>
 
 <phrase>
@@ -10724,17 +10669,17 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 
 <phrase>
 <original>Automatic translation complete!</original>
-<translation>Automatische Übersetzung vollständig!</translation>
+<translation>Automatische Übersetzung abgeschlossen!</translation>
 </phrase>
 
 <phrase>
 <original>Automatic translations were interrupted (the translation object stopped responding).  The existing work has been auto-saved.</original>
-<translation></translation>
+<translation>Automatische Übersetzungen wurden unterbrochen (das Übersetzungsobjekt stoppt ).</translation>
 </phrase>
 
 <phrase>
 <original>Translations interrupted</original>
-<translation></translation>
+<translation>Übersetzungen unterbrochen</translation>
 </phrase>
 
 <phrase>
@@ -10743,7 +10688,7 @@ Standardmäßig wird Transparenz in der Mitte geteilt, oder Sie spezifizieren ei
 (Even though this is an official PhotoDemon language file, you can safely delete it.)</original>
 <translation>Sind Sie sicher, dass Sie %1 löschen wollen?
 
-(Auch wenn dies eine offizielle PhotoDemon-Sprachdatei ist, können Sie sie problemlos löschen.)</translation>
+(Auch wenn dies eine offizielle PhotoDemon-Sprachdatei ist, können Sie diese problemlos löschen.)</translation>
 </phrase>
 
 <phrase>
@@ -10855,7 +10800,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>Please start by selecting a base language file.  If the selected file already contains translation data, you will be able to edit any existing translations, as well as add translations that may be missing.</original>
-<translation>Starten Sie, indem Sie eine Basis-Sprachdatei auswählen. Wenn die ausgewählte Datei bereits Übersetzungsdaten enthält, können Sie alle vorhandenen Übersetzungen bearbeiten sowie möglicherweise fehlende Übersetzungen hinzufügent.</translation>
+<translation>Starten Sie, indem Sie eine Basis-Sprachdatei auswählen. Wenn die ausgewählte Datei bereits Übersetzungsdaten enthält, können Sie alle vorhandenen Übersetzungen bearbeiten sowie möglicherweise fehlende Übersetzungen hinzufügen.</translation>
 </phrase>
 
 <phrase>
@@ -10875,7 +10820,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>add language metadata</original>
-<translation>Sprach-Metadaten hinzuzufügen</translation>
+<translation>Sprach-Metadaten hinzufügen</translation>
 </phrase>
 
 <phrase>
@@ -10925,7 +10870,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>so we can discuss adding your translation to the official list of supported languages.  Even partial translations are helpful!</original>
-<translation>So können wir klären, ob Ihre Übersetzung der offiziellen Liste der unterstützten Sprachen hinzugeüfgt wird. Selbst Teilübersetzungen sind hilfreich!</translation>
+<translation>So können wir klären, ob Ihre Übersetzung der offiziellen Liste der unterstützten Sprachen hinzugefügt wird. Selbst Teilübersetzungen sind hilfreich!</translation>
 </phrase>
 
 <phrase>
@@ -11060,7 +11005,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.</original>
-<translation>Diese Option wird ein leeres Bild erstellen. Andere Möglichkeiten zur Erstellung neuer Bilder finden Sie unter dem Menüpunkt "Datei > Importieren".</translation>
+<translation>Diese Option wird ein blankes Bild erstellen. Andere Möglichkeiten zur Erstellung neuer Bilder finden Sie unter dem Menüpunkt "Datei > Importieren".</translation>
 </phrase>
 
 <phrase>
@@ -11176,56 +11121,6 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 </phrase>
 
 <phrase>
-<original>layer position (x, y)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize quality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>interaction options</original>
-<translation>Interaktionsoptionen</translation>
-</phrase>
-
-<phrase>
-<original>automatically activate layer beneath mouse</original>
-<translation>Ebene unter Maus automatisch aktivieren</translation>
-</phrase>
-
-<phrase>
-<original>ignore transparent pixels when auto-activating layers</original>
-<translation>Transparente Pixel bei autom. Aktivierung von Ebenen ignorieren</translation>
-</phrase>
-
-<phrase>
-<original>show layer borders</original>
-<translation>Ebenenbegrenzung zeigen</translation>
-</phrase>
-
-<phrase>
-<original>show layer transform nodes</original>
-<translation>Transformierungsknoten der Ebene zeigen</translation>
-</phrase>
-
-<phrase>
-<original>display options</original>
-<translation>Anzeigeoptionen</translation>
-</phrase>
-
-<phrase>
 <original>smoothing</original>
 <translation>Glättung</translation>
 </phrase>
@@ -11311,43 +11206,38 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 </phrase>
 
 <phrase>
-<original>all</original>
-<translation></translation>
+<original>interaction options</original>
+<translation>Interaktionsoptionen</translation>
 </phrase>
 
 <phrase>
-<original>Make layer size permanent</original>
-<translation></translation>
+<original>show layer borders</original>
+<translation>Ebenenbegrenzungen zeigen</translation>
+</phrase>
+
+<phrase>
+<original>show layer transform nodes</original>
+<translation>Transformierungsknoten der Ebene zeigen</translation>
+</phrase>
+
+<phrase>
+<original>automatically activate layer beneath mouse</original>
+<translation>Ebene unter Maus automatisch aktivieren</translation>
+</phrase>
+
+<phrase>
+<original>ignore transparent pixels when auto-activating layers</original>
+<translation>Transparente Pixel bei autom. Aktivierung von Ebenen ignorieren</translation>
+</phrase>
+
+<phrase>
+<original>display options</original>
+<translation>Anzeigeoptionen</translation>
 </phrase>
 
 <phrase>
 <original>Make quick-fixes permanent</original>
 <translation>Schnelle Lösungen als permanent festlegen</translation>
-</phrase>
-
-<phrase>
-<original>Reset layer to original size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Make current layer size permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Nearest neighbor</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Reset all quick-fix adjustment values</original>
-<translation>Anpassungswerte aller schnellen Lösungen zurücksetzen</translation>
-</phrase>
-
-<phrase>
-<original>Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.</original>
-<translation>Schnelle Lösungsanpassungen als permanent festlegen, Diese Aktion ist nie erforderlich, kann aber die Performance verbessern, wenn viele schnelle Lösungsanpassungen aktiv sind und das Rendering des Viewports sehr träge ist.</translation>
 </phrase>
 
 <phrase>
@@ -11431,6 +11321,16 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 </phrase>
 
 <phrase>
+<original>Reset all quick-fix adjustment values</original>
+<translation>Anpassungswerte aller schnellen Lösungen zurücksetzen</translation>
+</phrase>
+
+<phrase>
+<original>Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.</original>
+<translation>Schnelle Lösungsanpassungen als permanent festlegen, Diese Aktion ist nie erforderlich, kann aber die Performance verbessern, wenn viele schnelle Lösungsanpassungen aktiv sind und das Rendering des Viewports sehr träge ist.</translation>
+</phrase>
+
+<phrase>
 <original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
 <translation>Klicken Sie hier, um einzustellen, wie Auswahlen auf der Bildleinwand gerendert werden. Dies hat keinen Einfluss auf die Auswahlinhalte - nur auf die Art, wie sie während der Bearbeitung erscheinen.</translation>
 </phrase>
@@ -11495,7 +11395,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 <translation>Diese Option steuert, welche Kriterien der Zauberstab zur Bestimmung verwendet, ob ein Pixel der aktuellen Auswahl hinzugefügt werden sollte.</translation>
 </phrase>
 
-<!-- VBP_ToolbarTools.frm contains 85 phrases. 20 were duplicates of existing phrases, so only 65 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 72 phrases. 16 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -11587,7 +11487,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>ICC transform requested, but no data found.  Abandoning attempt.</original>
-<translation>ICC Transformierung angefordert, aber keine Daten gefunden. Versuch abgebrochen.</translation>
+<translation>ICC Transformierung verlangt, aber keine Daten gefunden. Versuch abgebrochen.</translation>
 </phrase>
 
 <phrase>
@@ -11674,7 +11574,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>Click this button to enable color capturing from anywhere on the screen.</original>
-<translation>Klicken Sie auf diese Schaltfläche, um eine Farbe von irgendwo auf dem Bildschirm zu erfassen.</translation>
+<translation>Klicken Sie auf diese Schaltfläche, um die Farbaufnahme von irgendwo auf dem Bildschirm zu aktivieren.</translation>
 </phrase>
 
 <!-- VBP_FormColorSelector.frm contains 14 phrases. 7 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -11762,7 +11662,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>minimize PhotoDemon prior to capture</original>
-<translation>PhotoDemon vor der Aufnahme minimieren</translation>
+<translation>PhotoDemon vor Aufnehmen minimieren</translation>
 </phrase>
 
 <phrase>
@@ -11792,7 +11692,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>Please select a window to capture.</original>
-<translation>Wählen Sie bitte ein Fenster zum Capturing aus.</translation>
+<translation>Wählen Sie bitte ein Fenster zum Aufnehmen aus.</translation>
 </phrase>
 
 <phrase>
@@ -11916,7 +11816,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>Autosave reconstruction complete for %1</original>
-<translation>Autosave-Rekonstruktion komplett für %1</translation>
+<translation>Autosave-Rekonstruktion abgeschlossen für %1</translation>
 </phrase>
 
 <phrase>
@@ -12099,7 +11999,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>Release the mouse button to complete the lasso selection</original>
-<translation>Die Maustaste loslassen, um die Lasso-Auswahl zu vervollständigen</translation>
+<translation>Die Maustaste loslassen, um die Lasso-Auswahl abzuschließen</translation>
 </phrase>
 
 <phrase>
@@ -12124,7 +12024,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 
 <phrase>
 <original>Click on the first point to complete the polygon selection</original>
-<translation>Klicken Sie auf den ersten Punkt, um die Polygon-Auswahl zu vervollständigen</translation>
+<translation>Klicken Sie auf den ersten Punkt, um die Polygon-Auswahl abzuschließen</translation>
 </phrase>
 
 <phrase>
@@ -12275,12 +12175,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <translation>Zusammengeführte Ebenen</translation>
 </phrase>
 
-<phrase>
-<original>Cropping layer to selected area</original>
-<translation></translation>
-</phrase>
-
-<!-- VBP_LayerHandler.bas contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_LayerHandler.bas contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_LayerHandler.bas-->
 
@@ -12298,22 +12193,22 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Click to hide this layer.</original>
-<translation>Klicken, um diese Ebene auszublenden.</translation>
+<translation>Hier klicken, um diese Ebene auszublenden.</translation>
 </phrase>
 
 <phrase>
 <original>Click to show this layer.</original>
-<translation>Klicken, um diese Ebene einzublenden.</translation>
+<translation>Hier klicken, um diese Ebene zu zeigen.</translation>
 </phrase>
 
 <phrase>
 <original>Click to duplicate this layer.</original>
-<translation>Klicken, um diese Ebene zu duplizieren.</translation>
+<translation>Hier klicken, um diese Ebene zu duplizieren.</translation>
 </phrase>
 
 <phrase>
 <original>Click to merge this layer with the layer beneath it.</original>
-<translation>Klicken, um diese Ebene mit der Ebene unterhalb dieser zusammenzuführen.</translation>
+<translation>Hier klicken, um diese Ebene mit der Ebene unterhalb dieser zusammenzuführen.</translation>
 </phrase>
 
 <phrase>
@@ -12323,7 +12218,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Click to merge this layer with the layer above it.</original>
-<translation>Klicken, um diese Ebene mit der Ebene oberhalb dieser zusammenzuführen.</translation>
+<translation>Hier klicken, um diese Ebene mit der Ebene oberhalb dieser zusammenzuführen.</translation>
 </phrase>
 
 <phrase>
@@ -12333,7 +12228,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Click to make this the active layer.</original>
-<translation>Klicken, um diese Ebene als aktiv festzulegen.</translation>
+<translation>Hier klicken, um diese Ebene als aktiv festzulegen.</translation>
 </phrase>
 
 <phrase>
@@ -12353,7 +12248,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Add a blank layer to the image.</original>
-<translation>Eine leere Ebene in das Bild einfügen.</translation>
+<translation>Eine blanke Ebene dem Bild hinzufügen.</translation>
 </phrase>
 
 <phrase>
@@ -12394,12 +12289,12 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>File doesn't have valid pdPackage header.  Abandoning load.</original>
-<translation>Datei hat keinen gültigen pdPackage-Header. Laden abgebrochen.</translation>
+<translation>Datei hat keinen gültigen pdPackage-Header. Laden wird abgebrochen.</translation>
 </phrase>
 
 <phrase>
 <original>File doesn't match requested sub-type value.  Abandoning load.</original>
-<translation>Datei stimmt nicht mit angeforderten Sub-Typwert überein. Laden abgebrochen.</translation>
+<translation>Datei entspricht nicht verlangtem Sub-Typwert. Laden wird abgebrochen.</translation>
 </phrase>
 
 <phrase>
@@ -12419,27 +12314,27 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Directory chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation>Verzeichnisblock ist komprimiert, aber zLib fehlt. Dekomprimierung nicht möglich, Laden abgebrochen.</translation>
+<translation>Verzeichnisfragment ist komprimiert, aber zLib fehlt. Dekomprimierung nicht möglich, Laden abgebrochen.</translation>
 </phrase>
 
 <phrase>
 <original>Data chunk is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>Datenblock ist komprimiert, dekomprimieren seitens zLib aber fehlgeschlagen. Fehlercode zurückgegeben: %1</translation>
+<translation>Datenfragment ist komprimiert, dekomprimieren seitens zLib aber fehlgeschlagen. Fehlercode zurückgegeben: %1</translation>
 </phrase>
 
 <phrase>
 <original>Data chunk is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation>Datenblock ist komprimiert, aber zLib-Plugin fehlt. Dekomprimierung nicht möglich, Laden abgebrochen.</translation>
+<translation>Datenfragment ist komprimiert, aber zLib-Plugin fehlt. Dekomprimierung nicht möglich, Laden abgebrochen.</translation>
 </phrase>
 
 <phrase>
 <original>File node is compressed, but zLib failed to decompress it.  Error code returned: %1</original>
-<translation>Dateiknoten ist komprimiert, kann aber von zLib nicht entpackt werden. Fehlercode zurückgegeben: %1</translation>
+<translation>Dateiknoten ist komprimiert, dekomprimieren seitens zLib aber fehlgeschlagen. Fehlercode zurückgegeben: %1</translation>
 </phrase>
 
 <phrase>
 <original>File node is compressed, but zLib is missing.  Decompression impossible; abandoning load.</original>
-<translation>Dateiknoten ist gepackt, aber zLib-Plugin fehlt. Entpacken nicht möglich, Laden abgebrochen.</translation>
+<translation>Dateiknoten ist komprimiert, aber zLib-Plugin fehlt. Dekomprimierung nicht möglich, Laden abgebrochen.</translation>
 </phrase>
 
 <phrase>
@@ -12529,7 +12424,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Straighten complete.</original>
-<translation>Ausrichten beendet.</translation>
+<translation>Ausrichten abschließen.</translation>
 </phrase>
 
 <!-- VBP_FormStraighten.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
@@ -12676,7 +12571,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Enhance image edges</original>
-<translation>Bildkanten verbessern</translation>
+<translation>Bildränder verbessern</translation>
 </phrase>
 
 <!-- VBP_FormEdgeEnhance.frm contains 30 phrases. 29 were duplicates of existing phrases, so only one new phrase was written to file. -->
@@ -12754,7 +12649,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>spatial power (currently hidden)</original>
-<translation>Räumliche Kraft (derzeitig versteckt)</translation>
+<translation>Räumliche Kraft (derzeitig ausgeblendet)</translation>
 </phrase>
 
 <phrase>
@@ -12764,7 +12659,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Applying bilateral smoothing</original>
-<translation>Beidseitige Glättung anwenden</translation>
+<translation>Beidseitige Glättung wird angewendet</translation>
 </phrase>
 
 <!-- VBP_FormBilateral.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -12882,7 +12777,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>Fade complete.</original>
-<translation>Ausblenden abgeschlossen</translation>
+<translation>Ausblenden abschließen</translation>
 </phrase>
 
 <!-- VBP_FormFadeLast.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
@@ -13315,7 +13210,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrase>
 <original>If you're in the middle of something, feel free to keep working.  The update process will automatically complete whenever you next use the program.</original>
-<translation>Wenn Sie in der Mitte von etwas sind, können Sie Ihre Arbeit problemlos beibehalten. Der Update-Prozess wird automatisch vervollständigt, jedes Mal wenn Sie das Programm verwenden.</translation>
+<translation>Wenn Sie in der Mitte von etwas sind, können Sie Ihre Arbeit problemlos beibehalten. Der Update-Prozess wird automatisch abgeschlossen, wann immer Sie das Programm das nächste Mal verwenden.</translation>
 </phrase>
 
 <phrase>
@@ -13381,160 +13276,12 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <!-- END text for pdToolPreset.cls-->
 
-<!-- BEGIN text for VBP_DIBHandler.bas -->
-
-<!-- VBP_DIBHandler.bas contains 0 phrases. -->
-
-<!-- END text for VBP_DIBHandler.bas-->
-
-<!-- BEGIN text for VBP_FormColorHalftone.frm (FormColorHalftone) -->
-
-<phrase>
-<original>yellow angle</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>magenta angle</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>cyan angle</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Printing image to digital halftone surface</original>
-<translation></translation>
-</phrase>
-
-<!-- VBP_FormColorHalftone.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
-
-<!-- END text for VBP_FormColorHalftone.frm-->
-
-<!-- BEGIN text for VBP_FiltersStylize.bas -->
-
-<!-- VBP_FiltersStylize.bas contains 0 phrases. -->
-
-<!-- END text for VBP_FiltersStylize.bas-->
-
-<!-- BEGIN text for VBP_FormDonut.frm (FormDonut) -->
-
-<phrase>
-<original>interior radius</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>spread</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>initial angle</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Deep-frying image</original>
-<translation></translation>
-</phrase>
-
-<!-- VBP_FormDonut.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
-
-<!-- END text for VBP_FormDonut.frm-->
-
-<!-- BEGIN text for VBP_FormSteel.frm (FormMetal) -->
-
-<phrase>
-<original>smoothness</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Pouring smoldering metal onto image</original>
-<translation></translation>
-</phrase>
-
-<!-- VBP_FormSteel.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
-
-<!-- END text for VBP_FormSteel.frm-->
-
-<!-- BEGIN text for VBP_FiltersByteArray.bas -->
-
-<!-- VBP_FiltersByteArray.bas contains 0 phrases. -->
-
-<!-- END text for VBP_FiltersByteArray.bas-->
-
-<!-- BEGIN text for VBP_FormMezzotint.frm (FormMezzotint) -->
-
-<phrase>
-<original>stippling</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>randomness</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>type</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Mezzotinting image</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>dot</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>horizontal stroke</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>vertical stroke</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>coarse</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>fine</original>
-<translation></translation>
-</phrase>
-
-<!-- VBP_FormMezzotint.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- END text for VBP_FormMezzotint.frm-->
-
-<!-- BEGIN text for VBP_FormCrystallize.frm (FormCrystallize) -->
-
-<phrase>
-<original>Crystallizing image</original>
-<translation></translation>
-</phrase>
-
-<!-- VBP_FormCrystallize.frm contains 12 phrases. 11 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for VBP_FormCrystallize.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2356</phrasecount>
+<phrasecount>2315</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4023 phrases. -->
-<!-- 1667 are duplicates, so only 2356 unique phrases have been written to file. -->
-<!-- These 2356 phrases contain approximately 13439 total words. -->
+<!-- As of this build, PhotoDemon contains 3927 phrases. -->
+<!-- 1612 are duplicates, so only 2315 unique phrases have been written to file. -->
+<!-- These 2315 phrases contain approximately 13330 total words. -->
 
-</pdData>
+</pdData>>
