@@ -89,6 +89,8 @@ PhotoDemon would not be possible without the help of many talented contributors,
 * Plinio C Garcia for editing and improving the Spanish language file, and suggesting the Color Halftone filter
 * Boban Gjerasimoski for catching and reporting many bugs
 (https://www.behance.net/Boban_Gjerasimoski)
+* Djordje Djoric for help fixing a number of issues with shortcut keys
+(https://www.odesk.com/o/profiles/users/_~0181c1599705edab79/)
 * Dirk Hartmann for additional help with the German language file
 (http://www.taichi-zentrum-heidelberg.de)
 * Raj Chaudhuri for multiple patches (including fixes for a number of long-standing issues) and a great deal of bug-testing 

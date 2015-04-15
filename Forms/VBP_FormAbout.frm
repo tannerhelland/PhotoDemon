@@ -335,6 +335,7 @@ Private Sub Form_Load()
     GenerateThankyou "chrfb @ deviantart.com", "http://chrfb.deviantart.com/art/quot-ecqlipse-2-quot-PNG-59941546", True
     GenerateThankyou "Dana Seaman", "http://www.cyberactivex.com/", True
     GenerateThankyou "dilettante", "http://www.vbforums.com/showthread.php?660014-VB6-ShellPipe-quot-Shell-with-I-O-Redirection-quot-control", True
+    GenerateThankyou "Djordje Djoric", "https://www.odesk.com/o/profiles/users/_~0181c1599705edab79/", True
     GenerateThankyou "Dirk Hartmann", "http://www.taichi-zentrum-heidelberg.de", True
     GenerateThankyou "Dosadi", "http://eztwain.com/eztwain1.htm", True
     GenerateThankyou "Easy RGB", "http://www.easyrgb.com/", True

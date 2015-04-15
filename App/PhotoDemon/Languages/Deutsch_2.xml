@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (rk)</langname>
-<langversion>6.7.15</langversion>
+<langversion>6.7.16</langversion>
 <langstatus>Nicht abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -1153,11 +1153,11 @@ Verlustfreie Kopien werden im gleichen Ordner wie dieses initiale Bild gespeiche
 
 <!-- END text for VBP_FormBrightnessContrast.frm-->
 
-<!-- BEGIN text for VBP_FormMosaic.frm (FormPixelate) -->
+<!-- BEGIN text for VBP_FormMosaic.frm (FormMosaic) -->
 
 <phrase>
-<original>Pixelate Options</original>
-<translation>Verpixeln-Optionen</translation>
+<original>Mosaic</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -1176,16 +1176,11 @@ Verlustfreie Kopien werden im gleichen Ordner wie dieses initiale Bild gespeiche
 </phrase>
 
 <phrase>
-<original>Applying pixellation</original>
-<translation>Verpixelung wird angewendet</translation>
+<original>Applying mosaic</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>Pixelate</original>
-<translation>Verpixeln</translation>
-</phrase>
-
-<!-- VBP_FormMosaic.frm contains 6 phrases.  All 6 were unique, so 6 new phrases were written to file. -->
+<!-- VBP_FormMosaic.frm contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMosaic.frm-->
 
@@ -1216,7 +1211,7 @@ Verlustfreie Kopien werden im gleichen Ordner wie dieses initiale Bild gespeiche
 <translation>Viewport-Rendering angehalten wegen eines unerwarteten Fehlers (Nr. %1)</translation>
 </phrase>
 
-<!-- VBP_ZoomModule.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- VBP_ZoomModule.bas contains 6 phrases.  One was a duplicate of an existing phrase, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_ZoomModule.bas-->
 
@@ -2461,6 +2456,11 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 </phrase>
 
 <phrase>
+<original>Shadows and highlights</original>
+<translation>Schatten und Highlights</translation>
+</phrase>
+
+<phrase>
 <original>Auto enhance</original>
 <translation>Automatisch verbessern</translation>
 </phrase>
@@ -2593,11 +2593,6 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 <phrase>
 <original>Compound invert</original>
 <translation>Verbund invertieren</translation>
-</phrase>
-
-<phrase>
-<original>Shadows and highlights</original>
-<translation>Schatten und Highlights</translation>
 </phrase>
 
 <phrase>
@@ -2741,11 +2736,6 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 </phrase>
 
 <phrase>
-<original>Fragment</original>
-<translation>Fragment</translation>
-</phrase>
-
-<phrase>
 <original>Kuwahara filter</original>
 <translation>Kuwahara-Filter</translation>
 </phrase>
@@ -2763,6 +2753,11 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 <phrase>
 <original>Correct existing lens distortion</original>
 <translation>Vorhandene Linsenverzeichnung korrigieren</translation>
+</phrase>
+
+<phrase>
+<original>Donut</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2891,8 +2886,8 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 </phrase>
 
 <phrase>
-<original>Steel</original>
-<translation>Stahl</translation>
+<original>Metal</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -2918,6 +2913,31 @@ Sie können das Submodul MenuTest () in Filters_Miscellaneous verwenden, um Ihre
 <phrase>
 <original>Median smoothing</original>
 <translation>Median-Glättung</translation>
+</phrase>
+
+<phrase>
+<original>Pixelate</original>
+<translation>Verpixeln</translation>
+</phrase>
+
+<phrase>
+<original>Color halftone</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Crystallize</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Fragment</original>
+<translation>Fragment</translation>
+</phrase>
+
+<phrase>
+<original>Mezzotint</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3289,6 +3309,11 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
+<original>Auto correct shadows and highlights</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Auto enhance color</original>
 <translation>Farbe autom. verbessern</translation>
 </phrase>
@@ -3304,6 +3329,11 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 </phrase>
 
 <phrase>
+<original>Auto enhance shadows and highlights</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Merge layer up</original>
 <translation>Ebene nach oben zusammenführen</translation>
 </phrase>
@@ -3311,6 +3341,11 @@ Das Update wird automatisch im Hintergrund verarbeitet. Sie werden ein neue Bena
 <phrase>
 <original>Merge layer down</original>
 <translation>Ebene nach unten zusammenführen</translation>
+</phrase>
+
+<phrase>
+<original>Crop layer to selection</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -3657,6 +3692,11 @@ Hinweis: Einige kleinere Programmtexte können nicht live aktualisiert werden. S
 </phrase>
 
 <phrase>
+<original>Shadow and highlight</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>No metadata available.</original>
 <translation>Keine Metadaten verfügbar.</translation>
 </phrase>
@@ -3821,7 +3861,7 @@ Hinweis: Einige kleinere Programmtexte können nicht live aktualisiert werden. S
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 538 phrases. 159 were duplicates of existing phrases, so only 379 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 553 phrases. 165 were duplicates of existing phrases, so only 388 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -4158,12 +4198,7 @@ Um den Support für Scanner zu aktivieren, kopieren Sie bitte die Datei EZTW32.d
 <translation>Ein imaginärer Vulkan explodiert</translation>
 </phrase>
 
-<phrase>
-<original>Pouring smoldering steel onto image</original>
-<translation>Glühenden Stahl auf das Bild gießen</translation>
-</phrase>
-
-<!-- VBP_Filters_Natural.bas contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- VBP_Filters_Natural.bas contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <!-- END text for VBP_Filters_Natural.bas-->
 
@@ -5457,7 +5492,17 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 <translation>Helligkeit wird verbessert</translation>
 </phrase>
 
-<!-- VBP_Filters_Color_Effects.bas contains 11 phrases.  All 11 were unique, so 11 new phrases were written to file. -->
+<phrase>
+<original>Adjusting shadows and highlights</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Enhancing shadows and highlights</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_Filters_Color_Effects.bas contains 13 phrases.  All 13 were unique, so 13 new phrases were written to file. -->
 
 <!-- END text for VBP_Filters_Color_Effects.bas-->
 
@@ -6801,7 +6846,17 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <translation>Luminanz</translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 59 phrases. 22 were duplicates of existing phrases, so only 37 new phrases were written to file. -->
+<phrase>
+<original>Grain extract</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Grain merge</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_MiscInterface.bas contains 61 phrases. 22 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -8512,13 +8567,13 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>use the median midtone for this image</original>
-<translation>Den Median-Mittelton für dieses Bildes verwenden</translation>
+<original>midtone contrast</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>midtone target color (right-click preview to change)</original>
-<translation>Mittelton-Zielfarbe (zum Ändern mit Rechtsklick in Vorschau)</translation>
+<original>tonal width</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -8526,7 +8581,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Schatten, Mitteltöne und Highlights werden angepasst</translation>
 </phrase>
 
-<!-- VBP_FormShadowHighlight.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- VBP_FormShadowHighlight.frm contains 15 phrases. 11 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for VBP_FormShadowHighlight.frm-->
 
@@ -11121,6 +11176,56 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 </phrase>
 
 <phrase>
+<original>layer position (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interaction options</original>
+<translation>Interaktionsoptionen</translation>
+</phrase>
+
+<phrase>
+<original>automatically activate layer beneath mouse</original>
+<translation>Ebene unter Maus automatisch aktivieren</translation>
+</phrase>
+
+<phrase>
+<original>ignore transparent pixels when auto-activating layers</original>
+<translation>Transparente Pixel bei autom. Aktivierung von Ebenen ignorieren</translation>
+</phrase>
+
+<phrase>
+<original>show layer borders</original>
+<translation>Ebenenbegrenzungen zeigen</translation>
+</phrase>
+
+<phrase>
+<original>show layer transform nodes</original>
+<translation>Transformierungsknoten der Ebene zeigen</translation>
+</phrase>
+
+<phrase>
+<original>display options</original>
+<translation>Anzeigeoptionen</translation>
+</phrase>
+
+<phrase>
 <original>smoothing</original>
 <translation>Glättung</translation>
 </phrase>
@@ -11206,38 +11311,43 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 </phrase>
 
 <phrase>
-<original>interaction options</original>
-<translation>Interaktionsoptionen</translation>
+<original>all</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>show layer borders</original>
-<translation>Ebenenbegrenzungen zeigen</translation>
-</phrase>
-
-<phrase>
-<original>show layer transform nodes</original>
-<translation>Transformierungsknoten der Ebene zeigen</translation>
-</phrase>
-
-<phrase>
-<original>automatically activate layer beneath mouse</original>
-<translation>Ebene unter Maus automatisch aktivieren</translation>
-</phrase>
-
-<phrase>
-<original>ignore transparent pixels when auto-activating layers</original>
-<translation>Transparente Pixel bei autom. Aktivierung von Ebenen ignorieren</translation>
-</phrase>
-
-<phrase>
-<original>display options</original>
-<translation>Anzeigeoptionen</translation>
+<original>Make layer size permanent</original>
+<translation></translation>
 </phrase>
 
 <phrase>
 <original>Make quick-fixes permanent</original>
 <translation>Schnelle Lösungen als permanent festlegen</translation>
+</phrase>
+
+<phrase>
+<original>Reset layer to original size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Make current layer size permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Nearest neighbor</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reset all quick-fix adjustment values</original>
+<translation>Anpassungswerte aller schnellen Lösungen zurücksetzen</translation>
+</phrase>
+
+<phrase>
+<original>Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.</original>
+<translation>Schnelle Lösungsanpassungen als permanent festlegen, Diese Aktion ist nie erforderlich, kann aber die Performance verbessern, wenn viele schnelle Lösungsanpassungen aktiv sind und das Rendering des Viewports sehr träge ist.</translation>
 </phrase>
 
 <phrase>
@@ -11321,16 +11431,6 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 </phrase>
 
 <phrase>
-<original>Reset all quick-fix adjustment values</original>
-<translation>Anpassungswerte aller schnellen Lösungen zurücksetzen</translation>
-</phrase>
-
-<phrase>
-<original>Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.</original>
-<translation>Schnelle Lösungsanpassungen als permanent festlegen, Diese Aktion ist nie erforderlich, kann aber die Performance verbessern, wenn viele schnelle Lösungsanpassungen aktiv sind und das Rendering des Viewports sehr träge ist.</translation>
-</phrase>
-
-<phrase>
 <original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
 <translation>Klicken Sie hier, um einzustellen, wie Auswahlen auf der Bildleinwand gerendert werden. Dies hat keinen Einfluss auf die Auswahlinhalte - nur auf die Art, wie sie während der Bearbeitung erscheinen.</translation>
 </phrase>
@@ -11395,7 +11495,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 <translation>Diese Option steuert, welche Kriterien der Zauberstab zur Bestimmung verwendet, ob ein Pixel der aktuellen Auswahl hinzugefügt werden sollte.</translation>
 </phrase>
 
-<!-- VBP_ToolbarTools.frm contains 72 phrases. 16 were duplicates of existing phrases, so only 56 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 85 phrases. 20 were duplicates of existing phrases, so only 65 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -12175,7 +12275,12 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <translation>Zusammengeführte Ebenen</translation>
 </phrase>
 
-<!-- VBP_LayerHandler.bas contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>Cropping layer to selected area</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_LayerHandler.bas contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_LayerHandler.bas-->
 
@@ -13276,12 +13381,160 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <!-- END text for pdToolPreset.cls-->
 
+<!-- BEGIN text for VBP_DIBHandler.bas -->
+
+<!-- VBP_DIBHandler.bas contains 0 phrases. -->
+
+<!-- END text for VBP_DIBHandler.bas-->
+
+<!-- BEGIN text for VBP_FormColorHalftone.frm (FormColorHalftone) -->
+
+<phrase>
+<original>yellow angle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>magenta angle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>cyan angle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Printing image to digital halftone surface</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormColorHalftone.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<!-- END text for VBP_FormColorHalftone.frm-->
+
+<!-- BEGIN text for VBP_FiltersStylize.bas -->
+
+<!-- VBP_FiltersStylize.bas contains 0 phrases. -->
+
+<!-- END text for VBP_FiltersStylize.bas-->
+
+<!-- BEGIN text for VBP_FormDonut.frm (FormDonut) -->
+
+<phrase>
+<original>interior radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>spread</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>initial angle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Deep-frying image</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormDonut.frm contains 14 phrases. 10 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<!-- END text for VBP_FormDonut.frm-->
+
+<!-- BEGIN text for VBP_FormSteel.frm (FormMetal) -->
+
+<phrase>
+<original>smoothness</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Pouring smoldering metal onto image</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormSteel.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for VBP_FormSteel.frm-->
+
+<!-- BEGIN text for VBP_FiltersByteArray.bas -->
+
+<!-- VBP_FiltersByteArray.bas contains 0 phrases. -->
+
+<!-- END text for VBP_FiltersByteArray.bas-->
+
+<!-- BEGIN text for VBP_FormMezzotint.frm (FormMezzotint) -->
+
+<phrase>
+<original>stippling</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>randomness</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Mezzotinting image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dot</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>horizontal stroke</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical stroke</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>coarse</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fine</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormMezzotint.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<!-- END text for VBP_FormMezzotint.frm-->
+
+<!-- BEGIN text for VBP_FormCrystallize.frm (FormCrystallize) -->
+
+<phrase>
+<original>Crystallizing image</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_FormCrystallize.frm contains 12 phrases. 11 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for VBP_FormCrystallize.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2315</phrasecount>
+<phrasecount>2356</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 3927 phrases. -->
-<!-- 1612 are duplicates, so only 2315 unique phrases have been written to file. -->
-<!-- These 2315 phrases contain approximately 13330 total words. -->
+<!-- As of this build, PhotoDemon contains 4023 phrases. -->
+<!-- 1667 are duplicates, so only 2356 unique phrases have been written to file. -->
+<!-- These 2356 phrases contain approximately 13439 total words. -->
 
-</pdData>>
+</pdData>
