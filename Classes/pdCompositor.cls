@@ -52,7 +52,7 @@ Private Declare Function IntersectRect Lib "user32" (ByRef lpDestRect As RECT, B
 '
 'Anyway, as of v6.6, PD now caches this DIB at module-level this spares us needing to recreate the DIB if the viewport size hasn't changed.
 ' This improves responsiveness during painting.
-Private m_dstLayer As pdLayer
+Private m_dstDIB As pdDIB
 
 'Non-standard blend modes require use of a temporary DIB, because we must do our own compositing.  In an attempt to improve performance,
 ' we cache this at module level.  If an image only has a single non-standard blend mode layer, we can avoid recreating this DIB between
@@ -1194,217 +1194,23 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
     dibWidthCalc = Int(dstWidth + 0.999)
     dibHeightCalc = Int(dstHeight + 0.999)
     
-    If (m_dstLayer.layerDIB.getDIBWidth <> dibWidthCalc) Or (m_dstLayer.layerDIB.getDIBHeight <> dibHeightCalc) Then
-        m_dstLayer.layerDIB.createBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
+    'Note that we try to avoid recreating this DIB unless absolutely necessary
+    If (m_dstDIB.getDIBWidth <> dibWidthCalc) Or (m_dstDIB.getDIBHeight <> dibHeightCalc) Then
+        m_dstDIB.createBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
     Else
-        m_dstLayer.layerDIB.resetDIB
+        m_dstDIB.resetDIB
     End If
-        
-    'The base layer will get blended onto the destination area first.  Its blend mode does not matter.  (Blend mode of the
-    ' base layer is always ignored, because there are no pixels beneath it with which to blend.)
     
-    'Also note that as part of the compositing process, we will only be working with the relevant on-screen chunks of each layer.
-    ' If a layer lies off the current viewport, it will be completely ignored.
-    
-    'Start by seeing if the base layer intersects with the viewport at all.  We solve this by finding the intersection rect of
-    ' the current source rectangle, and the base layer.  If successful, this will return their intersection, as well as a
-    ' Boolean indicating whether the layers intersect.
-    Dim layerRect As RECTF, intRectSrc As RECTF, dstRect As RECTF, srcRect As RECTF
-    Dim xOffset As Single, yOffset As Single
-    xOffset = (dstRect.Left - dstX) - Int(dstRect.Left - dstX)
-    yOffset = (dstRect.Top - dstY) - Int(dstRect.Top - dstY)
-    
-    Dim tmpLayerRef As pdLayer
-    
+    'Now our work is pretty simple: iterate layers, and pass visible ones off to the helper function (which handles the messy
+    ' work of solving all the coordinate math)
     Dim i As Long
     For i = 0 To srcImage.getNumOfLayers - 1
         
-        Set tmpLayerRef = srcImage.getLayerByIndex(i)
-        
         'Only process a layer if it is currently visible.
-        If tmpLayerRef.getLayerVisibility Then
+        If srcImage.getLayerByIndex(i).getLayerVisibility Then
             
-            'Retrieve a rect for this layer, relative to the full-size composite image
-            Layer_Handler.fillRectForLayerF tmpLayerRef, layerRect, True
-            
-            'Check for an intersection between the target rect (passed to this function) and the base layer rect.
-            If GDI_Plus.IntersectRectF(intRectSrc, srcImageRect, layerRect) Then
-                
-                'The composite operation works similar to BitBlt, by calculating a destination rectangle and a source rectangle.
-                ' We know that these two rectangles define the same rectangle of the image, which allows us to infer zoom as well.
-                
-                'Now that we know the region of this layer that corresponds to the requested destination rect, we will use the
-                ' getDstRectFromSrcRectF() function to translate our already calculated eight bare destination and source values
-                ' (x/y/width/height) and retrieve a usable destination rect for this layer, defining the destination region of
-                ' the target covered by this layer.
-                getDstRectFromSrcRectF dstRect, intRectSrc, dstX, dstY, dstWidth, dstHeight, srcX, srcY, srcWidth, srcHeight
-                
-                'dstRect and intRectSrc now contain StretchBlt-compatible destination and source rectangles RELATIVE TO THE FULL IMAGE.
-                
-                'Because the current layer may not be the same size as the full image, we must perform one final translation: a source
-                ' rect that represents the source area, relative to the current layer's DIB.  This step is important if the layer has
-                ' had non-destructive resizing applied, because this is when we apply that calculation.
-                With srcRect
-                    .Left = (intRectSrc.Left - CSng(tmpLayerRef.getLayerOffsetX)) * (1 / tmpLayerRef.getLayerCanvasXModifier)
-                    .Width = intRectSrc.Width * (1 / tmpLayerRef.getLayerCanvasXModifier)
-                    .Top = (intRectSrc.Top - CSng(tmpLayerRef.getLayerOffsetY)) * (1 / tmpLayerRef.getLayerCanvasYModifier)
-                    .Height = intRectSrc.Height * (1 / tmpLayerRef.getLayerCanvasYModifier)
-                End With
-                
-                'With all coordinate math complete, we now proceed with the actual compositing!
-                
-                'Two conditions require us to create a temporary DIB prior to actually compositing this layer:
-                ' 1) Non-destructive effects
-                ' 2) Non-standard blend modes
-                
-                'These conditions are unpleasant, because additional per-pixel processing is required, instead of a basic alpha-blending
-                ' that we can let GDI+ automatically handle.
-                
-                'Check for such conditions now.
-                If tmpLayerRef.getLayerNonDestructiveFXState Or (tmpLayerRef.getLayerBlendMode <> BL_NORMAL) Then
-                
-                    'This layer has one or more "special cases" active.  Create a temporary DIB to reference the image's bits.
-                    dibWidthCalc = dstRect.Width + 0.999 + (dstRect.Left - Int(dstRect.Left))
-                    dibHeightCalc = dstRect.Height + 0.999 + (dstRect.Top - Int(dstRect.Top))
-                    If (m_tmpDIB.getDIBWidth <> dibWidthCalc) Or (m_tmpDIB.getDIBHeight < dibHeightCalc) Then
-                        m_tmpDIB.createBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
-                        m_tmpDIB.setInitialAlphaPremultiplicationState True
-                    Else
-                        m_tmpDIB.resetDIB
-                    End If
-                    
-                    'Check for the special case of 100% zoom; when this happens, and the image has no non-destructive resizing applied,
-                    ' we can completely skip the resize step and simply use BitBlt (way faster)
-                    If isRectZoomless And (tmpLayerRef.getLayerCanvasXModifier = 1) And (tmpLayerRef.getLayerCanvasYModifier = 1) Then
-                        
-                        BitBlt m_tmpDIB.getDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, tmpLayerRef.layerDIB.getDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
-                        
-                        'Apply non-destructive FX now
-                        If tmpLayerRef.getLayerNonDestructiveFXState Then applyNDFXToDIB tmpLayerRef, m_tmpDIB
-                    
-                    Else
-                    
-                        'If zoomed-in, we can switch to StretchBlt for performance gains.  (As nearest-neighbor interpolation will
-                        ' be used regardless of the caller's requested interpolation type.)
-                        If srcWidth < dstWidth Then
-                            
-                            'We are zoomed-in to the image, e.g. zoom is larger than 100%.  Check for non-destructive FX being present.
-                            
-                            'Non-destructive FX are active.  To reduce processing time, chop out the source rectangle, apply the non-destructive FX,
-                            ' and *then* resize the data.
-                            If tmpLayerRef.getLayerNonDestructiveFXState Then
-                            
-                                'Extract the smaller source rectangle into its own DIB.  Note that no extra coordinate math is involved here; this is
-                                ' a direct transfer.  We need a temp copy of the data because the effect is (per its name!) non-destructive, so it is
-                                ' only rendered when the image is written to the screen or to file.
-                                
-                                'Calculate width and height values for the DIB in advance.  These calculations are complicated because floating-point
-                                ' offsets and widths (due to subpixel positioning) may cause the relevant area of the DIB to as much as 2px larger than
-                                ' its integer-truncated values.  Also, if these calculated width/height values match the size of the current NDFX DIB,
-                                ' we don't need to recreate it!
-                                dibWidthCalc = srcRect.Width + 0.999 + (srcRect.Left - Int(srcRect.Left))
-                                dibHeightCalc = srcRect.Height + 0.999 + (srcRect.Top - Int(srcRect.Top))
-                                
-                                If (m_NDFXDIB.getDIBWidth <> dibWidthCalc) Or (m_NDFXDIB.getDIBHeight <> dibHeightCalc) Then
-                                    m_NDFXDIB.createBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
-                                Else
-                                    m_NDFXDIB.resetDIB
-                                End If
-                                
-                                BitBlt m_NDFXDIB.getDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, tmpLayerRef.layerDIB.getDIBDC, Int(srcRect.Left), Int(srcRect.Top), vbSrcCopy
-                                
-                                'Apply the non-destructive FX to the smaller source DIB; this is faster than applying it after the resize action,
-                                ' as we only have to process a small fraction of the pixels
-                                applyNDFXToDIB tmpLayerRef, m_NDFXDIB
-                                
-                                'Copy the processed DIB into tmpDIB, which will be used for compositing later in this function
-                                GDI_Plus.GDIPlus_StretchBlt m_tmpDIB, dstRect.Left - Int(dstRect.Left), dstRect.Top - Int(dstRect.Top), dstRect.Width, dstRect.Height, m_NDFXDIB, srcRect.Left - Int(srcRect.Left), srcRect.Top - Int(srcRect.Top), srcRect.Width, srcRect.Height, 1, InterpolationModeNearestNeighbor
-                                                                
-                            'Non-destructive FX are not active.  Resize the source rectangle immediately.
-                            Else
-                            
-                                'Check for non-destructive resizing.  If present, switch to GDI+; otherwise, StretchBlt is sufficient.
-                                ' (NOTE: this code works without incident.)
-                                If (tmpLayerRef.getLayerCanvasXModifier = 1) And (tmpLayerRef.getLayerCanvasYModifier = 1) Then
-                                    StretchBlt m_tmpDIB.getDIBDC, 0, 0, m_tmpDIB.getDIBWidth, m_tmpDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBDC, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, vbSrcCopy
-                                Else
-                                    GDIPlusResizeDIB m_tmpDIB, dstRect.Left - Int(dstRect.Left), dstRect.Top - Int(dstRect.Top), dstRect.Width, dstRect.Height, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, tmpLayerRef.getLayerResizeQuality_GDIPlus
-                                End If
-                                
-                            End If
-                        
-                        'We are zoomed-out, so StretchBlt cannot be used (as it will cause artifacting for 32bpp data).  GDI+ is our only
-                        ' option at present.
-                        Else
-                            
-                            'If the user has requested MAX PERFORMANCE rendering, override the requested interpolation type with nearest neighbor
-                            GDI_Plus.GDIPlus_StretchBlt m_tmpDIB, dstRect.Left - Int(dstRect.Left), dstRect.Top - Int(dstRect.Top), dstRect.Width, dstRect.Height, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1, interpolationType
-                            
-                            'Apply non-destructive FX now
-                            If tmpLayerRef.getLayerNonDestructiveFXState Then applyNDFXToDIB tmpLayerRef, m_tmpDIB
-                            
-                        End If
-                        
-                    End If
-                    
-                    'tmpDIB now contains the chunk of this layer that appears on the viewport, with all non-destructive edits applied.
-                    ' Time to composite it!
-                    If tmpLayerRef.getLayerBlendMode <> BL_NORMAL Then
-                        compositeDIBs m_tmpDIB, m_dstLayer.layerDIB, tmpLayerRef.getLayerBlendMode, dstRect.Left - dstX, dstRect.Top - dstY
-                    End If
-                    
-                    m_tmpDIB.alphaBlendToDC m_dstLayer.layerDIB.getDIBDC, tmpLayerRef.getLayerOpacity * 2.55, Int(dstRect.Left) - Int(dstX), Int(dstRect.Top) - Int(dstY)
-                    
-                'This is a simple layer, with no non-destructive effects or weird blend modes.  Composite it instantly, without using
-                ' a temporary placeholder layer.
-                Else
-                    
-                    'If the rect is zoomless, it means we don't have to perform subpixel positioning.  GDI's AlphaBlend is thus perfectly
-                    ' acceptable, and it will be much faster (5-10x) than GDI+.
-                    If isRectZoomless And (tmpLayerRef.getLayerCanvasXModifier = 1) And (tmpLayerRef.getLayerCanvasYModifier = 1) Then
-                        
-                        'AlphaBlend is very picky about invalid width/height values.  Make sure the source rect is valid.
-                        ' (It may be ever-so-slightly off due to rounding issues during all the floating-point math we perform.)
-                        If srcRect.Width > tmpLayerRef.layerDIB.getDIBWidth Then srcRect.Width = tmpLayerRef.layerDIB.getDIBWidth
-                        If srcRect.Height > tmpLayerRef.layerDIB.getDIBHeight Then srcRect.Height = tmpLayerRef.layerDIB.getDIBHeight
-                        tmpLayerRef.layerDIB.alphaBlendToDCEx m_dstLayer.layerDIB.getDIBDC, dstRect.Left - dstX, dstRect.Top - dstY, dstRect.Width, dstRect.Height, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, tmpLayerRef.getLayerOpacity * 2.55
-                        m_dstLayer.layerDIB.setInitialAlphaPremultiplicationState True
-                        
-                    Else
-                        
-                        If srcRect.Width > tmpLayerRef.layerDIB.getDIBWidth Then srcRect.Width = tmpLayerRef.layerDIB.getDIBWidth
-                        If srcRect.Height > tmpLayerRef.layerDIB.getDIBHeight Then srcRect.Height = tmpLayerRef.layerDIB.getDIBHeight
-                        
-                        'When zoomed in, nearest neighbor is preferred
-                        If srcWidth < dstWidth Then
-                            GDIPlus_StretchBlt m_dstLayer.layerDIB, dstRect.Left - dstX, dstRect.Top - dstY, dstRect.Width, dstRect.Height, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, tmpLayerRef.getLayerOpacity / 100, InterpolationModeNearestNeighbor
-                        
-                        'When zoomed out, use the supplied interpolation mode.  The caller typically toggles this according to PD's global
-                        ' performance settings.
-                        Else
-                            
-                            'GDI+ demonstrates a lot of weird behavior.  It seems fairly clear that parts of the library are half-baked.
-                            ' Their prefiltering algorithm works reasonably well on photos, but on images with sharp-defined edges
-                            ' (such as text), it causes weird alignment issues.  Unfiltered bilinear resampling does not experience this
-                            ' issue.  I'm leaving this comment here because once we have text layers, I want to conditionally enable
-                            ' bilinear resampling for them.  This will keep text properly aligned, without hurting photographic layers.
-                            
-                            'ALSO!  As of April 2016, the user can specify non-destructive resize algorithms on a per-layer basis.  We must
-                            ' also take this parameter into account when applying a resize, as it will override any existing values.
-                            If (tmpLayerRef.getLayerCanvasXModifier <> 1) Or (tmpLayerRef.getLayerCanvasYModifier <> 1) Then
-                                GDIPlus_StretchBlt m_dstLayer.layerDIB, dstRect.Left - dstX, dstRect.Top - dstY, dstRect.Width, dstRect.Height, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, tmpLayerRef.getLayerOpacity / 100, tmpLayerRef.getLayerResizeQuality_GDIPlus
-                            Else
-                                GDIPlus_StretchBlt m_dstLayer.layerDIB, dstRect.Left - dstX, dstRect.Top - dstY, dstRect.Width, dstRect.Height, tmpLayerRef.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, tmpLayerRef.getLayerOpacity / 100, interpolationType
-                            End If
-                            
-                        End If
-                                                
-                    End If
-                    
-                End If
-                
-            'END block for intersecting viewports
-            End If
+            'The helper function handles the actual compositing
+            getCompositedRect_LayerHelper m_dstDIB, srcImage.getLayerByIndex(i), dstViewportRect, srcImageRect, interpolationType, isRectZoomless, CBool(i = 0)
         
         'END block for layer visibility toggle
         End If
@@ -1414,14 +1220,249 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
     'With all layers successfully blended onto tmpLayer's DIB, we can now perform a final alphaBlend onto dstDIB.
     ' If we are at 100% zoom, subpixel positioning is not relevant, so we use GDI's AlphaBlend for a huge performance boost
     If isRectZoomless Then
-        m_dstLayer.layerDIB.alphaBlendToDCEx dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, 0, 0, dstWidth, dstHeight
+        m_dstDIB.alphaBlendToDCEx dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, 0, 0, dstWidth, dstHeight
     Else
-        GDIPlus_StretchBlt dstDIB, Int(dstX), Int(dstY), dstWidth + Int(dstX - Int(dstX) + 0.99), dstHeight + Int(dstY - Int(dstY) + 0.99), m_dstLayer.layerDIB, 0, 0, dstWidth, dstHeight, 1, InterpolationModeHighQualityBicubic
+        GDIPlus_StretchBlt dstDIB, Int(dstX), Int(dstY), dstWidth + Int(dstX - Int(dstX) + 0.99), dstHeight + Int(dstY - Int(dstY) + 0.99), m_dstDIB, 0, 0, dstWidth, dstHeight, 1, InterpolationModeHighQualityBicubic
     End If
     
     'The composited rect is always premultiplied, by design
     dstDIB.setInitialAlphaPremultiplicationState True
     
+End Sub
+
+'This helper function is only used internally, by the getCompositedRect function.
+'
+'The purpose of this helper function is to take a source layer, and merge it onto a destination DIB (*not* a destination layer).
+' This logic is handled separately so that paint operations can be silently "inserted" into the existing layer stack, without requiring
+' any modifications of the parent pdImage object.
+'
+'For performance reasons, the module-level m_tmpDIB object is used.  This is by design, because images that have only one
+' special-treatment layer (e.g. non-destructive FX, resizing, custom blend modes, etc) can avoid the creation of multiple temporary DIBs.
+'
+'In the future, I might look at giving each layer its own temporary compositing DIB object, so we can cache viewport-resized layers for
+' better performance, particularly while painting.
+Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer As pdLayer, ByRef dstViewportRect As RECTF, ByRef srcImageRect As RECTF, ByVal interpolationType As InterpolationMode, Optional ByVal isRectZoomless As Boolean = False, Optional ByVal isBaseLayer As Boolean = False)
+    
+    'This function requires two non-optional rects as parameters:
+    
+    ' - dstViewportRect: the destination rect of the fully composited rect, IN VIEWPORT COORDINATES
+    ' - srcImageRect: the source rect of the image, IN PDIMAGE COORDINATES
+    
+    'dstViewportRect is required to infer the current viewport zoom, while srcImageRect is used for intersection testing against
+    ' the current layers.  (Layers outside the viewport can be safely ignored.)
+    
+    'To simplify coordinate calculation, we also generate a bunch of our own rect objects.  The objects are as follows:
+    
+    'Floating-point rect of the FULL SOURCE LAYER, IN PDIMAGE COORDINATES
+    Dim layerRect As RECTF
+    
+    'Floating-point rect of the PORTION OF THE SOURCE LAYER RELEVANT TO THE CURRENT VIEWPORT, IN VIEWPORT COORDINATES
+    Dim intRectSrc As RECTF
+    
+    'Floating-point rect of the DESTINATION OF intRectSrc (above)
+    Dim dstRect As RECTF
+    
+    'Finally, a floating-point rect of intRectSrc, IN 0-BASED 1:1 COORDINATES.  This rect is used to crop-out a portion of the
+    ' source layer for pre-processing, if non-destructive FX are active.
+    Dim srcRect As RECTF
+    
+    'Note that some of these rects may only be necessary under certain conditions.
+        
+    'Start by retrieving a rect for this layer, in pdImage coordinates.
+    Layer_Handler.fillRectForLayerF srcLayer, layerRect, True
+    
+    'Check for an intersection between the full image source rect (passed to this function) and this layer.
+    If GDI_Plus.IntersectRectF(intRectSrc, srcImageRect, layerRect) Then
+        
+        'The passed layer intersects the viewport, so we must deal with it.
+        
+        Dim dibWidthCalc As Long, dibHeightCalc As Long
+        
+        'The composite operation works similar to StretchBlt, by calculating a destination rectangle and a source rectangle.
+        ' We know that these two rectangles define the same rectangle of the image, which allows us to infer zoom as well.
+        
+        'Now that we know the region of this layer that corresponds to the requested destination rect, we will use the
+        ' getDstRectFromSrcRectF() function to translate our already calculated eight bare destination and source values
+        ' (x/y/width/height) and retrieve a usable destination rect for this layer, defining the destination region of
+        ' the target covered by this layer.
+        getDstRectFromSrcRectF dstRect, intRectSrc, dstViewportRect.Left, dstViewportRect.Top, dstViewportRect.Width, dstViewportRect.Height, srcImageRect.Left, srcImageRect.Top, srcImageRect.Width, srcImageRect.Height
+        
+        'dstRect and intRectSrc now contain StretchBlt-compatible destination and source rectangles RELATIVE TO THE FULL IMAGE.
+        
+        'Because the current layer may not be the same size as the full image, we must perform one final translation: a source
+        ' rect that represents the source area, relative to the current layer's DIB.  This step is important if the layer has
+        ' had non-destructive resizing applied, because this is when we apply that calculation.
+        With srcRect
+            .Left = (intRectSrc.Left - CSng(srcLayer.getLayerOffsetX)) * (1 / srcLayer.getLayerCanvasXModifier)
+            .Width = intRectSrc.Width * (1 / srcLayer.getLayerCanvasXModifier)
+            .Top = (intRectSrc.Top - CSng(srcLayer.getLayerOffsetY)) * (1 / srcLayer.getLayerCanvasYModifier)
+            .Height = intRectSrc.Height * (1 / srcLayer.getLayerCanvasYModifier)
+        End With
+        
+        'With all coordinate math complete, we now proceed with the actual compositing!
+        
+        'Two conditions require us to create a temporary DIB prior to actually compositing this layer:
+        ' 1) Non-destructive effects
+        ' 2) Non-standard blend modes (on layers other than the background layer; the background layer blend mode is ignored)
+        
+        'These conditions are unpleasant, because additional per-pixel processing is required, instead of a basic alpha-blending
+        ' that we can let GDI+ automatically handle.
+        
+        'Check for such conditions now.
+        Dim nonStandardBlendModeActive As Boolean
+        
+        If isBaseLayer Then
+            nonStandardBlendModeActive = False
+        Else
+            nonStandardBlendModeActive = CBool(srcLayer.getLayerBlendMode <> BL_NORMAL)
+        End If
+        
+        If srcLayer.getLayerNonDestructiveFXState Or nonStandardBlendModeActive Then
+        
+            'This layer has one or more "special cases" active.  Create a temporary DIB to reference the image's bits.
+            dibWidthCalc = dstRect.Width + 0.999 + (dstRect.Left - Int(dstRect.Left))
+            dibHeightCalc = dstRect.Height + 0.999 + (dstRect.Top - Int(dstRect.Top))
+            
+            If (m_tmpDIB.getDIBWidth <> dibWidthCalc) Or (m_tmpDIB.getDIBHeight < dibHeightCalc) Then
+                m_tmpDIB.createBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
+                m_tmpDIB.setInitialAlphaPremultiplicationState True
+            Else
+                m_tmpDIB.resetDIB
+            End If
+            
+            'Check for the special case of 100% zoom; when this happens, and the image has no non-destructive resizing applied,
+            ' we can completely skip the resize step and simply use BitBlt (way faster)
+            If isRectZoomless And (srcLayer.getLayerCanvasXModifier = 1) And (srcLayer.getLayerCanvasYModifier = 1) Then
+                
+                BitBlt m_tmpDIB.getDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcLayer.layerDIB.getDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
+                
+                'Apply non-destructive FX now
+                If srcLayer.getLayerNonDestructiveFXState Then applyNDFXToDIB srcLayer, m_tmpDIB
+            
+            Else
+            
+                'If zoomed-in, we can switch to StretchBlt for performance gains.  (As nearest-neighbor interpolation will
+                ' be used regardless of the caller's requested interpolation type.)
+                If srcImageRect.Width < dstViewportRect.Width Then
+                    
+                    'We are zoomed-in to the image, e.g. zoom is larger than 100%.  Check for non-destructive FX being present.
+                    
+                    'Non-destructive FX are active.  To reduce processing time, chop out the source rectangle, apply the non-destructive FX,
+                    ' and *then* resize the data.
+                    If srcLayer.getLayerNonDestructiveFXState Then
+                    
+                        'Extract the smaller source rectangle into its own DIB.  Note that no extra coordinate math is involved here; this is
+                        ' a direct transfer.  We need a temp copy of the data because the effect is (per its name!) non-destructive, so it is
+                        ' only rendered when the image is written to the screen or to file.
+                        
+                        'Calculate width and height values for the DIB in advance.  These calculations are complicated because floating-point
+                        ' offsets and widths (due to subpixel positioning) may cause the relevant area of the DIB to as much as 2px larger than
+                        ' its integer-truncated values.  Also, if these calculated width/height values match the size of the current NDFX DIB,
+                        ' we don't need to recreate it!
+                        dibWidthCalc = srcRect.Width + 0.999 + (srcRect.Left - Int(srcRect.Left))
+                        dibHeightCalc = srcRect.Height + 0.999 + (srcRect.Top - Int(srcRect.Top))
+                        
+                        If (m_NDFXDIB.getDIBWidth <> dibWidthCalc) Or (m_NDFXDIB.getDIBHeight <> dibHeightCalc) Then
+                            m_NDFXDIB.createBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
+                        Else
+                            m_NDFXDIB.resetDIB
+                        End If
+                        
+                        BitBlt m_NDFXDIB.getDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcLayer.layerDIB.getDIBDC, Int(srcRect.Left), Int(srcRect.Top), vbSrcCopy
+                        
+                        'Apply the non-destructive FX to the smaller source DIB; this is faster than applying it after the resize action,
+                        ' as we only have to process a small fraction of the pixels
+                        applyNDFXToDIB srcLayer, m_NDFXDIB
+                        
+                        'Copy the processed DIB into tmpDIB, which will be used for compositing later in this function
+                        GDI_Plus.GDIPlus_StretchBlt m_tmpDIB, dstRect.Left - Int(dstRect.Left), dstRect.Top - Int(dstRect.Top), dstRect.Width, dstRect.Height, m_NDFXDIB, srcRect.Left - Int(srcRect.Left), srcRect.Top - Int(srcRect.Top), srcRect.Width, srcRect.Height, 1, InterpolationModeNearestNeighbor
+                                                        
+                    'Non-destructive FX are not active.  Resize the source rectangle immediately.
+                    Else
+                    
+                        'Check for non-destructive resizing.  If present, switch to GDI+; otherwise, StretchBlt is sufficient.
+                        ' (NOTE: this code works without incident.)
+                        If (srcLayer.getLayerCanvasXModifier = 1) And (srcLayer.getLayerCanvasYModifier = 1) Then
+                            StretchBlt m_tmpDIB.getDIBDC, 0, 0, m_tmpDIB.getDIBWidth, m_tmpDIB.getDIBHeight, srcLayer.layerDIB.getDIBDC, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, vbSrcCopy
+                        Else
+                            GDIPlusResizeDIB m_tmpDIB, dstRect.Left - Int(dstRect.Left), dstRect.Top - Int(dstRect.Top), dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerResizeQuality_GDIPlus
+                        End If
+                        
+                    End If
+                
+                'We are zoomed-out, so StretchBlt cannot be used (as it will cause artifacting for 32bpp data).  GDI+ is our only
+                ' option at present.
+                Else
+                    
+                    'If the user has requested MAX PERFORMANCE rendering, override the requested interpolation type with nearest neighbor
+                    GDI_Plus.GDIPlus_StretchBlt m_tmpDIB, dstRect.Left - Int(dstRect.Left), dstRect.Top - Int(dstRect.Top), dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1, interpolationType
+                    
+                    'Apply non-destructive FX now
+                    If srcLayer.getLayerNonDestructiveFXState Then applyNDFXToDIB srcLayer, m_tmpDIB
+                    
+                End If
+                
+            End If
+            
+            'tmpDIB now contains the chunk of this layer that appears on the viewport, with all non-destructive edits applied.
+            ' Time to composite it!
+            If nonStandardBlendModeActive Then
+                compositeDIBs m_tmpDIB, m_dstDIB, srcLayer.getLayerBlendMode, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top
+            End If
+            
+            m_tmpDIB.alphaBlendToDC m_dstDIB.getDIBDC, srcLayer.getLayerOpacity * 2.55, Int(dstRect.Left) - Int(dstViewportRect.Left), Int(dstRect.Top) - Int(dstViewportRect.Top)
+            
+        'This is a simple layer, with no non-destructive effects or weird blend modes.  Composite it instantly, without using
+        ' a temporary placeholder layer.
+        Else
+            
+            'If the rect is zoomless, it means we don't have to perform subpixel positioning.  GDI's AlphaBlend is thus perfectly
+            ' acceptable, and it will be much faster (5-10x) than GDI+.
+            If isRectZoomless And (srcLayer.getLayerCanvasXModifier = 1) And (srcLayer.getLayerCanvasYModifier = 1) Then
+                
+                'AlphaBlend is very picky about invalid width/height values.  Make sure the source rect is valid.
+                ' (It may be ever-so-slightly off due to rounding issues during all the floating-point math we perform.)
+                If srcRect.Width > srcLayer.layerDIB.getDIBWidth Then srcRect.Width = srcLayer.layerDIB.getDIBWidth
+                If srcRect.Height > srcLayer.layerDIB.getDIBHeight Then srcRect.Height = srcLayer.layerDIB.getDIBHeight
+                srcLayer.layerDIB.alphaBlendToDCEx m_dstDIB.getDIBDC, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity * 2.55
+                m_dstDIB.setInitialAlphaPremultiplicationState True
+                
+            Else
+                
+                If srcRect.Width > srcLayer.layerDIB.getDIBWidth Then srcRect.Width = srcLayer.layerDIB.getDIBWidth
+                If srcRect.Height > srcLayer.layerDIB.getDIBHeight Then srcRect.Height = srcLayer.layerDIB.getDIBHeight
+                
+                'When zoomed in, nearest neighbor is preferred
+                If srcImageRect.Width < dstViewportRect.Width Then
+                    GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity / 100, InterpolationModeNearestNeighbor
+                
+                'When zoomed out, use the supplied interpolation mode.  The caller typically toggles this according to PD's global
+                ' performance settings.
+                Else
+                    
+                    'GDI+ demonstrates a lot of weird behavior.  It seems fairly clear that parts of the library are half-baked.
+                    ' Their prefiltering algorithm works reasonably well on photos, but on images with sharp-defined edges
+                    ' (such as text), it causes weird alignment issues.  Unfiltered bilinear resampling does not experience this
+                    ' issue.  I'm leaving this comment here because once we have text layers, I want to conditionally enable
+                    ' bilinear resampling for them.  This will keep text properly aligned, without hurting photographic layers.
+                    
+                    'ALSO!  As of April 2016, the user can specify non-destructive resize algorithms on a per-layer basis.  We must
+                    ' also take this parameter into account when applying a resize, as it will override any existing values.
+                    If (srcLayer.getLayerCanvasXModifier <> 1) Or (srcLayer.getLayerCanvasYModifier <> 1) Then
+                        GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity / 100, srcLayer.getLayerResizeQuality_GDIPlus
+                    Else
+                        GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity / 100, interpolationType
+                    End If
+                    
+                End If
+                                        
+            End If
+            
+        End If
+        
+    'END block for layer intersecting the current viewport.  (Note that we simply ignore layers that don't intersect the viewport.)
+    End If
+
 End Sub
 
 'Given a layer containing one or more non-destructive effect parameters, and a target DIB, apply the layer's specified FX against
@@ -1890,13 +1931,13 @@ Private Function fMin3(rR As Single, rG As Single, rB As Single) As Single
 End Function
 
 Private Sub Class_Initialize()
-    Set m_dstLayer = New pdLayer
+    Set m_dstDIB = New pdDIB
     Set m_tmpDIB = New pdDIB
     Set m_NDFXDIB = New pdDIB
 End Sub
 
 Private Sub Class_Terminate()
-    Set m_dstLayer = Nothing
+    Set m_dstDIB = Nothing
     Set m_tmpDIB = Nothing
     Set m_NDFXDIB = Nothing
 End Sub
