@@ -135,14 +135,8 @@ Public Sub panImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
     'Reinstate canvas redraws
     srcCanvas.setRedrawSuspension False
     
-    'Manually request a canvas redraw
-    
-    '(Temporary switch while working on new viewport engine)
-    If PD_USE_OLD_VIEWPORT_ENGINE Then
-        Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    Else
-        Viewport_Engine.Stage3_ExtractRelevantRegion pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    End If
+    'Request the scroll-specific viewport pipeline stage
+    Viewport_Engine.Stage3_ExtractRelevantRegion srcImage, FormMain.mainCanvas(0)
     
 End Sub
 

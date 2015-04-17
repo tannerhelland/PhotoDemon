@@ -23,9 +23,6 @@ End Enum
 ' Obvious corollary: ALWAYS SET DEBUGMODE TO 0 IN PRODUCTION BUILDS!
 Public Const PD_BUILD_QUALITY As Long = PD_PRE_ALPHA
 
-'I am currently testing a new viewport strategy.  To preserve the old behavior, set this to TRUE.
-Public Const PD_USE_OLD_VIEWPORT_ENGINE As Boolean = True
-
 'Identifier for various PD-specific file types
 Public Const PD_IMAGE_IDENTIFIER As Long = &H44494450   'pdImage data (ASCII characters "PDID", as hex, little-endian)
 Public Const PD_LAYER_IDENTIFIER As Long = &H4C494450   'pdLayer data (ASCII characters "PDIL", as hex, little-endian)
