@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Compositor class
 'Copyright 2014-2015 by Tanner Helland
 'Created: 01/May/14
-'Last updated: 20/June/14
-'Last update: add non-destructive edit support!
+'Last updated: 17/April/15
+'Last update: unify compositing results of all blend modes between the two new viewport pipelines
 '
 'Image compositing is a fairly arduous process, especially when dealing with stuff like custom blend modes.
 ' Previously, the pdImage class handled all compositing on its own, but as PD's compositing needs have
@@ -162,7 +162,15 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
                 
                 'Apply the requested blend mode
                 Select Case blendMode
-                
+                    
+                    'PD's rendering pipeline will not generally pass normal-mode layers to this function, as we can simply composite them
+                    ' as-is using WAPI and/or GDI+.  But in the future, specialty features like alpha inheritance *will* require normal layers
+                    ' to pass through this function, so I've added this branch now in preparation.
+                    Case BL_NORMAL
+                        newR = topR
+                        newG = topG
+                        newB = topB
+                    
                     Case BL_DARKEN
                         If bottomR < topR Then newR = bottomR Else newR = topR
                         If bottomG < topG Then newG = bottomG Else newG = topG
@@ -336,47 +344,30 @@ Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal 
                         newB = topB
                 
                 End Select
-                                
-                If topA = 1 Then
-                    
-                    'Top layer is opaque, so premultiplication is irrelevant
-                    
-                    'NOTE!  I've tried to write the compositor so that additional bounds checks are not needed.
-                    ' If errors ever occur in the future, you can start debugging by enabling the checks below.
-                        'If newR > 1 Then newR = 1
-                        'If newG > 1 Then newG = 1
-                        'If newB > 1 Then newB = 1
-                        'If newR < 0 Then newR = 0
-                        'If newG < 0 Then newG = 0
-                        'If newB < 0 Then newB = 0
-                    
-                    tImageData(QuickX + 2, y) = (newR * 255)
-                    tImageData(QuickX + 1, y) = (newG * 255)
-                    tImageData(QuickX, y) = (newB * 255)
                 
-                Else
-                
-                    'Alpha blend the original color with the new color, per the lower image's alpha.  (This way,
-                    ' if the bottom image is transparent, the top image is unchanged.)
-                    If bottomA <> 1 Then
-                        newR = (newR * bottomA) + (topR * (1 - bottomA))
-                        newG = (newG * bottomA) + (topG * (1 - bottomA))
-                        newB = (newB * bottomA) + (topB * (1 - bottomA))
-                    End If
-                    
-                    'NOTE!  I've tried to write the compositor so that additional bounds checks are not needed.
-                    ' If errors ever occur in the future, you can start debugging by enabling the checks below.
-                    'If newR > 1 Then newR = 1
-                    'If newG > 1 Then newG = 1
-                    'If newB > 1 Then newB = 1
-                    
-                    'Copy the new values into the bottom layer, and premultiply them
-                    topA = topA * 255
-                    tImageData(QuickX + 2, y) = newR * topA
-                    tImageData(QuickX + 1, y) = newG * topA
-                    tImageData(QuickX, y) = newB * topA
-                    
+                'Alpha blend the original color with the new color, per the lower image's alpha.  (This way,
+                ' if the bottom image is transparent, the top image is unchanged, regardless of blend mode.)
+                '
+                'Note that GIMP actually factors alpha into its compositing order, which I find odd and unintuitive.  However, it might be
+                ' nice to someday provide a toggle for that behavior; I'm waiting to see if anyone actually requests it before
+                ' embarking, however.
+                If bottomA <> 1 Then
+                    newR = (newR * bottomA) + (topR * (1 - bottomA))
+                    newG = (newG * bottomA) + (topG * (1 - bottomA))
+                    newB = (newB * bottomA) + (topB * (1 - bottomA))
                 End If
+                
+                'NOTE!  I've tried to write the compositor so that additional bounds checks are not needed.
+                ' If errors ever occur in the future, you can start debugging by enabling the checks below.
+                'If newR > 1 Then newR = 1
+                'If newG > 1 Then newG = 1
+                'If newB > 1 Then newB = 1
+                
+                'Copy the new values into the bottom layer, and premultiply them
+                topA = topA * 255
+                tImageData(QuickX + 2, y) = newR * topA
+                tImageData(QuickX + 1, y) = newG * topA
+                tImageData(QuickX, y) = newB * topA
                 
             End If
             
@@ -413,6 +404,10 @@ Friend Sub compositeAndBlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
     'Also create an integer version of the alpha-modifier value
     Dim alphaModifierInt As Long
     alphaModifierInt = alphaModifier * 255
+    
+    'In the inner loop, we'll be doing a bunch of compositing relative to newly calculated alpha value.  Storing some intermediate terms
+    ' allows this to go much faster.
+    Dim bottomAlphaIntermediate As Double
     
     'Calculate bounds for the loop.  These are relative to the top layer, which may lay outside the bounds
     ' of the bottom layer.
@@ -478,10 +473,20 @@ Friend Sub compositeAndBlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
             
             'Again, ignore transparent pixels
             If bottomA = 0 Then
-                bImageData(quickBottomX, quickBottomY) = topB
-                bImageData(quickBottomX + 1, quickBottomY) = topG
-                bImageData(quickBottomX + 2, quickBottomY) = topR
-                bImageData(quickBottomX + 3, quickBottomY) = topA
+            
+                'We must apply layer opacity here, as this function both composites AND performs the final blend between layers
+                If alphaModifierInt = 255 Then
+                    bImageData(quickBottomX, quickBottomY) = topB
+                    bImageData(quickBottomX + 1, quickBottomY) = topG
+                    bImageData(quickBottomX + 2, quickBottomY) = topR
+                    bImageData(quickBottomX + 3, quickBottomY) = topA
+                Else
+                    bImageData(quickBottomX, quickBottomY) = topB * alphaModifier
+                    bImageData(quickBottomX + 1, quickBottomY) = topG * alphaModifier
+                    bImageData(quickBottomX + 2, quickBottomY) = topR * alphaModifier
+                    bImageData(quickBottomX + 3, quickBottomY) = topA * alphaModifier
+                End If
+                
             Else
                 
                 'Convert to floating-point
@@ -511,6 +516,14 @@ Friend Sub compositeAndBlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
                 
                 'Apply the requested blend mode
                 Select Case blendMode
+                
+                    'PD's rendering pipeline will not generally pass normal-mode layers to this function, as we can simply composite them
+                    ' as-is using WAPI and/or GDI+.  But in the future, specialty features like alpha inheritance *will* require normal layers
+                    ' to pass through this function, so I've added this branch now in preparation.
+                    Case BL_NORMAL
+                        newR = topR
+                        newG = topG
+                        newB = topB
                 
                     Case BL_DARKEN
                         If bottomR < topR Then newR = bottomR Else newR = topR
@@ -685,72 +698,40 @@ Friend Sub compositeAndBlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
                         newB = topB
                 
                 End Select
-                                
-                If topA = 1 Then
-                    
-                    'Top layer is opaque, so premultiplication is irrelevant
-                    
-                    'NOTE!  I've tried to write the compositor so that additional bounds checks are not needed.
-                    ' If errors ever occur in the future, you can start debugging by enabling the checks below.
-                        'If newR > 1 Then newR = 1
-                        'If newG > 1 Then newG = 1
-                        'If newB > 1 Then newB = 1
-                        'If newR < 0 Then newR = 0
-                        'If newG < 0 Then newG = 0
-                        'If newB < 0 Then newB = 0
-                    
-                    'tImageData(QuickX + 2, y) = (newR * 255)
-                    'tImageData(QuickX + 1, y) = (newG * 255)
-                    'tImageData(QuickX, y) = (newB * 255)
-                    
-                    bImageData(quickBottomX, quickBottomY) = newB * alphaModifierInt
-                    bImageData(quickBottomX + 1, quickBottomY) = newG * alphaModifierInt
-                    bImageData(quickBottomX + 2, quickBottomY) = newR * alphaModifierInt
-                    bImageData(quickBottomX + 3, quickBottomY) = 255
-                    
-                Else
                 
-                    'Calculate a new alpha for the top layer, using the supplied alpha modifier
-                    topA = topA * alphaModifier
+                'Calculate a new alpha for the top layer, using the supplied alpha modifier
+                topA = topA * alphaModifier
+                
+                'Calculate a new destination alpha value
+                bottomAlphaIntermediate = bottomA * (1 - topA)
+                newA = topA + bottomAlphaIntermediate
+                
+                'If the bottom layer contains transparency, we pre-blend the composited RGB values against the original top layer
+                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
+                ' (This is how Paint.NET behaves, and I like the end result.)
+                If bottomA <> 1 Then
                     
-                    'If the bottom layer is not transparent, no amount of top transparency will change that
-                    If bottomA = 1 Then
-                        
-                        'Blend each color accordingly
-                        newR = newR * topA + bottomR * (1 - topA)
-                        newG = newG * topA + bottomG * (1 - topA)
-                        newB = newB * topA + bottomB * (1 - topA)
-                        
-                        'Perform an alpha-blend with the top and bottom colors, premultiplied
-                        bImageData(quickBottomX, quickBottomY) = newB * 255
-                        bImageData(quickBottomX + 1, quickBottomY) = newG * 255
-                        bImageData(quickBottomX + 2, quickBottomY) = newR * 255
+                    'Reduce the strength of the blend mode result, proportionate to the bottom layer's alpha value.
+                    newR = (newR * bottomA) + (topR * (1 - bottomA))
+                    newG = (newG * bottomA) + (topG * (1 - bottomA))
+                    newB = (newB * bottomA) + (topB * (1 - bottomA))
                     
-                    'Alpha blend the original color with the new color, per the lower image's alpha.  (This way,
-                    ' if the bottom image is transparent, the top image is unchanged.)
-                    Else
-                    
-                        'Calculate a new destination alpha value
-                        newA = topA + bottomA * (1 - topA)
-                        
-                        'Blend each color accordingly
-                        newR = newR * topA + bottomR * (1 - topA)
-                        newG = newG * topA + bottomG * (1 - topA)
-                        newB = newB * topA + bottomB * (1 - topA)
-                        
-                        'Perform an alpha-blend with the top and bottom colors, premultiplied
-                        bImageData(quickBottomX, quickBottomY) = newB * 255
-                        bImageData(quickBottomX + 1, quickBottomY) = newG * 255
-                        bImageData(quickBottomX + 2, quickBottomY) = newR * 255
-                        
-                        'Apply alpha as well
-                        bImageData(quickBottomX + 3, quickBottomY) = newA * 255
-                        
-                    End If
-                                        
-                'End topA = 1/not 1 check
                 End If
                 
+                'Perform a final blend.  Note that the new alpha value does not factor into this; see http://en.wikipedia.org/wiki/Alpha_compositing
+                ' for a lengthy derivation of the required formulas.
+                newR = newR * topA + bottomR * bottomAlphaIntermediate
+                newG = newG * topA + bottomG * bottomAlphaIntermediate
+                newB = newB * topA + bottomB * bottomAlphaIntermediate
+                
+                'Perform an alpha-blend with the top and bottom colors.  (Note that premultiplication has already been applied.)
+                bImageData(quickBottomX, quickBottomY) = newB * 255
+                bImageData(quickBottomX + 1, quickBottomY) = newG * 255
+                bImageData(quickBottomX + 2, quickBottomY) = newR * 255
+                
+                'Apply alpha as well
+                bImageData(quickBottomX + 3, quickBottomY) = newA * 255
+                    
             End If
             
         End If
