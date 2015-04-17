@@ -237,11 +237,7 @@ End Sub
 Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
 
     '(Temporary switch while working on new viewport engine)
-    If PD_USE_OLD_VIEWPORT_ENGINE Then
-    
-        'Proceed directly to the next pipeline stage, as the canvas buffer has already been assembled.
-        
-    Else
+    If g_ViewportPerformance = PD_PERF_BESTQUALITY Then
         
         'Stage 2 of the pipeline (Stage2_CompositeAllLayers) prepared srcImage.compositeBuffer for us.  In this stage,
         ' we will be parsing out the portion of the compositeBuffer required by the current viewport.  As part of this process,
@@ -294,44 +290,7 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
             Message "WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)"
         End If
     
-    
-    End If
-    
-    'Pass control to the next stage of the pipeline.
-    Stage4_CompositeCanvas srcImage, dstCanvas
-
-End Sub
-
-'Stage2_CompositeAllLayers is used to composite the current layer stack (while accounting for all non-destructive modifications)
-' into a single, final image.  This image is stored in the source pdImage's back buffer.  This function does not perform any
-' initialization or pre-rendering checks, so you cannot use it if zoom is changed, or if the viewport area has changed.
-' (Stage1_InitializeBuffer is used for that.)  Similarly, depending on the active render mode, this stage may be redundant for
-' things like viewport scrollbars, as those only require Stage3_ExtractRelevantRegion, as the image has already been assembled.
-' The most common use-case for this function is changes made to individual layers, including non-destructive layer changes that
-' require a recomposite of the image, but not a full recreation calculation of the viewport and canvas buffers.
-Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
-        
-    'Like the previous stage of the pipeline, we start by performing a number of "do not render the viewport at all" checks.
-    
-    'First, and most obvious, is to exit now if the public g_AllowViewportRendering parameter has been forcibly disabled.
-    If Not g_AllowViewportRendering Then Exit Sub
-    
-    'Make sure the target canvas is valid
-    If dstCanvas Is Nothing Then Exit Sub
-    
-    'If the pdImage object associated with this form is inactive, ignore this request
-    If Not srcImage.IsActive Then Exit Sub
-    
-    'This function can return timing reports if desired; at present, this is automatically activated in PRE-ALPHA and ALPHA builds,
-    ' but disabled for BETA and PRODUCTION builds; see the LoadTheProgram() function for details.
-    Dim startTime As Double
-    If g_DisplayTimingReports Then startTime = Timer
-    
-    'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared srcImage.compositeBuffer for us.  The goal of this stage
-    ' is simple: fill the compositeBuffer object with a fully composited copy of the current image.
-    
-    '(Temporary switch while working on new viewport engine)
-    If PD_USE_OLD_VIEWPORT_ENGINE Then
+    Else
         
         'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared srcImage.BackBuffer for us.  The goal of this stage is two-fold:
         ' 1) Fill the viewport area of the canvas with a checkerboard pattern
@@ -385,13 +344,55 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
         Else
             Message "WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)"
         End If
+        
+    End If
     
-    Else
+    'Pass control to the next stage of the pipeline.
+    Stage4_CompositeCanvas srcImage, dstCanvas
+
+End Sub
+
+'Stage2_CompositeAllLayers is used to composite the current layer stack (while accounting for all non-destructive modifications)
+' into a single, final image.  This image is stored in the source pdImage's back buffer.  This function does not perform any
+' initialization or pre-rendering checks, so you cannot use it if zoom is changed, or if the viewport area has changed.
+' (Stage1_InitializeBuffer is used for that.)  Similarly, depending on the active render mode, this stage may be redundant for
+' things like viewport scrollbars, as those only require Stage3_ExtractRelevantRegion, as the image has already been assembled.
+' The most common use-case for this function is changes made to individual layers, including non-destructive layer changes that
+' require a recomposite of the image, but not a full recreation calculation of the viewport and canvas buffers.
+Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
+        
+    'Like the previous stage of the pipeline, we start by performing a number of "do not render the viewport at all" checks.
     
+    'First, and most obvious, is to exit now if the public g_AllowViewportRendering parameter has been forcibly disabled.
+    If Not g_AllowViewportRendering Then Exit Sub
+    
+    'Make sure the target canvas is valid
+    If dstCanvas Is Nothing Then Exit Sub
+    
+    'If the pdImage object associated with this form is inactive, ignore this request
+    If Not srcImage.IsActive Then Exit Sub
+    
+    'This function can return timing reports if desired; at present, this is automatically activated in PRE-ALPHA and ALPHA builds,
+    ' but disabled for BETA and PRODUCTION builds; see the LoadTheProgram() function for details.
+    Dim startTime As Double
+    If g_DisplayTimingReports Then startTime = Timer
+    
+    'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared srcImage.compositeBuffer for us.  The goal of this stage
+    ' is simple: fill the compositeBuffer object with a fully composited copy of the current image.
+    
+    '(Temporary switch while working on new viewport engine)
+    If g_ViewportPerformance = PD_PERF_BESTQUALITY Then
+        
         'Notify the parent object that a prepared composite buffer is required.  If the buffer is dirty, the parent will regenerate
         ' the composite for us.
         srcImage.rebuildCompositeBuffer
-    
+        
+    'Other viewport performance settings can automatically proceed to stage 3
+    Else
+        
+        'Proceed directly to the next pipeline stage, as the canvas buffer assembly happens simultaneous to
+        ' viewport crop and zoom calculations.
+        
     End If
     
     'Pass control to the next stage of the pipeline.
