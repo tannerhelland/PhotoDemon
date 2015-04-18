@@ -1037,8 +1037,6 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
         
             'Custom blend modes are active.  We have no choice but to create a temporary compositing DIB.
             
-            '(Potential future TODO: all-in-one compositor that handles NDFX and compositing and the final blend...?)
-            '
             'If non-destructive resizing is NOT active, pass the source layer to the all-in-one composite + blend function
             If (srcLayer.getLayerCanvasXModifier = 1) And (srcLayer.getLayerCanvasYModifier = 1) Then
                 
@@ -1280,6 +1278,11 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer 
             .Height = intRectSrc.Height * (1 / srcLayer.getLayerCanvasYModifier)
         End With
         
+        'Precalculate dimensions of any temporary DIBs we need to create.  These can have fractional offsets on either side, so we need
+        ' to make sure the DIB is at least large enough to contain 0.99 offsets on either side.
+        dibWidthCalc = dstRect.Width + 0.999 + (dstRect.Left - Int(dstRect.Left))
+        dibHeightCalc = dstRect.Height + 0.999 + (dstRect.Top - Int(dstRect.Top))
+        
         'With all coordinate math complete, we now proceed with the actual compositing!
         
         'Two conditions require us to create a temporary DIB prior to actually compositing this layer:
@@ -1298,16 +1301,13 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer 
             nonStandardBlendModeActive = CBool(srcLayer.getLayerBlendMode <> BL_NORMAL)
         End If
         
-        If srcLayer.getLayerNonDestructiveFXState Or nonStandardBlendModeActive Then
+        'To improve performance, we are now going to check the viewport hash of this layer.  If the layer AND viewport have not changed
+        ' since our last render, we can just grab the last temporary viewport object we generated.  Note that this hash value is valid for
+        ' any combination of non-destructive FX, non-destructive resizing, and weird blend modes.
+        Dim testHash As Long
+        testHash = srcLayer.getViewportHash_Theoretical(srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, dibWidthCalc, dibHeightCalc)
         
-            'This layer has one or more "special cases" active.  Create a temporary DIB to reference the image's bits.
-            dibWidthCalc = dstRect.Width + 0.999 + (dstRect.Left - Int(dstRect.Left))
-            dibHeightCalc = dstRect.Height + 0.999 + (dstRect.Top - Int(dstRect.Top))
-            
-            'To improve performance, we are now going to check the viewport hash of this layer.  If the layer AND viewport have not changed
-            ' since our last render, we can just grab the last temporary viewport object we generated.
-            Dim testHash As Long
-            testHash = srcLayer.getViewportHash_Theoretical(srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, dibWidthCalc, dibHeightCalc)
+        If srcLayer.getLayerNonDestructiveFXState Or nonStandardBlendModeActive Then
             
             If (srcLayer.getViewportHash = 0) Or (srcLayer.getViewportHash <> testHash) Then
             
@@ -1447,13 +1447,40 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer 
                     ' issue.  I'm leaving this comment here because once we have text layers, I want to conditionally enable
                     ' bilinear resampling for them.  This will keep text properly aligned, without hurting photographic layers.
                     
-                    'ALSO!  As of April 2016, the user can specify non-destructive resize algorithms on a per-layer basis.  We must
+                    'ALSO!  As of April 2015, the user can specify non-destructive resize algorithms on a per-layer basis.  We must
                     ' also take this parameter into account when applying a resize, as it will override any existing values.
-                    If (srcLayer.getLayerCanvasXModifier <> 1) Or (srcLayer.getLayerCanvasYModifier <> 1) Then
-                        GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity / 100, srcLayer.getLayerResizeQuality_GDIPlus
-                    Else
-                        GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity / 100, interpolationType
+                    'If (srcLayer.getLayerCanvasXModifier <> 1) Or (srcLayer.getLayerCanvasYModifier <> 1) Then
+                    '    GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity / 100, srcLayer.getLayerResizeQuality_GDIPlus
+                    'Else
+                    '    GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity / 100, interpolationType
+                    'End If
+                    
+                    'See if our existing hash is valid
+                    If (srcLayer.getViewportHash = 0) Or (srcLayer.getViewportHash <> testHash) Then
+                    
+                        'The layer and/or viewport has changed since our last composite.  Create a new DIB in the cheapest way possible
+                        ' (e.g., if the current temporary DIB size is acceptable, just reset it instead of fully redrawing it)
+                        If (srcLayer.tmpDIB.getDIBWidth <> dibWidthCalc) Or (srcLayer.tmpDIB.getDIBHeight < dibHeightCalc) Then
+                            srcLayer.tmpDIB.createBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
+                            srcLayer.tmpDIB.setInitialAlphaPremultiplicationState True
+                        Else
+                            srcLayer.tmpDIB.resetDIB
+                        End If
+                        
+                        'Paint the resized DIB to the layer, at offset (0, 0).
+                        If (srcLayer.getLayerCanvasXModifier <> 1) Or (srcLayer.getLayerCanvasYModifier <> 1) Then
+                            GDIPlus_StretchBlt srcLayer.tmpDIB, 0, 0, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity / 100, srcLayer.getLayerResizeQuality_GDIPlus
+                        Else
+                            GDIPlus_StretchBlt srcLayer.tmpDIB, 0, 0, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity / 100, interpolationType
+                        End If
+                        
+                        'Update the layer hash, so we can possibly skip this work in the future
+                        srcLayer.setViewportHash_FromLong testHash
+                        
                     End If
+                    
+                    'Paint the temporary DIB onto the main screen, at the specified offset
+                    GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.tmpDIB, 0, 0, dstRect.Width, dstRect.Height, 1, InterpolationModeNearestNeighbor
                     
                 End If
                                         
