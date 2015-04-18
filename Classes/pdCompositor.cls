@@ -1304,94 +1304,114 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer 
             dibWidthCalc = dstRect.Width + 0.999 + (dstRect.Left - Int(dstRect.Left))
             dibHeightCalc = dstRect.Height + 0.999 + (dstRect.Top - Int(dstRect.Top))
             
-            If (m_tmpDIB.getDIBWidth <> dibWidthCalc) Or (m_tmpDIB.getDIBHeight < dibHeightCalc) Then
-                m_tmpDIB.createBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
-                m_tmpDIB.setInitialAlphaPremultiplicationState True
-            Else
-                m_tmpDIB.resetDIB
-            End If
+            'To improve performance, we are now going to check the viewport hash of this layer.  If the layer AND viewport have not changed
+            ' since our last render, we can just grab the last temporary viewport object we generated.
+            Dim testHash As Long
+            testHash = srcLayer.getViewportHash_Theoretical(srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, dibWidthCalc, dibHeightCalc)
             
-            'Check for the special case of 100% zoom; when this happens, and the image has no non-destructive resizing applied,
-            ' we can completely skip the resize step and simply use BitBlt (way faster)
-            If isRectZoomless And (srcLayer.getLayerCanvasXModifier = 1) And (srcLayer.getLayerCanvasYModifier = 1) Then
-                
-                BitBlt m_tmpDIB.getDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcLayer.layerDIB.getDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
-                
-                'Apply non-destructive FX now
-                If srcLayer.getLayerNonDestructiveFXState Then applyNDFXToDIB srcLayer, m_tmpDIB
+            If (srcLayer.getViewportHash = 0) Or (srcLayer.getViewportHash <> testHash) Then
             
-            Else
-            
-                'If zoomed-in, we can switch to StretchBlt for performance gains.  (As nearest-neighbor interpolation will
-                ' be used regardless of the caller's requested interpolation type.)
-                If srcImageRect.Width < dstViewportRect.Width Then
-                    
-                    'We are zoomed-in to the image, e.g. zoom is larger than 100%.  Check for non-destructive FX being present.
-                    
-                    'Non-destructive FX are active.  To reduce processing time, chop out the source rectangle, apply the non-destructive FX,
-                    ' and *then* resize the data.
-                    If srcLayer.getLayerNonDestructiveFXState Then
-                    
-                        'Extract the smaller source rectangle into its own DIB.  Note that no extra coordinate math is involved here; this is
-                        ' a direct transfer.  We need a temp copy of the data because the effect is (per its name!) non-destructive, so it is
-                        ' only rendered when the image is written to the screen or to file.
-                        
-                        'Calculate width and height values for the DIB in advance.  These calculations are complicated because floating-point
-                        ' offsets and widths (due to subpixel positioning) may cause the relevant area of the DIB to as much as 2px larger than
-                        ' its integer-truncated values.  Also, if these calculated width/height values match the size of the current NDFX DIB,
-                        ' we don't need to recreate it!
-                        dibWidthCalc = srcRect.Width + 0.999 + (srcRect.Left - Int(srcRect.Left))
-                        dibHeightCalc = srcRect.Height + 0.999 + (srcRect.Top - Int(srcRect.Top))
-                        
-                        If (m_NDFXDIB.getDIBWidth <> dibWidthCalc) Or (m_NDFXDIB.getDIBHeight <> dibHeightCalc) Then
-                            m_NDFXDIB.createBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
-                        Else
-                            m_NDFXDIB.resetDIB
-                        End If
-                        
-                        BitBlt m_NDFXDIB.getDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcLayer.layerDIB.getDIBDC, Int(srcRect.Left), Int(srcRect.Top), vbSrcCopy
-                        
-                        'Apply the non-destructive FX to the smaller source DIB; this is faster than applying it after the resize action,
-                        ' as we only have to process a small fraction of the pixels
-                        applyNDFXToDIB srcLayer, m_NDFXDIB
-                        
-                        'Copy the processed DIB into tmpDIB, which will be used for compositing later in this function
-                        GDI_Plus.GDIPlus_StretchBlt m_tmpDIB, dstRect.Left - Int(dstRect.Left), dstRect.Top - Int(dstRect.Top), dstRect.Width, dstRect.Height, m_NDFXDIB, srcRect.Left - Int(srcRect.Left), srcRect.Top - Int(srcRect.Top), srcRect.Width, srcRect.Height, 1, InterpolationModeNearestNeighbor
-                                                        
-                    'Non-destructive FX are not active.  Resize the source rectangle immediately.
-                    Else
-                    
-                        'Check for non-destructive resizing.  If present, switch to GDI+; otherwise, StretchBlt is sufficient.
-                        ' (NOTE: this code works without incident.)
-                        If (srcLayer.getLayerCanvasXModifier = 1) And (srcLayer.getLayerCanvasYModifier = 1) Then
-                            StretchBlt m_tmpDIB.getDIBDC, 0, 0, m_tmpDIB.getDIBWidth, m_tmpDIB.getDIBHeight, srcLayer.layerDIB.getDIBDC, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, vbSrcCopy
-                        Else
-                            GDIPlusResizeDIB m_tmpDIB, dstRect.Left - Int(dstRect.Left), dstRect.Top - Int(dstRect.Top), dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerResizeQuality_GDIPlus
-                        End If
-                        
-                    End If
-                
-                'We are zoomed-out, so StretchBlt cannot be used (as it will cause artifacting for 32bpp data).  GDI+ is our only
-                ' option at present.
+                'The layer and/or viewport has changed since our last composite.  Create a new DIB in the cheapest way possible
+                ' (e.g., if the current temporary DIB size is acceptable, just reset it instead of fully redrawing it)
+                If (srcLayer.tmpDIB.getDIBWidth <> dibWidthCalc) Or (srcLayer.tmpDIB.getDIBHeight < dibHeightCalc) Then
+                    srcLayer.tmpDIB.createBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
+                    srcLayer.tmpDIB.setInitialAlphaPremultiplicationState True
                 Else
+                    srcLayer.tmpDIB.resetDIB
+                End If
+                
+                'Check for the special case of 100% zoom; when this happens, and the image has no non-destructive resizing applied,
+                ' we can completely skip the resize step and simply use BitBlt (way faster)
+                If isRectZoomless And (srcLayer.getLayerCanvasXModifier = 1) And (srcLayer.getLayerCanvasYModifier = 1) Then
                     
-                    'If the user has requested MAX PERFORMANCE rendering, override the requested interpolation type with nearest neighbor
-                    GDI_Plus.GDIPlus_StretchBlt m_tmpDIB, dstRect.Left - Int(dstRect.Left), dstRect.Top - Int(dstRect.Top), dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1, interpolationType
+                    BitBlt srcLayer.tmpDIB.getDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcLayer.layerDIB.getDIBDC, srcRect.Left, srcRect.Top, vbSrcCopy
                     
                     'Apply non-destructive FX now
-                    If srcLayer.getLayerNonDestructiveFXState Then applyNDFXToDIB srcLayer, m_tmpDIB
+                    If srcLayer.getLayerNonDestructiveFXState Then applyNDFXToDIB srcLayer, srcLayer.tmpDIB
+                
+                Else
+                
+                    'If zoomed-in, we can switch to StretchBlt for performance gains.  (As nearest-neighbor interpolation will
+                    ' be used regardless of the caller's requested interpolation type.)
+                    If srcImageRect.Width < dstViewportRect.Width Then
+                        
+                        'We are zoomed-in to the image, e.g. zoom is larger than 100%.  Check for non-destructive FX being present.
+                        
+                        'Non-destructive FX are active.  To reduce processing time, chop out the source rectangle, apply the non-destructive FX,
+                        ' and *then* resize the data.
+                        If srcLayer.getLayerNonDestructiveFXState Then
+                        
+                            'Extract the smaller source rectangle into its own DIB.  Note that no extra coordinate math is involved here; this is
+                            ' a direct transfer.  We need a temp copy of the data because the effect is (per its name!) non-destructive, so it is
+                            ' only rendered when the image is written to the screen or to file.
+                            
+                            'Calculate width and height values for the DIB in advance.  These calculations are complicated because floating-point
+                            ' offsets and widths (due to subpixel positioning) may cause the relevant area of the DIB to as much as 2px larger than
+                            ' its integer-truncated values.  Also, if these calculated width/height values match the size of the current NDFX DIB,
+                            ' we don't need to recreate it!
+                            dibWidthCalc = srcRect.Width + 0.999 + (srcRect.Left - Int(srcRect.Left))
+                            dibHeightCalc = srcRect.Height + 0.999 + (srcRect.Top - Int(srcRect.Top))
+                            
+                            If (m_NDFXDIB.getDIBWidth <> dibWidthCalc) Or (m_NDFXDIB.getDIBHeight <> dibHeightCalc) Then
+                                m_NDFXDIB.createBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
+                            Else
+                                m_NDFXDIB.resetDIB
+                            End If
+                            
+                            BitBlt m_NDFXDIB.getDIBDC, 0, 0, dibWidthCalc, dibHeightCalc, srcLayer.layerDIB.getDIBDC, Int(srcRect.Left), Int(srcRect.Top), vbSrcCopy
+                            
+                            'Apply the non-destructive FX to the smaller source DIB; this is faster than applying it after the resize action,
+                            ' as we only have to process a small fraction of the pixels
+                            applyNDFXToDIB srcLayer, m_NDFXDIB
+                            
+                            'Copy the processed DIB into tmpDIB, which will be used for compositing later in this function
+                            GDI_Plus.GDIPlus_StretchBlt srcLayer.tmpDIB, dstRect.Left - Int(dstRect.Left), dstRect.Top - Int(dstRect.Top), dstRect.Width, dstRect.Height, m_NDFXDIB, srcRect.Left - Int(srcRect.Left), srcRect.Top - Int(srcRect.Top), srcRect.Width, srcRect.Height, 1, InterpolationModeNearestNeighbor
+                                                            
+                        'Non-destructive FX are not active.  Resize the source rectangle immediately.
+                        Else
+                        
+                            'Check for non-destructive resizing.  If present, switch to GDI+; otherwise, StretchBlt is sufficient.
+                            ' (NOTE: this code works without incident.)
+                            If (srcLayer.getLayerCanvasXModifier = 1) And (srcLayer.getLayerCanvasYModifier = 1) Then
+                                StretchBlt srcLayer.tmpDIB.getDIBDC, 0, 0, srcLayer.tmpDIB.getDIBWidth, srcLayer.tmpDIB.getDIBHeight, srcLayer.layerDIB.getDIBDC, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, vbSrcCopy
+                            Else
+                                GDIPlusResizeDIB srcLayer.tmpDIB, dstRect.Left - Int(dstRect.Left), dstRect.Top - Int(dstRect.Top), dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerResizeQuality_GDIPlus
+                            End If
+                            
+                        End If
+                    
+                    'We are zoomed-out, so StretchBlt cannot be used (as it will cause artifacting for 32bpp data).  GDI+ is our only
+                    ' option at present.
+                    Else
+                        
+                        'If the user has requested MAX PERFORMANCE rendering, override the requested interpolation type with nearest neighbor
+                        GDI_Plus.GDIPlus_StretchBlt srcLayer.tmpDIB, dstRect.Left - Int(dstRect.Left), dstRect.Top - Int(dstRect.Top), dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, 1, interpolationType
+                        
+                        'Apply non-destructive FX now
+                        If srcLayer.getLayerNonDestructiveFXState Then applyNDFXToDIB srcLayer, srcLayer.tmpDIB
+                        
+                    End If
                     
                 End If
                 
+                'Update the layer hash, so we can possibly skip this work in the future
+                srcLayer.setViewportHash_FromLong testHash
+                
+            'End If for regenerating temporary layer compositing DIB (srcLayer.tmpDIB)
             End If
             
-            'tmpDIB now contains the chunk of this layer that appears on the viewport, with all non-destructive edits applied.
+            'srcLayer.tmpDIB now contains the chunk of this layer that appears on the viewport, with all non-destructive edits applied.
+            
             ' Time to composite it!
             If nonStandardBlendModeActive Then
-                compositeDIBs m_tmpDIB, m_dstDIB, srcLayer.getLayerBlendMode, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top
+                
+                'Composite and blend in one fell swoop
+                compositeAndBlendDIBs srcLayer.tmpDIB, m_dstDIB, srcLayer.getLayerBlendMode, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, srcLayer.getLayerOpacity / 100
+                
+            'If no wacky blend modes are in use, we can use GDI's AlphaBlend for a performance boost
+            Else
+                srcLayer.tmpDIB.alphaBlendToDC m_dstDIB.getDIBDC, srcLayer.getLayerOpacity * 2.55, Int(dstRect.Left) - Int(dstViewportRect.Left), Int(dstRect.Top) - Int(dstViewportRect.Top)
             End If
-            
-            m_tmpDIB.alphaBlendToDC m_dstDIB.getDIBDC, srcLayer.getLayerOpacity * 2.55, Int(dstRect.Left) - Int(dstViewportRect.Left), Int(dstRect.Top) - Int(dstViewportRect.Top)
             
         'This is a simple layer, with no non-destructive effects or weird blend modes.  Composite it instantly, without using
         ' a temporary placeholder layer.
