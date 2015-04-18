@@ -160,7 +160,8 @@ End Type
 
 Private myNonDestructiveFX As nonDestructiveFXSettings
 
-'Layer width, height.  Note that this values are automatically updated as necessary, depending on the contents of the layer
+'Layer width, height.  Note that this values are automatically updated as necessary, depending on the contents of the layer,
+' so there is no need to cache them at module-level.
 'Private layerWidth As Long, layerHeight As Long
 
 'A DIB that stores the contents of the layer, in DIB format.
@@ -172,7 +173,13 @@ Private myNonDestructiveFX As nonDestructiveFXSettings
 'For performance reasons, I have chosen to make layer DIBs publicly accessible.  This allows edit functions to directly modify
 ' them as necessary.  That said, any function that directly modifies the DIB must also take care of any management functions
 ' as well (e.g. redrawing the viewport), because layers have no way to propagate change notifications up to their parent image.
+' This is typically handled by a called to the parent's .notifyImageChanged function, and passing the relevant layer index.
 Public layerDIB As pdDIB
+
+'Temporary compositing DIB.  This DIB is only used under certain circumstances.  The pdLayer object itself has no use for it,
+' but because it's often necessary for the compositor to generate temporary DIBs on a per-layer basis, this can save us a lot
+' of time during performance-crucial operations (e.g. painting).
+Public tmpDIB As pdDIB
 
 'Layer thumbnail.  This 256x256 DIB is cached locally, then passed to external functions only when necessary.  Note that requests
 ' for sizes larger than 256x256 (in either dimension) will force creation of a custom thumbnail from scratch, so try to avoid that
@@ -184,6 +191,11 @@ Private layerThumbnail As pdDIB
 ' reflects the layer's contents.  Dirty means that we know the current thumbnail is invalid, so regenerate it before continuing.
 Private m_IsThumbClean As Boolean
 
+'For some parts of the rendering pipeline, we can cache intermediate copies of the layer, cropped and stretched and prepped for
+' viewport rendering.  To simplify the work performed by the compositor, layer's can generate a quick-and-dirty "viewport state hash"
+' that represents viewport settings.  This hash can be used to detect changes to the layer, which in turn tells us if we need to
+' regenerate the temporary compositing DIB, or if we can just use the existing copy.
+Private m_ViewportStateHash As Long
 
 'If an external function modifies this layer's DIB contents (or the vector data from which the DIB is generated),
 ' it must call this function afterward.
@@ -551,6 +563,9 @@ Private Sub Class_Initialize()
     
     'Initialize the layer's DIB
     Set layerDIB = New pdDIB
+    
+    'Initialize the temporary compositing DIB
+    Set tmpDIB = New pdDIB
     
     'Initialize the layer thumbnail and note that it is not clean, which will force a regeneration when the thumbnail is next requested.
     Set layerThumbnail = New pdDIB
@@ -1081,7 +1096,7 @@ Public Sub convertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parent
 
     'If this layer has transforms applied to it, we have to make them permanent before proceeding.
     ' Otherwise, the resulting image may not look right.  (Note that this behavior can be overridden if a function
-    ' is ABSOLUTELY CERTAIN that the end result won't botch the transform - this is only true for pixels transforms
+    ' is ABSOLUTELY CERTAIN that the end result won't botch the transform - this is only true for pixel transforms
     ' that operate strictly in separate x/y domains, such as resizing).
     If applyCanvasTransformsFirst Then makeCanvasTransformsPermanent
     
@@ -1306,6 +1321,7 @@ Public Function estimateRAMUsage() As Long
 
     'Calculate the raw memory size of both the layer and the cached thumbnail DIB, if any
     If Not (layerDIB Is Nothing) Then estimateRAMUsage = layerDIB.getDIBArrayWidth * layerDIB.getDIBHeight
+    If Not (tmpDIB Is Nothing) Then estimateRAMUsage = tmpDIB.getDIBArrayWidth * tmpDIB.getDIBHeight
     If Not (layerThumbnail Is Nothing) Then estimateRAMUsage = estimateRAMUsage + layerThumbnail.getDIBArrayWidth * layerThumbnail.getDIBHeight
     
     'Assume a 10% overhead for this class instance and other miscellaneous layer data
@@ -1313,7 +1329,58 @@ Public Function estimateRAMUsage() As Long
 
 End Function
 
+'Update the layer's current "viewport state hash".  This is used by the compositor, only.
+Public Sub setViewportHash(ParamArray allParams() As Variant)
+    m_ViewportStateHash = getViewportHash_Theoretical(allParams)
+End Sub
+
+'If the viewport generates a hash via getViewportHash_Theoretical(), it can pass that hash directly to this function to improve performance
+Public Sub setViewportHash_FromLong(ByVal newHash As Long)
+    m_ViewportStateHash = newHash
+End Sub
+
+'Retrieve the layer's current viewport hash
+Public Function getViewportHash() As Long
+    getViewportHash = m_ViewportStateHash
+End Function
+
+'Given a set of caller-specified parameters, generate a matching viewport hash.  This is used by the compositor to detect changes to the current layer.
+' Caller-specified params are relevant because the compositor will also pass viewport settings, and if *those* change (but the layer is unchanged),
+' we still need to regenerate the function.
+Public Function getViewportHash_Theoretical(ParamArray allParams() As Variant) As Long
+    
+    'First, generate a hash of relevant internals.
+    Dim tmpHash As Long
+    
+    With myLayerData
+        tmpHash = (.l_Angle * 3600) Xor (.l_CanvasXModifier * 10000) Xor (.l_CanvasYModifier * 9900)
+        tmpHash = tmpHash Xor (.l_OffsetX * 10) Xor (.l_OffsetY * 25)
+        tmpHash = tmpHash Xor (.l_ResizeQuality * 620)
+    End With
+    
+    'Next, add any non-destructive FX parameters to the hash
+    With myNonDestructiveFX
+        tmpHash = tmpHash Xor (.fx_Clarity * 7) Xor (.fx_Contrast * 15)
+        tmpHash = tmpHash Xor (.fx_Temperature * 63) Xor (.fx_Tint * 127) Xor (.fx_Vibrance * 255)
+        tmpHash = tmpHash Xor (.fx_Exposure * 2047)
+    End With
+    
+    'Finally, hash any parameters we were passed.
+    If UBound(allParams) >= LBound(allParams) Then
+    
+        Dim i As Long
+        For i = LBound(allParams) To UBound(allParams)
+            tmpHash = tmpHash Xor allParams(i) * (i * 3)
+        Next i
+    
+    End If
+    
+    getViewportHash_Theoretical = tmpHash
+    
+End Function
+
 Private Sub Class_Terminate()
     Set layerDIB = Nothing
+    Set tmpDIB = Nothing
     Set layerThumbnail = Nothing
 End Sub
