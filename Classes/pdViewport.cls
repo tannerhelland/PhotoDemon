@@ -63,14 +63,14 @@ Public Function getTopOffset() As Long
     getTopOffset = topOffset
 End Function
 
-Public Function setTopOffset(ByVal newOffset As Long) As Long
+Public Sub setTopOffset(ByVal newOffset As Long)
     topOffset = newOffset
-End Function
+End Sub
 
 Public Function getBottomOffset() As Long
     getBottomOffset = bottomOffset
 End Function
 
-Public Function setBottomOffset(ByVal newOffset As Long) As Long
+Public Sub setBottomOffset(ByVal newOffset As Long)
     bottomOffset = newOffset
-End Function
+End Sub

@@ -292,7 +292,8 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
     
     Else
         
-        'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared srcImage.BackBuffer for us.  The goal of this stage is two-fold:
+        'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared srcImage.BackBuffer for us.  Stage 2 does nothing on this
+        ' pipeline path.  The goal of this stage (3) is two-fold:
         ' 1) Fill the viewport area of the canvas with a checkerboard pattern
         ' 2) Render the fully composited image atop the checkerboard pattern
         

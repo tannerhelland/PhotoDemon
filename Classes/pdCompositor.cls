@@ -1410,7 +1410,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer 
                 
             'If no wacky blend modes are in use, we can use GDI's AlphaBlend for a performance boost
             Else
-                srcLayer.tmpDIB.alphaBlendToDC m_dstDIB.getDIBDC, srcLayer.getLayerOpacity * 2.55, Int(dstRect.Left) - Int(dstViewportRect.Left), Int(dstRect.Top) - Int(dstViewportRect.Top)
+                srcLayer.tmpDIB.alphaBlendToDC m_dstDIB.getDIBDC, srcLayer.getLayerOpacity * 2.55, Int(dstRect.Left - dstViewportRect.Left), Int(dstRect.Top - dstViewportRect.Top)
             End If
             
         'This is a simple layer, with no non-destructive effects or weird blend modes.  Composite it instantly, without using
@@ -1469,9 +1469,9 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer 
                         
                         'Paint the resized DIB to the layer, at offset (0, 0).
                         If (srcLayer.getLayerCanvasXModifier <> 1) Or (srcLayer.getLayerCanvasYModifier <> 1) Then
-                            GDIPlus_StretchBlt srcLayer.tmpDIB, 0, 0, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity / 100, srcLayer.getLayerResizeQuality_GDIPlus
+                            GDIPlus_StretchBlt srcLayer.tmpDIB, dstRect.Left - Int(dstRect.Left), dstRect.Top - Int(dstRect.Top), dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity / 100, srcLayer.getLayerResizeQuality_GDIPlus
                         Else
-                            GDIPlus_StretchBlt srcLayer.tmpDIB, 0, 0, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity / 100, interpolationType
+                            GDIPlus_StretchBlt srcLayer.tmpDIB, dstRect.Left - Int(dstRect.Left), dstRect.Top - Int(dstRect.Top), dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity / 100, interpolationType
                         End If
                         
                         'Update the layer hash, so we can possibly skip this work in the future
@@ -1480,7 +1480,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer 
                     End If
                     
                     'Paint the temporary DIB onto the main screen, at the specified offset
-                    GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.tmpDIB, 0, 0, dstRect.Width, dstRect.Height, 1, InterpolationModeNearestNeighbor
+                    GDIPlus_StretchBlt m_dstDIB, Int(dstRect.Left - dstViewportRect.Left), Int(dstRect.Top - dstViewportRect.Top), dstRect.Width, dstRect.Height, srcLayer.tmpDIB, 0, 0, dstRect.Width, dstRect.Height, 1, InterpolationModeNearestNeighbor
                     
                 End If
                                         

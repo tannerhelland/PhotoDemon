@@ -1371,7 +1371,7 @@ Public Function getViewportHash_Theoretical(ParamArray allParams() As Variant) A
     
         Dim i As Long
         For i = LBound(allParams) To UBound(allParams)
-            tmpHash = tmpHash Xor allParams(i) * (i * 3)
+            tmpHash = tmpHash Xor allParams(i) * (i + 1)
         Next i
     
     End If
