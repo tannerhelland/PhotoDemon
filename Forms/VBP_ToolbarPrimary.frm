@@ -245,6 +245,26 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1085
       _ExtentY        =   1085
    End
+   Begin PhotoDemon.pdLabel lblCategories 
+      Height          =   240
+      Index           =   4
+      Left            =   120
+      Top             =   5100
+      Width           =   2175
+      _ExtentX        =   3836
+      _ExtentY        =   503
+      Caption         =   "vector"
+   End
+   Begin PhotoDemon.pdButtonToolbox cmdTools 
+      Height          =   600
+      Index           =   9
+      Left            =   120
+      TabIndex        =   19
+      Top             =   5400
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+   End
    Begin VB.Line lnRightSeparator 
       X1              =   136
       X2              =   136
@@ -270,7 +290,7 @@ Begin VB.Form toolbar_Toolbox
       Height          =   600
       Left            =   120
       TabIndex        =   0
-      Top             =   5400
+      Top             =   6360
       UseMnemonic     =   0   'False
       Visible         =   0   'False
       Width           =   2160
@@ -396,7 +416,9 @@ Private Sub Form_Load()
     cmdTools(SELECT_POLYGON).AssignImage "T_SELPOLYGON"
     cmdTools(SELECT_LASSO).AssignImage "T_SELLASSO"
     cmdTools(SELECT_WAND).AssignImage "T_SELWAND"
-        
+    
+    cmdTools(VECTOR_TEXT).AssignImage "TV_TEXT", , , 50
+    
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
     lastUsedSettings.setParentForm Me
@@ -643,9 +665,37 @@ Private Sub reflowToolboxLayout()
         
     Next i
     
+    'Vector group
+    If m_ShowCategoryLabels Then
+    
+        If vOffset < cmdTools(SELECT_WAND).Top + cmdTools(SELECT_WAND).Height Then
+            vOffset = cmdTools(SELECT_WAND).Top + cmdTools(SELECT_WAND).Height + buttonMarginBottom
+        End If
+        
+        vOffset = vOffset + labelMarginTop
+        lblCategories(4).Move hOffsetDefaultLabel, vOffset
+        vOffset = lblCategories(4).Top + lblCategories(4).Height + labelMarginBottom
+        hOffset = hOffsetDefaultButton
+        
+    End If
+    
+    For i = VECTOR_TEXT To VECTOR_TEXT
+        
+        'Move this button into position
+        cmdTools(i).Move hOffset, vOffset
+        
+        'Calculate a new offset for the next button
+        hOffset = hOffset + cmdTools(i).Width + buttonMarginRight
+        If hOffset + cmdTools(i).Width > rightBoundary Then
+            hOffset = hOffsetDefaultButton
+            vOffset = vOffset + cmdTools(i).Height + buttonMarginBottom
+        End If
+        
+    Next i
+    
     'Macro recording message
-    If vOffset < cmdTools(SELECT_WAND).Top + cmdTools(SELECT_WAND).Height Then
-        vOffset = cmdTools(SELECT_WAND).Top + cmdTools(SELECT_WAND).Height + buttonMarginBottom
+    If vOffset < cmdTools(cmdTools.UBound).Top + cmdTools(cmdTools.UBound).Height Then
+        vOffset = cmdTools(cmdTools.UBound).Top + cmdTools(cmdTools.UBound).Height + buttonMarginBottom
     End If
     
     vOffset = vOffset + labelMarginTop
@@ -754,13 +804,17 @@ Public Sub resetToolButtonStates()
         Case NAV_MOVE
             activeToolPanel = 1
         
+        '"Quick fix" tool(s)
+        Case QUICK_FIX_LIGHTING
+            activeToolPanel = 2
+        
         'Rectangular, Elliptical, Line selections
         Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
             activeToolPanel = 3
             
-        '"Quick fix" tool(s)
-        Case QUICK_FIX_LIGHTING
-            activeToolPanel = 2
+        'Vector tools
+        Case VECTOR_TEXT
+            activeToolPanel = 4
         
         'If a tool does not require an extra settings panel, set the active panel to -1.  This will hide all panels.
         Case Else
@@ -784,26 +838,8 @@ Public Sub resetToolButtonStates()
         
     End If
     
-    'Next, we can automatically hide the options toolbox for certain tools (because they have no options).  This is a
-    ' nice courtesy, as it frees up space on the main canvas area if the current tool has no adjustable options.
-    ' (Note that we can skip the check if the main form is not yet loaded.)
-    If FormMain.Visible Then
-    
-        Select Case g_CurrentTool
-            
-            'Hand tool is currently the only tool without additional options
-            Case NAV_DRAG
-                g_WindowManager.setWindowVisibility toolbar_Options.hWnd, False, False
-                
-            'All other tools expose options, so display the toolbox (unless the user has disabled the window completely)
-            Case Else
-                g_WindowManager.setWindowVisibility toolbar_Options.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True), False
-                
-        End Select
-        
-    End If
-    
-    'Next, some tools display information about the current layer.  Synchronize that information before proceeding.
+    'Next, some tools display information about the current layer.  Synchronize that information before proceeding, so that the
+    ' option panel's information is correct as soon as the window appears.
     Tool_Support.syncToolOptionsUIToCurrentLayer
     
     'Check the selection state before swapping tools.  If a selection is active, and the user is switching to the same
@@ -828,6 +864,25 @@ Public Sub resetToolButtonStates()
     
     'If the current tool is a selection tool, make sure the selection area box (interior/exterior/border) is enabled properly
     If (getSelectionShapeFromCurrentTool > -1) Then toolbar_Options.updateSelectionPanelLayout
+    
+    'Next, we can automatically hide the options toolbox for certain tools (because they have no options).  This is a
+    ' nice courtesy, as it frees up space on the main canvas area if the current tool has no adjustable options.
+    ' (Note that we can skip the check if the main form is not yet loaded.)
+    If FormMain.Visible Then
+    
+        Select Case g_CurrentTool
+            
+            'Hand tool is currently the only tool without additional options
+            Case NAV_DRAG
+                g_WindowManager.setWindowVisibility toolbar_Options.hWnd, False, False
+                
+            'All other tools expose options, so display the toolbox (unless the user has disabled the window completely)
+            Case Else
+                g_WindowManager.setWindowVisibility toolbar_Options.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True), False
+                
+        End Select
+        
+    End If
     
     'Display the current tool options panel, while hiding all inactive ones.  The On Error Resume statement is used to fix
     ' trouble with the .SetFocus line, below.  That .SetFocus line is helpful for fixing some VB issues with controls embedded
@@ -1007,16 +1062,21 @@ Public Sub updateAgainstCurrentTheme()
     'cmdFile(FILE_FADE).assignTooltip "Fade last action"
     'cmdFile(FILE_REDO).assignTooltip "Redo previous action"
     
-    'Painting tool buttons are next
+    'Non-destructive tool buttons are next
     cmdTools(NAV_DRAG).assignTooltip "Hand (click-and-drag image scrolling)"
     cmdTools(NAV_MOVE).assignTooltip "Move and resize image layers"
     cmdTools(QUICK_FIX_LIGHTING).assignTooltip "Apply non-destructive lighting adjustments"
+    
+    '...then selections...
     cmdTools(SELECT_RECT).assignTooltip "Rectangular Selection"
     cmdTools(SELECT_CIRC).assignTooltip "Elliptical (Oval) Selection"
     cmdTools(SELECT_LINE).assignTooltip "Line Selection"
     cmdTools(SELECT_POLYGON).assignTooltip "Polygon Selection"
     cmdTools(SELECT_LASSO).assignTooltip "Lasso (Freehand) Selection"
     cmdTools(SELECT_WAND).assignTooltip "Magic Wand Selection"
+    
+    '...then vector tools...
+    cmdTools(VECTOR_TEXT).assignTooltip "Text"
     
     'The right separator line is colored according to the current shadow accent color
     If Not g_Themer Is Nothing Then
