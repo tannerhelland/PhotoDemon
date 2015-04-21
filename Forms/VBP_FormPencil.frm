@@ -288,11 +288,11 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         qvDepth = curDIBValues.BytesPerPixel
                 
         'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
-        Dim grayLookUp() As Byte
-        ReDim grayLookUp(0 To 765) As Byte
+        Dim grayLookup() As Byte
+        ReDim grayLookup(0 To 765) As Byte
         
         For x = 0 To 765
-            grayLookUp(x) = x \ 3
+            grayLookup(x) = x \ 3
         Next x
                 
         'Invert the source DIB, and optionally, apply grayscale as well
@@ -312,7 +312,7 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
             
             '...but for the "luminous" color mode, we also convert the image to grayscale
             Else
-                g = grayLookUp(r + g + b)
+                g = grayLookup(r + g + b)
                 srcImageData(QuickVal + 2, y) = 255 - g
                 srcImageData(QuickVal + 1, y) = 255 - g
                 srcImageData(QuickVal, y) = 255 - g
@@ -344,8 +344,8 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         Set tmpLayerTop = New pdLayer
         Set tmpLayerBottom = New pdLayer
         
-        tmpLayerTop.CreateNewImageLayer blurDIB
-        tmpLayerBottom.CreateNewImageLayer workingDIB
+        tmpLayerTop.InitializeNewLayer PDL_IMAGE, , blurDIB
+        tmpLayerBottom.InitializeNewLayer PDL_IMAGE, , workingDIB
         
         'Normally we use the "color dodge" blend mode, but for "pastel" mode, we switch to linear dodge for a
         ' lighter, softer appearance
@@ -410,7 +410,7 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
             
                 Case 0, 1
             
-                    avgVal = grayLookUp(r + g + b)
+                    avgVal = grayLookup(r + g + b)
                     maxVal = Max3Int(r, g, b)
                     
                     'Calculate a vibrance-adjusted average, using the gray as our base
@@ -434,7 +434,7 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
                     b = gammaTable(b)
                     
                 Case 3
-                    r = gammaTable(grayLookUp(r + g + b))
+                    r = gammaTable(grayLookup(r + g + b))
                     g = r
                     b = r
                 

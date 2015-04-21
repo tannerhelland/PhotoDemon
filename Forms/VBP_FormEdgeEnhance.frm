@@ -353,8 +353,8 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
     Set tmpLayerTop = New pdLayer
     Set tmpLayerBottom = New pdLayer
     
-    tmpLayerTop.CreateNewImageLayer edgeDIB
-    tmpLayerBottom.CreateNewImageLayer workingDIB
+    tmpLayerTop.InitializeNewLayer PDL_IMAGE, , edgeDIB
+    tmpLayerBottom.InitializeNewLayer PDL_IMAGE, , workingDIB
     
     tmpLayerTop.setLayerBlendMode BL_SCREEN
     tmpLayerTop.setLayerOpacity enhanceStrength

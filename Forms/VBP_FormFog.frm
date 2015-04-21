@@ -404,8 +404,8 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     Set tmpLayerTop = New pdLayer
     Set tmpLayerBottom = New pdLayer
     
-    tmpLayerTop.CreateNewImageLayer tmpFogDIB
-    tmpLayerBottom.CreateNewImageLayer workingDIB
+    tmpLayerTop.InitializeNewLayer PDL_IMAGE, , tmpFogDIB
+    tmpLayerBottom.InitializeNewLayer PDL_IMAGE, , workingDIB
     
     tmpLayerTop.setLayerBlendMode BL_NORMAL
     tmpLayerTop.setLayerOpacity fxDensity

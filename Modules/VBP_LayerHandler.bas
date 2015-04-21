@@ -20,7 +20,7 @@ Option Explicit
 Private Declare Function InflateRect Lib "user32" (ByRef lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
 
 'Add a blank 32bpp layer above the specified layer index (typically the currently active layer)
-Public Sub addBlankLayer(ByVal dLayerIndex As Long)
+Public Sub addBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType As LAYER_TYPE = PDL_IMAGE)
 
     'Validate the requested layer index
     If dLayerIndex < 0 Then dLayerIndex = 0
@@ -30,11 +30,12 @@ Public Sub addBlankLayer(ByVal dLayerIndex As Long)
     Dim newLayerID As Long
     newLayerID = pdImages(g_CurrentImage).createBlankLayer(dLayerIndex)
     
-    'Assign the newly created layer the IMAGE type, and initialize it to the size of the image
+    'Until vector layers are implemented, let's just assign the newly created layer the IMAGE type,
+    ' and initialize it to the size of the image.
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, 0, 0
-    pdImages(g_CurrentImage).getLayerByID(newLayerID).CreateNewImageLayer tmpDIB, , g_Language.TranslateMessage("Blank layer")
+    pdImages(g_CurrentImage).getLayerByID(newLayerID).InitializeNewLayer newLayerType, g_Language.TranslateMessage("Blank layer"), tmpDIB
     
     'Make the blank layer the new active layer
     pdImages(g_CurrentImage).setActiveLayerByID newLayerID
@@ -98,7 +99,7 @@ Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As Long, ByVa
     If Len(dLayerName) = 0 Then dLayerName = g_Language.TranslateMessage("Blank layer")
     
     'Assign the newly created DIB and layer name to the layer object
-    pdImages(g_CurrentImage).getLayerByID(newLayerID).CreateNewImageLayer tmpDIB, , dLayerName
+    pdImages(g_CurrentImage).getLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, dLayerName, tmpDIB
     
     pdImages(g_CurrentImage).setActiveLayerByID prevActiveLayerID
     
@@ -178,9 +179,9 @@ Public Sub loadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal image
             
             'Convert the layer to an IMAGE-type layer and copy the newly loaded DIB's contents into it
             If Len(customLayerName) = 0 Then
-                pdImages(g_CurrentImage).getLayerByID(newLayerID).CreateNewImageLayer tmpDIB, pdImages(g_CurrentImage), Trim$(getFilenameWithoutExtension(imagePath))
+                pdImages(g_CurrentImage).getLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, Trim$(getFilenameWithoutExtension(imagePath)), tmpDIB, pdImages(g_CurrentImage)
             Else
-                pdImages(g_CurrentImage).getLayerByID(newLayerID).CreateNewImageLayer tmpDIB, pdImages(g_CurrentImage), customLayerName
+                pdImages(g_CurrentImage).getLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, customLayerName, tmpDIB, pdImages(g_CurrentImage)
             End If
             
             Debug.Print "Layer created successfully (ID# " & pdImages(g_CurrentImage).getLayerByID(newLayerID).getLayerName & ")"
@@ -632,7 +633,7 @@ Public Sub flattenImage()
     pdImages(g_CurrentImage).getLayerByIndex(0).resetLayerParameters
     
     'Overwrite the final layer with the composite DIB.
-    pdImages(g_CurrentImage).getLayerByIndex(0).CreateNewImageLayer compositeDIB, , flattenedName
+    pdImages(g_CurrentImage).getLayerByIndex(0).InitializeNewLayer PDL_IMAGE, flattenedName, compositeDIB
     
     'Mark the only layer present as the active one.  (This will also re-synchronize the interface against the new image.)
     setActiveLayerByIndex 0, False
@@ -675,7 +676,7 @@ Public Sub mergeVisibleLayers()
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, 0
-    pdImages(g_CurrentImage).getLayerByIndex(0).CreateNewImageLayer tmpDIB, , g_Language.TranslateMessage("Merged layers")
+    pdImages(g_CurrentImage).getLayerByIndex(0).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Merged layers"), tmpDIB
     
     'With that done, merging visible layers is actually not that hard.  Loop through the layer collection,
     ' merging visible layers with the base layer, until all visible layers have been merged.

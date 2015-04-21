@@ -242,9 +242,9 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     Dim grayVal As Byte
     
     'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
-    Dim grayLookUp(0 To 765) As Byte
+    Dim grayLookup(0 To 765) As Byte
     For x = 0 To 765
-        grayLookUp(x) = x \ 3
+        grayLookup(x) = x \ 3
     Next x
     
     Dim distLookUp(0 To 765) As Single
@@ -317,7 +317,7 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
         b = ImageData(QuickVal, y)
         
         'Calculate the gray value using the look-up table
-        grayVal = grayLookUp(r + g + b)
+        grayVal = grayLookup(r + g + b)
         
         'Perform the fire conversion
         r = grayVal * fxIntensity
@@ -357,8 +357,8 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     Set tmpLayerTop = New pdLayer
     Set tmpLayerBottom = New pdLayer
     
-    tmpLayerTop.CreateNewImageLayer edgeDIB
-    tmpLayerBottom.CreateNewImageLayer workingDIB
+    tmpLayerTop.InitializeNewLayer PDL_IMAGE, , edgeDIB
+    tmpLayerBottom.InitializeNewLayer PDL_IMAGE, , workingDIB
     
     tmpLayerTop.setLayerBlendMode BL_SCREEN
     tmpLayerTop.setLayerOpacity fxOpacity

@@ -257,8 +257,8 @@ Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As L
     Set tmpLayerTop = New pdLayer
     Set tmpLayerBottom = New pdLayer
     
-    tmpLayerTop.CreateNewImageLayer curLayerDIBCopy
-    tmpLayerBottom.CreateNewImageLayer prevLayerDIBCopy
+    tmpLayerTop.InitializeNewLayer PDL_IMAGE, , curLayerDIBCopy
+    tmpLayerBottom.InitializeNewLayer PDL_IMAGE, , prevLayerDIBCopy
     
     tmpLayerTop.setLayerBlendMode dstBlendMode
     tmpLayerTop.setLayerOpacity fadeOpacity
