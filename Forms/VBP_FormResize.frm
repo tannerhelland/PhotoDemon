@@ -401,7 +401,7 @@ Private Sub cmdBar_ResetClick()
             ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight, pdImages(g_CurrentImage).getDPI
+            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
         
     End Select
     
@@ -442,7 +442,7 @@ Private Sub Form_Activate()
             ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight, pdImages(g_CurrentImage).getDPI
+            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
         
     End Select
     
@@ -477,7 +477,7 @@ Private Sub Form_Load()
             ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight, pdImages(g_CurrentImage).getDPI
+            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
         
     End Select
     
@@ -548,8 +548,8 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
             srcHeight = pdImages(g_CurrentImage).Height
         
         Case PD_AT_SINGLELAYER
-            srcWidth = pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth
-            srcHeight = pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight
+            srcWidth = pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False)
+            srcHeight = pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False)
         
     End Select
     
@@ -667,7 +667,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
                 Else
                 
                     tmpDIB.createBlank fitWidth, fitHeight, 32, 0
-                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.layerDIB.getDIBWidth, tmpLayerRef.layerDIB.getDIBHeight, InterpolationModeHighQualityBilinear
+                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.getLayerWidth(False), tmpLayerRef.getLayerHeight(False), InterpolationModeHighQualityBilinear
                     
                 End If
             
@@ -682,7 +682,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
                 Else
                 
                     tmpDIB.createBlank fitWidth, fitHeight, 32, 0
-                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.layerDIB.getDIBWidth, tmpLayerRef.layerDIB.getDIBHeight, InterpolationModeHighQualityBicubic
+                    GDIPlusResizeDIB tmpDIB, 0, 0, fitWidth, fitHeight, tmpLayerRef.layerDIB, 0, 0, tmpLayerRef.getLayerWidth(False), tmpLayerRef.getLayerHeight(False), InterpolationModeHighQualityBicubic
                     
                 End If
                 

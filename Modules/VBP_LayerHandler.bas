@@ -216,7 +216,7 @@ Public Sub eraseLayerByIndex(ByVal layerIndex As Long)
     
         'Create a blank layer at the current layer DIB's dimensions
         With pdImages(g_CurrentImage).getLayerByIndex(layerIndex)
-            .layerDIB.createBlank .layerDIB.getDIBWidth, .layerDIB.getDIBHeight, 32, 0, 0
+            .layerDIB.createBlank .getLayerWidth(False), .getLayerHeight(False), 32, 0, 0
         End With
         
         'Notify the parent object of the change
@@ -797,17 +797,9 @@ Public Sub fillRectForLayer(ByRef srcLayer As pdLayer, ByRef dstRect As RECT, Op
     
     With srcLayer
         dstRect.Left = .getLayerOffsetX
-        If useCanvasModifiers Then
-            dstRect.Right = .getLayerOffsetX + (.getLayerCanvasWidthModified)
-        Else
-            dstRect.Right = .getLayerOffsetX + .layerDIB.getDIBWidth
-        End If
+        dstRect.Right = .getLayerOffsetX + .getLayerWidth(useCanvasModifiers)
         dstRect.Top = .getLayerOffsetY
-        If useCanvasModifiers Then
-            dstRect.Bottom = .getLayerOffsetY + (.getLayerCanvasHeightModified)
-        Else
-            dstRect.Bottom = .getLayerOffsetY + .layerDIB.getDIBHeight
-        End If
+        dstRect.Bottom = .getLayerOffsetY + .getLayerHeight(useCanvasModifiers)
     End With
     
 End Sub
@@ -817,17 +809,9 @@ Public Sub fillRectForLayerF(ByRef srcLayer As pdLayer, ByRef dstRect As RECTF, 
 
     With srcLayer
         dstRect.Left = .getLayerOffsetX
-        If useCanvasModifiers Then
-            dstRect.Width = .getLayerCanvasWidthModified
-        Else
-            dstRect.Width = .layerDIB.getDIBWidth
-        End If
+        dstRect.Width = .getLayerWidth(useCanvasModifiers)
         dstRect.Top = .getLayerOffsetY
-        If useCanvasModifiers Then
-            dstRect.Height = .getLayerCanvasHeightModified
-        Else
-            dstRect.Height = .layerDIB.getDIBHeight
-        End If
+        dstRect.Height = .getLayerHeight(useCanvasModifiers)
     End With
 
 End Sub

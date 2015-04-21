@@ -917,8 +917,8 @@ End Sub
 Public Function updateSize(Optional ByVal useBaseLayer As Boolean = True, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)
     
     If useBaseLayer Then
-        Me.Width = imgLayers(0).layerDIB.getDIBWidth
-        Me.Height = imgLayers(0).layerDIB.getDIBHeight
+        Me.Width = imgLayers(0).getLayerWidth(False)
+        Me.Height = imgLayers(0).getLayerHeight(False)
     Else
         Me.Width = newWidth
         Me.Height = newHeight
@@ -1003,7 +1003,7 @@ Public Sub retrieveNullPaddedLayer(ByRef dstDIB As pdDIB, ByVal srcLayerIndex As
     dstDIB.createBlank Width, Height, 32, 0
     
     'Copy the source layer into the blank DIB
-    BitBlt dstDIB.getDIBDC, imgLayers(srcLayerIndex).getLayerOffsetX, imgLayers(srcLayerIndex).getLayerOffsetY, imgLayers(srcLayerIndex).layerDIB.getDIBWidth, imgLayers(srcLayerIndex).layerDIB.getDIBHeight, imgLayers(srcLayerIndex).layerDIB.getDIBDC, 0, 0, vbSrcCopy
+    BitBlt dstDIB.getDIBDC, imgLayers(srcLayerIndex).getLayerOffsetX, imgLayers(srcLayerIndex).getLayerOffsetY, imgLayers(srcLayerIndex).getLayerWidth(False), imgLayers(srcLayerIndex).getLayerHeight(False), imgLayers(srcLayerIndex).layerDIB.getDIBDC, 0, 0, vbSrcCopy
     
 End Sub
 

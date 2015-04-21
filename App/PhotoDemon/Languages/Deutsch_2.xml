@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (rk)</langname>
-<langversion>6.7.16</langversion>
+<langversion>6.7.17</langversion>
 <langstatus>Nicht abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -11054,6 +11054,11 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 </phrase>
 
 <phrase>
+<original>vector</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>macro recording in progress</original>
 <translation>Makroaufnahme im Gange</translation>
 </phrase>
@@ -11158,7 +11163,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 <translation>Zauberstab-Auswahl</translation>
 </phrase>
 
-<!-- VBP_ToolbarPrimary.frm contains 42 phrases. 17 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- VBP_ToolbarPrimary.frm contains 44 phrases. 18 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarPrimary.frm-->
 
@@ -11176,53 +11181,8 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 </phrase>
 
 <phrase>
-<original>layer position (x, y)</original>
+<original>(this tool is under construction)</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize quality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>interaction options</original>
-<translation>Interaktionsoptionen</translation>
-</phrase>
-
-<phrase>
-<original>automatically activate layer beneath mouse</original>
-<translation>Ebene unter Maus automatisch aktivieren</translation>
-</phrase>
-
-<phrase>
-<original>ignore transparent pixels when auto-activating layers</original>
-<translation>Transparente Pixel bei autom. Aktivierung von Ebenen ignorieren</translation>
-</phrase>
-
-<phrase>
-<original>show layer borders</original>
-<translation>Ebenenbegrenzungen zeigen</translation>
-</phrase>
-
-<phrase>
-<original>show layer transform nodes</original>
-<translation>Transformierungsknoten der Ebene zeigen</translation>
-</phrase>
-
-<phrase>
-<original>display options</original>
-<translation>Anzeigeoptionen</translation>
 </phrase>
 
 <phrase>
@@ -11313,6 +11273,56 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 <phrase>
 <original>all</original>
 <translation></translation>
+</phrase>
+
+<phrase>
+<original>layer position (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interaction options</original>
+<translation>Interaktionsoptionen</translation>
+</phrase>
+
+<phrase>
+<original>automatically activate layer beneath mouse</original>
+<translation>Ebene unter Maus automatisch aktivieren</translation>
+</phrase>
+
+<phrase>
+<original>ignore transparent pixels when auto-activating layers</original>
+<translation>Transparente Pixel bei autom. Aktivierung von Ebenen ignorieren</translation>
+</phrase>
+
+<phrase>
+<original>show layer borders</original>
+<translation>Ebenenbegrenzungen zeigen</translation>
+</phrase>
+
+<phrase>
+<original>show layer transform nodes</original>
+<translation>Transformierungsknoten der Ebene zeigen</translation>
+</phrase>
+
+<phrase>
+<original>display options</original>
+<translation>Anzeigeoptionen</translation>
 </phrase>
 
 <phrase>
@@ -11495,7 +11505,7 @@ Um fortzufahren, laden Sie bitte eine neue Kopie von PhotoDemon herunter unter p
 <translation>Diese Option steuert, welche Kriterien der Zauberstab zur Bestimmung verwendet, ob ein Pixel der aktuellen Auswahl hinzugefügt werden sollte.</translation>
 </phrase>
 
-<!-- VBP_ToolbarTools.frm contains 85 phrases. 20 were duplicates of existing phrases, so only 65 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 86 phrases. 20 were duplicates of existing phrases, so only 66 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -13531,10 +13541,10 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2356</phrasecount>
+<phrasecount>2358</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4023 phrases. -->
-<!-- 1667 are duplicates, so only 2356 unique phrases have been written to file. -->
-<!-- These 2356 phrases contain approximately 13439 total words. -->
+<!-- As of this build, PhotoDemon contains 4026 phrases. -->
+<!-- 1668 are duplicates, so only 2358 unique phrases have been written to file. -->
+<!-- These 2358 phrases contain approximately 13445 total words. -->
 
 </pdData>

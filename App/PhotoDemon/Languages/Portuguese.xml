@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.15</langversion>
+<langversion>6.7.16</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -11054,6 +11054,11 @@ To continuar, faça o download de uma nova cópia de PhotoDemon de photodemon.or
 </phrase>
 
 <phrase>
+<original>vector</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>macro recording in progress</original>
 <translation>gravação de macro em andamento</translation>
 </phrase>
@@ -11158,7 +11163,7 @@ To continuar, faça o download de uma nova cópia de PhotoDemon de photodemon.or
 <translation>Magic Wand Seleção</translation>
 </phrase>
 
-<!-- VBP_ToolbarPrimary.frm contains 42 phrases. 17 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- VBP_ToolbarPrimary.frm contains 44 phrases. 18 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarPrimary.frm-->
 
@@ -11176,53 +11181,8 @@ To continuar, faça o download de uma nova cópia de PhotoDemon de photodemon.or
 </phrase>
 
 <phrase>
-<original>layer position (x, y)</original>
+<original>(this tool is under construction)</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize quality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>interaction options</original>
-<translation>opções de interação</translation>
-</phrase>
-
-<phrase>
-<original>automatically activate layer beneath mouse</original>
-<translation>activar automaticamente camada abaixo do mouse</translation>
-</phrase>
-
-<phrase>
-<original>ignore transparent pixels when auto-activating layers</original>
-<translation>ignorar pixels transparentes quando as camadas de auto-ativação</translation>
-</phrase>
-
-<phrase>
-<original>show layer borders</original>
-<translation>fronteiras espectáculo de camada</translation>
-</phrase>
-
-<phrase>
-<original>show layer transform nodes</original>
-<translation>Mostrar camada transformar os nós</translation>
-</phrase>
-
-<phrase>
-<original>display options</original>
-<translation>opções de exibição</translation>
 </phrase>
 
 <phrase>
@@ -11313,6 +11273,56 @@ To continuar, faça o download de uma nova cópia de PhotoDemon de photodemon.or
 <phrase>
 <original>all</original>
 <translation></translation>
+</phrase>
+
+<phrase>
+<original>layer position (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interaction options</original>
+<translation>opções de interação</translation>
+</phrase>
+
+<phrase>
+<original>automatically activate layer beneath mouse</original>
+<translation>activar automaticamente camada abaixo do mouse</translation>
+</phrase>
+
+<phrase>
+<original>ignore transparent pixels when auto-activating layers</original>
+<translation>ignorar pixels transparentes quando as camadas de auto-ativação</translation>
+</phrase>
+
+<phrase>
+<original>show layer borders</original>
+<translation>fronteiras espectáculo de camada</translation>
+</phrase>
+
+<phrase>
+<original>show layer transform nodes</original>
+<translation>Mostrar camada transformar os nós</translation>
+</phrase>
+
+<phrase>
+<original>display options</original>
+<translation>opções de exibição</translation>
 </phrase>
 
 <phrase>
@@ -11495,7 +11505,7 @@ To continuar, faça o download de uma nova cópia de PhotoDemon de photodemon.or
 <translation>Esta opção controla quais os critérios que a varinha mágica usa para determinar se um pixel deve ser adicionado à seleção atual.</translation>
 </phrase>
 
-<!-- VBP_ToolbarTools.frm contains 85 phrases. 20 were duplicates of existing phrases, so only 65 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 86 phrases. 20 were duplicates of existing phrases, so only 66 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -13531,10 +13541,10 @@ or os menus File> Open e File> Import.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2356</phrasecount>
+<phrasecount>2358</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4023 phrases. -->
-<!-- 1667 are duplicates, so only 2356 unique phrases have been written to file. -->
-<!-- These 2356 phrases contain approximately 13439 total words. -->
+<!-- As of this build, PhotoDemon contains 4026 phrases. -->
+<!-- 1668 are duplicates, so only 2358 unique phrases have been written to file. -->
+<!-- These 2358 phrases contain approximately 13445 total words. -->
 
 </pdData>

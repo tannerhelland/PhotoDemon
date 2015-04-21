@@ -781,9 +781,12 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         yOffset = bottomRect.Top - finalRect.Top
         
         If (bottomLayer.getLayerCanvasXModifier = 1) And (bottomLayer.getLayerCanvasYModifier = 1) Then
-            BitBlt tmpDIB.getDIBDC, xOffset, yOffset, bottomLayer.layerDIB.getDIBWidth, bottomLayer.layerDIB.getDIBHeight, bottomLayer.layerDIB.getDIBDC, 0, 0, vbSrcCopy
+            BitBlt tmpDIB.getDIBDC, xOffset, yOffset, bottomLayer.getLayerWidth(False), bottomLayer.getLayerHeight(False), bottomLayer.layerDIB.getDIBDC, 0, 0, vbSrcCopy
         Else
-            GDI_Plus.GDIPlus_StretchBlt tmpDIB, xOffset, yOffset, bottomLayer.getLayerCanvasWidthModified, bottomLayer.getLayerCanvasHeightModified, bottomLayer.layerDIB, 0, 0, bottomLayer.layerDIB.getDIBWidth, bottomLayer.layerDIB.getDIBHeight, 1, bottomLayer.getLayerResizeQuality_GDIPlus
+            
+            With bottomLayer
+                GDI_Plus.GDIPlus_StretchBlt tmpDIB, xOffset, yOffset, .getLayerWidth(True), .getLayerHeight(True), .layerDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), 1, .getLayerResizeQuality_GDIPlus
+            End With
             
             'Also, reset the canvas modifiers for the bottom layer now, as we have effectively nullified them by this resize
             bottomLayer.setLayerCanvasXModifier 1
@@ -824,8 +827,12 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         If (topLayer.getLayerCanvasXModifier = 1) And (topLayer.getLayerCanvasYModifier = 1) Then
             tmpDIB.createFromExistingDIB topLayer.layerDIB
         Else
-            tmpDIB.createBlank topLayer.getLayerCanvasWidthModified, topLayer.getLayerCanvasHeightModified, 32, 0
-            GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, topLayer.layerDIB, 0, 0, topLayer.layerDIB.getDIBWidth, topLayer.layerDIB.getDIBHeight, topLayer.getLayerResizeQuality_GDIPlus
+            
+            With topLayer
+                tmpDIB.createBlank .getLayerWidth(True), .getLayerHeight(True), 32, 0
+                GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, .layerDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), .getLayerResizeQuality_GDIPlus
+            End With
+            
         End If
         
         'tmpDIB now contains the chunk of this layer that appears on the viewport.  Before we can composite it against the base layer,
@@ -1423,15 +1430,15 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer 
                 
                 'AlphaBlend is very picky about invalid width/height values.  Make sure the source rect is valid.
                 ' (It may be ever-so-slightly off due to rounding issues during all the floating-point math we perform.)
-                If srcRect.Width > srcLayer.layerDIB.getDIBWidth Then srcRect.Width = srcLayer.layerDIB.getDIBWidth
-                If srcRect.Height > srcLayer.layerDIB.getDIBHeight Then srcRect.Height = srcLayer.layerDIB.getDIBHeight
+                If srcRect.Width > srcLayer.getLayerWidth(False) Then srcRect.Width = srcLayer.getLayerWidth(False)
+                If srcRect.Height > srcLayer.getLayerHeight(False) Then srcRect.Height = srcLayer.getLayerHeight(False)
                 srcLayer.layerDIB.alphaBlendToDCEx m_dstDIB.getDIBDC, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity * 2.55
                 m_dstDIB.setInitialAlphaPremultiplicationState True
                 
             Else
                 
-                If srcRect.Width > srcLayer.layerDIB.getDIBWidth Then srcRect.Width = srcLayer.layerDIB.getDIBWidth
-                If srcRect.Height > srcLayer.layerDIB.getDIBHeight Then srcRect.Height = srcLayer.layerDIB.getDIBHeight
+                If srcRect.Width > srcLayer.getLayerWidth(False) Then srcRect.Width = srcLayer.getLayerWidth(False)
+                If srcRect.Height > srcLayer.getLayerHeight(False) Then srcRect.Height = srcLayer.getLayerHeight(False)
                 
                 'When zoomed in, nearest neighbor is preferred
                 If srcImageRect.Width < dstViewportRect.Width Then

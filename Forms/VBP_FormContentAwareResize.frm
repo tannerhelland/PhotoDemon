@@ -191,8 +191,8 @@ Private Sub cmdBar_RandomizeClick()
             ucResize.imgHeightInPixels = (pdImages(g_CurrentImage).Height / 2) + (Rnd * pdImages(g_CurrentImage).Height)
         
         Case PD_AT_SINGLELAYER
-            ucResize.imgWidthInPixels = (pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth / 2) + (Rnd * pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth)
-            ucResize.imgHeightInPixels = (pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight / 2) + (Rnd * pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight)
+            ucResize.imgWidthInPixels = (pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False) / 2) + (Rnd * pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False))
+            ucResize.imgHeightInPixels = (pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False) / 2) + (Rnd * pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False))
     
     End Select
     
@@ -209,7 +209,7 @@ Private Sub cmdBar_ResetClick()
             ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
         
         Case PD_AT_SINGLELAYER
-            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight, pdImages(g_CurrentImage).getDPI
+            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
     
     End Select
 
@@ -239,7 +239,7 @@ Private Sub Form_Activate()
             ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight, pdImages(g_CurrentImage).getDPI
+            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
         
     End Select
     
@@ -260,7 +260,7 @@ Private Sub Form_Load()
             ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
             
         Case PD_AT_SINGLELAYER
-            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight, pdImages(g_CurrentImage).getDPI
+            ucResize.setInitialDimensions pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False), pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False), pdImages(g_CurrentImage).getDPI
         
     End Select
     
@@ -307,8 +307,8 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     'In past versions of the software, we could assume the passed measurements were always in pixels,
     ' but that is no longer the case!  Using the supplied "unit of measurement", convert the passed
     ' width and height values to pixel measurements.
-    iWidth = convertOtherUnitToPixels(unitOfMeasurement, iWidth, iDPI, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth)
-    iHeight = convertOtherUnitToPixels(unitOfMeasurement, iHeight, iDPI, pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight)
+    iWidth = convertOtherUnitToPixels(unitOfMeasurement, iWidth, iDPI, pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False))
+    iHeight = convertOtherUnitToPixels(unitOfMeasurement, iHeight, iDPI, pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False))
     
     'Pass the temporary DIB to the master seam carve function
     If SeamCarveDIB(tmpDIB, iWidth, iHeight) Then

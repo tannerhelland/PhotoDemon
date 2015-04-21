@@ -207,7 +207,8 @@ Private m_ViewportStateHash As Long
 ' - per the name, lol - do not require us to rebuild internal caches, because the effects and/or resizing will be
 ' handled by a compositor object.
 '
-'Finally, function will mark all layer caches as dirty, causing a lot of subsequent work, so use it only when absolutely necessary.
+'Finally, this function will mark all layer caches as dirty, causing a lot of subsequent work, so use it only when
+' absolutely necessary.
 Public Sub notifyOfDestructiveChanges()
 
     'Mark the layer thumbnail as dirty
@@ -312,10 +313,12 @@ End Sub
 'Also, at present, these values are not stored persistently.  They are simply generated on-the-fly by taking the layerDIB object's dimensions,
 ' and multiplying them by the current canvas x/y modifiers.  The caller can override the canvas modifier calculation by passing FALSE to the function.
 Public Function getLayerWidth(Optional ByVal applyCanvasModifier As Boolean = True) As Double
+    
     If Not (layerDIB Is Nothing) Then
         
         If applyCanvasModifier Then
             getLayerWidth = layerDIB.getDIBWidth * getLayerCanvasXModifier
+            If getLayerWidth < 1 Then getLayerWidth = 1
         Else
             getLayerWidth = layerDIB.getDIBWidth
         End If
@@ -323,13 +326,16 @@ Public Function getLayerWidth(Optional ByVal applyCanvasModifier As Boolean = Tr
     Else
         getLayerWidth = 0
     End If
+    
 End Function
 
 Public Function getLayerHeight(Optional ByVal applyCanvasModifier As Boolean = True) As Double
+    
     If Not (layerDIB Is Nothing) Then
         
         If applyCanvasModifier Then
             getLayerHeight = layerDIB.getDIBHeight * getLayerCanvasYModifier
+            If getLayerHeight < 1 Then getLayerHeight = 1
         Else
             getLayerHeight = layerDIB.getDIBHeight
         End If
@@ -337,6 +343,7 @@ Public Function getLayerHeight(Optional ByVal applyCanvasModifier As Boolean = T
     Else
         getLayerHeight = 0
     End If
+    
 End Function
 
 'Get/set layer canvas modifiers (necessary for non-destructive on-canvas resizing)
@@ -487,18 +494,6 @@ Public Sub setLayerNonDestructiveFXState(ByVal ndEffect As LAYER_NONDESTRUCTIVE_
     
 End Sub
 
-'As a convenience to the user, modified width/height values can be retrieved using this function.  Note that
-' error handling is automatically performed to prevent over/underflow.
-Public Function getLayerCanvasWidthModified() As Long
-    getLayerCanvasWidthModified = layerDIB.getDIBWidth * myLayerData.l_CanvasXModifier
-    If getLayerCanvasWidthModified < 1 Then getLayerCanvasWidthModified = 1
-End Function
-
-Public Function getLayerCanvasHeightModified() As Long
-    getLayerCanvasHeightModified = layerDIB.getDIBHeight * myLayerData.l_CanvasYModifier
-    If getLayerCanvasHeightModified < 1 Then getLayerCanvasHeightModified = 1
-End Function
-
 'If this layer needs to have its on-canvas transformations made permanent (for example, when applying an action
 ' that involves a selection), this function can be used.
 Public Sub makeCanvasTransformsPermanent()
@@ -510,8 +505,8 @@ Public Sub makeCanvasTransformsPermanent()
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     
-    tmpDIB.createBlank getLayerCanvasWidthModified, getLayerCanvasHeightModified, 32, 0
-    GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, layerDIB, 0, 0, layerDIB.getDIBWidth, layerDIB.getDIBHeight, Me.getLayerResizeQuality_GDIPlus
+    tmpDIB.createBlank getLayerWidth(True), getLayerHeight(True), 32, 0
+    GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, layerDIB, 0, 0, getLayerWidth(False), getLayerHeight(False), Me.getLayerResizeQuality_GDIPlus
     
     layerDIB.createFromExistingDIB tmpDIB
     Set tmpDIB = Nothing
@@ -1257,12 +1252,12 @@ Public Function checkForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) 
             ReDim poiList(0 To 3) As POINTAPI
             poiList(0).x = getLayerOffsetX
             poiList(0).y = getLayerOffsetY
-            poiList(1).x = getLayerOffsetX + (layerDIB.getDIBWidth * getLayerCanvasXModifier)
+            poiList(1).x = getLayerOffsetX + getLayerWidth(True)
             poiList(1).y = getLayerOffsetY
-            poiList(2).x = getLayerOffsetX + (layerDIB.getDIBWidth * getLayerCanvasXModifier)
-            poiList(2).y = getLayerOffsetY + (layerDIB.getDIBHeight * getLayerCanvasYModifier)
+            poiList(2).x = getLayerOffsetX + getLayerWidth(True)
+            poiList(2).y = getLayerOffsetY + getLayerHeight(True)
             poiList(3).x = getLayerOffsetX
-            poiList(3).y = getLayerOffsetY + (layerDIB.getDIBHeight * getLayerCanvasYModifier)
+            poiList(3).y = getLayerOffsetY + getLayerHeight(True)
             
             'Check to see if one of the corners has been clicked
             closestPoint = findClosestPointInArray(imgX, imgY, minDistance, poiList)

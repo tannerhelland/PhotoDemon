@@ -167,8 +167,8 @@ Public Function isMouseOverLayer(ByVal imgX As Long, ByVal imgY As Long, ByRef s
     
     With srcImage.getLayerByIndex(srcLayerIndex)
     
-        If (imgX >= .getLayerOffsetX) And (imgX <= .getLayerOffsetX + .layerDIB.getDIBWidth) Then
-            If (imgY >= .getLayerOffsetY) And (imgY <= .getLayerOffsetY + .layerDIB.getDIBHeight) Then
+        If (imgX >= .getLayerOffsetX) And (imgX <= .getLayerOffsetX + .getLayerWidth(False)) Then
+            If (imgY >= .getLayerOffsetY) And (imgY <= .getLayerOffsetY + .getLayerHeight(False)) Then
                 isMouseOverLayer = True
                 Exit Function
             Else
