@@ -440,8 +440,8 @@ Private Sub Form_Activate()
             srcHeight = pdImages(g_CurrentImage).Height
         
         Case PD_AT_SINGLELAYER
-            srcWidth = pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth
-            srcHeight = pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight
+            srcWidth = pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False)
+            srcHeight = pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False)
         
     End Select
     

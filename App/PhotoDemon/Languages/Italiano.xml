@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.15</langversion>
+<langversion>6.7.16</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -11050,6 +11050,11 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 </phrase>
 
 <phrase>
+<original>vector</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>macro recording in progress</original>
 <translation>Registrazione della Macro in corso</translation>
 </phrase>
@@ -11154,7 +11159,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <translation>Selezione Bacchetta Magica</translation>
 </phrase>
 
-<!-- VBP_ToolbarPrimary.frm contains 42 phrases. 17 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- VBP_ToolbarPrimary.frm contains 44 phrases. 18 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarPrimary.frm-->
 
@@ -11172,53 +11177,8 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 </phrase>
 
 <phrase>
-<original>layer position (x, y)</original>
+<original>(this tool is under construction)</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize quality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>interaction options</original>
-<translation>opzioni di interazione</translation>
-</phrase>
-
-<phrase>
-<original>automatically activate layer beneath mouse</original>
-<translation>attiva automaticamente il livello al di sotto del mouse</translation>
-</phrase>
-
-<phrase>
-<original>ignore transparent pixels when auto-activating layers</original>
-<translation>ignora i pixel trasparenti quando l'attivazione dei livelli è automatica</translation>
-</phrase>
-
-<phrase>
-<original>show layer borders</original>
-<translation>mostra i bordi del livello</translation>
-</phrase>
-
-<phrase>
-<original>show layer transform nodes</original>
-<translation>mostra i nodi di trasformazione del livello</translation>
-</phrase>
-
-<phrase>
-<original>display options</original>
-<translation>opzioni di visualizzazione</translation>
 </phrase>
 
 <phrase>
@@ -11309,6 +11269,56 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <phrase>
 <original>all</original>
 <translation></translation>
+</phrase>
+
+<phrase>
+<original>layer position (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>interaction options</original>
+<translation>opzioni di interazione</translation>
+</phrase>
+
+<phrase>
+<original>automatically activate layer beneath mouse</original>
+<translation>attiva automaticamente il livello al di sotto del mouse</translation>
+</phrase>
+
+<phrase>
+<original>ignore transparent pixels when auto-activating layers</original>
+<translation>ignora i pixel trasparenti quando l'attivazione dei livelli è automatica</translation>
+</phrase>
+
+<phrase>
+<original>show layer borders</original>
+<translation>mostra i bordi del livello</translation>
+</phrase>
+
+<phrase>
+<original>show layer transform nodes</original>
+<translation>mostra i nodi di trasformazione del livello</translation>
+</phrase>
+
+<phrase>
+<original>display options</original>
+<translation>opzioni di visualizzazione</translation>
 </phrase>
 
 <phrase>
@@ -11491,7 +11501,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <translation>Questa opzione controlla quali criteri usa la bacchetta magica per determinare se un pixel deve essere aggiunto alla selezione corrente.</translation>
 </phrase>
 
-<!-- VBP_ToolbarTools.frm contains 85 phrases. 20 were duplicates of existing phrases, so only 65 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 86 phrases. 20 were duplicates of existing phrases, so only 66 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -13527,10 +13537,10 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2356</phrasecount>
+<phrasecount>2358</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4023 phrases. -->
-<!-- 1667 are duplicates, so only 2356 unique phrases have been written to file. -->
-<!-- These 2356 phrases contain approximately 13439 total words. -->
+<!-- As of this build, PhotoDemon contains 4026 phrases. -->
+<!-- 1668 are duplicates, so only 2358 unique phrases have been written to file. -->
+<!-- These 2358 phrases contain approximately 13445 total words. -->
 
 </pdData>

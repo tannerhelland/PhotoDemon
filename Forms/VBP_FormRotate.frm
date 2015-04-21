@@ -316,8 +316,8 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
                 
                 'If we are only resizing a single layer, make a copy of the layer's current offset.  We will use these
                 ' to re-center the layer after it has been resized.
-                origOffsetX = tmpLayerRef.getLayerOffsetX + (tmpLayerRef.layerDIB.getDIBWidth \ 2)
-                origOffsetY = tmpLayerRef.getLayerOffsetY + (tmpLayerRef.layerDIB.getDIBHeight \ 2)
+                origOffsetX = tmpLayerRef.getLayerOffsetX + (tmpLayerRef.getLayerWidth(False) \ 2)
+                origOffsetY = tmpLayerRef.getLayerOffsetY + (tmpLayerRef.getLayerHeight(False) \ 2)
                 
                 'Null-pad the layer
                 If thingToRotate = PD_AT_WHOLEIMAGE Then tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
@@ -364,8 +364,8 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
                 
                 'If resizing only a single layer, re-center it according to its old offset
                 Else
-                    tmpLayerRef.setLayerOffsetX origOffsetX - (tmpLayerRef.layerDIB.getDIBWidth \ 2)
-                    tmpLayerRef.setLayerOffsetY origOffsetY - (tmpLayerRef.layerDIB.getDIBHeight \ 2)
+                    tmpLayerRef.setLayerOffsetX origOffsetX - (tmpLayerRef.getLayerWidth(False) \ 2)
+                    tmpLayerRef.setLayerOffsetY origOffsetY - (tmpLayerRef.getLayerHeight(False) \ 2)
                 End If
                 
                 'Notify the parent of the change
@@ -453,8 +453,8 @@ Private Sub Form_Activate()
             srcHeight = pdImages(g_CurrentImage).Height
         
         Case PD_AT_SINGLELAYER
-            srcWidth = pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBWidth
-            srcHeight = pdImages(g_CurrentImage).getActiveLayer.layerDIB.getDIBHeight
+            srcWidth = pdImages(g_CurrentImage).getActiveLayer.getLayerWidth(False)
+            srcHeight = pdImages(g_CurrentImage).getActiveLayer.getLayerHeight(False)
         
     End Select
     

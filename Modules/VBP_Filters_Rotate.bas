@@ -440,7 +440,7 @@ Public Sub MenuFlip(Optional ByVal targetLayerIndex As Long = -1)
         If flipAllLayers Then tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         'Flip it
-        StretchBlt tmpLayerRef.layerDIB.getDIBDC, 0, 0, tmpLayerRef.layerDIB.getDIBWidth, tmpLayerRef.layerDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBDC, 0, tmpLayerRef.layerDIB.getDIBHeight - 1, tmpLayerRef.layerDIB.getDIBWidth, -tmpLayerRef.layerDIB.getDIBHeight, vbSrcCopy
+        StretchBlt tmpLayerRef.layerDIB.getDIBDC, 0, 0, tmpLayerRef.getLayerWidth(False), tmpLayerRef.getLayerHeight(False), tmpLayerRef.layerDIB.getDIBDC, 0, tmpLayerRef.getLayerHeight(False) - 1, tmpLayerRef.getLayerWidth(False), -tmpLayerRef.getLayerHeight(False), vbSrcCopy
         
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
@@ -499,7 +499,7 @@ Public Sub MenuMirror(Optional ByVal targetLayerIndex As Long = -1)
         If flipAllLayers Then tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         'Mirror it
-        StretchBlt tmpLayerRef.layerDIB.getDIBDC, 0, 0, tmpLayerRef.layerDIB.getDIBWidth, tmpLayerRef.layerDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBDC, tmpLayerRef.layerDIB.getDIBWidth - 1, 0, -tmpLayerRef.layerDIB.getDIBWidth, tmpLayerRef.layerDIB.getDIBHeight, vbSrcCopy
+        StretchBlt tmpLayerRef.layerDIB.getDIBDC, 0, 0, tmpLayerRef.getLayerWidth(False), tmpLayerRef.getLayerHeight(False), tmpLayerRef.layerDIB.getDIBDC, tmpLayerRef.getLayerWidth(False) - 1, 0, -tmpLayerRef.getLayerWidth(False), tmpLayerRef.getLayerHeight(False), vbSrcCopy
         
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
@@ -579,7 +579,7 @@ Public Sub MenuRotate90Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         copyDIB.createFromExistingDIB tmpLayerRef.layerDIB
         
         'Create a blank destination DIB to receive the transformed pixels
-        tmpLayerRef.layerDIB.createBlank tmpLayerRef.layerDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBWidth, 32
+        tmpLayerRef.layerDIB.createBlank tmpLayerRef.getLayerHeight(False), tmpLayerRef.getLayerWidth(False), 32
         
         'Use GDI+ to apply the rotation
         
@@ -656,7 +656,7 @@ Public Sub MenuRotate180(Optional ByVal targetLayerIndex As Long = -1)
         If flipAllLayers Then tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
         
         'Rotate it by inverting both directions of a StretchBlt call
-        StretchBlt tmpLayerRef.layerDIB.getDIBDC, 0, 0, tmpLayerRef.layerDIB.getDIBWidth, tmpLayerRef.layerDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBDC, tmpLayerRef.layerDIB.getDIBWidth - 1, tmpLayerRef.layerDIB.getDIBHeight - 1, -tmpLayerRef.layerDIB.getDIBWidth, -tmpLayerRef.layerDIB.getDIBHeight, vbSrcCopy
+        StretchBlt tmpLayerRef.layerDIB.getDIBDC, 0, 0, tmpLayerRef.getLayerWidth(False), tmpLayerRef.getLayerHeight(False), tmpLayerRef.layerDIB.getDIBDC, tmpLayerRef.getLayerWidth(False) - 1, tmpLayerRef.getLayerHeight(False) - 1, -tmpLayerRef.getLayerWidth(False), -tmpLayerRef.getLayerHeight(False), vbSrcCopy
         
         'Remove any null-padding
         If flipAllLayers Then tmpLayerRef.cropNullPaddedLayer
@@ -735,7 +735,7 @@ Public Sub MenuRotate270Clockwise(Optional ByVal targetLayerIndex As Long = -1)
         copyDIB.createFromExistingDIB tmpLayerRef.layerDIB
         
         'Create a blank destination DIB to receive the transformed pixels
-        tmpLayerRef.layerDIB.createBlank tmpLayerRef.layerDIB.getDIBHeight, tmpLayerRef.layerDIB.getDIBWidth, 32
+        tmpLayerRef.layerDIB.createBlank tmpLayerRef.getLayerHeight(False), tmpLayerRef.getLayerWidth(False), 32
         
         'Use GDI+ to apply the rotation
         
@@ -880,7 +880,7 @@ Public Sub MenuFitCanvasToLayer(ByVal dstLayerIndex As Long)
     Next i
     
     'Finally, update the parent image's size and DPI values
-    pdImages(g_CurrentImage).updateSize False, pdImages(g_CurrentImage).getLayerByIndex(dstLayerIndex).layerDIB.getDIBWidth, pdImages(g_CurrentImage).getLayerByIndex(dstLayerIndex).layerDIB.getDIBHeight
+    pdImages(g_CurrentImage).updateSize False, pdImages(g_CurrentImage).getLayerByIndex(dstLayerIndex).getLayerWidth(False), pdImages(g_CurrentImage).getLayerByIndex(dstLayerIndex).getLayerHeight(False)
     DisplaySize pdImages(g_CurrentImage)
     
     'In other functions, we would refresh the layer box here; however, because we haven't actually changed the
@@ -924,8 +924,8 @@ Public Sub MenuFitCanvasToAllLayers()
             If .getLayerOffsetY < dstTop Then dstTop = .getLayerOffsetY
             
             'Check for new maximum right/top
-            If .getLayerOffsetX + .layerDIB.getDIBWidth > dstRight Then dstRight = .getLayerOffsetX + .layerDIB.getDIBWidth
-            If .getLayerOffsetY + .layerDIB.getDIBHeight > dstBottom Then dstBottom = .getLayerOffsetY + .layerDIB.getDIBHeight
+            If .getLayerOffsetX + .getLayerWidth(False) > dstRight Then dstRight = .getLayerOffsetX + .getLayerWidth(False)
+            If .getLayerOffsetY + .getLayerHeight(False) > dstBottom Then dstBottom = .getLayerOffsetY + .getLayerHeight(False)
         
         End With
     

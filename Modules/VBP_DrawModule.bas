@@ -547,11 +547,7 @@ Public Sub getCanvasRectForLayer(ByVal layerIndex As Long, ByRef dstRect As RECT
         dstRect.Top = tmpY
         
         'End with the bottom-right corner
-        If useCanvasModifiers Then
-            convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX + .layerDIB.getDIBWidth * .getLayerCanvasXModifier, .getLayerOffsetY + .layerDIB.getDIBHeight * .getLayerCanvasYModifier, tmpX, tmpY
-        Else
-            convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX + .layerDIB.getDIBWidth, .getLayerOffsetY + .layerDIB.getDIBHeight, tmpX, tmpY
-        End If
+        convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX + .getLayerWidth(useCanvasModifiers), .getLayerOffsetY + .getLayerHeight(useCanvasModifiers), tmpX, tmpY
         
         'Because layers support sub-pixel positioning, but the canvas rect renderer *does not*, we must manually align the right/bottom coords
         dstRect.Right = Int(tmpX + 0.99)
@@ -574,11 +570,7 @@ Public Sub getCanvasRectForLayerF(ByVal layerIndex As Long, ByRef dstRect As REC
         dstRect.Top = tmpY
         
         'End with the bottom-right corner
-        If useCanvasModifiers Then
-            convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX + .layerDIB.getDIBWidth * .getLayerCanvasXModifier, .getLayerOffsetY + .layerDIB.getDIBHeight * .getLayerCanvasYModifier, tmpX, tmpY
-        Else
-            convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX + .layerDIB.getDIBWidth, .getLayerOffsetY + .layerDIB.getDIBHeight, tmpX, tmpY
-        End If
+        convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), .getLayerOffsetX + .getLayerWidth(useCanvasModifiers), .getLayerOffsetY + .getLayerHeight(useCanvasModifiers), tmpX, tmpY
         dstRect.Width = tmpX - dstRect.Left
         dstRect.Height = tmpY - dstRect.Top
         
