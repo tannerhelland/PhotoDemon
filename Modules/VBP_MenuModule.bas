@@ -518,7 +518,7 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     End Select
     
     'Assign the newly created DIB to the layer object
-    pdImages(g_CurrentImage).getLayerByID(newLayerID).CreateNewImageLayer tmpDIB, , g_Language.TranslateMessage("Background")
+    pdImages(g_CurrentImage).getLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, g_Language.TranslateMessage("Background"), tmpDIB
     
     'Make the newly created layer the active layer
     setActiveLayerByID newLayerID, False

@@ -1148,7 +1148,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 End If
                 
                 'Create the layer now, and assign our assembled name
-                targetImage.getLayerByID(newLayerID).CreateNewImageLayer targetDIB, targetImage, layerNameBase
+                targetImage.getLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, layerNameBase, targetDIB, targetImage
                 
             End If
             
@@ -1432,9 +1432,9 @@ PDI_Load_Continuation:
                     
                     'Copy the DIB into the layer, with a relevant name attached
                     If Len(imgName) = 0 Then
-                        targetImage.getLayerByID(newLayerID).CreateNewImageLayer targetDIB, targetImage, getFilenameWithoutExtension(sFile(thisImage)) & layerNameAddon
+                        targetImage.getLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, getFilenameWithoutExtension(sFile(thisImage)) & layerNameAddon, targetDIB, targetImage
                     Else
-                        targetImage.getLayerByID(newLayerID).CreateNewImageLayer targetDIB, targetImage, imgName & layerNameAddon
+                        targetImage.getLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, imgName & layerNameAddon, targetDIB, targetImage
                     End If
                     
                     'Redraw the main viewport
@@ -1810,7 +1810,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
                 End If
                 
                 'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-                If Not dstImage.getLayerByIndex(i).CreateNewImageLayerFromXML(retString) Then
+                If Not dstImage.getLayerByIndex(i).CreateNewLayerFromXML(retString) Then
                     Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
                 End If
                 
@@ -1969,7 +1969,7 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal PDIPath As String, ByRef dst
                 End If
                 
                 'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-                If Not dstImage.getLayerByIndex(i).CreateNewImageLayerFromXML(retString, , True) Then
+                If Not dstImage.getLayerByIndex(i).CreateNewLayerFromXML(retString, , True) Then
                     Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
                 End If
                 
@@ -2049,7 +2049,7 @@ Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer A
             'Pass the string to the target layer, which will read the XML data and initialize itself accordingly.
             ' Note that we also pass along the loadHeaderOnly flag, which will instruct the layer to erase its current
             ' DIB as necessary.
-            If Not dstLayer.CreateNewImageLayerFromXML(retString, , loadHeaderOnly) Then
+            If Not dstLayer.CreateNewLayerFromXML(retString, , loadHeaderOnly) Then
                 Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
             End If
         
@@ -2142,7 +2142,7 @@ Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As p
             'Pass the string to the target layer, which will read the XML data and initialize itself accordingly.
             ' Note that we pass the loadHeaderOnly request to this function; if this is a header-only load, the target
             ' layer must retain its current DIB.  This functionality is used by PD's Undo/Redo engine.
-            dstLayer.CreateNewImageLayerFromXML retString, , loadHeaderOnly
+            dstLayer.CreateNewLayerFromXML retString, , loadHeaderOnly
             
         'Bytes could not be read, or alternately, checksums didn't match.  (Note that checksums are currently disabled
         ' for this function, for performance reasons, but I'm leaving this check in case we someday decide to re-enable them.)

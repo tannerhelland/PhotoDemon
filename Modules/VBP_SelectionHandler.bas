@@ -255,7 +255,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
     Dim newLayerID As Long
     newLayerID = tmpImage.createBlankLayer
-    tmpImage.getLayerByID(newLayerID).CreateNewImageLayer tmpDIB
+    tmpImage.getLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, , tmpDIB
     tmpImage.updateSize
         
     'Give the selection a basic filename
@@ -332,7 +332,7 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     'In the temporary pdImage object, create a blank layer; this will receive the processed DIB
     Dim newLayerID As Long
     newLayerID = tmpImage.createBlankLayer
-    tmpImage.getLayerByID(newLayerID).CreateNewImageLayer tmpDIB
+    tmpImage.getLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, , tmpDIB
     tmpImage.updateSize
     
     'Give the selection a basic filename

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Layers class
 'Copyright 2012-2015 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 06/July/14
-'Last update: add variable performance/quality options to the thumbnail request functions
+'Last updated: 21/April/15
+'Last update: start refactoring this class to prep for vector layers
 '
 'Once upon a time, the pdLayer class was simply a DIB wrapper.  Once PhotoDemon moved to a fully layer-compatible
 ' image editor, however, it became necessary to separate Layer-specific functions from generic DIB functions.
@@ -709,7 +709,7 @@ End Sub
 'Note that if the optional createNonDestructively parameter is FALSE (as it is by default), this function will create a
 ' blank DIB for the layer DIB, using the dimensions and color depth stored in the XML string.  However, it will obviously
 ' NOT apply any stored image data.  That must be handled separately, via binary data interactions.
-Public Function CreateNewImageLayerFromXML(ByRef xmlString As String, Optional ByVal useCustomLayerID As Long = -1, Optional ByVal createNonDestructively As Boolean = False) As Boolean
+Public Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal useCustomLayerID As Long = -1, Optional ByVal createNonDestructively As Boolean = False) As Boolean
 
     'Prepare an XML engine, which greatly simplifies the process of parsing XML data
     Dim xmlEngine As pdXML
@@ -757,7 +757,8 @@ Public Function CreateNewImageLayerFromXML(ByRef xmlString As String, Optional B
         
         'Next, we're going to do something kinda weird.  We're going to create a blank DIB for the layer contents
         ' using the DIB header supplied in the XML, but we're *not* going to fill the DIB!  An external function will
-        ' handle that, because the actual DIB bits are stored in binary format.
+        ' handle that, because the actual DIB bits are stored in binary format.  (Serializing them to XML is not feasible
+        ' for the image sizes PD deals with.)
         '
         'Note that this behavior can be overridden by setting the optional createNonDestructively parameter to TRUE.
         ' This is used by the Undo/Redo engine to re-load an image's header data, without actually overwriting the
@@ -778,29 +779,31 @@ Public Function CreateNewImageLayerFromXML(ByRef xmlString As String, Optional B
             
         End If
         
-        CreateNewImageLayerFromXML = True
+        CreateNewLayerFromXML = True
     
     'If the layer XML data can't be validated, there's nothing we can do but exit.
     Else
         Debug.Print "Layer could not be created: are you sure the supplied data was valid?"
-        CreateNewImageLayerFromXML = False
+        CreateNewLayerFromXML = False
     End If
     
 End Function
 
-'Create a new image-type layer, using a DIB as the reference.  Note that this will automatically set the layer type to PDL_IMAGE.
-' If the parentImage parameter is supplied, the layer will automatically center itself on the parent image.
-Public Sub CreateNewImageLayer(ByRef srcDIB As pdDIB, Optional ByRef parentImage As pdImage, Optional ByVal newLayerName As String = "")
+'Initialize a new layer.  Optional inputs include:
+' - Layer name
+' - For image-type layers, a DIB can be passed; the layer's raster contents will be initialized to match the DIB
+' - A parent pdImage object.  This is currently unused, but in the future, I may use it to center the new layer on the current viewport
+Public Sub InitializeNewLayer(ByVal newLayerType As LAYER_TYPE, Optional ByVal newLayerName As String = "", Optional ByRef srcDIB As pdDIB = Nothing, Optional ByRef parentImage As pdImage = Nothing)
 
-    'Mark the layer as being IMAGE type.
-    myLayerType = PDL_IMAGE
+    'Mark the layer type.
+    myLayerType = newLayerType
     
     'Copy the name locally, and set other values to their natural defaults
     With myLayerData
         If Len(newLayerName) <> 0 Then
             .l_Name = newLayerName
         Else
-            .l_Name = g_Language.TranslateMessage("New Image Layer")
+            .l_Name = g_Language.TranslateMessage("New layer")
         End If
         .l_GroupID = 0
         .l_Opacity = 100
@@ -820,28 +823,21 @@ Public Sub CreateNewImageLayer(ByRef srcDIB As pdDIB, Optional ByRef parentImage
         .fx_Tint = 0
     End With
     
-    'Create a local copy of the passed DIB.
-    Set layerDIB = New pdDIB
-    layerDIB.createFromExistingDIB srcDIB
+    'If passed, create a local copy of the passed DIB.
+    If Not (srcDIB Is Nothing) Then
+        Set layerDIB = New pdDIB
+        layerDIB.createFromExistingDIB srcDIB
+    End If
     
     'Note that the layer thumbnail is not valid
     m_IsThumbClean = False
     
-    'Set the initial offset so that the image is centered on the parent canvas
-    'If Not (parentImage Is Nothing) Then
-    '
-    '    Dim layerDiff As Double
-    '    layerDiff = parentImage.Width - layerDIB.getDIBWidth
-    '    myLayerData.l_OffsetX = layerDiff / 2
-    '
-    '    layerDiff = parentImage.Height - layerDIB.getDIBHeight
-    '    myLayerData.l_OffsetY = layerDiff / 2
-    '
-    'Else
-        myLayerData.l_OffsetX = 0
-        myLayerData.l_OffsetY = 0
-    'End If
+    'Set default offsets
+    myLayerData.l_OffsetX = 0
+    myLayerData.l_OffsetY = 0
     
+    'In the future, we might want to set an intial offset relative to the parent image's viewport settings...?
+
 End Sub
 
 'Copy an existing layer.  All layer contents will be copied manually, so make sure that new layer properties are

@@ -261,10 +261,10 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, Opti
     Set tmpLayerTop = New pdLayer
     Set tmpLayerBottom = New pdLayer
     
-    tmpLayerTop.CreateNewImageLayer inkDIBh
+    tmpLayerTop.InitializeNewLayer PDL_IMAGE, , inkDIBh
     Set inkDIBh = Nothing
     
-    tmpLayerBottom.CreateNewImageLayer workingDIB
+    tmpLayerBottom.InitializeNewLayer PDL_IMAGE, , workingDIB
     workingDIB.eraseDIB
     
     tmpLayerTop.setLayerBlendMode BL_MULTIPLY
