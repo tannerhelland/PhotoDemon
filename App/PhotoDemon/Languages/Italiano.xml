@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.16</langversion>
+<langversion>6.7.17</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -12261,8 +12261,8 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>New Image Layer</original>
-<translation>Nuovo livello dell'Immagine</translation>
+<original>New layer</original>
+<translation>Nuovo livello</translation>
 </phrase>
 
 <!-- pdLayer.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -12363,11 +12363,6 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>New layer</original>
-<translation>Nuovo livello</translation>
-</phrase>
-
-<phrase>
 <original>Delete the currently selected layer.</original>
 <translation>Elimina il livello attualmente selezionato.</translation>
 </phrase>
@@ -12392,7 +12387,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation>Sposta il livello in basso</translation>
 </phrase>
 
-<!-- VBP_ToolbarLayers.frm contains 41 phrases. 21 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- VBP_ToolbarLayers.frm contains 41 phrases. 22 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarLayers.frm-->
 
@@ -13537,10 +13532,10 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2358</phrasecount>
+<phrasecount>2357</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4026 phrases. -->
-<!-- 1668 are duplicates, so only 2358 unique phrases have been written to file. -->
-<!-- These 2358 phrases contain approximately 13445 total words. -->
+<!-- 1669 are duplicates, so only 2357 unique phrases have been written to file. -->
+<!-- These 2357 phrases contain approximately 13442 total words. -->
 
 </pdData>

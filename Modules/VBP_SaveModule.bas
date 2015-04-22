@@ -760,8 +760,8 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     
     'Next, we will add each pdLayer object to the stream.  This is done in two steps:
     ' 1) First, obtain the layer header in XML format and write it out
-    ' 2) Second, obtain the current layer DIB (raw data only, no header!) and write it out
-    Dim layerXMLHeader As String
+    ' 2) Second, obtain any layer-specific data (DIB for raster layers, XML for vector layers) and write it out
+    Dim layerXMLHeader As String, layerXMLData As String
     Dim layerDIBPointer As Long, layerDIBLength As Long
     
     Dim i As Long
@@ -778,11 +778,29 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
         layerXMLHeader = srcPDImage.getLayerByIndex(i).getLayerHeaderAsXML(True)
         pdiWriter.addNodeDataFromString nodeIndex, True, layerXMLHeader, compressHeaders, , embedChecksums
         
-        'If this is not a header-only file, retrieve the layer's DIB and add it to the data section of this node
-        ' (Note: the user's compression setting *is* used for the very large binary DIB data section.)
+        'If this is not a header-only file, retrieve any layer-type-specific data and add it to the data section of this node
+        ' (Note: the user's compression setting *is* used for this data section, as it can be quite large for raster layers
+        '        as we have to store a raw stream of the DIB contents.)
         If Not writeHeaderOnlyFile Then
-            srcPDImage.getLayerByIndex(i).layerDIB.retrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
-            pdiWriter.addNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel, embedChecksums
+        
+            'Specific handling varies by layer type
+            Select Case srcPDImage.getLayerByIndex(i).getLayerType
+            
+                'Image layers save their raster contents as a raw byte stream
+                Case PDL_IMAGE
+                    srcPDImage.getLayerByIndex(i).layerDIB.retrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
+                    pdiWriter.addNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel, embedChecksums
+                
+                'Text (and other vector layers) save their vector contents in XML format
+                Case PDL_TEXT
+                    layerXMLData = srcPDImage.getLayerByIndex(i).getVectorDataAsXML(True)
+                    pdiWriter.addNodeDataFromString nodeIndex, False, layerXMLData, compressLayers, compressionLevel, embedChecksums
+                
+                Case Else
+                    Debug.Print "WARNING!  SavePhotoDemonImage can't save the layer at index " & i
+                
+            End Select
+            
         End If
     
     Next i
@@ -849,10 +867,25 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     'If this is not a header-only request, retrieve the layer DIB (as a byte array), then copy the array
     ' into the pdPackage instance
     If Not writeHeaderOnlyFile Then
-    
-        Dim layerDIBPointer As Long, layerDIBLength As Long
-        srcLayer.layerDIB.retrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
-        pdiWriter.addNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel, embedChecksums
+        
+        'Specific handling varies by layer type
+        Select Case srcLayer.getLayerType
+        
+            'Image layers save their raster contents as a raw byte stream
+            Case PDL_IMAGE
+                Dim layerDIBPointer As Long, layerDIBLength As Long
+                srcLayer.layerDIB.retrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
+                pdiWriter.addNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel, embedChecksums
+            
+            'Text (and other vector layers) save their vector contents in XML format
+            Case PDL_TEXT
+                dataString = srcLayer.getVectorDataAsXML(True)
+                pdiWriter.addNodeDataFromString nodeIndex, False, dataString, compressLayers, compressionLevel, embedChecksums
+            
+            Case Else
+                Debug.Print "WARNING!  SavePhotoDemonLayer was passed a layer of unknown or unsupported type."
+            
+        End Select
         
     End If
     
