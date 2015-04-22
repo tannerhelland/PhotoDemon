@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.16</langversion>
+<langversion>6.7.17</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -12263,8 +12263,8 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 </phrase>
 
 <phrase>
-<original>New Image Layer</original>
-<translation>Neue Bildebene</translation>
+<original>New layer</original>
+<translation>Neue Ebene</translation>
 </phrase>
 
 <!-- pdLayer.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -12365,11 +12365,6 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 </phrase>
 
 <phrase>
-<original>New layer</original>
-<translation>Neue Ebene</translation>
-</phrase>
-
-<phrase>
 <original>Delete the currently selected layer.</original>
 <translation>Gewählte Ebene löschen.</translation>
 </phrase>
@@ -12394,7 +12389,7 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <translation>Ebene nach unten</translation>
 </phrase>
 
-<!-- VBP_ToolbarLayers.frm contains 41 phrases. 21 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- VBP_ToolbarLayers.frm contains 41 phrases. 22 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarLayers.frm-->
 
@@ -13539,10 +13534,10 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2358</phrasecount>
+<phrasecount>2357</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4026 phrases. -->
-<!-- 1668 are duplicates, so only 2358 unique phrases have been written to file. -->
-<!-- These 2358 phrases contain approximately 13445 total words. -->
+<!-- 1669 are duplicates, so only 2357 unique phrases have been written to file. -->
+<!-- These 2357 phrases contain approximately 13442 total words. -->
 
 </pdData>

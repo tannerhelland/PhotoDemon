@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Layers class
 'Copyright 2012-2015 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 21/April/15
-'Last update: start refactoring this class to prep for vector layers
+'Last updated: 22/April/15
+'Last update: continued work on vector layers
 '
 'Once upon a time, the pdLayer class was simply a DIB wrapper.  Once PhotoDemon moved to a fully layer-compatible
 ' image editor, however, it became necessary to separate Layer-specific functions from generic DIB functions.
@@ -201,9 +201,9 @@ Private m_ViewportStateHash As Long
 ' it must call this function afterward.
 '
 'IMPORTANT NOTE! As of v7.0, PD functions should not call this sub directly.  Instead, they must call notifyImageChanged on
-' the parent pdImage object, so the master object knows to recomposite itself.
+' the parent pdImage object, so the master object knows to recomposite itself (which is necessary for some viewport modes).
 '
-'ANOTHER IMPORTANT NOTE!  This function only needs to be called if a change was destructive.  Non-destructive changes
+'ANOTHER IMPORTANT NOTE!  This function only needs to be called if a change was *destructive*.  Non-destructive changes
 ' - per the name, lol - do not require us to rebuild internal caches, because the effects and/or resizing will be
 ' handled by a compositor object.
 '
@@ -708,7 +708,9 @@ End Sub
 '
 'Note that if the optional createNonDestructively parameter is FALSE (as it is by default), this function will create a
 ' blank DIB for the layer DIB, using the dimensions and color depth stored in the XML string.  However, it will obviously
-' NOT apply any stored image data.  That must be handled separately, via binary data interactions.
+' NOT apply any stored image data.  That must be handled separately, as the layer data varies by layer type.  (Raster layers
+' store their data as a raw byte stream, while vector and text layers store XML data and we simply recreate the raster copy
+' at run-time.)
 Public Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal useCustomLayerID As Long = -1, Optional ByVal createNonDestructively As Boolean = False) As Boolean
 
     'Prepare an XML engine, which greatly simplifies the process of parsing XML data
@@ -774,8 +776,8 @@ Public Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
             
             End With
             
-            'Note that the layer thumbnail is no longer valid
-            m_IsThumbClean = False
+            'Note that all internal layer caches are no longer valid
+            Me.notifyOfDestructiveChanges
             
         End If
         
@@ -785,6 +787,75 @@ Public Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
     Else
         Debug.Print "Layer could not be created: are you sure the supplied data was valid?"
         CreateNewLayerFromXML = False
+    End If
+    
+End Function
+
+'Write a copy of a vector layer's contents to an XML-format string.  All data necessary to recreate a vector layer
+' from scratch will be included in this string.  For obvious performance reasons, the DIB contents of this layer are not
+' part of this function.  PD regenerates the DIB copy of vector layers from scratch, at load-time.
+'
+'If the optional parameter "avoidFluffEntries" is set, descriptive comments and pretty formatting will not be
+' applied to the XML string.  This helpful for improving read/write performance of the data, such as when writing
+' Undo/Redo entries.
+Public Function getVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean = False) As String
+    
+    'First, make sure this is not an image layer
+    If Me.getLayerType = PDL_IMAGE Then
+        Debug.Print "WARNING!  The getVectorDataAsXML() function is only valid for vector layers!"
+        Exit Function
+    End If
+    
+    'Prepare an XML engine, which greatly simplifies the process of assembling XML data
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    
+    'Add a basic header and explanatory comment
+    xmlEngine.prepareNewXML "pdVector"
+    
+    'Add a helpful comment, if requested.
+    If Not avoidFluffEntries Then
+        xmlEngine.writeBlankLine
+        xmlEngine.writeComment "This XML string contains a summary of crucial data for a pdVector object."
+        xmlEngine.writeBlankLine
+    End If
+    
+    'TODO: a whole bunch of xmlEngine.writeTag calls!
+        
+    If Not avoidFluffEntries Then xmlEngine.writeBlankLine
+    
+    'The layer XML string is now complete.  Return it.
+    getVectorDataAsXML = xmlEngine.returnCurrentXMLString(avoidFluffEntries)
+
+End Function
+
+'The sister function to "getVectorDataAsXML" above, this function will initialize a vector layer's contents from an XML-format string.
+'
+'Optionally, the createRasterCopyImmediately parameter can be set to generate an immediate raster copy of the vector data.  This is helpful
+' for preventing a stutter upon first interaction (as generating the raster layer can be a tedious process, depending on the complexity of
+' the source).
+Public Function CreateVectorDataFromXML(ByRef xmlString As String, Optional ByVal createRasterCopyImmediately As Boolean = False) As Boolean
+
+    'Prepare an XML engine, which greatly simplifies the process of parsing XML data
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    
+    'Validate the XML header...
+    If xmlEngine.loadXMLFromString(xmlString) And xmlEngine.isPDDataType("pdVector") Then
+        
+        'TODO: load the actual data.
+        
+        'Note that all internal layer caches are no longer valid; this will also cause the raster cache to be marked unclean
+        Me.notifyOfDestructiveChanges
+        
+        'TODO: deal with createRasterCopyImmediately
+        
+        CreateVectorDataFromXML = True
+    
+    'If the layer XML data can't be validated, there's nothing we can do but exit.
+    Else
+        Debug.Print "Vector layer could not be initialized: are you sure the supplied data is valid?"
+        CreateVectorDataFromXML = False
     End If
     
 End Function
@@ -824,19 +895,18 @@ Public Sub InitializeNewLayer(ByVal newLayerType As LAYER_TYPE, Optional ByVal n
     End With
     
     'If passed, create a local copy of the passed DIB.
-    If Not (srcDIB Is Nothing) Then
-        Set layerDIB = New pdDIB
-        layerDIB.createFromExistingDIB srcDIB
-    End If
-    
-    'Note that the layer thumbnail is not valid
-    m_IsThumbClean = False
+    Set layerDIB = New pdDIB
+    If Not (srcDIB Is Nothing) Then layerDIB.createFromExistingDIB srcDIB
     
     'Set default offsets
     myLayerData.l_OffsetX = 0
     myLayerData.l_OffsetY = 0
     
     'In the future, we might want to set an intial offset relative to the parent image's viewport settings...?
+    
+    'Note that all internal layer caches are no longer valid.  This is particularly important for vector layers, which generate a raster copy
+    ' of their contents "on the fly"
+    Me.notifyOfDestructiveChanges
 
 End Sub
 
@@ -844,7 +914,7 @@ End Sub
 ' manually added to this function!
 Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
 
-    'Copy all relevant layer properties from the source layer.  (Note that canonical layer ID is *not* copied; that must always
+    'Copy all generic layer properties from the source layer.  (Note that canonical layer ID is *not* copied; that must always
     ' be unique for every created layer!)
     myLayerType = srcLayer.getLayerType
     
@@ -876,8 +946,8 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
     'Finally, copy the source layer's DIB.
     layerDIB.createFromExistingDIB srcLayer.layerDIB
     
-    'Note that the layer thumbnail is no longer valid
-    m_IsThumbClean = False
+    'Note that all internal layer caches are no longer valid
+    Me.notifyOfDestructiveChanges
     
     'Depending on the type of layer we are copying, copy any extra layer data, or generate a new layer mask to
     ' match the layer's vector contents.
@@ -1304,6 +1374,8 @@ Public Sub resetLayerParameters()
         .fx_Temperature = 0
         .fx_Tint = 0
     End With
+    
+    'TODO: vector layers probably need some extra reset code here
 
 End Sub
 

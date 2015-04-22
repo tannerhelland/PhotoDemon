@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.16</langversion>
+<langversion>6.7.17</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -12265,8 +12265,8 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 </phrase>
 
 <phrase>
-<original>New Image Layer</original>
-<translation>Nouveau couche de l'image</translation>
+<original>New layer</original>
+<translation>Nouveau couche</translation>
 </phrase>
 
 <!-- pdLayer.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
@@ -12367,11 +12367,6 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 </phrase>
 
 <phrase>
-<original>New layer</original>
-<translation>Nouveau couche</translation>
-</phrase>
-
-<phrase>
 <original>Delete the currently selected layer.</original>
 <translation>Supprimer la couche sélectionné.</translation>
 </phrase>
@@ -12396,7 +12391,7 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 <translation>Couche Descendre</translation>
 </phrase>
 
-<!-- VBP_ToolbarLayers.frm contains 41 phrases. 21 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- VBP_ToolbarLayers.frm contains 41 phrases. 22 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarLayers.frm-->
 
@@ -13541,10 +13536,10 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2358</phrasecount>
+<phrasecount>2357</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4026 phrases. -->
-<!-- 1668 are duplicates, so only 2358 unique phrases have been written to file. -->
-<!-- These 2358 phrases contain approximately 13445 total words. -->
+<!-- 1669 are duplicates, so only 2357 unique phrases have been written to file. -->
+<!-- These 2357 phrases contain approximately 13442 total words. -->
 
 </pdData>
