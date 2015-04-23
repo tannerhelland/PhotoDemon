@@ -200,10 +200,16 @@ Private Sub swapStrings(ByVal strIndex1 As Long, ByVal strIndex2 As Long)
     m_Strings(strIndex2) = tmpString
 End Sub
 
-'Clear the current stack.
-Public Sub resetStack()
-    ReDim m_Strings(0 To INIT_STACK_SIZE - 1) As String
+'Clear the current stack.  An optional stack size can be passed; if it is not passed, it will default to INIT_STACK_SIZE
+Public Sub resetStack(Optional ByVal newStackSize As Long = INIT_STACK_SIZE)
+    
+    'Failsafe bounds check
+    If newStackSize <= 0 Then newStackSize = INIT_STACK_SIZE
+    
+    'Reset the array
+    ReDim m_Strings(0 To newStackSize - 1) As String
     m_NumOfStrings = 0
+    
 End Sub
 
 Private Sub Class_Initialize()
