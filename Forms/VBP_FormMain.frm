@@ -4365,11 +4365,21 @@ Private Sub MnuTest_Click()
 '
 '    MsgBox "Box blur approximation: " & startTime1 & vbCrLf & "IIR approach: " & startTime2
 
-    'FFT tests
-    Dim cFFT As pdFFT
-    Set cFFT = New pdFFT
+'    'FFT tests
+'    Dim cFFT As pdFFT
+'    Set cFFT = New pdFFT
+'
+'    cFFT.testFFT
+
+    'GDI+ font tests
+    Dim testFont As pdTextRenderer
+    Set testFont = New pdTextRenderer
     
-    cFFT.testFFT
+    Dim tmpStack As pdStringStack
+    Set tmpStack = New pdStringStack
+    
+    testFont.getListOfInstalledFonts tmpStack
+    tmpStack.DEBUG_dumpResultsToImmediateWindow
     
 End Sub
 
