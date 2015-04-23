@@ -191,7 +191,7 @@ Public Sub convertPathToBorderType_Simple(ByVal borderWidth As Single, Optional 
     'Widening a path requires a GDI+ pen.  All of the pen's properties (width, dashing, transforms, miters, etc)
     ' are considered when applying the widening transform.
     Dim hPen As Long
-    GdipCreatePen1 0, borderWidth, UnitPixel, hPen
+    GdipCreatePen1 0, borderWidth, gdipUnitPixel, hPen
     
     'Apply the requested line cap and miter
     GdipSetPenLineCap hPen, useLineCap, useLineCap, DashCapFlat
@@ -272,8 +272,8 @@ Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB)
     
     'Create two pens, each of which will be used to stroke the line
     Dim hBlackPen As Long, hWhitePen As Long
-    GdipCreatePen1 fillQuadWithVBRGB(RGB(0, 0, 0), 192), 2, UnitPixel, hBlackPen
-    GdipCreatePen1 fillQuadWithVBRGB(RGB(255, 255, 255), 192), 1, UnitPixel, hWhitePen
+    GdipCreatePen1 fillQuadWithVBRGB(RGB(0, 0, 0), 192), 2, gdipUnitPixel, hBlackPen
+    GdipCreatePen1 fillQuadWithVBRGB(RGB(255, 255, 255), 192), 1, gdipUnitPixel, hWhitePen
     
     'Stroke the paths in turn
     GdipDrawPath hGraphics, hBlackPen, m_PathHandle

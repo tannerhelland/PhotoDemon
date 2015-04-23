@@ -483,7 +483,7 @@ Private Declare Function GdipSetImageAttributesToIdentity Lib "gdiplus" (ByVal h
 
 'Transforms
 Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal Order As Long) As Long
-Private Declare Function GdipTranslateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal dx As Single, ByVal dy As Single, ByVal Order As Long) As Long
+Private Declare Function GdipTranslateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal dX As Single, ByVal dY As Single, ByVal Order As Long) As Long
 
 'Helpful GDI functions for moving image data between GDI and GDI+
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
@@ -576,6 +576,9 @@ End Enum
 #If False Then
     Const FillModeAlternate = 0, FillModeWinding = 1
 #End If
+
+'Because the "pixel" unit is used so frequently, we declare it as its own constant
+Public Const gdipUnitPixel As Long = 2
 
 Public Enum GpUnit
    UnitWorld = 0
