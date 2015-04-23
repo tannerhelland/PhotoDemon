@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.17</langversion>
+<langversion>6.7.18</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -13533,6 +13533,12 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 <!-- VBP_FormCrystallize.frm contains 12 phrases. 11 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for VBP_FormCrystallize.frm-->
+
+<!-- BEGIN text for pdTextRenderer.cls -->
+
+<!-- pdTextRenderer.cls contains 0 phrases. -->
+
+<!-- END text for pdTextRenderer.cls-->
 
 <!-- Automatic text extraction complete. -->
 

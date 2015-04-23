@@ -160,9 +160,33 @@ End Type
 
 Private myNonDestructiveFX As nonDestructiveFXSettings
 
-'Layer width, height.  Note that this values are automatically updated as necessary, depending on the contents of the layer,
-' so there is no need to cache them at module-level.
-'Private layerWidth As Long, layerHeight As Long
+'Vector-type layers store many things that image layers do not.  Generic data shared between all vector layer types are
+' stored in this struct.
+Private Type genericVectorData
+    vs_Width As Long        'Unlike raster layers, vector layers must explicitly store their width and height
+    vs_Height As Long
+End Type
+
+Private myVectorData As genericVectorData
+
+'Next comes various structs for vector data in a specific format.  These structs must be comprehensive, because their data
+' is used to reconstruct the raster copy of the layer between sessions.
+
+'TEXT LAYER STRUCTS
+
+'The text layer data struct is currently under heavy construction.  I plan to expose not just every relevant GDI+ font setting,
+' but a number of ones custom to PD (e.g. custom kerning, character spacing, line spacing, etc)
+Private Type textLayerData
+    tld_Text As String
+    tld_FontName As String
+    tld_FontSize As Single
+    tld_FontBold As Boolean
+    tld_FontItalic As Boolean
+    tld_FontUnderline As Boolean
+    tld_FontStrikethrough As Boolean
+End Type
+
+Private myTextData As textLayerData
 
 'A DIB that stores the contents of the layer, in DIB format.
 ' - For image layers, the layer contents will be stored in this DIB.

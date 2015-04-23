@@ -269,6 +269,7 @@ Module=Filters_ByteArray; Modules\VBP_FiltersByteArray.bas
 Form=Forms\VBP_FormMezzotint.frm
 Form=Forms\VBP_FormCrystallize.frm
 ResFile32="Resources\PD_icons.RES"
+Class=pdTextRenderer; Classes\pdTextRenderer.cls
 IconForm="FormMain"
 Startup="Sub Main"
 HelpFile=""
