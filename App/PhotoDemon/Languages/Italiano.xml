@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.18</langversion>
+<langversion>6.7.19</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -11182,6 +11182,26 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 </phrase>
 
 <phrase>
+<original>text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font face</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>smoothing</original>
 <translation>lisciatura</translation>
 </phrase>
@@ -11501,7 +11521,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <translation>Questa opzione controlla quali criteri usa la bacchetta magica per determinare se un pixel deve essere aggiunto alla selezione corrente.</translation>
 </phrase>
 
-<!-- VBP_ToolbarTools.frm contains 86 phrases. 20 were duplicates of existing phrases, so only 66 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 90 phrases. 20 were duplicates of existing phrases, so only 70 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -12164,7 +12184,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation>cm</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 48 phrases. 28 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 50 phrases. 30 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -12261,15 +12281,25 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
+<original>(enter text here)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>New layer</original>
 <translation>Nuovo livello</translation>
 </phrase>
 
-<!-- pdLayer.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- pdLayer.cls contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for pdLayer.cls-->
 
 <!-- BEGIN text for VBP_LayerHandler.bas -->
+
+<phrase>
+<original>Text layer</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>New layer added successfully.</original>
@@ -12286,7 +12316,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_LayerHandler.bas contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_LayerHandler.bas contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for VBP_LayerHandler.bas-->
 
@@ -13538,10 +13568,10 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2357</phrasecount>
+<phrasecount>2363</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4026 phrases. -->
-<!-- 1669 are duplicates, so only 2357 unique phrases have been written to file. -->
-<!-- These 2357 phrases contain approximately 13442 total words. -->
+<!-- As of this build, PhotoDemon contains 4038 phrases. -->
+<!-- 1675 are duplicates, so only 2363 unique phrases have been written to file. -->
+<!-- These 2363 phrases contain approximately 13454 total words. -->
 
 </pdData>

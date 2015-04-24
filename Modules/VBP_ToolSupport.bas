@@ -395,6 +395,7 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                 toolbar_Options.txtTextTool = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_Text)
                 toolbar_Options.cboTextFontFace.setListIndexByString pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontFace)
                 toolbar_Options.tudTextFontSize = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontSize)
+                toolbar_Options.csTextFontColor.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontColor)
         
         End Select
         

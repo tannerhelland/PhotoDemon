@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.18</langversion>
+<langversion>6.7.19</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -11184,6 +11184,26 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 </phrase>
 
 <phrase>
+<original>text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font face</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>smoothing</original>
 <translation>Glättung</translation>
 </phrase>
@@ -11503,7 +11523,7 @@ Um weiterzumachen, laden Sie bitte eine neue PhotoDemon-Kopie von photodemon.org
 <translation>Hiermit legen Sie fest, nach welchen Regeln der Zauberstab Bildpunkte in die Auswahl aufnimmt.</translation>
 </phrase>
 
-<!-- VBP_ToolbarTools.frm contains 86 phrases. 20 were duplicates of existing phrases, so only 66 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 90 phrases. 20 were duplicates of existing phrases, so only 70 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -12166,7 +12186,7 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <translation>cm</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 48 phrases. 28 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 50 phrases. 30 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -12263,15 +12283,25 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 </phrase>
 
 <phrase>
+<original>(enter text here)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>New layer</original>
 <translation>Neue Ebene</translation>
 </phrase>
 
-<!-- pdLayer.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- pdLayer.cls contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for pdLayer.cls-->
 
 <!-- BEGIN text for VBP_LayerHandler.bas -->
+
+<phrase>
+<original>Text layer</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>New layer added successfully.</original>
@@ -12288,7 +12318,7 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <translation></translation>
 </phrase>
 
-<!-- VBP_LayerHandler.bas contains 10 phrases. 7 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_LayerHandler.bas contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for VBP_LayerHandler.bas-->
 
@@ -13540,10 +13570,10 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2357</phrasecount>
+<phrasecount>2363</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4026 phrases. -->
-<!-- 1669 are duplicates, so only 2357 unique phrases have been written to file. -->
-<!-- These 2357 phrases contain approximately 13442 total words. -->
+<!-- As of this build, PhotoDemon contains 4038 phrases. -->
+<!-- 1675 are duplicates, so only 2363 unique phrases have been written to file. -->
+<!-- These 2363 phrases contain approximately 13454 total words. -->
 
 </pdData>
