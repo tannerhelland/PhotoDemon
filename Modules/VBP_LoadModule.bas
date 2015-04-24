@@ -254,7 +254,7 @@ Public Sub LoadTheProgram()
     End If
         
     'Make the splash screen's message display match the rest of PD
-    FormSplash.lblMessage.FontName = g_InterfaceFont
+    FormSplash.lblMessage.fontName = g_InterfaceFont
     
     'Ask the splash screen to finish whatever initializing it needs prior to displaying itself
     FormSplash.prepareRestOfSplash
@@ -1843,7 +1843,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
                         CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
                         
                         'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-                        If Not dstImage.getLayerByIndex(i).CreateVectorDataFromXML(retString, False) Then
+                        If Not dstImage.getLayerByIndex(i).CreateVectorDataFromXML(retString) Then
                             Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
                         End If
                         
@@ -2205,7 +2205,7 @@ Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As p
                         CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
                         
                         'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-                        If Not dstLayer.CreateVectorDataFromXML(retString, False) Then
+                        If Not dstLayer.CreateVectorDataFromXML(retString) Then
                             Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
                         End If
                         

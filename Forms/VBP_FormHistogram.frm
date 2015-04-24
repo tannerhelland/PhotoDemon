@@ -34,15 +34,6 @@ Begin VB.Form FormHistogram
       _ExtentX        =   5265
       _ExtentY        =   582
       Caption         =   "use logarithmic values"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkSmooth 
       Height          =   330
@@ -53,15 +44,6 @@ Begin VB.Form FormHistogram
       _ExtentX        =   5265
       _ExtentY        =   582
       Caption         =   "use smooth lines"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkChannel 
       Height          =   330
@@ -73,15 +55,6 @@ Begin VB.Form FormHistogram
       _ExtentX        =   3731
       _ExtentY        =   582
       Caption         =   "red"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.CommandButton cmdOK 
       Caption         =   "Close Histogram"
@@ -149,15 +122,6 @@ Begin VB.Form FormHistogram
       _ExtentX        =   3731
       _ExtentY        =   582
       Caption         =   "green"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkChannel 
       Height          =   330
@@ -169,15 +133,6 @@ Begin VB.Form FormHistogram
       _ExtentX        =   3731
       _ExtentY        =   582
       Caption         =   "blue"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkChannel 
       Height          =   330
@@ -189,15 +144,6 @@ Begin VB.Form FormHistogram
       _ExtentX        =   3731
       _ExtentY        =   582
       Caption         =   "luminance"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkFillCurve 
       Height          =   330
@@ -208,15 +154,6 @@ Begin VB.Form FormHistogram
       _ExtentX        =   5265
       _ExtentY        =   582
       Caption         =   "fill histogram curves"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblVisibleChannels 
       Appearance      =   0  'Flat
@@ -651,7 +588,7 @@ Private u() As Double
 Private results() As Long   'Stores the y-values for each x-value in the final spline
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Private m_ToolTip As clsToolTip
+Private m_Tooltip As clsToolTip
 
 'To improve histogram render performance, we cache a number of translated strings; this saves us having to re-translate them
 ' every time the histogram is redrawn.
@@ -687,8 +624,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Cache the translation for several dynamic strings; this is more efficient than retranslating them over and over
     strTotalPixels = g_Language.TranslateMessage("total pixels") & ": "
@@ -885,7 +822,7 @@ Private Sub Form_Resize()
     picH.Width = Me.ScaleWidth - picH.Left - fixDPI(8)
     picGradient.Width = Me.ScaleWidth - picGradient.Left - fixDPI(8)
     lblBackground.Width = Abs(lblBackground.Left) + Me.ScaleWidth
-    cmdOK.Left = Me.ScaleWidth - cmdOK.Width - fixDPI(8)
+    CmdOK.Left = Me.ScaleWidth - CmdOK.Width - fixDPI(8)
     
     'Now draw a little gradient below the histogram window, to help orient the user
     DrawHistogramGradient picGradient, RGB(0, 0, 0), RGB(255, 255, 255)
@@ -1017,7 +954,7 @@ Private Sub drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal tHeig
     'For performance reasons, cache the handle to the GDI+ image container and GDI+ pens we will be using.  This is faster than recreating
     ' them for every line, especially if the histogram window has been resized to something large.
     Dim gdiHistogram As Long
-    gdiHistogram = getGDIPlusImageHandleFromDC(picH.hDC)
+    gdiHistogram = getGDIPlusGraphicsFromDC(picH.hDC)
     
     Dim gdiPenSolid As Long, gdiPenTranslucent As Long
     gdiPenSolid = getGDIPlusPenHandle(curHistColor)
@@ -1034,7 +971,7 @@ Private Sub drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal tHeig
     Next i
     
     'Free the GDI+ handles
-    releaseGDIPlusImageHandle gdiHistogram
+    releaseGDIPlusGraphics gdiHistogram
     releaseGDIPlusPen gdiPenSolid
     releaseGDIPlusPen gdiPenTranslucent
     
