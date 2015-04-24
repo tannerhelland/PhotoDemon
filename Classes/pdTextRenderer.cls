@@ -498,6 +498,8 @@ Public Function createFontObject() As Boolean
         Exit Function
     End If
     
+    Debug.Print "Creating GDI+ font object..."
+    
     'If a font already exists, delete it now
     If m_GDIPlusFont <> 0 Then GdipDeleteFont m_GDIPlusFont
     

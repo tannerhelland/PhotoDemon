@@ -257,6 +257,9 @@ Private m_IsThumbClean As Boolean
 ' regenerate the temporary compositing DIB, or if we can just use the existing copy.
 Private m_ViewportStateHash As Long
 
+'If a layer has changed since the last hash cache, we must still recomposite the DIB, even though its on-screen position hasn't changed
+Private m_DIBChangedSinceLastHashRequest As Boolean
+
 'If an external function modifies this layer's DIB contents (or the vector data from which the DIB is generated),
 ' it must call this function afterward.
 '
@@ -273,6 +276,9 @@ Public Sub notifyOfDestructiveChanges()
 
     'Mark the layer thumbnail as dirty
     m_IsThumbClean = False
+    
+    'Note that the layer has changed since a past hash request
+    m_DIBChangedSinceLastHashRequest = True
     
     'If this is a vector layer, note that the backing DIB is now out of sync
     If myLayerType = PDL_TEXT Then m_VectorDIBSynched = False
@@ -1760,15 +1766,26 @@ End Sub
 'If something needs to access the layer DIB directly (like PD's central compositor), this function should first be called for
 ' any vector layers.  If the DIB is already synched, there is no penalty to calling this function, but if it is *not* synched,
 ' this will guarantee the DIB is ready for access.
-Public Sub syncVectorDIB()
+'
+'For vector DIBs, returns TRUE if we had to sync the vector DIB; FALSE if the DIB was already synched
+'For raster DIBs, returns TRUE if the image has changed since the last viewport hash was set; FALSE otherwise.
+'
+'If the return value is TRUE, any DIBs derived from this layer (e.g. viewport ones) must be recreated
+Public Function syncInternalDIB() As Boolean
 
-    'If this is not a vector layer, disregard this request.
-    If myLayerType = PDL_IMAGE Then Exit Sub
+    'If this is not a vector layer, rely on the "DIB has changed since last hash request" marker.
+    If myLayerType = PDL_IMAGE Then
+        syncInternalDIB = m_DIBChangedSinceLastHashRequest
+        Exit Function
+    End If
     
     'If the DIB is already synched, disregard this request
-    If m_VectorDIBSynched Then Exit Sub
+    If m_VectorDIBSynched Then
+        syncInternalDIB = False
+        Exit Function
+    End If
     
-    'From here, the specific syncing process varies by vector layer type
+    'From here, the specific vector syncing process varies by vector layer type
     Select Case myLayerType
     
         Case PDL_TEXT
@@ -1792,7 +1809,7 @@ Public Sub syncVectorDIB()
             End With
             
             'Initialize the backer DIB as necessary
-            If layerDIB Is Nothing Then Set layerDIB = New pdDIB
+            If (layerDIB Is Nothing) Then Set layerDIB = New pdDIB
             
             If (layerDIB.getDIBWidth <> myVectorData.vd_Width) Or (layerDIB.getDIBHeight <> myVectorData.vd_Height) Then
                 
@@ -1803,6 +1820,8 @@ Public Sub syncVectorDIB()
                 
             Else
                 
+                'TODO: test performance, and see if it's beneficial to clear only the relevant portion of the rect
+                '       if the text is much smaller than its container
                 layerDIB.resetDIB
                 
                 'Use to test a white background:
@@ -1823,8 +1842,9 @@ Public Sub syncVectorDIB()
     
     'Note that the DIB is ready to go!
     m_VectorDIBSynched = True
+    syncInternalDIB = True
 
-End Sub
+End Function
 
 'Estimate the RAM usage for this layer, based on known heavy memory users (layer DIB, in particular)
 Public Function estimateRAMUsage() As Long
@@ -1842,11 +1862,13 @@ End Function
 'Update the layer's current "viewport state hash".  This is used by the compositor, only.
 Public Sub setViewportHash(ParamArray allParams() As Variant)
     m_ViewportStateHash = getViewportHash_Theoretical(allParams)
+    m_DIBChangedSinceLastHashRequest = False
 End Sub
 
 'If the viewport generates a hash via getViewportHash_Theoretical(), it can pass that hash directly to this function to improve performance
 Public Sub setViewportHash_FromLong(ByVal newHash As Long)
     m_ViewportStateHash = newHash
+    m_DIBChangedSinceLastHashRequest = False
 End Sub
 
 'Retrieve the layer's current viewport hash

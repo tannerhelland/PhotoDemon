@@ -760,8 +760,8 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     
     'If the layers are vector layers, make sure their DIBs are properly synchronized.  (If the layers are not vector layers,
     ' this action does nothing.)
-    topLayer.syncVectorDIB
-    bottomLayer.syncVectorDIB
+    topLayer.syncInternalDIB
+    bottomLayer.syncInternalDIB
     
     'If the bottom layer is the size of the image itself, we can use the existing layer offsets in our calculation.  (Nice!)
     If bottomLayerIsFullSize Then
@@ -911,7 +911,7 @@ Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
     If backgroundLayer.getLayerVisibility Then
         
         'If this layer is a vector layer, make sure its DIB is properly synchronized.  (If it's *not* a vector layer, this action does nothing.)
-        backgroundLayer.syncVectorDIB
+        backgroundLayer.syncInternalDIB
         
         'We now perform a few advance checks, to see if we can skip various compositing steps.
         
@@ -1019,7 +1019,7 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
     'Hypothetically, we could write special handling for 24-bpp DIBs in the future.  But at present, PD only operates on 32-bpp DIBs.
     
     'If this layer is a vector layer, make sure its DIB is properly synchronized.  (If it's *not* a vector layer, this action does nothing.)
-    srcLayer.syncVectorDIB
+    srcLayer.syncInternalDIB
     
     'Start by separating our handling into "simple" and "complex" branches.  Basic layers with no non-destructive effects or much easier
     ' to deal with.
@@ -1264,7 +1264,14 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer 
     Dim srcRect As RECTF
     
     'Note that some of these rects may only be necessary under certain conditions.
-        
+    
+    'Vector layers are a special case.  Their temporary compositing DIB may pass a hash test (because it matches the size and
+    ' position of the current viewport), even though the layer's contents have changed.  If this is the case, we must still
+    ' recomposite the layer.
+    '
+    'Note that raster layers may also trigger this setting, if their raster contents have changed since a previous cache request.
+    Dim cachedDIBValid As Boolean
+    
     'Start by retrieving a rect for this layer, in pdImage coordinates.
     Layer_Handler.fillRectForLayerF srcLayer, layerRect, True
     
@@ -1274,7 +1281,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer 
         'The passed layer intersects the viewport, so we must deal with it.
         
         'If this layer is a vector layer, make sure its DIB is properly synchronized.  (If it's *not* a vector layer, this action does nothing.)
-        srcLayer.syncVectorDIB
+        cachedDIBValid = Not srcLayer.syncInternalDIB()
                 
         'The composite operation works similar to StretchBlt, by calculating a destination rectangle and a source rectangle.
         ' We know that these two rectangles define the same rectangle of the image, which allows us to infer zoom as well.
@@ -1329,7 +1336,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer 
         
         If srcLayer.getLayerNonDestructiveFXState Or nonStandardBlendModeActive Then
             
-            If (srcLayer.getViewportHash = 0) Or (srcLayer.getViewportHash <> testHash) Then
+            If (srcLayer.getViewportHash = 0) Or (srcLayer.getViewportHash <> testHash) Or (Not cachedDIBValid) Then
             
                 'The layer and/or viewport has changed since our last composite.  Create a new DIB in the cheapest way possible
                 ' (e.g., if the current temporary DIB size is acceptable, just reset it instead of fully redrawing it)
@@ -1476,7 +1483,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer 
                     'End If
                     
                     'See if our existing hash is valid
-                    If (srcLayer.getViewportHash = 0) Or (srcLayer.getViewportHash <> testHash) Then
+                    If (srcLayer.getViewportHash = 0) Or (srcLayer.getViewportHash <> testHash) Or (Not cachedDIBValid) Then
                     
                         'The layer and/or viewport has changed since our last composite.  Create a new DIB in the cheapest way possible
                         ' (e.g., if the current temporary DIB size is acceptable, just reset it instead of fully redrawing it)

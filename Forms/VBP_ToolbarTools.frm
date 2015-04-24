@@ -41,11 +41,34 @@ Begin VB.Form toolbar_Options
       Top             =   15
       Visible         =   0   'False
       Width           =   18450
-      Begin PhotoDemon.pdComboBox cboTextFont 
+      Begin PhotoDemon.textUpDown tudTextFontSize 
+         Height          =   345
+         Left            =   7680
+         TabIndex        =   69
+         Top             =   900
+         Width           =   2415
+         _ExtentX        =   4260
+         _ExtentY        =   609
+         Min             =   1
+         Max             =   1000
+         Value           =   16
+      End
+      Begin PhotoDemon.pdTextBox txtTextTool 
+         Height          =   1305
+         Left            =   840
+         TabIndex        =   68
+         Top             =   60
+         Width           =   5295
+         _ExtentX        =   9340
+         _ExtentY        =   2302
+         FontSize        =   9
+         Multiline       =   -1  'True
+      End
+      Begin PhotoDemon.pdComboBox cboTextFontFace 
          Height          =   375
-         Left            =   120
+         Left            =   7680
          TabIndex        =   67
-         Top             =   450
+         Top             =   390
          Width           =   2415
          _ExtentX        =   4260
          _ExtentY        =   635
@@ -53,14 +76,60 @@ Begin VB.Form toolbar_Options
       Begin PhotoDemon.pdLabel lblText 
          Height          =   240
          Index           =   0
-         Left            =   120
-         Top             =   60
+         Left            =   11040
+         Top             =   600
          Width           =   2445
          _ExtentX        =   0
          _ExtentY        =   503
          Caption         =   "(this tool is under construction)"
          ForeColor       =   255
          UseCustomForeColor=   -1  'True
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   1
+         Left            =   120
+         Top             =   60
+         Width           =   645
+         _ExtentX        =   1138
+         _ExtentY        =   503
+         Caption         =   "text:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   2
+         Left            =   6360
+         Top             =   60
+         Width           =   1845
+         _ExtentX        =   3254
+         _ExtentY        =   503
+         Caption         =   "font settings:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   3
+         Left            =   6360
+         Top             =   450
+         Width           =   1125
+         _ExtentX        =   1984
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "font face:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   4
+         Left            =   6360
+         Top             =   930
+         Width           =   1125
+         _ExtentX        =   1984
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "font size:"
+         ForeColor       =   0
       End
    End
    Begin VB.PictureBox picTools 
@@ -1257,6 +1326,9 @@ Option Explicit
 Private WithEvents lastUsedSettings As pdLastUsedSettings
 Attribute lastUsedSettings.VB_VarHelpID = -1
 
+'Current list of fonts, in pdStringStack format
+Private userFontList As pdStringStack
+
 'Whether or not non-destructive FX can be applied to the image
 Private m_NonDestructiveFXAllowed As Boolean
 
@@ -1353,6 +1425,26 @@ Private Sub cboSelSmoothing_Click()
         Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 
+End Sub
+
+Private Sub cboTextFontFace_Click()
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+    
+    'Update the current layer font size
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex)
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
 End Sub
 
 Private Sub cboWandCompare_Click()
@@ -1551,6 +1643,25 @@ Private Sub Form_Load()
         cboWandCompare.AddItem " Blue", 5
         cboWandCompare.AddItem " Alpha", 6
         cboWandCompare.ListIndex = 1
+        
+        'Generate a list of fonts
+        If g_IsProgramRunning Then
+        
+            Dim tmpFontRetrieval As pdTextRenderer
+            Set tmpFontRetrieval = New pdTextRenderer
+            tmpFontRetrieval.getListOfInstalledFonts userFontList
+            Set tmpFontRetrieval = Nothing
+            
+            'Populate the font selection combo box
+            Dim tmpFontName As String, relevantListIndex As Long
+            For i = 0 To userFontList.getNumOfStrings - 1
+                cboTextFontFace.AddItem userFontList.GetString(i)
+                If StrComp(userFontList.GetString(i), g_InterfaceFont) = 0 Then relevantListIndex = i
+            Next i
+            
+            cboTextFontFace.ListIndex = relevantListIndex
+            
+        End If
         
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
@@ -1849,3 +1960,52 @@ Public Sub updateAgainstCurrentTheme()
     
 End Sub
 
+Private Sub tudTextFontSize_Change()
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+    
+    'Update the current layer font size
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_FontSize, tudTextFontSize.Value
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+Private Sub txtTextTool_Change()
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+    
+    'Update the current layer text
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_Text, txtTextTool.Text
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+Private Sub txtTextTool_GotFocus()
+    'Disable accelerators
+    FormMain.ctlAccelerator.Enabled = False
+End Sub
+
+Private Sub txtTextTool_LostFocus()
+    'Re-enable accelerators
+    FormMain.ctlAccelerator.Enabled = True
+End Sub
