@@ -55,7 +55,7 @@ Public Sub addBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType 
 End Sub
 
 'Add a non-blank 32bpp layer to the image.  (This function is used by the Add New Layer button on the layer box.)
-Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As Long, ByVal dLayerColor As Long, ByVal dLayerPosition As Long, ByVal dLayerAutoSelect As Boolean, Optional ByVal dLayerName As String = "")
+Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE, ByVal dLayerSubType As Long, ByVal dLayerColor As Long, ByVal dLayerPosition As Long, ByVal dLayerAutoSelect As Boolean, Optional ByVal dLayerName As String = "")
 
     'Before making any changes, make a note of the currently active layer
     Dim prevActiveLayerID As Long
@@ -74,32 +74,57 @@ Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As Long, ByVa
     Set tmpDIB = New pdDIB
     
     'The parameters passed to the new DIB vary according to layer type.  Use the specified type to determine how we
-    ' initialize the new layer.
-    Select Case dLayerType
+    ' initialize the new layer.  (Note that this is only relevant for raster layers.)
+    If dLayerType = PDL_IMAGE Then
     
-        'Transparent (blank)
-        Case 0
-            tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, 0, 0
+        Select Case dLayerSubType
         
-        'Black
-        Case 1
-            tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, vbBlack, 255
+            'Transparent (blank)
+            Case 0
+                tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, 0, 0
+            
+            'Black
+            Case 1
+                tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, vbBlack, 255
+            
+            'White
+            Case 2
+                tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, vbWhite, 255
+            
+            'Custom color
+            Case 3
+                tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, dLayerColor, 255
+            
+        End Select
         
-        'White
-        Case 2
-            tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, vbWhite, 255
-        
-        'Custom color
-        Case 3
-            tmpDIB.createBlank pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 32, dLayerColor, 255
-        
-    End Select
+    End If
     
     'Set the layer name
-    If Len(dLayerName) = 0 Then dLayerName = g_Language.TranslateMessage("Blank layer")
+    If Len(Trim$(dLayerName)) = 0 Then
+    
+        Select Case dLayerType
+        
+            Case PDL_IMAGE
+                dLayerName = g_Language.TranslateMessage("Blank layer")
+                
+            Case PDL_TEXT
+                dLayerName = g_Language.TranslateMessage("Text layer")
+        
+        End Select
+        
+    End If
     
     'Assign the newly created DIB and layer name to the layer object
-    pdImages(g_CurrentImage).getLayerByID(newLayerID).InitializeNewLayer PDL_IMAGE, dLayerName, tmpDIB
+    pdImages(g_CurrentImage).getLayerByID(newLayerID).InitializeNewLayer dLayerType, dLayerName, tmpDIB
+    
+    'Some layer types may require extra initialization steps in the future
+    Select Case dLayerType
+        
+        Case PDL_IMAGE
+        
+        Case PDL_TEXT
+        
+    End Select
     
     pdImages(g_CurrentImage).setActiveLayerByID prevActiveLayerID
     
@@ -215,10 +240,21 @@ Public Sub eraseLayerByIndex(ByVal layerIndex As Long)
 
     If Not pdImages(g_CurrentImage) Is Nothing Then
     
-        'Create a blank layer at the current layer DIB's dimensions
-        With pdImages(g_CurrentImage).getLayerByIndex(layerIndex)
-            .layerDIB.createBlank .getLayerWidth(False), .getLayerHeight(False), 32, 0, 0
-        End With
+        'How we "clear" the layer varies by layer type
+        Select Case pdImages(g_CurrentImage).getLayerByIndex(layerIndex).getLayerType
+        
+            'For image layers, force the layer DIB to all zeroes
+            Case PDL_IMAGE
+                With pdImages(g_CurrentImage).getLayerByIndex(layerIndex)
+                    .layerDIB.createBlank .getLayerWidth(False), .getLayerHeight(False), 32, 0, 0
+                End With
+            
+            'For text layers, simply erase the current text.  (This has the effect of making the layer fully transparent,
+            ' while retaining all text settings... I'm not sure of a better solution at present.)
+            Case PDL_TEXT
+                'TODO!
+        
+        End Select
         
         'Notify the parent object of the change
         pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, layerIndex
