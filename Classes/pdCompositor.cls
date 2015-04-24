@@ -758,6 +758,11 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     
+    'If the layers are vector layers, make sure their DIBs are properly synchronized.  (If the layers are not vector layers,
+    ' this action does nothing.)
+    topLayer.syncVectorDIB
+    bottomLayer.syncVectorDIB
+    
     'If the bottom layer is the size of the image itself, we can use the existing layer offsets in our calculation.  (Nice!)
     If bottomLayerIsFullSize Then
     
@@ -904,7 +909,10 @@ Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
     'Note that the bottom layer can technically be hidden.  (Some software doesn't allow this, but PD does, for better or worse.
     ' We can skip this entire section if the background layer is invisible.
     If backgroundLayer.getLayerVisibility Then
-    
+        
+        'If this layer is a vector layer, make sure its DIB is properly synchronized.  (If it's *not* a vector layer, this action does nothing.)
+        backgroundLayer.syncVectorDIB
+        
         'We now perform a few advance checks, to see if we can skip various compositing steps.
         
         'First: if the layer has no non-destructive effects active, merging it becomes much simpler!
@@ -1009,7 +1017,10 @@ End Sub
 Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer As pdLayer)
     
     'Hypothetically, we could write special handling for 24-bpp DIBs in the future.  But at present, PD only operates on 32-bpp DIBs.
-        
+    
+    'If this layer is a vector layer, make sure its DIB is properly synchronized.  (If it's *not* a vector layer, this action does nothing.)
+    srcLayer.syncVectorDIB
+    
     'Start by separating our handling into "simple" and "complex" branches.  Basic layers with no non-destructive effects or much easier
     ' to deal with.
     If Not srcLayer.getLayerNonDestructiveFXState Then
@@ -1262,8 +1273,9 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer 
         
         'The passed layer intersects the viewport, so we must deal with it.
         
-        Dim dibWidthCalc As Long, dibHeightCalc As Long
-        
+        'If this layer is a vector layer, make sure its DIB is properly synchronized.  (If it's *not* a vector layer, this action does nothing.)
+        srcLayer.syncVectorDIB
+                
         'The composite operation works similar to StretchBlt, by calculating a destination rectangle and a source rectangle.
         ' We know that these two rectangles define the same rectangle of the image, which allows us to infer zoom as well.
         
@@ -1287,6 +1299,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer 
         
         'Precalculate dimensions of any temporary DIBs we need to create.  These can have fractional offsets on either side, so we need
         ' to make sure the DIB is at least large enough to contain 0.99 offsets on either side.
+        Dim dibWidthCalc As Long, dibHeightCalc As Long
         dibWidthCalc = dstRect.Width + 0.999 + (dstRect.Left - Int(dstRect.Left))
         dibHeightCalc = dstRect.Height + 0.999 + (dstRect.Top - Int(dstRect.Top))
         
