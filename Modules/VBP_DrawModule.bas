@@ -334,7 +334,7 @@ Public Sub DrawHorizontalGradientToDIB(ByVal dstDIB As pdDIB, ByVal xLeft As Lon
     
     'If alpha is relevant, cache a GDI+ image handle and pen in advance
     Dim hGdipImage As Long, hGdipPen As Long
-    If alphaMatters Then hGdipImage = GDI_Plus.getGDIPlusImageHandleFromDC(dstDIB.getDIBDC, False)
+    If alphaMatters Then hGdipImage = GDI_Plus.getGDIPlusGraphicsFromDC(dstDIB.getDIBDC, False)
     
     'Run a loop across the DIB, changing the gradient color according to the step calculated earlier
     For x = xLeft To xRight
@@ -361,7 +361,7 @@ Public Sub DrawHorizontalGradientToDIB(ByVal dstDIB As pdDIB, ByVal xLeft As Lon
     Next x
     
     'Release our GDI+ handle, if any
-    If alphaMatters Then GDI_Plus.releaseGDIPlusImageHandle hGdipImage
+    If alphaMatters Then GDI_Plus.releaseGDIPlusGraphics hGdipImage
     
 End Sub
 
