@@ -1113,7 +1113,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     'Because VB does not allow an user control to receive focus if it contains controls that can receive focus, the arrow buttons
     ' can behave unpredictably (for example, if the zoom box has focus, and the user clicks on the canvas, the canvas will not
     ' receive focus and arrow key presses will continue to interact with the zoom box instead of the viewport)
-    'cmdZoomFit.SetFocus
+    ' (NOTE: this should be fixed as of 6.6, as a dedicated picture box is now used for rendering)
     
     'Note that the user has attempted to interact with the canvas.
     m_UserInteractedWithCanvas = True
@@ -1144,6 +1144,9 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
         m_initMouseX = x
         m_initMouseY = y
         
+        'Some functions may not operate on the current layer, but on the layer under the mouse
+        Dim layerUnderMouse As Long
+        
         'Ask the current layer if these coordinates correspond to a point of interest.  We don't always use this return value,
         ' but a number of functions could potentially ask for it, so we cache it at MouseDown time and hang onto it until
         ' the mouse is released.
@@ -1163,7 +1166,6 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 ' option; if it is set, check (and possibly modify) the active layer based on the mouse position.
                 If CBool(toolbar_Options.chkAutoActivateLayer) Then
                 
-                    Dim layerUnderMouse As Long
                     layerUnderMouse = Layer_Handler.getLayerUnderMouse(imgX, imgY, True)
                     
                     'The "getLayerUnderMouse" function will return a layer index if the mouse is over a layer.  If the mouse is not
@@ -1276,6 +1278,44 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
             Case SELECT_WAND
                 Selection_Handler.initSelectionByPoint imgX, imgY
                 Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
+                
+            'Text layer behavior varies depending on whether the current layer is a text layer or not
+            Case VECTOR_TEXT
+                
+                'One of two things can happen when the mouse is clicked in text mode:
+                ' 1) The current layer is a text layer, and the user wants to edit it (move it around, resize, etc)
+                ' 2) The user wants to add a new text layer, which they can do by clicking over a non-text layer portion of the image
+                
+                'Let's start by distinguishing between these two states.
+                Dim userIsEditingCurrentTextLayer As Boolean
+                
+                'Check to see if the current layer is a text layer
+                If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
+                
+                    'Did the user click on a POI for this layer?  If they did, the user is editing the current text layer.
+                    If curPointOfInterest >= 0 Then
+                        userIsEditingCurrentTextLayer = True
+                    Else
+                        userIsEditingCurrentTextLayer = False
+                    End If
+                
+                'The current active layer is not a text layer.
+                Else
+                    userIsEditingCurrentTextLayer = False
+                End If
+                
+                'If the user is editing the current text layer, we can switch directly into layer transform mode
+                If userIsEditingCurrentTextLayer Then
+                    
+                    'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
+                    setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
+                    
+                'The user is not editing a text layer.  Create a new text layer now.
+                Else
+                    
+                    Process "Add new layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, ""), UNDO_IMAGE
+                
+                End If
                 
             'In the future, other tools can be handled here
             Case Else
@@ -2381,6 +2421,48 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                     
             End Select
         
+'        Case VECTOR_TEXT
+'
+'            'The text tool bears a lot of similarity to the Move / Size tool, although the resulting behavior is
+'            ' obviously quite different.
+'            Select Case pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
+'
+'                'Mouse is not over the current layer
+'                Case -1
+'                    cMouseEvents.setSystemCursor IDC_ARROW
+'
+'                'Mouse is over the top-left corner
+'                Case 0
+'                    cMouseEvents.setSystemCursor IDC_SIZENWSE
+'
+'                'Mouse is over the top-right corner
+'                Case 1
+'                    cMouseEvents.setSystemCursor IDC_SIZENESW
+'
+'                'Mouse is over the bottom-right corner
+'                Case 2
+'                    cMouseEvents.setSystemCursor IDC_SIZENWSE
+'
+'                'Mouse is over the bottom-left corner
+'                Case 3
+'                    cMouseEvents.setSystemCursor IDC_SIZENESW
+'
+'                'Mouse is within the layer, but not over a specific node
+'                Case 4
+'
+'                    'This case is unique because if the user has elected to ignore transparent pixels, they cannot move a layer
+'                    ' by dragging the mouse within a transparent region of the layer.  Thus, before changing the cursor,
+'                    ' check to see if the hovered layer index is the same as the current layer index; if it isn't, don't display
+'                    ' the Move cursor.  (Note that this works because the getLayerUnderMouse function, called during the MouseMove
+'                    ' event, automatically factors the transparency check into its calculation.  Thus we don't have to
+'                    ' re-evaluate the setting here.)
+'                    If m_LayerAutoActivateIndex = pdImages(g_CurrentImage).getActiveLayerIndex Then
+'                        cMouseEvents.setSystemCursor IDC_SIZEALL
+'                    Else
+'                        cMouseEvents.setSystemCursor IDC_ARROW
+'                    End If
+'
+'            End Select
         
         Case Else
             cMouseEvents.setSystemCursor IDC_ARROW
