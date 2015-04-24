@@ -664,12 +664,63 @@ Public Property Let ListIndex(ByVal newIndex As Long)
             
         End If
         
-    'If the combo box doesn't exist yet, maek a backup of any ListIndex requests
+    'If the combo box doesn't exist yet, make a backup of any ListIndex requests
     Else
         m_BackupListIndex = newIndex
     End If
     
 End Property
+
+'As a convenience, this class also allows the user to set the list index by string.  The combo box will automatically find the matching
+' entry in the list.  If a match cannot be found, the list index will remain unchanged
+Public Sub setListIndexByString(ByVal listString As String, Optional ByVal compareMode As VbCompareMethod = vbBinaryCompare)
+    
+    'Look for this string in our current array
+    If m_NumBackupEntries > 0 Then
+        
+        Dim newIndex As Long
+        newIndex = -1
+        
+        Dim i As Long
+        For i = 0 To UBound(m_BackupEntries)
+            If StrComp(listString, m_BackupEntries(i).entryStringEn, compareMode) = 0 Then
+                newIndex = i
+                Exit For
+            End If
+        Next i
+        
+        'If a match was found, change the list index now
+        If (newIndex >= 0) Then
+                
+            'Make a backup of the new listindex
+            m_CurrentListIndex = newIndex
+        
+            If m_ComboBoxHwnd <> 0 Then
+                
+                'See if new ListIndex is different from the current ListIndex.  (We can skip the assignment step if they match.)
+                If newIndex <> SendMessage(m_ComboBoxHwnd, CB_GETCURSEL, 0, ByVal 0&) Then
+                    
+                    'Request the new list index
+                    SendMessage m_ComboBoxHwnd, CB_SETCURSEL, newIndex, ByVal 0&
+                    
+                    'Request an immediate repaint; without this, there may be a delay, based on the caller's handling of the Click event
+                    If Not (cPainterBox Is Nothing) Then cPainterBox.requestRepaint
+                    
+                    'Notify the user of the change
+                    RaiseEvent Click
+                    
+                End If
+                
+            'If the combo box doesn't exist yet, make a backup of any ListIndex requests
+            Else
+                m_BackupListIndex = newIndex
+            End If
+                
+        End If
+    
+    End If
+    
+End Sub
 
 'hWnds aren't exposed by default
 Public Property Get hWnd() As Long

@@ -360,10 +360,12 @@ Public Sub syncToolOptionsUIToCurrentLayer()
     
     Select Case g_CurrentTool
         
-        'At present, the only layer-specific tool is the move tool.  In the future, additional transform tools may be added.
         Case NAV_MOVE
             layerToolActive = True
-            
+        
+        Case VECTOR_TEXT
+            If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then layerToolActive = True
+        
         Case Else
             layerToolActive = False
         
@@ -374,16 +376,27 @@ Public Sub syncToolOptionsUIToCurrentLayer()
         'Mark the tool engine as busy; this prevents each change from triggering viewport redraws
         Tool_Support.setToolBusyState True
         
-        'Start iterating various layer properties, and reflecting them across their corresponding UI elements
+        'Start iterating various layer properties, and reflecting them across their corresponding UI elements.
+        ' (Obviously, this step is separated by tool type.)
+        Select Case g_CurrentTool
         
-        'The Layer Move tool has four text up/downs: two for layer position (x, y) and two for layer size (w, y)
-        toolbar_Options.tudLayerMove(0).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerOffsetX
-        toolbar_Options.tudLayerMove(1).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerOffsetY
-        toolbar_Options.tudLayerMove(2).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerWidth
-        toolbar_Options.tudLayerMove(3).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerHeight
+            Case NAV_MOVE
+            
+                'The Layer Move tool has four text up/downs: two for layer position (x, y) and two for layer size (w, y)
+                toolbar_Options.tudLayerMove(0).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerOffsetX
+                toolbar_Options.tudLayerMove(1).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerOffsetY
+                toolbar_Options.tudLayerMove(2).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerWidth
+                toolbar_Options.tudLayerMove(3).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerHeight
+                
+                'The layer resize quality combo box also needs to be synched
+                toolbar_Options.cboLayerResizeQuality.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getLayerResizeQuality
+            
+            Case VECTOR_TEXT
+                toolbar_Options.txtTextTool = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_Text)
+                toolbar_Options.cboTextFontFace.setListIndexByString pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontFace)
+                toolbar_Options.tudTextFontSize = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontSize)
         
-        'The layer resize quality combo box also needs to be synched
-        toolbar_Options.cboLayerResizeQuality.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getLayerResizeQuality
+        End Select
         
         'Free the tool engine
         Tool_Support.setToolBusyState False
