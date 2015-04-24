@@ -1133,7 +1133,13 @@ Public Function getVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
         xmlEngine.writeBlankLine
     End If
     
-    'Next, the type of vector data we write varies by layer type
+    'All vector layers store some similar data
+    With xmlEngine
+        .writeTag "GenericVectorWidth", myVectorData.vd_Width
+        .writeTag "GenericVectorHeight", myVectorData.vd_Height
+    End With
+    
+    'Additional vector data varies by layer type
     Select Case myLayerType
         
         Case PDL_TEXT
@@ -1172,6 +1178,12 @@ Public Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
     
     'Validate the XML header...
     If xmlEngine.loadXMLFromString(xmlString) And xmlEngine.isPDDataType("pdVector") Then
+        
+        'All vector layers store some similar data
+        With myVectorData
+            .vd_Width = xmlEngine.getUniqueTag_Long("GenericVectorWidth", 1)
+            .vd_Height = xmlEngine.getUniqueTag_Long("GenericVectorHeight", 1)
+        End With
         
         'Next, the vector tags we look for vary by layer type
         Select Case myLayerType
