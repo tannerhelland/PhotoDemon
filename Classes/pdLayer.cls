@@ -615,29 +615,138 @@ Public Sub setLayerNonDestructiveFXState(ByVal ndEffect As LAYER_NONDESTRUCTIVE_
 End Sub
 
 'Text layer properties can be get/set via these singular functions.
-Public Function getTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPERTY) As Variant
+Friend Function getTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPERTY) As Variant
 
     Select Case desiredProperty
         
-        'TODO!
-        
         Case ptp_Text
+            getTextLayerProperty = myTextData.tld_Text
+        
         Case ptp_FontColor
+            getTextLayerProperty = myTextData.tld_FontColor
+        
         Case ptp_FontFace
+            getTextLayerProperty = myTextData.tld_FontFace
+        
         Case ptp_FontSize
+            getTextLayerProperty = myTextData.tld_FontSize
+        
         Case ptp_FontSizeUnit
+            getTextLayerProperty = myTextData.tld_FontSizeUnit
+        
         Case ptp_FontBold
+            getTextLayerProperty = myTextData.tld_FontBold
+        
         Case ptp_FontItalic
+            getTextLayerProperty = myTextData.tld_FontItalic
+        
         Case ptp_FontUnderline
+            getTextLayerProperty = myTextData.tld_FontUnderline
+        
         Case ptp_FontStrikeout
+            getTextLayerProperty = myTextData.tld_FontUnderline
+        
         Case ptp_HorizontalAlignment
+            getTextLayerProperty = myTextData.tld_HorizontalAlignment
+        
         Case ptp_VerticalAlignment
+            getTextLayerProperty = myTextData.tld_VerticalAlignment
+        
         Case ptp_TextRenderingHint
+            getTextLayerProperty = myTextData.tld_TextRenderingHint
+        
         Case ptp_TextContrast
+            getTextLayerProperty = myTextData.tld_TextContrast
     
     End Select
 
 End Function
+
+Friend Sub setTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPERTY, ByVal newValue As Variant)
+
+    Select Case desiredProperty
+        
+        Case ptp_Text
+            If myTextData.tld_Text <> CStr(newValue) Then
+                myTextData.tld_Text = CStr(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_FontColor
+            If myTextData.tld_FontColor <> CLng(newValue) Then
+                myTextData.tld_FontColor = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_FontFace
+            If myTextData.tld_FontFace <> CStr(newValue) Then
+                myTextData.tld_FontFace = CStr(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_FontSize
+            If myTextData.tld_FontSize <> CSng(newValue) Then
+                myTextData.tld_FontSize = CSng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_FontSizeUnit
+            If myTextData.tld_FontSizeUnit <> CLng(newValue) Then
+                myTextData.tld_FontSizeUnit = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_FontBold
+            If myTextData.tld_FontBold <> CBool(newValue) Then
+                myTextData.tld_FontBold = CBool(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_FontItalic
+            If myTextData.tld_FontItalic <> CBool(newValue) Then
+                myTextData.tld_FontItalic = CBool(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_FontUnderline
+            If myTextData.tld_FontUnderline <> CBool(newValue) Then
+                myTextData.tld_FontUnderline = CBool(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_FontStrikeout
+            If myTextData.tld_FontUnderline <> CBool(newValue) Then
+                myTextData.tld_FontUnderline = CBool(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_HorizontalAlignment
+            If myTextData.tld_HorizontalAlignment <> CLng(newValue) Then
+                myTextData.tld_HorizontalAlignment = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_VerticalAlignment
+            If myTextData.tld_VerticalAlignment <> CLng(newValue) Then
+                myTextData.tld_VerticalAlignment = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_TextRenderingHint
+            If myTextData.tld_TextRenderingHint <> CLng(newValue) Then
+                myTextData.tld_TextRenderingHint = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_TextContrast
+            If myTextData.tld_TextContrast <> CLng(newValue) Then
+                myTextData.tld_TextContrast = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
+    
+    End Select
+    
+End Sub
 
 'If this layer needs to have its on-canvas transformations made permanent (for example, when applying an action
 ' that involves a selection), this function can be used.
