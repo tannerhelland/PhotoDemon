@@ -919,18 +919,18 @@ End Function
 
 'Retrieve a persistent handle to a GDI+-format graphics container.  Optionally, a smoothing mode can be specified so that it does
 ' not have to be repeatedly specified by a caller function.  (GDI+ sets smoothing mode by graphics container, not by function call.)
-Public Function getGDIPlusImageHandleFromDC(ByVal srcDC As Long, Optional ByVal useAA As Boolean = True) As Long
+Public Function getGDIPlusGraphicsFromDC(ByVal srcDC As Long, Optional ByVal useAA As Boolean = True) As Long
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC srcDC, iGraphics
     If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
 
-    getGDIPlusImageHandleFromDC = iGraphics
+    getGDIPlusGraphicsFromDC = iGraphics
 
 End Function
 
-Public Sub releaseGDIPlusImageHandle(ByVal srcHandle As Long)
+Public Sub releaseGDIPlusGraphics(ByVal srcHandle As Long)
     GdipDeleteGraphics srcHandle
 End Sub
 
@@ -951,6 +951,22 @@ End Function
 
 Public Sub releaseGDIPlusPen(ByVal srcPen As Long)
     GdipDeletePen srcPen
+End Sub
+
+'Return a persistent handle to a GDI+ brush.  This can be useful if many drawing operations are going to be applied with the same brush.
+Public Function getGDIPlusBrushHandle(ByVal eColor As Long, Optional ByVal cTransparency As Long = 255) As Long
+
+    'Create the requested brush
+    Dim iBrush As Long
+    GdipCreateSolidFill fillQuadWithVBRGB(eColor, cTransparency), iBrush
+    
+    'Return the handle
+    getGDIPlusBrushHandle = iBrush
+
+End Function
+
+Public Sub releaseGDIPlusBrush(ByVal srcBrush As Long)
+    GdipDeleteBrush srcBrush
 End Sub
 
 'Assuming the client has already obtained a GDI+ graphics handle and a GDI+ pen handle, they can use this function to quickly draw a line using
@@ -1255,7 +1271,7 @@ End Function
 
 'GDI+ requires RGBQUAD colors with alpha in the 4th byte.  This function returns an RGBQUAD (long-type) from a standard RGB()
 ' long and supplied alpha.  It's not a very efficient conversion, but I need it so infrequently that I don't really care.
-Private Function fillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte) As Long
+Public Function fillQuadWithVBRGB(ByVal vbRGB As Long, ByVal alphaValue As Byte) As Long
     
     'The vbRGB constant may be an OLE color constant; if that happens, we want to convert it to a normal RGB quad.
     vbRGB = TranslateColor(vbRGB)
