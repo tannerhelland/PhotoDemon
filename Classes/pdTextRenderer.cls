@@ -110,7 +110,7 @@ End Enum
 #End If
 
 'GDI+ string format settings.  Note that "near" and "far" monikers are used, to better support RTL languages.
-Public Enum gdipStringAlignment
+Public Enum GdiPlusStringAlignment
     StringAlignmentNear = 0
     StringAlignmentCenter = 1
     StringAlignmentFar = 2
@@ -132,12 +132,15 @@ Private Declare Function GdipDeleteFont Lib "gdiplus" (ByVal srcFont As Long) As
 'String format functions
 Private Declare Function GdipStringFormatGetGenericTypographic Lib "gdiplus" (ByRef dstStringFormat As Long) As Long
 Private Declare Function GdipDeleteStringFormat Lib "gdiplus" (ByVal srcStringFormat As Long) As Long
-Private Declare Function GdipSetStringFormatAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newAlignment As gdipStringAlignment) As Long
-Private Declare Function GdipSetStringFormatLineAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newLineAlignment As gdipStringAlignment) As Long
+Private Declare Function GdipSetStringFormatAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newAlignment As GdiPlusStringAlignment) As Long
+Private Declare Function GdipSetStringFormatLineAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newLineAlignment As GdiPlusStringAlignment) As Long
 
 'Graphics container font functions
 Private Declare Function GdipSetTextRenderingHint Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newRenderHintMode As GdiPlusTextRenderingHint) As Long
 Private Declare Function GdipSetTextContrast Lib "gdiplus" (ByVal dstGraphics As Long, ByVal textContrast As Long) As Long
+
+'Render functions
+Private Declare Function GdipDrawString Lib "gdiplus" (ByVal dstGraphics As Long, ByVal ptrToString As Long, ByVal strLength As Long, ByVal gdipFontHandle As Long, ByRef layoutRect As RECTF, ByVal gdipStringFormat As Long, ByVal gdipBrush As Long) As Long
 
 'This class internally maintains various font properties.  These properties must be converted into specific GDI+ parameters via
 ' various means, but they are stored in human-friendly format to simplify serializing a class instance to an XML string.
@@ -160,8 +163,8 @@ Private m_StrikeoutSupported As Boolean
 ' to per-DC settings in GDI (e.g. string alignment).  Because it is cheap to modify a StringFormat object, PD automatically
 ' syncs these internal values to a GDI+ StringFormat handle whenever they are changed.  This spares us from needing to do
 ' it during rendering stages.
-Private m_HorizontalAlignment As gdipStringAlignment
-Private m_VerticalAlignment As gdipStringAlignment
+Private m_HorizontalAlignment As GdiPlusStringAlignment
+Private m_VerticalAlignment As GdiPlusStringAlignment
 
 'Even *more* string settings are not stored in the font itself, or in a StringFormat object, but in the target
 ' GDI+ Graphics container.  These must be assigned to the graphics container prior to painting text, so there's not really
@@ -275,11 +278,11 @@ End Sub
 'Get/set string alignment.  Note that unlike other settings, these functions have two significant features:
 ' 1) These Set functions immediately update a corresponding GDI+ StringFormat object.
 ' 2) These Set functions do not affect the current font cache
-Friend Function getHorizontalAlignment() As gdipStringAlignment
+Friend Function getHorizontalAlignment() As GdiPlusStringAlignment
     getHorizontalAlignment = m_HorizontalAlignment
 End Function
 
-Friend Sub setHorizontalAlignment(ByVal newAlignment As gdipStringAlignment)
+Friend Sub setHorizontalAlignment(ByVal newAlignment As GdiPlusStringAlignment)
     
     If m_HorizontalAlignment <> newAlignment Then
         m_HorizontalAlignment = newAlignment
@@ -288,11 +291,11 @@ Friend Sub setHorizontalAlignment(ByVal newAlignment As gdipStringAlignment)
     
 End Sub
 
-Friend Function getVerticalAlignment() As gdipStringAlignment
+Friend Function getVerticalAlignment() As GdiPlusStringAlignment
     getVerticalAlignment = m_VerticalAlignment
 End Function
 
-Friend Sub setVerticalAlignment(ByVal newAlignment As gdipStringAlignment)
+Friend Sub setVerticalAlignment(ByVal newAlignment As GdiPlusStringAlignment)
     
     If m_VerticalAlignment <> newAlignment Then
         m_VerticalAlignment = newAlignment
@@ -415,6 +418,12 @@ End Function
 ' Returns: TRUE if font exists; FALSE otherwise
 Public Function setFontFace(ByVal fontName As String) As Boolean
     
+    'If this font face has already been set, and a font has been successfully created, ignore this request
+    If (StrComp(fontName, m_FontFace, vbBinaryCompare) = 0) And (m_GDIPlusFontFamily <> 0) Then
+        setFontFace = True
+        Exit Function
+    End If
+    
     'If a font family already exists, delete it
     If m_GDIPlusFontFamily <> 0 Then GdipDeleteFontFamily m_GDIPlusFontFamily
     
@@ -424,6 +433,9 @@ Public Function setFontFace(ByVal fontName As String) As Boolean
     
     'This GDI+ function supports several unique fail conditions; test for them
     If (gdipReturn = 0) And (m_GDIPlusFontFamily <> 0) Then
+        
+        'The font appears to have been created successfully!
+        m_FontFace = fontName
         
         'Prior to exiting, cache the font styles supported by this font family
         Dim testResult As Long
@@ -500,7 +512,7 @@ Public Function createFontObject() As Boolean
     
     'Attempt to create the font
     Dim gdipReturn As Long
-    gdipReturn = GdipCreateFont(m_GDIPlusFontFamily, m_FontSize, getFontStylesAsGdipLong, convertPDFontUnitToGDIPlusFontUnit(m_FontSizeUnit), m_GDIPlusFont)
+    gdipReturn = GdipCreateFont(m_GDIPlusFontFamily, m_FontSize, getFontStylesAsGdipLong(), convertPDFontUnitToGDIPlusFontUnit(m_FontSizeUnit), m_GDIPlusFont)
     
     'Check for known errors; GDI+ does not support OpenType fonts, for example
     If (gdipReturn = 0) And (m_GDIPlusFont <> 0) Then
@@ -544,6 +556,43 @@ Private Function getFontStylesAsGdipLong() As Long
     If m_FontUnderline Then getFontStylesAsGdipLong = (getFontStylesAsGdipLong Or FontStyleUnderline)
     If m_FontStrikeout Then getFontStylesAsGdipLong = (getFontStylesAsGdipLong Or FontStyleStrikeout)
     
+End Function
+
+'Use this function to render arbitrary text to an arbitrary DIB.  Performance should be decent, but if you're going to be making
+' a ton of successive calls, it's probably worthwhile to cache a GDI+ graphics instance that points to the target.  (This class does
+' not currently offer a function for that, FYI.)
+'
+'Note also that the crColor parameter should not include alpha; alpha in PD is handled by layers, not the text renderer.
+Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String, ByVal crColor As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
+
+    'Start by acquiring a GDI+ handle to the destination DIB
+    Dim dstGraphics As Long
+    dstGraphics = GDI_Plus.getGDIPlusGraphicsFromDC(dstDIB.getDIBDC, False)
+    
+    'Next, set up all container-specific text settings
+    GdipSetTextRenderingHint dstGraphics, m_TextRenderingHint
+    GdipSetTextContrast dstGraphics, m_TextContrast
+    
+    'Create a solid fill brush.  (In the future, we'll add more impressive options!)
+    Dim gdipBrush As Long
+    gdipBrush = GDI_Plus.getGDIPlusBrushHandle(crColor)
+    
+    'Convert the input rect to a RECTF
+    Dim boundingRect As RECTF
+    With boundingRect
+        .Left = x1
+        .Top = y1
+        .Width = textWidth
+        .Height = textHeight
+    End With
+    
+    'Finally, use GDI+ to render the actual string
+    GdipDrawString dstGraphics, StrPtr(srcString), Len(srcString), m_GDIPlusFont, boundingRect, m_GDIPlusStringFormat, gdipBrush
+    
+    'Release the temporary GDI+ objects we created
+    GDI_Plus.releaseGDIPlusBrush gdipBrush
+    GDI_Plus.releaseGDIPlusGraphics dstGraphics
+
 End Function
 
 'Helper function for returning a string stack of currently installed, GDI+ compatible (e.g. TrueType) fonts
