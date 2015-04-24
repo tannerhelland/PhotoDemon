@@ -72,6 +72,7 @@ Begin VB.Form FormNewLayer
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.smartOptionButton optLayer 
       CausesValidation=   0   'False
@@ -241,7 +242,7 @@ Private Sub cmdBar_OKClick()
         End If
     Next i
     
-    Process "Add new layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex, newLayerType, colorPicker.Color, cboPosition.ListIndex, CBool(chkAutoSelectLayer), txtLayerName), UNDO_IMAGE
+    Process "Add new layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex, PDL_IMAGE, newLayerType, colorPicker.Color, cboPosition.ListIndex, CBool(chkAutoSelectLayer), txtLayerName), UNDO_IMAGE
     
 End Sub
 
