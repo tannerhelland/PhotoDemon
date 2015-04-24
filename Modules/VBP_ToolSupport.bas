@@ -174,6 +174,8 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
     Dim origWidth As Double, origHeight As Double
     origWidth = origLayerRect.Right - origLayerRect.Left
     origHeight = origLayerRect.Bottom - origLayerRect.Top
+    If origWidth < 1 Then origWidth = 1
+    If origHeight < 1 Then origHeight = 1
     
     'To prevent the user from flipping or mirroring the image, we must do some bound checking on their changes,
     ' and disallow anything that results in an invalid image coordinate.

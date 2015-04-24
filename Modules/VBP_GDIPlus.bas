@@ -954,11 +954,11 @@ Public Sub releaseGDIPlusPen(ByVal srcPen As Long)
 End Sub
 
 'Return a persistent handle to a GDI+ brush.  This can be useful if many drawing operations are going to be applied with the same brush.
-Public Function getGDIPlusBrushHandle(ByVal eColor As Long, Optional ByVal cTransparency As Long = 255) As Long
+Public Function getGDIPlusBrushHandle(ByVal eColor As Long, Optional ByVal cOpacity As Byte = 255) As Long
 
     'Create the requested brush
     Dim iBrush As Long
-    GdipCreateSolidFill fillQuadWithVBRGB(eColor, cTransparency), iBrush
+    GdipCreateSolidFill fillQuadWithVBRGB(eColor, cOpacity), iBrush
     
     'Return the handle
     getGDIPlusBrushHandle = iBrush
