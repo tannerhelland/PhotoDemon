@@ -438,35 +438,42 @@ End Function
 
 Public Sub setLayerWidth(ByVal newSize As Single)
     
+    'Force size in-bounds
+    If newSize < 1 Then newSize = 1
+    
     'Make sure the layer is a vector layer
-    If myLayerType <> PDL_IMAGE Then
+    If (myLayerType <> PDL_IMAGE) And (newSize <> myVectorData.vd_Width) Then
         
         'Store the new size and mark the DIB cache as dirty
         myVectorData.vd_Width = newSize
         m_VectorDIBSynched = False
         
     Else
-        Debug.Print "WARNING!  The setLayerWidth and setLayerHeight functions are only valid for vector layers!"
+        If myLayerType = PDL_IMAGE Then Debug.Print "WARNING!  The setLayerWidth and setLayerHeight functions are only valid for vector layers!"
     End If
     
 End Sub
 
 Public Sub setLayerHeight(ByVal newSize As Single)
     
+    'Force size in-bounds
+    If newSize < 1 Then newSize = 1
+    
     'Make sure the layer is a vector layer
-    If myLayerType <> PDL_IMAGE Then
+    If (myLayerType <> PDL_IMAGE) And (newSize <> myVectorData.vd_Width) Then
         
         'Store the new size and mark the DIB cache as dirty
         myVectorData.vd_Height = newSize
         m_VectorDIBSynched = False
         
     Else
-        Debug.Print "WARNING!  The setLayerWidth and setLayerHeight functions are only valid for vector layers!"
+        If myLayerType = PDL_IMAGE Then Debug.Print "WARNING!  The setLayerWidth and setLayerHeight functions are only valid for vector layers!"
     End If
     
 End Sub
 
-'Get/set layer canvas modifiers (necessary for non-destructive on-canvas resizing)
+'Get/set layer canvas modifiers (necessary for non-destructive on-canvas resizing).  For vector layers, these have no effect.
+' Vector layers always maintain canvas x/y modifiers of 1, and they simply translate these requests into setLayerWidth/Height calls.
 Public Function getLayerCanvasXModifier() As Double
     getLayerCanvasXModifier = myLayerData.l_CanvasXModifier
 End Function
@@ -476,19 +483,41 @@ Public Function getLayerCanvasYModifier() As Double
 End Function
 
 Public Sub setLayerCanvasXModifier(ByVal newXModifier As Double)
-    If newXModifier <= 0 Then
-        myLayerData.l_CanvasXModifier = 0.00000001
-    Else
-        myLayerData.l_CanvasXModifier = newXModifier
-    End If
+    
+    'Check bounds
+    If newXModifier <= 0 Then newXModifier = 0.00000001
+    
+    'Separate handling by layer type
+    Select Case myLayerType
+    
+        Case PDL_IMAGE
+            myLayerData.l_CanvasXModifier = newXModifier
+            
+        Case PDL_TEXT
+            myLayerData.l_CanvasXModifier = 1
+            setLayerWidth newXModifier * getLayerWidth
+    
+    End Select
+    
 End Sub
 
 Public Sub setLayerCanvasYModifier(ByVal newYModifier As Double)
-    If newYModifier <= 0 Then
-        myLayerData.l_CanvasYModifier = 0.00000001
-    Else
-        myLayerData.l_CanvasYModifier = newYModifier
-    End If
+    
+    'Check bounds
+    If newYModifier <= 0 Then newYModifier = 0.00000001
+    
+    'Separate handling by layer type
+    Select Case myLayerType
+    
+        Case PDL_IMAGE
+            myLayerData.l_CanvasYModifier = newYModifier
+            
+        Case PDL_TEXT
+            myLayerData.l_CanvasYModifier = 1
+            setLayerHeight newYModifier * getLayerHeight
+    
+    End Select
+    
 End Sub
 
 'Get/set non-destructive resize algorithm.  Note that there are two GET functions:
@@ -827,7 +856,7 @@ Private Sub Class_Initialize()
         .tld_FontStrikeout = False
         .tld_HorizontalAlignment = StringAlignmentNear
         .tld_VerticalAlignment = StringAlignmentNear
-        .tld_TextRenderingHint = TextRenderingHintAntiAlias
+        .tld_TextRenderingHint = TextRenderingHintAntiAliasGridFit
         .tld_TextContrast = 4
     End With
     
@@ -1155,7 +1184,7 @@ Public Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
                     .tld_FontStrikeout = xmlEngine.getUniqueTag_Boolean("TextLayerFontStrikeout", False)
                     .tld_HorizontalAlignment = xmlEngine.getUniqueTag_Long("TextLayerHorizontalAlignment", StringAlignmentNear)
                     .tld_VerticalAlignment = xmlEngine.getUniqueTag_Long("TextLayerVerticalAlignment", StringAlignmentNear)
-                    .tld_TextRenderingHint = xmlEngine.getUniqueTag_Long("TextLayerRenderingHint", TextRenderingHintAntiAlias)
+                    .tld_TextRenderingHint = xmlEngine.getUniqueTag_Long("TextLayerRenderingHint", TextRenderingHintAntiAliasGridFit)
                     .tld_TextContrast = xmlEngine.getUniqueTag_Long("TextLayerContrast", 4)
                 End With
                 
@@ -1722,7 +1751,7 @@ Public Sub resetLayerParameters()
         .tld_FontStrikeout = False
         .tld_HorizontalAlignment = StringAlignmentNear
         .tld_VerticalAlignment = StringAlignmentNear
-        .tld_TextRenderingHint = TextRenderingHintAntiAlias
+        .tld_TextRenderingHint = TextRenderingHintAntiAliasGridFit
         .tld_TextContrast = 4
     End With
 
@@ -1766,13 +1795,29 @@ Public Sub syncVectorDIB()
             If layerDIB Is Nothing Then Set layerDIB = New pdDIB
             
             If (layerDIB.getDIBWidth <> myVectorData.vd_Width) Or (layerDIB.getDIBHeight <> myVectorData.vd_Height) Then
+                
                 layerDIB.createBlank myVectorData.vd_Width, myVectorData.vd_Height, 32, 0, 0
+                
+                'Use to test a white background:
+                'layerDIB.createBlank myVectorData.vd_Width, myVectorData.vd_Height, 32, , 255
+                
             Else
+                
                 layerDIB.resetDIB
+                
+                'Use to test a white background:
+                'GDI_Plus.GDIPlusFillDIBRect layerDIB, 0, 0, myVectorData.vd_Width, myVectorData.vd_Height, vbWhite
+                
             End If
             
+            layerDIB.setInitialAlphaPremultiplicationState True
+            
             'Use the text renderer to paint the string onto the backer DIB
-            myTextRenderer.renderTextToDIB layerDIB, myTextData.tld_Text, myTextData.tld_FontColor, 0, 0, myVectorData.vd_Width, myVectorData.vd_Height
+            If Len(myTextData.tld_Text) <> 0 Then
+                myTextRenderer.renderTextToDIB layerDIB, myTextData.tld_Text, myTextData.tld_FontColor, 0, 0, myVectorData.vd_Width, myVectorData.vd_Height
+            Else
+                Debug.Print "no text to print!"
+            End If
     
     End Select
     

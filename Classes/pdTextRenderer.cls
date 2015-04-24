@@ -393,7 +393,7 @@ Public Function setAllFontSettingsFromXML(ByRef srcXMLString As String) As Boole
             setFontStrikeout xmlEngine.getUniqueTag_Boolean("FontStrikeout", False)
             setHorizontalAlignment xmlEngine.getUniqueTag_Long("FontHorizontalAlignment", StringAlignmentNear)
             setVerticalAlignment xmlEngine.getUniqueTag_Long("FontVerticalAlignment", StringAlignmentNear)
-            setTextRenderingHint xmlEngine.getUniqueTag_Long("FontRenderingHint", TextRenderingHintAntiAlias)
+            setTextRenderingHint xmlEngine.getUniqueTag_Long("FontRenderingHint", TextRenderingHintAntiAliasGridFit)
             setTextContrast xmlEngine.getUniqueTag_Long("FontContrast", 4)
             
             'Return success!
@@ -564,7 +564,10 @@ End Function
 '
 'Note also that the crColor parameter should not include alpha; alpha in PD is handled by layers, not the text renderer.
 Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String, ByVal crColor As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
-
+    
+    'As a convenience to the user, create the font as necessary
+    If (Not m_FontCacheClean) Then createFontObject
+    
     'Start by acquiring a GDI+ handle to the destination DIB
     Dim dstGraphics As Long
     dstGraphics = GDI_Plus.getGDIPlusGraphicsFromDC(dstDIB.getDIBDC, False)
@@ -575,7 +578,7 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String
     
     'Create a solid fill brush.  (In the future, we'll add more impressive options!)
     Dim gdipBrush As Long
-    gdipBrush = GDI_Plus.getGDIPlusBrushHandle(crColor)
+    gdipBrush = GDI_Plus.getGDIPlusBrushHandle(crColor, 255)
     
     'Convert the input rect to a RECTF
     Dim boundingRect As RECTF
@@ -587,7 +590,13 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String
     End With
     
     'Finally, use GDI+ to render the actual string
-    GdipDrawString dstGraphics, StrPtr(srcString), Len(srcString), m_GDIPlusFont, boundingRect, m_GDIPlusStringFormat, gdipBrush
+    Dim gdipReturn As Long
+    gdipReturn = GdipDrawString(dstGraphics, StrPtr(srcString), Len(srcString), m_GDIPlusFont, boundingRect, m_GDIPlusStringFormat, gdipBrush)
+    
+    If gdipReturn <> 0 Then
+        Debug.Print "WARNING!  GdipDrawString failed with error code " & gdipReturn
+        Debug.Print "WARNING!  (Extra debug info: hFont - " & m_GDIPlusFont & ", hStringFormat - " & m_GDIPlusStringFormat & ")"
+    End If
     
     'Release the temporary GDI+ objects we created
     GDI_Plus.releaseGDIPlusBrush gdipBrush
@@ -698,7 +707,7 @@ Private Sub Class_Initialize()
     
     'Set default graphics container text settings
     m_TextContrast = 4
-    m_TextRenderingHint = TextRenderingHintAntiAlias
+    m_TextRenderingHint = TextRenderingHintAntiAliasGridFit
 
 End Sub
 

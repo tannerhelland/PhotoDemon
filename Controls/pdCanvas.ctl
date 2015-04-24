@@ -1314,6 +1314,11 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 Else
                     
                     Process "Add new layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, ""), UNDO_IMAGE
+                    
+                    'Put the newly created layer into transform mode, and lock the bottom-right corner
+                    pdImages(g_CurrentImage).getActiveLayer.setLayerOffsetX imgX
+                    pdImages(g_CurrentImage).getActiveLayer.setLayerOffsetY imgY
+                    setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, 2
                 
                 End If
                 
@@ -1432,6 +1437,11 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                     pdImages(g_CurrentImage).mainSelection.setAdditionalCoordinates imgX, imgY
                     Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
                 End If
+                
+            'Text layers are identical to the move tool
+            Case NAV_MOVE, VECTOR_TEXT
+                Message "Shift key: preserve layer aspect ratio"
+                transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask)
             
         End Select
     
@@ -1484,6 +1494,9 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                 
             'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
+            
+            'Text tool
+            Case VECTOR_TEXT
             
             Case Else
             
@@ -1717,6 +1730,29 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     'If the selection is not active, make sure it stays that way
                     pdImages(g_CurrentImage).mainSelection.lockRelease
                 End If
+                
+            'Text layers
+            Case VECTOR_TEXT
+            
+                'See if this was just a click (as it might be at creation time).
+                If ClickEventAlsoFiring Then
+                
+                    'If the text layer is size 1x1, force it to the size of the image.
+                    With pdImages(g_CurrentImage).getActiveLayer
+                        If (.getLayerWidth = 1) And (.getLayerHeight = 1) Then
+                            .setLayerWidth pdImages(g_CurrentImage).Width - .getLayerOffsetX
+                            .setLayerHeight pdImages(g_CurrentImage).Height - .getLayerOffsetY
+                        End If
+                    End With
+                
+                End If
+                
+                'Pass a final transform request to the layer handler.  This will initiate Undo/Redo creation,
+                ' among other things.
+                If (hasMouseMoved > 0) Then transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask), True
+                
+                'Reset the generic tool mouse tracking function
+                Tool_Support.terminateGenericToolTracking
                 
             Case Else
                     
@@ -2421,48 +2457,57 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                     
             End Select
         
-'        Case VECTOR_TEXT
-'
-'            'The text tool bears a lot of similarity to the Move / Size tool, although the resulting behavior is
-'            ' obviously quite different.
-'            Select Case pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
-'
-'                'Mouse is not over the current layer
-'                Case -1
-'                    cMouseEvents.setSystemCursor IDC_ARROW
-'
-'                'Mouse is over the top-left corner
-'                Case 0
-'                    cMouseEvents.setSystemCursor IDC_SIZENWSE
-'
-'                'Mouse is over the top-right corner
-'                Case 1
-'                    cMouseEvents.setSystemCursor IDC_SIZENESW
-'
-'                'Mouse is over the bottom-right corner
-'                Case 2
-'                    cMouseEvents.setSystemCursor IDC_SIZENWSE
-'
-'                'Mouse is over the bottom-left corner
-'                Case 3
-'                    cMouseEvents.setSystemCursor IDC_SIZENESW
-'
-'                'Mouse is within the layer, but not over a specific node
-'                Case 4
-'
-'                    'This case is unique because if the user has elected to ignore transparent pixels, they cannot move a layer
-'                    ' by dragging the mouse within a transparent region of the layer.  Thus, before changing the cursor,
-'                    ' check to see if the hovered layer index is the same as the current layer index; if it isn't, don't display
-'                    ' the Move cursor.  (Note that this works because the getLayerUnderMouse function, called during the MouseMove
-'                    ' event, automatically factors the transparency check into its calculation.  Thus we don't have to
-'                    ' re-evaluate the setting here.)
-'                    If m_LayerAutoActivateIndex = pdImages(g_CurrentImage).getActiveLayerIndex Then
-'                        cMouseEvents.setSystemCursor IDC_SIZEALL
-'                    Else
-'                        cMouseEvents.setSystemCursor IDC_ARROW
-'                    End If
-'
-'            End Select
+        Case VECTOR_TEXT
+
+            'The text tool bears a lot of similarity to the Move / Size tool, although the resulting behavior is
+            ' obviously quite different.
+            Select Case pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
+
+                'Mouse is not over the current layer
+                Case -1
+                    cMouseEvents.setSystemCursor IDC_IBEAM
+
+                'Mouse is over the top-left corner
+                Case 0
+                    If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
+                        cMouseEvents.setSystemCursor IDC_SIZENWSE
+                    Else
+                        cMouseEvents.setSystemCursor IDC_IBEAM
+                    End If
+
+                'Mouse is over the top-right corner
+                Case 1
+                    If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
+                        cMouseEvents.setSystemCursor IDC_SIZENESW
+                    Else
+                        cMouseEvents.setSystemCursor IDC_IBEAM
+                    End If
+
+                'Mouse is over the bottom-right corner
+                Case 2
+                    If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
+                        cMouseEvents.setSystemCursor IDC_SIZENWSE
+                    Else
+                        cMouseEvents.setSystemCursor IDC_IBEAM
+                    End If
+
+                'Mouse is over the bottom-left corner
+                Case 3
+                    If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
+                        cMouseEvents.setSystemCursor IDC_SIZENESW
+                    Else
+                        cMouseEvents.setSystemCursor IDC_IBEAM
+                    End If
+
+                'Mouse is within the layer, but not over a specific node
+                Case 4
+                    If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
+                        cMouseEvents.setSystemCursor IDC_SIZEALL
+                    Else
+                        cMouseEvents.setSystemCursor IDC_IBEAM
+                    End If
+            
+            End Select
         
         Case Else
             cMouseEvents.setSystemCursor IDC_ARROW
