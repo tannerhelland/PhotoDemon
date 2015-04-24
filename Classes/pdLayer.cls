@@ -163,11 +163,15 @@ Private myNonDestructiveFX As nonDestructiveFXSettings
 'Vector-type layers store many things that image layers do not.  Generic data shared between all vector layer types are
 ' stored in this struct.
 Private Type genericVectorData
-    vs_Width As Long        'Unlike raster layers, vector layers must explicitly store their width and height
-    vs_Height As Long
+    vd_Width As Long          'Unlike raster layers, vector layers must explicitly store their width and height
+    vd_Height As Long
 End Type
 
 Private myVectorData As genericVectorData
+
+'Vector layers must be converted into raster format for rendering on the screen.  If the DIB is synched against the
+' the current vector contents, this will be set to TRUE.  If it is FALSE, the DIB must be generated prior to display.
+Private m_VectorDIBSynched As Boolean
 
 'Next comes various structs for vector data in a specific format.  These structs must be comprehensive, because their data
 ' is used to reconstruct the raster copy of the layer between sessions.
@@ -178,15 +182,47 @@ Private myVectorData As genericVectorData
 ' but a number of ones custom to PD (e.g. custom kerning, character spacing, line spacing, etc)
 Private Type textLayerData
     tld_Text As String
-    tld_FontName As String
+    tld_FontColor As Long
+    tld_FontFace As String
     tld_FontSize As Single
+    tld_FontSizeUnit As pdFontUnit
     tld_FontBold As Boolean
     tld_FontItalic As Boolean
     tld_FontUnderline As Boolean
-    tld_FontStrikethrough As Boolean
+    tld_FontStrikeout As Boolean
+    tld_HorizontalAlignment As GdiPlusStringAlignment
+    tld_VerticalAlignment As GdiPlusStringAlignment
+    tld_TextRenderingHint As GdiPlusTextRenderingHint
+    tld_TextContrast As Long
 End Type
 
 Private myTextData As textLayerData
+
+'To simplify the process of setting/getting text settings for a given layer, this Enum is used to pass text properties
+Public Enum PDLAYER_TEXT_PROPERTY
+    ptp_Text
+    ptp_FontColor
+    ptp_FontFace
+    ptp_FontSize
+    ptp_FontSizeUnit
+    ptp_FontBold
+    ptp_FontItalic
+    ptp_FontUnderline
+    ptp_FontStrikeout
+    ptp_HorizontalAlignment
+    ptp_VerticalAlignment
+    ptp_TextRenderingHint
+    ptp_TextContrast
+End Enum
+
+#If False Then
+    Const ptp_Text = 0, ptp_FontColor = 0, ptp_FontFace = 0, ptp_FontSize = 0, ptp_FontSizeUnit = 0, ptp_FontBold = 0, ptp_FontItalic = 0
+    Const ptp_FontUnderline = 0, ptp_FontStrikeout = 0, ptp_HorizontalAlignment = 0, ptp_VerticalAlignment = 0, ptp_TextRenderingHint = 0
+    Const ptp_TextContrast = 0
+#End If
+
+'A dedicated text renderer is used to render the backer layer for text layers
+Private myTextRenderer As pdTextRenderer
 
 'A DIB that stores the contents of the layer, in DIB format.
 ' - For image layers, the layer contents will be stored in this DIB.
@@ -237,7 +273,10 @@ Public Sub notifyOfDestructiveChanges()
 
     'Mark the layer thumbnail as dirty
     m_IsThumbClean = False
-
+    
+    'If this is a vector layer, note that the backing DIB is now out of sync
+    If myLayerType = PDL_TEXT Then m_VectorDIBSynched = False
+    
 End Sub
 
 'Get/set this layer's canonical ID value.  Note that this value is valid for both the life of the layer, and the life of its
@@ -331,44 +370,101 @@ Public Sub setLayerOffsetY(ByVal newOffsetY As Double)
     myLayerData.l_OffsetY = newOffsetY
 End Sub
 
-'Get layer size.  Note that there is no corresponding "set size" function; because size changes are destructive, they must be handled manually.
-' (The exception, of course, being the non-destructive X/Y canvas modifier values.)
+'Get/set layer size.  Note that the corresponding "set size" functions are ONLY VALID FOR VECTOR LAYERS; because size changes are destructive
+' for raster layers, they must be handled manually.  (The exception, of course, being the non-destructive X/Y canvas modifier values, which exist
+' for this explicit purpose!)
 '
 'Also, at present, these values are not stored persistently.  They are simply generated on-the-fly by taking the layerDIB object's dimensions,
 ' and multiplying them by the current canvas x/y modifiers.  The caller can override the canvas modifier calculation by passing FALSE to the function.
 Public Function getLayerWidth(Optional ByVal applyCanvasModifier As Boolean = True) As Double
     
-    If Not (layerDIB Is Nothing) Then
+    'The returned width varies by layer type
+    Select Case myLayerType
+    
+        'Image layers do not store persistent width/height values.  Return the layer DIB's dimensions in its place
+        Case PDL_IMAGE
+            
+            If Not (layerDIB Is Nothing) Then
         
-        If applyCanvasModifier Then
-            getLayerWidth = layerDIB.getDIBWidth * getLayerCanvasXModifier
-            If getLayerWidth < 1 Then getLayerWidth = 1
-        Else
-            getLayerWidth = layerDIB.getDIBWidth
-        End If
+                If applyCanvasModifier Then
+                    getLayerWidth = layerDIB.getDIBWidth * getLayerCanvasXModifier
+                    If getLayerWidth < 1 Then getLayerWidth = 1
+                Else
+                    getLayerWidth = layerDIB.getDIBWidth
+                End If
+                
+            Else
+                getLayerWidth = 0
+            End If
         
-    Else
-        getLayerWidth = 0
-    End If
+        'Vector layers do actually store persistent width/height values.  This is important because these values may fall
+        ' out of sync with the backer DIB, which is only updated on an as-needed basis
+        Case PDL_TEXT
+            getLayerWidth = myVectorData.vd_Width
+    
+    End Select
     
 End Function
 
 Public Function getLayerHeight(Optional ByVal applyCanvasModifier As Boolean = True) As Double
     
-    If Not (layerDIB Is Nothing) Then
+    'The returned height varies by layer type
+    Select Case myLayerType
+    
+        'Image layers do not store persistent width/height values.  Return the layer DIB's dimensions in its place
+        Case PDL_IMAGE
+            
+            If Not (layerDIB Is Nothing) Then
         
-        If applyCanvasModifier Then
-            getLayerHeight = layerDIB.getDIBHeight * getLayerCanvasYModifier
-            If getLayerHeight < 1 Then getLayerHeight = 1
-        Else
-            getLayerHeight = layerDIB.getDIBHeight
-        End If
+                If applyCanvasModifier Then
+                    getLayerHeight = layerDIB.getDIBHeight * getLayerCanvasYModifier
+                    If getLayerHeight < 1 Then getLayerHeight = 1
+                Else
+                    getLayerHeight = layerDIB.getDIBHeight
+                End If
+                
+            Else
+                getLayerHeight = 0
+            End If
         
-    Else
-        getLayerHeight = 0
-    End If
+        'Vector layers do actually store persistent width/height values.  This is important because these values may fall
+        ' out of sync with the backer DIB, which is only updated on an as-needed basis
+        Case PDL_TEXT
+            getLayerHeight = myVectorData.vd_Height
+    
+    End Select
     
 End Function
+
+Public Sub setLayerWidth(ByVal newSize As Single)
+    
+    'Make sure the layer is a vector layer
+    If myLayerType <> PDL_IMAGE Then
+        
+        'Store the new size and mark the DIB cache as dirty
+        myVectorData.vd_Width = newSize
+        m_VectorDIBSynched = False
+        
+    Else
+        Debug.Print "WARNING!  The setLayerWidth and setLayerHeight functions are only valid for vector layers!"
+    End If
+    
+End Sub
+
+Public Sub setLayerHeight(ByVal newSize As Single)
+    
+    'Make sure the layer is a vector layer
+    If myLayerType <> PDL_IMAGE Then
+        
+        'Store the new size and mark the DIB cache as dirty
+        myVectorData.vd_Height = newSize
+        m_VectorDIBSynched = False
+        
+    Else
+        Debug.Print "WARNING!  The setLayerWidth and setLayerHeight functions are only valid for vector layers!"
+    End If
+    
+End Sub
 
 'Get/set layer canvas modifiers (necessary for non-destructive on-canvas resizing)
 Public Function getLayerCanvasXModifier() As Double
@@ -518,6 +614,31 @@ Public Sub setLayerNonDestructiveFXState(ByVal ndEffect As LAYER_NONDESTRUCTIVE_
     
 End Sub
 
+'Text layer properties can be get/set via these singular functions.
+Public Function getTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPERTY) As Variant
+
+    Select Case desiredProperty
+        
+        'TODO!
+        
+        Case ptp_Text
+        Case ptp_FontColor
+        Case ptp_FontFace
+        Case ptp_FontSize
+        Case ptp_FontSizeUnit
+        Case ptp_FontBold
+        Case ptp_FontItalic
+        Case ptp_FontUnderline
+        Case ptp_FontStrikeout
+        Case ptp_HorizontalAlignment
+        Case ptp_VerticalAlignment
+        Case ptp_TextRenderingHint
+        Case ptp_TextContrast
+    
+    End Select
+
+End Function
+
 'If this layer needs to have its on-canvas transformations made permanent (for example, when applying an action
 ' that involves a selection), this function can be used.
 Public Sub makeCanvasTransformsPermanent()
@@ -580,6 +701,27 @@ Private Sub Class_Initialize()
         .fx_Tint = 0
     End With
     
+    With myVectorData
+        .vd_Width = 0
+        .vd_Height = 0
+    End With
+    
+    With myTextData
+        .tld_Text = g_Language.TranslateMessage("(enter text here)")
+        .tld_FontColor = RGB(0, 0, 0)
+        .tld_FontFace = g_InterfaceFont
+        .tld_FontSize = 16#
+        .tld_FontSizeUnit = pdfu_Pixel
+        .tld_FontBold = False
+        .tld_FontItalic = False
+        .tld_FontUnderline = False
+        .tld_FontStrikeout = False
+        .tld_HorizontalAlignment = StringAlignmentNear
+        .tld_VerticalAlignment = StringAlignmentNear
+        .tld_TextRenderingHint = TextRenderingHintAntiAlias
+        .tld_TextContrast = 4
+    End With
+    
     'Initialize the layer's DIB
     Set layerDIB = New pdDIB
     
@@ -592,6 +734,9 @@ Private Sub Class_Initialize()
     
     'Set the canonical ID to -1.  This can be used to determine if the layer has been activated.
     layerID = -1
+    
+    'By default, vector layers do not have a backer DIB generated
+    m_VectorDIBSynched = False
     
 End Sub
 
@@ -844,7 +989,28 @@ Public Function getVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
         xmlEngine.writeBlankLine
     End If
     
-    'TODO: a whole bunch of xmlEngine.writeTag calls!
+    'Next, the type of vector data we write varies by layer type
+    Select Case myLayerType
+        
+        Case PDL_TEXT
+        
+            With xmlEngine
+                .writeTag "TextLayerText", myTextData.tld_Text
+                .writeTag "TextLayerColor", myTextData.tld_FontColor
+                .writeTag "TextLayerFontFace", myTextData.tld_FontFace
+                .writeTag "TextLayerFontSize", myTextData.tld_FontSize
+                .writeTag "TextLayerFontSizeUnit", myTextData.tld_FontSizeUnit
+                .writeTag "TextLayerFontBold", myTextData.tld_FontBold
+                .writeTag "TextLayerFontItalic", myTextData.tld_FontItalic
+                .writeTag "TextLayerFontUnderline", myTextData.tld_FontUnderline
+                .writeTag "TextLayerFontStrikeout", myTextData.tld_FontStrikeout
+                .writeTag "TextLayerHorizontalAlignment", myTextData.tld_HorizontalAlignment
+                .writeTag "TextLayerVerticalAlignment", myTextData.tld_VerticalAlignment
+                .writeTag "TextLayerRenderingHint", myTextData.tld_TextRenderingHint
+                .writeTag "TextLayerContrast", myTextData.tld_TextContrast
+            End With
+        
+    End Select
         
     If Not avoidFluffEntries Then xmlEngine.writeBlankLine
     
@@ -854,11 +1020,7 @@ Public Function getVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
 End Function
 
 'The sister function to "getVectorDataAsXML" above, this function will initialize a vector layer's contents from an XML-format string.
-'
-'Optionally, the createRasterCopyImmediately parameter can be set to generate an immediate raster copy of the vector data.  This is helpful
-' for preventing a stutter upon first interaction (as generating the raster layer can be a tedious process, depending on the complexity of
-' the source).
-Public Function CreateVectorDataFromXML(ByRef xmlString As String, Optional ByVal createRasterCopyImmediately As Boolean = False) As Boolean
+Public Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
 
     'Prepare an XML engine, which greatly simplifies the process of parsing XML data
     Dim xmlEngine As pdXML
@@ -867,12 +1029,31 @@ Public Function CreateVectorDataFromXML(ByRef xmlString As String, Optional ByVa
     'Validate the XML header...
     If xmlEngine.loadXMLFromString(xmlString) And xmlEngine.isPDDataType("pdVector") Then
         
-        'TODO: load the actual data.
+        'Next, the vector tags we look for vary by layer type
+        Select Case myLayerType
+            
+            Case PDL_TEXT
+            
+                With myTextData
+                    .tld_Text = xmlEngine.getUniqueTag_String("TextLayerText", "")
+                    .tld_FontColor = xmlEngine.getUniqueTag_Long("TextLayerColor", 0)
+                    .tld_FontFace = xmlEngine.getUniqueTag_String("TextLayerFontFace", g_InterfaceFont)
+                    .tld_FontSize = xmlEngine.getUniqueTag_Double("TextLayerFontSize", 16#)
+                    .tld_FontSizeUnit = xmlEngine.getUniqueTag_Long("TextLayerFontSizeUnit", pdfu_Pixel)
+                    .tld_FontBold = xmlEngine.getUniqueTag_Boolean("TextLayerFontBold", False)
+                    .tld_FontItalic = xmlEngine.getUniqueTag_Boolean("TextLayerFontItalic", False)
+                    .tld_FontUnderline = xmlEngine.getUniqueTag_Boolean("TextLayerFontUnderline", False)
+                    .tld_FontStrikeout = xmlEngine.getUniqueTag_Boolean("TextLayerFontStrikeout", False)
+                    .tld_HorizontalAlignment = xmlEngine.getUniqueTag_Long("TextLayerHorizontalAlignment", StringAlignmentNear)
+                    .tld_VerticalAlignment = xmlEngine.getUniqueTag_Long("TextLayerVerticalAlignment", StringAlignmentNear)
+                    .tld_TextRenderingHint = xmlEngine.getUniqueTag_Long("TextLayerRenderingHint", TextRenderingHintAntiAlias)
+                    .tld_TextContrast = xmlEngine.getUniqueTag_Long("TextLayerContrast", 4)
+                End With
+                
+        End Select
         
         'Note that all internal layer caches are no longer valid; this will also cause the raster cache to be marked unclean
         Me.notifyOfDestructiveChanges
-        
-        'TODO: deal with createRasterCopyImmediately
         
         CreateVectorDataFromXML = True
     
@@ -917,6 +1098,14 @@ Public Sub InitializeNewLayer(ByVal newLayerType As LAYER_TYPE, Optional ByVal n
         .fx_Temperature = 0
         .fx_Tint = 0
     End With
+    
+    'Reset any vector-specific data
+    With myVectorData
+        .vd_Width = 0
+        .vd_Height = 0
+    End With
+    
+    m_VectorDIBSynched = False
     
     'If passed, create a local copy of the passed DIB.
     Set layerDIB = New pdDIB
@@ -967,11 +1156,8 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
         .fx_Tint = srcLayer.getLayerNonDestructiveFXValue(NDFX_TINT)
     End With
     
-    'Finally, copy the source layer's DIB.
-    layerDIB.createFromExistingDIB srcLayer.layerDIB
-    
-    'Note that all internal layer caches are no longer valid
-    Me.notifyOfDestructiveChanges
+    'Copy the source layer's DIB, if one exists.
+    If Not (srcLayer.layerDIB Is Nothing) Then layerDIB.createFromExistingDIB srcLayer.layerDIB
     
     'Depending on the type of layer we are copying, copy any extra layer data, or generate a new layer mask to
     ' match the layer's vector contents.
@@ -979,12 +1165,21 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
     
         Case PDL_IMAGE
         
+        'Vector layers copy additional vector-specific data
         Case PDL_TEXT
+            myVectorData.vd_Width = srcLayer.getLayerWidth
+            myVectorData.vd_Height = srcLayer.getLayerHeight
+            
+            'Other vector-specific data can be transferred via XML, saving us the hassle of explicitly copying it here
+            Me.CreateVectorDataFromXML srcLayer.getVectorDataAsXML(True)
         
         Case PDL_ADJUSTMENT
     
     End Select
-
+    
+    'Note that all internal layer caches are no longer valid
+    Me.notifyOfDestructiveChanges
+    
 End Sub
 
 'Assuming the current layer DIB is null-padded (a term I use to describe a layer that has been forced to the size of the
@@ -1359,7 +1554,7 @@ Public Function checkForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) 
             End If
             
             'If we're at this line of code, a corner was not clicked. Perform one final check to see if the mouse is within
-            ' the layer's boundaries, and if it is, return the "move selection" ID, then exit.
+            ' the layer's boundaries, and if it is, return the "move" ID, then exit.
             If (imgX > poiList(0).x) And (imgX < poiList(1).x) And (imgY > poiList(0).y) And (imgY < poiList(2).y) Then
                 checkForPointOfInterest = 4
             Else
@@ -1399,7 +1594,81 @@ Public Sub resetLayerParameters()
         .fx_Tint = 0
     End With
     
-    'TODO: vector layers probably need some extra reset code here
+    'Assign default vector layer values
+    With myVectorData
+        .vd_Width = 0
+        .vd_Height = 0
+    End With
+    
+    'Assign default text layer values
+    With myTextData
+        .tld_Text = g_Language.TranslateMessage("(enter text here)")
+        .tld_FontColor = RGB(0, 0, 0)
+        .tld_FontFace = g_InterfaceFont
+        .tld_FontSize = 16#
+        .tld_FontSizeUnit = pdfu_Pixel
+        .tld_FontBold = False
+        .tld_FontItalic = False
+        .tld_FontUnderline = False
+        .tld_FontStrikeout = False
+        .tld_HorizontalAlignment = StringAlignmentNear
+        .tld_VerticalAlignment = StringAlignmentNear
+        .tld_TextRenderingHint = TextRenderingHintAntiAlias
+        .tld_TextContrast = 4
+    End With
+
+End Sub
+
+'If something needs to access the layer DIB directly (like PD's central compositor), this function should first be called for
+' any vector layers.  If the DIB is already synched, there is no penalty to calling this function, but if it is *not* synched,
+' this will guarantee the DIB is ready for access.
+Public Sub syncVectorDIB()
+
+    'If this is not a vector layer, disregard this request.
+    If myLayerType = PDL_IMAGE Then Exit Sub
+    
+    'If the DIB is already synched, disregard this request
+    If m_VectorDIBSynched Then Exit Sub
+    
+    'From here, the specific syncing process varies by vector layer type
+    Select Case myLayerType
+    
+        Case PDL_TEXT
+        
+            'Start by prepping a GDI+ font object.  Note that this only needs to be done once; after the font object has been
+            ' created successfully, these various functions will not trigger a rebuild.
+            If myTextRenderer Is Nothing Then Set myTextRenderer = New pdTextRenderer
+            
+            With myTextRenderer
+                .setFontFace myTextData.tld_FontFace
+                .setFontSize myTextData.tld_FontSize
+                .setFontSizeUnit myTextData.tld_FontSizeUnit
+                .setFontBold myTextData.tld_FontBold
+                .setFontItalic myTextData.tld_FontItalic
+                .setFontUnderline myTextData.tld_FontUnderline
+                .setFontStrikeout myTextData.tld_FontStrikeout
+                .setHorizontalAlignment myTextData.tld_HorizontalAlignment
+                .setVerticalAlignment myTextData.tld_VerticalAlignment
+                .setTextRenderingHint myTextData.tld_TextRenderingHint
+                .setTextContrast myTextData.tld_TextContrast
+            End With
+            
+            'Initialize the backer DIB as necessary
+            If layerDIB Is Nothing Then Set layerDIB = New pdDIB
+            
+            If (layerDIB.getDIBWidth <> myVectorData.vd_Width) Or (layerDIB.getDIBHeight <> myVectorData.vd_Height) Then
+                layerDIB.createBlank myVectorData.vd_Width, myVectorData.vd_Height, 32, 0, 0
+            Else
+                layerDIB.resetDIB
+            End If
+            
+            'Use the text renderer to paint the string onto the backer DIB
+            myTextRenderer.renderTextToDIB layerDIB, myTextData.tld_Text, myTextData.tld_FontColor, 0, 0, myVectorData.vd_Width, myVectorData.vd_Height
+    
+    End Select
+    
+    'Note that the DIB is ready to go!
+    m_VectorDIBSynched = True
 
 End Sub
 
@@ -1471,4 +1740,5 @@ Private Sub Class_Terminate()
     Set layerDIB = Nothing
     Set tmpDIB = Nothing
     Set layerThumbnail = Nothing
+    Set myTextRenderer = Nothing
 End Sub
