@@ -392,10 +392,15 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                 toolbar_Options.cboLayerResizeQuality.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getLayerResizeQuality
             
             Case VECTOR_TEXT
-                toolbar_Options.txtTextTool = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_Text)
-                toolbar_Options.cboTextFontFace.setListIndexByString pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontFace)
-                toolbar_Options.tudTextFontSize = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontSize)
-                toolbar_Options.csTextFontColor.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontColor)
+                
+                With toolbar_Options
+                    .txtTextTool.Text = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_Text)
+                    .cboTextFontFace.setListIndexByString pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontFace)
+                    .tudTextFontSize.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontSize)
+                    .csTextFontColor.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontColor)
+                    .cboTextRenderingHint.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextRenderingHint) - 1
+                    .tudTextClarity.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextContrast)
+                End With
         
         End Select
         
