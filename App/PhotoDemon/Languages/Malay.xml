@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.19</langversion>
+<langversion>6.7.20</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -11191,17 +11191,27 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>font settings</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>font face</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>font size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>AA and hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>AA clarity</original>
 <translation></translation>
 </phrase>
 
@@ -11461,6 +11471,26 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
+<original>Hinting, no AA</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>No hinting, no AA</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Hinting, AA</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>ClearType (debug only)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
 <translation>Klik untuk mengubah cara pilihan diberikan ke kanvas imej. Ini tidak berkaitan dengan kandungan pemilihan - hanya cara mereka muncul semasa penyuntingan.</translation>
 </phrase>
@@ -11525,7 +11555,7 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <translation>Opsyen ini mengawal kriteria yang tongkat sihir digunakan untuk menentukan sama ada piksel yang perlu ditambah kepada pilihan semasa.</translation>
 </phrase>
 
-<!-- VBP_ToolbarTools.frm contains 90 phrases. 20 were duplicates of existing phrases, so only 70 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 97 phrases. 21 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -13572,10 +13602,10 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2363</phrasecount>
+<phrasecount>2369</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4038 phrases. -->
-<!-- 1675 are duplicates, so only 2363 unique phrases have been written to file. -->
-<!-- These 2363 phrases contain approximately 13454 total words. -->
+<!-- As of this build, PhotoDemon contains 4045 phrases. -->
+<!-- 1676 are duplicates, so only 2369 unique phrases have been written to file. -->
+<!-- These 2369 phrases contain approximately 13471 total words. -->
 
 </pdData>

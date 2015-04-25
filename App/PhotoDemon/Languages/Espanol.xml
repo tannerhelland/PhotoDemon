@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.22</langversion>
+<langversion>6.7.23</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -11191,17 +11191,27 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 </phrase>
 
 <phrase>
-<original>font settings</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>font face</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>font size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>AA and hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>AA clarity</original>
 <translation></translation>
 </phrase>
 
@@ -11461,6 +11471,26 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 </phrase>
 
 <phrase>
+<original>Hinting, no AA</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>No hinting, no AA</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Hinting, AA</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>ClearType (debug only)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
 <translation>Haga clic para cambiar la forma en selecciones son prestados en el lienzo de la imagen. Esto no tiene nada que ver con el contenido de selección - sólo la forma en que aparecen durante la edición.</translation>
 </phrase>
@@ -11525,7 +11555,7 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 <translation>Esta opción controla qué criterios utiliza la varita mágica para determinar si un píxel se debe agregar a la selección actual.</translation>
 </phrase>
 
-<!-- VBP_ToolbarTools.frm contains 90 phrases. 20 were duplicates of existing phrases, so only 70 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 97 phrases. 21 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -13572,10 +13602,10 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2363</phrasecount>
+<phrasecount>2369</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4038 phrases. -->
-<!-- 1675 are duplicates, so only 2363 unique phrases have been written to file. -->
-<!-- These 2363 phrases contain approximately 13454 total words. -->
+<!-- As of this build, PhotoDemon contains 4045 phrases. -->
+<!-- 1676 are duplicates, so only 2369 unique phrases have been written to file. -->
+<!-- These 2369 phrases contain approximately 13471 total words. -->
 
 </pdData>

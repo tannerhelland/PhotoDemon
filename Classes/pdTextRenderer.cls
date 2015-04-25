@@ -72,6 +72,66 @@ End Enum
     Private Const gpUnitWorld = 0, gpUnitDisplay = 1, gpUnitPixel = 2, gpUnitPoint = 3, gpUnitInch = 4, gpUnitDocument = 5, gpUnitMillimeter = 6
 #End If
 
+'GDI+ maps a number of enums to this default "QualityMode" enum.  These values tend to be unpredictable, so I recommend sticking with
+' explicit mapping options whenever possible.
+Private Enum GdiPlusQualityMode
+    QualityModeInvalid = -1
+    QualityModeDefault = 0
+    QualityModeLow = 1
+    QualityModeHigh = 2
+End Enum
+
+#If False Then
+    Private Const QualityModeInvalid = -1, QualityModeDefault = 0, QualityModeLow = 1, QualityModeHigh = 2
+#End If
+
+'Compositing quality constants; there are really only three settings: HighSpeed, AssumeLinear, and GammaCorrected
+' (in that order, going from fast performance to slow performance)
+Private Enum GdiPlusCompositingQuality
+    CompositingQualityInvalid = QualityModeInvalid
+    CompositingQualityDefault = QualityModeDefault
+    CompositingQualityHighSpeed = QualityModeLow
+    CompositingQualityHighQuality = QualityModeHigh
+    CompositingQualityGammaCorrected
+    CompositingQualityAssumeLinear
+End Enum
+
+#If False Then
+    Private Const CompositingQualityInvalid = QualityModeInvalid, CompositingQualityDefault = QualityModeDefault, CompositingQualityHighSpeed = QualityModeLow
+    Private Const CompositingQualityHighQuality = QualityModeHigh, CompositingQualityGammaCorrected = 0, CompositingQualityAssumeLinear = 0
+#End If
+
+'SmoothingMode controls generic AA operations for pens
+Private Enum GdiPlusSmoothingMode
+    SmoothingModeInvalid = QualityModeInvalid
+    SmoothingModeDefault = QualityModeDefault
+    SmoothingModeHighSpeed = QualityModeLow
+    SmoothingModeHighQuality = QualityModeHigh
+    SmoothingModeNone
+    SmoothingModeAntiAlias
+End Enum
+
+#If False Then
+    Private Const SmoothingModeInvalid = QualityModeInvalid, SmoothingModeDefault = QualityModeDefault, SmoothingModeHighSpeed = QualityModeLow, SmoothingModeHighQuality = QualityModeHigh
+    Private Const SmoothingModeNone = 0, SmoothingModeAntiAlias = 0
+#End If
+
+'Pixel offset mode controls the "theoretical" positioning of pixel commands.  Half mode treats pixel coordinates as occurring "between" physical pixels,
+' which can improve AA output
+Private Enum GdiPlusPixelOffsetMode
+    PixelOffsetModeInvalid = QualityModeInvalid
+    PixelOffsetModeDefault = QualityModeDefault
+    PixelOffsetModeHighSpeed = QualityModeLow
+    PixelOffsetModeHighQuality = QualityModeHigh
+    PixelOffsetModeNone
+    PixelOffsetModeHalf
+End Enum
+
+#If False Then
+    Private Const PixelOffsetModeInvalid = QualityModeInvalid, PixelOffsetModeDefault = QualityModeDefault, PixelOffsetModeHighSpeed = QualityModeLow, PixelOffsetModeHighQuality = QualityModeHigh
+    Private Const PixelOffsetModeNone = 0, PixelOffsetModeHalf = 0
+#End If
+
 'Text hinting and AA are merged into a single setting in GDI+
 Public Enum GdiPlusTextRenderingHint
     TextRenderingHintSystemDefault = 0              'System default; unused because it is unpredictable
@@ -138,6 +198,9 @@ Private Declare Function GdipSetStringFormatLineAlign Lib "gdiplus" (ByVal dstSt
 'Graphics container font functions
 Private Declare Function GdipSetTextRenderingHint Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newRenderHintMode As GdiPlusTextRenderingHint) As Long
 Private Declare Function GdipSetTextContrast Lib "gdiplus" (ByVal dstGraphics As Long, ByVal textContrast As Long) As Long
+Private Declare Function GdipSetCompositingQuality Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newCompositingQuality As GdiPlusCompositingQuality) As Long
+Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newSmoothingMode As GdiPlusSmoothingMode) As Long
+Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newPixelOffsetMode As GdiPlusPixelOffsetMode) As Long
 
 'Render functions
 Private Declare Function GdipDrawString Lib "gdiplus" (ByVal dstGraphics As Long, ByVal ptrToString As Long, ByVal strLength As Long, ByVal gdipFontHandle As Long, ByRef layoutRect As RECTF, ByVal gdipStringFormat As Long, ByVal gdipBrush As Long) As Long
@@ -570,13 +633,29 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String
     'As a convenience to the user, create the font as necessary
     If (Not m_FontCacheClean) Then createFontObject
     
+    'TESTING ONLY!  Fill with white prior to rendering
+    'GDI_Plus.GDIPlusFillDIBRect dstDIB, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, vbWhite
+    
     'Start by acquiring a GDI+ handle to the destination DIB
     Dim dstGraphics As Long
     dstGraphics = GDI_Plus.getGDIPlusGraphicsFromDC(dstDIB.getDIBDC, False)
     
     'Next, set up all container-specific text settings
-    GdipSetTextRenderingHint dstGraphics, m_TextRenderingHint
-    GdipSetTextContrast dstGraphics, m_TextContrast
+    If GdipSetTextRenderingHint(dstGraphics, m_TextRenderingHint) <> 0 Then
+        Debug.Print "Failed to set text rendering hint " & m_TextRenderingHint
+    End If
+    
+    If GdipSetTextContrast(dstGraphics, m_TextContrast) <> 0 Then
+        Debug.Print "Failed to set text contrast " & m_TextContrast
+    End If
+    
+    If GdipSetCompositingQuality(dstGraphics, CompositingQualityAssumeLinear) <> 0 Then
+        Debug.Print "Failed to set compositing quality."
+    End If
+    
+    If GdipSetPixelOffsetMode(dstGraphics, PixelOffsetModeHalf) <> 0 Then
+        Debug.Print "Failed to set pixel offset mode."
+    End If
     
     'Create a solid fill brush.  (In the future, we'll add more impressive options!)
     Dim gdipBrush As Long
