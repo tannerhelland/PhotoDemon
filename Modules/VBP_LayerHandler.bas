@@ -55,7 +55,7 @@ Public Sub addBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType 
 End Sub
 
 'Add a non-blank 32bpp layer to the image.  (This function is used by the Add New Layer button on the layer box.)
-Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE, ByVal dLayerSubType As Long, ByVal dLayerColor As Long, ByVal dLayerPosition As Long, ByVal dLayerAutoSelect As Boolean, Optional ByVal dLayerName As String = "")
+Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE, ByVal dLayerSubType As Long, ByVal dLayerColor As Long, ByVal dLayerPosition As Long, ByVal dLayerAutoSelect As Boolean, Optional ByVal dLayerName As String = "", Optional ByVal initialXOffset As Single = 0#, Optional ByVal initialYOffset As Single = 0#)
 
     'Before making any changes, make a note of the currently active layer
     Dim prevActiveLayerID As Long
@@ -97,6 +97,11 @@ Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
             
         End Select
         
+    Else
+    
+        'Create a 4x4 transparent DIB to avoid errors; subsequent functions will resize the DIB as required
+        tmpDIB.createBlank 1, 1, 32, 0, 0
+    
     End If
     
     'Set the layer name
@@ -117,15 +122,23 @@ Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
     'Assign the newly created DIB and layer name to the layer object
     pdImages(g_CurrentImage).getLayerByID(newLayerID).InitializeNewLayer dLayerType, dLayerName, tmpDIB
     
+    'Apply initial layer offsets
+    pdImages(g_CurrentImage).getLayerByID(newLayerID).setLayerOffsetX initialXOffset
+    pdImages(g_CurrentImage).getLayerByID(newLayerID).setLayerOffsetY initialYOffset
+    
     'Some layer types may require extra initialization steps in the future
     Select Case dLayerType
         
         Case PDL_IMAGE
         
+        'Set an initial width/height of 1x1
         Case PDL_TEXT
+            pdImages(g_CurrentImage).getLayerByID(newLayerID).setLayerWidth 1
+            pdImages(g_CurrentImage).getLayerByID(newLayerID).setLayerHeight 1
         
     End Select
-    
+        
+    'Activate the new layer
     pdImages(g_CurrentImage).setActiveLayerByID prevActiveLayerID
     
     'Move the layer into position as necessary.

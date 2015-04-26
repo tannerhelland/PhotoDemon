@@ -1308,17 +1308,20 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 If userIsEditingCurrentTextLayer Then
                     
                     'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
-                    setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
+                    Tool_Support.setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
                     
                 'The user is not editing a text layer.  Create a new text layer now.
                 Else
                     
-                    Process "Add new layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, ""), UNDO_IMAGE
+                    'Create a new text layer directly; note that we *do not* pass this command through the central processor, as we do not
+                    ' want the delay associated with full Undo/Redo creation.
+                    Layer_Handler.addNewLayer pdImages(g_CurrentImage).getActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, "", imgX, imgY
                     
-                    'Put the newly created layer into transform mode, and lock the bottom-right corner
-                    pdImages(g_CurrentImage).getActiveLayer.setLayerOffsetX imgX
-                    pdImages(g_CurrentImage).getActiveLayer.setLayerOffsetY imgY
-                    setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, 2
+                    'Put the newly created layer into transform mode, with the bottom-right corner selected
+                    Tool_Support.setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, 2
+                                        
+                    'Also, note that we have just created a new text layer.  The MouseUp event needs to know this, so it can initiate a full-image Undo/Redo event.
+                    Tool_Support.setCustomToolState PD_TEXT_TOOL_CREATED_NEW_LAYER
                 
                 End If
                 
@@ -1733,23 +1736,44 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                 
             'Text layers
             Case VECTOR_TEXT
-            
-                'See if this was just a click (as it might be at creation time).
-                If ClickEventAlsoFiring Then
                 
-                    'If the text layer is size 1x1, force it to the size of the image.
-                    With pdImages(g_CurrentImage).getActiveLayer
-                        If (.getLayerWidth = 1) And (.getLayerHeight = 1) Then
-                            .setLayerWidth pdImages(g_CurrentImage).Width - .getLayerOffsetX
-                            .setLayerHeight pdImages(g_CurrentImage).Height - .getLayerOffsetY
-                        End If
-                    End With
+                'Pass a final transform request to the layer handler.  This will initiate Undo/Redo creation, among other things.
                 
+                '(Note that this function branches according to two states: whether this click is creating a new text layer (which requires a full
+                ' image stack Undo/Redo), or whether we are simply modifying an existing layer.
+                If Tool_Support.getCustomToolState = PD_TEXT_TOOL_CREATED_NEW_LAYER Then
+                    
+                    'See if this was just a click (as it might be at creation time).
+                    If ClickEventAlsoFiring Or ((Tool_Support.getCustomToolState = PD_TEXT_TOOL_CREATED_NEW_LAYER) And (hasMouseMoved <= 1)) Then
+                        
+                        'Update the layer's size
+                        pdImages(g_CurrentImage).getActiveLayer.setLayerWidth Abs(pdImages(g_CurrentImage).Width - pdImages(g_CurrentImage).getActiveLayer.getLayerOffsetX)
+                        pdImages(g_CurrentImage).getActiveLayer.setLayerHeight Abs(pdImages(g_CurrentImage).Height - pdImages(g_CurrentImage).getActiveLayer.getLayerOffsetY)
+                        
+                        'Manually synchronize the new size values against their on-screen UI elements
+                        Tool_Support.setToolBusyState True
+                        Tool_Support.syncToolOptionsUIToCurrentLayer
+                        Tool_Support.setToolBusyState False
+                        
+                        'Manually force a viewport redraw
+                        Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                        
+                    'If the user already specified a size, use their values to finalize the layer size
+                    Else
+                        transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask)
+                    End If
+                    
+                    'Process the addition of the new layer; this will create proper Undo/Redo data for the entire image (required, as the layer order
+                    ' has changed due to this new addition).
+                    Process "New text layer", , , UNDO_IMAGE
+                   
+                'The user is simply editing an existing layer.
+                Else
+                    
+                    'As a convenience to the user, ignore clicks that don't actually change layer settings
+                    If (hasMouseMoved > 0) Then transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask), True
+                    
                 End If
-                
-                'Pass a final transform request to the layer handler.  This will initiate Undo/Redo creation,
-                ' among other things.
-                If (hasMouseMoved > 0) Then transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask), True
                 
                 'Reset the generic tool mouse tracking function
                 Tool_Support.terminateGenericToolTracking
