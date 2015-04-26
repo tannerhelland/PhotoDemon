@@ -1,6 +1,6 @@
 Attribute VB_Name = "Text_Support"
 '***************************************************************************
-'Miscellaneous Functions Related to Validating User Input
+'Miscellaneous functions related to specialized text handling
 'Copyright 2000-2015 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 07/May/14
@@ -271,5 +271,3 @@ Public Function unEscapeParamCharacters(ByVal srcString As String) As String
     End If
     
 End Function
-
-

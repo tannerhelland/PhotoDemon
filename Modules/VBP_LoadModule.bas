@@ -57,6 +57,8 @@ Public Sub LoadTheProgram()
         perfCheck.startProfiling "PhotoDemon Startup", True
     #End If
     
+    
+    
     '*************************************************************************************************************************************
     ' With the debugger initialized, prep a few crucial variables
     '*************************************************************************************************************************************
@@ -68,7 +70,9 @@ Public Sub LoadTheProgram()
     
     'We also need to create a blank pdImages() array, as some initialization functions may attempt to access the array
     ReDim pdImages(0) As pdImage
-    
+        
+        
+        
     '*************************************************************************************************************************************
     ' Prepare the splash screen (but don't display it yet)
     '*************************************************************************************************************************************
@@ -97,6 +101,8 @@ Public Sub LoadTheProgram()
     Else
         m_LoadTime = 0#
     End If
+    
+    
     
     '*************************************************************************************************************************************
     ' Determine which version of Windows the user is running (as other load functions rely on this)
@@ -130,6 +136,8 @@ Public Sub LoadTheProgram()
     #End If
     
     handleClearType True
+    
+    
     
     '*************************************************************************************************************************************
     ' Initialize the user preferences (settings) handler
@@ -169,6 +177,7 @@ Public Sub LoadTheProgram()
     
     'While here, also initialize the image format handler (as plugins and other load functions interact with it)
     Set g_ImageFormats = New pdFormats
+    
     
     
     '*************************************************************************************************************************************
@@ -292,7 +301,8 @@ Public Sub LoadTheProgram()
     #If DEBUGMODE = 1 Then
         pdDebug.InitializeDebugger True
     #End If
-        
+    
+    
     
     '*************************************************************************************************************************************
     ' Based on available plugins, determine which image formats PhotoDemon can handle
@@ -325,6 +335,20 @@ Public Sub LoadTheProgram()
     
     
     '*************************************************************************************************************************************
+    ' Build a font cache for this system
+    '*************************************************************************************************************************************
+    
+    #If DEBUGMODE = 1 Then
+        perfCheck.markEvent "Build font cache"
+    #End If
+    
+    LoadMessage "Building font cache..."
+        
+    Font_Management.buildFontCache
+    
+    
+    
+    '*************************************************************************************************************************************
     ' Get the viewport engine ready
     '*************************************************************************************************************************************
     
@@ -344,6 +368,8 @@ Public Sub LoadTheProgram()
     
     'Populate the main canvas's size unit dropdown
     FormMain.mainCanvas(0).populateSizeUnits
+    
+    
     
     '*************************************************************************************************************************************
     ' Initialize the window manager (the class that synchronizes all toolbox and image window positions)
@@ -386,6 +412,7 @@ Public Sub LoadTheProgram()
     'The primary toolbox has some options of its own.  Load them now.
     FormMain.MnuWindowToolbox(2).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Toolbox Category Labels", True)
     toolbar_Toolbox.updateButtonSize g_UserPreferences.GetPref_Long("Core", "Toolbox Button Size", 1), True
+    
     
     
     '*************************************************************************************************************************************
@@ -451,6 +478,7 @@ Public Sub LoadTheProgram()
     FormMain.updateAgainstCurrentTheme False
     
     
+    
     '*************************************************************************************************************************************
     ' The program's menus support many features that VB can't do natively (like icons and custom shortcuts).  Load such things now.
     '*************************************************************************************************************************************
@@ -490,6 +518,7 @@ Public Sub LoadTheProgram()
     
     'Synchronize all other interface elements to match the current program state (e.g. no images loaded).
     syncInterfaceToCurrentImage
+    
     
     
     '*************************************************************************************************************************************

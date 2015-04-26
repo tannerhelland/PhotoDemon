@@ -12,7 +12,7 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon Font Manager (and Renderer)
+'PhotoDemon Font Renderer
 'Copyright 2013-2015 by Tanner Helland
 'Created: 31/May/13
 'Last updated: 29/October/14
