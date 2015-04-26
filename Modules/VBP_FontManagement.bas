@@ -104,12 +104,9 @@ Private Const TRUETYPE_FONTTYPE = &H4
 
 Private Declare Function EnumFontFamiliesEx Lib "gdi32" Alias "EnumFontFamiliesExW" (ByVal hDC As Long, ByRef lpLogFontW As LOGFONTW, ByVal lpEnumFontFamExProc As Long, ByRef lParam As Any, ByVal dwFlags As Long) As Long
 
-Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
-
 'Internal font cache.  PD uses this to populate things like font selection dropdowns.
 Private m_PDFontCache As pdStringStack
-Private Const INITIAL_PDFONTCACHE_SIZE As Long = 64
+Private Const INITIAL_PDFONTCACHE_SIZE As Long = 256
 Private m_LastFontAdded As String
 
 'Temporary DIB (more importantly - DC) for testing and/or applying font settings
@@ -146,7 +143,9 @@ Public Function buildFontCache() As Long
     
     'TESTING ONLY!  Curious about the list of fonts?  Use this line to write it out to the immediate window
     'm_PDFontCache.DEBUG_dumpResultsToImmediateWindow
-    Debug.Print "Number of fonts found on this PC: " & m_PDFontCache.getNumOfStrings
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "FYI - number of fonts found on this PC: " & m_PDFontCache.getNumOfStrings
+    #End If
     
 End Function
 
