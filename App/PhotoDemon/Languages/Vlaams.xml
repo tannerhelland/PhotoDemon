@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.20</langversion>
+<langversion>6.7.21</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -11470,17 +11470,27 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 </phrase>
 
 <phrase>
-<original>Hinting, no AA</original>
+<original>Default (debug only)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>No hinting, no AA</original>
+<original>No AA, hinting</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Hinting, AA</original>
+<original>No AA, no hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>AA, hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>AA, no hinting</original>
 <translation></translation>
 </phrase>
 
@@ -11554,7 +11564,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 <translation>Deze optie controleerd welke criteria de toverstaf gebruikt om te bepalen of een pixel moet toegevoegd worden aan de huidige selectie.</translation>
 </phrase>
 
-<!-- VBP_ToolbarTools.frm contains 97 phrases. 21 were duplicates of existing phrases, so only 76 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 98 phrases. 20 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -12187,6 +12197,11 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 </phrase>
 
 <phrase>
+<original>New text layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM</original>
 <translation>Muiswiel = VERTIKALE SCROLL, Shift + Wiel = HORIZONTALE SCROLL, Ctrl + Wiel = ZOOM</translation>
 </phrase>
@@ -12217,7 +12232,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation>cm</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 50 phrases. 30 were duplicates of existing phrases, so only 20 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 50 phrases. 29 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -13601,10 +13616,10 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2369</phrasecount>
+<phrasecount>2372</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4045 phrases. -->
-<!-- 1676 are duplicates, so only 2369 unique phrases have been written to file. -->
-<!-- These 2369 phrases contain approximately 13471 total words. -->
+<!-- As of this build, PhotoDemon contains 4046 phrases. -->
+<!-- 1674 are duplicates, so only 2372 unique phrases have been written to file. -->
+<!-- These 2372 phrases contain approximately 13480 total words. -->
 
 </pdData>

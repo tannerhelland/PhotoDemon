@@ -16,6 +16,9 @@ Attribute VB_Name = "Tool_Support"
 
 Option Explicit
 
+'Various constants related to custom tool behavior
+Public Const PD_TEXT_TOOL_CREATED_NEW_LAYER As Long = &H1
+
 'The drag-to-pan tool uses these values to store the original image offset
 Private m_InitHScroll As Long, m_InitVScroll As Long
 
@@ -34,12 +37,28 @@ Private curPOI As Long
 ' current state as "busy".  Subsequent UI refreshes will be rejected until the "busy" state is reset.
 Private m_ToolIsBusy As Boolean
 
+'Some tools may perform different actions under different circumstances.  At MouseDown, they can set this value to anything
+' they want.  At MouseUp, this value can be retrieved to know what kind of action occurred.  (For example, the text tool uses
+' this to know if the previous MouseDown actually created the current text layer, or if it is just editing an existing layer.)
+'
+'IMPORTANT: after retrieval, this value is forcibly reset to zero.  Do not check it more than once without internally caching it.
+Private m_CustomToolMarker As Long
+
 Public Function getToolBusyState() As Boolean
     getToolBusyState = m_ToolIsBusy
 End Function
 
 Public Sub setToolBusyState(ByVal NewState As Boolean)
     m_ToolIsBusy = NewState
+End Sub
+
+Public Function getCustomToolState() As Long
+    getCustomToolState = m_CustomToolMarker
+    m_CustomToolMarker = 0
+End Function
+
+Public Sub setCustomToolState(ByVal NewState As Long)
+    m_CustomToolMarker = NewState
 End Sub
 
 'When a tool is finished processing, it can call this function to release all tool tracking variables
@@ -263,7 +282,7 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
     'If this is the final step of a transform (e.g. if the user has just released the mouse), forward this
     ' request to PD's central processor, so an Undo/Redo entry can be generated.
     If finalizeTransform Then
-    
+        
         'As a convenience to the user, layer resize and move operations are listed separately.
         Select Case curPOI
         
@@ -280,9 +299,13 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
                 With srcImage.getActiveLayer
                     Process "Move layer", False, buildParams(.getLayerOffsetX, .getLayerOffsetY), UNDO_LAYERHEADER
                 End With
+                
+            'The caller can specify other dummy values if they don't want us to redraw the screen
         
         End Select
     
+    'If the transformation is still active (e.g. the user has the mouse pressed down), just redraw the viewport, but don't
+    ' process Undo/Redo or any macro stuff.
     Else
     
         'Manually request a canvas redraw
@@ -398,7 +421,7 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                     .cboTextFontFace.setListIndexByString pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontFace)
                     .tudTextFontSize.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontSize)
                     .csTextFontColor.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontColor)
-                    .cboTextRenderingHint.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextRenderingHint) - 1
+                    .cboTextRenderingHint.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextRenderingHint)
                     .tudTextClarity.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextContrast)
                 End With
         

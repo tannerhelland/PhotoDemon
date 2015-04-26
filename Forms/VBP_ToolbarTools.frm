@@ -1513,7 +1513,7 @@ Private Sub cboTextRenderingHint_Click()
     Tool_Support.setToolBusyState True
     
     'Update the current layer text
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_TextRenderingHint, cboTextRenderingHint.ListIndex + 1
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_TextRenderingHint, cboTextRenderingHint.ListIndex
     
     'Free the tool engine
     Tool_Support.setToolBusyState False
@@ -1760,12 +1760,13 @@ Private Sub Form_Load()
         End If
         
         cboTextRenderingHint.Clear
-        cboTextRenderingHint.AddItem "Hinting, no AA", 0
-        cboTextRenderingHint.AddItem "No hinting, no AA", 1
-        cboTextRenderingHint.AddItem "Hinting, AA", 2
-        cboTextRenderingHint.AddItem "No hinting, no AA", 3
-        cboTextRenderingHint.AddItem "ClearType (debug only)", 4
-        cboTextRenderingHint.ListIndex = 2
+        cboTextRenderingHint.AddItem "Default (debug only)", 0
+        cboTextRenderingHint.AddItem "No AA, hinting", 1
+        cboTextRenderingHint.AddItem "No AA, no hinting", 2
+        cboTextRenderingHint.AddItem "AA, hinting", 3
+        cboTextRenderingHint.AddItem "AA, no hinting", 4
+        cboTextRenderingHint.AddItem "ClearType (debug only)", 5
+        cboTextRenderingHint.ListIndex = 3
         
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
@@ -2127,6 +2128,7 @@ End Sub
 Private Sub txtTextTool_GotFocus()
     'Disable accelerators
     FormMain.ctlAccelerator.Enabled = False
+    Debug.Print "lost focus"
 End Sub
 
 Private Sub txtTextTool_LostFocus()

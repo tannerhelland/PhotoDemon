@@ -1630,6 +1630,8 @@ Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
             GDIPlusResizeDIB dstThumbnailDIB, 0, 0, thumbnailSize, thumbnailSize, layerThumbnail, 0, 0, layerThumbnail.getDIBWidth, layerThumbnail.getDIBHeight, IIf(g_ThumbnailPerformance = PD_PERF_FASTEST, InterpolationModeNearestNeighbor, InterpolationModeHighQualityBicubic)
         End If
         
+        dstThumbnailDIB.setInitialAlphaPremultiplicationState True
+        
     Else
         dstThumbnailDIB.createFromExistingDIB layerThumbnail
     End If
