@@ -263,8 +263,17 @@ Public Sub generateProfileReport(Optional ByVal writeToFile As Boolean = False)
         
         sortProfileEntries PDPSORT_MEAN
         
+        Dim uncertaintyValue As Double
+        
         For i = 0 To m_CurrentEventIndex - 1
-            reportString = reportString & vbTab & CStr(i + 1) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).HistoricalMean, 0, vbTrue, vbFalse, vbFalse) & " ± " & FormatNumber(Sqr(Abs(m_Events(i).HistoricalStdDev / (m_Events(i).NumHistoricalEntries - 1))), 0, vbTrue, vbFalse, vbFalse) & " ms" & vbCrLf
+            
+            If m_Events(i).HistoricalStdDev = 0 Then
+                uncertaintyValue = 0
+            Else
+                uncertaintyValue = Abs(m_Events(i).HistoricalStdDev / (m_Events(i).NumHistoricalEntries - 1))
+            End If
+            
+            reportString = reportString & vbTab & CStr(i + 1) & ") " & m_Events(i).Name & ", " & FormatNumber(m_Events(i).HistoricalMean, 0, vbTrue, vbFalse, vbFalse) & " ± " & FormatNumber(Sqr(uncertaintyValue), 0, vbTrue, vbFalse, vbFalse) & " ms" & vbCrLf
         Next i
         
         'Display results by their coefficient of deviation, which is a dimensionless number defined as StdDev / Mean;
