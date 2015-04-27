@@ -39,7 +39,7 @@ Attribute VB_Exposed = False
 'This unpleasant hybrid approach is part of the shit we deal with as Windows developers, I guess.
 '
 'Dependencies:
-'  - Font_Management module
+'  - Font_Management module, which handles some of the messier bits of GDI interaction
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -569,26 +569,34 @@ Public Function createFontObject() As Boolean
         
         'Note that GDI+ works fine for this particular combination of settings, and return success
         m_curTextEngine = te_GDIPLUS
+        m_FontCacheClean = True
         createFontObject = True
         
     'If GDI+ failed, fall back to GDI and try again.
     Else
         
+        fontCreationSuccess = createGDIFont()
+        
         'If GDI is successful...
-        'If GDIWorked Then...
-        '
-        '    'Note that GDI is required for this combination of settings
-        '    m_curTextEngine = te_GDI
-        '
-        '
-        'Else...
+        If fontCreationSuccess And (m_GDIFont <> 0) Then
+        
+            'Note that GDI is required for this combination of settings
+            m_curTextEngine = te_GDI
+            m_FontCacheClean = True
+            createFontObject = True
+            
+        Else
         
             'For some reason, this combination of settings doesn't work at all.  I hope this never happens, but you never know.
-            Debug.Print "PD's font engine can't handle this combination of settings; sorry!"
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  pdTextRenderer's createFontObject failed with both GDI+ and GDI; sorry!"
+            #End If
+            
             m_curTextEngine = te_UNKNOWN
+            m_FontCacheClean = False
             createFontObject = False
             
-        'End If
+        End If
         
     End If
         
@@ -635,10 +643,7 @@ Private Function createGDIPlusFont() As Boolean
             'Font creation successful.  Set the font cache flag, so we know not to create the font again.
             Debug.Print "WOW, two miracles in a row!  GDI+ font object created successfully."
             
-            'Note that GDI+ is acceptable for this combination of settings
-            m_curTextEngine = te_GDIPLUS
-            
-            m_FontCacheClean = True
+            'Return success
             createGDIPlusFont = True
             
         Else
@@ -647,13 +652,8 @@ Private Function createGDIPlusFont() As Boolean
             Debug.Print "WARNING!  GDI+ failed to create a font object based on this font family."
             reportGDIPlusFailure gdipReturn
             
-            'Delete the font family we created as well
+            'Delete the font family we created as well, then exit
             If m_GDIPlusFontFamily <> 0 Then GdipDeleteFontFamily m_GDIPlusFontFamily
-            
-            'Note that GDI will be required for this combination of font settings
-            m_curTextEngine = te_GDI
-            
-            m_FontCacheClean = False
             createGDIPlusFont = False
             
         End If
