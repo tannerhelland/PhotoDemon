@@ -38,6 +38,9 @@ Attribute VB_Exposed = False
 '
 'This unpleasant hybrid approach is part of the shit we deal with as Windows developers, I guess.
 '
+'Dependencies:
+'  - Font_Management module
+'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
@@ -203,30 +206,34 @@ End Enum
     Private Const StringAlignmentNear = 0, StringAlignmentCenter = 1, StringAlignmentFar = 2
 #End If
 
-'Font family functions
+'GDI+ font family functions
 Private Declare Function GdipCreateFontFamilyFromName Lib "gdiplus" (ByVal ptrToSrcFontName As Long, ByVal srcFontCollection As Long, ByRef dstFontFamily As Long) As Long
 Private Declare Function GdipDeleteFontFamily Lib "gdiplus" (ByVal srcFontFamily As Long) As Long
 Private Declare Function GdipIsStyleAvailable Lib "gdiplus" (ByVal srcFontFamily As Long, ByVal srcStyleToTest As FontStyle, ByRef dstIsStyleAvailable As Long) As Long
 
-'Font functions
+'GDI+ font functions
 Private Declare Function GdipCreateFont Lib "gdiplus" (ByVal srcFontFamily As Long, ByVal srcFontSize As Single, ByVal srcFontStyle As FontStyle, ByVal srcMeasurementUnit As GdiPlusMeasurementUnit, ByRef dstCreatedFont As Long) As Long
 Private Declare Function GdipDeleteFont Lib "gdiplus" (ByVal srcFont As Long) As Long
 
-'String format functions
+'GDI+ string format functions
 Private Declare Function GdipStringFormatGetGenericTypographic Lib "gdiplus" (ByRef dstStringFormat As Long) As Long
 Private Declare Function GdipDeleteStringFormat Lib "gdiplus" (ByVal srcStringFormat As Long) As Long
 Private Declare Function GdipSetStringFormatAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newAlignment As GdiPlusStringAlignment) As Long
 Private Declare Function GdipSetStringFormatLineAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newLineAlignment As GdiPlusStringAlignment) As Long
 
-'Graphics container font functions
+'GDI+ graphics container font functions
 Private Declare Function GdipSetTextRenderingHint Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newRenderHintMode As GdiPlusTextRenderingHint) As Long
 Private Declare Function GdipSetTextContrast Lib "gdiplus" (ByVal dstGraphics As Long, ByVal textContrast As Long) As Long
 Private Declare Function GdipSetCompositingQuality Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newCompositingQuality As GdiPlusCompositingQuality) As Long
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newSmoothingMode As GdiPlusSmoothingMode) As Long
 Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newPixelOffsetMode As GdiPlusPixelOffsetMode) As Long
 
-'Render functions
+'GDI+ Render functions
 Private Declare Function GdipDrawString Lib "gdiplus" (ByVal dstGraphics As Long, ByVal ptrToString As Long, ByVal strLength As Long, ByVal gdipFontHandle As Long, ByRef layoutRect As RECTF, ByVal gdipStringFormat As Long, ByVal gdipBrush As Long) As Long
+
+'GDI generic object management
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
+Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 
 'This class internally maintains various font properties.  These properties must be converted into specific GDI+ parameters via
 ' various means, but they are stored in human-friendly format to simplify serializing a class instance to an XML string.
@@ -263,11 +270,12 @@ Private m_VerticalAlignment As GdiPlusStringAlignment
 Private m_TextRenderingHint As GdiPlusTextRenderingHint
 Private m_TextContrast As Long
 
-'For performance reasons, this class caches various GDI+ font objects and handles.  This spares us from having to recreate
-' expensive font data during rendering steps.
+'For performance reasons, this class caches various font objects and handles from both GDI and GDI+.  This spares us from
+' having to recreate expensive font data during rendering steps.
 Private m_GDIPlusFont As Long
 Private m_GDIPlusFontFamily As Long
 Private m_GDIPlusStringFormat As Long
+Private m_GDIFont As Long
 
 'If a font object has been created, and a setting has been changed (e.g. font name, size, etc), we must recreate the font.
 ' All relevant property changes will set this value to FALSE to signify a re-cache is required.
@@ -586,7 +594,7 @@ Public Function createFontObject() As Boolean
         
 End Function
 
-'Attempt to create a GDI+ font family matching the current class settings
+'Attempt to create a GDI+ font matching the current class settings.  Note that GDI+ creates two relevant objects: font family, and font itself
 Private Function createGDIPlusFont() As Boolean
     
     Debug.Print "Attempting to create GDI+ font object matching the current pdTextRenderer settings..."
@@ -700,6 +708,45 @@ Private Sub reportGDIPlusFailure(ByVal failCode As Long)
     
 End Sub
 
+'Attempt to create a GDI font matching the current class settings
+Private Function createGDIFont() As Boolean
+    
+    'Reset the current font cache state, as we're about to wipe any existing font handles
+    m_FontCacheClean = False
+    
+    Debug.Print "Attempting to create GDI font object matching the current pdTextRenderer settings..."
+    
+    'If a GDI font handle already exists, free it.  Note that the font must have been unselected from a DC; this is typically handled
+    ' by the renderer function itself.
+    If m_GDIFont <> 0 Then DeleteObject m_GDIFont
+    
+    'The font management module makes this task a lot easier.  Start by creating a LOGFONTW container.
+    Dim tmpLogFont As LOGFONTW
+    
+    'Use the font management module to populate the struct
+    Font_Management.fillLogFontW_Basic tmpLogFont, m_FontFace, m_FontBold, m_FontItalic, m_FontUnderline, m_FontStrikeout
+    Font_Management.fillLogFontW_Size tmpLogFont, m_FontSize, m_FontSizeUnit
+    Font_Management.fillLogFontW_Quality tmpLogFont, m_TextRenderingHint
+    
+    'Attempt to create a matching GDI font
+    If Font_Management.createGDIFont(tmpLogFont, m_GDIFont) Then
+        
+        'Success!  Note that GDI is an acceptable engine for this font, and return success
+        m_curTextEngine = te_GDI
+        m_FontCacheClean = True
+        createGDIFont = True
+        
+    Else
+        
+        'Failure!  PD doesn't have a fallback beyond GDI, so this whole request is doomed
+        m_curTextEngine = te_UNKNOWN
+        m_FontCacheClean = False
+        createGDIFont = False
+    
+    End If
+    
+End Function
+
 'Use this function to render arbitrary text to an arbitrary DIB.  Performance should be decent, but if you're going to be making
 ' a ton of successive calls, it's probably worthwhile to cache a GDI+ graphics instance that points to the target.  (This class does
 ' not currently offer a function for that, FYI.)
@@ -719,6 +766,12 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String
         
         'GDI is required
         Case te_GDI
+            
+            'Because GDI doesn't support 32-bpp rendering targets, we must manually translate GDI glyphs into GDI+ paths, then render
+            ' the paths manually.  Because this is hugely energy intensive, our separate class attempts to cache glyphs as they are
+            ' created.  This saves us from having to translate glyphs more than once, which is a non-trivial boost on long chunks
+            ' of text.
+        
         
         'GDI and GDI+ both failed; at present, we have no fallback for this case
         Case te_UNKNOWN
@@ -838,6 +891,9 @@ Private Sub Class_Terminate()
         If m_GDIPlusFont <> 0 Then GdipDeleteFont m_GDIPlusFont
         If m_GDIPlusFontFamily <> 0 Then GdipDeleteFontFamily m_GDIPlusFontFamily
         If m_GDIPlusStringFormat <> 0 Then GdipDeleteStringFormat m_GDIPlusStringFormat
+        
+        'Release any GDI objects we created
+        If m_GDIFont <> 0 Then DeleteObject m_GDIFont
         
     End If
     
