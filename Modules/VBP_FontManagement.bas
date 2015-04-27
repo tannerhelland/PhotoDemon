@@ -104,6 +104,14 @@ Private Const TRUETYPE_FONTTYPE = &H4
 
 Private Declare Function EnumFontFamiliesEx Lib "gdi32" Alias "EnumFontFamiliesExW" (ByVal hDC As Long, ByRef lpLogFontW As LOGFONTW, ByVal lpEnumFontFamExProc As Long, ByRef lParam As Any, ByVal dwFlags As Long) As Long
 
+'GDI+ font collection interfaces; these are temporarily in-use while I sort out OpenType handling
+Private Declare Function GdipNewInstalledFontCollection Lib "gdiplus" (ByRef dstFontCollectionHandle As Long) As Long
+Private Declare Function GdipGetFontCollectionFamilyCount Lib "gdiplus" (ByVal srcFontCollection As Long, ByRef dstNumFound As Long) As Long
+Private Declare Function GdipGetFontCollectionFamilyList Lib "gdiplus" (ByVal srcFontCollection As Long, ByVal sizeOfDstBuffer As Long, ByVal ptrToDstFontFamilyArray As Long, ByRef dstNumFound As Long) As Long
+Private Declare Function GdipGetFamilyName Lib "gdiplus" (ByVal srcFontFamily As Long, ByVal ptrDstNameBuffer As Long, ByVal languageID As Integer) As Long
+Private Const LF_FACESIZE As Long = 32          'Note: this represents 32 *chars*, not bytes!
+Private Const LANG_NEUTRAL As Integer = &H0
+
 'Internal font cache.  PD uses this to populate things like font selection dropdowns.
 Private m_PDFontCache As pdStringStack
 Private Const INITIAL_PDFONTCACHE_SIZE As Long = 256
@@ -112,18 +120,57 @@ Private m_LastFontAdded As String
 'Temporary DIB (more importantly - DC) for testing and/or applying font settings
 Private m_TestDIB As pdDIB
 
+'If functions want their own copy of available fonts, call this function
+Public Function getCopyOfFontCache(ByRef dstStringStack As pdStringStack) As Boolean
+    If dstStringStack Is Nothing Then Set dstStringStack = New pdStringStack
+    dstStringStack.cloneStack m_PDFontCache
+End Function
+
 'Build a system font cache.  Note that this is an expensive operation, and should never be called more than once.
 ' RETURNS: 0 if failure, Number of fonts (>= 0) if successful
-Public Function buildFontCache() As Long
+Public Function buildFontCache(Optional ByVal getTrueTypeOnly As Boolean = False) As Long
     
     'Prep the default font cache
     Set m_PDFontCache = New pdStringStack
-    m_PDFontCache.resetStack INITIAL_PDFONTCACHE_SIZE
     
     'Prep a tiny internal DIB for testing font settings
     Set m_TestDIB = New pdDIB
     m_TestDIB.createBlank 4, 4, 32, 0, 0
     
+    'We now branch into two possible directions:
+    ' 1) If getTrueTypeOnly is FALSE, we retrieve all fonts on the PC via GDI's EnumFontFamiliesEx
+    ' 2) If getTrueTypeOnly is TRUE, we retrieve only TrueType fonts via GDI+'s getFontFamilyCollectionList function.
+    If getTrueTypeOnly Then
+        
+        'GDI+ will return the font count prior to enumeration, so we don't need to prep the string stack in advance
+        getAllAvailableTrueTypeFonts
+        
+    Else
+        
+        'We won't know the full number of available fonts until the Enum function finishes, so prep an extra-large
+        ' buffer in advance.
+        m_PDFontCache.resetStack INITIAL_PDFONTCACHE_SIZE
+        getAllAvailableFonts
+        
+    End If
+    
+    
+    'Because the font cache will potentially be accessed by tons of external functions, it pays to sort it just once,
+    ' at initialization time.
+    m_PDFontCache.trimStack
+    m_PDFontCache.SortAlphabetically
+    
+    'TESTING ONLY!  Curious about the list of fonts?  Use this line to write it out to the immediate window
+    'm_PDFontCache.DEBUG_dumpResultsToImmediateWindow
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "FYI - number of fonts found on this PC: " & m_PDFontCache.getNumOfStrings
+    #End If
+    
+End Function
+
+'Retrieve all available fonts on this PC, regardless of font type
+Private Function getAllAvailableFonts() As Boolean
+
     'Prep a default LOGFONTW instance.  Note that EnumFontFamiliesEx only checks three params:
     ' lfCharSet:  If set to DEFAULT_CHARSET, the function enumerates all uniquely-named fonts in all character sets.
     '             (If there are two fonts with the same name, only one is enumerated.)
@@ -137,16 +184,9 @@ Public Function buildFontCache() As Long
     'Enumerate font families using our temporary DIB DC
     EnumFontFamiliesEx m_TestDIB.getDIBDC, tmpLogFont, AddressOf EnumFontFamExProc, ByVal 0, 0
     
-    'Because the font cache will potentially be accessed by tons of external functions, it pays to sort it just once,
-    ' at initialization time.
-    m_PDFontCache.SortAlphabetically
-    
-    'TESTING ONLY!  Curious about the list of fonts?  Use this line to write it out to the immediate window
-    'm_PDFontCache.DEBUG_dumpResultsToImmediateWindow
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "FYI - number of fonts found on this PC: " & m_PDFontCache.getNumOfStrings
-    #End If
-    
+    'If at least one font was found, return TRUE
+    getAllAvailableFonts = CBool(m_PDFontCache.getNumOfStrings > 0)
+
 End Function
 
 'Callback function for EnumFontFamiliesEx
@@ -162,7 +202,9 @@ Public Function EnumFontFamExProc(ByRef lpElfe As LOGFONTW, ByRef lpNtme As NEWT
     Dim fontUsable As Boolean
     fontUsable = CBool(StrComp(thisFontFace, m_LastFontAdded, vbBinaryCompare) <> 0)
     
-    'We also want to ignore fonts with @ in front of their name, as these are merely duplicates of existing fonts
+    'We also want to ignore fonts with @ in front of their name, as these are merely duplicates of existing fonts.
+    ' (The @ signifies improved support for vertical text, which may someday be useful... but right now I have enough
+    '  on my plate without worrying about that.)
     If fontUsable Then
         fontUsable = CBool(StrComp(Left$(thisFontFace, 1), "@", vbBinaryCompare) <> 0)
     End If
@@ -185,6 +227,62 @@ Public Function EnumFontFamExProc(ByRef lpElfe As LOGFONTW, ByRef lpNtme As NEWT
     
 End Function
 
+'Helper function for returning a string stack of currently installed, GDI+ compatible (e.g. TrueType) fonts
+Private Function getAllAvailableTrueTypeFonts() As Boolean
+    
+    'Create a new GDI+ font collection object
+    Dim fontCollection As Long
+    If GdipNewInstalledFontCollection(fontCollection) = 0 Then
+    
+        'Get the family count
+        Dim fontCount As Long
+        If GdipGetFontCollectionFamilyCount(fontCollection, fontCount) = 0 Then
+        
+            'Prep a Long-type array, which will receive the list of fonts installed on this machine
+            Dim fontList() As Long
+            If fontCount > 0 Then ReDim fontList(0 To fontCount - 1) As Long Else ReDim fontList(0) As Long
+        
+            'I don't know if it's possible for GDI+ to return a different amount of fonts than it originally reported,
+            ' but since it takes a parameter for numFound, let's use it
+            Dim fontsFound As Long
+            If GdipGetFontCollectionFamilyList(fontCollection, fontCount, VarPtr(fontList(0)), fontsFound) = 0 Then
+            
+                'Populate our string stack with the names of this collection; also, since we know the approximate size of
+                ' the stack in advance, we can accurately prep the stack's buffer.
+                m_PDFontCache.resetStack fontCount
+                
+                'Retrieve all font names
+                Dim i As Long, thisFontName As String
+                For i = 0 To fontsFound - 1
+                    
+                    'Retrieve the name for this entry
+                    thisFontName = String$(LF_FACESIZE, 0)
+                    If GdipGetFamilyName(fontList(i), StrPtr(thisFontName), LANG_NEUTRAL) = 0 Then
+                        m_PDFontCache.AddString TrimNull(thisFontName)
+                    End If
+                    
+                Next i
+                
+                'Return success
+                getAllAvailableTrueTypeFonts = True
+            
+            Else
+                Debug.Print "WARNING! GDI+ refused to return a font collection list."
+                getAllAvailableTrueTypeFonts = False
+            End If
+        
+        Else
+            Debug.Print "WARNING! GDI+ refused to return a font collection count."
+            getAllAvailableTrueTypeFonts = False
+        End If
+    
+    Else
+        Debug.Print "WARNING! GDI+ refused to return a font collection object."
+        getAllAvailableTrueTypeFonts = False
+    End If
+    
+End Function
+
 'This function is identical to PD's publicly declared "TrimNull" function in File_And_Path_Handling.  It is included here to reduce
 ' external dependencies for this class.
 Private Function TrimNull(ByRef origString As String) As String
@@ -201,3 +299,5 @@ Private Function TrimNull(ByRef origString As String) As String
     End If
   
 End Function
+
+

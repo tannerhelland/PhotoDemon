@@ -15,29 +15,28 @@ Attribute VB_Exposed = False
 'PhotoDemon GDI+ Text Manager and Renderer
 'Copyright 2015-2015 by Tanner Helland
 'Created: 22/April/15
-'Last updated: 22/April/15
-'Last update: initial build
+'Last updated: 26/April/15
+'Last update: migrate the rendering-specific bits out of this class, and into pdTextBackend_WAPI
 '
-'While PhotoDemon already has a capable GDI font renderer in pdFont, text rendering onto actual images is a whole other
-' can of worms.
+'This class handles the messy business of font management for PD's new text layers.  It switches between GDI and GDI+ as
+' necessary to provide a comprehensive text rendering solution.
 '
-'The biggest problem with GDI rendering is its total lack of support for 32-bpp rendering targets.  This is a deal-breaker
-' for text layers, so I have no choice but to lean on GDI+ (short of writing some incredibly ugly functions for rasterizing
-' GDI font render results, and extrapolating font data - ugh no).
+'I had originally planned to split this class in two, as a GDI-specific backend and a separate GDI+-specific backend.
+' But there are complications with this.  GDI and GDI+ have different strengths and weaknesses (GDI has no 32-bpp rendering
+' support, while GDI+ doesn't support OpenType), so to really provide a decent font experience without native libraries,
+' one must utilize both libraries.
 '
-'As such, this text renderer class was originally designed against GDI+ text capabilities.  As a failsafe against future
-' improvements, I have included some framework code for variable backends.  Pango intrigues me as another rendering option,
-' so I may look to it in the future if I can't wrangle GDI+ into supporting all the features I'd like.  (As it is, I'll
-' be manually implementing some features, like line and character spacing, but that's okay.)
+'Hence this class.  Here's the basic setup:
 '
-'Much like pdFont, this class requires you to *manually create a font object before using it*.  Font creation is fairly
-' cumbersome in GDI+, and this class will take care of some initializations in the background.  But because things like
-' font size must be declared *at font creation time*, it is very likely that a single session will require many font
-' creation/destruction cycles.  To that end, after any/all font settings are adjusted, you MUST CREATE THE FONT prior to
-' actually rendering with this class.
+'For TrueType fonts, GDI+ is used.  This saves us a lot of grief, and lets us make use of some nice, typographic-specific
+' features (like variable antialiasing contrast).
 '
-'Dependencies:
-' - pdStringStack (used to report supported fonts as detected by GDI+)
+'For OpenType fonts, GDI is used out of necessity.  Individual glyphs are retrieved, parsed, and converted into a usable
+' format (e.g. OpenType's quadratic B-splines are converted into GDI+'s native cubic Bézier curve format).  The final,
+' resultant shape(s) are then passed to GDI+ as a generic path object, which we can render with any of GDI+'s native
+' features (antialiasing, fancy gradients, etc).
+'
+'This unpleasant hybrid approach is part of the shit we deal with as Windows developers, I guess.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -45,6 +44,17 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+'At present, only a WAPI font rendering backend is available.  This may change in the future.
+Private Enum fontRenderingBackend
+    frb_WAPI = 0
+End Enum
+
+#If False Then
+    Private Const frb_WAPI = 0
+#End If
+
+Private m_CurrentFontBackend As fontRenderingBackend
 
 'GDI+ supports multiple measurement modes, and these may actually be relevant for fonts.  Because GDI+ provides some units
 ' that we don't want to expose to users (e.g. "World", "Display"), PD uses its own font size enumeration, which we translate
@@ -147,13 +157,7 @@ End Enum
     Private Const TextRenderingHintAntiAliasGridFit = 3, TextRenderingHintAntiAlias = 4, TextRenderingHintClearTypeGridFit = 5
 #End If
 
-'Font collection interfaces
-Private Declare Function GdipNewInstalledFontCollection Lib "gdiplus" (ByRef dstFontCollectionHandle As Long) As Long
-Private Declare Function GdipGetFontCollectionFamilyCount Lib "gdiplus" (ByVal srcFontCollection As Long, ByRef dstNumFound As Long) As Long
-Private Declare Function GdipGetFontCollectionFamilyList Lib "gdiplus" (ByVal srcFontCollection As Long, ByVal sizeOfDstBuffer As Long, ByVal ptrToDstFontFamilyArray As Long, ByRef dstNumFound As Long) As Long
-Private Declare Function GdipGetFamilyName Lib "gdiplus" (ByVal srcFontFamily As Long, ByVal ptrDstNameBuffer As Long, ByVal languageID As Integer) As Long
-Private Const LF_FACESIZE As Long = 32          'Note: this represents 32 *chars*, not bytes!
-Private Const LANG_NEUTRAL As Integer = &H0
+
 
 'Font style settings
 Private Enum FontStyle
@@ -685,85 +689,32 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String
 
 End Function
 
-'Helper function for returning a string stack of currently installed, GDI+ compatible (e.g. TrueType) fonts
-Public Function getListOfInstalledFonts(ByRef dstStringStack As pdStringStack) As Boolean
-    
-    'Create a new GDI+ font collection object
-    Dim fontCollection As Long
-    If GdipNewInstalledFontCollection(fontCollection) = 0 Then
-    
-        'Get the family count
-        Dim fontCount As Long
-        If GdipGetFontCollectionFamilyCount(fontCollection, fontCount) = 0 Then
-        
-            'Prep a Long-type array, which will receive the list of fonts installed on this machine
-            Dim fontList() As Long
-            If fontCount > 0 Then ReDim fontList(0 To fontCount - 1) As Long Else ReDim fontList(0) As Long
-        
-            'I don't know if it's possible for GDI+ to return a different amount of fonts than it originally reported,
-            ' but since it takes a parameter for numFound, let's use it
-            Dim fontsFound As Long
-            If GdipGetFontCollectionFamilyList(fontCollection, fontCount, VarPtr(fontList(0)), fontsFound) = 0 Then
-            
-                'Populate our string stack with the names of this collection; also, since we know the approximate size of
-                ' the stack in advance, we can accurately prep the stack's buffer.
-                If dstStringStack Is Nothing Then Set dstStringStack = New pdStringStack
-                dstStringStack.resetStack fontCount
-                
-                'Retrieve all font names
-                Dim i As Long, thisFontName As String
-                For i = 0 To fontsFound - 1
-                    
-                    'Retrieve the name for this entry
-                    thisFontName = String$(LF_FACESIZE, 0)
-                    If GdipGetFamilyName(fontList(i), StrPtr(thisFontName), LANG_NEUTRAL) = 0 Then
-                        dstStringStack.AddString TrimNull(thisFontName)
-                    End If
-                    
-                Next i
-                
-                'Return success
-                getListOfInstalledFonts = True
-            
-            Else
-                Debug.Print "WARNING! GDI+ refused to return a font collection list."
-                getListOfInstalledFonts = False
-            End If
-        
-        Else
-            Debug.Print "WARNING! GDI+ refused to return a font collection count."
-            getListOfInstalledFonts = False
-        End If
-    
-    Else
-        Debug.Print "WARNING! GDI+ refused to return a font collection object."
-        getListOfInstalledFonts = False
-    End If
-    
-End Function
-
-'This function is identical to PD's publicly declared "TrimNull" function in File_And_Path_Handling.  It is included here to reduce
-' external dependencies for this class.
-Private Function TrimNull(ByVal origString As String) As String
-
-    'See if the incoming string contains null chars
-    Dim nullPosition As Long
-    nullPosition = InStr(origString, ChrW$(0))
-    
-    'If it does, trim accordingly
-    If nullPosition Then
-       TrimNull = Left$(origString, nullPosition - 1)
-    Else
-       TrimNull = origString
-    End If
-  
-End Function
-
 Private Sub Class_Initialize()
-
+    
+    'Only one backend is available at present
+    m_CurrentFontBackend = frb_WAPI
+    
+    'Create a relevant font rendering backend
+    If m_CurrentFontBackend = frb_WAPI Then
+        
+        'Because GDI+ StringFormat creation is cheap, create a default typographic GDI+ StringFormat object now.
+        ' This saves us having to recreate the object later.
+        '
+        'Note that a default typographic StringFormat has the following options set:
+        ' FormatFlags: 24580 (NoClip, FitBlackBox and LineLimit.)
+        ' Alignment: Near
+        ' LineAlignment: Near
+        ' Trimming: None
+        ' HotkeyPrefix: None
+        ' DigitSubstitutionMethod: User
+        ' DigitSubstitutionLanguage: 0
+        GdipStringFormatGetGenericTypographic m_GDIPlusStringFormat
+        
+    End If
+    
     'Mark the current font cache as dirty
     m_FontCacheClean = False
-    
+        
     'By default, this class uses pixels
     m_FontSizeUnit = pdfu_Pixel
     
@@ -771,18 +722,6 @@ Private Sub Class_Initialize()
     m_FontFace = g_InterfaceFont
     m_FontSize = 16#                '16px = 12 points at 96 DPI
     
-    'Because StringFormat creation is cheap, create a default typographic GDI+ StringFormat object now.
-    ' This saves us having to recreate the object later.
-    '
-    'Note that a default typographic StringFormat has the following options set:
-    ' FormatFlags: 24580 (NoClip, FitBlackBox and LineLimit.)
-    ' Alignment: Near
-    ' LineAlignment: Near
-    ' Trimming: None
-    ' HotkeyPrefix: None
-    ' DigitSubstitutionMethod: User
-    ' DigitSubstitutionLanguage: 0
-    GdipStringFormatGetGenericTypographic m_GDIPlusStringFormat
     m_HorizontalAlignment = StringAlignmentNear
     m_VerticalAlignment = StringAlignmentNear
     
@@ -794,9 +733,14 @@ End Sub
 
 Private Sub Class_Terminate()
     
-    'Release any GDI+ objects we created
-    If m_GDIPlusFont <> 0 Then GdipDeleteFont m_GDIPlusFont
-    If m_GDIPlusFontFamily <> 0 Then GdipDeleteFontFamily m_GDIPlusFontFamily
-    If m_GDIPlusStringFormat <> 0 Then GdipDeleteStringFormat m_GDIPlusStringFormat
+    'Perform any backend-specific clean-up
+    If m_CurrentFontBackend = frb_WAPI Then
+    
+        'Release any GDI+ objects we created
+        If m_GDIPlusFont <> 0 Then GdipDeleteFont m_GDIPlusFont
+        If m_GDIPlusFontFamily <> 0 Then GdipDeleteFontFamily m_GDIPlusFontFamily
+        If m_GDIPlusStringFormat <> 0 Then GdipDeleteStringFormat m_GDIPlusStringFormat
+        
+    End If
     
 End Sub
