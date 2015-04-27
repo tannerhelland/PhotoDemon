@@ -56,6 +56,27 @@ End Enum
 
 Private m_CurrentFontBackend As fontRenderingBackend
 
+'Because I want switches between GDI and GDI+ to be transparent, this class will dynamically track which engine is required
+' for rendering.  If a setting changes (and renders the font cache invalid), this value will be reset to UNKNOWN.  On the next
+' font object creation attempt, the required backend will be noted.
+Private Enum textEngineRequired
+    te_UNKNOWN = 0
+    te_GDIPLUS = 1
+    te_GDI = 2
+End Enum
+
+#If False Then
+    Private Const te_UNKNOWN = 0, te_GDIPLUS = 1, te_GDI = 2
+#End If
+
+Private m_curTextEngine As textEngineRequired
+
+'GDI+ font functions are prone to failure, for reasons both known (e.g. no OpenType support) and unknown (e.g. GDI+ font handling is
+' a pile of garbage).  Here are a few common failure states.
+Private Const gdipFontFamilyNotFound As Long = 14
+Private Const gdipFontStyleNotFound As Long = 15
+Private Const gdipNotTrueTypeFont As Long = 16
+
 'GDI+ supports multiple measurement modes, and these may actually be relevant for fonts.  Because GDI+ provides some units
 ' that we don't want to expose to users (e.g. "World", "Display"), PD uses its own font size enumeration, which we translate
 ' to corresponding GDI+ units as necessary.
@@ -156,8 +177,6 @@ End Enum
     Private Const TextRenderingHintSystemDefault = 0, TextRenderingHintSingleBitPerPixelGridFit = 1, TextRenderingHintSingleBitPerPixel = 2
     Private Const TextRenderingHintAntiAliasGridFit = 3, TextRenderingHintAntiAlias = 4, TextRenderingHintClearTypeGridFit = 5
 #End If
-
-
 
 'Font style settings
 Private Enum FontStyle
@@ -353,7 +372,12 @@ Friend Sub setHorizontalAlignment(ByVal newAlignment As GdiPlusStringAlignment)
     
     If m_HorizontalAlignment <> newAlignment Then
         m_HorizontalAlignment = newAlignment
-        GdipSetStringFormatAlign m_GDIPlusStringFormat, newAlignment
+        
+        'If using GDI+, set this format immediately, as it's inexpensive to do so
+        If m_CurrentFontBackend = frb_WAPI Then
+            GdipSetStringFormatAlign m_GDIPlusStringFormat, newAlignment
+        End If
+        
     End If
     
 End Sub
@@ -366,7 +390,12 @@ Friend Sub setVerticalAlignment(ByVal newAlignment As GdiPlusStringAlignment)
     
     If m_VerticalAlignment <> newAlignment Then
         m_VerticalAlignment = newAlignment
-        GdipSetStringFormatLineAlign m_GDIPlusStringFormat, newAlignment
+        
+        'If using GDI+, set this format immediately, as it's inexpensive to do so
+        If m_CurrentFontBackend = frb_WAPI Then
+            GdipSetStringFormatLineAlign m_GDIPlusStringFormat, newAlignment
+        End If
+        
     End If
     
 End Sub
@@ -481,124 +510,16 @@ Public Function getFontFace() As String
     getFontFace = m_FontFace
 End Function
 
-'Set a given font face, as specified by a font name (hopefully captured via getListOfInstalledFonts, below)
-' Returns: TRUE if font exists; FALSE otherwise
-Public Function setFontFace(ByVal fontName As String) As Boolean
+'Set a given font face, as specified by a font name.
+Public Sub setFontFace(ByVal fontName As String)
     
-    'If this font face has already been set, and a font has been successfully created, ignore this request
-    If (StrComp(fontName, m_FontFace, vbBinaryCompare) = 0) And (m_GDIPlusFontFamily <> 0) Then
-        setFontFace = True
-        Exit Function
-    End If
-    
-    'If a font family already exists, delete it
-    If m_GDIPlusFontFamily <> 0 Then GdipDeleteFontFamily m_GDIPlusFontFamily
-    
-    'Attempt to retrieve the font family matching this name
-    Dim gdipReturn As Long
-    gdipReturn = GdipCreateFontFamilyFromName(StrPtr(fontName), 0&, m_GDIPlusFontFamily)
-    
-    'This GDI+ function supports several unique fail conditions; test for them
-    If (gdipReturn = 0) And (m_GDIPlusFontFamily <> 0) Then
-        
-        'The font appears to have been created successfully!
+    'If this font face has already been set, ignore this request
+    If (StrComp(fontName, m_FontFace, vbBinaryCompare) <> 0) Then
         m_FontFace = fontName
-        
-        'Prior to exiting, cache the font styles supported by this font family
-        Dim testResult As Long
-        GdipIsStyleAvailable m_GDIPlusFontFamily, FontStyleBold, testResult
-        m_BoldSupported = CBool(testResult <> 0)
-        
-        GdipIsStyleAvailable m_GDIPlusFontFamily, FontStyleItalic, testResult
-        m_ItalicSupported = CBool(testResult <> 0)
-        
-        GdipIsStyleAvailable m_GDIPlusFontFamily, FontStyleUnderline, testResult
-        m_UnderlineSupported = CBool(testResult <> 0)
-        
-        GdipIsStyleAvailable m_GDIPlusFontFamily, FontStyleStrikeout, testResult
-        m_StrikeoutSupported = CBool(testResult <> 0)
-        
-        'Note that the current font cache, if one exists, is no longer valid
         m_FontCacheClean = False
-        
-        'Return success
-        setFontFace = True
-        
-    Else
-        
-        Const FontFamilyNotFound As Long = 14
-        Const FontStyleNotFound As Long = 15
-        Const NotTrueTypeFont As Long = 16
-        
-        #If DEBUG_MODE = 1 Then
-        
-            Select Case gdipReturn
-            
-                Case FontFamilyNotFound
-                    pdDebug.LogAction "pdTextRenderer.setFontFace failed: font family wasn't found"
-                    
-                Case FontStyleNotFound
-                    pdDebug.LogAction "pdTextRenderer.setFontFace failed: requested font style wasn't found"
-                    
-                Case NotTrueTypeFont
-                    pdDebug.LogAction "pdTextRenderer.setFontFace failed: requested font is not a TrueType font"
-                    
-                Case Else
-                    pdDebug.LogAction "pdTextRenderer.setFontFace failed for unknown reasons"
-            
-            End Select
-            
-        #End If
-        
-        setFontFace = False
-        
     End If
     
-End Function
-
-'When all font parameters have been set, we can actually create a font!
-Public Function createFontObject() As Boolean
-    
-    'If the font cache is clean, this request is redundant; ignore it
-    If m_FontCacheClean Then
-        createFontObject = True
-        Exit Function
-    End If
-    
-    Debug.Print "Creating GDI+ font object..."
-    
-    'If a font already exists, delete it now
-    If m_GDIPlusFont <> 0 Then GdipDeleteFont m_GDIPlusFont
-    
-    'If a font family does not exist, attempt to create one now
-    If m_GDIPlusFontFamily = 0 Then setFontFace m_FontFace
-    
-    'If a font family *still* does not exist, the font name is invalid.
-    If m_GDIPlusFontFamily = 0 Then
-        Debug.Print "WARNING! Invalid font name specified!"
-        createFontObject = False
-    End If
-    
-    'Attempt to create the font
-    Dim gdipReturn As Long
-    gdipReturn = GdipCreateFont(m_GDIPlusFontFamily, m_FontSize, getFontStylesAsGdipLong(), convertPDFontUnitToGDIPlusFontUnit(m_FontSizeUnit), m_GDIPlusFont)
-    
-    'Check for known errors; GDI+ does not support OpenType fonts, for example
-    If (gdipReturn = 0) And (m_GDIPlusFont <> 0) Then
-    
-        'Font creation successful.  Set the font cache flag, so we know not to create the font again.
-        m_FontCacheClean = True
-        createFontObject = True
-        
-    Else
-    
-        'Font creation failure.  Not much we can do now.
-        m_FontCacheClean = False
-        createFontObject = False
-        
-    End If
-    
-End Function
+End Sub
 
 'Convert a pdFontUnit enum to a GDI+ format measurement unit.  Note that not all GDI+ units are reachable this way, by design.
 Private Function convertPDFontUnitToGDIPlusFontUnit(ByRef srcPDFontUnit As pdFontUnit) As GdiPlusMeasurementUnit
@@ -615,6 +536,131 @@ Private Function convertPDFontUnitToGDIPlusFontUnit(ByRef srcPDFontUnit As pdFon
     
 End Function
 
+'When all font parameters have been set, we can actually create a font!
+Public Function createFontObject() As Boolean
+    
+    'If the font cache is clean, this request is redundant; ignore it
+    If m_FontCacheClean Then
+        createFontObject = True
+        Exit Function
+    End If
+    
+    'Reset the current text engine marker, as we won't know which engine is required until we try to create the font.
+    m_curTextEngine = te_UNKNOWN
+    
+    'If we have already created any font objects (in either engine), free them now
+    If m_GDIPlusFont <> 0 Then GdipDeleteFont m_GDIPlusFont
+    If m_GDIPlusFontFamily <> 0 Then GdipDeleteFontFamily m_GDIPlusFontFamily
+    
+    'First, try to create a GDI+ font family.  This saves us a lot of grief.
+    Dim fontCreationSuccess As Boolean
+    fontCreationSuccess = createGDIPlusFont()
+    
+    'GDI+ reported success, and we obtained a valid GDI+ font handle, carry on
+    If fontCreationSuccess And (m_GDIPlusFont <> 0) Then
+        
+        'Note that GDI+ works fine for this particular combination of settings, and return success
+        m_curTextEngine = te_GDIPLUS
+        createFontObject = True
+        
+    'If GDI+ failed, fall back to GDI and try again.
+    Else
+        
+        'If GDI is successful...
+        'If GDIWorked Then...
+        '
+        '    'Note that GDI is required for this combination of settings
+        '    m_curTextEngine = te_GDI
+        '
+        '
+        'Else...
+        
+            'For some reason, this combination of settings doesn't work at all.  I hope this never happens, but you never know.
+            Debug.Print "PD's font engine can't handle this combination of settings; sorry!"
+            m_curTextEngine = te_UNKNOWN
+            createFontObject = False
+            
+        'End If
+        
+    End If
+        
+End Function
+
+'Attempt to create a GDI+ font family matching the current class settings
+Private Function createGDIPlusFont() As Boolean
+    
+    Debug.Print "Attempting to create GDI+ font object matching the current pdTextRenderer settings..."
+    
+    'If a GDI+ font family already exists, free it
+    If m_GDIPlusFontFamily <> 0 Then GdipDeleteFontFamily m_GDIPlusFontFamily
+    
+    'Attempt to retrieve a GDI+ font family matching this name
+    Dim gdipReturn As Long
+    gdipReturn = GdipCreateFontFamilyFromName(StrPtr(m_FontFace), 0&, m_GDIPlusFontFamily)
+    
+    'If GDI+ reported success and a non-zero handle was obtained, carry on!
+    If (gdipReturn = 0) And (m_GDIPlusFontFamily <> 0) Then
+        
+        Debug.Print "It's a miracle!  GDI+ font family created successfully."
+        
+        'As a convenience for future efforts, cache the font styles supported by this font family
+        Dim testResult As Long
+        GdipIsStyleAvailable m_GDIPlusFontFamily, FontStyleBold, testResult
+        m_BoldSupported = CBool(testResult <> 0)
+        
+        GdipIsStyleAvailable m_GDIPlusFontFamily, FontStyleItalic, testResult
+        m_ItalicSupported = CBool(testResult <> 0)
+        
+        GdipIsStyleAvailable m_GDIPlusFontFamily, FontStyleUnderline, testResult
+        m_UnderlineSupported = CBool(testResult <> 0)
+        
+        GdipIsStyleAvailable m_GDIPlusFontFamily, FontStyleStrikeout, testResult
+        m_StrikeoutSupported = CBool(testResult <> 0)
+        
+        'Next, we will use the family handle to create an actual font; this includes any font styles (bold, italic, etc) and the
+        ' current font size.
+        gdipReturn = GdipCreateFont(m_GDIPlusFontFamily, m_FontSize, getFontStylesAsGdipLong(), convertPDFontUnitToGDIPlusFontUnit(m_FontSizeUnit), m_GDIPlusFont)
+        
+        'Check for known errors; GDI+ cannot synthesize some font sizes, for example
+        If (gdipReturn = 0) And (m_GDIPlusFont <> 0) Then
+        
+            'Font creation successful.  Set the font cache flag, so we know not to create the font again.
+            Debug.Print "WOW, two miracles in a row!  GDI+ font object created successfully."
+            
+            'Note that GDI+ is acceptable for this combination of settings
+            m_curTextEngine = te_GDIPLUS
+            
+            m_FontCacheClean = True
+            createGDIPlusFont = True
+            
+        Else
+        
+            'Font creation failure.  Not much we can do now.
+            Debug.Print "WARNING!  GDI+ failed to create a font object based on this font family."
+            reportGDIPlusFailure gdipReturn
+            
+            'Delete the font family we created as well
+            If m_GDIPlusFontFamily <> 0 Then GdipDeleteFontFamily m_GDIPlusFontFamily
+            
+            'Note that GDI will be required for this combination of font settings
+            m_curTextEngine = te_GDI
+            
+            m_FontCacheClean = False
+            createGDIPlusFont = False
+            
+        End If
+        
+    'GDI+ font selection can fail for a variety of reasons; report the failure reason and exit immediately
+    Else
+        
+        Debug.Print "GDI+ font family could not be created; font is probably OpenType."
+        reportGDIPlusFailure gdipReturn
+        createGDIPlusFont = False
+        
+    End If
+    
+End Function
+
 'Convert the current arrangement of font styles into a Long-type value compatible with GDI+'s style declarations
 Private Function getFontStylesAsGdipLong() As Long
     
@@ -627,6 +673,33 @@ Private Function getFontStylesAsGdipLong() As Long
     
 End Function
 
+'If a GDI+ function fails, pass the return value to this function so the debugger can attempt to output a helpful message.
+Private Sub reportGDIPlusFailure(ByVal failCode As Long)
+
+    'For performance reasons, this sub is disabled in production builds.  GDI+ failures are expected and frequent, so my
+    ' main interest in them is academic.
+    #If DEBUGMODE = 1 Then
+        
+        Select Case failCode
+        
+            Case gdipFontFamilyNotFound
+                pdDebug.LogAction "(GDI+ error code analysis: font family wasn't located)"
+                
+            Case gdipFontStyleNotFound
+                pdDebug.LogAction "(GDI+ error code analysis: requested font style wasn't found)"
+                
+            Case gdipNotTrueTypeFont
+                pdDebug.LogAction "(GDI+ error code analysis: requested font is not a TrueType font)"
+                
+            Case Else
+                pdDebug.LogAction "(GDI+ failed for an unknown reason: #" & failCode & ")"
+        
+        End Select
+        
+    #End If
+    
+End Sub
+
 'Use this function to render arbitrary text to an arbitrary DIB.  Performance should be decent, but if you're going to be making
 ' a ton of successive calls, it's probably worthwhile to cache a GDI+ graphics instance that points to the target.  (This class does
 ' not currently offer a function for that, FYI.)
@@ -637,6 +710,27 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String
     'As a convenience to the user, create the font as necessary
     If (Not m_FontCacheClean) Then createFontObject
     
+    'We should now know whether GDI or GDI+ is required for this combination of settings.
+    Select Case m_curTextEngine
+        
+        'GDI+ is sufficient
+        Case te_GDIPLUS
+            renderTextToDIB = renderTextToDIB_GDIPlus(dstDIB, srcString, crColor, x1, y1, textWidth, textHeight)
+        
+        'GDI is required
+        Case te_GDI
+        
+        'GDI and GDI+ both failed; at present, we have no fallback for this case
+        Case te_UNKNOWN
+            Debug.Print "GDI and GDI+ both failed; something is probably wrong with this font.  Consider blacklisting it...?"
+            
+    End Select
+    
+End Function
+
+'Render text using GDI+
+Private Function renderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString As String, ByVal crColor As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
+
     'TESTING ONLY!  Fill with white prior to rendering
     'GDI_Plus.GDIPlusFillDIBRect dstDIB, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, vbWhite
     
@@ -689,6 +783,7 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String
 
 End Function
 
+
 Private Sub Class_Initialize()
     
     'Only one backend is available at present
@@ -714,6 +809,9 @@ Private Sub Class_Initialize()
     
     'Mark the current font cache as dirty
     m_FontCacheClean = False
+    
+    'Reset the text engine marker (we don't know this until we attempt to create a given font)
+    m_curTextEngine = te_UNKNOWN
         
     'By default, this class uses pixels
     m_FontSizeUnit = pdfu_Pixel
