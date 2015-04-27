@@ -1743,10 +1743,8 @@ Private Sub Form_Load()
         'Generate a list of fonts
         If g_IsProgramRunning Then
         
-            Dim tmpFontRetrieval As pdTextRenderer
-            Set tmpFontRetrieval = New pdTextRenderer
-            tmpFontRetrieval.getListOfInstalledFonts userFontList
-            Set tmpFontRetrieval = Nothing
+            'Retrieve a copy of the current system font cache
+            Font_Management.getCopyOfFontCache userFontList
             
             'Populate the font selection combo box
             Dim tmpFontName As String, relevantListIndex As Long

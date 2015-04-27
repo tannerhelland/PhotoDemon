@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.21</langversion>
+<langversion>6.7.22</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -191,6 +191,11 @@
 <phrase>
 <original>Initializing theme engine</original>
 <translation>Memulakan enjin tema</translation>
+</phrase>
+
+<phrase>
+<original>Building font cache</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -445,7 +450,7 @@ To membolehkan sokongan untuk fail PDI mampat, klik Bantuan> Semak Terbaru, dan 
 <translation>Pertindihan imej yang lengkap.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 82 phrases. 28 were duplicates of existing phrases, so only 54 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 83 phrases. 28 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -13615,12 +13620,24 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <!-- END text for pdTextRenderer.cls-->
 
+<!-- BEGIN text for VBP_FontManagement.bas -->
+
+<!-- VBP_FontManagement.bas contains 0 phrases. -->
+
+<!-- END text for VBP_FontManagement.bas-->
+
+<!-- BEGIN text for pdComboBox_Font.ctl -->
+
+<!-- pdComboBox_Font.ctl contains 0 phrases. -->
+
+<!-- END text for pdComboBox_Font.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2372</phrasecount>
+<phrasecount>2373</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4046 phrases. -->
-<!-- 1674 are duplicates, so only 2372 unique phrases have been written to file. -->
-<!-- These 2372 phrases contain approximately 13480 total words. -->
+<!-- As of this build, PhotoDemon contains 4047 phrases. -->
+<!-- 1674 are duplicates, so only 2373 unique phrases have been written to file. -->
+<!-- These 2373 phrases contain approximately 13483 total words. -->
 
 </pdData>

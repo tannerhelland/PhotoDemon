@@ -4370,16 +4370,6 @@ Private Sub MnuTest_Click()
 '    Set cFFT = New pdFFT
 '
 '    cFFT.testFFT
-
-    'GDI+ font tests
-    Dim testFont As pdTextRenderer
-    Set testFont = New pdTextRenderer
-    
-    Dim tmpStack As pdStringStack
-    Set tmpStack = New pdStringStack
-    
-    testFont.getListOfInstalledFonts tmpStack
-    tmpStack.DEBUG_dumpResultsToImmediateWindow
     
 End Sub
 

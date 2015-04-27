@@ -343,11 +343,11 @@ End Sub
 ' http://www.vbforums.com/showthread.php?473677-VB6-Sorting-algorithms-%28sort-array-sorting-arrays%29&p=2933240#post2933240
 Private Sub SnakeSortMerge(pvarSource As Variant, plngLeft As Long, plngMid As Long, plngRight As Long, pvarDest As Variant)
     
-    Dim L As Long
-    Dim LMin As Long
-    Dim LMax As Long
+    Dim l As Long
+    Dim lMin As Long
+    Dim lMax As Long
     Dim LStep As Long
-    Dim R As Long
+    Dim r As Long
     Dim RMin As Long
     Dim RMax As Long
     Dim RStep As Long
@@ -356,12 +356,12 @@ Private Sub SnakeSortMerge(pvarSource As Variant, plngLeft As Long, plngMid As L
     If plngLeft <> 0 Then O = Abs(plngLeft) + 1
     
     If plngMid > 0 Then
-        LMin = O
-        LMax = Abs(plngMid)
+        lMin = O
+        lMax = Abs(plngMid)
         LStep = 1
     Else
-        LMin = Abs(plngMid)
-        LMax = O
+        lMin = Abs(plngMid)
+        lMax = O
         LStep = -1
     End If
     
@@ -375,45 +375,59 @@ Private Sub SnakeSortMerge(pvarSource As Variant, plngLeft As Long, plngMid As L
         RStep = -1
     End If
     
-    L = LMin
-    R = RMin
+    l = lMin
+    r = RMin
     
     Do
     
-        If StrComp(pvarSource(L), pvarSource(R)) <= 0 Then
+        If StrComp(pvarSource(l), pvarSource(r)) <= 0 Then
             
-            pvarDest(O) = pvarSource(L)
+            pvarDest(O) = pvarSource(l)
             
-            If L = LMax Then
-                For R = R To RMax Step RStep
+            If l = lMax Then
+                For r = r To RMax Step RStep
                     O = O + 1
-                    pvarDest(O) = pvarSource(R)
+                    pvarDest(O) = pvarSource(r)
                 Next
                 Exit Do
             
             End If
             
-            L = L + LStep
+            l = l + LStep
             
         Else
         
-            pvarDest(O) = pvarSource(R)
+            pvarDest(O) = pvarSource(r)
             
-            If R = RMax Then
-                For L = L To LMax Step LStep
+            If r = RMax Then
+                For l = l To lMax Step LStep
                     O = O + 1
-                    pvarDest(O) = pvarSource(L)
+                    pvarDest(O) = pvarSource(l)
                 Next
                 Exit Do
             End If
             
-            R = R + RStep
+            r = r + RStep
             
         End If
         
         O = O + 1
         
     Loop
+    
+End Sub
+
+'Clone another string stack
+Public Sub cloneStack(ByRef stackToClone As pdStringStack)
+    
+    'Initialize this stack to the size of the target
+    Me.resetStack stackToClone.getNumOfStrings
+    
+    'Copy all strings
+    Dim i As Long
+    For i = 0 To stackToClone.getNumOfStrings - 1
+        Me.AddString stackToClone.GetString(i)
+    Next i
     
 End Sub
 

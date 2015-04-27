@@ -344,7 +344,9 @@ Public Sub LoadTheProgram()
     
     LoadMessage "Building font cache..."
         
-    Font_Management.buildFontCache
+    'TODO: enable all fonts.  At present, the font manager only loads TrueType fonts, as GDI+ can't handle OpenType.
+    '      I'm working on an improved solution to this.  (Switch TRUE to FALSE to get a list of *all* fonts, regardless of type.)
+    Font_Management.buildFontCache True
     
     
     
