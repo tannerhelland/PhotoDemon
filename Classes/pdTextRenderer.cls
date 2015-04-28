@@ -842,7 +842,10 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String
             'Next, pass it our string.  It will generate a list of required glyphs and automatically retrieve any glyphs it hasn't
             ' already calculated.  (For example, if the last request it received was "cat", but this request is "cats", only the 's'
             ' needs to be newly retrieved.)
-            m_GlyphCollection.buildGlyphCollection srcString
+            m_GlyphCollection.buildGlyphCollection srcString, True
+            
+            'After all glyphs have been created, it's *very important* that we regain control over our GDI font
+            m_GlyphCollection.requestGDIFontRelease
             
             'With the glyph collection successfully assembled, proceed with rendering
             renderTextToDIB = renderTextToDIB_Glyphs(dstDIB, srcString, crColor, x1, y1, textWidth, textHeight)

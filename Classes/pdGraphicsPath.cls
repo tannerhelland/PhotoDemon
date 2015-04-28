@@ -60,6 +60,21 @@ Private Declare Function GdipAddPathPolygon Lib "gdiplus" (ByVal hPath As Long, 
 Private Declare Function GdipAddPathArc Lib "gdiplus" (ByVal hPath As Long, ByVal x As Single, ByVal y As Single, ByVal arcWidth As Single, ByVal arcHeight As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As Long
 Private Declare Function GdipClosePathFigure Lib "gdiplus" (ByVal hPath As Long) As Long
 
+'General matrix transformations
+Private Enum MatrixOrder
+    MatrixOrderPrepend = 0
+    MatrixOrderAppend = 1
+End Enum
+
+#If False Then
+    Private Const MatrixOrderPrepend = 0, MatrixOrderAppend = 1
+#End If
+
+Private Declare Function GdipTransformPath Lib "gdiplus" (ByVal hPath As Long, ByVal srcMatrix As Long) As Long
+Private Declare Function GdipCreateMatrix Lib "gdiplus" (ByRef dstMatrix As Long) As Long
+Private Declare Function GdipDeleteMatrix Lib "gdiplus" (ByVal hMatrix As Long) As Long
+Private Declare Function GdipTranslateMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal offsetX As Single, ByVal offsetY As Single, ByVal order As MatrixOrder) As Long
+
 'Drawing functions
 Private Declare Function GdipDrawPath Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal hPath As Long) As Long
 
@@ -179,6 +194,24 @@ End Sub
 'Change the path's fill mode.  (This behavior is non-destructive.)
 Public Sub setPathFillMode(ByVal newMode As GDIFillMode)
     GdipSetPathFillMode m_PathHandle, newMode
+End Sub
+
+'Translate the entire path by some amount in the x and/or y positions
+Public Sub translatePath(ByVal xAmount As Single, ByVal yAmount As Single)
+
+    'Retrieve an identity matrix
+    Dim tmpMatrix As Long
+    GdipCreateMatrix tmpMatrix
+    
+    'Convert to a translation matrix
+    GdipTranslateMatrix tmpMatrix, xAmount, yAmount, MatrixOrderAppend
+    
+    'Apply the transformation
+    GdipTransformPath m_PathHandle, tmpMatrix
+    
+    'Free the matrix
+    GdipDeleteMatrix tmpMatrix
+    
 End Sub
 
 ' END: NON-DESTRUCTIVE PATH EDITS
