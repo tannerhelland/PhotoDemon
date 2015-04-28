@@ -54,6 +54,7 @@ Private Declare Function GdipAddPathEllipse Lib "gdiplus" (ByVal hPath As Long, 
 Private Declare Function GdipAddPathLine Lib "gdiplus" (ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single) As Long
 Private Declare Function GdipAddPathCurve2 Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As Long
 Private Declare Function GdipAddPathClosedCurve2 Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long, ByVal curveTension As Single) As Long
+Private Declare Function GdipAddPathBezier Lib "gdiplus" (ByVal hPath As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal x3 As Single, ByVal y3 As Single, ByVal x4 As Single, ByVal y4 As Single) As Long
 Private Declare Function GdipAddPathLine2 Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As Long
 Private Declare Function GdipAddPathPolygon Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As Long
 Private Declare Function GdipAddPathArc Lib "gdiplus" (ByVal hPath As Long, ByVal x As Single, ByVal y As Single, ByVal arcWidth As Single, ByVal arcHeight As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As Long
@@ -156,6 +157,13 @@ Public Sub addRoundedRectangle_Relative(ByVal x1 As Single, ByVal y1 As Single, 
     
 End Sub
 
+Public Sub addBezierCurve(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal x3 As Single, ByVal y3 As Single, ByVal x4 As Single, ByVal y4 As Single)
+    GdipAddPathBezier m_PathHandle, x1, y1, x2, y2, x3, y3, x4, y4
+End Sub
+
+Public Sub closeCurrentFigure()
+    GdipClosePathFigure m_PathHandle
+End Sub
 
 ' END: ADDING SHAPES AND FIGURES TO THE PATH
 '
@@ -205,12 +213,23 @@ Public Sub convertPathToBorderType_Simple(ByVal borderWidth As Single, Optional 
 
 End Sub
 
-
 ' END: DESTRUCTIVE PATH EDITS
 '
 '***************************************************************************
 
 
+
+'***************************************************************************
+'
+' BEGIN: EXTERNAL PATH ACCESS
+
+Public Function getCopyOfPathHandle() As Long
+    getCopyOfPathHandle = m_PathHandle
+End Function
+
+' END: EXTERNAL PATH ACCESS
+'
+'***************************************************************************
 
 
 

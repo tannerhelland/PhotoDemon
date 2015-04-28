@@ -230,6 +230,8 @@ Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal dstGraphics
 
 'GDI+ Render functions
 Private Declare Function GdipDrawString Lib "gdiplus" (ByVal dstGraphics As Long, ByVal ptrToString As Long, ByVal strLength As Long, ByVal gdipFontHandle As Long, ByRef layoutRect As RECTF, ByVal gdipStringFormat As Long, ByVal gdipBrush As Long) As Long
+Private Declare Function GdipDrawPath Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal srcPath As Long) As Long
+Private Declare Function GdipFillPath Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal srcPath As Long) As Long
 
 'GDI generic object management
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
@@ -326,6 +328,10 @@ Private m_GDIPlusFont As Long
 Private m_GDIPlusFontFamily As Long
 Private m_GDIPlusStringFormat As Long
 Private m_GDIFont As Long
+
+'If we have to fallback to GDI, we can't actually use GDI for rendering.  Instead, we use it to generate glyph data, which we
+' then retrieve, translate into a usable format, and rendering ourselves.  (Yes, it's a major PITA.)
+Private m_GlyphCollection As pdGlyphCollection
 
 'If a font object has been created, and a setting has been changed (e.g. font name, size, etc), we must recreate the font.
 ' All relevant property changes will set this value to FALSE to signify a re-cache is required.
@@ -825,8 +831,24 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String
             ' created.  This saves us from having to translate glyphs more than once, which is a non-trivial boost on long chunks
             ' of text.
             
-            'While I work on that, here's a dummy rendering mode for testing
-            renderTextToDIB = renderTextToDIB_GDI_Dummy(dstDIB, srcString, crColor, x1, y1, textWidth, textHeight)
+            'Start by creating a pdGlyphCollection instance, if one doesn't already exist.
+            If (m_GlyphCollection Is Nothing) Then Set m_GlyphCollection = New pdGlyphCollection
+            
+            'Notify the glyph collection of our GDI font handle.  It obviously needs this in order to generate glyphs.
+            m_GlyphCollection.notifyOfGDIFontChoice m_GDIFont
+            
+            'TODO: retrieve kerning pairs in advance...?
+            
+            'Next, pass it our string.  It will generate a list of required glyphs and automatically retrieve any glyphs it hasn't
+            ' already calculated.  (For example, if the last request it received was "cat", but this request is "cats", only the 's'
+            ' needs to be newly retrieved.)
+            m_GlyphCollection.buildGlyphCollection srcString
+            
+            'With the glyph collection successfully assembled, proceed with rendering
+            renderTextToDIB = renderTextToDIB_Glyphs(dstDIB, srcString, crColor, x1, y1, textWidth, textHeight)
+            
+            'While I work on the above code, here's a dummy rendering mode for testing
+            'renderTextToDIB = renderTextToDIB_GDI_Dummy(dstDIB, srcString, crColor, x1, y1, textWidth, textHeight)
         
         
         'GDI and GDI+ both failed; at present, we have no fallback for this case
@@ -888,6 +910,92 @@ Private Function renderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
         Debug.Print "WARNING!  (Extra debug info: hFont - " & m_GDIPlusFont & ", hStringFormat - " & m_GDIPlusStringFormat & ")"
         renderTextToDIB_GDIPlus = False
     End If
+    
+    'Release the temporary GDI+ objects we created
+    GDI_Plus.releaseGDIPlusBrush gdipBrush
+    GDI_Plus.releaseGDIPlusGraphics dstGraphics
+
+End Function
+
+'Render text using GDI+, and a glyph collection properly assembled inside m_GlyphCollection.
+Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString As String, ByVal crColor As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
+
+    'TESTING ONLY!  Fill with white prior to rendering
+    'GDI_Plus.GDIPlusFillDIBRect dstDIB, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, vbWhite
+    
+    'Start by acquiring a GDI+ handle to the destination DIB
+    Dim dstGraphics As Long
+    dstGraphics = GDI_Plus.getGDIPlusGraphicsFromDC(dstDIB.getDIBDC, False)
+    
+    'Next, set up all container-specific path settings
+    If GdipSetCompositingQuality(dstGraphics, CompositingQualityAssumeLinear) <> 0 Then
+        Debug.Print "Failed to set compositing quality."
+    End If
+    
+    If GdipSetPixelOffsetMode(dstGraphics, PixelOffsetModeHalf) <> 0 Then
+        Debug.Print "Failed to set pixel offset mode."
+    End If
+    
+    If GdipSetSmoothingMode(dstGraphics, SmoothingModeAntiAlias) <> 0 Then
+        Debug.Print "Failed to set smoothing mode."
+    End If
+    
+    'Create a solid fill brush.  (In the future, we'll add more impressive options!)
+    Dim gdipBrush As Long
+    gdipBrush = GDI_Plus.getGDIPlusBrushHandle(crColor, 255)
+    
+    'Convert the input rect to a RECTF
+    Dim boundingRect As RECTF
+    With boundingRect
+        .Left = x1
+        .Top = y1
+        .Width = textWidth
+        .Height = textHeight
+    End With
+    
+    'Finally, use GDI+ to render the actual string, one character at a time.
+    Dim i As Long, glyphIndex As Long, srcPathHandle As Long
+    
+    For i = 0 To Len(srcString) - 1
+        
+        'Start by retrieving this glyph index
+        glyphIndex = m_GlyphCollection.getGlyphIndex(AscW(Mid$(srcString, i + 1, 1)))
+        
+        If glyphIndex >= 0 Then
+            
+            'Retrieve a handle to this glyph's path
+            srcPathHandle = m_GlyphCollection.getGlyphPathHandle(glyphIndex)
+            
+            'If the handle is zero, there are two possible explanations:
+            ' 1) The glyph is a whitespace character
+            ' 2) The glyph couldn't be generated
+            
+            '(1) is common, and (2) should never happen.  Process accordingly.
+            If srcPathHandle <> 0 Then
+                
+                'Draw the glyph!
+                Debug.Print "GdipFillPath returned: " & GdipFillPath(dstGraphics, gdipBrush, srcPathHandle)
+                
+            Else
+                Debug.Print "for some reason, that glyph doesn't have a path???"
+            End If
+            
+        Else
+            Debug.Print "for some reason, that glyph doesn't exist???"
+        End If
+        
+    Next i
+    
+    'TODO: handle returns
+    'Dim gdipReturn As Long
+   '
+   ' If gdipReturn = 0 Then
+   '     renderTextToDIB_GDIPlus = True
+   ' Else
+   '     Debug.Print "WARNING!  GdipDrawString failed with error code " & gdipReturn
+   '     Debug.Print "WARNING!  (Extra debug info: hFont - " & m_GDIPlusFont & ", hStringFormat - " & m_GDIPlusStringFormat & ")"
+   '     renderTextToDIB_GDIPlus = False
+   ' End If
     
     'Release the temporary GDI+ objects we created
     GDI_Plus.releaseGDIPlusBrush gdipBrush
