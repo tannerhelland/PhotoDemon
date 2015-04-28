@@ -235,6 +235,56 @@ Private Declare Function GdipDrawString Lib "gdiplus" (ByVal dstGraphics As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 
+'GDI DC settings
+Private Declare Function SetBkColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
+Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
+Private Declare Function SetTextAlign Lib "gdi32" (ByVal hDC As Long, ByVal wFlags As Long) As Long
+Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
+
+'GDI font rendering functions
+Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
+Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByRef lpRect As RECT, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
+Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, ByRef lpRect As RECT, ByVal wFormat As Long) As Long
+
+'GDI text alignment flags
+Private Const TA_LEFT = 0
+Private Const TA_RIGHT = 2
+Private Const TA_CENTER = 6
+
+Private Const TA_TOP = 0
+Private Const TA_BOTTOM = 8
+Private Const TA_BASELINE = 24
+
+Private Const TA_UPDATECP = 1
+Private Const TA_NOUPDATECP = 0
+
+'Back color modes (not useful here except during debug mode)
+Private Const FONT_TRANSPARENT = &H1
+Private Const FONT_OPAQUE = &H2
+
+'Formatting constants for DrawText
+Private Const DT_TOP = &H0
+Private Const DT_LEFT = &H0
+Private Const DT_CENTER = &H1
+Private Const DT_RIGHT = &H2
+Private Const DT_VCENTER = &H4
+Private Const DT_BOTTOM = &H8
+Private Const DT_WORDBREAK = &H10
+Private Const DT_SINGLELINE = &H20
+Private Const DT_EXPANDTABS = &H40
+Private Const DT_TABSTOP = &H80
+Private Const DT_NOCLIP = &H100
+Private Const DT_EXTERNALLEADING = &H200
+Private Const DT_CALCRECT = &H400
+Private Const DT_NOPREFIX = &H800
+Private Const DT_INTERNAL = &H1000
+Private Const DT_EDITCONTROL = &H2000
+Private Const DT_PATH_ELLIPSIS = &H4000
+Private Const DT_END_ELLIPSIS = &H8000
+Private Const DT_MODIFYSTRING = &H10000
+Private Const DT_RTLREADING = &H20000
+Private Const DT_WORD_ELLIPSIS = &H40000
+
 'This class internally maintains various font properties.  These properties must be converted into specific GDI+ parameters via
 ' various means, but they are stored in human-friendly format to simplify serializing a class instance to an XML string.
 Private m_FontFace As String
@@ -732,13 +782,16 @@ Private Function createGDIFont() As Boolean
     If Font_Management.createGDIFont(tmpLogFont, m_GDIFont) Then
         
         'Success!  Note that GDI is an acceptable engine for this font, and return success
+        Debug.Print "GDI font fallback worked!  Proceeding with rendering."
         m_curTextEngine = te_GDI
         m_FontCacheClean = True
         createGDIFont = True
         
     Else
         
-        'Failure!  PD doesn't have a fallback beyond GDI, so this whole request is doomed
+        'Failure!  PD doesn't have a fallback beyond GDI, so this whole request is doomed.
+        ' (This shouldn't technically be possible, but if it is, I'd rather laugh than cry.)
+        Debug.Print "GDI font fallback failed miserably!  Everything is falling apart!  AAAAHHHH!"
         m_curTextEngine = te_UNKNOWN
         m_FontCacheClean = False
         createGDIFont = False
@@ -771,6 +824,9 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String
             ' the paths manually.  Because this is hugely energy intensive, our separate class attempts to cache glyphs as they are
             ' created.  This saves us from having to translate glyphs more than once, which is a non-trivial boost on long chunks
             ' of text.
+            
+            'While I work on that, here's a dummy rendering mode for testing
+            renderTextToDIB = renderTextToDIB_GDI_Dummy(dstDIB, srcString, crColor, x1, y1, textWidth, textHeight)
         
         
         'GDI and GDI+ both failed; at present, we have no fallback for this case
@@ -825,9 +881,12 @@ Private Function renderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
     Dim gdipReturn As Long
     gdipReturn = GdipDrawString(dstGraphics, StrPtr(srcString), Len(srcString), m_GDIPlusFont, boundingRect, m_GDIPlusStringFormat, gdipBrush)
     
-    If gdipReturn <> 0 Then
+    If gdipReturn = 0 Then
+        renderTextToDIB_GDIPlus = True
+    Else
         Debug.Print "WARNING!  GdipDrawString failed with error code " & gdipReturn
         Debug.Print "WARNING!  (Extra debug info: hFont - " & m_GDIPlusFont & ", hStringFormat - " & m_GDIPlusStringFormat & ")"
+        renderTextToDIB_GDIPlus = False
     End If
     
     'Release the temporary GDI+ objects we created
@@ -836,6 +895,49 @@ Private Function renderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
 
 End Function
 
+'Render text using GDI using a dummy implementation, only.  This only exists to test things like GDI font creation; I am actively working on
+' superceding it with a much more advanced implementation.
+Private Function renderTextToDIB_GDI_Dummy(ByRef dstDIB As pdDIB, ByRef srcString As String, ByVal crColor As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
+
+    'TESTING ONLY!  Since GDI font rendering forcibly sets alpha to 0 on any pixels it touches, we go ahead and fill
+    ' the layer with white prior to rendering.
+    GDI_Plus.GDIPlusFillDIBRect dstDIB, x1, y1, textWidth, textHeight, vbWhite
+    
+    'Start by setting up all container-specific text settings
+    Dim oldFont As Long
+    oldFont = SelectObject(dstDIB.getDIBDC, m_GDIFont)
+    
+    'Set other font parameters
+    SetTextColor dstDIB.getDIBDC, crColor
+    SetTextAlign dstDIB.getDIBDC, 0        'Setting actual text alignment is TODO!
+    
+    'Enable transparent font rendering; if nothing else, this lets us see a "cutout" where GDI wants to render the font
+    SetBkMode dstDIB.getDIBDC, FONT_TRANSPARENT
+    
+    'You'd think drawing opaque text would work, but nope, this just means that GDI functions make the ENTIRE TEXT AREA transparent.
+    ' THANKS, MICROSOFT!
+    'SetBkMode dstDIB.getDIBDC, FONT_OPAQUE
+    'SetBkColor dstDIB.getDIBDC, vbWhite
+    
+    'GDI rendering requires an integer rect; populate one now
+    Dim tmpRect As RECT
+    tmpRect.Left = x1
+    tmpRect.Top = y1
+    tmpRect.Right = x1 + textWidth
+    tmpRect.Bottom = y1 + textHeight
+    
+    'Use DrawText for the actual rendering
+    Dim retDrawText As Long
+    retDrawText = DrawText(dstDIB.getDIBDC, StrPtr(srcString), Len(srcString), tmpRect, DT_WORDBREAK Or DT_LEFT Or DT_TOP)
+    
+    'Restore prior font settings (except text color and alignment; we don't care about those because PD will override those automatically)
+    SelectObject dstDIB.getDIBDC, oldFont
+    
+    'This is just debug code, so I don't care about return values
+    Debug.Print "FYI, renderTextToDIB_GDI_Dummy reported its outcome as " & UCase(CStr(CBool(retDrawText <> 0)))
+    renderTextToDIB_GDI_Dummy = True
+
+End Function
 
 Private Sub Class_Initialize()
     
