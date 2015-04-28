@@ -73,8 +73,33 @@ Public Type NEWTEXTMETRIC
     ntmAveWidth As Long
 End Type
 
-'END PUBLIC ENUMS
+'END ENUMFONTFAMILESEX ENUMS
 '****************************************************************************************
+
+'Retrieve specific metrics on a font (in our case, crucial for aligning button images against the font baseline and ascender)
+Private Declare Function GetTextMetrics Lib "gdi32" Alias "GetTextMetricsW" (ByVal hDC As Long, ByRef lpMetrics As TEXTMETRIC) As Long
+Public Type TEXTMETRIC
+    tmHeight As Long
+    tmAscent As Long
+    tmDescent As Long
+    tmInternalLeading As Long
+    tmExternalLeading As Long
+    tmAveCharWidth As Long
+    tmMaxCharWidth As Long
+    tmWeight As Long
+    tmOverhang As Long
+    tmDigitizedAspectX As Long
+    tmDigitizedAspectY As Long
+    tmFirstChar As Byte
+    tmLastChar As Byte
+    tmDefaultChar As Byte
+    tmBreakChar As Byte
+    tmItalic As Byte
+    tmUnderlined As Byte
+    tmStruckOut As Byte
+    tmPitchAndFamily As Byte
+    tmCharSet As Byte
+End Type
 
 'Font enumeration types
 Private Const LF_FACESIZEA = 32
@@ -446,6 +471,16 @@ Public Sub fillLogFontW_Quality(ByRef dstLogFontW As LOGFONTW, ByVal fontQuality
     dstLogFontW.lfQuality = gdiFontQuality
 
 End Sub
+
+'Retrieve a text metrics struct for a given DC.  Obviously, the desired font needs to be selected into the DC *prior* to calling this.
+Public Function fillTextMetrics(ByRef srcDC As Long, ByRef dstTextMetrics As TEXTMETRIC) As Boolean
+    
+    Dim gtmReturn As Long
+    gtmReturn = GetTextMetrics(srcDC, dstTextMetrics)
+    
+    fillTextMetrics = CBool(gtmReturn <> 0)
+    
+End Function
 
 'Given a filled LOGFONTW struct (hopefully filled by the fillLogFontW_* functions above!), attempt to create an actual font object.
 ' Returns TRUE if successful; FALSE otherwise.

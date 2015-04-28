@@ -49,15 +49,7 @@ Private Type POINT_FLOAT
     y As Single
 End Type
 
-'Technically, the MAT2 type consists of 4 FIXED values (16-bits of fraction (unsigned), followed by 16-bits of integer (signed)).
-' Since we don't make use of the matrix, but it's required by the GetGlyphOutline API, we're fine to declare these as Longs.
-Private Type MAT2
-    eM11 As Long
-    eM12 As Long
-    eM21 As Long
-    eM22 As Long
-End Type
-
+'TrueType fonts use their own special fraction format.  Yes, it's obnoxious.
 Private Type TT_FIXED
     Fract As Integer
     IntValue As Integer
@@ -65,6 +57,15 @@ End Type
 
 'The fractional component of FIXED values are converted by dividing by 65536
 Private Const FIXED_CONVERSION As Long = 65536
+
+'The MAT2 type consists of 4 FIXED values (16-bits of fraction (unsigned), followed by 16-bits of integer (signed)) that comprise the
+' four top-left spots of a 3x3.  We do actually use this matrix to reorient characters against their top-left corner.
+Private Type MAT2
+    eM11 As TT_FIXED
+    eM12 As TT_FIXED
+    eM21 As TT_FIXED
+    eM22 As TT_FIXED
+End Type
 
 'Supported shape types inside TrueType and OpenType fonts
 Private Const TT_PRIM_LINE As Long = 1       'Line or polyline primitive
@@ -85,6 +86,7 @@ Private Type GLYPHMETRICS
 End Type
 
 'Generic GDI object management
+Private m_oldFontHandle As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 
@@ -120,6 +122,15 @@ Private m_IdentityMatrix As MAT2
 'Tiny temporary DIB, created once and cached; the target font is selected into this DIB prior to retrieving glyph outlines.
 Private m_tmpDIB As pdDIB
 
+'Metrics for the current font.  These are crucial because font path coordinate are all relative to the font baseline, but when rendering
+' the path to the screen, we need to orient the points against the top-left corner of the image.  It's faster to apply this coordinate
+' conversion when we first build the glyphs.
+Private m_TextMetrics As TEXTMETRIC
+
+'During glyph parsing, we have to apply a number of fixed conversions due to differences between TrueType coordinates and traditional
+' screen coordinates.  We cache these values so we don't have to constantly retrieve them from the larger TEXTMETRIC struct.
+Private m_FontAscent As Long, m_FontDescent As Long, m_FontHeight As Long
+
 'Prior to glyph generation, this class needs a copy of GDI font handle.  I have deliberately made this function separate
 ' AS A REMINDER TO REMOVE THE FONT FROM ANY ACTIVE DCs PRIOR TO GIVING THIS CLASS ACCESS.
 Public Sub notifyOfGDIFontChoice(ByVal srcGDIFontHandle As Long)
@@ -136,21 +147,30 @@ Public Sub notifyOfGDIFontChoice(ByVal srcGDIFontHandle As Long)
         m_GDIFont = srcGDIFontHandle
         
     End If
+    
+    'Select the font into our temporary DC.  (Many GDI functions operate on DCs instead of hFonts, so this is important.)
+    m_oldFontHandle = SelectObject(m_tmpDIB.getDIBDC, m_GDIFont)
+    
+    'Retrieve text metrics for this font, and cache any metrics required on the inner glyph parsing loop
+    Font_Management.fillTextMetrics m_tmpDIB.getDIBDC, m_TextMetrics
+    m_FontAscent = m_TextMetrics.tmAscent
+    m_FontDescent = m_TextMetrics.tmDescent
+    m_FontHeight = m_TextMetrics.tmHeight
+    
+End Sub
 
+'After this class has done its work, the caller MUST CALL THIS FUNCTION to release their font from our internal DC
+Public Sub requestGDIFontRelease()
+    SelectObject m_tmpDIB.getDIBDC, m_oldFontHandle
 End Sub
 
 'Given a source string, add all glyphs from that string to our current collection
-Public Function buildGlyphCollection(ByRef srcString As String) As Boolean
-    
-    'Before proceeding with glyph retrieval, select the active font into our temporary "testing" DC
-    Dim oldFontHandle As Long
-    oldFontHandle = SelectObject(m_tmpDIB.getDIBDC, m_GDIFont)
+Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal useHinting As Boolean = False) As Boolean
     
     Dim curChar As Long
     Dim charAlreadyExists As Boolean
     Dim rawGlyphBytes() As Long
     Dim glyphAdded As Boolean
-    
     
     'Start iterating through the string, one character at a time.
     Dim i As Long, j As Long
@@ -184,7 +204,7 @@ Public Function buildGlyphCollection(ByRef srcString As String) As Boolean
             m_GlyphCollection(m_NumOfGlyphs).charCode = curChar
             
             'Start by retrieving the raw glyph buffer.
-            If getRawGlyphBuffer(curChar, rawGlyphBytes) Then
+            If getRawGlyphBuffer(curChar, rawGlyphBytes, useHinting) Then
                 
                 'With the raw buffer retrieved, we can now walk the byte array and retrieve individual line and curve metrics.
                 
@@ -240,12 +260,12 @@ Public Function buildGlyphCollection(ByRef srcString As String) As Boolean
     Next i
     
     'Before exiting, remove the active font into our temporary "testing" DC
-    SelectObject m_tmpDIB.getDIBDC, oldFontHandle
+    SelectObject m_tmpDIB.getDIBDC, m_oldFontHandle
 
 End Function
 
 'Given a Unicode entry point, fill a buffer with the raw output of GetGlyphOutline
-Private Function getRawGlyphBuffer(ByVal curChar As Long, ByRef dstBuffer() As Long) As Boolean
+Private Function getRawGlyphBuffer(ByVal curChar As Long, ByRef dstBuffer() As Long, Optional ByVal useHinting As Boolean = False) As Boolean
     
     'Start by retrieving the glyph metrics.  These are plugged directly into the current glyph entry in the master collection.
     ' (These metrics are separate from the glyph shape; we use them to control inter-character spacing, among other things.)
@@ -267,11 +287,16 @@ Private Function getRawGlyphBuffer(ByVal curChar As Long, ByRef dstBuffer() As L
     'If we made it here, metrics are good to go.
     ' (TODO: metrics should be retrieved automatically by subsequent calls, so that initial call probably isn't required - test it)
     
+    'Hinting is optional; prep formatting flags based on whether hinting is enabled
+    Dim formatFlags As Long
+    formatFlags = GGO_BEZIER
+    If (Not useHinting) Then formatFlags = formatFlags Or GGO_UNHINTED
+    
     'Next, we want to retrieve the required size of the glyph shape buffer.  FYI, for complex glyphs, this can be fairly large.
     ' Note also that we explicitly request bezier curve format.  This makes our subsequent parsing much easier, and improves the
     ' output fidelity of OpenType fonts.
     Dim byteSizeOfBuffer As Long
-    ggoReturn = GetGlyphOutline(m_tmpDIB.getDIBDC, curChar, GGO_BEZIER Or GGO_UNHINTED, m_GlyphCollection(m_NumOfGlyphs).gMetrics, 0, 0, m_IdentityMatrix)
+    ggoReturn = GetGlyphOutline(m_tmpDIB.getDIBDC, curChar, formatFlags, m_GlyphCollection(m_NumOfGlyphs).gMetrics, 0, 0, m_IdentityMatrix)
     
     'ggoReturn should be > 0, which tells us the required size of the destination buffer
     If ggoReturn <= 0 Then
@@ -295,7 +320,7 @@ Private Function getRawGlyphBuffer(ByVal curChar As Long, ByRef dstBuffer() As L
     ReDim dstBuffer(0 To (byteSizeOfBuffer \ 4) - 1) As Long
     
     'Now we can retrieve the actual data buffer!
-    ggoReturn = GetGlyphOutline(m_tmpDIB.getDIBDC, curChar, GGO_BEZIER Or GGO_UNHINTED, m_GlyphCollection(m_NumOfGlyphs).gMetrics, byteSizeOfBuffer, VarPtr(dstBuffer(0)), m_IdentityMatrix)
+    ggoReturn = GetGlyphOutline(m_tmpDIB.getDIBDC, curChar, formatFlags, m_GlyphCollection(m_NumOfGlyphs).gMetrics, byteSizeOfBuffer, VarPtr(dstBuffer(0)), m_IdentityMatrix)
     
     'Per MSDN, successful queries return a value > 0
     getRawGlyphBuffer = CBool(ggoReturn > 0)
@@ -453,7 +478,8 @@ Private Function parseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
                     
                     'Cubic splines occur in sets of four points (but one is already known from the end of the previous curve)
                     ' Iterate each in turn.
-                    'For i = 1 To pointCount
+                    'Debug.Print pointCount
+                    For i = 1 To pointCount Step 3
                     
                         'Previous point is already known; retrieve the next three points explicitly
                         bezPoint2.x = getSingleFromFIXED(srcBuffer(curPosition))
@@ -473,7 +499,7 @@ Private Function parseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
                         'Advance to the next buffer position
                         curPosition = curPosition + 6
                     
-                    'Next i
+                    Next i
             
             End Select
         
@@ -486,10 +512,20 @@ Private Function parseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
     'If more shapes exist, draw them next
     Loop Until curPosition >= UBound(srcBuffer)
     
+    'With parsing complete, we now need to translate the finished glyph downward.  TrueType and OpenType fonts are positioned against
+    ' relative to their baseline, so (0, 0) is the bottom-left point of the glyph that touches the baseline.  When rendering to the
+    ' screen, we obviously want things oriented against their top-left corner.
+    
+    'We can do this by translating the path downward by the current font's ascender value, which is constant for all glyphs.
+    ' (Note that we multiply the ascent by 2; this is because we reflect characters across the y-axis during transformation.)
+    dstGlyphPath.translatePath 0, m_FontAscent * 2
+    
     'Parsing complete!
     parseRawGlyphBuffer = True
 
 End Function
+
+'
 
 'Given a Long-type value - which is really a FIXED struct in disguise - parse out the two chunks, and return them as a normal floating-point value
 Private Function getSingleFromFIXED(ByRef srcFixed As Long) As Single
@@ -503,10 +539,10 @@ Private Function getSingleFromFIXED(ByRef srcFixed As Long) As Single
     integerPortion = ((srcFixed And &H7FFF0000) \ &H10000) Or (&H8000 And srcFixed < 0)
     
     'Next, retrieve the value portion of the Long (which is SIGNED)
-    fracPortion = (srcFixed And &HFFFF)
+    fracPortion = (srcFixed And &HFFFF&)
     
     'Finally, return these using the standard FIXED conversion
-    getSingleFromFIXED = CSng(integerPortion) + CSng(fracPortion) / 65536#
+    getSingleFromFIXED = CDbl(integerPortion) + CDbl(fracPortion) / 65536#
     
     'Shortcut formula for testing:
     'getSingleFromFIXED = srcFixed / 65536#
@@ -558,7 +594,7 @@ Public Function getGlyphIndex(ByVal srcCharValue As Long) As Long
     
     Next i
     
-    'If we made it all the way here, the glyph does not exist.  WTF?
+    'If we made it all the way here, the glyph does not exist.  Oops?
     getGlyphIndex = -1
     
 End Function
@@ -571,8 +607,8 @@ Private Sub Class_Initialize()
     ' [1, 0]
     ' [0, 1]
     With m_IdentityMatrix
-        .eM11 = FIXED_CONVERSION
-        .eM22 = FIXED_CONVERSION
+        .eM11.IntValue = 1
+        .eM22.IntValue = -1
     End With
     
     'Create a temporary DIB for selecting the font into
