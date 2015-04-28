@@ -363,7 +363,7 @@ Public Sub fillLogFontW_Basic(ByRef dstLogFontW As LOGFONTW, ByRef srcFontFace A
         'Other styles all use the same pattern: multiply the bool by -1 to obtain a matching byte-type style
         .lfItalic = -1 * srcFontItalic
         .lfUnderline = -1 * srcFontUnderline
-        .lfStrikeOut = -1 & srcFontStrikeout
+        .lfStrikeOut = -1 * srcFontStrikeout
         
         'While we're here, set charset to the default value; PD does not deviate from this (at present)
         .lfCharSet = DEFAULT_CHARSET
@@ -373,7 +373,7 @@ Public Sub fillLogFontW_Basic(ByRef dstLogFontW As LOGFONTW, ByRef srcFontFace A
 End Sub
 
 'Fill a LOGFONTW struct with a matching PD font size (typically in pixels, but points are also supported)
-Public Sub fillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal fontSize As Single, ByVal fontMeasurementUnit As pdFontUnit)
+Public Sub fillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal FontSize As Single, ByVal fontMeasurementUnit As pdFontUnit)
 
     With dstLogFontW
         
@@ -384,14 +384,14 @@ Public Sub fillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal fontSize As Si
             Case pdfu_Pixel
                 
                 'Convert font size to points
-                fontSize = fontSize * 0.75      '(72 / 96, technically, where 96 is the current screen DPI)
+                FontSize = FontSize * 0.75      '(72 / 96, technically, where 96 is the current screen DPI)
                 
                 'Use the standard point-based formula
-                .lfHeight = -1 * internal_MulDiv(fontSize, curLogPixelsY, 72)
+                .lfHeight = -1 * internal_MulDiv(FontSize, curLogPixelsY, 72)
                 
             'Points are converted using a standard Windows formula; see https://msdn.microsoft.com/en-us/library/dd145037%28v=vs.85%29.aspx
             Case pdfu_Point
-                .lfHeight = -1 * internal_MulDiv(fontSize, curLogPixelsY, 72)
+                .lfHeight = -1 * internal_MulDiv(FontSize, curLogPixelsY, 72)
         
         End Select
         
