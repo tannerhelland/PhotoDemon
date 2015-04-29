@@ -124,10 +124,10 @@ Public Sub syncInterfaceToCurrentImage()
         
         'Disable various layer-related commands as well
         FormMain.MnuLayerSize(0).Enabled = False
-        toolbar_Options.cmdLayerMove(0).Enabled = False
-        toolbar_Options.cmdLayerMove(1).Enabled = False
-        toolbar_Options.cboLayerResizeQuality.Enabled = False
-        toolbar_Options.cboLayerResizeQuality.Enabled = False
+        toolpanel_MoveSize.cmdLayerMove(0).Enabled = False
+        toolpanel_MoveSize.cmdLayerMove(1).Enabled = False
+        toolpanel_MoveSize.cboLayerResizeQuality.Enabled = False
+        toolpanel_MoveSize.cboLayerResizeQuality.Enabled = False
         
         'Undo history is disabled when no images are loaded
         FormMain.MnuEdit(2).Enabled = False
@@ -320,9 +320,9 @@ Public Sub syncInterfaceToCurrentImage()
                     
                     'If non-destructive resizing is active, the "reset layer size" menu (and corresponding Move Tool button) must be enabled.
                     FormMain.MnuLayerSize(0).Enabled = nonDestructiveResizeActive
-                    toolbar_Options.cmdLayerMove(0).Enabled = nonDestructiveResizeActive
-                    toolbar_Options.cmdLayerMove(1).Enabled = nonDestructiveResizeActive
-                    toolbar_Options.cboLayerResizeQuality.Enabled = nonDestructiveResizeActive
+                    toolpanel_MoveSize.cmdLayerMove(0).Enabled = nonDestructiveResizeActive
+                    toolpanel_MoveSize.cmdLayerMove(1).Enabled = nonDestructiveResizeActive
+                    toolpanel_MoveSize.cboLayerResizeQuality.Enabled = nonDestructiveResizeActive
                                         
                     'If non-destructive FX are active on the current layer, update the non-destructive tool enablement to match
                     metaToggle tNonDestructiveFX, True
@@ -635,16 +635,16 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             
             'If selections are not active, clear all the selection value textboxes
             If Not NewState Then
-                For i = 0 To toolbar_Options.tudSel.Count - 1
-                    toolbar_Options.tudSel(i).Value = 0
+                For i = 0 To toolpanel_Selections.tudSel.Count - 1
+                    toolpanel_Selections.tudSel(i).Value = 0
                 Next i
             End If
             
             'Set selection text boxes to enable only when a selection is active.  Other selection controls can remain active
             ' even without a selection present; this allows the user to set certain parameters in advance, so when they actually
             ' draw a selection, it already has the attributes they want.
-            For i = 0 To toolbar_Options.tudSel.Count - 1
-                toolbar_Options.tudSel(i).Enabled = NewState
+            For i = 0 To toolpanel_Selections.tudSel.Count - 1
+                toolpanel_Selections.tudSel(i).Enabled = NewState
             Next i
             
             'En/disable all selection menu items that rely on an existing selection to operate
@@ -678,9 +678,9 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
         Case tSelectionTransform
         
             'Under certain circumstances, it is desirable to disable only the selection location boxes
-            For i = 0 To toolbar_Options.tudSel.Count - 1
-                If (Not NewState) Then toolbar_Options.tudSel(i).Value = 0
-                toolbar_Options.tudSel(i).Enabled = NewState
+            For i = 0 To toolpanel_Selections.tudSel.Count - 1
+                If (Not NewState) Then toolpanel_Selections.tudSel(i).Value = 0
+                toolpanel_Selections.tudSel(i).Enabled = NewState
             Next i
                 
         'If the ExifTool plugin is not available, metadata will ALWAYS be disabled.  (We do not currently have a separate fallback for
@@ -743,28 +743,28 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             Tool_Support.setToolBusyState True
             
             'Enable/disable all UI elements as necessary
-            For i = 0 To toolbar_Options.tudLayerMove.Count - 1
-                If toolbar_Options.tudLayerMove(i).Enabled <> NewState Then toolbar_Options.tudLayerMove(i).Enabled = NewState
+            For i = 0 To toolpanel_MoveSize.tudLayerMove.Count - 1
+                If toolpanel_MoveSize.tudLayerMove(i).Enabled <> NewState Then toolpanel_MoveSize.tudLayerMove(i).Enabled = NewState
             Next i
             
             'Where relevant, also update control bounds
             If NewState Then
             
-                For i = 0 To toolbar_Options.tudLayerMove.Count - 1
+                For i = 0 To toolpanel_MoveSize.tudLayerMove.Count - 1
                     
                     'Even-numbered indices correspond to width; odd-numbered to height
                     If i Mod 2 = 0 Then
                         
-                        If toolbar_Options.tudLayerMove(i).Min <> minLayerUIValue_Width Then
-                            toolbar_Options.tudLayerMove(i).Min = minLayerUIValue_Width
-                            toolbar_Options.tudLayerMove(i).Max = maxLayerUIValue_Width
+                        If toolpanel_MoveSize.tudLayerMove(i).Min <> minLayerUIValue_Width Then
+                            toolpanel_MoveSize.tudLayerMove(i).Min = minLayerUIValue_Width
+                            toolpanel_MoveSize.tudLayerMove(i).Max = maxLayerUIValue_Width
                         End If
                         
                     Else
                     
-                        If toolbar_Options.tudLayerMove(i).Min <> minLayerUIValue_Height Then
-                            toolbar_Options.tudLayerMove(i).Min = minLayerUIValue_Height
-                            toolbar_Options.tudLayerMove(i).Max = maxLayerUIValue_Height
+                        If toolpanel_MoveSize.tudLayerMove(i).Min <> minLayerUIValue_Height Then
+                            toolpanel_MoveSize.tudLayerMove(i).Min = minLayerUIValue_Height
+                            toolpanel_MoveSize.tudLayerMove(i).Max = maxLayerUIValue_Height
                         End If
                     
                     End If
@@ -781,8 +781,8 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             If NewState Then
                 
                 'Start by enabling all non-destructive FX controls
-                For i = 0 To toolbar_Options.sltQuickFix.Count - 1
-                    If Not toolbar_Options.sltQuickFix(i).Enabled Then toolbar_Options.sltQuickFix(i).Enabled = True
+                For i = 0 To toolpanel_NDFX.sltQuickFix.Count - 1
+                    If Not toolpanel_NDFX.sltQuickFix(i).Enabled Then toolpanel_NDFX.sltQuickFix(i).Enabled = True
                 Next i
                 
                 'Quick fix buttons are only relevant if the current image has some non-destructive events applied
@@ -790,14 +790,14 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
                 
                     If pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState() Then
                         
-                        For i = 0 To toolbar_Options.cmdQuickFix.Count - 1
-                            toolbar_Options.cmdQuickFix(i).Enabled = True
+                        For i = 0 To toolpanel_NDFX.cmdQuickFix.Count - 1
+                            toolpanel_NDFX.cmdQuickFix(i).Enabled = True
                         Next i
                         
                     Else
                         
-                        For i = 0 To toolbar_Options.cmdQuickFix.Count - 1
-                            toolbar_Options.cmdQuickFix(i).Enabled = False
+                        For i = 0 To toolpanel_NDFX.cmdQuickFix.Count - 1
+                            toolpanel_NDFX.cmdQuickFix(i).Enabled = False
                         Next i
                         
                     End If
@@ -805,7 +805,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
                 End If
                 
                 'Disable automatic NDFX syncing, then update all sliders to match the current layer's values
-                With toolbar_Options
+                With toolpanel_NDFX
                     .setNDFXControlState False
                     
                     'The index of sltQuickFix controls aligns exactly with PD's constants for non-destructive effects.  This is by design.
@@ -825,12 +825,12 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             Else
                 
                 'Disable all non-destructive FX controls
-                For i = 0 To toolbar_Options.sltQuickFix.Count - 1
-                    If toolbar_Options.sltQuickFix(i).Enabled Then toolbar_Options.sltQuickFix(i).Enabled = False
+                For i = 0 To toolpanel_NDFX.sltQuickFix.Count - 1
+                    If toolpanel_NDFX.sltQuickFix(i).Enabled Then toolpanel_NDFX.sltQuickFix(i).Enabled = False
                 Next i
                 
-                For i = 0 To toolbar_Options.cmdQuickFix.Count - 1
-                    If toolbar_Options.cmdQuickFix(i).Enabled Then toolbar_Options.cmdQuickFix(i).Enabled = False
+                For i = 0 To toolpanel_NDFX.cmdQuickFix.Count - 1
+                    If toolpanel_NDFX.cmdQuickFix(i).Enabled Then toolpanel_NDFX.cmdQuickFix(i).Enabled = False
                 Next i
                 
             End If
@@ -1213,7 +1213,7 @@ Public Sub fitWordwrapLabel(ByRef srcLabel As Label, ByRef srcForm As Form)
     Set tmpFont = New pdFont
     tmpFont.setFontBold srcLabel.FontBold
     tmpFont.setFontItalic srcLabel.FontItalic
-    tmpFont.setFontFace srcLabel.FontName
+    tmpFont.setFontFace srcLabel.fontName
     tmpFont.setFontSize srcLabel.FontSize
     tmpFont.createFontObject
     tmpFont.setTextAlignment srcLabel.Alignment
@@ -1275,7 +1275,7 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
         'STEP 2: if the current system is Vista or later, and the user has requested modern typefaces via Edit -> Preferences,
         ' redraw all control fonts using Segoe UI.
         If ((TypeOf eControl Is TextBox) Or (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox) Or (TypeOf eControl Is Label)) And (Not TypeOf eControl Is PictureBox) Then
-            eControl.FontName = g_InterfaceFont
+            eControl.fontName = g_InterfaceFont
         End If
         
         If ((TypeOf eControl Is jcbutton) Or (TypeOf eControl Is commandBar) Or (TypeOf eControl Is smartResize)) Then
@@ -1474,17 +1474,17 @@ Public Sub DisplaySize(ByRef srcImage As pdImage)
     
     If srcImage.Width < srcImage.Height Then
         limitingSize = srcImage.Width
-        toolbar_Options.sltCornerRounding.Max = srcImage.Width
-        toolbar_Options.sltSelectionLineWidth.Max = srcImage.Height
+        toolpanel_Selections.sltCornerRounding.Max = srcImage.Width
+        toolpanel_Selections.sltSelectionLineWidth.Max = srcImage.Height
     Else
         limitingSize = srcImage.Height
-        toolbar_Options.sltCornerRounding.Max = srcImage.Height
-        toolbar_Options.sltSelectionLineWidth.Max = srcImage.Width
+        toolpanel_Selections.sltCornerRounding.Max = srcImage.Height
+        toolpanel_Selections.sltSelectionLineWidth.Max = srcImage.Width
     End If
     
     Dim i As Long
-    For i = 0 To toolbar_Options.sltSelectionBorder.Count - 1
-        toolbar_Options.sltSelectionBorder(i).Max = limitingSize
+    For i = 0 To toolpanel_Selections.sltSelectionBorder.Count - 1
+        toolpanel_Selections.sltSelectionBorder(i).Max = limitingSize
     Next i
     
 End Sub

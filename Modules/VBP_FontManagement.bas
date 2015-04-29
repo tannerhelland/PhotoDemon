@@ -213,23 +213,14 @@ Public Function buildFontCache() As Long
     curLogPixelsX = GetDeviceCaps(m_TestDIB.getDIBDC, LOGPIXELSX)
     curLogPixelsY = GetDeviceCaps(m_TestDIB.getDIBDC, LOGPIXELSY)
     
-    'We now branch into two possible directions:
-    ' 1) If getTrueTypeOnly is FALSE, we retrieve all fonts on the PC via GDI's EnumFontFamiliesEx
-    ' 2) If getTrueTypeOnly is TRUE, we retrieve only TrueType fonts via GDI+'s getFontFamilyCollectionList function.
-    If getTrueTypeOnly Then
+    'First, prep a TrueType font list using GDI+.  (Note that GDI+ will return the font count prior to enumeration,
+    ' so we don't need to prep the string stack in advance.)
+    getAllAvailableTrueTypeFonts m_PDFontCache_GDIPlus
         
-        'GDI+ will return the font count prior to enumeration, so we don't need to prep the string stack in advance
-        getAllAvailableTrueTypeFonts m_PDFontCache_GDIPlus
-        
-    Else
-        
-        'We won't know the full number of available fonts until the Enum function finishes, so prep an extra-large
-        ' buffer in advance.
-        m_PDFontCache.resetStack INITIAL_PDFONTCACHE_SIZE
-        getAllAvailableFonts
-        
-    End If
-    
+    'Next, prep a full font list for the advanced typography tool.
+    '(We won't know the full number of available fonts until the Enum function finishes, so prep an extra-large buffer in advance.)
+    m_PDFontCache.resetStack INITIAL_PDFONTCACHE_SIZE
+    getAllAvailableFonts
     
     'Because the font cache(s) will potentially be accessed by tons of external functions, it pays to sort them just once,
     ' at initialization time.  (Note that the GDI+ cache comes sorted, but our algorithm will detect that and skip sorting.)

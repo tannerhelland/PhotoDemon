@@ -327,7 +327,7 @@ Public Sub makeQuickFixesPermanent()
     
     'Reset the quick-fix settings stored inside the pdLayer object
     Dim i As Long
-    For i = 0 To toolbar_Options.sltQuickFix.Count - 1
+    For i = 0 To toolpanel_NDFX.sltQuickFix.Count - 1
         pdImages(g_CurrentImage).getActiveLayer.setLayerNonDestructiveFXState i, 0
     Next i
     
@@ -406,17 +406,17 @@ Public Sub syncToolOptionsUIToCurrentLayer()
             Case NAV_MOVE
             
                 'The Layer Move tool has four text up/downs: two for layer position (x, y) and two for layer size (w, y)
-                toolbar_Options.tudLayerMove(0).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerOffsetX
-                toolbar_Options.tudLayerMove(1).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerOffsetY
-                toolbar_Options.tudLayerMove(2).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerWidth
-                toolbar_Options.tudLayerMove(3).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerHeight
+                toolpanel_MoveSize.tudLayerMove(0).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerOffsetX
+                toolpanel_MoveSize.tudLayerMove(1).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerOffsetY
+                toolpanel_MoveSize.tudLayerMove(2).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerWidth
+                toolpanel_MoveSize.tudLayerMove(3).Value = pdImages(g_CurrentImage).getActiveLayer.getLayerHeight
                 
                 'The layer resize quality combo box also needs to be synched
-                toolbar_Options.cboLayerResizeQuality.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getLayerResizeQuality
+                toolpanel_MoveSize.cboLayerResizeQuality.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getLayerResizeQuality
             
             Case VECTOR_TEXT
                 
-                With toolbar_Options
+                With toolpanel_Text
                     .txtTextTool.Text = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_Text)
                     .cboTextFontFace.setListIndexByString pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontFace)
                     .tudTextFontSize.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontSize)
