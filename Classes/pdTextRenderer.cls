@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon GDI+ Text Manager and Renderer
 'Copyright 2015-2015 by Tanner Helland
 'Created: 22/April/15
-'Last updated: 26/April/15
-'Last update: migrate the rendering-specific bits out of this class, and into pdTextBackend_WAPI
+'Last updated: 28/April/15
+'Last update: wrap up initial build of the new PD-specific vector glyph engine
 '
 'This class handles the messy business of font management for PD's new text layers.  It switches between GDI and GDI+ as
 ' necessary to provide a comprehensive text rendering solution.
