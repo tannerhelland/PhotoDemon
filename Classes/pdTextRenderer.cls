@@ -618,7 +618,11 @@ Public Function createFontObject() As Boolean
     
     'First, try to create a GDI+ font family.  This saves us a lot of grief.
     Dim fontCreationSuccess As Boolean
-    fontCreationSuccess = createGDIPlusFont()
+    
+    'As of 28 April 2015, I am deactivating the GDI+ codepath.  PD's manual glyph rendering code is stable enough for me to
+    ' rely on it exclusively for the remainder of this testing cycle, I think.  (That said, I'm leaving this here in case
+    ' I ever need to revisit in the future.)
+    'fontCreationSuccess = createGDIPlusFont()
     
     'GDI+ reported success, and we obtained a valid GDI+ font handle, carry on
     If fontCreationSuccess And (m_GDIPlusFont <> 0) Then
@@ -691,7 +695,7 @@ Private Function createGDIPlusFont() As Boolean
         
         'Next, we will use the family handle to create an actual font; this includes any font styles (bold, italic, etc) and the
         ' current font size.
-        gdipReturn = GdipCreateFont(m_GDIPlusFontFamily, m_FontSize, getFontStylesAsGdipLong(), convertPDFontUnitToGDIPlusFontUnit(m_FontSizeUnit), m_GDIPlusFont)
+        gdipReturn = GdipCreateFont(m_GDIPlusFontFamily, m_FontSize, getFontStylesAsGdipLong, convertPDFontUnitToGDIPlusFontUnit(m_FontSizeUnit), m_GDIPlusFont)
         
         'Check for known errors; GDI+ cannot synthesize some font sizes, for example
         If (gdipReturn = 0) And (m_GDIPlusFont <> 0) Then
@@ -956,38 +960,20 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
         .Height = textHeight
     End With
     
-    'Finally, use GDI+ to render the actual string, one character at a time.
-    Dim i As Long, glyphIndex As Long, srcPathHandle As Long
-    
-    For i = 0 To Len(srcString) - 1
+    'Retrieve a full, composite path from the glyph collector.  It handles messy business like character positioning,
+    ' and simply hands us a fully composited path, ready for rendering.
+    Dim finalTextPath As pdGraphicsPath
+    If m_GlyphCollection.assembleCompositePath(srcString, finalTextPath, boundingRect) Then
         
-        'Start by retrieving this glyph index
-        glyphIndex = m_GlyphCollection.getGlyphIndex(AscW(Mid$(srcString, i + 1, 1)))
+        'Draw the path
+        Dim gdipReturn As Long
+        gdipReturn = GdipFillPath(dstGraphics, gdipBrush, finalTextPath.getCopyOfPathHandle)
         
-        If glyphIndex >= 0 Then
-            
-            'Retrieve a handle to this glyph's path
-            srcPathHandle = m_GlyphCollection.getGlyphPathHandle(glyphIndex)
-            
-            'If the handle is zero, there are two possible explanations:
-            ' 1) The glyph is a whitespace character
-            ' 2) The glyph couldn't be generated
-            
-            '(1) is common, and (2) should never happen.  Process accordingly.
-            If srcPathHandle <> 0 Then
-                
-                'Draw the glyph!
-                Debug.Print "GdipFillPath returned: " & GdipFillPath(dstGraphics, gdipBrush, srcPathHandle)
-                
-            Else
-                Debug.Print "for some reason, that glyph doesn't have a path???"
-            End If
-            
-        Else
-            Debug.Print "for some reason, that glyph doesn't exist???"
-        End If
+        If gdipReturn <> 0 Then Debug.Print "WARNING!  GdipFillPath failed; return code was " & gdipReturn
         
-    Next i
+    Else
+        Debug.Print "WARNING!  m_GlyphCollection.assembleCompositePath returned FALSE.  Please investigate."
+    End If
     
     'TODO: handle returns
     'Dim gdipReturn As Long

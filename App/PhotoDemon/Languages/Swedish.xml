@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.22</langversion>
+<langversion>6.7.23</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -13631,6 +13631,12 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 <!-- pdComboBox_Font.ctl contains 0 phrases. -->
 
 <!-- END text for pdComboBox_Font.ctl-->
+
+<!-- BEGIN text for pdGlyphCollection.cls -->
+
+<!-- pdGlyphCollection.cls contains 0 phrases. -->
+
+<!-- END text for pdGlyphCollection.cls-->
 
 <!-- Automatic text extraction complete. -->
 

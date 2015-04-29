@@ -3,12 +3,9 @@ Attribute VB_Name = "Loading"
 'Program/File Loading Handler
 'Copyright 2001-2015 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 17/February/15
-'Last updated by: Raj
-'Last update: Changed g_RecentFiles from pdRecentFiles to pdMRUManager, and
-'               initialized it using an instance of pdMRURecentFiles. Also
-'               added g_RecentMacros, another instance of pdMRUManager, and
-'               initialized it using an instance of pdMRURecentMacros.
+'Last updated: 28/April/15
+'Last updated by: Tanner
+'Last update: thanks to the new pdGlyphCollection class, PD now caches a list of all fonts, not just TrueType ones.
 '
 'Module for handling any and all program loading.  This includes the program itself,
 ' plugins, files, and anything else the program needs to take from the hard drive.
@@ -346,7 +343,7 @@ Public Sub LoadTheProgram()
         
     'TODO: enable all fonts.  At present, the font manager only loads TrueType fonts, as GDI+ can't handle OpenType.
     '      I'm working on an improved solution to this.  (Switch TRUE to FALSE to get a list of *all* fonts, regardless of type.)
-    Font_Management.buildFontCache True
+    Font_Management.buildFontCache False
     
     
     

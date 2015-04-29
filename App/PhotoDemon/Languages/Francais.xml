@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.22</langversion>
+<langversion>6.7.23</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -13631,6 +13631,12 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 <!-- pdComboBox_Font.ctl contains 0 phrases. -->
 
 <!-- END text for pdComboBox_Font.ctl-->
+
+<!-- BEGIN text for pdGlyphCollection.cls -->
+
+<!-- pdGlyphCollection.cls contains 0 phrases. -->
+
+<!-- END text for pdGlyphCollection.cls-->
 
 <!-- Automatic text extraction complete. -->
 

@@ -38,8 +38,7 @@ Private Declare Function GdipDeleteGraphics Lib "gdiplus" (ByVal hGraphics As Lo
 Private Declare Function GdipCreatePath Lib "gdiplus" (ByVal mBrushMode As GDIFillMode, ByRef hPath As Long) As Long
 Private Declare Function GdipDeletePath Lib "gdiplus" (ByVal hPath As Long) As Long
 Private Declare Function GdipResetPath Lib "gdiplus" (ByVal hPath As Long) As Long
-Private Declare Function GdipCreatePen1 Lib "gdiplus" (ByVal penColor As Long, ByVal penWidth As Single, ByVal penUnit As GpUnit, ByRef hPen As Long) As Long
-Private Declare Function GdipDeletePen Lib "gdiplus" (ByVal hPen As Long) As Long
+Private Declare Function GdipClonePath Lib "gdiplus" (ByVal srcPath As Long, ByRef dstPath As Long) As Long
 
 'Path property changes (both destructive and non-destructive)
 Private Declare Function GdipSetPathFillMode Lib "gdiplus" (ByVal hPath As Long, ByVal newBrushMode As GDIFillMode) As Long
@@ -58,6 +57,7 @@ Private Declare Function GdipAddPathBezier Lib "gdiplus" (ByVal hPath As Long, B
 Private Declare Function GdipAddPathLine2 Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As Long
 Private Declare Function GdipAddPathPolygon Lib "gdiplus" (ByVal hPath As Long, ByVal ptrToFloatArray As Long, ByVal numOfPoints As Long) As Long
 Private Declare Function GdipAddPathArc Lib "gdiplus" (ByVal hPath As Long, ByVal x As Single, ByVal y As Single, ByVal arcWidth As Single, ByVal arcHeight As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As Long
+Private Declare Function GdipAddPathPath Lib "gdiplus" (ByVal hPath As Long, ByVal pathToAdd As Long, ByVal connectToPreviousPoint As Long) As Long
 Private Declare Function GdipClosePathFigure Lib "gdiplus" (ByVal hPath As Long) As Long
 
 'General matrix transformations
@@ -74,6 +74,10 @@ Private Declare Function GdipTransformPath Lib "gdiplus" (ByVal hPath As Long, B
 Private Declare Function GdipCreateMatrix Lib "gdiplus" (ByRef dstMatrix As Long) As Long
 Private Declare Function GdipDeleteMatrix Lib "gdiplus" (ByVal hMatrix As Long) As Long
 Private Declare Function GdipTranslateMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal offsetX As Single, ByVal offsetY As Single, ByVal order As MatrixOrder) As Long
+
+'Pen functions (for stroking a path)
+Private Declare Function GdipCreatePen1 Lib "gdiplus" (ByVal penColor As Long, ByVal penWidth As Single, ByVal penUnit As GpUnit, ByRef hPen As Long) As Long
+Private Declare Function GdipDeletePen Lib "gdiplus" (ByVal hPen As Long) As Long
 
 'Drawing functions
 Private Declare Function GdipDrawPath Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal hPath As Long) As Long
@@ -176,6 +180,34 @@ Public Sub addBezierCurve(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Si
     GdipAddPathBezier m_PathHandle, x1, y1, x2, y2, x3, y3, x4, y4
 End Sub
 
+Public Sub addPath(ByRef srcGraphicsPath As pdGraphicsPath, Optional ByVal offsetX As Single = 0, Optional ByVal offsetY As Single = 0, Optional ByVal connectToLastPointOfThisPath As Boolean = False)
+    
+    'If no offsets are specified, copy the path as-is
+    If (offsetX = 0) And (offsetY = 0) Then
+    
+        GdipAddPathPath m_PathHandle, srcGraphicsPath.getCopyOfPathHandle, IIf(connectToLastPointOfThisPath, 1&, 0&)
+        
+    'If offsets were specified, we need to clone the path, translate it, then add it
+    Else
+    
+        'Clone the path
+        Dim tmpPath As pdGraphicsPath
+        Set tmpPath = New pdGraphicsPath
+        tmpPath.cloneExistingPath srcGraphicsPath
+        
+        'Translate the path
+        tmpPath.translatePath offsetX, offsetY
+        
+        'Add it
+        GdipAddPathPath m_PathHandle, tmpPath.getCopyOfPathHandle, IIf(connectToLastPointOfThisPath, 1&, 0&)
+        
+        'Free our temporary path object
+        Set tmpPath = Nothing
+    
+    End If
+    
+End Sub
+
 Public Sub closeCurrentFigure()
     GdipClosePathFigure m_PathHandle
 End Sub
@@ -260,6 +292,16 @@ Public Function getCopyOfPathHandle() As Long
     getCopyOfPathHandle = m_PathHandle
 End Function
 
+Public Sub cloneExistingPath(ByRef srcPath As pdGraphicsPath)
+    
+    'If we already have a path, delete it
+    If m_PathHandle <> 0 Then GdipDeletePath m_PathHandle
+    
+    'Clone the new path
+    GdipClonePath srcPath.getCopyOfPathHandle, m_PathHandle
+    
+End Sub
+
 ' END: EXTERNAL PATH ACCESS
 '
 '***************************************************************************
@@ -281,7 +323,7 @@ End Sub
 Private Sub Class_Terminate()
 
     'Release our path handle
-    GdipDeletePath m_PathHandle
+    If m_PathHandle <> 0 Then GdipDeletePath m_PathHandle
 
 End Sub
 

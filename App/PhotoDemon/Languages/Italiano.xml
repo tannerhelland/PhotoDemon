@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.22</langversion>
+<langversion>6.7.23</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -13627,6 +13627,12 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- pdComboBox_Font.ctl contains 0 phrases. -->
 
 <!-- END text for pdComboBox_Font.ctl-->
+
+<!-- BEGIN text for pdGlyphCollection.cls -->
+
+<!-- pdGlyphCollection.cls contains 0 phrases. -->
+
+<!-- END text for pdGlyphCollection.cls-->
 
 <!-- Automatic text extraction complete. -->
 
