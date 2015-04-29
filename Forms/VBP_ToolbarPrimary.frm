@@ -828,11 +828,11 @@ Public Sub resetToolButtonStates()
     
         activeSelectionSubpanel = Selection_Handler.getSelectionSubPanelFromCurrentTool
         
-        For i = 0 To toolbar_Options.picSelectionSubcontainer.Count - 1
+        For i = 0 To toolpanel_Selections.picSelectionSubcontainer.Count - 1
             If i = activeSelectionSubpanel Then
-                toolbar_Options.picSelectionSubcontainer(i).Visible = True
+                toolpanel_Selections.picSelectionSubcontainer(i).Visible = True
             Else
-                toolbar_Options.picSelectionSubcontainer(i).Visible = False
+                toolpanel_Selections.picSelectionSubcontainer(i).Visible = False
             End If
         Next i
         
@@ -863,7 +863,7 @@ Public Sub resetToolButtonStates()
     End If
     
     'If the current tool is a selection tool, make sure the selection area box (interior/exterior/border) is enabled properly
-    If (getSelectionShapeFromCurrentTool > -1) Then toolbar_Options.updateSelectionPanelLayout
+    If (getSelectionShapeFromCurrentTool > -1) Then toolpanel_Selections.updateSelectionPanelLayout
     
     'Next, we can automatically hide the options toolbox for certain tools (because they have no options).  This is a
     ' nice courtesy, as it frees up space on the main canvas area if the current tool has no adjustable options.
@@ -884,24 +884,26 @@ Public Sub resetToolButtonStates()
         
     End If
     
+    'TODO!  Migrate this to the new form-based method, obviously
+    
     'Display the current tool options panel, while hiding all inactive ones.  The On Error Resume statement is used to fix
     ' trouble with the .SetFocus line, below.  That .SetFocus line is helpful for fixing some VB issues with controls embedded
     ' on a picture box (specifically, combo boxes which do not drop-down properly unless a picture box or its child already
     ' has focus).  Sometimes, VB will inexplicably fail to set focus, and it will raise an Error 5 to match; as this is not
     ' a crucial error, just a VB quirk, I don't mind using OERN here.
-    On Error Resume Next
-    For i = 0 To toolbar_Options.picTools.Count - 1
-        If i = activeToolPanel Then
-            If Not toolbar_Options.picTools(i).Visible Then
-                toolbar_Options.picTools(i).Visible = True
-                toolbar_Options.picTools(i).Refresh
-                setArrowCursor toolbar_Options.picTools(i)
-            End If
-            If toolbar_Options.Visible And toolbar_Options.picTools(i).Visible Then toolbar_Options.picTools(i).SetFocus
-        Else
-            If toolbar_Options.picTools(i).Visible Then toolbar_Options.picTools(i).Visible = False
-        End If
-    Next i
+    'On Error Resume Next
+    'For i = 0 To toolbar_Options.picTools.Count - 1
+    '    If i = activeToolPanel Then
+    '        If Not toolbar_Options.picTools(i).Visible Then
+    '            toolbar_Options.picTools(i).Visible = True
+    '            toolbar_Options.picTools(i).Refresh
+    '            setArrowCursor toolbar_Options.picTools(i)
+    '        End If
+    '        If toolbar_Options.Visible And toolbar_Options.picTools(i).Visible Then toolbar_Options.picTools(i).SetFocus
+    '    Else
+    '        If toolbar_Options.picTools(i).Visible Then toolbar_Options.picTools(i).Visible = False
+    '    End If
+    'Next i
             
     newToolSelected
         

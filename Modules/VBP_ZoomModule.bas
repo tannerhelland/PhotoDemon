@@ -88,7 +88,7 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
         Case NAV_MOVE
         
             'If the user has requested visible layer borders, draw them now
-            If CBool(toolbar_Options.chkLayerBorder) Then
+            If CBool(toolpanel_MoveSize.chkLayerBorder) Then
                 
                 'Draw layer borders
                 Drawing.drawLayerBoundaries srcImage.getActiveLayerIndex
@@ -96,7 +96,7 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             End If
             
             'If the user has requested visible transformation nodes, draw them now
-            If CBool(toolbar_Options.chkLayerNodes) Then
+            If CBool(toolpanel_MoveSize.chkLayerNodes) Then
                 
                 'Draw layer nodes
                 Drawing.drawLayerNodes srcImage.getActiveLayerIndex
@@ -228,7 +228,7 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     If srcImage.selectionActive Then
     
         'If it is, composite the selection against the front buffer
-        srcImage.mainSelection.renderCustom frontBuffer, srcImage, dstCanvas, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, toolbar_Options.cboSelRender.ListIndex, toolbar_Options.csSelectionHighlight.Color
+        srcImage.mainSelection.renderCustom frontBuffer, srcImage, dstCanvas, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, toolpanel_Selections.cboSelRender.ListIndex, toolpanel_Selections.csSelectionHighlight.Color
     
     End If
         

@@ -1447,10 +1447,10 @@ Public Sub updateViaTextBox()
         'Rectangles, ellipses, and lines all support movement via text box
         Case sRectangle, sCircle, sLine
             isMaskReady = False
-            If toolbar_Options.tudSel(subpanelOffset + 0).IsValid(False) Then selLeft = toolbar_Options.tudSel(subpanelOffset + 0)
-            If toolbar_Options.tudSel(subpanelOffset + 1).IsValid(False) Then selTop = toolbar_Options.tudSel(subpanelOffset + 1)
-            If toolbar_Options.tudSel(subpanelOffset + 2).IsValid(False) Then selWidth = toolbar_Options.tudSel(subpanelOffset + 2)
-            If toolbar_Options.tudSel(subpanelOffset + 3).IsValid(False) Then selHeight = toolbar_Options.tudSel(subpanelOffset + 3)
+            If toolpanel_Selections.tudSel(subpanelOffset + 0).IsValid(False) Then selLeft = toolpanel_Selections.tudSel(subpanelOffset + 0)
+            If toolpanel_Selections.tudSel(subpanelOffset + 1).IsValid(False) Then selTop = toolpanel_Selections.tudSel(subpanelOffset + 1)
+            If toolpanel_Selections.tudSel(subpanelOffset + 2).IsValid(False) Then selWidth = toolpanel_Selections.tudSel(subpanelOffset + 2)
+            If toolpanel_Selections.tudSel(subpanelOffset + 3).IsValid(False) Then selHeight = toolpanel_Selections.tudSel(subpanelOffset + 3)
             
         'I haven't decided if other selection types will support movement via text box...
         Case Else

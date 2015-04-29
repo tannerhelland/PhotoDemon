@@ -914,12 +914,12 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                             Else
                             
                                 'Update the selection coordinate text boxes with the new offsets
-                                toolbar_Options.tudSel(0).Value = toolbar_Options.tudSel(0).Value + hOffset
-                                toolbar_Options.tudSel(1).Value = toolbar_Options.tudSel(1).Value + vOffset
+                                toolpanel_Selections.tudSel(0).Value = toolpanel_Selections.tudSel(0).Value + hOffset
+                                toolpanel_Selections.tudSel(1).Value = toolpanel_Selections.tudSel(1).Value + vOffset
                                 
                                 If g_CurrentTool = SELECT_LINE Then
-                                    toolbar_Options.tudSel(2).Value = toolbar_Options.tudSel(2).Value + hOffset
-                                    toolbar_Options.tudSel(3).Value = toolbar_Options.tudSel(3).Value + vOffset
+                                    toolpanel_Selections.tudSel(2).Value = toolpanel_Selections.tudSel(2).Value + hOffset
+                                    toolpanel_Selections.tudSel(3).Value = toolpanel_Selections.tudSel(3).Value + vOffset
                                 End If
                                 
                                 'Update the screen
@@ -1164,7 +1164,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
             
                 'Prior to moving or transforming a layer, we need to check the state of the "auto-activate layer beneath mouse"
                 ' option; if it is set, check (and possibly modify) the active layer based on the mouse position.
-                If CBool(toolbar_Options.chkAutoActivateLayer) Then
+                If CBool(toolpanel_MoveSize.chkAutoActivateLayer) Then
                 
                     layerUnderMouse = Layer_Handler.getLayerUnderMouse(imgX, imgY, True)
                     
@@ -1464,7 +1464,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
             
                 'If the user has the "auto-activate layer beneath mouse" option set, report the current layer name in the
                 ' message bar; this is helpful for determining what layer will be affected by a given action.
-                If CBool(toolbar_Options.chkAutoActivateLayer) Then
+                If CBool(toolpanel_MoveSize.chkAutoActivateLayer) Then
                 
                     Dim layerUnderMouse As Long
                     layerUnderMouse = Layer_Handler.getLayerUnderMouse(imgX, imgY, True)

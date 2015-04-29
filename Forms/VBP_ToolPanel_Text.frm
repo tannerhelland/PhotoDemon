@@ -256,6 +256,8 @@ Private Sub Form_Load()
         
         'Populate the font selection combo box
         Dim tmpFontName As String, relevantListIndex As Long
+        
+        Dim i As Long
         For i = 0 To userFontList.getNumOfStrings - 1
             cboTextFontFace.AddItem userFontList.GetString(i)
             If StrComp(userFontList.GetString(i), g_InterfaceFont) = 0 Then relevantListIndex = i

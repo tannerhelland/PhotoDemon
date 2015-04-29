@@ -812,28 +812,29 @@ Private Sub Form_Load()
     'Initialize various selection tool settings
     
     'Selection visual styles (Highlight, Lightbox, or Outline)
-    toolbar_Options.cboSelRender.Clear
-    toolbar_Options.cboSelRender.AddItem " Highlight", 0
-    toolbar_Options.cboSelRender.AddItem " Lightbox", 1
-    toolbar_Options.cboSelRender.AddItem " Outline", 2
-    toolbar_Options.cboSelRender.ListIndex = 0
+    cboSelRender.Clear
+    cboSelRender.AddItem " Highlight", 0
+    cboSelRender.AddItem " Lightbox", 1
+    cboSelRender.AddItem " Outline", 2
+    cboSelRender.ListIndex = 0
     
     csSelectionHighlight.Color = RGB(255, 58, 72)
     csSelectionHighlight.Visible = True
     
     'Selection smoothing (currently none, antialiased, fully feathered)
-    toolbar_Options.cboSelSmoothing.Clear
-    toolbar_Options.cboSelSmoothing.AddItem " None", 0
-    toolbar_Options.cboSelSmoothing.AddItem " Antialiased", 1
-    toolbar_Options.cboSelSmoothing.AddItem " Feathered", 2
-    toolbar_Options.cboSelSmoothing.ListIndex = 1
+    cboSelSmoothing.Clear
+    cboSelSmoothing.AddItem " None", 0
+    cboSelSmoothing.AddItem " Antialiased", 1
+    cboSelSmoothing.AddItem " Feathered", 2
+    cboSelSmoothing.ListIndex = 1
     
     'Selection types (currently interior, exterior, border)
+    Dim i As Long
     For i = 0 To cboSelArea.Count - 1
-        toolbar_Options.cboSelArea(i).AddItem " Interior", 0
-        toolbar_Options.cboSelArea(i).AddItem " Exterior", 1
-        toolbar_Options.cboSelArea(i).AddItem " Border", 2
-        toolbar_Options.cboSelArea(i).ListIndex = 0
+        cboSelArea(i).AddItem " Interior", 0
+        cboSelArea(i).AddItem " Exterior", 1
+        cboSelArea(i).AddItem " Border", 2
+        cboSelArea(i).ListIndex = 0
     Next i
     
     'Magic wand options
@@ -947,8 +948,8 @@ Public Sub updateSelectionPanelLayout()
         If cboSelRender.ListCount = 3 Then
             
             'Remove the "outline" option
-            If toolbar_Options.cboSelRender.ListIndex = 2 Then toolbar_Options.cboSelRender.ListIndex = 0
-            toolbar_Options.cboSelRender.RemoveItem 2
+            If cboSelRender.ListIndex = 2 Then cboSelRender.ListIndex = 0
+            cboSelRender.RemoveItem 2
             
         End If
     
@@ -956,7 +957,7 @@ Public Sub updateSelectionPanelLayout()
     
         'See if the combo box is missing an entry
         If cboSelRender.ListCount = 2 Then
-            toolbar_Options.cboSelRender.AddItem " Outline", 2
+            cboSelRender.AddItem " Outline", 2
         End If
     
     End If
@@ -1006,25 +1007,25 @@ Public Sub updateAgainstCurrentTheme()
     
     'Tooltips must be manually re-assigned according to the current language.  This is a necessary evil, if the user switches
     ' between two non-English languages at run-time.
-    toolbar_Options.cboSelRender.assignTooltip "Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing."
-    toolbar_Options.cboSelSmoothing.assignTooltip "This option controls how smoothly a selection blends with its surroundings."
+    cboSelRender.assignTooltip "Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing."
+    cboSelSmoothing.assignTooltip "This option controls how smoothly a selection blends with its surroundings."
         
     Dim i As Long
     For i = 0 To cboSelArea.Count - 1
-        toolbar_Options.cboSelArea(i).assignTooltip "These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu."
-        toolbar_Options.sltSelectionBorder(i).assignTooltip "This option adjusts the width of the selection border."
+        cboSelArea(i).assignTooltip "These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu."
+        sltSelectionBorder(i).assignTooltip "This option adjusts the width of the selection border."
     Next i
     
-    toolbar_Options.sltSelectionFeathering.assignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
-    toolbar_Options.sltCornerRounding.assignTooltip "This option adjusts the roundness of a rectangular selection's corners."
-    toolbar_Options.sltSelectionLineWidth.assignTooltip "This option adjusts the width of a line selection."
+    sltSelectionFeathering.assignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
+    sltCornerRounding.assignTooltip "This option adjusts the roundness of a rectangular selection's corners."
+    sltSelectionLineWidth.assignTooltip "This option adjusts the width of a line selection."
     
-    toolbar_Options.sltPolygonCurvature.assignTooltip "This option adjusts the curvature, if any, of a polygon selection's sides."
-    toolbar_Options.sltSmoothStroke.assignTooltip "This option increases the smoothness of a hand-drawn lasso selection."
-    toolbar_Options.sltWandTolerance.assignTooltip "Tolerance controls how similar two pixels must be before adding them to a magic wand selection."
+    sltPolygonCurvature.assignTooltip "This option adjusts the curvature, if any, of a polygon selection's sides."
+    sltSmoothStroke.assignTooltip "This option increases the smoothness of a hand-drawn lasso selection."
+    sltWandTolerance.assignTooltip "Tolerance controls how similar two pixels must be before adding them to a magic wand selection."
     
-    toolbar_Options.btsWandMerge.assignTooltip "The magic wand can operate on the entire image, or just the active layer."
-    toolbar_Options.btsWandArea.assignTooltip "Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuity."
+    btsWandMerge.assignTooltip "The magic wand can operate on the entire image, or just the active layer."
+    btsWandArea.assignTooltip "Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuity."
     
     cboWandCompare.assignTooltip "This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection."
 
