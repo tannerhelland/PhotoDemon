@@ -90,6 +90,9 @@ Private m_oldFontHandle As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 
+'If a glyph doesn't exist because a character is a whitespace character (fairly common case), retrieve a default width in its place.
+Private Declare Function GetCharWidthFloat Lib "gdi32" Alias "GetCharWidthFloatW" (ByVal hDC As Long, ByVal iFirstChar As Long, ByVal repeatIFirstChar As Long, ByRef dstSingle As Single) As Long
+
 'Glyph retrieval.  Per MSDN (https://msdn.microsoft.com/en-us/library/dd144891%28v=vs.85%29.aspx) I don't think there's any
 ' difference between the A and W variants, but W is declared for consistency with the rest of PD.
 Private Const GGO_METRICS As Long = 0
@@ -106,6 +109,7 @@ Private Type pdGlyph
     gMetrics As GLYPHMETRICS        'Copy of the GLYPHMETRICS struct returned by GetGlyphMetrics
     glyphPath As pdGraphicsPath     'GDI+ GraphicsPath wrapper containing the fully translated font outline
     charIsWhiteSpace As Boolean     'If this character has no drawable glyph (e.g. " "), this will be set to TRUE.
+    whiteSpaceWidth As Single       'For whitespace characters, we must retrieve their width using other means (as the glyph isn't helpful!)
 End Type
 
 'Current glyph collection.  Because glyph generation is very expensive, we store glyphs as we translate them.  If the font
@@ -210,12 +214,28 @@ Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal u
                 
                 'Before doing that, see if the buffer size is non-zero.  This is valid output for whitespace characters (e.g. spaces).
                 If UBound(rawGlyphBytes) > 0 Then
-                
+                    
+                    'Debug.Print ChrW$(curChar) & ":" & UBound(rawGlyphBytes)
+                    
                     'Proceed with parsing this glyph
                     If parseRawGlyphBuffer(rawGlyphBytes, m_GlyphCollection(m_NumOfGlyphs).glyphPath) Then
                         
-                        'Clear the whitespace flag and note that this glyph is valid.
-                        m_GlyphCollection(m_NumOfGlyphs).charIsWhiteSpace = False
+                        'Some missing glyphs are supplied with a box shape.  Check for a few obvious ones and replace them now.
+                        If curChar = AscW(vbLf) Then
+                            m_GlyphCollection(m_NumOfGlyphs).charIsWhiteSpace = True
+                        Else
+                        
+                            'Clear the whitespace flag and note that this glyph is valid.
+                            m_GlyphCollection(m_NumOfGlyphs).charIsWhiteSpace = False
+                            
+                            'Want to see this character's GLYPHMETRICS struct?  Uncomment the block below
+                            'With m_GlyphCollection(m_NumOfGlyphs).gMetrics
+                            '    Debug.Print "CHAR: " & ChrW$(curChar) & ", " & .gmBlackBoxX & ", " & .gmBlackBoxY & ", " & .gmCellIncX & ", " & .gmCellIncY & ", " & .gmptGlyphOrigin.x & ", " & .gmptGlyphOrigin.y
+                            'End With
+                            
+                        End If
+                        
+                        'Note that this glyph is valid; this will move the collection pointer to the next entry in the stack
                         glyphAdded = True
                         
                     'Glyph buffer parsing failed
@@ -228,23 +248,25 @@ Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal u
                         
                     End If
                 
-                'This is a whitespace character.
+                'This is likely a whitespace character.
                 Else
-                
-                    'Mark the whitespace flag and note that this glyph is valid.
+                    
+                    'Debug.Print "FAILURE: " & ChrW$(curChar) & ":" & UBound(rawGlyphBytes)
+                    
+                    'Mark the whitespace flag, retrieve a default width, and note that this glyph is valid.
                     m_GlyphCollection(m_NumOfGlyphs).charIsWhiteSpace = True
+                    m_GlyphCollection(m_NumOfGlyphs).whiteSpaceWidth = m_TextMetrics.tmAveCharWidth
                     glyphAdded = True
                 
                 End If
             
-            'Raw glyph buffer retrieval failed
+            'Raw glyph buffer retrieval failed.  This is a valid return for some whitespace characters.
             Else
-            
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "WARNING!  getRawGlyphBuffer failed for character code " & curChar
-                #End If
                 
-                glyphAdded = False
+                'Mark the whitespace flag, retrieve a default width, and note that this glyph is valid.
+                m_GlyphCollection(m_NumOfGlyphs).charIsWhiteSpace = True
+                m_GlyphCollection(m_NumOfGlyphs).whiteSpaceWidth = getWidthOfCharCode(curChar)
+                glyphAdded = True
                 
             End If
             
@@ -267,27 +289,17 @@ End Function
 'Given a Unicode entry point, fill a buffer with the raw output of GetGlyphOutline
 Private Function getRawGlyphBuffer(ByVal curChar As Long, ByRef dstBuffer() As Long, Optional ByVal useHinting As Boolean = False) As Boolean
     
-    'Start by retrieving the glyph metrics.  These are plugged directly into the current glyph entry in the master collection.
+    'We could start by retrieving glyph metrics, which are plugged directly into the current glyph entry in the master collection.
     ' (These metrics are separate from the glyph shape; we use them to control inter-character spacing, among other things.)
-    Dim ggoReturn As Long
-    ggoReturn = GetGlyphOutline(m_tmpDIB.getDIBDC, curChar, GGO_METRICS, m_GlyphCollection(m_NumOfGlyphs).gMetrics, 0, 0, m_IdentityMatrix)
     
-    'Make sure the return was valid
-    If ggoReturn = GDI_ERROR Then
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  GetGlyphOutline failed to return metrics for char code " & curChar
-        #End If
-        
-        getRawGlyphBuffer = False
-        Exit Function
-        
-    End If
+    'To grab these, use the following line of code:
+    'ggoReturn = GetGlyphOutline(m_tmpDIB.getDIBDC, curChar, GGO_METRICS, m_GlyphCollection(m_NumOfGlyphs).gMetrics, 0, 0, m_IdentityMatrix)
     
-    'If we made it here, metrics are good to go.
-    ' (TODO: metrics should be retrieved automatically by subsequent calls, so that initial call probably isn't required - test it)
+    'The reason I don't do this is that the metrics will be retrieved anyway by our next call, which requests length of the raw
+    ' glyph buffer.  For performance reasons, we kill two birds with one stone on that call.
     
-    'Hinting is optional; prep formatting flags based on whether hinting is enabled
+    'Prior to retrieving metrics, set the hinting flag.  Note that hinting is optional, and its presence (or lack thereof)
+    ' has consequences for glyph shape and positioning.
     Dim formatFlags As Long
     formatFlags = GGO_BEZIER
     If (Not useHinting) Then formatFlags = formatFlags Or GGO_UNHINTED
@@ -295,17 +307,16 @@ Private Function getRawGlyphBuffer(ByVal curChar As Long, ByRef dstBuffer() As L
     'Next, we want to retrieve the required size of the glyph shape buffer.  FYI, for complex glyphs, this can be fairly large.
     ' Note also that we explicitly request bezier curve format.  This makes our subsequent parsing much easier, and improves the
     ' output fidelity of OpenType fonts.
-    Dim byteSizeOfBuffer As Long
+    Dim ggoReturn As Long, byteSizeOfBuffer As Long
     ggoReturn = GetGlyphOutline(m_tmpDIB.getDIBDC, curChar, formatFlags, m_GlyphCollection(m_NumOfGlyphs).gMetrics, 0, 0, m_IdentityMatrix)
     
-    'ggoReturn should be > 0, which tells us the required size of the destination buffer
+    'ggoReturn should be > 0, which tells us the required size of the destination buffer.
     If ggoReturn <= 0 Then
-    
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  GetGlyphOutline failed to return buffer size for char code " & curChar
-        #End If
         
-        getRawGlyphBuffer = False
+        'If zero is returned, that's okay; this might just be a whitespace character with no corresponding glyph.
+        ' Return TRUE; the caller function has logic to deal with this combination of outputs.
+        ReDim dstBuffer(0) As Long
+        getRawGlyphBuffer = True
         Exit Function
     
     Else
@@ -443,7 +454,7 @@ Private Function parseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
             'End Type
             
             'Start by retrieving the curve type and number of points in this curve
-            curveType = srcBuffer(curPosition) And 65535    '&HFFFF&
+            curveType = srcBuffer(curPosition) And 65535
             pointCount = srcBuffer(curPosition) \ 65536
             
             'Advance the pointer to the start of the POINTFX array
@@ -470,7 +481,8 @@ Private Function parseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
                         
                     Next i
                 
-                'Quadratic Bézier spline (PD doesn't currently handle this case, because we explicitly require cubic bezier splines).
+                'Quadratic Bézier spline (PD doesn't currently handle this case, because we explicitly request cubic bezier splines
+                ' from the font mapper).
                 'Case TT_PRIM_QSPLINE
                 
                 'Cubic Bézier spline
@@ -478,7 +490,6 @@ Private Function parseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
                     
                     'Cubic splines occur in sets of four points (but one is already known from the end of the previous curve)
                     ' Iterate each in turn.
-                    'Debug.Print pointCount
                     For i = 1 To pointCount Step 3
                     
                         'Previous point is already known; retrieve the next three points explicitly
@@ -517,15 +528,99 @@ Private Function parseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
     ' screen, we obviously want things oriented against their top-left corner.
     
     'We can do this by translating the path downward by the current font's ascender value, which is constant for all glyphs.
-    ' (Note that we multiply the ascent by 2; this is because we reflect characters across the y-axis during transformation.)
-    dstGlyphPath.translatePath 0, m_FontAscent * 2
+    dstGlyphPath.translatePath 0, m_FontAscent
     
     'Parsing complete!
     parseRawGlyphBuffer = True
 
 End Function
 
-'
+'After assembling a full glyph collection, this function can be called to generate a totally complete graphics path, with all
+' characters laid out according to the passed rect.
+Friend Function assembleCompositePath(ByVal srcString As String, ByRef dstPath As pdGraphicsPath, ByRef boundingRect As RECTF) As Boolean
+    
+    'Initialize the destination path as necessary
+    If dstPath Is Nothing Then Set dstPath = New pdGraphicsPath
+    
+    'Only proceed if the source string is non-empty
+    If Len(srcString) <> 0 Then
+        
+        'Before processing the string, let's do some preprocessing to it.
+        
+        'First, normalize all linebreaks to vbLf
+        If InStr(1, srcString, vbCrLf, vbBinaryCompare) <> 0 Then srcString = Replace$(srcString, vbCrLf, vbLf)
+        If InStr(1, srcString, vbCr, vbBinaryCompare) <> 0 Then srcString = Replace$(srcString, vbCr, vbLf)
+        
+        'Add more in the future, perhaps...?
+        
+        Dim i As Long, glyphIndex As Long, srcPathHandle As Long
+        Dim xOffset As Single, yOffset As Single
+        yOffset = 0
+        xOffset = 0
+        
+        'Start iterating through the source string, one character at a time.
+        For i = 0 To Len(srcString) - 1
+            
+            'Start by retrieving this glyph index
+            glyphIndex = getGlyphIndex(AscW(Mid$(srcString, i + 1, 1)))
+            
+            If glyphIndex >= 0 Then
+                
+                'Retrieve a handle to this glyph's path.  If the handle is zero, there are two possible explanations:
+                ' 1) The glyph is a whitespace character
+                ' 2) The glyph couldn't be generated
+                
+                '(1) is common, and (2) should never happen.  Process accordingly.
+                If m_GlyphCollection(glyphIndex).charIsWhiteSpace Then
+                    
+                    'Line feeds are a special case of white space.
+                    If m_GlyphCollection(glyphIndex).charCode = AscW(vbLf) Then
+                    
+                        yOffset = yOffset + m_TextMetrics.tmHeight + m_TextMetrics.tmExternalLeading
+                        xOffset = 0
+                    
+                    'For other whitespace chars, plug in a default space value
+                    Else
+                    
+                        'Add the manually retrieved glyph width to the running offset
+                        xOffset = xOffset + m_GlyphCollection(glyphIndex).whiteSpaceWidth
+                        
+                    End If
+                    
+                Else
+                    
+                    'See if this glyph extends past the end of the line.  If it does, push us down to the next line.
+                    If xOffset + m_GlyphCollection(glyphIndex).gMetrics.gmCellIncX > boundingRect.Width Then
+                        yOffset = yOffset + m_TextMetrics.tmHeight + m_TextMetrics.tmExternalLeading
+                        xOffset = 0
+                    End If
+                    
+                    'Add this glyph to the current path at the running x-offset
+                    
+                    'If this is the start of a line, look for characters that hang off the left side of the bounding box, and push them
+                    ' in-bounds.
+                    If xOffset = 0 Then
+                        If m_GlyphCollection(glyphIndex).gMetrics.gmptGlyphOrigin.x < 0 Then xOffset = Abs(m_GlyphCollection(glyphIndex).gMetrics.gmptGlyphOrigin.x)
+                    End If
+                    
+                    dstPath.addPath m_GlyphCollection(glyphIndex).glyphPath, xOffset, yOffset
+                    
+                    'Add the glyph's width to the running x-direction offset.
+                    xOffset = xOffset + m_GlyphCollection(glyphIndex).gMetrics.gmCellIncX
+                
+                End If
+                
+            Else
+                Debug.Print "for some reason, that glyph doesn't exist???"
+            End If
+            
+        Next i
+        
+    End If
+        
+    assembleCompositePath = True
+
+End Function
 
 'Given a Long-type value - which is really a FIXED struct in disguise - parse out the two chunks, and return them as a normal floating-point value
 Private Function getSingleFromFIXED(ByRef srcFixed As Long) As Single
@@ -544,9 +639,11 @@ Private Function getSingleFromFIXED(ByRef srcFixed As Long) As Single
     'Finally, return these using the standard FIXED conversion
     getSingleFromFIXED = CDbl(integerPortion) + CDbl(fracPortion) / 65536#
     
-    'Shortcut formula for testing:
-    'getSingleFromFIXED = srcFixed / 65536#
+End Function
 
+'GetCharWidthFloat is an interesting function; I've included it here in case I ever decide to test it further.
+Private Function getWidthOfCharCode(ByVal srcCharCode As Long) As Single
+    GetCharWidthFloat m_tmpDIB.getDIBDC, srcCharCode, srcCharCode, getWidthOfCharCode
 End Function
 
 'Reset the current glyph collection.  This forces all glyphs to be recreated from scratch, so use only if absolutely necessary.
@@ -603,7 +700,8 @@ Private Sub Class_Initialize()
     
     m_GDIFont = 0
     
-    'Create an identity matrix and cache it at class level.
+    'Create an identity matrix and cache it at class level.  Note that we deliberately invert the y-value as glyphs are returned in a
+    ' coordinate system relative to their baseline, where as screen coordinates are relative to the top-left.
     ' [1, 0]
     ' [0, 1]
     With m_IdentityMatrix

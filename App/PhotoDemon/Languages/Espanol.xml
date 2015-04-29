@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.25</langversion>
+<langversion>6.7.26</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -13631,6 +13631,12 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <!-- pdComboBox_Font.ctl contains 0 phrases. -->
 
 <!-- END text for pdComboBox_Font.ctl-->
+
+<!-- BEGIN text for pdGlyphCollection.cls -->
+
+<!-- pdGlyphCollection.cls contains 0 phrases. -->
+
+<!-- END text for pdGlyphCollection.cls-->
 
 <!-- Automatic text extraction complete. -->
 

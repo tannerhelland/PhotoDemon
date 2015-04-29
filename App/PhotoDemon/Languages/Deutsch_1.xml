@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.22</langversion>
+<langversion>6.7.23</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -13629,6 +13629,12 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <!-- pdComboBox_Font.ctl contains 0 phrases. -->
 
 <!-- END text for pdComboBox_Font.ctl-->
+
+<!-- BEGIN text for pdGlyphCollection.cls -->
+
+<!-- pdGlyphCollection.cls contains 0 phrases. -->
+
+<!-- END text for pdGlyphCollection.cls-->
 
 <!-- Automatic text extraction complete. -->
 
