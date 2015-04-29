@@ -173,8 +173,9 @@ Private Declare Function MulDiv Lib "kernel32" (ByVal nNumber As Long, ByVal nNu
 'Some system-specific font settings are cached at initialization time, and unchanged for the life of the program
 Private curLogPixelsX As Long, curLogPixelsY As Long
 
-'Internal font cache.  PD uses this to populate things like font selection dropdowns.
+'Internal font caches.  PD uses these to populate things like font selection dropdowns.
 Private m_PDFontCache As pdStringStack
+Private m_PDFontCache_GDIPlus As pdStringStack
 Private Const INITIAL_PDFONTCACHE_SIZE As Long = 256
 Private m_LastFontAdded As String
 
@@ -182,17 +183,27 @@ Private m_LastFontAdded As String
 Private m_TestDIB As pdDIB
 
 'If functions want their own copy of available fonts, call this function
-Public Function getCopyOfFontCache(ByRef dstStringStack As pdStringStack) As Boolean
+Public Function getCopyOfFontCache(ByRef dstStringStack As pdStringStack, Optional ByVal getTrueTypeOnly As Boolean = False) As Boolean
+    
     If dstStringStack Is Nothing Then Set dstStringStack = New pdStringStack
-    dstStringStack.cloneStack m_PDFontCache
+    
+    'Clone the requested font stack
+    If getTrueTypeOnly Then
+        dstStringStack.cloneStack m_PDFontCache_GDIPlus
+    Else
+        dstStringStack.cloneStack m_PDFontCache
+    End If
+    
 End Function
 
 'Build a system font cache.  Note that this is an expensive operation, and should never be called more than once.
-' RETURNS: 0 if failure, Number of fonts (>= 0) if successful
-Public Function buildFontCache(Optional ByVal getTrueTypeOnly As Boolean = False) As Long
+' RETURNS: 0 if failure, Number of fonts (>= 0) if successful.  (Note that the *total number of all fonts* is returned,
+'          not just TrueType ones.)
+Public Function buildFontCache() As Long
     
-    'Prep the default font cache
+    'Prep the default font caches
     Set m_PDFontCache = New pdStringStack
+    Set m_PDFontCache_GDIPlus = New pdStringStack
     
     'Prep a tiny internal DIB for testing font settings
     Set m_TestDIB = New pdDIB
@@ -208,7 +219,7 @@ Public Function buildFontCache(Optional ByVal getTrueTypeOnly As Boolean = False
     If getTrueTypeOnly Then
         
         'GDI+ will return the font count prior to enumeration, so we don't need to prep the string stack in advance
-        getAllAvailableTrueTypeFonts
+        getAllAvailableTrueTypeFonts m_PDFontCache_GDIPlus
         
     Else
         
@@ -220,10 +231,13 @@ Public Function buildFontCache(Optional ByVal getTrueTypeOnly As Boolean = False
     End If
     
     
-    'Because the font cache will potentially be accessed by tons of external functions, it pays to sort it just once,
-    ' at initialization time.
+    'Because the font cache(s) will potentially be accessed by tons of external functions, it pays to sort them just once,
+    ' at initialization time.  (Note that the GDI+ cache comes sorted, but our algorithm will detect that and skip sorting.)
     m_PDFontCache.trimStack
     m_PDFontCache.SortAlphabetically
+    
+    m_PDFontCache_GDIPlus.trimStack
+    m_PDFontCache_GDIPlus.SortAlphabetically
     
     'TESTING ONLY!  Curious about the list of fonts?  Use this line to write it out to the immediate window
     'm_PDFontCache.DEBUG_dumpResultsToImmediateWindow
@@ -293,7 +307,10 @@ Public Function EnumFontFamExProc(ByRef lpElfe As LOGFONTW, ByRef lpNtme As NEWT
 End Function
 
 'Helper function for returning a string stack of currently installed, GDI+ compatible (e.g. TrueType) fonts
-Private Function getAllAvailableTrueTypeFonts() As Boolean
+Private Function getAllAvailableTrueTypeFonts(ByRef dstStringStack As pdStringStack) As Boolean
+    
+    'Instantiate the string stack as necessary
+    If dstStringStack Is Nothing Then Set dstStringStack = New pdStringStack
     
     'Create a new GDI+ font collection object
     Dim fontCollection As Long
@@ -314,7 +331,7 @@ Private Function getAllAvailableTrueTypeFonts() As Boolean
             
                 'Populate our string stack with the names of this collection; also, since we know the approximate size of
                 ' the stack in advance, we can accurately prep the stack's buffer.
-                m_PDFontCache.resetStack fontCount
+                dstStringStack.resetStack fontCount
                 
                 'Retrieve all font names
                 Dim i As Long, thisFontName As String
@@ -323,7 +340,7 @@ Private Function getAllAvailableTrueTypeFonts() As Boolean
                     'Retrieve the name for this entry
                     thisFontName = String$(LF_FACESIZE, 0)
                     If GdipGetFamilyName(fontList(i), StrPtr(thisFontName), LANG_NEUTRAL) = 0 Then
-                        m_PDFontCache.AddString TrimNull(thisFontName)
+                        dstStringStack.AddString TrimNull(thisFontName)
                     End If
                     
                 Next i
