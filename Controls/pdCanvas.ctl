@@ -1769,7 +1769,10 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     'Process the addition of the new layer; this will create proper Undo/Redo data for the entire image (required, as the layer order
                     ' has changed due to this new addition).
                     Process "New text layer", , , UNDO_IMAGE
-                   
+                    
+                    'Manually synchronize menu, layer toolbox, and other UI settings against the newly created layer.
+                    syncInterfaceToCurrentImage
+                    
                 'The user is simply editing an existing layer.
                 Else
                     

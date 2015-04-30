@@ -167,9 +167,9 @@ Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
     
     'Make the newly created layer the active layer
     If dLayerAutoSelect Then
-        setActiveLayerByID newLayerID, False
+        setActiveLayerByID newLayerID, False, Not suspendRedraws
     Else
-        setActiveLayerByID prevActiveLayerID, False
+        setActiveLayerByID prevActiveLayerID, False, Not suspendRedraws
     End If
     
     'Notify the parent of the change
@@ -282,7 +282,7 @@ End Sub
 
 'Activate a layer.  Use this instead of directly calling the pdImage.setActiveLayer function if you want to also
 ' synchronize the UI to match.
-Public Sub setActiveLayerByID(ByVal newLayerID As Long, Optional ByVal alsoRedrawViewport As Boolean = False)
+Public Sub setActiveLayerByID(ByVal newLayerID As Long, Optional ByVal alsoRedrawViewport As Boolean = False, Optional ByVal alsoSyncInterface As Boolean = True)
 
     'If this layer is already active, ignore the request
     If pdImages(g_CurrentImage).getActiveLayerID = newLayerID Then Exit Sub
@@ -294,18 +294,18 @@ Public Sub setActiveLayerByID(ByVal newLayerID As Long, Optional ByVal alsoRedra
     pdImages(g_CurrentImage).setActiveLayerByID newLayerID
     
     'Sync the interface to the new layer
-    syncInterfaceToCurrentImage
+    If alsoSyncInterface Then syncInterfaceToCurrentImage
     
     'Set a new image checkpoint (necessary to do this manually, as we haven't invoked PD's central processor)
     Processor.setImageCheckpoint
     
     'Redraw the viewport, but only if requested
     If alsoRedrawViewport Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    
+        
 End Sub
 
 'Same idea as setActiveLayerByID, above
-Public Sub setActiveLayerByIndex(ByVal newLayerIndex As Long, Optional ByVal alsoRedrawViewport As Boolean = False)
+Public Sub setActiveLayerByIndex(ByVal newLayerIndex As Long, Optional ByVal alsoRedrawViewport As Boolean = False, Optional ByVal alsoSyncInterface As Boolean = True)
 
     'If this layer is already active, ignore the request
     If pdImages(g_CurrentImage).getActiveLayerID = pdImages(g_CurrentImage).getLayerByIndex(newLayerIndex).getLayerID Then Exit Sub
@@ -317,11 +317,11 @@ Public Sub setActiveLayerByIndex(ByVal newLayerIndex As Long, Optional ByVal als
     pdImages(g_CurrentImage).setActiveLayerByIndex newLayerIndex
     
     'Sync the interface to the new layer
-    syncInterfaceToCurrentImage
-    
+    If alsoSyncInterface Then syncInterfaceToCurrentImage
+        
     'Set a new image checkpoint (necessary to do this manually, as we haven't invoked PD's central processor)
     Processor.setImageCheckpoint
-    
+        
     'Redraw the viewport, but only if requested
     If alsoRedrawViewport Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     

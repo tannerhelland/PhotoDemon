@@ -347,7 +347,7 @@ Private Sub txtTextTool_Change()
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    
+        
 End Sub
 
 Private Sub txtTextTool_GotFocus()
