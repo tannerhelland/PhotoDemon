@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.23</langversion>
+<langversion>6.7.24</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -11181,392 +11181,7 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <translation>Utilità</translation>
 </phrase>
 
-<phrase>
-<original>(this tool is under construction)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>text</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>font face</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>font size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>font color</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>AA and hinting</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>AA clarity</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>smoothing</original>
-<translation>lisciatura</translation>
-</phrase>
-
-<phrase>
-<original>appearance</original>
-<translation>aspetto</translation>
-</phrase>
-
-<phrase>
-<original>corner rounding</original>
-<translation>arrotondamento spigolo</translation>
-</phrase>
-
-<phrase>
-<original>position (x, y)</original>
-<translation>posizione (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>size (w, h)</original>
-<translation>dimensioni (w, h)</translation>
-</phrase>
-
-<phrase>
-<original>area</original>
-<translation>area</translation>
-</phrase>
-
-<phrase>
-<original>sampling area</original>
-<translation>area di campionamento</translation>
-</phrase>
-
-<phrase>
-<original>tolerance</original>
-<translation>tolleranza</translation>
-</phrase>
-
-<phrase>
-<original>stroke smoothing</original>
-<translation>levigatura tratto</translation>
-</phrase>
-
-<phrase>
-<original>curvature</original>
-<translation>curvatura</translation>
-</phrase>
-
-<phrase>
-<original>line width</original>
-<translation>larghezza della linea</translation>
-</phrase>
-
-<phrase>
-<original>2nd point (x, y)</original>
-<translation>2° punto (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>1st point (x, y)</original>
-<translation>1° punto (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>temperature</original>
-<translation>temperatura</translation>
-</phrase>
-
-<phrase>
-<original>tint</original>
-<translation>tinta</translation>
-</phrase>
-
-<phrase>
-<original>clarity</original>
-<translation>chiarezza</translation>
-</phrase>
-
-<phrase>
-<original>exposure</original>
-<translation>esposizione</translation>
-</phrase>
-
-<phrase>
-<original>all</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>layer position (x, y)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize quality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>interaction options</original>
-<translation>opzioni di interazione</translation>
-</phrase>
-
-<phrase>
-<original>automatically activate layer beneath mouse</original>
-<translation>attiva automaticamente il livello al di sotto del mouse</translation>
-</phrase>
-
-<phrase>
-<original>ignore transparent pixels when auto-activating layers</original>
-<translation>ignora i pixel trasparenti quando l'attivazione dei livelli è automatica</translation>
-</phrase>
-
-<phrase>
-<original>show layer borders</original>
-<translation>mostra i bordi del livello</translation>
-</phrase>
-
-<phrase>
-<original>show layer transform nodes</original>
-<translation>mostra i nodi di trasformazione del livello</translation>
-</phrase>
-
-<phrase>
-<original>display options</original>
-<translation>opzioni di visualizzazione</translation>
-</phrase>
-
-<phrase>
-<original>Make layer size permanent</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Make quick-fixes permanent</original>
-<translation>Crea la soluzione rapida permanente</translation>
-</phrase>
-
-<phrase>
-<original>Reset layer to original size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Make current layer size permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Nearest neighbor</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Reset all quick-fix adjustment values</original>
-<translation>Ripristina tutti i valori di regolazione della soluzione automatica</translation>
-</phrase>
-
-<phrase>
-<original>Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.</original>
-<translation>Crea le regolazioni della soluzione automatica permanenti.  Questa azione non è mai necessaria, ma se la resa di visualizzazione è lenta e molti aggiustamenti della soluzione automatica sono attivi, potrebbe migliorare le prestazioni.</translation>
-</phrase>
-
-<phrase>
-<original>Highlight</original>
-<translation>Evidenziatore</translation>
-</phrase>
-
-<phrase>
-<original>Lightbox</original>
-<translation>Visualizzatore</translation>
-</phrase>
-
-<phrase>
-<original>Outline</original>
-<translation>Contorno</translation>
-</phrase>
-
-<phrase>
-<original>Antialiased</original>
-<translation>Antialiasizzata</translation>
-</phrase>
-
-<phrase>
-<original>Feathered</original>
-<translation>Sfumata</translation>
-</phrase>
-
-<phrase>
-<original>Interior</original>
-<translation>Interna</translation>
-</phrase>
-
-<phrase>
-<original>Exterior</original>
-<translation>Esterna</translation>
-</phrase>
-
-<phrase>
-<original>image</original>
-<translation>immagine</translation>
-</phrase>
-
-<phrase>
-<original>layer</original>
-<translation>livello</translation>
-</phrase>
-
-<phrase>
-<original>contiguous</original>
-<translation>contiguo</translation>
-</phrase>
-
-<phrase>
-<original>global</original>
-<translation>globale</translation>
-</phrase>
-
-<phrase>
-<original>Luminance</original>
-<translation>Luminanza</translation>
-</phrase>
-
-<phrase>
-<original>Red</original>
-<translation>Rosso</translation>
-</phrase>
-
-<phrase>
-<original>Green</original>
-<translation>Verde</translation>
-</phrase>
-
-<phrase>
-<original>Blue</original>
-<translation>Blu</translation>
-</phrase>
-
-<phrase>
-<original>Alpha</original>
-<translation>Alfa</translation>
-</phrase>
-
-<phrase>
-<original>Default (debug only)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>No AA, hinting</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>No AA, no hinting</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>AA, hinting</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>AA, no hinting</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>ClearType (debug only)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
-<translation>Fare clic per cambiare il modo in cui le selezioni sono rese sulla tela dell'immagine.  Questo non influisce sul contenuto della selezione - solo il modo in cui appaiono durante la modifica.</translation>
-</phrase>
-
-<phrase>
-<original>This option controls how smoothly a selection blends with its surroundings.</original>
-<translation>Questa opzione controlla come agevolmente una selezione si fonde con l'ambiente circostante.</translation>
-</phrase>
-
-<phrase>
-<original>These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.</original>
-<translation>Queste opzioni controllano la zona selezionata.  La selezione può essere modificata sulla tela mentre una qualsiasi di queste impostazioni sono attive.  Per le regolazioni della selezione più avanzate, utilizzare il menù Selezione.</translation>
-</phrase>
-
-<phrase>
-<original>This option adjusts the width of the selection border.</original>
-<translation>Questa opzione consente di regolare la larghezza del bordo della selezione.</translation>
-</phrase>
-
-<phrase>
-<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu.</original>
-<translation>Questo cursore della sfumatura, consente aggiustamenti immediati.  Per motivi di prestazioni, viene limitata a piccoli raggi.  Per raggi più grandi di sfumatura, si prega di utilizzare il menù Seleziona -> Sfumatura.</translation>
-</phrase>
-
-<phrase>
-<original>This option adjusts the roundness of a rectangular selection's corners.</original>
-<translation>Questa opzione consente di regolare la rotondità degli angoli di una selezione rettangolare.</translation>
-</phrase>
-
-<phrase>
-<original>This option adjusts the width of a line selection.</original>
-<translation>Questa opzione consente di regolare la larghezza di una linea di selezione.</translation>
-</phrase>
-
-<phrase>
-<original>This option adjusts the curvature, if any, of a polygon selection's sides.</original>
-<translation>Questa opzione regola se presente, la curvatura dei lati del poligono selezionato.</translation>
-</phrase>
-
-<phrase>
-<original>This option increases the smoothness of a hand-drawn lasso selection.</original>
-<translation>Questa opzione aumenta la levigatura di una selezione lazo a mano.</translation>
-</phrase>
-
-<phrase>
-<original>Tolerance controls how similar two pixels must be before adding them to a magic wand selection.</original>
-<translation>La tolleranza controlla come due pixel simili devono essere prima di aggiungerli ad una selezione con bacchetta magica.</translation>
-</phrase>
-
-<phrase>
-<original>The magic wand can operate on the entire image, or just the active layer.</original>
-<translation>La bacchetta magica può operare su tutta l'immagine o solo sul livello attivo.</translation>
-</phrase>
-
-<phrase>
-<original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuity.</original>
-<translation>Normalmente, la bacchetta magica si diffonderà fuori dal pixel di destinazione, aggiungendo pixel vicini alla selezione come vengono.  In alternativa, è possibile impostare la ricerca nell'intera immagine senza riguardo per la continuità.</translation>
-</phrase>
-
-<phrase>
-<original>This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection.</original>
-<translation>Questa opzione controlla quali criteri usa la bacchetta magica per determinare se un pixel deve essere aggiunto alla selezione corrente.</translation>
-</phrase>
-
-<!-- VBP_ToolbarTools.frm contains 98 phrases. 20 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -12620,11 +12235,16 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- BEGIN text for VBP_FormGlassTiles.frm (FormGlassTiles) -->
 
 <phrase>
+<original>curvature</original>
+<translation>curvatura</translation>
+</phrase>
+
+<phrase>
 <original>Generating glass tiles</original>
 <translation>Generazione piastrelle di vetro</translation>
 </phrase>
 
-<!-- VBP_FormGlassTiles.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- VBP_FormGlassTiles.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormGlassTiles.frm-->
 
@@ -12787,6 +12407,11 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
+<original>position (x, y)</original>
+<translation>posizione (x, y)</translation>
+</phrase>
+
+<phrase>
 <original>Applying lens flare</original>
 <translation>Applicazione del bagliore lenticolare</translation>
 </phrase>
@@ -12801,7 +12426,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation>no</translation>
 </phrase>
 
-<!-- VBP_FormLensFlare.frm contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- VBP_FormLensFlare.frm contains 16 phrases. 8 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_FormLensFlare.frm-->
 
@@ -12888,11 +12513,16 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- BEGIN text for VBP_FormTint.frm (FormTint) -->
 
 <phrase>
+<original>tint</original>
+<translation>tinta</translation>
+</phrase>
+
+<phrase>
 <original>Re-tinting image</original>
 <translation>Ritinteggiatura dell'immagine</translation>
 </phrase>
 
-<!-- VBP_FormTint.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- VBP_FormTint.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormTint.frm-->
 
@@ -13188,6 +12818,11 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
+<original>exposure</original>
+<translation>esposizione</translation>
+</phrase>
+
+<phrase>
 <original>adaptation</original>
 <translation>adattamento</translation>
 </phrase>
@@ -13257,7 +12892,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation>Reinhard</translation>
 </phrase>
 
-<!-- VBP_FormToneMapping.frm contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- VBP_FormToneMapping.frm contains 24 phrases. 6 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_FormToneMapping.frm-->
 
@@ -13634,12 +13269,406 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- END text for pdGlyphCollection.cls-->
 
+<!-- BEGIN text for VBP_ToolPanel_Text.frm (toolpanel_Text) -->
+
+<phrase>
+<original>Form1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(this tool is under construction)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font face</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>AA and hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>AA clarity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Default (debug only)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>No AA, hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>No AA, no hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>AA, hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>AA, no hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>ClearType (debug only)</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_ToolPanel_Text.frm contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
+
+<!-- END text for VBP_ToolPanel_Text.frm-->
+
+<!-- BEGIN text for VBP_ToolPanel_Selections.frm (toolpanel_Selections) -->
+
+<phrase>
+<original>area</original>
+<translation>area</translation>
+</phrase>
+
+<phrase>
+<original>size (w, h)</original>
+<translation>dimensioni (w, h)</translation>
+</phrase>
+
+<phrase>
+<original>line width</original>
+<translation>larghezza della linea</translation>
+</phrase>
+
+<phrase>
+<original>2nd point (x, y)</original>
+<translation>2° punto (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>1st point (x, y)</original>
+<translation>1° punto (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>stroke smoothing</original>
+<translation>levigatura tratto</translation>
+</phrase>
+
+<phrase>
+<original>sampling area</original>
+<translation>area di campionamento</translation>
+</phrase>
+
+<phrase>
+<original>tolerance</original>
+<translation>tolleranza</translation>
+</phrase>
+
+<phrase>
+<original>corner rounding</original>
+<translation>arrotondamento spigolo</translation>
+</phrase>
+
+<phrase>
+<original>smoothing</original>
+<translation>lisciatura</translation>
+</phrase>
+
+<phrase>
+<original>appearance</original>
+<translation>aspetto</translation>
+</phrase>
+
+<phrase>
+<original>Highlight</original>
+<translation>Evidenziatore</translation>
+</phrase>
+
+<phrase>
+<original>Lightbox</original>
+<translation>Visualizzatore</translation>
+</phrase>
+
+<phrase>
+<original>Outline</original>
+<translation>Contorno</translation>
+</phrase>
+
+<phrase>
+<original>Antialiased</original>
+<translation>Antialiasizzata</translation>
+</phrase>
+
+<phrase>
+<original>Feathered</original>
+<translation>Sfumata</translation>
+</phrase>
+
+<phrase>
+<original>Interior</original>
+<translation>Interna</translation>
+</phrase>
+
+<phrase>
+<original>Exterior</original>
+<translation>Esterna</translation>
+</phrase>
+
+<phrase>
+<original>image</original>
+<translation>immagine</translation>
+</phrase>
+
+<phrase>
+<original>layer</original>
+<translation>livello</translation>
+</phrase>
+
+<phrase>
+<original>contiguous</original>
+<translation>contiguo</translation>
+</phrase>
+
+<phrase>
+<original>global</original>
+<translation>globale</translation>
+</phrase>
+
+<phrase>
+<original>Luminance</original>
+<translation>Luminanza</translation>
+</phrase>
+
+<phrase>
+<original>Red</original>
+<translation>Rosso</translation>
+</phrase>
+
+<phrase>
+<original>Green</original>
+<translation>Verde</translation>
+</phrase>
+
+<phrase>
+<original>Blue</original>
+<translation>Blu</translation>
+</phrase>
+
+<phrase>
+<original>Alpha</original>
+<translation>Alfa</translation>
+</phrase>
+
+<phrase>
+<original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
+<translation>Fare clic per cambiare il modo in cui le selezioni sono rese sulla tela dell'immagine.  Questo non influisce sul contenuto della selezione - solo il modo in cui appaiono durante la modifica.</translation>
+</phrase>
+
+<phrase>
+<original>This option controls how smoothly a selection blends with its surroundings.</original>
+<translation>Questa opzione controlla come agevolmente una selezione si fonde con l'ambiente circostante.</translation>
+</phrase>
+
+<phrase>
+<original>These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.</original>
+<translation>Queste opzioni controllano la zona selezionata.  La selezione può essere modificata sulla tela mentre una qualsiasi di queste impostazioni sono attive.  Per le regolazioni della selezione più avanzate, utilizzare il menù Selezione.</translation>
+</phrase>
+
+<phrase>
+<original>This option adjusts the width of the selection border.</original>
+<translation>Questa opzione consente di regolare la larghezza del bordo della selezione.</translation>
+</phrase>
+
+<phrase>
+<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu.</original>
+<translation>Questo cursore della sfumatura, consente aggiustamenti immediati.  Per motivi di prestazioni, viene limitata a piccoli raggi.  Per raggi più grandi di sfumatura, si prega di utilizzare il menù Seleziona -> Sfumatura.</translation>
+</phrase>
+
+<phrase>
+<original>This option adjusts the roundness of a rectangular selection's corners.</original>
+<translation>Questa opzione consente di regolare la rotondità degli angoli di una selezione rettangolare.</translation>
+</phrase>
+
+<phrase>
+<original>This option adjusts the width of a line selection.</original>
+<translation>Questa opzione consente di regolare la larghezza di una linea di selezione.</translation>
+</phrase>
+
+<phrase>
+<original>This option adjusts the curvature, if any, of a polygon selection's sides.</original>
+<translation>Questa opzione regola se presente, la curvatura dei lati del poligono selezionato.</translation>
+</phrase>
+
+<phrase>
+<original>This option increases the smoothness of a hand-drawn lasso selection.</original>
+<translation>Questa opzione aumenta la levigatura di una selezione lazo a mano.</translation>
+</phrase>
+
+<phrase>
+<original>Tolerance controls how similar two pixels must be before adding them to a magic wand selection.</original>
+<translation>La tolleranza controlla come due pixel simili devono essere prima di aggiungerli ad una selezione con bacchetta magica.</translation>
+</phrase>
+
+<phrase>
+<original>The magic wand can operate on the entire image, or just the active layer.</original>
+<translation>La bacchetta magica può operare su tutta l'immagine o solo sul livello attivo.</translation>
+</phrase>
+
+<phrase>
+<original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuity.</original>
+<translation>Normalmente, la bacchetta magica si diffonderà fuori dal pixel di destinazione, aggiungendo pixel vicini alla selezione come vengono.  In alternativa, è possibile impostare la ricerca nell'intera immagine senza riguardo per la continuità.</translation>
+</phrase>
+
+<phrase>
+<original>This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection.</original>
+<translation>Questa opzione controlla quali criteri usa la bacchetta magica per determinare se un pixel deve essere aggiunto alla selezione corrente.</translation>
+</phrase>
+
+<!-- VBP_ToolPanel_Selections.frm contains 55 phrases. 15 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+
+<!-- END text for VBP_ToolPanel_Selections.frm-->
+
+<!-- BEGIN text for VBP_ToolPanel_NDFX.frm (toolpanel_NDFX) -->
+
+<phrase>
+<original>temperature</original>
+<translation>temperatura</translation>
+</phrase>
+
+<phrase>
+<original>clarity</original>
+<translation>chiarezza</translation>
+</phrase>
+
+<phrase>
+<original>all</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Make quick-fixes permanent</original>
+<translation>Crea la soluzione rapida permanente</translation>
+</phrase>
+
+<phrase>
+<original>Reset all quick-fix adjustment values</original>
+<translation>Ripristina tutti i valori di regolazione della soluzione automatica</translation>
+</phrase>
+
+<phrase>
+<original>Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.</original>
+<translation>Crea le regolazioni della soluzione automatica permanenti.  Questa azione non è mai necessaria, ma se la resa di visualizzazione è lenta e molti aggiustamenti della soluzione automatica sono attivi, potrebbe migliorare le prestazioni.</translation>
+</phrase>
+
+<!-- VBP_ToolPanel_NDFX.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for VBP_ToolPanel_NDFX.frm-->
+
+<!-- BEGIN text for VBP_ToolPanel_MoveSize.frm (toolpanel_MoveSize) -->
+
+<phrase>
+<original>interaction options</original>
+<translation>opzioni di interazione</translation>
+</phrase>
+
+<phrase>
+<original>automatically activate layer beneath mouse</original>
+<translation>attiva automaticamente il livello al di sotto del mouse</translation>
+</phrase>
+
+<phrase>
+<original>ignore transparent pixels when auto-activating layers</original>
+<translation>ignora i pixel trasparenti quando l'attivazione dei livelli è automatica</translation>
+</phrase>
+
+<phrase>
+<original>show layer borders</original>
+<translation>mostra i bordi del livello</translation>
+</phrase>
+
+<phrase>
+<original>show layer transform nodes</original>
+<translation>mostra i nodi di trasformazione del livello</translation>
+</phrase>
+
+<phrase>
+<original>display options</original>
+<translation>opzioni di visualizzazione</translation>
+</phrase>
+
+<phrase>
+<original>layer position (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Make layer size permanent</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reset layer to original size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Make current layer size permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Nearest neighbor</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_ToolPanel_MoveSize.frm contains 21 phrases. 7 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<!-- END text for VBP_ToolPanel_MoveSize.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2373</phrasecount>
+<phrasecount>2374</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4047 phrases. -->
-<!-- 1674 are duplicates, so only 2373 unique phrases have been written to file. -->
-<!-- These 2373 phrases contain approximately 13483 total words. -->
+<!-- As of this build, PhotoDemon contains 4051 phrases. -->
+<!-- 1677 are duplicates, so only 2374 unique phrases have been written to file. -->
+<!-- These 2374 phrases contain approximately 13483 total words. -->
 
 </pdData>
