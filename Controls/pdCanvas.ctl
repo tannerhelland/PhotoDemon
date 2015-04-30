@@ -1773,6 +1773,13 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     'Manually synchronize menu, layer toolbox, and other UI settings against the newly created layer.
                     syncInterfaceToCurrentImage
                     
+                    'Finally, set focus to the text layer text entry box
+                    toolpanel_Text.txtTextTool.SetFocus
+                    If Len(toolpanel_Text.txtTextTool.Text) = 0 Then
+                        toolpanel_Text.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
+                        toolpanel_Text.txtTextTool.selectAll
+                    End If
+                    
                 'The user is simply editing an existing layer.
                 Else
                     
