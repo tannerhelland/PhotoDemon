@@ -269,7 +269,9 @@ Public Sub eraseLayerByIndex(ByVal layerIndex As Long)
             'For text layers, simply erase the current text.  (This has the effect of making the layer fully transparent,
             ' while retaining all text settings... I'm not sure of a better solution at present.)
             Case PDL_TEXT
-                'TODO!
+                With pdImages(g_CurrentImage).getLayerByIndex(layerIndex)
+                    .setTextLayerProperty ptp_Text, ""
+                End With
         
         End Select
         

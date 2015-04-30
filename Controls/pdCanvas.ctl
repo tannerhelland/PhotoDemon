@@ -2491,53 +2491,42 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
 
             'The text tool bears a lot of similarity to the Move / Size tool, although the resulting behavior is
             ' obviously quite different.
-            Select Case pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
-
-                'Mouse is not over the current layer
-                Case -1
-                    cMouseEvents.setSystemCursor IDC_IBEAM
-
-                'Mouse is over the top-left corner
-                Case 0
-                    If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
-                        cMouseEvents.setSystemCursor IDC_SIZENWSE
-                    Else
-                        cMouseEvents.setSystemCursor IDC_IBEAM
-                    End If
-
-                'Mouse is over the top-right corner
-                Case 1
-                    If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
-                        cMouseEvents.setSystemCursor IDC_SIZENESW
-                    Else
-                        cMouseEvents.setSystemCursor IDC_IBEAM
-                    End If
-
-                'Mouse is over the bottom-right corner
-                Case 2
-                    If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
-                        cMouseEvents.setSystemCursor IDC_SIZENWSE
-                    Else
-                        cMouseEvents.setSystemCursor IDC_IBEAM
-                    End If
-
-                'Mouse is over the bottom-left corner
-                Case 3
-                    If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
-                        cMouseEvents.setSystemCursor IDC_SIZENESW
-                    Else
-                        cMouseEvents.setSystemCursor IDC_IBEAM
-                    End If
-
-                'Mouse is within the layer, but not over a specific node
-                Case 4
-                    If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
-                        cMouseEvents.setSystemCursor IDC_SIZEALL
-                    Else
-                        cMouseEvents.setSystemCursor IDC_IBEAM
-                    End If
             
-            End Select
+            'First, see if the active layer is a text layer.  If it is, we need to check for POIs.
+            If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
+            
+                Select Case pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
+    
+                    'Mouse is not over the current layer
+                    Case -1
+                        cMouseEvents.setSystemCursor IDC_IBEAM
+    
+                    'Mouse is over the top-left corner
+                    Case 0
+                        cMouseEvents.setSystemCursor IDC_SIZENWSE
+                    
+                    'Mouse is over the top-right corner
+                    Case 1
+                        cMouseEvents.setSystemCursor IDC_SIZENESW
+                    
+                    'Mouse is over the bottom-right corner
+                    Case 2
+                        cMouseEvents.setSystemCursor IDC_SIZENWSE
+                    
+                    'Mouse is over the bottom-left corner
+                    Case 3
+                        cMouseEvents.setSystemCursor IDC_SIZENESW
+                    
+                    'Mouse is within the layer, but not over a specific node
+                    Case 4
+                        cMouseEvents.setSystemCursor IDC_SIZEALL
+                    
+                End Select
+                
+            'If the current layer is *not* a text layer, clicking anywhere will create a new text layer
+            Else
+                cMouseEvents.setSystemCursor IDC_IBEAM
+            End If
         
         Case Else
             cMouseEvents.setSystemCursor IDC_ARROW

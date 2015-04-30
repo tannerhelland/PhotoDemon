@@ -310,6 +310,30 @@ Public Function getLayerType() As LAYER_TYPE
     getLayerType = myLayerType
 End Function
 
+'If a caller simply wants to determine vector vs raster layers, this helper function takes care of it.  Note that text layers are
+' considered vector layers, because all changes are non-destructive.
+Public Function isLayerVector() As Boolean
+
+    Select Case myLayerType
+    
+        Case PDL_IMAGE
+            isLayerVector = False
+        
+        Case PDL_TEXT
+            isLayerVector = True
+        
+        Case Else
+            Debug.Print "Layer type unknown!  Returning VECTOR = FALSE by default."
+    
+    End Select
+
+End Function
+
+'Counterpart to isLayerVector(), above
+Public Function isLayerRaster() As Boolean
+    isLayerRaster = Not isLayerVector
+End Function
+
 'Get/set name
 Public Function getLayerName() As String
     getLayerName = myLayerData.l_Name
@@ -1114,7 +1138,7 @@ End Function
 Public Function getVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean = False) As String
     
     'First, make sure this is not an image layer
-    If Me.getLayerType = PDL_IMAGE Then
+    If Me.isLayerVector() Then
         Debug.Print "WARNING!  The getVectorDataAsXML() function is only valid for vector layers!"
         Exit Function
     End If
