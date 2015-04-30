@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _ExtentX        =   873
-      _ExtentY        =   873
+      _extentx        =   873
+      _extenty        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
@@ -3062,7 +3062,7 @@ Private Sub Form_Unload(Cancel As Integer)
     ' the problematic image anyway.)
     g_RecentFiles.MRU_SaveToFile
     
-    'Save the Macros MRU. Same concerns as above
+    'Save the macro-specific MRU.
     g_RecentMacros.MRU_SaveToFile
     
     #If DEBUGMODE = 1 Then
@@ -3084,6 +3084,16 @@ Private Sub Form_Unload(Cancel As Integer)
     #End If
     
     ReleaseFormTheming Me
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Unloading all tool panels"
+    #End If
+    
+    'Manually unload all tool panels
+    Unload toolpanel_MoveSize
+    Unload toolpanel_NDFX
+    Unload toolpanel_Selections
+    Unload toolpanel_Text
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Shutting down window manager"

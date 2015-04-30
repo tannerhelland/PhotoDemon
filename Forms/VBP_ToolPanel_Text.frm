@@ -31,9 +31,9 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   1
       Top             =   930
       Width           =   2415
-      _ExtentX        =   4260
-      _ExtentY        =   741
-      curColor        =   0
+      _extentx        =   4260
+      _extenty        =   741
+      curcolor        =   0
    End
    Begin PhotoDemon.textUpDown tudTextFontSize 
       Height          =   345
@@ -41,11 +41,11 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   2
       Top             =   510
       Width           =   2415
-      _ExtentX        =   4260
-      _ExtentY        =   609
-      Min             =   1
-      Max             =   1000
-      Value           =   16
+      _extentx        =   4260
+      _extenty        =   609
+      max             =   1000
+      min             =   1
+      value           =   16
    End
    Begin PhotoDemon.pdTextBox txtTextTool 
       Height          =   1380
@@ -53,10 +53,10 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   3
       Top             =   30
       Width           =   5295
-      _ExtentX        =   9340
-      _ExtentY        =   2434
-      FontSize        =   9
-      Multiline       =   -1  'True
+      _extentx        =   9340
+      _extenty        =   2434
+      fontsize        =   9
+      multiline       =   -1
    End
    Begin PhotoDemon.pdComboBox cboTextFontFace 
       Height          =   375
@@ -64,8 +64,8 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   4
       Top             =   60
       Width           =   2415
-      _ExtentX        =   4260
-      _ExtentY        =   635
+      _extentx        =   4260
+      _extenty        =   635
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -73,11 +73,11 @@ Begin VB.Form toolpanel_Text
       Left            =   12600
       Top             =   1080
       Width           =   2445
-      _ExtentX        =   0
-      _ExtentY        =   503
-      Caption         =   "(this tool is under construction)"
-      ForeColor       =   255
-      UseCustomForeColor=   -1  'True
+      _extentx        =   0
+      _extenty        =   503
+      caption         =   "(this tool is under construction)"
+      forecolor       =   255
+      usecustomforecolor=   -1
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -85,11 +85,11 @@ Begin VB.Form toolpanel_Text
       Left            =   120
       Top             =   60
       Width           =   645
-      _ExtentX        =   1138
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "text:"
-      ForeColor       =   0
+      _extentx        =   1138
+      _extenty        =   503
+      alignment       =   1
+      caption         =   "text:"
+      forecolor       =   0
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -97,11 +97,11 @@ Begin VB.Form toolpanel_Text
       Left            =   6360
       Top             =   120
       Width           =   1125
-      _ExtentX        =   1984
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "font face:"
-      ForeColor       =   0
+      _extentx        =   1984
+      _extenty        =   503
+      alignment       =   1
+      caption         =   "font face:"
+      forecolor       =   0
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -109,11 +109,11 @@ Begin VB.Form toolpanel_Text
       Left            =   6360
       Top             =   570
       Width           =   1125
-      _ExtentX        =   1984
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "font size:"
-      ForeColor       =   0
+      _extentx        =   1984
+      _extenty        =   503
+      alignment       =   1
+      caption         =   "font size:"
+      forecolor       =   0
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -121,11 +121,11 @@ Begin VB.Form toolpanel_Text
       Left            =   6360
       Top             =   1020
       Width           =   1125
-      _ExtentX        =   1984
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "font color:"
-      ForeColor       =   0
+      _extentx        =   1984
+      _extenty        =   503
+      alignment       =   1
+      caption         =   "font color:"
+      forecolor       =   0
    End
    Begin PhotoDemon.pdComboBox cboTextRenderingHint 
       Height          =   375
@@ -133,8 +133,8 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   5
       Top             =   60
       Width           =   2415
-      _ExtentX        =   4260
-      _ExtentY        =   635
+      _extentx        =   4260
+      _extenty        =   635
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -142,11 +142,11 @@ Begin VB.Form toolpanel_Text
       Left            =   10200
       Top             =   120
       Width           =   1365
-      _ExtentX        =   2408
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "AA and hinting:"
-      ForeColor       =   0
+      _extentx        =   2408
+      _extenty        =   503
+      alignment       =   1
+      caption         =   "AA and hinting:"
+      forecolor       =   0
    End
    Begin PhotoDemon.textUpDown tudTextClarity 
       Height          =   345
@@ -154,10 +154,10 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   0
       Top             =   510
       Width           =   2415
-      _ExtentX        =   4260
-      _ExtentY        =   609
-      Max             =   12
-      Value           =   4
+      _extentx        =   4260
+      _extenty        =   609
+      max             =   12
+      value           =   4
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -165,11 +165,11 @@ Begin VB.Form toolpanel_Text
       Left            =   10200
       Top             =   570
       Width           =   1365
-      _ExtentX        =   2408
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "AA clarity:"
-      ForeColor       =   0
+      _extentx        =   2408
+      _extenty        =   503
+      alignment       =   1
+      caption         =   "AA clarity:"
+      forecolor       =   0
    End
 End
 Attribute VB_Name = "toolpanel_Text"
@@ -185,6 +185,11 @@ Attribute lastUsedSettings.VB_VarHelpID = -1
 
 'Current list of fonts, in pdStringStack format
 Private userFontList As pdStringStack
+
+'All tool panels expose an unchanging "ID Key"; this is the name used to identify this panel internally
+Public Function getInternalIDKey() As String
+    getInternalIDKey = "Text"
+End Function
 
 Private Sub cboTextFontFace_Click()
     

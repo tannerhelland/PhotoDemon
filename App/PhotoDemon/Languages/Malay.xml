@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.23</langversion>
+<langversion>6.7.24</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -11185,392 +11185,7 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <translation>Tools</translation>
 </phrase>
 
-<phrase>
-<original>(this tool is under construction)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>text</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>font face</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>font size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>font color</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>AA and hinting</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>AA clarity</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>smoothing</original>
-<translation>pelicinan</translation>
-</phrase>
-
-<phrase>
-<original>appearance</original>
-<translation>rupa</translation>
-</phrase>
-
-<phrase>
-<original>corner rounding</original>
-<translation>sudut pembundaran</translation>
-</phrase>
-
-<phrase>
-<original>position (x, y)</original>
-<translation>kedudukan (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>size (w, h)</original>
-<translation>saiz (w, h)</translation>
-</phrase>
-
-<phrase>
-<original>area</original>
-<translation>kawasan</translation>
-</phrase>
-
-<phrase>
-<original>sampling area</original>
-<translation>kawasan persampelan</translation>
-</phrase>
-
-<phrase>
-<original>tolerance</original>
-<translation>toleransi</translation>
-</phrase>
-
-<phrase>
-<original>stroke smoothing</original>
-<translation>strok pelicinan</translation>
-</phrase>
-
-<phrase>
-<original>curvature</original>
-<translation>kelengkungan</translation>
-</phrase>
-
-<phrase>
-<original>line width</original>
-<translation>lebar talian</translation>
-</phrase>
-
-<phrase>
-<original>2nd point (x, y)</original>
-<translation>2 titik (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>1st point (x, y)</original>
-<translation>1 titik (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>temperature</original>
-<translation>suhu</translation>
-</phrase>
-
-<phrase>
-<original>tint</original>
-<translation>warna</translation>
-</phrase>
-
-<phrase>
-<original>clarity</original>
-<translation>kejelasan</translation>
-</phrase>
-
-<phrase>
-<original>exposure</original>
-<translation>pendedahan</translation>
-</phrase>
-
-<phrase>
-<original>all</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>layer position (x, y)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize quality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>interaction options</original>
-<translation>pilihan interaksi</translation>
-</phrase>
-
-<phrase>
-<original>automatically activate layer beneath mouse</original>
-<translation>secara automatik mengaktifkan lapisan bawah tetikus</translation>
-</phrase>
-
-<phrase>
-<original>ignore transparent pixels when auto-activating layers</original>
-<translation>mengabaikan piksel telus apabila auto-mengaktifkan lapisan</translation>
-</phrase>
-
-<phrase>
-<original>show layer borders</original>
-<translation>sempadan lapisan persembahan</translation>
-</phrase>
-
-<phrase>
-<original>show layer transform nodes</original>
-<translation>lapisan persembahan mengubah nod</translation>
-</phrase>
-
-<phrase>
-<original>display options</original>
-<translation>pilihan paparan</translation>
-</phrase>
-
-<phrase>
-<original>Make layer size permanent</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Make quick-fixes permanent</original>
-<translation>Membuat pembaikan cepat-tetap</translation>
-</phrase>
-
-<phrase>
-<original>Reset layer to original size</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Make current layer size permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Nearest neighbor</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Reset all quick-fix adjustment values</original>
-<translation>Tetapkan semula semua nilai pelarasan yang cepat</translation>
-</phrase>
-
-<phrase>
-<original>Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.</original>
-<translation>Buat pelarasan yang cepat kekal. Tindakan ini tidak diperlukan, tetapi jika rendering viewport adalah pelarasan yang cepat lembap dan ramai yang aktif, ia boleh meningkatkan prestasi.</translation>
-</phrase>
-
-<phrase>
-<original>Highlight</original>
-<translation>highlight</translation>
-</phrase>
-
-<phrase>
-<original>Lightbox</original>
-<translation>Lightbox</translation>
-</phrase>
-
-<phrase>
-<original>Outline</original>
-<translation>Rangka</translation>
-</phrase>
-
-<phrase>
-<original>Antialiased</original>
-<translation>Antialiased</translation>
-</phrase>
-
-<phrase>
-<original>Feathered</original>
-<translation>berlapis</translation>
-</phrase>
-
-<phrase>
-<original>Interior</original>
-<translation>Dalam Negeri</translation>
-</phrase>
-
-<phrase>
-<original>Exterior</original>
-<translation>Bahagian Luar</translation>
-</phrase>
-
-<phrase>
-<original>image</original>
-<translation>imej</translation>
-</phrase>
-
-<phrase>
-<original>layer</original>
-<translation>lapisan</translation>
-</phrase>
-
-<phrase>
-<original>contiguous</original>
-<translation>berdampingan</translation>
-</phrase>
-
-<phrase>
-<original>global</original>
-<translation>global</translation>
-</phrase>
-
-<phrase>
-<original>Luminance</original>
-<translation>lar</translation>
-</phrase>
-
-<phrase>
-<original>Red</original>
-<translation>merah</translation>
-</phrase>
-
-<phrase>
-<original>Green</original>
-<translation>hijau</translation>
-</phrase>
-
-<phrase>
-<original>Blue</original>
-<translation>Blue</translation>
-</phrase>
-
-<phrase>
-<original>Alpha</original>
-<translation>Alpha</translation>
-</phrase>
-
-<phrase>
-<original>Default (debug only)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>No AA, hinting</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>No AA, no hinting</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>AA, hinting</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>AA, no hinting</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>ClearType (debug only)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
-<translation>Klik untuk mengubah cara pilihan diberikan ke kanvas imej. Ini tidak berkaitan dengan kandungan pemilihan - hanya cara mereka muncul semasa penyuntingan.</translation>
-</phrase>
-
-<phrase>
-<original>This option controls how smoothly a selection blends with its surroundings.</original>
-<translation>Opsyen ini mengawal bagaimana lancar pilihan menggabungkan dengan persekitarannya.</translation>
-</phrase>
-
-<phrase>
-<original>These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.</original>
-<translation>Pilihan ini mengawal kawasan yang terjejas oleh pilihan. Pemilihan boleh diubah suai di kanvas manakala mana-mana tetapan aktif. Untuk pelarasan pemilihan maju, gunakan menu Pilih.</translation>
-</phrase>
-
-<phrase>
-<original>This option adjusts the width of the selection border.</original>
-<translation>Pilihan ini menyesuaikan lebar sempadan pemilihan.</translation>
-</phrase>
-
-<phrase>
-<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu.</original>
-<translation>Ini slider bulu-bulu membolehkan pelarasan bulu-bulu serta-merta. Atas sebab-sebab prestasi, ia adalah terhad kepada jejari kecil. Untuk jejari bulu-bulu yang lebih besar, sila gunakan Pilih -> menu bulu-bulu.</translation>
-</phrase>
-
-<phrase>
-<original>This option adjusts the roundness of a rectangular selection's corners.</original>
-<translation>Pilihan ini menyesuaikan kebulatan sudut pilihan segi empat tepat ini.</translation>
-</phrase>
-
-<phrase>
-<original>This option adjusts the width of a line selection.</original>
-<translation>Pilihan ini menyesuaikan lebar pemilihan talian.</translation>
-</phrase>
-
-<phrase>
-<original>This option adjusts the curvature, if any, of a polygon selection's sides.</original>
-<translation>Pilihan ini menyesuaikan kelengkungan, jika ada, sisi pilihan poligon ini.</translation>
-</phrase>
-
-<phrase>
-<original>This option increases the smoothness of a hand-drawn lasso selection.</original>
-<translation>Pilihan ini meningkatkan kelancaran pilihan lasso tangan yang ditarik.</translation>
-</phrase>
-
-<phrase>
-<original>Tolerance controls how similar two pixels must be before adding them to a magic wand selection.</original>
-<translation>Toleransi mengawal bagaimana serupa dua piksel mestilah sebelum menambah mereka untuk pemilihan tongkat sakti.</translation>
-</phrase>
-
-<phrase>
-<original>The magic wand can operate on the entire image, or just the active layer.</original>
-<translation>The tongkat sihir boleh beroperasi pada keseluruhan imej, atau hanya lapisan yang aktif.</translation>
-</phrase>
-
-<phrase>
-<original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuity.</original>
-<translation>Biasanya, tongkat ajaib akan mengembang dari pixel sasaran, menambah piksel jiran untuk pilihan kerana ia pergi. Anda alternatif boleh menetapkannya untuk mencari semua imej, tanpa berkaitan untuk kesinambungan.</translation>
-</phrase>
-
-<phrase>
-<original>This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection.</original>
-<translation>Opsyen ini mengawal kriteria yang tongkat sihir digunakan untuk menentukan sama ada piksel yang perlu ditambah kepada pilihan semasa.</translation>
-</phrase>
-
-<!-- VBP_ToolbarTools.frm contains 98 phrases. 20 were duplicates of existing phrases, so only 78 new phrases were written to file. -->
+<!-- VBP_ToolbarTools.frm contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for VBP_ToolbarTools.frm-->
 
@@ -12624,11 +12239,16 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <!-- BEGIN text for VBP_FormGlassTiles.frm (FormGlassTiles) -->
 
 <phrase>
+<original>curvature</original>
+<translation>kelengkungan</translation>
+</phrase>
+
+<phrase>
 <original>Generating glass tiles</original>
 <translation>Menjana jubin kaca</translation>
 </phrase>
 
-<!-- VBP_FormGlassTiles.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- VBP_FormGlassTiles.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormGlassTiles.frm-->
 
@@ -12791,6 +12411,11 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
+<original>position (x, y)</original>
+<translation>kedudukan (x, y)</translation>
+</phrase>
+
+<phrase>
 <original>Applying lens flare</original>
 <translation>Menggunakan kanta suar</translation>
 </phrase>
@@ -12805,7 +12430,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <translation>tidak</translation>
 </phrase>
 
-<!-- VBP_FormLensFlare.frm contains 16 phrases. 9 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- VBP_FormLensFlare.frm contains 16 phrases. 8 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_FormLensFlare.frm-->
 
@@ -12892,11 +12517,16 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <!-- BEGIN text for VBP_FormTint.frm (FormTint) -->
 
 <phrase>
+<original>tint</original>
+<translation>warna</translation>
+</phrase>
+
+<phrase>
 <original>Re-tinting image</original>
 <translation>Re-mewarna gambar</translation>
 </phrase>
 
-<!-- VBP_FormTint.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- VBP_FormTint.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormTint.frm-->
 
@@ -13192,6 +12822,11 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
+<original>exposure</original>
+<translation>pendedahan</translation>
+</phrase>
+
+<phrase>
 <original>adaptation</original>
 <translation>penyesuaian</translation>
 </phrase>
@@ -13261,7 +12896,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <translation>Reinhard</translation>
 </phrase>
 
-<!-- VBP_FormToneMapping.frm contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- VBP_FormToneMapping.frm contains 24 phrases. 6 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_FormToneMapping.frm-->
 
@@ -13638,12 +13273,406 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <!-- END text for pdGlyphCollection.cls-->
 
+<!-- BEGIN text for VBP_ToolPanel_Text.frm (toolpanel_Text) -->
+
+<phrase>
+<original>Form1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(this tool is under construction)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font face</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>AA and hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>AA clarity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Default (debug only)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>No AA, hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>No AA, no hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>AA, hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>AA, no hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>ClearType (debug only)</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_ToolPanel_Text.frm contains 14 phrases.  All 14 were unique, so 14 new phrases were written to file. -->
+
+<!-- END text for VBP_ToolPanel_Text.frm-->
+
+<!-- BEGIN text for VBP_ToolPanel_Selections.frm (toolpanel_Selections) -->
+
+<phrase>
+<original>area</original>
+<translation>kawasan</translation>
+</phrase>
+
+<phrase>
+<original>size (w, h)</original>
+<translation>saiz (w, h)</translation>
+</phrase>
+
+<phrase>
+<original>line width</original>
+<translation>lebar talian</translation>
+</phrase>
+
+<phrase>
+<original>2nd point (x, y)</original>
+<translation>2 titik (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>1st point (x, y)</original>
+<translation>1 titik (x, y)</translation>
+</phrase>
+
+<phrase>
+<original>stroke smoothing</original>
+<translation>strok pelicinan</translation>
+</phrase>
+
+<phrase>
+<original>sampling area</original>
+<translation>kawasan persampelan</translation>
+</phrase>
+
+<phrase>
+<original>tolerance</original>
+<translation>toleransi</translation>
+</phrase>
+
+<phrase>
+<original>corner rounding</original>
+<translation>sudut pembundaran</translation>
+</phrase>
+
+<phrase>
+<original>smoothing</original>
+<translation>pelicinan</translation>
+</phrase>
+
+<phrase>
+<original>appearance</original>
+<translation>rupa</translation>
+</phrase>
+
+<phrase>
+<original>Highlight</original>
+<translation>highlight</translation>
+</phrase>
+
+<phrase>
+<original>Lightbox</original>
+<translation>Lightbox</translation>
+</phrase>
+
+<phrase>
+<original>Outline</original>
+<translation>Rangka</translation>
+</phrase>
+
+<phrase>
+<original>Antialiased</original>
+<translation>Antialiased</translation>
+</phrase>
+
+<phrase>
+<original>Feathered</original>
+<translation>berlapis</translation>
+</phrase>
+
+<phrase>
+<original>Interior</original>
+<translation>Dalam Negeri</translation>
+</phrase>
+
+<phrase>
+<original>Exterior</original>
+<translation>Bahagian Luar</translation>
+</phrase>
+
+<phrase>
+<original>image</original>
+<translation>imej</translation>
+</phrase>
+
+<phrase>
+<original>layer</original>
+<translation>lapisan</translation>
+</phrase>
+
+<phrase>
+<original>contiguous</original>
+<translation>berdampingan</translation>
+</phrase>
+
+<phrase>
+<original>global</original>
+<translation>global</translation>
+</phrase>
+
+<phrase>
+<original>Luminance</original>
+<translation>lar</translation>
+</phrase>
+
+<phrase>
+<original>Red</original>
+<translation>merah</translation>
+</phrase>
+
+<phrase>
+<original>Green</original>
+<translation>hijau</translation>
+</phrase>
+
+<phrase>
+<original>Blue</original>
+<translation>Blue</translation>
+</phrase>
+
+<phrase>
+<original>Alpha</original>
+<translation>Alpha</translation>
+</phrase>
+
+<phrase>
+<original>Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing.</original>
+<translation>Klik untuk mengubah cara pilihan diberikan ke kanvas imej. Ini tidak berkaitan dengan kandungan pemilihan - hanya cara mereka muncul semasa penyuntingan.</translation>
+</phrase>
+
+<phrase>
+<original>This option controls how smoothly a selection blends with its surroundings.</original>
+<translation>Opsyen ini mengawal bagaimana lancar pilihan menggabungkan dengan persekitarannya.</translation>
+</phrase>
+
+<phrase>
+<original>These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu.</original>
+<translation>Pilihan ini mengawal kawasan yang terjejas oleh pilihan. Pemilihan boleh diubah suai di kanvas manakala mana-mana tetapan aktif. Untuk pelarasan pemilihan maju, gunakan menu Pilih.</translation>
+</phrase>
+
+<phrase>
+<original>This option adjusts the width of the selection border.</original>
+<translation>Pilihan ini menyesuaikan lebar sempadan pemilihan.</translation>
+</phrase>
+
+<phrase>
+<original>This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu.</original>
+<translation>Ini slider bulu-bulu membolehkan pelarasan bulu-bulu serta-merta. Atas sebab-sebab prestasi, ia adalah terhad kepada jejari kecil. Untuk jejari bulu-bulu yang lebih besar, sila gunakan Pilih -> menu bulu-bulu.</translation>
+</phrase>
+
+<phrase>
+<original>This option adjusts the roundness of a rectangular selection's corners.</original>
+<translation>Pilihan ini menyesuaikan kebulatan sudut pilihan segi empat tepat ini.</translation>
+</phrase>
+
+<phrase>
+<original>This option adjusts the width of a line selection.</original>
+<translation>Pilihan ini menyesuaikan lebar pemilihan talian.</translation>
+</phrase>
+
+<phrase>
+<original>This option adjusts the curvature, if any, of a polygon selection's sides.</original>
+<translation>Pilihan ini menyesuaikan kelengkungan, jika ada, sisi pilihan poligon ini.</translation>
+</phrase>
+
+<phrase>
+<original>This option increases the smoothness of a hand-drawn lasso selection.</original>
+<translation>Pilihan ini meningkatkan kelancaran pilihan lasso tangan yang ditarik.</translation>
+</phrase>
+
+<phrase>
+<original>Tolerance controls how similar two pixels must be before adding them to a magic wand selection.</original>
+<translation>Toleransi mengawal bagaimana serupa dua piksel mestilah sebelum menambah mereka untuk pemilihan tongkat sakti.</translation>
+</phrase>
+
+<phrase>
+<original>The magic wand can operate on the entire image, or just the active layer.</original>
+<translation>The tongkat sihir boleh beroperasi pada keseluruhan imej, atau hanya lapisan yang aktif.</translation>
+</phrase>
+
+<phrase>
+<original>Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuity.</original>
+<translation>Biasanya, tongkat ajaib akan mengembang dari pixel sasaran, menambah piksel jiran untuk pilihan kerana ia pergi. Anda alternatif boleh menetapkannya untuk mencari semua imej, tanpa berkaitan untuk kesinambungan.</translation>
+</phrase>
+
+<phrase>
+<original>This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection.</original>
+<translation>Opsyen ini mengawal kriteria yang tongkat sihir digunakan untuk menentukan sama ada piksel yang perlu ditambah kepada pilihan semasa.</translation>
+</phrase>
+
+<!-- VBP_ToolPanel_Selections.frm contains 55 phrases. 15 were duplicates of existing phrases, so only 40 new phrases were written to file. -->
+
+<!-- END text for VBP_ToolPanel_Selections.frm-->
+
+<!-- BEGIN text for VBP_ToolPanel_NDFX.frm (toolpanel_NDFX) -->
+
+<phrase>
+<original>temperature</original>
+<translation>suhu</translation>
+</phrase>
+
+<phrase>
+<original>clarity</original>
+<translation>kejelasan</translation>
+</phrase>
+
+<phrase>
+<original>all</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Make quick-fixes permanent</original>
+<translation>Membuat pembaikan cepat-tetap</translation>
+</phrase>
+
+<phrase>
+<original>Reset all quick-fix adjustment values</original>
+<translation>Tetapkan semula semua nilai pelarasan yang cepat</translation>
+</phrase>
+
+<phrase>
+<original>Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance.</original>
+<translation>Buat pelarasan yang cepat kekal. Tindakan ini tidak diperlukan, tetapi jika rendering viewport adalah pelarasan yang cepat lembap dan ramai yang aktif, ia boleh meningkatkan prestasi.</translation>
+</phrase>
+
+<!-- VBP_ToolPanel_NDFX.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for VBP_ToolPanel_NDFX.frm-->
+
+<!-- BEGIN text for VBP_ToolPanel_MoveSize.frm (toolpanel_MoveSize) -->
+
+<phrase>
+<original>interaction options</original>
+<translation>pilihan interaksi</translation>
+</phrase>
+
+<phrase>
+<original>automatically activate layer beneath mouse</original>
+<translation>secara automatik mengaktifkan lapisan bawah tetikus</translation>
+</phrase>
+
+<phrase>
+<original>ignore transparent pixels when auto-activating layers</original>
+<translation>mengabaikan piksel telus apabila auto-mengaktifkan lapisan</translation>
+</phrase>
+
+<phrase>
+<original>show layer borders</original>
+<translation>sempadan lapisan persembahan</translation>
+</phrase>
+
+<phrase>
+<original>show layer transform nodes</original>
+<translation>lapisan persembahan mengubah nod</translation>
+</phrase>
+
+<phrase>
+<original>display options</original>
+<translation>pilihan paparan</translation>
+</phrase>
+
+<phrase>
+<original>layer position (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Make layer size permanent</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reset layer to original size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Make current layer size permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Nearest neighbor</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_ToolPanel_MoveSize.frm contains 21 phrases. 7 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<!-- END text for VBP_ToolPanel_MoveSize.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2373</phrasecount>
+<phrasecount>2374</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4047 phrases. -->
-<!-- 1674 are duplicates, so only 2373 unique phrases have been written to file. -->
-<!-- These 2373 phrases contain approximately 13483 total words. -->
+<!-- As of this build, PhotoDemon contains 4051 phrases. -->
+<!-- 1677 are duplicates, so only 2374 unique phrases have been written to file. -->
+<!-- These 2374 phrases contain approximately 13483 total words. -->
 
 </pdData>

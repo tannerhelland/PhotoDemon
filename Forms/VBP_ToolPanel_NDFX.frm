@@ -32,9 +32,9 @@ Begin VB.Form toolpanel_NDFX
       TabIndex        =   1
       Top             =   120
       Width           =   660
-      _ExtentX        =   1164
-      _ExtentY        =   1005
-      AutoToggle      =   -1  'True
+      _extentx        =   1164
+      _extenty        =   1005
+      autotoggle      =   -1
    End
    Begin PhotoDemon.sliderTextCombo sltQuickFix 
       CausesValidation=   0   'False
@@ -44,12 +44,12 @@ Begin VB.Form toolpanel_NDFX
       TabIndex        =   2
       Top             =   165
       Width           =   2670
-      _ExtentX        =   4710
-      _ExtentY        =   873
-      Min             =   -2
-      Max             =   2
-      SigDigits       =   2
-      SliderTrackStyle=   2
+      _extentx        =   4710
+      _extenty        =   873
+      sigdigits       =   2
+      max             =   2
+      min             =   -2
+      slidertrackstyle=   2
    End
    Begin PhotoDemon.sliderTextCombo sltQuickFix 
       CausesValidation=   0   'False
@@ -59,10 +59,10 @@ Begin VB.Form toolpanel_NDFX
       TabIndex        =   3
       Top             =   780
       Width           =   2670
-      _ExtentX        =   4710
-      _ExtentY        =   873
-      Min             =   -100
-      Max             =   100
+      _extentx        =   4710
+      _extenty        =   873
+      max             =   100
+      min             =   -100
    End
    Begin PhotoDemon.sliderTextCombo sltQuickFix 
       CausesValidation=   0   'False
@@ -72,10 +72,10 @@ Begin VB.Form toolpanel_NDFX
       TabIndex        =   4
       Top             =   165
       Width           =   2670
-      _ExtentX        =   4710
-      _ExtentY        =   873
-      Min             =   -100
-      Max             =   100
+      _extentx        =   4710
+      _extenty        =   873
+      max             =   100
+      min             =   -100
    End
    Begin PhotoDemon.sliderTextCombo sltQuickFix 
       CausesValidation=   0   'False
@@ -85,10 +85,10 @@ Begin VB.Form toolpanel_NDFX
       TabIndex        =   5
       Top             =   780
       Width           =   2670
-      _ExtentX        =   4710
-      _ExtentY        =   873
-      Min             =   -100
-      Max             =   100
+      _extentx        =   4710
+      _extenty        =   873
+      max             =   100
+      min             =   -100
    End
    Begin PhotoDemon.sliderTextCombo sltQuickFix 
       CausesValidation=   0   'False
@@ -98,14 +98,14 @@ Begin VB.Form toolpanel_NDFX
       TabIndex        =   6
       Top             =   165
       Width           =   2670
-      _ExtentX        =   4710
-      _ExtentY        =   873
-      Min             =   -100
-      Max             =   100
-      SliderTrackStyle=   3
-      GradientColorLeft=   16752699
-      GradientColorRight=   2990335
-      GradientColorMiddle=   16777215
+      _extentx        =   4710
+      _extenty        =   873
+      max             =   100
+      min             =   -100
+      slidertrackstyle=   3
+      gradientcolorleft=   16752699
+      gradientcolorright=   2990335
+      gradientcolormiddle=   16777215
    End
    Begin PhotoDemon.sliderTextCombo sltQuickFix 
       CausesValidation=   0   'False
@@ -115,14 +115,14 @@ Begin VB.Form toolpanel_NDFX
       TabIndex        =   7
       Top             =   780
       Width           =   2670
-      _ExtentX        =   4710
-      _ExtentY        =   873
-      Min             =   -100
-      Max             =   100
-      SliderTrackStyle=   3
-      GradientColorLeft=   15102446
-      GradientColorRight=   8253041
-      GradientColorMiddle=   16777215
+      _extentx        =   4710
+      _extenty        =   873
+      max             =   100
+      min             =   -100
+      slidertrackstyle=   3
+      gradientcolorleft=   15102446
+      gradientcolorright=   8253041
+      gradientcolormiddle=   16777215
    End
    Begin PhotoDemon.pdLabel lblOptions 
       Height          =   240
@@ -130,10 +130,10 @@ Begin VB.Form toolpanel_NDFX
       Left            =   8190
       Top             =   270
       Width           =   1335
-      _ExtentX        =   2355
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "temperature:"
+      _extentx        =   2355
+      _extenty        =   503
+      alignment       =   1
+      caption         =   "temperature:"
    End
    Begin PhotoDemon.pdLabel lblOptions 
       Height          =   240
@@ -141,10 +141,10 @@ Begin VB.Form toolpanel_NDFX
       Left            =   8190
       Top             =   885
       Width           =   1335
-      _ExtentX        =   2355
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "tint:"
+      _extentx        =   2355
+      _extenty        =   503
+      alignment       =   1
+      caption         =   "tint:"
    End
    Begin PhotoDemon.pdLabel lblOptions 
       Height          =   240
@@ -152,10 +152,10 @@ Begin VB.Form toolpanel_NDFX
       Left            =   4050
       Top             =   885
       Width           =   1335
-      _ExtentX        =   2355
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "vibrance:"
+      _extentx        =   2355
+      _extenty        =   503
+      alignment       =   1
+      caption         =   "vibrance:"
    End
    Begin PhotoDemon.pdLabel lblOptions 
       Height          =   240
@@ -163,10 +163,10 @@ Begin VB.Form toolpanel_NDFX
       Left            =   4050
       Top             =   270
       Width           =   1335
-      _ExtentX        =   2355
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "clarity:"
+      _extentx        =   2355
+      _extenty        =   503
+      alignment       =   1
+      caption         =   "clarity:"
    End
    Begin PhotoDemon.pdLabel lblOptions 
       Height          =   240
@@ -174,10 +174,10 @@ Begin VB.Form toolpanel_NDFX
       Left            =   120
       Top             =   885
       Width           =   1155
-      _ExtentX        =   2037
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "contrast:"
+      _extentx        =   2037
+      _extenty        =   503
+      alignment       =   1
+      caption         =   "contrast:"
    End
    Begin PhotoDemon.pdLabel lblOptions 
       Height          =   240
@@ -185,10 +185,10 @@ Begin VB.Form toolpanel_NDFX
       Left            =   120
       Top             =   270
       Width           =   1155
-      _ExtentX        =   2037
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "exposure:"
+      _extentx        =   2037
+      _extenty        =   503
+      alignment       =   1
+      caption         =   "exposure:"
    End
    Begin PhotoDemon.pdButtonToolbox cmdQuickFix 
       Height          =   570
@@ -197,9 +197,9 @@ Begin VB.Form toolpanel_NDFX
       TabIndex        =   0
       Top             =   720
       Width           =   660
-      _ExtentX        =   1164
-      _ExtentY        =   1005
-      AutoToggle      =   -1  'True
+      _extentx        =   1164
+      _extenty        =   1005
+      autotoggle      =   -1
    End
    Begin PhotoDemon.pdLabel lblOptions 
       Height          =   240
@@ -207,10 +207,10 @@ Begin VB.Form toolpanel_NDFX
       Left            =   12360
       Top             =   270
       Width           =   795
-      _ExtentX        =   1402
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "all:"
+      _extentx        =   1402
+      _extenty        =   503
+      alignment       =   1
+      caption         =   "all:"
    End
 End
 Attribute VB_Name = "toolpanel_NDFX"
@@ -226,6 +226,11 @@ Attribute lastUsedSettings.VB_VarHelpID = -1
 
 'Whether or not non-destructive FX can be applied to the image
 Private m_NonDestructiveFXAllowed As Boolean
+
+'All tool panels expose an unchanging "ID Key"; this is the name used to identify this panel internally
+Public Function getInternalIDKey() As String
+    getInternalIDKey = "NDFX"
+End Function
 
 'If external functions want to disable automatic non-destructive FX syncing, then can do so via this function
 Public Sub setNDFXControlState(ByVal newNDFXState As Boolean)
