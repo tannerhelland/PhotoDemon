@@ -951,6 +951,10 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     Dim gdipBrush As Long
     gdipBrush = GDI_Plus.getGDIPlusBrushHandle(crColor, 255)
     
+    'For fun, you can also stroke the path outline with a pen, using the following code
+    Dim gdipPen As Long
+    'gdipPen = GDI_Plus.getGDIPlusPenHandle(crColor, 255, 1)
+        
     'Convert the input rect to a RECTF
     Dim boundingRect As RECTF
     With boundingRect
@@ -965,9 +969,13 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     Dim finalTextPath As pdGraphicsPath
     If m_GlyphCollection.assembleCompositePath(srcString, finalTextPath, boundingRect) Then
         
-        'Draw the path
         Dim gdipReturn As Long
+        
+        'Draw the path
         gdipReturn = GdipFillPath(dstGraphics, gdipBrush, finalTextPath.getCopyOfPathHandle)
+        
+        'For fun, you can stroke the path outline with a pen, using the following code
+        'gdipReturn = GdipDrawPath(dstGraphics, gdipPen, finalTextPath.getCopyOfPathHandle)
         
         If gdipReturn <> 0 Then Debug.Print "WARNING!  GdipFillPath failed; return code was " & gdipReturn
         
@@ -975,21 +983,14 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
         Debug.Print "WARNING!  m_GlyphCollection.assembleCompositePath returned FALSE.  Please investigate."
     End If
     
-    'TODO: handle returns
-    'Dim gdipReturn As Long
-   '
-   ' If gdipReturn = 0 Then
-   '     renderTextToDIB_GDIPlus = True
-   ' Else
-   '     Debug.Print "WARNING!  GdipDrawString failed with error code " & gdipReturn
-   '     Debug.Print "WARNING!  (Extra debug info: hFont - " & m_GDIPlusFont & ", hStringFormat - " & m_GDIPlusStringFormat & ")"
-   '     renderTextToDIB_GDIPlus = False
-   ' End If
-    
     'Release the temporary GDI+ objects we created
-    GDI_Plus.releaseGDIPlusBrush gdipBrush
+    If gdipPen <> 0 Then GDI_Plus.releaseGDIPlusPen gdipPen
+    If gdipBrush <> 0 Then GDI_Plus.releaseGDIPlusBrush gdipBrush
     GDI_Plus.releaseGDIPlusGraphics dstGraphics
-
+    
+    'Return success/failure contingent on the return of the GDI+ rendering call
+    renderTextToDIB_GDIPlus = CBool(gdipReturn = 0)
+    
 End Function
 
 'Render text using GDI using a dummy implementation, only.  This only exists to test things like GDI font creation; I am actively working on
