@@ -425,8 +425,7 @@ Public Sub LoadTheProgram()
     LoadMessage "Initializing image tools..."
         
     'Note that selection tools are initialized in the Tool toolbar's Form_Load event
-    
-    
+        
     
     '*************************************************************************************************************************************
     ' PhotoDemon's complex interface requires a lot of things to be generated at run-time.

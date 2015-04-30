@@ -3,7 +3,6 @@ Begin VB.Form toolpanel_MoveSize
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   Caption         =   "Form1"
    ClientHeight    =   1515
    ClientLeft      =   0
    ClientTop       =   0
@@ -45,9 +44,9 @@ Begin VB.Form toolpanel_MoveSize
          Left            =   120
          Top             =   60
          Width           =   5370
-         _extentx        =   9472
-         _extenty        =   503
-         caption         =   "interaction options:"
+         _ExtentX        =   9472
+         _ExtentY        =   503
+         Caption         =   "interaction options:"
       End
       Begin PhotoDemon.smartCheckBox chkAutoActivateLayer 
          Height          =   330
@@ -55,9 +54,9 @@ Begin VB.Form toolpanel_MoveSize
          TabIndex        =   11
          Top             =   450
          Width           =   5370
-         _extentx        =   9472
-         _extenty        =   582
-         caption         =   "automatically activate layer beneath mouse"
+         _ExtentX        =   9472
+         _ExtentY        =   582
+         Caption         =   "automatically activate layer beneath mouse"
       End
       Begin PhotoDemon.smartCheckBox chkIgnoreTransparent 
          Height          =   330
@@ -65,9 +64,9 @@ Begin VB.Form toolpanel_MoveSize
          TabIndex        =   12
          Top             =   900
          Width           =   5370
-         _extentx        =   9472
-         _extenty        =   582
-         caption         =   "ignore transparent pixels when auto-activating layers"
+         _ExtentX        =   9472
+         _ExtentY        =   582
+         Caption         =   "ignore transparent pixels when auto-activating layers"
       End
       Begin PhotoDemon.smartCheckBox chkLayerBorder 
          Height          =   330
@@ -75,9 +74,9 @@ Begin VB.Form toolpanel_MoveSize
          TabIndex        =   13
          Top             =   450
          Width           =   5370
-         _extentx        =   9472
-         _extenty        =   582
-         caption         =   "show layer borders"
+         _ExtentX        =   9472
+         _ExtentY        =   582
+         Caption         =   "show layer borders"
       End
       Begin PhotoDemon.smartCheckBox chkLayerNodes 
          Height          =   330
@@ -85,9 +84,9 @@ Begin VB.Form toolpanel_MoveSize
          TabIndex        =   0
          Top             =   900
          Width           =   5370
-         _extentx        =   9472
-         _extenty        =   582
-         caption         =   "show layer transform nodes"
+         _ExtentX        =   9472
+         _ExtentY        =   582
+         Caption         =   "show layer transform nodes"
       End
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
@@ -95,9 +94,9 @@ Begin VB.Form toolpanel_MoveSize
          Left            =   5640
          Top             =   60
          Width           =   5370
-         _extentx        =   9472
-         _extenty        =   503
-         caption         =   "display options:"
+         _ExtentX        =   9472
+         _ExtentY        =   503
+         Caption         =   "display options:"
       End
    End
    Begin VB.PictureBox picMoveContainer 
@@ -120,8 +119,8 @@ Begin VB.Form toolpanel_MoveSize
          TabIndex        =   3
          Top             =   420
          Width           =   2775
-         _extentx        =   4895
-         _extenty        =   529
+         _ExtentX        =   4895
+         _ExtentY        =   529
       End
       Begin PhotoDemon.textUpDown tudLayerMove 
          Height          =   345
@@ -130,8 +129,8 @@ Begin VB.Form toolpanel_MoveSize
          TabIndex        =   4
          Top             =   420
          Width           =   2055
-         _extentx        =   3625
-         _extenty        =   609
+         _ExtentX        =   3625
+         _ExtentY        =   609
       End
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
@@ -139,9 +138,9 @@ Begin VB.Form toolpanel_MoveSize
          Left            =   120
          Top             =   60
          Width           =   2370
-         _extentx        =   4180
-         _extenty        =   503
-         caption         =   "layer position (x, y):"
+         _ExtentX        =   4180
+         _ExtentY        =   503
+         Caption         =   "layer position (x, y):"
       End
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
@@ -149,9 +148,9 @@ Begin VB.Form toolpanel_MoveSize
          Left            =   2640
          Top             =   60
          Width           =   2370
-         _extentx        =   4180
-         _extenty        =   503
-         caption         =   "layer size (w, h):"
+         _ExtentX        =   4180
+         _ExtentY        =   503
+         Caption         =   "layer size (w, h):"
       End
       Begin PhotoDemon.textUpDown tudLayerMove 
          Height          =   345
@@ -160,8 +159,8 @@ Begin VB.Form toolpanel_MoveSize
          TabIndex        =   5
          Top             =   840
          Width           =   2055
-         _extentx        =   3625
-         _extenty        =   609
+         _ExtentX        =   3625
+         _ExtentY        =   609
       End
       Begin PhotoDemon.textUpDown tudLayerMove 
          Height          =   345
@@ -170,8 +169,8 @@ Begin VB.Form toolpanel_MoveSize
          TabIndex        =   6
          Top             =   420
          Width           =   2055
-         _extentx        =   3625
-         _extenty        =   609
+         _ExtentX        =   3625
+         _ExtentY        =   609
       End
       Begin PhotoDemon.textUpDown tudLayerMove 
          Height          =   345
@@ -180,8 +179,8 @@ Begin VB.Form toolpanel_MoveSize
          TabIndex        =   7
          Top             =   840
          Width           =   2055
-         _extentx        =   3625
-         _extenty        =   609
+         _ExtentX        =   3625
+         _ExtentY        =   609
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerMove 
          Height          =   570
@@ -190,9 +189,9 @@ Begin VB.Form toolpanel_MoveSize
          TabIndex        =   8
          Top             =   420
          Width           =   660
-         _extentx        =   1164
-         _extenty        =   1005
-         autotoggle      =   -1
+         _ExtentX        =   1164
+         _ExtentY        =   1005
+         AutoToggle      =   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerMove 
          Height          =   570
@@ -201,9 +200,9 @@ Begin VB.Form toolpanel_MoveSize
          TabIndex        =   9
          Top             =   420
          Width           =   660
-         _extentx        =   1164
-         _extenty        =   1005
-         autotoggle      =   -1
+         _ExtentX        =   1164
+         _ExtentY        =   1005
+         AutoToggle      =   -1  'True
       End
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
@@ -211,9 +210,9 @@ Begin VB.Form toolpanel_MoveSize
          Left            =   5190
          Top             =   60
          Width           =   3090
-         _extentx        =   5450
-         _extenty        =   503
-         caption         =   "non-destructive resize quality:"
+         _ExtentX        =   5450
+         _ExtentY        =   503
+         Caption         =   "non-destructive resize quality:"
       End
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
@@ -221,9 +220,9 @@ Begin VB.Form toolpanel_MoveSize
          Left            =   8400
          Top             =   60
          Width           =   3360
-         _extentx        =   5927
-         _extenty        =   503
-         caption         =   "non-destructive resize options:"
+         _ExtentX        =   5927
+         _ExtentY        =   503
+         Caption         =   "non-destructive resize options:"
       End
    End
    Begin PhotoDemon.buttonStrip btsMoveOptions 
@@ -232,8 +231,8 @@ Begin VB.Form toolpanel_MoveSize
       TabIndex        =   1
       Top             =   420
       Width           =   2415
-      _extentx        =   4895
-      _extenty        =   1508
+      _ExtentX        =   4895
+      _ExtentY        =   1508
    End
    Begin PhotoDemon.pdLabel lblOptions 
       Height          =   240
@@ -241,9 +240,9 @@ Begin VB.Form toolpanel_MoveSize
       Left            =   120
       Top             =   60
       Width           =   2700
-      _extentx        =   1164
-      _extenty        =   503
-      caption         =   "display:"
+      _ExtentX        =   1164
+      _ExtentY        =   503
+      Caption         =   "display:"
    End
 End
 Attribute VB_Name = "toolpanel_MoveSize"
@@ -256,12 +255,6 @@ Option Explicit
 'The value of all controls on this form are saved and loaded to file by this class
 Private WithEvents lastUsedSettings As pdLastUsedSettings
 Attribute lastUsedSettings.VB_VarHelpID = -1
-
-'All tool panels expose an unchanging "ID Key"; this is the name used to identify this panel internally
-Public Function getInternalIDKey() As String
-    getInternalIDKey = "MoveSize"
-End Function
-
 
 'Two sub-panels are available on the "move options" panel
 Private Sub btsMoveOptions_Click(ByVal buttonIndex As Long)
@@ -354,10 +347,11 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
-
+    
     'Save all last-used settings to file
     lastUsedSettings.saveAllControlValues
-
+    lastUsedSettings.setParentForm Nothing
+    
 End Sub
 
 Private Sub tudLayerMove_Change(Index As Integer)

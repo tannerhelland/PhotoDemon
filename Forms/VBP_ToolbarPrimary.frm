@@ -31,9 +31,9 @@ Begin VB.Form toolbar_Toolbox
       Left            =   120
       Top             =   30
       Width           =   2175
-      _extentx        =   450
-      _extenty        =   503
-      caption         =   "file"
+      _ExtentX        =   450
+      _ExtentY        =   503
+      Caption         =   "file"
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -42,8 +42,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   1
       Top             =   2880
       Width           =   720
-      _extentx        =   1085
-      _extenty        =   1085
+      _ExtentX        =   1085
+      _ExtentY        =   1085
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -52,8 +52,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   2
       Top             =   2880
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
+      _ExtentX        =   1270
+      _ExtentY        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -62,8 +62,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   3
       Top             =   2880
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
+      _ExtentX        =   1270
+      _ExtentY        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -72,8 +72,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   4
       Top             =   3840
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
+      _ExtentX        =   1270
+      _ExtentY        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -82,8 +82,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   5
       Top             =   3840
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
+      _ExtentX        =   1270
+      _ExtentY        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -92,8 +92,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   6
       Top             =   3840
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
+      _ExtentX        =   1270
+      _ExtentY        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -102,8 +102,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   7
       Top             =   4440
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
+      _ExtentX        =   1270
+      _ExtentY        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -112,8 +112,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   8
       Top             =   4440
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
+      _ExtentX        =   1270
+      _ExtentY        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -122,8 +122,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   9
       Top             =   4440
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
+      _ExtentX        =   1270
+      _ExtentY        =   1058
    End
    Begin PhotoDemon.pdLabel lblCategories 
       Height          =   240
@@ -131,9 +131,9 @@ Begin VB.Form toolbar_Toolbox
       Left            =   120
       Top             =   1620
       Width           =   2175
-      _extentx        =   3836
-      _extenty        =   503
-      caption         =   "undo"
+      _ExtentX        =   3836
+      _ExtentY        =   503
+      Caption         =   "undo"
    End
    Begin PhotoDemon.pdLabel lblCategories 
       Height          =   240
@@ -141,9 +141,9 @@ Begin VB.Form toolbar_Toolbox
       Left            =   120
       Top             =   2580
       Width           =   2175
-      _extentx        =   3836
-      _extenty        =   503
-      caption         =   "non-destructive"
+      _ExtentX        =   3836
+      _ExtentY        =   503
+      Caption         =   "non-destructive"
    End
    Begin PhotoDemon.pdLabel lblCategories 
       Height          =   240
@@ -151,9 +151,9 @@ Begin VB.Form toolbar_Toolbox
       Left            =   120
       Top             =   3540
       Width           =   2175
-      _extentx        =   3836
-      _extenty        =   503
-      caption         =   "selection"
+      _ExtentX        =   3836
+      _ExtentY        =   503
+      Caption         =   "selection"
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -162,8 +162,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   10
       Top             =   300
       Width           =   720
-      _extentx        =   1085
-      _extenty        =   1085
+      _ExtentX        =   1085
+      _ExtentY        =   1085
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -172,8 +172,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   11
       Top             =   300
       Width           =   720
-      _extentx        =   1085
-      _extenty        =   1085
+      _ExtentX        =   1085
+      _ExtentY        =   1085
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -182,8 +182,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   12
       Top             =   300
       Width           =   720
-      _extentx        =   1085
-      _extenty        =   1085
+      _ExtentX        =   1085
+      _ExtentY        =   1085
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -192,8 +192,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   13
       Top             =   960
       Width           =   720
-      _extentx        =   1085
-      _extenty        =   1085
+      _ExtentX        =   1085
+      _ExtentY        =   1085
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -202,8 +202,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   14
       Top             =   960
       Width           =   720
-      _extentx        =   1085
-      _extenty        =   1085
+      _ExtentX        =   1085
+      _ExtentY        =   1085
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -212,8 +212,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   15
       Top             =   960
       Width           =   720
-      _extentx        =   1085
-      _extenty        =   1085
+      _ExtentX        =   1085
+      _ExtentY        =   1085
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -222,8 +222,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   16
       Top             =   1920
       Width           =   720
-      _extentx        =   1085
-      _extenty        =   1085
+      _ExtentX        =   1085
+      _ExtentY        =   1085
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -232,8 +232,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   17
       Top             =   1920
       Width           =   720
-      _extentx        =   1085
-      _extenty        =   1085
+      _ExtentX        =   1085
+      _ExtentY        =   1085
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -242,8 +242,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   18
       Top             =   1920
       Width           =   720
-      _extentx        =   1085
-      _extenty        =   1085
+      _ExtentX        =   1085
+      _ExtentY        =   1085
    End
    Begin PhotoDemon.pdLabel lblCategories 
       Height          =   240
@@ -251,9 +251,9 @@ Begin VB.Form toolbar_Toolbox
       Left            =   120
       Top             =   5100
       Width           =   2175
-      _extentx        =   3836
-      _extenty        =   503
-      caption         =   "vector"
+      _ExtentX        =   3836
+      _ExtentY        =   503
+      Caption         =   "vector"
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -262,8 +262,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   19
       Top             =   5400
       Width           =   720
-      _extentx        =   1270
-      _extenty        =   1058
+      _ExtentX        =   1270
+      _ExtentY        =   1058
    End
    Begin VB.Line lnRightSeparator 
       X1              =   136
@@ -352,7 +352,7 @@ Private Const BTS_HEIGHT_LARGE As Long = 48
 Private m_ButtonWidth As Long, m_ButtonHeight As Long
 
 'The currently active tool panel and ID key will be mirrored to this reference
-Private m_ActiveToolPanel As Form, m_ActiveToolPanelKey As String
+Private m_ActiveToolPanelKey As String
 
 Private Sub cmdFile_Click(Index As Integer)
         
@@ -528,7 +528,7 @@ Private Sub reflowToolboxLayout()
     rightBoundary = Me.ScaleWidth - 1
     
     'Reflow label width first; they are easy because they simply match the width of the form
-    For i = 0 To lblCategories.UBound
+    For i = 0 To lblCategories.ubound
         lblCategories(i).Width = rightBoundary - (lblCategories(i).Left + fixDPI(2))
     Next i
     
@@ -558,7 +558,7 @@ Private Sub reflowToolboxLayout()
     buttonMarginRight = 0           'Distance between buttons
     
     'If category labels are displayed, make them visible now
-    For i = 0 To lblCategories.UBound
+    For i = 0 To lblCategories.ubound
         If lblCategories(i).Visible <> m_ShowCategoryLabels Then lblCategories(i).Visible = m_ShowCategoryLabels
     Next i
     
@@ -697,8 +697,8 @@ Private Sub reflowToolboxLayout()
     Next i
     
     'Macro recording message
-    If vOffset < cmdTools(cmdTools.UBound).Top + cmdTools(cmdTools.UBound).Height Then
-        vOffset = cmdTools(cmdTools.UBound).Top + cmdTools(cmdTools.UBound).Height + buttonMarginBottom
+    If vOffset < cmdTools(cmdTools.ubound).Top + cmdTools(cmdTools.ubound).Height Then
+        vOffset = cmdTools(cmdTools.ubound).Top + cmdTools(cmdTools.ubound).Height + buttonMarginBottom
     End If
     
     vOffset = vOffset + labelMarginTop
@@ -805,29 +805,28 @@ Public Sub resetToolButtonStates()
         
         'Move/size tool
         Case NAV_MOVE
+            Load toolpanel_MoveSize
             m_ActiveToolPanelKey = "MoveSize"
-            Set m_ActiveToolPanel = toolpanel_MoveSize
             
         '"Quick fix" tool(s)
         Case QUICK_FIX_LIGHTING
+            Load toolpanel_NDFX
             m_ActiveToolPanelKey = "NDFX"
-            Set m_ActiveToolPanel = toolpanel_NDFX
-        
+            
         'Rectangular, Elliptical, Line selections
         Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
+            Load toolpanel_Selections
             m_ActiveToolPanelKey = "Selections"
-            Set m_ActiveToolPanel = toolpanel_Selections
             
         'Vector tools
         Case VECTOR_TEXT
+            Load toolpanel_Text
             m_ActiveToolPanelKey = "Text"
-            Set m_ActiveToolPanel = toolpanel_Text
-        
+            
         'If a tool does not require an extra settings panel, set the active panel to -1.  This will hide all panels.
         Case Else
             m_ActiveToolPanelKey = "NoPanels"
-            Set m_ActiveToolPanel = Nothing
-        
+            
     End Select
         
     'If a selection tool is active, we will also need activate a specific subpanel
@@ -893,28 +892,38 @@ Public Sub resetToolButtonStates()
     End If
     
     'Display the current tool options panel, while hiding all inactive ones
-    Dim toolPanelCollection As Collection
-    Set toolPanelCollection = New Collection
+    Dim toolPanelCollection As pdDictionary
+    Set toolPanelCollection = New pdDictionary
     
-    toolPanelCollection.Add toolpanel_MoveSize, "MoveSize"
-    toolPanelCollection.Add toolpanel_NDFX, "NDFX"
-    toolPanelCollection.Add toolpanel_Selections, "Selections"
-    toolPanelCollection.Add toolpanel_Text, "Text"
+    If Not (toolpanel_MoveSize Is Nothing) Then toolPanelCollection.AddEntry "MoveSize", toolpanel_MoveSize.hWnd
+    If Not (toolpanel_NDFX Is Nothing) Then toolPanelCollection.AddEntry "NDFX", toolpanel_NDFX.hWnd
+    If Not (toolpanel_Selections Is Nothing) Then toolPanelCollection.AddEntry "Selections", toolpanel_Selections.hWnd
+    If Not (toolpanel_Text Is Nothing) Then toolPanelCollection.AddEntry "Text", toolpanel_Text.hWnd
     
-    For i = 1 To toolPanelCollection.Count
-        
-        'If this is the active panel, display it
-        If StrComp(toolPanelCollection(i).getInternalIDKey, m_ActiveToolPanelKey) = 0 Then
+    g_WindowManager.deactivateToolPanel False
+    
+    'To prevent flicker, we handle this in two passes.
+    
+    'First, activate the new window.
+    If toolPanelCollection.getNumOfEntries > 0 Then
+    
+        For i = 0 To toolPanelCollection.getNumOfEntries - 1
             
-            'Use the window manager to activate the window
-            g_WindowManager.activateToolPanel toolPanelCollection(i).hWnd
+            'If this is the active panel, display it
+            If StrComp(toolPanelCollection.getKeyByIndex(i), LCase(m_ActiveToolPanelKey)) = 0 Then
+                g_WindowManager.activateToolPanel toolPanelCollection.getValueByIndex(i)
+            End If
             
-        'If this is not the active panel, hide it
-        Else
-            toolPanelCollection(i).Visible = False
-        End If
+        Next i
         
-    Next i
+        'Next, hide all other panels
+        For i = 0 To toolPanelCollection.getNumOfEntries - 1
+            If StrComp(toolPanelCollection.getKeyByIndex(i), LCase(m_ActiveToolPanelKey)) <> 0 Then
+                g_WindowManager.setVisibilityOfAnyWindowByHwnd toolPanelCollection.getValueByIndex(i), False
+            End If
+        Next i
+        
+    End If
     
     'Display the current tool options panel, while hiding all inactive ones.  The On Error Resume statement is used to fix
     ' trouble with the .SetFocus line, below.  That .SetFocus line is helpful for fixing some VB issues with controls embedded
@@ -1023,13 +1032,13 @@ Public Sub updateButtonSize(ByVal newSize As Long, Optional ByVal suppressRedraw
     'Update all buttons to match
     Dim i As Long
     
-    For i = 0 To cmdFile.UBound
+    For i = 0 To cmdFile.ubound
         If (cmdFile(i).Width <> m_ButtonWidth) Or (cmdFile(i).Height <> m_ButtonHeight) Then
             cmdFile(i).Move cmdFile(i).Left, cmdFile(i).Top, m_ButtonWidth, m_ButtonHeight
         End If
     Next i
     
-    For i = 0 To cmdTools.UBound
+    For i = 0 To cmdTools.ubound
         If (cmdTools(i).Width <> m_ButtonWidth) Or (cmdTools(i).Height <> m_ButtonHeight) Then
             cmdTools(i).Move cmdTools(i).Left, cmdTools(i).Top, m_ButtonWidth, m_ButtonHeight
         End If
