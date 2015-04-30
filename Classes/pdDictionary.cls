@@ -54,6 +54,33 @@ Private m_DictEntries() As dictEntry
 Private m_NumOfEntries As Long
 Private Const INIT_DICT_SIZE = 16
 
+'Number of entries in the current dictionary; 1-based
+Public Function getNumOfEntries() As Long
+    getNumOfEntries = m_NumOfEntries
+End Function
+
+'Retrieve a particular entry by index.  Helpful when iterating the dictionary.
+Public Function getValueByIndex(ByVal entryIndex As Long) As Variant
+    
+    If (entryIndex >= 0) And (entryIndex < m_NumOfEntries) Then
+        getValueByIndex = m_DictEntries(entryIndex).dItem
+    Else
+        Debug.Print "Invalid dictionary entry request!"
+    End If
+    
+End Function
+
+'Retrieve a particular entry key by index.  Helpful when iterating the dictionary.
+Public Function getKeyByIndex(ByVal entryIndex As Long) As String
+    
+    If (entryIndex >= 0) And (entryIndex < m_NumOfEntries) Then
+        getKeyByIndex = m_DictEntries(entryIndex).dKey
+    Else
+        Debug.Print "Invalid dictionary entry request!"
+    End If
+    
+End Function
+
 'A single function is used to add or update dictionary entries.  If the specified key does not exist, it is added as a
 ' new entry.  If it does exist, it is simply updated.
 '

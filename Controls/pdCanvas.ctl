@@ -1315,7 +1315,10 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                     
                     'Create a new text layer directly; note that we *do not* pass this command through the central processor, as we do not
                     ' want the delay associated with full Undo/Redo creation.
-                    Layer_Handler.addNewLayer pdImages(g_CurrentImage).getActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, "", imgX, imgY
+                    Layer_Handler.addNewLayer pdImages(g_CurrentImage).getActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, "", imgX, imgY, True
+                    
+                    'Use a special initialization command that basically copies all existing text properties into the newly created layer.
+                    Tool_Support.syncCurrentLayerToToolOptionsUI
                     
                     'Put the newly created layer into transform mode, with the bottom-right corner selected
                     Tool_Support.setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, 2
@@ -1744,7 +1747,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                 If Tool_Support.getCustomToolState = PD_TEXT_TOOL_CREATED_NEW_LAYER Then
                     
                     'See if this was just a click (as it might be at creation time).
-                    If ClickEventAlsoFiring Or ((Tool_Support.getCustomToolState = PD_TEXT_TOOL_CREATED_NEW_LAYER) And (hasMouseMoved <= 1)) Then
+                    If ClickEventAlsoFiring Or (hasMouseMoved <= 2) Or (pdImages(g_CurrentImage).getActiveLayer.getLayerWidth < 4) Or (pdImages(g_CurrentImage).getActiveLayer.getLayerHeight < 4) Then
                         
                         'Update the layer's size
                         pdImages(g_CurrentImage).getActiveLayer.setLayerWidth Abs(pdImages(g_CurrentImage).Width - pdImages(g_CurrentImage).getActiveLayer.getLayerOffsetX)

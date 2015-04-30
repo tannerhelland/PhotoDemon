@@ -350,3 +350,6 @@ Private Function InControlArray(Ctl As Object) As Boolean
     InControlArray = Not Ctl.Parent.Controls(Ctl.Name) Is Ctl
 End Function
 
+Private Sub Class_Terminate()
+    Set parentForm = Nothing
+End Sub

@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _extentx        =   1191
-      _extenty        =   1058
-      enabled         =   0
+      _ExtentX        =   1191
+      _ExtentY        =   1058
+      Enabled         =   0   'False
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _extentx        =   873
-      _extenty        =   873
+      _ExtentX        =   873
+      _ExtentY        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
@@ -2972,6 +2972,35 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
         
     End If
     
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Unloading all tool panels"
+    #End If
+        
+    'Manually unload all tool panels
+    If Not (toolpanel_MoveSize Is Nothing) Then
+        g_WindowManager.deactivateToolPanel True, toolpanel_MoveSize.hWnd
+        Unload toolpanel_MoveSize
+        Set toolpanel_MoveSize = Nothing
+    End If
+
+    If Not (toolpanel_NDFX Is Nothing) Then
+        g_WindowManager.deactivateToolPanel True, toolpanel_NDFX.hWnd
+        Unload toolpanel_NDFX
+        Set toolpanel_NDFX = Nothing
+    End If
+    
+    If Not (toolpanel_Selections Is Nothing) Then
+        g_WindowManager.deactivateToolPanel True, toolpanel_Selections.hWnd
+        Unload toolpanel_Selections
+        Set toolpanel_Selections = Nothing
+    End If
+
+    If Not (toolpanel_Text Is Nothing) Then
+        g_WindowManager.deactivateToolPanel True, toolpanel_Text.hWnd
+        Unload toolpanel_Text
+        Set toolpanel_Text = Nothing
+    End If
+    
 End Sub
 
 'UNLOAD EVERYTHING
@@ -3083,22 +3112,12 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Releasing main form theming"
     #End If
     
-    ReleaseFormTheming Me
-    
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Unloading all tool panels"
-    #End If
-    
-    'Manually unload all tool panels
-    Unload toolpanel_MoveSize
-    Unload toolpanel_NDFX
-    Unload toolpanel_Selections
-    Unload toolpanel_Text
+    'ReleaseFormTheming Me
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Shutting down window manager"
     #End If
-        
+            
     'Release this form from the window manager, and write out all window data to file
     g_WindowManager.unregisterForm Me
     g_WindowManager.saveAllWindowLocations
@@ -3110,13 +3129,14 @@ Private Sub Form_Unload(Cancel As Integer)
     'As a final failsafe, forcibly unload any remaining forms
     Dim tmpForm As Form
     For Each tmpForm In Forms
-        
+
         'Note that there is no need to unload FormMain, as we're about to unload it anyway!
         If tmpForm.Name <> "FormMain" Then
+            Debug.Print "Forcibly unloading " & tmpForm.Name
             Unload tmpForm
             Set tmpForm = Nothing
         End If
-        
+
     Next tmpForm
     
     'If an update package was downloaded, this is a good time to apply it
