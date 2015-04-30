@@ -1471,16 +1471,9 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer 
                     'GDI+ demonstrates a lot of weird behavior.  It seems fairly clear that parts of the library are half-baked.
                     ' Their prefiltering algorithm works reasonably well on photos, but on images with sharp-defined edges
                     ' (such as text), it causes weird alignment issues.  Unfiltered bilinear resampling does not experience this
-                    ' issue.  I'm leaving this comment here because once we have text layers, I want to conditionally enable
-                    ' bilinear resampling for them.  This will keep text properly aligned, without hurting photographic layers.
-                    
-                    'ALSO!  As of April 2015, the user can specify non-destructive resize algorithms on a per-layer basis.  We must
-                    ' also take this parameter into account when applying a resize, as it will override any existing values.
-                    'If (srcLayer.getLayerCanvasXModifier <> 1) Or (srcLayer.getLayerCanvasYModifier <> 1) Then
-                    '    GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity / 100, srcLayer.getLayerResizeQuality_GDIPlus
-                    'Else
-                    '    GDIPlus_StretchBlt m_dstDIB, dstRect.Left - dstViewportRect.Left, dstRect.Top - dstViewportRect.Top, dstRect.Width, dstRect.Height, srcLayer.layerDIB, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, srcLayer.getLayerOpacity / 100, interpolationType
-                    'End If
+                    ' issue.  I'm leaving this comment here because I'm still considering conditionally enabling bilinear resampling
+                    ' for text and other vector layers.  This could keep text properly aligned, without hurting photographic layers,
+                    ' at some cost to performance.
                     
                     'See if our existing hash is valid
                     If (srcLayer.getViewportHash = 0) Or (srcLayer.getViewportHash <> testHash) Or (Not cachedDIBValid) Then

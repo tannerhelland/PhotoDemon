@@ -1851,34 +1851,33 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
             If pdiReader.getNodeDataByIndex(i + 1, False, retBytes, sourceIsUndoFile) Then
                 
                 'How we handle this data varies by layer type.
-                Select Case dstImage.getLayerByIndex(i).getLayerType
                 
-                    'Image (raster) layers
-                    Case PDL_IMAGE
-                    
-                        'This chunk of data is a raw stream of the target layer's DIB.  Ask the target layer's DIB to copy
-                        ' the byte array over its existing DIB data (which will have been initialized to zero by the
-                        ' CreateNewLayerFromXML() call, above).
-                        dstImage.getLayerByIndex(i).layerDIB.copyStreamOverImageArray retBytes
-                    
-                    'Text (vector) layers
-                    Case PDL_TEXT
-                    
-                        'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
-                        ' as vector layers were implemented after pdPackager was given Unicode compatibility.
-                        retString = Space$((UBound(retBytes) + 1) \ 2)
-                        CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
-                        
-                        'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-                        If Not dstImage.getLayerByIndex(i).CreateVectorDataFromXML(retString) Then
-                            Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
-                        End If
-                        
-                    'In the future, additional layer types can be handled here
-                    Case Else
-                        Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstImage.getLayerByIndex(i).getLayerType
+                'Image (raster) layers
+                If dstImage.getLayerByIndex(i).isLayerRaster Then
                 
-                End Select
+                    'This chunk of data is a raw stream of the target layer's DIB.  Ask the target layer's DIB to copy
+                    ' the byte array over its existing DIB data (which will have been initialized to zero by the
+                    ' CreateNewLayerFromXML() call, above).
+                    dstImage.getLayerByIndex(i).layerDIB.copyStreamOverImageArray retBytes
+                    
+                'Text and other vector layers
+                ElseIf dstImage.getLayerByIndex(i).isLayerVector Then
+                    
+                    'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
+                    ' as vector layers were implemented after pdPackager gained full Unicode compatibility.
+                    retString = Space$((UBound(retBytes) + 1) \ 2)
+                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+                    
+                    'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
+                    If Not dstImage.getLayerByIndex(i).CreateVectorDataFromXML(retString) Then
+                        Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
+                    End If
+                        
+                'In the future, additional layer types can be handled here
+                Else
+                    Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstImage.getLayerByIndex(i).getLayerType
+                
+                End If
                 
                 'Notify the parent of the change
                 dstImage.notifyImageChanged UNDO_LAYER, i
@@ -2213,34 +2212,33 @@ Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As p
             If pdiReader.getNodeDataByIndex(0, False, retBytes, True) Then
             
                 'How we handle this data varies by layer type.
-                Select Case dstLayer.getLayerType
                 
-                    'Image (raster) layers
-                    Case PDL_IMAGE
-                    
-                        'This chunk of data is a raw stream of the target layer's DIB.  Ask the target layer's DIB to copy
-                        ' the byte array over its existing DIB data (which will have been initialized to zero by the
-                        ' CreateNewLayerFromXML() call, above).
-                        dstLayer.layerDIB.copyStreamOverImageArray retBytes
-                    
-                    'Text (vector) layers
-                    Case PDL_TEXT
-                    
-                        'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
-                        ' as vector layers were implemented after pdPackager was given Unicode compatibility.
-                        retString = Space$((UBound(retBytes) + 1) \ 2)
-                        CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
-                        
-                        'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-                        If Not dstLayer.CreateVectorDataFromXML(retString) Then
-                            Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
-                        End If
-                        
-                    'In the future, additional layer types can be handled here
-                    Case Else
-                        Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstLayer.getLayerType
+                'Image (raster) layers
+                If dstLayer.isLayerRaster Then
                 
-                End Select
+                    'This chunk of data is a raw stream of the target layer's DIB.  Ask the target layer's DIB to copy
+                    ' the byte array over its existing DIB data (which will have been initialized to zero by the
+                    ' CreateNewLayerFromXML() call, above).
+                    dstLayer.layerDIB.copyStreamOverImageArray retBytes
+                    
+                'Text and other vector layers
+                ElseIf dstLayer.isLayerVector Then
+                    
+                    'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
+                    ' as vector layers were implemented after pdPackager was given Unicode compatibility.
+                    retString = Space$((UBound(retBytes) + 1) \ 2)
+                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+                    
+                    'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
+                    If Not dstLayer.CreateVectorDataFromXML(retString) Then
+                        Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
+                    End If
+                
+                'In the future, additional layer types can be handled here
+                Else
+                    Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstLayer.getLayerType
+                
+                End If
                 
                 'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
                 dstLayer.notifyOfDestructiveChanges

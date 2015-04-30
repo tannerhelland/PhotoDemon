@@ -784,22 +784,24 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
         If Not writeHeaderOnlyFile Then
         
             'Specific handling varies by layer type
-            Select Case srcPDImage.getLayerByIndex(i).getLayerType
             
-                'Image layers save their raster contents as a raw byte stream
-                Case PDL_IMAGE
-                    srcPDImage.getLayerByIndex(i).layerDIB.retrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
-                    pdiWriter.addNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel, embedChecksums
+            'Image layers save their raster contents as a raw byte stream
+            If srcPDImage.getLayerByIndex(i).isLayerRaster Then
+            
+                srcPDImage.getLayerByIndex(i).layerDIB.retrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
+                pdiWriter.addNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel, embedChecksums
                 
-                'Text (and other vector layers) save their vector contents in XML format
-                Case PDL_TEXT
-                    layerXMLData = srcPDImage.getLayerByIndex(i).getVectorDataAsXML(True)
-                    pdiWriter.addNodeDataFromString nodeIndex, False, layerXMLData, compressLayers, compressionLevel, embedChecksums
+            'Text (and other vector layers) save their vector contents in XML format
+            ElseIf srcPDImage.getLayerByIndex(i).isLayerVector Then
+            
+                layerXMLData = srcPDImage.getLayerByIndex(i).getVectorDataAsXML(True)
+                pdiWriter.addNodeDataFromString nodeIndex, False, layerXMLData, compressLayers, compressionLevel, embedChecksums
+            
+            'No other layer types are currently supported
+            Else
+                Debug.Print "WARNING!  SavePhotoDemonImage can't save the layer at index " & i
                 
-                Case Else
-                    Debug.Print "WARNING!  SavePhotoDemonImage can't save the layer at index " & i
-                
-            End Select
+            End If
             
         End If
     
@@ -869,23 +871,24 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     If Not writeHeaderOnlyFile Then
         
         'Specific handling varies by layer type
-        Select Case srcLayer.getLayerType
         
-            'Image layers save their raster contents as a raw byte stream
-            Case PDL_IMAGE
-                Dim layerDIBPointer As Long, layerDIBLength As Long
-                srcLayer.layerDIB.retrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
-                pdiWriter.addNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel, embedChecksums
+        'Image layers save their raster contents as a raw byte stream
+        If srcLayer.isLayerRaster Then
+        
+            Dim layerDIBPointer As Long, layerDIBLength As Long
+            srcLayer.layerDIB.retrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
+            pdiWriter.addNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel, embedChecksums
+        
+        'Text (and other vector layers) save their vector contents in XML format
+        ElseIf srcLayer.isLayerVector Then
             
-            'Text (and other vector layers) save their vector contents in XML format
-            Case PDL_TEXT
-                dataString = srcLayer.getVectorDataAsXML(True)
-                pdiWriter.addNodeDataFromString nodeIndex, False, dataString, compressLayers, compressionLevel, embedChecksums
-            
-            Case Else
-                Debug.Print "WARNING!  SavePhotoDemonLayer was passed a layer of unknown or unsupported type."
-            
-        End Select
+            dataString = srcLayer.getVectorDataAsXML(True)
+            pdiWriter.addNodeDataFromString nodeIndex, False, dataString, compressLayers, compressionLevel, embedChecksums
+        
+        'Other layer types are not currently supported
+        Else
+            Debug.Print "WARNING!  SavePhotoDemonLayer was passed a layer of unknown or unsupported type."
+        End If
         
     End If
     
