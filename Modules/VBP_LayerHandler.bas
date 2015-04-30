@@ -55,7 +55,7 @@ Public Sub addBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType 
 End Sub
 
 'Add a non-blank 32bpp layer to the image.  (This function is used by the Add New Layer button on the layer box.)
-Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE, ByVal dLayerSubType As Long, ByVal dLayerColor As Long, ByVal dLayerPosition As Long, ByVal dLayerAutoSelect As Boolean, Optional ByVal dLayerName As String = "", Optional ByVal initialXOffset As Single = 0#, Optional ByVal initialYOffset As Single = 0#)
+Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE, ByVal dLayerSubType As Long, ByVal dLayerColor As Long, ByVal dLayerPosition As Long, ByVal dLayerAutoSelect As Boolean, Optional ByVal dLayerName As String = "", Optional ByVal initialXOffset As Single = 0#, Optional ByVal initialYOffset As Single = 0#, Optional ByVal suspendRedraws As Boolean = False)
 
     'Before making any changes, make a note of the currently active layer
     Dim prevActiveLayerID As Long
@@ -175,11 +175,15 @@ Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
     'Notify the parent of the change
     pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
     
-    'Redraw the main viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    'Redraw the main viewport (if requested)
+    If Not suspendRedraws Then
+        
+        Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
-    'Redraw the layer box, and note that thumbnails need to be re-cached
-    toolbar_Layers.forceRedraw True
+        'Redraw the layer box, and note that thumbnails need to be re-cached
+        toolbar_Layers.forceRedraw True
+        
+    End If
     
 End Sub
 

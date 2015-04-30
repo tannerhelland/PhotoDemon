@@ -421,7 +421,7 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                     .cboTextFontFace.setListIndexByString pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontFace)
                     .tudTextFontSize.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontSize)
                     .csTextFontColor.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontColor)
-                    .cboTextRenderingHint.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextRenderingHint)
+                    .cboTextRenderingHint.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextAntialiasing)
                     .tudTextClarity.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextContrast)
                 End With
         
@@ -433,3 +433,72 @@ Public Sub syncToolOptionsUIToCurrentLayer()
     End If
     
 End Sub
+
+'this function is the reverse of syncToolOptionsUIToCurrentLayer(), above.  If you want to copy all current UI settings into
+' the currently active layer, call this function.
+Public Sub syncCurrentLayerToToolOptionsUI()
+    
+    'Before doing anything else, make sure canvas tool operations are allowed
+    If Not canvasToolsAllowed(False) Then Exit Sub
+    
+    'To improve performance, we'll only sync the UI if a layer-specific tool is active, and the tool options panel is currently
+    ' set to VISIBLE.
+    If Not toolbar_Options.Visible Then Exit Sub
+    
+    Dim layerToolActive As Boolean
+    
+    Select Case g_CurrentTool
+        
+        Case NAV_MOVE
+            layerToolActive = True
+        
+        Case VECTOR_TEXT
+            If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then layerToolActive = True
+        
+        Case Else
+            layerToolActive = False
+        
+    End Select
+    
+    If layerToolActive Then
+        
+        'Mark the tool engine as busy; this prevents each change from triggering viewport redraws
+        Tool_Support.setToolBusyState True
+        
+        'Start iterating various layer properties, and reflecting them across their corresponding UI elements.
+        ' (Obviously, this step is separated by tool type.)
+        Select Case g_CurrentTool
+        
+            Case NAV_MOVE
+            
+                'The Layer Move tool has four text up/downs: two for layer position (x, y) and two for layer size (w, y)
+                pdImages(g_CurrentImage).getActiveLayer.setLayerOffsetX toolpanel_MoveSize.tudLayerMove(0).Value
+                pdImages(g_CurrentImage).getActiveLayer.setLayerOffsetY toolpanel_MoveSize.tudLayerMove(1).Value
+                
+                'Setting layer width and height isn't activated at present, on purpose
+                'pdImages(g_CurrentImage).getActiveLayer.setLayerWidth toolpanel_MoveSize.tudLayerMove(2).Value
+                'pdImages(g_CurrentImage).getActiveLayer.setLayerHeight toolpanel_MoveSize.tudLayerMove(3).Value
+                
+                'The layer resize quality combo box also needs to be synched
+                pdImages(g_CurrentImage).getActiveLayer.setLayerResizeQuality toolpanel_MoveSize.cboLayerResizeQuality.ListIndex
+            
+            Case VECTOR_TEXT
+                
+                With pdImages(g_CurrentImage).getActiveLayer
+                    .setTextLayerProperty ptp_Text, toolpanel_Text.txtTextTool.Text
+                    .setTextLayerProperty ptp_FontFace, toolpanel_Text.cboTextFontFace.List(toolpanel_Text.cboTextFontFace.ListIndex)
+                    .setTextLayerProperty ptp_FontSize, toolpanel_Text.tudTextFontSize.Value
+                    .setTextLayerProperty ptp_FontColor, toolpanel_Text.csTextFontColor.Color
+                    .setTextLayerProperty ptp_TextAntialiasing, toolpanel_Text.cboTextRenderingHint.ListIndex
+                    .setTextLayerProperty ptp_TextContrast, toolpanel_Text.tudTextClarity.Value
+                End With
+        
+        End Select
+        
+        'Free the tool engine
+        Tool_Support.setToolBusyState False
+    
+    End If
+    
+End Sub
+
