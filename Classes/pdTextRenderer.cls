@@ -166,6 +166,18 @@ End Enum
     Private Const PixelOffsetModeNone = 0, PixelOffsetModeHalf = 0
 #End If
 
+'GDI+ supports multiple text antialiasing modes, but half of them don't work on 32-bpp rendering targets (UGGGGGH).  Rather than expose a confusing list
+' of operators that may or may not be relevant, PD uses its own AA enumeration, which we translate to corresponding GDI+ units as necessary.
+Public Enum pdTextAA
+    pdta_None = 0
+    pdta_Standard = 1
+    pdta_Crisp = 2
+End Enum
+
+#If False Then
+    Private Const pdta_None = 0, pdta_Standard = 1, pdta_Crisp = 2
+#End If
+
 'Text hinting and AA are merged into a single setting in GDI+
 Public Enum GdiPlusTextRenderingHint
     TextRenderingHintSystemDefault = 0              'System default; unused because it is unpredictable
@@ -316,10 +328,7 @@ Private m_VerticalAlignment As GdiPlusStringAlignment
 ' an easy way to cache these settings.  (We could keep a temporary graphics container on hand, but we still have to clone
 ' it prior to rendering, so I doubt there's any gain there.)  As such, these values are not relevant until text is
 ' actually painted onto a target object.
-
-'TODO: expose a PD-specific hinting + AA solution, rather than GDI+'s very confusing options.  (I'm waiting until I've
-' better tested the various options before making this change.)
-Private m_TextRenderingHint As GdiPlusTextRenderingHint
+Private m_TextAntialiasing As pdTextAA
 Private m_TextContrast As Long
 
 'For performance reasons, this class caches various font objects and handles from both GDI and GDI+.  This spares us from
@@ -466,12 +475,12 @@ End Sub
 
 'Get/set container-specific font settings.  These are stored in normal variables, but they cannot be passed to GDI+
 ' until rendering time, as they are container-specific.  As such, they do not affect the current font cache.
-Friend Function getTextRenderingHint() As GdiPlusTextRenderingHint
-    getTextRenderingHint = m_TextRenderingHint
+Friend Function getTextAntialiasing() As pdTextAA
+    getTextAntialiasing = m_TextAntialiasing
 End Function
 
-Friend Sub setTextRenderingHint(ByVal newRenderingHint As GdiPlusTextRenderingHint)
-    m_TextRenderingHint = newRenderingHint
+Friend Sub setTextAntialiasing(ByVal newAASetting As pdTextAA)
+    m_TextAntialiasing = newAASetting
 End Sub
 
 'Text contrast is a weird one: the values vary from 0 to 12, and 4 is the default.
@@ -517,7 +526,7 @@ Public Function getAllFontSettingsAsXML(Optional ByVal ignoreFluffEntries As Boo
     xmlEngine.writeTag "FontStrikeout", m_FontStrikeout
     xmlEngine.writeTag "FontHorizontalAlignment", m_HorizontalAlignment
     xmlEngine.writeTag "FontVerticalAlignment", m_VerticalAlignment
-    xmlEngine.writeTag "FontRenderingHint", m_TextRenderingHint
+    xmlEngine.writeTag "FontAntialiasing", m_TextAntialiasing
     xmlEngine.writeTag "FontContrast", m_TextContrast
     
     'Return the completed XML string
@@ -553,7 +562,7 @@ Public Function setAllFontSettingsFromXML(ByRef srcXMLString As String) As Boole
             setFontStrikeout xmlEngine.getUniqueTag_Boolean("FontStrikeout", False)
             setHorizontalAlignment xmlEngine.getUniqueTag_Long("FontHorizontalAlignment", StringAlignmentNear)
             setVerticalAlignment xmlEngine.getUniqueTag_Long("FontVerticalAlignment", StringAlignmentNear)
-            setTextRenderingHint xmlEngine.getUniqueTag_Long("FontRenderingHint", TextRenderingHintAntiAliasGridFit)
+            setTextAntialiasing xmlEngine.getUniqueTag_Long("FontAntialiasing", pdta_Standard)
             setTextContrast xmlEngine.getUniqueTag_Long("FontContrast", 4)
             
             'Return success!
@@ -741,6 +750,24 @@ Private Function getFontStylesAsGdipLong() As Long
     
 End Function
 
+'Convert the current PD-specific text rendering hint into a Long-type value compatible with GDI+'s text declarations
+Private Function convertTextAAToGdipTextHint() As GdiPlusTextRenderingHint
+    
+    Select Case m_TextAntialiasing
+    
+        Case pdta_None
+            convertTextAAToGdipTextHint = TextRenderingHintSingleBitPerPixelGridFit
+        
+        Case pdta_Standard
+            convertTextAAToGdipTextHint = TextRenderingHintAntiAlias
+        
+        Case pdta_Crisp
+            convertTextAAToGdipTextHint = TextRenderingHintAntiAliasGridFit
+    
+    End Select
+    
+End Function
+
 'If a GDI+ function fails, pass the return value to this function so the debugger can attempt to output a helpful message.
 Private Sub reportGDIPlusFailure(ByVal failCode As Long)
 
@@ -786,7 +813,7 @@ Private Function createGDIFont() As Boolean
     'Use the font management module to populate the struct
     Font_Management.fillLogFontW_Basic tmpLogFont, m_FontFace, m_FontBold, m_FontItalic, m_FontUnderline, m_FontStrikeout
     Font_Management.fillLogFontW_Size tmpLogFont, m_FontSize, m_FontSizeUnit
-    Font_Management.fillLogFontW_Quality tmpLogFont, m_TextRenderingHint
+    Font_Management.fillLogFontW_Quality tmpLogFont, convertTextAAToGdipTextHint
     
     'Attempt to create a matching GDI font
     If Font_Management.createGDIFont(tmpLogFont, m_GDIFont) Then
@@ -877,8 +904,8 @@ Private Function renderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
     dstGraphics = GDI_Plus.getGDIPlusGraphicsFromDC(dstDIB.getDIBDC, False)
     
     'Next, set up all container-specific text settings
-    If GdipSetTextRenderingHint(dstGraphics, m_TextRenderingHint) <> 0 Then
-        Debug.Print "Failed to set text rendering hint " & m_TextRenderingHint
+    If GdipSetTextRenderingHint(dstGraphics, convertTextAAToGdipTextHint) <> 0 Then
+        Debug.Print "Failed to set text rendering hint " & m_TextAntialiasing
     End If
     
     If GdipSetTextContrast(dstGraphics, m_TextContrast) <> 0 Then
@@ -935,18 +962,27 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     dstGraphics = GDI_Plus.getGDIPlusGraphicsFromDC(dstDIB.getDIBDC, False)
     
     'Next, set up all container-specific path settings
-    If GdipSetCompositingQuality(dstGraphics, CompositingQualityAssumeLinear) <> 0 Then
-        Debug.Print "Failed to set compositing quality."
-    End If
     
-    If GdipSetPixelOffsetMode(dstGraphics, PixelOffsetModeHalf) <> 0 Then
-        Debug.Print "Failed to set pixel offset mode."
-    End If
-    
-    If GdipSetSmoothingMode(dstGraphics, SmoothingModeAntiAlias) <> 0 Then
-        Debug.Print "Failed to set smoothing mode."
-    End If
-    
+    'Antialiasing affects a number of different settings
+    Select Case m_TextAntialiasing
+        
+        Case pdta_None
+            GdipSetCompositingQuality dstGraphics, CompositingQualityHighSpeed
+            GdipSetSmoothingMode dstGraphics, SmoothingModeHighSpeed
+            GdipSetPixelOffsetMode dstGraphics, PixelOffsetModeHighSpeed
+        
+        Case pdta_Standard
+            GdipSetCompositingQuality dstGraphics, CompositingQualityHighSpeed
+            GdipSetSmoothingMode dstGraphics, SmoothingModeAntiAlias
+            GdipSetPixelOffsetMode dstGraphics, PixelOffsetModeHighSpeed
+        
+        Case pdta_Crisp
+            GdipSetCompositingQuality dstGraphics, CompositingQualityHighSpeed
+            GdipSetSmoothingMode dstGraphics, SmoothingModeAntiAlias
+            GdipSetPixelOffsetMode dstGraphics, PixelOffsetModeHalf
+        
+    End Select
+        
     'Create a solid fill brush.  (In the future, we'll add more impressive options!)
     Dim gdipBrush As Long
     gdipBrush = GDI_Plus.getGDIPlusBrushHandle(crColor, 255)
@@ -989,7 +1025,7 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     GDI_Plus.releaseGDIPlusGraphics dstGraphics
     
     'Return success/failure contingent on the return of the GDI+ rendering call
-    renderTextToDIB_GDIPlus = CBool(gdipReturn = 0)
+    renderTextToDIB_Glyphs = CBool(gdipReturn = 0)
     
 End Function
 
@@ -1078,7 +1114,7 @@ Private Sub Class_Initialize()
     
     'Set default graphics container text settings
     m_TextContrast = 4
-    m_TextRenderingHint = TextRenderingHintAntiAliasGridFit
+    m_TextAntialiasing = pdta_Standard
 
 End Sub
 

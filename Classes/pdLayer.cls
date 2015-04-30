@@ -192,7 +192,7 @@ Private Type textLayerData
     tld_FontStrikeout As Boolean
     tld_HorizontalAlignment As GdiPlusStringAlignment
     tld_VerticalAlignment As GdiPlusStringAlignment
-    tld_TextRenderingHint As GdiPlusTextRenderingHint
+    tld_TextAntialiasing As pdTextAA
     tld_TextContrast As Long
 End Type
 
@@ -211,13 +211,13 @@ Public Enum PDLAYER_TEXT_PROPERTY
     ptp_FontStrikeout
     ptp_HorizontalAlignment
     ptp_VerticalAlignment
-    ptp_TextRenderingHint
+    ptp_TextAntialiasing
     ptp_TextContrast
 End Enum
 
 #If False Then
     Const ptp_Text = 0, ptp_FontColor = 0, ptp_FontFace = 0, ptp_FontSize = 0, ptp_FontSizeUnit = 0, ptp_FontBold = 0, ptp_FontItalic = 0
-    Const ptp_FontUnderline = 0, ptp_FontStrikeout = 0, ptp_HorizontalAlignment = 0, ptp_VerticalAlignment = 0, ptp_TextRenderingHint = 0
+    Const ptp_FontUnderline = 0, ptp_FontStrikeout = 0, ptp_HorizontalAlignment = 0, ptp_VerticalAlignment = 0, ptp_TextAntialiasing = 0
     Const ptp_TextContrast = 0
 #End If
 
@@ -687,8 +687,8 @@ Friend Function getTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPE
         Case ptp_VerticalAlignment
             getTextLayerProperty = myTextData.tld_VerticalAlignment
         
-        Case ptp_TextRenderingHint
-            getTextLayerProperty = myTextData.tld_TextRenderingHint
+        Case ptp_TextAntialiasing
+            getTextLayerProperty = myTextData.tld_TextAntialiasing
         
         Case ptp_TextContrast
             getTextLayerProperty = myTextData.tld_TextContrast
@@ -767,9 +767,9 @@ Friend Sub setTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPERTY, 
                 m_VectorDIBSynched = False
             End If
         
-        Case ptp_TextRenderingHint
-            If myTextData.tld_TextRenderingHint <> CLng(newValue) Then
-                myTextData.tld_TextRenderingHint = CLng(newValue)
+        Case ptp_TextAntialiasing
+            If myTextData.tld_TextAntialiasing <> CLng(newValue) Then
+                myTextData.tld_TextAntialiasing = CLng(newValue)
                 m_VectorDIBSynched = False
             End If
         
@@ -862,7 +862,7 @@ Private Sub Class_Initialize()
         .tld_FontStrikeout = False
         .tld_HorizontalAlignment = StringAlignmentNear
         .tld_VerticalAlignment = StringAlignmentNear
-        .tld_TextRenderingHint = TextRenderingHintAntiAliasGridFit
+        .tld_TextAntialiasing = pdta_Standard
         .tld_TextContrast = 4
     End With
     
@@ -1156,7 +1156,7 @@ Public Function getVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
                 .writeTag "TextLayerFontStrikeout", myTextData.tld_FontStrikeout
                 .writeTag "TextLayerHorizontalAlignment", myTextData.tld_HorizontalAlignment
                 .writeTag "TextLayerVerticalAlignment", myTextData.tld_VerticalAlignment
-                .writeTag "TextLayerRenderingHint", myTextData.tld_TextRenderingHint
+                .writeTag "TextLayerAntialiasing", myTextData.tld_TextAntialiasing
                 .writeTag "TextLayerContrast", myTextData.tld_TextContrast
             End With
         
@@ -1202,7 +1202,7 @@ Public Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
                     .tld_FontStrikeout = xmlEngine.getUniqueTag_Boolean("TextLayerFontStrikeout", False)
                     .tld_HorizontalAlignment = xmlEngine.getUniqueTag_Long("TextLayerHorizontalAlignment", StringAlignmentNear)
                     .tld_VerticalAlignment = xmlEngine.getUniqueTag_Long("TextLayerVerticalAlignment", StringAlignmentNear)
-                    .tld_TextRenderingHint = xmlEngine.getUniqueTag_Long("TextLayerRenderingHint", TextRenderingHintAntiAliasGridFit)
+                    .tld_TextAntialiasing = xmlEngine.getUniqueTag_Long("TextLayerAntialiasing", pdta_Standard)
                     .tld_TextContrast = xmlEngine.getUniqueTag_Long("TextLayerContrast", 4)
                 End With
                 
@@ -1771,7 +1771,7 @@ Public Sub resetLayerParameters()
         .tld_FontStrikeout = False
         .tld_HorizontalAlignment = StringAlignmentNear
         .tld_VerticalAlignment = StringAlignmentNear
-        .tld_TextRenderingHint = TextRenderingHintAntiAliasGridFit
+        .tld_TextAntialiasing = pdta_Standard
         .tld_TextContrast = 4
     End With
 
@@ -1818,7 +1818,7 @@ Public Function syncInternalDIB() As Boolean
                 .setFontStrikeout myTextData.tld_FontStrikeout
                 .setHorizontalAlignment myTextData.tld_HorizontalAlignment
                 .setVerticalAlignment myTextData.tld_VerticalAlignment
-                .setTextRenderingHint myTextData.tld_TextRenderingHint
+                .setTextAntialiasing myTextData.tld_TextAntialiasing
                 .setTextContrast myTextData.tld_TextContrast
             End With
             
