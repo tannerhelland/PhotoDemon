@@ -259,6 +259,7 @@ Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode
 Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
 Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByRef lpRect As RECT, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
 Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, ByRef lpRect As RECT, ByVal wFormat As Long) As Long
+Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpStrPointer As Long, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
 
 'GDI text alignment flags
 Private Const TA_LEFT = 0
@@ -345,6 +346,10 @@ Private m_GlyphCollection As pdGlyphCollection
 'If a font object has been created, and a setting has been changed (e.g. font name, size, etc), we must recreate the font.
 ' All relevant property changes will set this value to FALSE to signify a re-cache is required.
 Private m_FontCacheClean As Boolean
+
+'If we have to fall back to plain GDI for rendering, we use a temporary 24-bpp DIB to cache the results.  This is then manually
+' transferred to the 32-bpp target.
+Private m_TmpGdiDIB As pdDIB
 
 'Get functions for various font styles, and whether said styles are supported by the current font.
 ' (If no font name has been set, the function returns *will not be valid*)
@@ -857,6 +862,10 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String
         'GDI is required
         Case te_GDI
             
+            'While I work on the above code, here's a dummy rendering mode for testing
+            renderTextToDIB = renderTextToDIB_GDI(dstDIB, srcString, crColor, x1, y1, textWidth, textHeight)
+            Exit Function
+            
             'Because GDI doesn't support 32-bpp rendering targets, we must manually translate GDI glyphs into GDI+ paths, then render
             ' the paths manually.  Because this is hugely energy intensive, our separate class attempts to cache glyphs as they are
             ' created.  This saves us from having to translate glyphs more than once, which is a non-trivial boost on long chunks
@@ -881,9 +890,6 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String
             'With the glyph collection successfully assembled, proceed with rendering
             renderTextToDIB = renderTextToDIB_Glyphs(dstDIB, srcString, crColor, x1, y1, textWidth, textHeight)
             
-            'While I work on the above code, here's a dummy rendering mode for testing
-            'renderTextToDIB = renderTextToDIB_GDI_Dummy(dstDIB, srcString, crColor, x1, y1, textWidth, textHeight)
-        
         
         'GDI and GDI+ both failed; at present, we have no fallback for this case
         Case te_UNKNOWN
@@ -1031,46 +1037,187 @@ End Function
 
 'Render text using GDI using a dummy implementation, only.  This only exists to test things like GDI font creation; I am actively working on
 ' superceding it with a much more advanced implementation.
-Private Function renderTextToDIB_GDI_Dummy(ByRef dstDIB As pdDIB, ByRef srcString As String, ByVal crColor As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
+Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As String, ByVal crColor As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
 
-    'TESTING ONLY!  Since GDI font rendering forcibly sets alpha to 0 on any pixels it touches, we go ahead and fill
-    ' the layer with white prior to rendering.
-    GDI_Plus.GDIPlusFillDIBRect dstDIB, x1, y1, textWidth, textHeight, vbWhite
+    'Because GDI doesn't support 32-bpp rendering targets, we must do all rendering to a 24-bpp surface, then copy it over manually
+    If (m_TmpGdiDIB Is Nothing) Then
+        Set m_TmpGdiDIB = New pdDIB
+        m_TmpGdiDIB.createBlank 4, 4, 24, 0
+    End If
     
-    'Start by setting up all container-specific text settings
+    'Start by setting up all container-specific text settings; note that these are only used in our temporary DIB!
     Dim oldFont As Long
-    oldFont = SelectObject(dstDIB.getDIBDC, m_GDIFont)
+    oldFont = SelectObject(m_TmpGdiDIB.getDIBDC, m_GDIFont)
     
-    'Set other font parameters
-    SetTextColor dstDIB.getDIBDC, crColor
-    SetTextAlign dstDIB.getDIBDC, 0        'Setting actual text alignment is TODO!
+    'Set other font parameters.  Note that this function only draws white text onto a black background.  Color is applied later.
+    SetTextColor m_TmpGdiDIB.getDIBDC, RGB(255, 255, 255)
+    SetTextAlign m_TmpGdiDIB.getDIBDC, 0        'Setting actual text alignment is TODO!
     
-    'Enable transparent font rendering; if nothing else, this lets us see a "cutout" where GDI wants to render the font
-    SetBkMode dstDIB.getDIBDC, FONT_TRANSPARENT
+    'Enable transparent font rendering
+    SetBkMode m_TmpGdiDIB.getDIBDC, FONT_TRANSPARENT
     
-    'You'd think drawing opaque text would work, but nope, this just means that GDI functions make the ENTIRE TEXT AREA transparent.
-    ' THANKS, MICROSOFT!
+    'You'd think drawing opaque text to a 32-bpp container would work, but nope, this just means that GDI functions make the
+    ' ENTIRE TEXT AREA transparent. THANKS, MICROSOFT!
     'SetBkMode dstDIB.getDIBDC, FONT_OPAQUE
     'SetBkColor dstDIB.getDIBDC, vbWhite
     
-    'GDI rendering requires an integer rect; populate one now
+    'We now need to figure out the size of our drawn text.  Wordwrap is supported if the text extends past the horizontal boundary
+    ' of the target DIB.
+    Dim targetWidth As Long, targetHeight As Long
+    Dim txtSize As POINTAPI
+    GetTextExtentPoint32 m_TmpGdiDIB.getDIBDC, StrPtr(srcString), Len(srcString), txtSize
+    
     Dim tmpRect As RECT
-    tmpRect.Left = x1
-    tmpRect.Top = y1
-    tmpRect.Right = x1 + textWidth
-    tmpRect.Bottom = y1 + textHeight
+    
+    'If the width of this string (in the current font) is less than the width of the target DIB, we will use the string's
+    ' precise render dimensions for our target DIB.
+    If txtSize.x < dstDIB.getDIBWidth Then
+        targetWidth = txtSize.x
+        targetHeight = txtSize.y
+    
+    'The string extends beyond the width of the DIB. Wordwrap is required.  Calculate height now.
+    Else
+    
+        targetWidth = dstDIB.getDIBWidth
+    
+        tmpRect.Left = 0
+        tmpRect.Top = 0
+        tmpRect.Bottom = 0
+        tmpRect.Right = targetWidth
+        
+        DrawText m_TmpGdiDIB.getDIBDC, StrPtr(srcString), Len(srcString), tmpRect, DT_LEFT Or DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_NOPREFIX Or DT_TOP
+        
+        'Take the height of the rendered string, or the height of the target DIB, whichever is smaller
+        If tmpRect.Bottom > dstDIB.getDIBHeight Then
+            targetHeight = dstDIB.getDIBHeight
+        Else
+            targetHeight = tmpRect.Bottom
+        End If
+    
+    End If
+    
+    If (m_TmpGdiDIB.getDIBWidth <> targetWidth) Or (m_TmpGdiDIB.getDIBHeight <> targetHeight) Then
+    
+        'Remove the font from the temporary DC, because we are about to create it.
+        SelectObject m_TmpGdiDIB.getDIBDC, oldFont
+    
+        'Create the temporary DIB.  We know this will be smaller or equal to the size of the target DIB, greatly simplifying the eventual transfer process.
+        m_TmpGdiDIB.createBlank targetWidth, targetHeight, 24
+        m_TmpGdiDIB.resetDIB
+        
+        'Re-select the font into the DIB
+        oldFont = SelectObject(m_TmpGdiDIB.getDIBDC, m_GDIFont)
+        
+        'Reset other font parameters.
+        SetTextColor m_TmpGdiDIB.getDIBDC, RGB(255, 255, 255)
+        SetTextAlign m_TmpGdiDIB.getDIBDC, 0        'Setting actual text alignment is TODO!
+        SetBkMode m_TmpGdiDIB.getDIBDC, FONT_TRANSPARENT
+        
+    Else
+        m_TmpGdiDIB.resetDIB
+    End If
+    
+    'GDI rendering requires an integer rect; populate one now
+    tmpRect.Left = 0
+    tmpRect.Top = 0
+    tmpRect.Right = targetWidth
+    tmpRect.Bottom = targetHeight
     
     'Use DrawText for the actual rendering
     Dim retDrawText As Long
-    retDrawText = DrawText(dstDIB.getDIBDC, StrPtr(srcString), Len(srcString), tmpRect, DT_WORDBREAK Or DT_LEFT Or DT_TOP)
+    retDrawText = DrawText(m_TmpGdiDIB.getDIBDC, StrPtr(srcString), Len(srcString), tmpRect, DT_WORDBREAK Or DT_LEFT Or DT_TOP)
     
-    'Restore prior font settings (except text color and alignment; we don't care about those because PD will override those automatically)
-    SelectObject dstDIB.getDIBDC, oldFont
+    'We can actually determine a return value now
+    renderTextToDIB_GDI = CBool(retDrawText <> 0)
     
-    'This is just debug code, so I don't care about return values
-    Debug.Print "FYI, renderTextToDIB_GDI_Dummy reported its outcome as " & UCase(CStr(CBool(retDrawText <> 0)))
-    renderTextToDIB_GDI_Dummy = True
-
+    'Remove the font, so we can use again it later!
+    SelectObject m_TmpGdiDIB.getDIBDC, oldFont
+    
+    'With the temporary DIB successfully renderered, our new job is to transfer its contents to the destination DIB.
+    
+    'Start by clearing the destination DIB
+    dstDIB.resetDIB
+    
+    'Next, we need to prepare lookup tables based on the translation of gray pixels (since we rendered white text to a black background)
+    ' to the target color, with alpha accounted for.  Note that alpha is easy - the grayscale value of the temporary DIB represents
+    ' alpha - so we just need to calculate premultiplied colors.
+    
+    'Start by extracting individual RGB components from the text color.
+    Dim r As Long, g As Long, b As Long
+    r = ExtractR(crColor)
+    g = ExtractG(crColor)
+    b = ExtractB(crColor)
+    
+    'Build RGB lookup tables for premultiplied alpha
+    Dim rLookup() As Byte, gLookUp() As Byte, bLookup() As Byte
+    ReDim rLookup(0 To 255) As Byte
+    ReDim gLookUp(0 To 255) As Byte
+    ReDim bLookup(0 To 255) As Byte
+    
+    Dim x As Long, y As Long
+    Dim preMultiplicationFactor As Double
+    
+    For x = 0 To 255
+        
+        preMultiplicationFactor = x / 255
+        
+        rLookup(x) = r * preMultiplicationFactor
+        gLookUp(x) = g * preMultiplicationFactor
+        bLookup(x) = b * preMultiplicationFactor
+        
+    Next x
+    
+    'Lookup tables are now ready.  Time to transfer the bits!
+    
+    'Create a local array and point it at the pixel data of the target image
+    Dim dstImageData() As Byte
+    Dim dstSA As SAFEARRAY2D
+    prepSafeArray dstSA, dstDIB
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    
+    'Create a second local array and point it as the pixel data of our temporary image
+    Dim srcImageData() As Byte
+    Dim srcSA As SAFEARRAY2D
+    prepSafeArray srcSA, m_TmpGdiDIB
+    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
+    
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim finalX As Long, finalY As Long
+    finalX = m_TmpGdiDIB.getDIBWidth - 1
+    finalY = m_TmpGdiDIB.getDIBHeight - 1
+    
+    Dim xStrideSrc As Long, xStrideDst As Long
+    
+    'Start transferring pixels
+    For x = 0 To finalX
+        xStrideSrc = x * 3
+        xStrideDst = x * 4
+    For y = 0 To finalY
+        
+        'Because we know the source DIB is grayscale, we can skip processing of all pixels with value = 0.
+        g = srcImageData(xStrideSrc, y)
+        
+        If g > 0 Then
+        
+            'We don't need to retrieve red and green, as they are identical to blue.
+            
+            'Populate the destination pixel at this point with our lookup table values.
+            dstImageData(xStrideDst, y) = bLookup(g)
+            dstImageData(xStrideDst + 1, y) = gLookUp(g)
+            dstImageData(xStrideDst + 2, y) = rLookup(g)
+            
+            'Alpha is set to the pixel value itself
+            dstImageData(xStrideDst + 3, y) = g
+        
+        End If
+        
+    Next y
+    Next x
+    
+    'Deallocate both arrays and exit
+    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
+    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+    
 End Function
 
 Private Sub Class_Initialize()
