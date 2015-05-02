@@ -422,7 +422,7 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                     .tudTextFontSize.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontSize)
                     .csTextFontColor.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontColor)
                     .cboTextRenderingHint.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextAntialiasing)
-                    .tudTextClarity.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextContrast)
+                    .sltTextClarity.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextContrast)
                 End With
         
         End Select
@@ -490,7 +490,7 @@ Public Sub syncCurrentLayerToToolOptionsUI()
                     .setTextLayerProperty ptp_FontSize, toolpanel_Text.tudTextFontSize.Value
                     .setTextLayerProperty ptp_FontColor, toolpanel_Text.csTextFontColor.Color
                     .setTextLayerProperty ptp_TextAntialiasing, toolpanel_Text.cboTextRenderingHint.ListIndex
-                    .setTextLayerProperty ptp_TextContrast, toolpanel_Text.tudTextClarity.Value
+                    .setTextLayerProperty ptp_TextContrast, toolpanel_Text.sltTextClarity.Value
                 End With
         
         End Select
