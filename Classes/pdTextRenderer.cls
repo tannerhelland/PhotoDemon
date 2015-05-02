@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon GDI+ Text Manager and Renderer
 'Copyright 2015-2015 by Tanner Helland
 'Created: 22/April/15
-'Last updated: 28/April/15
-'Last update: wrap up initial build of the new PD-specific vector glyph engine
+'Last updated: 02/May/15
+'Last update: get GDI antialiasing settings to (roughly) match GDI+ results
 '
 'This class handles the messy business of font management for PD's new text layers.  It switches between GDI and GDI+ as
 ' necessary to provide a comprehensive text rendering solution.
@@ -484,11 +484,18 @@ Friend Function getTextAntialiasing() As pdTextAA
 End Function
 
 Friend Sub setTextAntialiasing(ByVal newAASetting As pdTextAA)
+    
     m_TextAntialiasing = newAASetting
+    
+    'If we're using GDI for rendering, this setting requires us to recreate the font
+    If m_CurrentBackend = fb_GDI Then m_FontCacheClean = False
+    
 End Sub
 
-'Text contrast is a weird one: the values vary from 0 to 12, and 4 is the default.  Note that this *ONLY WORKS WITH GDI+ FONTS*.
-' GDI and PD's manual glyph rendering methods ignore this setting.
+'Text contrast is a weird one: the values vary from 0 to 12, and 4 is the default.  In PD, I have modified it to use a 0-10 scale with
+' 3 as the default, and we convert it to a 12-based measurement if working with GDI+ specifically.  Note that this *ONLY WORKS IN
+' BASIC RENDERING MODE.  GDI doesn't support this measurement natively, so we have to rig it using a manual system.  PD's manual glyph
+' rendering methods ignore this setting entirely.
 Public Function getTextContrast() As Long
     getTextContrast = m_TextContrast
 End Function
@@ -498,8 +505,8 @@ Public Sub setTextContrast(ByVal newContrast As Long)
     'Force contrast into valid bounds
     If newContrast < 0 Then
         newContrast = 0
-    ElseIf newContrast > 12 Then
-        newContrast = 12
+    ElseIf newContrast > 10 Then
+        newContrast = 10
     End If
     
     m_TextContrast = newContrast
@@ -568,7 +575,7 @@ Public Function setAllFontSettingsFromXML(ByRef srcXMLString As String) As Boole
             setHorizontalAlignment xmlEngine.getUniqueTag_Long("FontHorizontalAlignment", StringAlignmentNear)
             setVerticalAlignment xmlEngine.getUniqueTag_Long("FontVerticalAlignment", StringAlignmentNear)
             setTextAntialiasing xmlEngine.getUniqueTag_Long("FontAntialiasing", pdta_Standard)
-            setTextContrast xmlEngine.getUniqueTag_Long("FontContrast", 4)
+            setTextContrast xmlEngine.getUniqueTag_Long("FontContrast", 5)
             
             'Return success!
             setAllFontSettingsFromXML = True
@@ -785,7 +792,7 @@ Private Function convertTextAAToGdipTextHint() As GdiPlusTextRenderingHint
     Select Case m_TextAntialiasing
     
         Case pdta_None
-            convertTextAAToGdipTextHint = TextRenderingHintSingleBitPerPixelGridFit
+            convertTextAAToGdipTextHint = TextRenderingHintSingleBitPerPixel 'TextRenderingHintSingleBitPerPixelGridFit
         
         Case pdta_Standard
             convertTextAAToGdipTextHint = TextRenderingHintAntiAlias
@@ -961,7 +968,8 @@ Private Function renderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
         Debug.Print "Failed to set text rendering hint " & m_TextAntialiasing
     End If
     
-    If GdipSetTextContrast(dstGraphics, m_TextContrast) <> 0 Then
+    'PD stores text contrast on a 0-10 scale, but GDI+ inexplicably uses a 0-12 scale.
+    If GdipSetTextContrast(dstGraphics, CLng(CDbl(m_TextContrast) * 1.2)) <> 0 Then
         Debug.Print "Failed to set text contrast " & m_TextContrast
     End If
     
@@ -1193,27 +1201,81 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     ' alpha - so we just need to calculate premultiplied colors.
     
     'Start by extracting individual RGB components from the text color.
-    Dim r As Long, g As Long, b As Long
+    Dim r As Long, g As Long, b As Long, a As Long
     r = ExtractR(crColor)
     g = ExtractG(crColor)
     b = ExtractB(crColor)
     
-    'Build RGB lookup tables for premultiplied alpha
-    Dim rLookup() As Byte, gLookUp() As Byte, bLookup() As Byte
+    'Build RGB lookup tables for premultiplied alpha.  Note that we must also calculate an alpha lookup table, so we can manually implement
+    ' GDI+-specific features like "text clarity".
+    Dim rLookup() As Byte, gLookUp() As Byte, bLookup() As Byte, aLookup() As Byte
     ReDim rLookup(0 To 255) As Byte
     ReDim gLookUp(0 To 255) As Byte
     ReDim bLookup(0 To 255) As Byte
+    ReDim aLookup(0 To 255) As Byte
     
     Dim x As Long, y As Long
-    Dim preMultiplicationFactor As Double
+    Dim preMultiplicationFactor As Double, textContrastFactor As Double, alphaCalculation As Double
+    
+    '"Standard" and "Crisp" AA modes need to mimic the Text Contrast setting GDI+ provides.  We use a custom calculation
+    ' that provides similar results.
+    
+    'Convert m_TextContrast from the range [0, 10] to [0.5, 3.0]
+    textContrastFactor = (m_TextContrast / 4) + 0.5
     
     For x = 0 To 255
         
-        preMultiplicationFactor = x / 255
+        a = x
+        
+        'Start by calculating alpha.  This varies according to the current antialiasing mode and clarity.
+        Select Case m_TextAntialiasing
+        
+            Case pdta_None
+                
+                'Split alpha to strictly 0 or 255 values.  (Also, ignore text contrast completely.)
+                If a < 127 Then
+                    a = 0
+                Else
+                    a = 255
+                End If
+            
+            Case pdta_Standard
+                
+                'Modify incoming alpha according to our text contrast measurement
+                alphaCalculation = a / 255
+                alphaCalculation = alphaCalculation ^ textContrastFactor
+                
+                'Convert back to the [0, 255] range
+                a = alphaCalculation * 255
+                If a < 0 Then
+                    a = 0
+                ElseIf a > 255 Then
+                    a = 255
+                End If
+            
+            Case pdta_Crisp
+            
+                'Crisp is almost identical to regular alpha, except we convert alpha to a ^ 2 curve in advance
+                alphaCalculation = a / 255
+                alphaCalculation = alphaCalculation * alphaCalculation
+                alphaCalculation = alphaCalculation ^ textContrastFactor
+                
+                'Convert back to the [0, 255] range
+                a = alphaCalculation * 255
+                If a < 0 Then
+                    a = 0
+                ElseIf a > 255 Then
+                    a = 255
+                End If
+        
+        End Select
+        
+        preMultiplicationFactor = a / 255
         
         rLookup(x) = r * preMultiplicationFactor
         gLookUp(x) = g * preMultiplicationFactor
         bLookup(x) = b * preMultiplicationFactor
+        aLookup(x) = a
         
     Next x
     
@@ -1256,11 +1318,11 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
             'We don't need to retrieve red and green, as they are identical to blue.
             
             'Populate the destination pixel at this point with our lookup table values.
+            g = aLookup(g)
+            
             dstImageData(xStrideDst, y) = bLookup(g)
             dstImageData(xStrideDst + 1, y) = gLookUp(g)
             dstImageData(xStrideDst + 2, y) = rLookup(g)
-            
-            'Alpha is set to the pixel value itself
             dstImageData(xStrideDst + 3, y) = g
         
         End If
@@ -1309,7 +1371,7 @@ Private Sub Class_Initialize()
     m_VerticalAlignment = StringAlignmentNear
     
     'Set default graphics container text settings
-    m_TextContrast = 4
+    m_TextContrast = 5
     m_TextAntialiasing = pdta_Standard
 
 End Sub
