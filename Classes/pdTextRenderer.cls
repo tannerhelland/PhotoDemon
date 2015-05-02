@@ -48,31 +48,34 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'At present, only a WAPI font rendering backend is available.  This may change in the future.
-Private Enum fontRenderingBackend
-    frb_WAPI = 0
+'At present, only WAPI font backends are available.  This may change in the future (Cairo+Pango would be particularly nice to implement).
+Private Enum fontBackend
+    fb_UNKNOWN = 0
+    fb_GDIPLUS = 1
+    fb_GDI = 2
 End Enum
 
 #If False Then
-    Private Const frb_WAPI = 0
+    Private Const fb_UNKNOWN = 0, fb_GDIPLUS = 1, fb_GDI = 2
 #End If
-
-Private m_CurrentFontBackend As fontRenderingBackend
 
 'Because I want switches between GDI and GDI+ to be transparent, this class will dynamically track which engine is required
 ' for rendering.  If a setting changes (and renders the font cache invalid), this value will be reset to UNKNOWN.  On the next
-' font object creation attempt, the required backend will be noted.
-Private Enum textEngineRequired
-    te_UNKNOWN = 0
-    te_GDIPLUS = 1
-    te_GDI = 2
+' font object creation attempt, the required backend will be automatically determined, based on the current class settings.
+Private m_CurrentBackend As fontBackend
+
+'This class provides two basic rendering engines: WAPI and MANUAL.  WAPI limits you to innate features of GDI and GDI+ (BOOOORING).
+' MANUAL offloads all rendering to PD's manual glyph renderer, and enables... well, pretty much anything I can think to implement.
+Public Enum TEXT_RENDERING_ENGINE
+    tre_WAPI = 0
+    tre_PHOTODEMON = 1
 End Enum
 
 #If False Then
-    Private Const te_UNKNOWN = 0, te_GDIPLUS = 1, te_GDI = 2
+    Private Const tre_WAPI = 0, tre_PHOTODEMON = 1
 #End If
 
-Private m_curTextEngine As textEngineRequired
+Private m_RenderingEngine As TEXT_RENDERING_ENGINE
 
 'GDI+ font functions are prone to failure, for reasons both known (e.g. no OpenType support) and unknown (e.g. GDI+ font handling is
 ' a pile of garbage).  Here are a few common failure states.
@@ -452,9 +455,7 @@ Friend Sub setHorizontalAlignment(ByVal newAlignment As GdiPlusStringAlignment)
         m_HorizontalAlignment = newAlignment
         
         'If using GDI+, set this format immediately, as it's inexpensive to do so
-        If m_CurrentFontBackend = frb_WAPI Then
-            GdipSetStringFormatAlign m_GDIPlusStringFormat, newAlignment
-        End If
+        If m_GDIPlusStringFormat <> 0 Then GdipSetStringFormatAlign m_GDIPlusStringFormat, newAlignment
         
     End If
     
@@ -470,9 +471,7 @@ Friend Sub setVerticalAlignment(ByVal newAlignment As GdiPlusStringAlignment)
         m_VerticalAlignment = newAlignment
         
         'If using GDI+, set this format immediately, as it's inexpensive to do so
-        If m_CurrentFontBackend = frb_WAPI Then
-            GdipSetStringFormatLineAlign m_GDIPlusStringFormat, newAlignment
-        End If
+        If m_GDIPlusStringFormat <> 0 Then GdipSetStringFormatLineAlign m_GDIPlusStringFormat, newAlignment
         
     End If
     
@@ -488,7 +487,8 @@ Friend Sub setTextAntialiasing(ByVal newAASetting As pdTextAA)
     m_TextAntialiasing = newAASetting
 End Sub
 
-'Text contrast is a weird one: the values vary from 0 to 12, and 4 is the default.
+'Text contrast is a weird one: the values vary from 0 to 12, and 4 is the default.  Note that this *ONLY WORKS WITH GDI+ FONTS*.
+' GDI and PD's manual glyph rendering methods ignore this setting.
 Public Function getTextContrast() As Long
     getTextContrast = m_TextContrast
 End Function
@@ -595,6 +595,7 @@ Public Sub setFontFace(ByVal fontName As String)
     If (StrComp(fontName, m_FontFace, vbBinaryCompare) <> 0) Then
         m_FontFace = fontName
         m_FontCacheClean = False
+        m_CurrentBackend = fb_UNKNOWN
     End If
     
 End Sub
@@ -619,30 +620,52 @@ Public Function createFontObject() As Boolean
     
     'If the font cache is clean, this request is redundant; ignore it
     If m_FontCacheClean Then
+        Debug.Print "Font cache is clean; ignoring createFontObject request"
         createFontObject = True
         Exit Function
     End If
     
     'Reset the current text engine marker, as we won't know which engine is required until we try to create the font.
-    m_curTextEngine = te_UNKNOWN
+    m_CurrentBackend = fb_UNKNOWN
     
     'If we have already created any font objects (in either engine), free them now
-    If m_GDIPlusFont <> 0 Then GdipDeleteFont m_GDIPlusFont
-    If m_GDIPlusFontFamily <> 0 Then GdipDeleteFontFamily m_GDIPlusFontFamily
+    If m_GDIPlusFont <> 0 Then
+        GdipDeleteFont m_GDIPlusFont
+        m_GDIPlusFont = 0
+    End If
+    
+    If m_GDIPlusFontFamily <> 0 Then
+        GdipDeleteFontFamily m_GDIPlusFontFamily
+        m_GDIPlusFontFamily = 0
+    End If
+    
+    If m_GDIFont <> 0 Then
+        
+        'I've added some debug code here, just to make absolutely certain that we're not leaking GDI objects by forgetting to unselect
+        ' them from a DC prior to removal.
+        Dim gdiCheck As Long
+        gdiCheck = DeleteObject(m_GDIFont)
+        Debug.Print "FYI: DeleteObject on m_GDIFont returned " & gdiCheck
+        m_GDIFont = 0
+        
+    End If
     
     'First, try to create a GDI+ font family.  This saves us a lot of grief.
+    ' (Note that this step is skipped if manual rendering mode is activated; in that case, we will only use GDI fonts)
     Dim fontCreationSuccess As Boolean
     
-    'As of 28 April 2015, I am deactivating the GDI+ codepath.  PD's manual glyph rendering code is stable enough for me to
-    ' rely on it exclusively for the remainder of this testing cycle, I think.  (That said, I'm leaving this here in case
-    ' I ever need to revisit in the future.)
-    'fontCreationSuccess = createGDIPlusFont()
+    If m_RenderingEngine = tre_WAPI Then
+        fontCreationSuccess = createGDIPlusFont()
+    Else
+        fontCreationSuccess = False
+    End If
     
     'GDI+ reported success, and we obtained a valid GDI+ font handle, carry on
     If fontCreationSuccess And (m_GDIPlusFont <> 0) Then
         
         'Note that GDI+ works fine for this particular combination of settings, and return success
-        m_curTextEngine = te_GDIPLUS
+        Debug.Print "GDI+ is now set as the active font handling backend."
+        m_CurrentBackend = fb_GDIPLUS
         m_FontCacheClean = True
         createFontObject = True
         
@@ -655,7 +678,8 @@ Public Function createFontObject() As Boolean
         If fontCreationSuccess And (m_GDIFont <> 0) Then
         
             'Note that GDI is required for this combination of settings
-            m_curTextEngine = te_GDI
+            Debug.Print "GDI is now set as the active font handling backend."
+            m_CurrentBackend = fb_GDI
             m_FontCacheClean = True
             createFontObject = True
             
@@ -666,7 +690,7 @@ Public Function createFontObject() As Boolean
                 pdDebug.LogAction "WARNING!  pdTextRenderer's createFontObject failed with both GDI+ and GDI; sorry!"
             #End If
             
-            m_curTextEngine = te_UNKNOWN
+            m_CurrentBackend = fb_UNKNOWN
             m_FontCacheClean = False
             createFontObject = False
             
@@ -824,8 +848,8 @@ Private Function createGDIFont() As Boolean
     If Font_Management.createGDIFont(tmpLogFont, m_GDIFont) Then
         
         'Success!  Note that GDI is an acceptable engine for this font, and return success
-        Debug.Print "GDI font fallback worked!  Proceeding with rendering."
-        m_curTextEngine = te_GDI
+        Debug.Print "GDI font creation worked!  Proceeding with rendering."
+        m_CurrentBackend = fb_GDI
         m_FontCacheClean = True
         createGDIFont = True
         
@@ -833,8 +857,8 @@ Private Function createGDIFont() As Boolean
         
         'Failure!  PD doesn't have a fallback beyond GDI, so this whole request is doomed.
         ' (This shouldn't technically be possible, but if it is, I'd rather laugh than cry.)
-        Debug.Print "GDI font fallback failed miserably!  Everything is falling apart!  AAAAHHHH!"
-        m_curTextEngine = te_UNKNOWN
+        Debug.Print "GDI font creation failed miserably!  Everything is falling apart!  AAAAHHHH!"
+        m_CurrentBackend = fb_UNKNOWN
         m_FontCacheClean = False
         createGDIFont = False
     
@@ -850,52 +874,75 @@ End Function
 Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String, ByVal crColor As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
     
     'As a convenience to the user, create the font as necessary
-    If (Not m_FontCacheClean) Then createFontObject
+    If (Not m_FontCacheClean) Then
+        Debug.Print "Font settings have changed; attempting to recreate font now..."
+        createFontObject
+    End If
     
-    'We should now know whether GDI or GDI+ is required for this combination of settings.
-    Select Case m_curTextEngine
+    'If the font cache *still* isn't clean, something went horribly wrong
+    If (Not m_FontCacheClean) Then
+        Debug.Print "PD failed to create the requested font.  Abandoning render request."
+        renderTextToDIB = False
+        Exit Function
+    Else
+        Debug.Print "Font object looks good.  Proceeding with rendering."
+    End If
+    
+    'PD currently supports two rendering modes: WAPI (which uses GDI or GDI+ to render the text, and is thus limited by the settings
+    ' those two engines provide), or an internal PHOTODEMON engine, which manually extracts font glyphs and renders them ourselves.
+    If m_RenderingEngine = tre_WAPI Then
+    
+        'We should now know whether GDI or GDI+ is required for this combination of settings.
+        Select Case m_CurrentBackend
+            
+            'GDI+ is sufficient
+            Case fb_GDIPLUS
+                renderTextToDIB = renderTextToDIB_GDIPlus(dstDIB, srcString, crColor, x1, y1, textWidth, textHeight)
+            
+            'GDI is required
+            Case fb_GDI
+                renderTextToDIB = renderTextToDIB_GDI(dstDIB, srcString, crColor, x1, y1, textWidth, textHeight)
+                
+            'GDI and GDI+ both failed; at present, we have no fallback for this case
+            Case fb_UNKNOWN
+                Debug.Print "GDI and GDI+ both failed; something is probably wrong with this font.  Consider blacklisting it...?"
+                renderTextToDIB = False
+                
+        End Select
         
-        'GDI+ is sufficient
-        Case te_GDIPLUS
-            renderTextToDIB = renderTextToDIB_GDIPlus(dstDIB, srcString, crColor, x1, y1, textWidth, textHeight)
+        Debug.Print "FYI - renderTextToDIB returned " & CStr(renderTextToDIB)
+    
+    ElseIf m_RenderingEngine = tre_PHOTODEMON Then
+    
+        'PD's internal font engine works by manually translating GDI glyphs into GDI+ paths, then rendering the paths manually.
+        ' Because glyph geometry is very energy intensive, we use a separate class that caches glyphs as they are created.
+        ' This saves us from having to translate glyphs more than once, which is a non-trivial boost on text with one or more
+        ' repeated characters.
         
-        'GDI is required
-        Case te_GDI
-            
-            'While I work on the above code, here's a dummy rendering mode for testing
-            renderTextToDIB = renderTextToDIB_GDI(dstDIB, srcString, crColor, x1, y1, textWidth, textHeight)
-            Exit Function
-            
-            'Because GDI doesn't support 32-bpp rendering targets, we must manually translate GDI glyphs into GDI+ paths, then render
-            ' the paths manually.  Because this is hugely energy intensive, our separate class attempts to cache glyphs as they are
-            ' created.  This saves us from having to translate glyphs more than once, which is a non-trivial boost on long chunks
-            ' of text.
-            
-            'Start by creating a pdGlyphCollection instance, if one doesn't already exist.
-            If (m_GlyphCollection Is Nothing) Then Set m_GlyphCollection = New pdGlyphCollection
-            
-            'Notify the glyph collection of our GDI font handle.  It obviously needs this in order to generate glyphs.
-            m_GlyphCollection.notifyOfGDIFontChoice m_GDIFont
-            
-            'TODO: retrieve kerning pairs in advance...?
-            
-            'Next, pass it our string.  It will generate a list of required glyphs and automatically retrieve any glyphs it hasn't
-            ' already calculated.  (For example, if the last request it received was "cat", but this request is "cats", only the 's'
-            ' needs to be newly retrieved.)
-            m_GlyphCollection.buildGlyphCollection srcString, True
-            
-            'After all glyphs have been created, it's *very important* that we regain control over our GDI font
-            m_GlyphCollection.requestGDIFontRelease
-            
-            'With the glyph collection successfully assembled, proceed with rendering
-            renderTextToDIB = renderTextToDIB_Glyphs(dstDIB, srcString, crColor, x1, y1, textWidth, textHeight)
-            
+        'Start by creating a pdGlyphCollection instance, if one doesn't already exist.
+        If (m_GlyphCollection Is Nothing) Then Set m_GlyphCollection = New pdGlyphCollection
         
-        'GDI and GDI+ both failed; at present, we have no fallback for this case
-        Case te_UNKNOWN
-            Debug.Print "GDI and GDI+ both failed; something is probably wrong with this font.  Consider blacklisting it...?"
-            
-    End Select
+        'Notify the glyph collection of our GDI font handle.  It obviously needs this in order to generate glyphs.
+        m_GlyphCollection.notifyOfGDIFontChoice m_GDIFont
+        
+        'TODO: retrieve kerning pairs here...?
+        
+        'Next, pass the glyph collection our target string.  The glyph collection will generate a list of required glyphs and
+        ' automatically retrieve any glyph geometry it hasn't already calculated.  (For example, if the last request it received
+        ' was "cat", but this request is "cats", only the 's' needs to be newly retrieved.)
+        m_GlyphCollection.buildGlyphCollection srcString, True
+        
+        'After all glyphs have been created, it's *very important* that we regain control over our GDI font, as we need it for
+        ' the actual rendering step!
+        m_GlyphCollection.requestGDIFontRelease
+        
+        'With the glyph collection successfully assembled, proceed with rendering
+        renderTextToDIB = renderTextToDIB_Glyphs(dstDIB, srcString, crColor, x1, y1, textWidth, textHeight)
+    
+    Else
+        Debug.Print "WARNING!  Unknown rendering engine set in pdTextRenderer."
+        renderTextToDIB = False
+    End If
     
 End Function
 
@@ -1072,13 +1119,16 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     'If the width of this string (in the current font) is less than the width of the target DIB, we will use the string's
     ' precise render dimensions for our target DIB.
     If txtSize.x < dstDIB.getDIBWidth Then
-        targetWidth = txtSize.x
-        targetHeight = txtSize.y
+        
+        'GDI adds 1/6 em width to account for glyph overhang.  Italic mode doubles the default overhang (and we apply that correction
+        ' by default, to cover fonts where italics is the only available mode).
+        targetWidth = txtSize.x + CLng((CDbl(txtSize.y) / 6 + 1) * 2)
+        targetHeight = txtSize.y + 1
     
     'The string extends beyond the width of the DIB. Wordwrap is required.  Calculate height now.
     Else
     
-        targetWidth = dstDIB.getDIBWidth
+        targetWidth = dstDIB.getDIBWidth - 1
     
         tmpRect.Left = 0
         tmpRect.Top = 0
@@ -1091,7 +1141,7 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
         If tmpRect.Bottom > dstDIB.getDIBHeight Then
             targetHeight = dstDIB.getDIBHeight
         Else
-            targetHeight = tmpRect.Bottom
+            targetHeight = tmpRect.Bottom + 1
         End If
     
     End If
@@ -1186,6 +1236,10 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     finalX = m_TmpGdiDIB.getDIBWidth - 1
     finalY = m_TmpGdiDIB.getDIBHeight - 1
     
+    'As a failsafe, make sure finalX and Y don't extend beyond our target DIB, either
+    If finalX >= dstDIB.getDIBWidth Then finalX = dstDIB.getDIBWidth - 1
+    If finalY >= dstDIB.getDIBHeight Then finalY = dstDIB.getDIBHeight - 1
+    
     Dim xStrideSrc As Long, xStrideDst As Long
     
     'Start transferring pixels
@@ -1222,32 +1276,27 @@ End Function
 
 Private Sub Class_Initialize()
     
-    'Only one backend is available at present
-    m_CurrentFontBackend = frb_WAPI
-    
-    'Create a relevant font rendering backend
-    If m_CurrentFontBackend = frb_WAPI Then
+    'TEMPORARY!  Force the default, basic rendering engine while we get the basic text tool sorted out.
+    m_RenderingEngine = tre_WAPI
         
-        'Because GDI+ StringFormat creation is cheap, create a default typographic GDI+ StringFormat object now.
-        ' This saves us having to recreate the object later.
-        '
-        'Note that a default typographic StringFormat has the following options set:
-        ' FormatFlags: 24580 (NoClip, FitBlackBox and LineLimit.)
-        ' Alignment: Near
-        ' LineAlignment: Near
-        ' Trimming: None
-        ' HotkeyPrefix: None
-        ' DigitSubstitutionMethod: User
-        ' DigitSubstitutionLanguage: 0
-        GdipStringFormatGetGenericTypographic m_GDIPlusStringFormat
-        
-    End If
+    'Because GDI+ StringFormat creation is cheap, create a default typographic GDI+ StringFormat object now.
+    ' This saves us having to recreate the object later.
+    '
+    'Note that a default typographic StringFormat has the following options set:
+    ' FormatFlags: 24580 (NoClip, FitBlackBox and LineLimit.)
+    ' Alignment: Near
+    ' LineAlignment: Near
+    ' Trimming: None
+    ' HotkeyPrefix: None
+    ' DigitSubstitutionMethod: User
+    ' DigitSubstitutionLanguage: 0
+    GdipStringFormatGetGenericTypographic m_GDIPlusStringFormat
     
     'Mark the current font cache as dirty
     m_FontCacheClean = False
     
-    'Reset the text engine marker (we don't know this until we attempt to create a given font)
-    m_curTextEngine = te_UNKNOWN
+    'Reset the font backend marker (this is set on a per-font basis, based on a fairly sophisticated combination of settings)
+    m_CurrentBackend = fb_UNKNOWN
         
     'By default, this class uses pixels
     m_FontSizeUnit = pdfu_Pixel
@@ -1267,17 +1316,12 @@ End Sub
 
 Private Sub Class_Terminate()
     
-    'Perform any backend-specific clean-up
-    If m_CurrentFontBackend = frb_WAPI Then
+    'Release any GDI+ objects we created
+    If m_GDIPlusFont <> 0 Then GdipDeleteFont m_GDIPlusFont
+    If m_GDIPlusFontFamily <> 0 Then GdipDeleteFontFamily m_GDIPlusFontFamily
+    If m_GDIPlusStringFormat <> 0 Then GdipDeleteStringFormat m_GDIPlusStringFormat
     
-        'Release any GDI+ objects we created
-        If m_GDIPlusFont <> 0 Then GdipDeleteFont m_GDIPlusFont
-        If m_GDIPlusFontFamily <> 0 Then GdipDeleteFontFamily m_GDIPlusFontFamily
-        If m_GDIPlusStringFormat <> 0 Then GdipDeleteStringFormat m_GDIPlusStringFormat
-        
-        'Release any GDI objects we created
-        If m_GDIFont <> 0 Then DeleteObject m_GDIFont
-        
-    End If
+    'Release any GDI objects we created
+    If m_GDIFont <> 0 Then DeleteObject m_GDIFont
     
 End Sub
