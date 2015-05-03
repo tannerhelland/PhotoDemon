@@ -381,6 +381,12 @@ TEXT_BOLD    CUSTOM  MOVEABLE        LOADONCALL      text_bold_24.png
 TEXT_ITALIC  CUSTOM  MOVEABLE        LOADONCALL      text_italic_24.png
 TEXT_UNDERLINE CUSTOM  MOVEABLE      LOADONCALL      text_underline_24.png
 TEXT_STRIKE  CUSTOM  MOVEABLE        LOADONCALL      text_strikeout_24.png
+TEXT_ALIGN_LEFT    CUSTOM  MOVEABLE  LOADONCALL      text_align_left_24.png
+TEXT_ALIGN_HCENTER CUSTOM  MOVEABLE  LOADONCALL      text_align_horizontal_center_24.png
+TEXT_ALIGN_RIGHT   CUSTOM  MOVEABLE  LOADONCALL      text_align_right_24.png
+TEXT_ALIGN_TOP     CUSTOM  MOVEABLE  LOADONCALL      text_align_top_24.png
+TEXT_ALIGN_VCENTER CUSTOM  MOVEABLE  LOADONCALL      text_align_vertical_center_24.png
+TEXT_ALIGN_BOTTOM  CUSTOM  MOVEABLE  LOADONCALL      text_align_bottom_24.png
 
 //Layer toolbox (note that other layer toolbox entries are in the Layer Menu section, above
 EYE_OPEN     CUSTOM  MOVEABLE        LOADONCALL      eye.png
