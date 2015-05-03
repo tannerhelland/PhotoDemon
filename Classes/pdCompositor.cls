@@ -1145,9 +1145,10 @@ End Sub
 'Returns a subsection of the fully composited image (in pdDIB format, of course).  This is helpful for rendering the main viewport,
 ' as we only composite the relevant portions of the image.
 '
-'This function is large, complicated, and unfortunately tricky, as we must resize and composite each layer in turn.  Optimizing this
-' function will be a huge project going forward, but we must optimize carefully if we want the viewport to work smoothly.
-Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal interpolationType As InterpolationMode)
+'This function is large, complicated, and unfortunately tricky, as we must resize and composite each layer in turn.  However, it's the secret
+' to PD's incredible viewport performance.  (e.g., this function is how we can outperform both GIMP and Paint.NET despite being single-threaded
+' and heavily CPU-bound)
+Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal interpolationType As InterpolationMode, Optional ByVal ignoreInternalCaches As Boolean = False)
     
     'Before doing anything else, fill two rects with the coordinates we were passed.  We will use these rects to calculate the
     ' boundary regions for all individual layers.
@@ -1207,7 +1208,7 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
         If srcImage.getLayerByIndex(i).getLayerVisibility Then
             
             'The helper function handles the actual compositing
-            getCompositedRect_LayerHelper m_dstDIB, srcImage.getLayerByIndex(i), dstViewportRect, srcImageRect, interpolationType, isRectZoomless, CBool(i = 0)
+            getCompositedRect_LayerHelper m_dstDIB, srcImage.getLayerByIndex(i), dstViewportRect, srcImageRect, interpolationType, isRectZoomless, CBool(i = 0), ignoreInternalCaches
         
         'END block for layer visibility toggle
         End If
@@ -1233,12 +1234,9 @@ End Sub
 ' This logic is handled separately so that paint operations can be silently "inserted" into the existing layer stack, without requiring
 ' any modifications of the parent pdImage object.
 '
-'For performance reasons, the module-level m_tmpDIB object is used.  This is by design, because images that have only one
-' special-treatment layer (e.g. non-destructive FX, resizing, custom blend modes, etc) can avoid the creation of multiple temporary DIBs.
-'
-'In the future, I might look at giving each layer its own temporary compositing DIB object, so we can cache viewport-resized layers for
-' better performance, particularly while painting.
-Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer As pdLayer, ByRef dstViewportRect As RECTF, ByRef srcImageRect As RECTF, ByVal interpolationType As InterpolationMode, Optional ByVal isRectZoomless As Boolean = False, Optional ByVal isBaseLayer As Boolean = False)
+'Extensive caching has been implemented to maximize performance.  Each individual pdLayer object stores its own viewport cache, but note that
+' the optional ignoreInternalCaches can be set to TRUE, in which case these caches must be forcibly regenerated.
+Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer As pdLayer, ByRef dstViewportRect As RECTF, ByRef srcImageRect As RECTF, ByVal interpolationType As InterpolationMode, Optional ByVal isRectZoomless As Boolean = False, Optional ByVal isBaseLayer As Boolean = False, Optional ByVal ignoreInternalCaches As Boolean = False)
     
     'This function requires two non-optional rects as parameters:
     
@@ -1336,7 +1334,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer 
         
         If srcLayer.getLayerNonDestructiveFXState Or nonStandardBlendModeActive Then
             
-            If (srcLayer.getViewportHash = 0) Or (srcLayer.getViewportHash <> testHash) Or (Not cachedDIBValid) Then
+            If (srcLayer.getViewportHash = 0) Or (srcLayer.getViewportHash <> testHash) Or (Not cachedDIBValid) Or ignoreInternalCaches Then
             
                 'The layer and/or viewport has changed since our last composite.  Create a new DIB in the cheapest way possible
                 ' (e.g., if the current temporary DIB size is acceptable, just reset it instead of fully redrawing it)
@@ -1476,7 +1474,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer 
                     ' at some cost to performance.
                     
                     'See if our existing hash is valid
-                    If (srcLayer.getViewportHash = 0) Or (srcLayer.getViewportHash <> testHash) Or (Not cachedDIBValid) Then
+                    If (srcLayer.getViewportHash = 0) Or (srcLayer.getViewportHash <> testHash) Or (Not cachedDIBValid) Or ignoreInternalCaches Then
                     
                         'The layer and/or viewport has changed since our last composite.  Create a new DIB in the cheapest way possible
                         ' (e.g., if the current temporary DIB size is acceptable, just reset it instead of fully redrawing it)

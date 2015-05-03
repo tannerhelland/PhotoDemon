@@ -241,9 +241,14 @@ End Sub
 
 'Stage3_ExtractRelevantRegion is used to composite the current image onto the source pdImage's back buffer.  This function does not
 ' perform any initialization or pre-rendering checks, so you cannot use it if zoom is changed, or if the viewport area has changed.
-' (Stage1_InitializeBuffer is used for that.)  The most common use-case for this function is the use of scrollbars, or non-destructive
-' layer changes that require a recomposite of the image, but not a full recreation calculation of the viewport and canvas buffers.
-Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
+' (Stage1_InitializeBuffer is used for that.)
+'
+'The most common use-case for this function is the use of scrollbars, or non-destructive layer changes that require a recomposite
+' of the image, but not a full re-creation and calculation of the viewport and canvas buffers.
+'
+'The optional pipelineOriginatedAtStageOne parameter lets this function know if a full pipeline purge is required.  Some caches
+' may need to be regenerated from scratch after zoom changes.
+Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal pipelineOriginatedAtStageOne As Boolean = False)
 
     '(Temporary switch while working on new viewport engine)
     If g_ViewportPerformance = PD_PERF_BESTQUALITY Then
@@ -301,8 +306,8 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
     
     Else
         
-        'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared srcImage.BackBuffer for us.  Stage 2 does nothing on this
-        ' pipeline path.  The goal of this stage (3) is two-fold:
+        'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared srcImage.BackBuffer for us.  Stage 2 does nothing for this
+        ' particular pipeline branch.  The goal of this stage (3) is two-fold:
         ' 1) Fill the viewport area of the canvas with a checkerboard pattern
         ' 2) Render the fully composited image atop the checkerboard pattern
         
@@ -341,13 +346,13 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
             
             'When we've been asked to maximize performance, use nearest neighbor for all zoom modes
             If g_ViewportPerformance = PD_PERF_FASTEST Then
-                srcImage.getCompositedRect srcImage.canvasBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, InterpolationModeNearestNeighbor
+                srcImage.getCompositedRect srcImage.canvasBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, InterpolationModeNearestNeighbor, pipelineOriginatedAtStageOne
                 
             'Otherwise, switch dynamically between high-quality and low-quality interpolation depending on the current zoom.
             ' Note that the compositor will perform some additional checks, and if the image is zoomed-in, it will switch to nearest-neighbor
             ' automatically (regardless of what method we request).
             Else
-                srcImage.getCompositedRect srcImage.canvasBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor)
+                srcImage.getCompositedRect srcImage.canvasBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor), pipelineOriginatedAtStageOne
             End If
                     
         'This is an emergency fallback, only.  PD won't work without GDI+, so rendering the viewport is pointless.
@@ -365,11 +370,17 @@ End Sub
 'Stage2_CompositeAllLayers is used to composite the current layer stack (while accounting for all non-destructive modifications)
 ' into a single, final image.  This image is stored in the source pdImage's back buffer.  This function does not perform any
 ' initialization or pre-rendering checks, so you cannot use it if zoom is changed, or if the viewport area has changed.
-' (Stage1_InitializeBuffer is used for that.)  Similarly, depending on the active render mode, this stage may be redundant for
-' things like viewport scrollbars, as those only require Stage3_ExtractRelevantRegion, as the image has already been assembled.
-' The most common use-case for this function is changes made to individual layers, including non-destructive layer changes that
+' (Stage1_InitializeBuffer is used for that.)
+'
+'Similarly, depending on the active render mode, this stage may be redundant for things like viewport scrollbars, as those only
+' require Stage3_ExtractRelevantRegion, as the image has already been assembled.
+'
+'The most common use-case for this function is changes made to individual layers, including non-destructive layer changes that
 ' require a recomposite of the image, but not a full recreation calculation of the viewport and canvas buffers.
-Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
+'
+'The optional pipelineOriginatedAtStageOne parameter lets this function know if a full pipeline purge is required.  Some caches
+' may need to be regenerated from scratch after zoom changes.
+Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal pipelineOriginatedAtStageOne As Boolean = False)
         
     'Like the previous stage of the pipeline, we start by performing a number of "do not render the viewport at all" checks.
     
@@ -406,7 +417,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
     End If
     
     'Pass control to the next stage of the pipeline.
-    Stage3_ExtractRelevantRegion srcImage, dstCanvas
+    Stage3_ExtractRelevantRegion srcImage, dstCanvas, pipelineOriginatedAtStageOne
     
     'If timing reports are enabled, we report them after the rest of the pipeline has finished.
     If g_DisplayTimingReports Then Debug.Print "Viewport render timing: " & Format(CStr((Timer - startTime) * 1000), "0000.00") & " ms"
@@ -634,7 +645,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
         srcImage.imgViewport.targetHeight = viewportHeight
         
         'Pass control to the next stage of the pipeline
-        Viewport_Engine.Stage2_CompositeAllLayers srcImage, dstCanvas
+        Viewport_Engine.Stage2_CompositeAllLayers srcImage, dstCanvas, True
         
     
     'This Else() bracket covers the case of one or both viewport scroll bars being enabled.  Inside this block, we will calculate
@@ -783,7 +794,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
         srcImage.imgViewport.targetHeight = viewportHeight
             
         'Pass control to the next pipeline stage.
-        Stage2_CompositeAllLayers srcImage, dstCanvas
+        Stage2_CompositeAllLayers srcImage, dstCanvas, True
         
     End If
     
