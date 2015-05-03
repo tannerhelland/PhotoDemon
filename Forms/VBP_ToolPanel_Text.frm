@@ -169,7 +169,7 @@ Begin VB.Form toolpanel_Text
       _ExtentX        =   2408
       _ExtentY        =   503
       Alignment       =   1
-      Caption         =   "AA and hinting:"
+      Caption         =   "antialiasing:"
       ForeColor       =   0
    End
    Begin PhotoDemon.pdLabel lblText 
@@ -181,7 +181,7 @@ Begin VB.Form toolpanel_Text
       _ExtentX        =   2408
       _ExtentY        =   503
       Alignment       =   1
-      Caption         =   "AA clarity:"
+      Caption         =   "clarity:"
       ForeColor       =   0
    End
    Begin PhotoDemon.pdLabel lblText 
@@ -303,7 +303,17 @@ Private Sub cboTextFontFace_Click()
 End Sub
 
 Private Sub cboTextRenderingHint_Click()
-    
+        
+    'We show/hide the AA clarity option depending on this tool's setting.  (AA clarity doesn't make much sense
+    ' if AA is disabled.)
+    If cboTextRenderingHint.ListIndex = 0 Then
+        sltTextClarity.Visible = False
+        lblText(6).Visible = False
+    Else
+        sltTextClarity.Visible = True
+        lblText(6).Visible = True
+    End If
+        
     'If tool changes are not allowed, exit.
     ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
     If Not Tool_Support.canvasToolsAllowed Then Exit Sub
