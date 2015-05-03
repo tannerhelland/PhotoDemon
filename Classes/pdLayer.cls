@@ -331,7 +331,7 @@ End Function
 
 'Counterpart to isLayerVector(), above
 Public Function isLayerRaster() As Boolean
-    isLayerRaster = Not isLayerVector
+    isLayerRaster = Not isLayerVector()
 End Function
 
 'Get/set name
@@ -1138,7 +1138,7 @@ End Function
 Public Function getVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean = False) As String
     
     'First, make sure this is not an image layer
-    If Me.isLayerVector() Then
+    If Not Me.isLayerVector() Then
         Debug.Print "WARNING!  The getVectorDataAsXML() function is only valid for vector layers!"
         Exit Function
     End If
