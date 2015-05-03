@@ -774,8 +774,8 @@ Friend Sub setTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPERTY, 
             End If
         
         Case ptp_FontStrikeout
-            If myTextData.tld_FontUnderline <> CBool(newValue) Then
-                myTextData.tld_FontUnderline = CBool(newValue)
+            If myTextData.tld_FontStrikeout <> CBool(newValue) Then
+                myTextData.tld_FontStrikeout = CBool(newValue)
                 m_VectorDIBSynched = False
             End If
         
