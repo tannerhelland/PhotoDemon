@@ -423,6 +423,12 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                     .csTextFontColor.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontColor)
                     .cboTextRenderingHint.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextAntialiasing)
                     .sltTextClarity.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextContrast)
+                    .btnFontStyles(0).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontBold)
+                    .btnFontStyles(1).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontItalic)
+                    .btnFontStyles(2).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontUnderline)
+                    .btnFontStyles(3).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontStrikeout)
+                    .setCurrentAlignment True, pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_HorizontalAlignment)
+                    .setCurrentAlignment False, pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_VerticalAlignment)
                 End With
         
         End Select
@@ -491,6 +497,12 @@ Public Sub syncCurrentLayerToToolOptionsUI()
                     .setTextLayerProperty ptp_FontColor, toolpanel_Text.csTextFontColor.Color
                     .setTextLayerProperty ptp_TextAntialiasing, toolpanel_Text.cboTextRenderingHint.ListIndex
                     .setTextLayerProperty ptp_TextContrast, toolpanel_Text.sltTextClarity.Value
+                    .setTextLayerProperty ptp_FontBold, toolpanel_Text.btnFontStyles(0).Value
+                    .setTextLayerProperty ptp_FontItalic, toolpanel_Text.btnFontStyles(1).Value
+                    .setTextLayerProperty ptp_FontUnderline, toolpanel_Text.btnFontStyles(2).Value
+                    .setTextLayerProperty ptp_FontStrikeout, toolpanel_Text.btnFontStyles(3).Value
+                    .setTextLayerProperty ptp_HorizontalAlignment, toolpanel_Text.getCurrentAlignment(True)
+                    .setTextLayerProperty ptp_VerticalAlignment, toolpanel_Text.getCurrentAlignment(False)
                 End With
         
         End Select
