@@ -787,13 +787,15 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
             
             'Image layers save their raster contents as a raw byte stream
             If srcPDImage.getLayerByIndex(i).isLayerRaster Then
-            
+                
+                Debug.Print "Writing layer index " & i & " out to file as RASTER layer."
                 srcPDImage.getLayerByIndex(i).layerDIB.retrieveDIBPointerAndSize layerDIBPointer, layerDIBLength
                 pdiWriter.addNodeDataFromPointer nodeIndex, False, layerDIBPointer, layerDIBLength, compressLayers, compressionLevel, embedChecksums
                 
             'Text (and other vector layers) save their vector contents in XML format
             ElseIf srcPDImage.getLayerByIndex(i).isLayerVector Then
-            
+                
+                Debug.Print "Writing layer index " & i & " out to file as VECTOR layer."
                 layerXMLData = srcPDImage.getLayerByIndex(i).getVectorDataAsXML(True)
                 pdiWriter.addNodeDataFromString nodeIndex, False, layerXMLData, compressLayers, compressionLevel, embedChecksums
             
