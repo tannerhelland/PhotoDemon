@@ -31,9 +31,9 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   6
       Top             =   930
       Width           =   450
-      _extentx        =   794
-      _extenty        =   767
-      stickytoggle    =   -1  'True
+      _ExtentX        =   794
+      _ExtentY        =   767
+      StickyToggle    =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltTextClarity 
       Height          =   435
@@ -41,11 +41,11 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   5
       Top             =   930
       Width           =   2415
-      _extentx        =   4260
-      _extenty        =   767
-      value           =   5
-      notchposition   =   2
-      notchvaluecustom=   5
+      _ExtentX        =   4260
+      _ExtentY        =   767
+      Value           =   5
+      NotchPosition   =   2
+      NotchValueCustom=   5
    End
    Begin PhotoDemon.colorSelector csTextFontColor 
       Height          =   390
@@ -53,9 +53,9 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   0
       Top             =   60
       Width           =   2415
-      _extentx        =   4260
-      _extenty        =   688
-      curcolor        =   0
+      _ExtentX        =   4260
+      _ExtentY        =   688
+      curColor        =   0
    End
    Begin PhotoDemon.textUpDown tudTextFontSize 
       Height          =   345
@@ -63,11 +63,11 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   1
       Top             =   510
       Width           =   2415
-      _extentx        =   4260
-      _extenty        =   609
-      max             =   1000
-      min             =   1
-      value           =   16
+      _ExtentX        =   4260
+      _ExtentY        =   609
+      Min             =   1
+      Max             =   1000
+      Value           =   16
    End
    Begin PhotoDemon.pdTextBox txtTextTool 
       Height          =   1380
@@ -75,10 +75,10 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   2
       Top             =   30
       Width           =   5295
-      _extentx        =   9340
-      _extenty        =   2434
-      fontsize        =   9
-      multiline       =   -1  'True
+      _ExtentX        =   9340
+      _ExtentY        =   2434
+      FontSize        =   9
+      Multiline       =   -1  'True
    End
    Begin PhotoDemon.pdComboBox cboTextFontFace 
       Height          =   375
@@ -86,8 +86,8 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   3
       Top             =   60
       Width           =   2415
-      _extentx        =   4260
-      _extenty        =   635
+      _ExtentX        =   4260
+      _ExtentY        =   635
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   1080
@@ -95,13 +95,13 @@ Begin VB.Form toolpanel_Text
       Left            =   0
       Top             =   360
       Width           =   765
-      _extentx        =   1349
-      _extenty        =   1905
-      alignment       =   2
-      caption         =   "(this tool is under constr- uction)"
-      forecolor       =   255
-      layout          =   1
-      usecustomforecolor=   -1  'True
+      _ExtentX        =   1349
+      _ExtentY        =   1905
+      Alignment       =   2
+      Caption         =   "(this tool is under constr- uction)"
+      ForeColor       =   255
+      Layout          =   1
+      UseCustomForeColor=   -1  'True
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -109,11 +109,11 @@ Begin VB.Form toolpanel_Text
       Left            =   120
       Top             =   60
       Width           =   645
-      _extentx        =   1138
-      _extenty        =   503
-      alignment       =   1
-      caption         =   "text:"
-      forecolor       =   0
+      _ExtentX        =   1138
+      _ExtentY        =   503
+      Alignment       =   1
+      Caption         =   "text:"
+      ForeColor       =   0
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -121,11 +121,11 @@ Begin VB.Form toolpanel_Text
       Left            =   6360
       Top             =   120
       Width           =   1125
-      _extentx        =   1984
-      _extenty        =   503
-      alignment       =   1
-      caption         =   "font face:"
-      forecolor       =   0
+      _ExtentX        =   1984
+      _ExtentY        =   503
+      Alignment       =   1
+      Caption         =   "font face:"
+      ForeColor       =   0
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -133,11 +133,11 @@ Begin VB.Form toolpanel_Text
       Left            =   6360
       Top             =   570
       Width           =   1125
-      _extentx        =   1984
-      _extenty        =   503
-      alignment       =   1
-      caption         =   "font size:"
-      forecolor       =   0
+      _ExtentX        =   1984
+      _ExtentY        =   503
+      Alignment       =   1
+      Caption         =   "font size:"
+      ForeColor       =   0
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -145,11 +145,11 @@ Begin VB.Form toolpanel_Text
       Left            =   6360
       Top             =   1020
       Width           =   1125
-      _extentx        =   1984
-      _extenty        =   503
-      alignment       =   1
-      caption         =   "font style:"
-      forecolor       =   0
+      _ExtentX        =   1984
+      _ExtentY        =   503
+      Alignment       =   1
+      Caption         =   "font style:"
+      ForeColor       =   0
    End
    Begin PhotoDemon.pdComboBox cboTextRenderingHint 
       Height          =   375
@@ -157,8 +157,8 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   4
       Top             =   525
       Width           =   2415
-      _extentx        =   4260
-      _extenty        =   635
+      _ExtentX        =   4260
+      _ExtentY        =   635
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -166,11 +166,11 @@ Begin VB.Form toolpanel_Text
       Left            =   10320
       Top             =   570
       Width           =   1365
-      _extentx        =   2408
-      _extenty        =   503
-      alignment       =   1
-      caption         =   "antialiasing:"
-      forecolor       =   0
+      _ExtentX        =   2408
+      _ExtentY        =   503
+      Alignment       =   1
+      Caption         =   "antialiasing:"
+      ForeColor       =   0
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -178,11 +178,11 @@ Begin VB.Form toolpanel_Text
       Left            =   10320
       Top             =   1020
       Width           =   1365
-      _extentx        =   2408
-      _extenty        =   503
-      alignment       =   1
-      caption         =   "clarity:"
-      forecolor       =   0
+      _ExtentX        =   2408
+      _ExtentY        =   503
+      Alignment       =   1
+      Caption         =   "clarity:"
+      ForeColor       =   0
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -190,11 +190,11 @@ Begin VB.Form toolpanel_Text
       Left            =   10320
       Top             =   120
       Width           =   1365
-      _extentx        =   2408
-      _extenty        =   503
-      alignment       =   1
-      caption         =   "color:"
-      forecolor       =   0
+      _ExtentX        =   2408
+      _ExtentY        =   503
+      Alignment       =   1
+      Caption         =   "color:"
+      ForeColor       =   0
    End
    Begin PhotoDemon.pdButtonToolbox btnFontStyles 
       Height          =   435
@@ -203,9 +203,9 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   7
       Top             =   930
       Width           =   450
-      _extentx        =   794
-      _extenty        =   767
-      stickytoggle    =   -1  'True
+      _ExtentX        =   794
+      _ExtentY        =   767
+      StickyToggle    =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox btnFontStyles 
       Height          =   435
@@ -214,9 +214,9 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   8
       Top             =   930
       Width           =   450
-      _extentx        =   794
-      _extenty        =   767
-      stickytoggle    =   -1  'True
+      _ExtentX        =   794
+      _ExtentY        =   767
+      StickyToggle    =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox btnFontStyles 
       Height          =   435
@@ -225,9 +225,9 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   9
       Top             =   930
       Width           =   450
-      _extentx        =   794
-      _extenty        =   767
-      stickytoggle    =   -1  'True
+      _ExtentX        =   794
+      _ExtentY        =   767
+      StickyToggle    =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox btnHAlignment 
       Height          =   435
@@ -236,8 +236,8 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   10
       Top             =   30
       Width           =   450
-      _extentx        =   794
-      _extenty        =   767
+      _ExtentX        =   794
+      _ExtentY        =   767
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -245,11 +245,11 @@ Begin VB.Form toolpanel_Text
       Left            =   14400
       Top             =   120
       Width           =   1125
-      _extentx        =   1984
-      _extenty        =   503
-      alignment       =   1
-      caption         =   "alignment:"
-      forecolor       =   0
+      _ExtentX        =   1984
+      _ExtentY        =   503
+      Alignment       =   1
+      Caption         =   "alignment:"
+      ForeColor       =   0
    End
    Begin PhotoDemon.pdButtonToolbox btnHAlignment 
       Height          =   435
@@ -258,8 +258,8 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   11
       Top             =   30
       Width           =   450
-      _extentx        =   794
-      _extenty        =   767
+      _ExtentX        =   794
+      _ExtentY        =   767
    End
    Begin PhotoDemon.pdButtonToolbox btnHAlignment 
       Height          =   435
@@ -268,8 +268,8 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   12
       Top             =   30
       Width           =   450
-      _extentx        =   794
-      _extenty        =   767
+      _ExtentX        =   794
+      _ExtentY        =   767
    End
    Begin PhotoDemon.pdButtonToolbox btnVAlignment 
       Height          =   435
@@ -278,8 +278,8 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   13
       Top             =   480
       Width           =   450
-      _extentx        =   794
-      _extenty        =   767
+      _ExtentX        =   794
+      _ExtentY        =   767
    End
    Begin PhotoDemon.pdButtonToolbox btnVAlignment 
       Height          =   435
@@ -288,8 +288,8 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   14
       Top             =   480
       Width           =   450
-      _extentx        =   794
-      _extenty        =   767
+      _ExtentX        =   794
+      _ExtentY        =   767
    End
    Begin PhotoDemon.pdButtonToolbox btnVAlignment 
       Height          =   435
@@ -298,8 +298,8 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   15
       Top             =   480
       Width           =   450
-      _extentx        =   794
-      _extenty        =   767
+      _ExtentX        =   794
+      _ExtentY        =   767
    End
 End
 Attribute VB_Name = "toolpanel_Text"
@@ -335,24 +335,28 @@ Public Sub setCurrentAlignment(ByVal alignDirectionHorizontal As Boolean, ByVal 
     
     If alignDirectionHorizontal Then
         m_CurHorizontalAlignment = newAlignment
+        syncHorizontalAlignmentButtons
     Else
         m_CurVerticalAlignment = newAlignment
+        syncVerticalAlignmentButtons
     End If
-    
-    'After alignment has changed, we must resynchronize the various buttons to match
-    syncAlignmentButtons
     
 End Sub
 
 'Alignment buttons work in groups, where pressing one automatically off-toggles the others in the group.  This behavior must be
 ' handled programmatically.
-Private Sub syncAlignmentButtons()
+Private Sub syncHorizontalAlignmentButtons()
     
     Dim i As Long
     For i = 0 To 2
         btnHAlignment(i).Value = CBool(i = m_CurHorizontalAlignment)
     Next i
+        
+End Sub
+
+Private Sub syncVerticalAlignmentButtons()
     
+    Dim i As Long
     For i = 0 To 2
         btnVAlignment(i).Value = CBool(i = m_CurVerticalAlignment)
     Next i
@@ -404,7 +408,7 @@ Private Sub btnHAlignment_Click(Index As Integer)
     
         'Store the new alignment value and synchronize the other alignment buttons accordingly
         m_CurHorizontalAlignment = Index
-        syncAlignmentButtons
+        syncHorizontalAlignmentButtons
         
     End If
     
@@ -433,7 +437,7 @@ Private Sub btnVAlignment_Click(Index As Integer)
     
         'Store the new alignment value and synchronize the other alignment buttons accordingly
         m_CurVerticalAlignment = Index
-        syncAlignmentButtons
+        syncVerticalAlignmentButtons
         
     End If
 
@@ -596,7 +600,8 @@ End Sub
 Private Sub lastUsedSettings_ReadCustomPresetData()
     m_CurHorizontalAlignment = CLng(lastUsedSettings.retrievePresetData("HorizontalAlignment", "0"))
     m_CurVerticalAlignment = CLng(lastUsedSettings.retrievePresetData("VerticalAlignment", "0"))
-    syncAlignmentButtons
+    syncHorizontalAlignmentButtons
+    syncVerticalAlignmentButtons
 End Sub
 
 Private Sub sltTextClarity_Change()

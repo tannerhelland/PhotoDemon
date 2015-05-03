@@ -1325,6 +1325,9 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                                         
                     'Also, note that we have just created a new text layer.  The MouseUp event needs to know this, so it can initiate a full-image Undo/Redo event.
                     Tool_Support.setCustomToolState PD_TEXT_TOOL_CREATED_NEW_LAYER
+                    
+                    'Redraw the viewport immediately
+                    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 
                 End If
                 
