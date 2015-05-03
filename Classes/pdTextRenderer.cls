@@ -1106,7 +1106,7 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     
     'Set other font parameters.  Note that this function only draws white text onto a black background.  Color is applied later.
     SetTextColor m_TmpGdiDIB.getDIBDC, RGB(255, 255, 255)
-    SetTextAlign m_TmpGdiDIB.getDIBDC, 0        'Setting actual text alignment is TODO!
+    SetTextAlign m_TmpGdiDIB.getDIBDC, 0
     
     'Enable transparent font rendering
     SetBkMode m_TmpGdiDIB.getDIBDC, FONT_TRANSPARENT
@@ -1131,6 +1131,7 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
         'GDI adds 1/6 em width to account for glyph overhang.  Italic mode doubles the default overhang (and we apply that correction
         ' by default, to cover fonts where italics is the only available mode).
         targetWidth = txtSize.x + CLng((CDbl(txtSize.y) / 6 + 1) * 2)
+        If targetWidth > dstDIB.getDIBWidth Then targetWidth = dstDIB.getDIBWidth
         targetHeight = txtSize.y + 1
     
     'The string extends beyond the width of the DIB. Wordwrap is required.  Calculate height now.
@@ -1143,7 +1144,7 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
         tmpRect.Bottom = 0
         tmpRect.Right = targetWidth
         
-        DrawText m_TmpGdiDIB.getDIBDC, StrPtr(srcString), Len(srcString), tmpRect, DT_LEFT Or DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_NOPREFIX Or DT_TOP
+        DrawText m_TmpGdiDIB.getDIBDC, StrPtr(srcString), Len(srcString), tmpRect, getDrawTextAlignmentFlags() Or DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_NOPREFIX
         
         'Take the height of the rendered string, or the height of the target DIB, whichever is smaller
         If tmpRect.Bottom > dstDIB.getDIBHeight Then
@@ -1168,7 +1169,7 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
         
         'Reset other font parameters.
         SetTextColor m_TmpGdiDIB.getDIBDC, RGB(255, 255, 255)
-        SetTextAlign m_TmpGdiDIB.getDIBDC, 0        'Setting actual text alignment is TODO!
+        SetTextAlign m_TmpGdiDIB.getDIBDC, 0
         SetBkMode m_TmpGdiDIB.getDIBDC, FONT_TRANSPARENT
         
     Else
@@ -1183,7 +1184,7 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     
     'Use DrawText for the actual rendering
     Dim retDrawText As Long
-    retDrawText = DrawText(m_TmpGdiDIB.getDIBDC, StrPtr(srcString), Len(srcString), tmpRect, DT_WORDBREAK Or DT_LEFT Or DT_TOP)
+    retDrawText = DrawText(m_TmpGdiDIB.getDIBDC, StrPtr(srcString), Len(srcString), tmpRect, DT_WORDBREAK Or getDrawTextAlignmentFlags())
     
     'We can actually determine a return value now
     renderTextToDIB_GDI = CBool(retDrawText <> 0)
@@ -1192,10 +1193,11 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     SelectObject m_TmpGdiDIB.getDIBDC, oldFont
     
     'With the temporary DIB successfully renderered, our new job is to transfer its contents to the destination DIB.
+    ' Unfortunately, we have to do this manually, using per-pixel code.
     
     'Start by clearing the destination DIB
     dstDIB.resetDIB
-    
+        
     'Next, we need to prepare lookup tables based on the translation of gray pixels (since we rendered white text to a black background)
     ' to the target color, with alpha accounted for.  Note that alpha is easy - the grayscale value of the temporary DIB represents
     ' alpha - so we just need to calculate premultiplied colors.
@@ -1280,7 +1282,7 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     Next x
     
     'Lookup tables are now ready.  Time to transfer the bits!
-    
+        
     'Create a local array and point it at the pixel data of the target image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
@@ -1302,12 +1304,50 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     If finalX >= dstDIB.getDIBWidth Then finalX = dstDIB.getDIBWidth - 1
     If finalY >= dstDIB.getDIBHeight Then finalY = dstDIB.getDIBHeight - 1
     
+    'Finally, we also need to calculate x/y offset values.  For performance reasons, this class renders text to a temporary DIB
+    ' at the exact size of the text's bounding rect.  Because we must manually convert these results to 32-bpp, then transfer them
+    ' to the destination image, the alignment of the temporary DIB vs the destination DIB varies according to the underlying
+    ' text alignment.
+    
+    'Calculate offsets now
+    Dim xOffset As Long, yOffset As Long
+    
+    Select Case m_HorizontalAlignment
+    
+        Case StringAlignmentNear
+            xOffset = 0
+        
+        Case StringAlignmentCenter
+            xOffset = (dstDIB.getDIBWidth - m_TmpGdiDIB.getDIBWidth) \ 2
+        
+        Case StringAlignmentFar
+            xOffset = dstDIB.getDIBWidth - m_TmpGdiDIB.getDIBWidth
+    
+    End Select
+    
+    Select Case m_VerticalAlignment
+    
+        Case StringAlignmentNear
+            yOffset = 0
+        
+        Case StringAlignmentCenter
+            yOffset = (dstDIB.getDIBHeight - m_TmpGdiDIB.getDIBHeight) \ 2
+        
+        Case StringAlignmentFar
+            yOffset = dstDIB.getDIBHeight - m_TmpGdiDIB.getDIBHeight
+    
+    End Select
+    
+    'Add failsafe offset checks
+    If xOffset < 0 Then xOffset = 0
+    If yOffset < 0 Then yOffset = 0
+    
     Dim xStrideSrc As Long, xStrideDst As Long
     
     'Start transferring pixels
     For x = 0 To finalX
         xStrideSrc = x * 3
-        xStrideDst = x * 4
+        xStrideDst = (x + xOffset) * 4
     For y = 0 To finalY
         
         'Because we know the source DIB is grayscale, we can skip processing of all pixels with value = 0.
@@ -1320,10 +1360,10 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
             'Populate the destination pixel at this point with our lookup table values.
             g = aLookup(g)
             
-            dstImageData(xStrideDst, y) = bLookup(g)
-            dstImageData(xStrideDst + 1, y) = gLookUp(g)
-            dstImageData(xStrideDst + 2, y) = rLookup(g)
-            dstImageData(xStrideDst + 3, y) = g
+            dstImageData(xStrideDst, y + yOffset) = bLookup(g)
+            dstImageData(xStrideDst + 1, y + yOffset) = gLookUp(g)
+            dstImageData(xStrideDst + 2, y + yOffset) = rLookup(g)
+            dstImageData(xStrideDst + 3, y + yOffset) = g
         
         End If
         
@@ -1334,6 +1374,41 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     
+End Function
+
+'Convert the current alignment flags into DrawText-compatible alignment values
+Private Function getDrawTextAlignmentFlags() As Long
+
+    getDrawTextAlignmentFlags = 0
+    
+    'Start with horizontal flags
+    Select Case m_HorizontalAlignment
+        
+        Case StringAlignmentNear
+            getDrawTextAlignmentFlags = getDrawTextAlignmentFlags Or DT_LEFT
+        
+        Case StringAlignmentCenter
+            getDrawTextAlignmentFlags = getDrawTextAlignmentFlags Or DT_CENTER
+        
+        Case StringAlignmentFar
+            getDrawTextAlignmentFlags = getDrawTextAlignmentFlags Or DT_RIGHT
+        
+    End Select
+    
+    'Add vertical flags
+    Select Case m_VerticalAlignment
+        
+        Case StringAlignmentNear
+            getDrawTextAlignmentFlags = getDrawTextAlignmentFlags Or DT_TOP
+        
+        Case StringAlignmentCenter
+            getDrawTextAlignmentFlags = getDrawTextAlignmentFlags Or DT_VCENTER
+        
+        Case StringAlignmentFar
+            getDrawTextAlignmentFlags = getDrawTextAlignmentFlags Or DT_BOTTOM
+        
+    End Select
+
 End Function
 
 Private Sub Class_Initialize()
