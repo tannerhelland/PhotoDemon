@@ -175,9 +175,11 @@ Private curLogPixelsX As Long, curLogPixelsY As Long
 
 'Internal font caches.  PD uses these to populate things like font selection dropdowns.
 Private m_PDFontCache As pdStringStack
-Private m_PDFontCache_GDIPlus As pdStringStack
 Private Const INITIAL_PDFONTCACHE_SIZE As Long = 256
 Private m_LastFontAdded As String
+
+'Previously, a GDIPlus-specific font cache was generated.  This is no longer required.
+'Private m_PDFontCache_GDIPlus As pdStringStack
 
 'Temporary DIB (more importantly - DC) for testing and/or applying font settings
 Private m_TestDIB As pdDIB
@@ -189,7 +191,8 @@ Public Function getCopyOfFontCache(ByRef dstStringStack As pdStringStack, Option
     
     'Clone the requested font stack
     If getTrueTypeOnly Then
-        dstStringStack.cloneStack m_PDFontCache_GDIPlus
+        Debug.Print "PD's TrueType-specific font cache is currently disabled."
+        'dstStringStack.cloneStack m_PDFontCache_GDIPlus
     Else
         dstStringStack.cloneStack m_PDFontCache
     End If
@@ -203,7 +206,7 @@ Public Function buildFontCache() As Long
     
     'Prep the default font caches
     Set m_PDFontCache = New pdStringStack
-    Set m_PDFontCache_GDIPlus = New pdStringStack
+    'Set m_PDFontCache_GDIPlus = New pdStringStack
     
     'Prep a tiny internal DIB for testing font settings
     Set m_TestDIB = New pdDIB
@@ -215,8 +218,10 @@ Public Function buildFontCache() As Long
     
     'First, prep a TrueType font list using GDI+.  (Note that GDI+ will return the font count prior to enumeration,
     ' so we don't need to prep the string stack in advance.)
-    getAllAvailableTrueTypeFonts m_PDFontCache_GDIPlus
-        
+    'getAllAvailableTrueTypeFonts m_PDFontCache_GDIPlus
+    'm_PDFontCache_GDIPlus.trimStack
+    'm_PDFontCache_GDIPlus.SortAlphabetically
+    
     'Next, prep a full font list for the advanced typography tool.
     '(We won't know the full number of available fonts until the Enum function finishes, so prep an extra-large buffer in advance.)
     m_PDFontCache.resetStack INITIAL_PDFONTCACHE_SIZE
@@ -226,10 +231,7 @@ Public Function buildFontCache() As Long
     ' at initialization time.  (Note that the GDI+ cache comes sorted, but our algorithm will detect that and skip sorting.)
     m_PDFontCache.trimStack
     m_PDFontCache.SortAlphabetically
-    
-    m_PDFontCache_GDIPlus.trimStack
-    m_PDFontCache_GDIPlus.SortAlphabetically
-    
+        
     'TESTING ONLY!  Curious about the list of fonts?  Use this line to write it out to the immediate window
     'm_PDFontCache.DEBUG_dumpResultsToImmediateWindow
     #If DEBUGMODE = 1 Then
@@ -277,6 +279,11 @@ Public Function EnumFontFamExProc(ByRef lpElfe As LOGFONTW, ByRef lpNtme As NEWT
     '  on my plate without worrying about that.)
     If fontUsable Then
         fontUsable = CBool(StrComp(Left$(thisFontFace, 1), "@", vbBinaryCompare) <> 0)
+    End If
+    
+    'For now, we are also ignoring raster fonts, as they create unwanted complications
+    If fontUsable Then
+        fontUsable = CBool(CLng(srcFontType And RASTER_FONTTYPE) = 0)
     End If
     
     'If this font is a worthy addition, add it now
