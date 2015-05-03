@@ -27,9 +27,9 @@ Begin VB.Form toolpanel_Text
    Begin PhotoDemon.pdButtonToolbox btnFontStyles 
       Height          =   435
       Index           =   0
-      Left            =   11880
+      Left            =   7680
       TabIndex        =   6
-      Top             =   30
+      Top             =   930
       Width           =   450
       _ExtentX        =   794
       _ExtentY        =   767
@@ -48,13 +48,13 @@ Begin VB.Form toolpanel_Text
       NotchValueCustom=   5
    End
    Begin PhotoDemon.colorSelector csTextFontColor 
-      Height          =   420
-      Left            =   7680
+      Height          =   390
+      Left            =   11880
       TabIndex        =   0
-      Top             =   930
+      Top             =   60
       Width           =   2415
       _ExtentX        =   4260
-      _ExtentY        =   741
+      _ExtentY        =   688
       curColor        =   0
    End
    Begin PhotoDemon.textUpDown tudTextFontSize 
@@ -148,14 +148,14 @@ Begin VB.Form toolpanel_Text
       _ExtentX        =   1984
       _ExtentY        =   503
       Alignment       =   1
-      Caption         =   "font color:"
+      Caption         =   "font style:"
       ForeColor       =   0
    End
    Begin PhotoDemon.pdComboBox cboTextRenderingHint 
       Height          =   375
       Left            =   11880
       TabIndex        =   4
-      Top             =   510
+      Top             =   525
       Width           =   2415
       _ExtentX        =   4260
       _ExtentY        =   635
@@ -193,15 +193,15 @@ Begin VB.Form toolpanel_Text
       _ExtentX        =   2408
       _ExtentY        =   503
       Alignment       =   1
-      Caption         =   "styles:"
+      Caption         =   "color:"
       ForeColor       =   0
    End
    Begin PhotoDemon.pdButtonToolbox btnFontStyles 
       Height          =   435
       Index           =   1
-      Left            =   12360
+      Left            =   8160
       TabIndex        =   7
-      Top             =   30
+      Top             =   930
       Width           =   450
       _ExtentX        =   794
       _ExtentY        =   767
@@ -210,9 +210,9 @@ Begin VB.Form toolpanel_Text
    Begin PhotoDemon.pdButtonToolbox btnFontStyles 
       Height          =   435
       Index           =   2
-      Left            =   12840
+      Left            =   8640
       TabIndex        =   8
-      Top             =   30
+      Top             =   930
       Width           =   450
       _ExtentX        =   794
       _ExtentY        =   767
@@ -221,9 +221,9 @@ Begin VB.Form toolpanel_Text
    Begin PhotoDemon.pdButtonToolbox btnFontStyles 
       Height          =   435
       Index           =   3
-      Left            =   13320
+      Left            =   9120
       TabIndex        =   9
-      Top             =   30
+      Top             =   930
       Width           =   450
       _ExtentX        =   794
       _ExtentY        =   767
