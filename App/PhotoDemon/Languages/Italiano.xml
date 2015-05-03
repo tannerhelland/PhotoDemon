@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.25</langversion>
+<langversion>6.7.26</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -11819,6 +11819,11 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 </phrase>
 
 <phrase>
+<original>(enter text here)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Mouse Wheel = VERTICAL SCROLL,  Shift + Wheel = HORIZONTAL SCROLL,  Ctrl + Wheel = ZOOM</original>
 <translation>Rotellina del mouse = SCORRIMENTO VERTICALE,  Maiusc + Rotellina = SCORRIMENTO ORIZZONTALE,  Ctrl + Wheel = ZOOM</translation>
 </phrase>
@@ -11849,7 +11854,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation>cm</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 50 phrases. 29 were duplicates of existing phrases, so only 21 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 52 phrases. 30 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -11946,16 +11951,11 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>(enter text here)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>New layer</original>
 <translation>Nuovo livello</translation>
 </phrase>
 
-<!-- pdLayer.cls contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- pdLayer.cls contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdLayer.cls-->
 
@@ -13307,11 +13307,16 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
+<original>styles</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Crisp</original>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_Text.frm contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- VBP_ToolPanel_Text.frm contains 11 phrases. 2 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_Text.frm-->
 
@@ -13635,10 +13640,10 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2368</phrasecount>
+<phrasecount>2369</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4044 phrases. -->
-<!-- 1676 are duplicates, so only 2368 unique phrases have been written to file. -->
-<!-- These 2368 phrases contain approximately 13466 total words. -->
+<!-- As of this build, PhotoDemon contains 4047 phrases. -->
+<!-- 1678 are duplicates, so only 2369 unique phrases have been written to file. -->
+<!-- These 2369 phrases contain approximately 13467 total words. -->
 
 </pdData>

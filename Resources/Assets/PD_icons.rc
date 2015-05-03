@@ -377,6 +377,10 @@ TV_TEXT      CUSTOM  MOVEABLE        LOADONCALL      toolbox_vector_text_24.png
 
 //Tool options area icons
 TO_APPLY     CUSTOM  MOVEABLE        LOADONCALL      apply_changes.png
+TEXT_BOLD    CUSTOM  MOVEABLE        LOADONCALL      text_bold_24.png
+TEXT_ITALIC  CUSTOM  MOVEABLE        LOADONCALL      text_italic_24.png
+TEXT_UNDERLINE CUSTOM  MOVEABLE      LOADONCALL      text_underline_24.png
+TEXT_STRIKE  CUSTOM  MOVEABLE        LOADONCALL      text_strikeout_24.png
 
 //Layer toolbox (note that other layer toolbox entries are in the Layer Menu section, above
 EYE_OPEN     CUSTOM  MOVEABLE        LOADONCALL      eye.png

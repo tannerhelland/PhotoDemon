@@ -24,17 +24,28 @@ Begin VB.Form toolpanel_Text
    ScaleWidth      =   1110
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+      Height          =   435
+      Index           =   0
+      Left            =   11880
+      TabIndex        =   6
+      Top             =   30
+      Width           =   450
+      _ExtentX        =   794
+      _ExtentY        =   767
+      StickyToggle    =   -1  'True
+   End
    Begin PhotoDemon.sliderTextCombo sltTextClarity 
       Height          =   435
-      Left            =   11760
+      Left            =   11880
       TabIndex        =   5
-      Top             =   480
+      Top             =   930
       Width           =   2415
-      _extentx        =   4260
-      _extenty        =   767
-      value           =   5
-      notchposition   =   2
-      notchvaluecustom=   5
+      _ExtentX        =   4260
+      _ExtentY        =   767
+      Value           =   5
+      NotchPosition   =   2
+      NotchValueCustom=   5
    End
    Begin PhotoDemon.colorSelector csTextFontColor 
       Height          =   420
@@ -42,9 +53,9 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   0
       Top             =   930
       Width           =   2415
-      _extentx        =   4260
-      _extenty        =   741
-      curcolor        =   0
+      _ExtentX        =   4260
+      _ExtentY        =   741
+      curColor        =   0
    End
    Begin PhotoDemon.textUpDown tudTextFontSize 
       Height          =   345
@@ -52,11 +63,11 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   1
       Top             =   510
       Width           =   2415
-      _extentx        =   4260
-      _extenty        =   609
-      min             =   1
-      max             =   1000
-      value           =   16
+      _ExtentX        =   4260
+      _ExtentY        =   609
+      Min             =   1
+      Max             =   1000
+      Value           =   16
    End
    Begin PhotoDemon.pdTextBox txtTextTool 
       Height          =   1380
@@ -64,10 +75,10 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   2
       Top             =   30
       Width           =   5295
-      _extentx        =   9340
-      _extenty        =   2434
-      fontsize        =   9
-      multiline       =   -1  'True
+      _ExtentX        =   9340
+      _ExtentY        =   2434
+      FontSize        =   9
+      Multiline       =   -1  'True
    End
    Begin PhotoDemon.pdComboBox cboTextFontFace 
       Height          =   375
@@ -75,20 +86,22 @@ Begin VB.Form toolpanel_Text
       TabIndex        =   3
       Top             =   60
       Width           =   2415
-      _extentx        =   4260
-      _extenty        =   635
+      _ExtentX        =   4260
+      _ExtentY        =   635
    End
    Begin PhotoDemon.pdLabel lblText 
-      Height          =   240
+      Height          =   1080
       Index           =   0
-      Left            =   12600
-      Top             =   1080
-      Width           =   2445
-      _extentx        =   0
-      _extenty        =   503
-      caption         =   "(this tool is under construction)"
-      forecolor       =   255
-      usecustomforecolor=   -1  'True
+      Left            =   15360
+      Top             =   120
+      Width           =   1125
+      _ExtentX        =   1984
+      _ExtentY        =   1905
+      Alignment       =   2
+      Caption         =   "(this tool is under construction)"
+      ForeColor       =   255
+      Layout          =   1
+      UseCustomForeColor=   -1  'True
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -96,11 +109,11 @@ Begin VB.Form toolpanel_Text
       Left            =   120
       Top             =   60
       Width           =   645
-      _extentx        =   1138
-      _extenty        =   503
-      alignment       =   1
-      caption         =   "text:"
-      forecolor       =   0
+      _ExtentX        =   1138
+      _ExtentY        =   503
+      Alignment       =   1
+      Caption         =   "text:"
+      ForeColor       =   0
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -108,11 +121,11 @@ Begin VB.Form toolpanel_Text
       Left            =   6360
       Top             =   120
       Width           =   1125
-      _extentx        =   1984
-      _extenty        =   503
-      alignment       =   1
-      caption         =   "font face:"
-      forecolor       =   0
+      _ExtentX        =   1984
+      _ExtentY        =   503
+      Alignment       =   1
+      Caption         =   "font face:"
+      ForeColor       =   0
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -120,11 +133,11 @@ Begin VB.Form toolpanel_Text
       Left            =   6360
       Top             =   570
       Width           =   1125
-      _extentx        =   1984
-      _extenty        =   503
-      alignment       =   1
-      caption         =   "font size:"
-      forecolor       =   0
+      _ExtentX        =   1984
+      _ExtentY        =   503
+      Alignment       =   1
+      Caption         =   "font size:"
+      ForeColor       =   0
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -132,44 +145,89 @@ Begin VB.Form toolpanel_Text
       Left            =   6360
       Top             =   1020
       Width           =   1125
-      _extentx        =   1984
-      _extenty        =   503
-      alignment       =   1
-      caption         =   "font color:"
-      forecolor       =   0
+      _ExtentX        =   1984
+      _ExtentY        =   503
+      Alignment       =   1
+      Caption         =   "font color:"
+      ForeColor       =   0
    End
    Begin PhotoDemon.pdComboBox cboTextRenderingHint 
       Height          =   375
-      Left            =   11760
+      Left            =   11880
       TabIndex        =   4
-      Top             =   60
+      Top             =   510
       Width           =   2415
-      _extentx        =   4260
-      _extenty        =   635
+      _ExtentX        =   4260
+      _ExtentY        =   635
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
       Index           =   5
-      Left            =   10200
-      Top             =   120
+      Left            =   10320
+      Top             =   570
       Width           =   1365
-      _extentx        =   2408
-      _extenty        =   503
-      alignment       =   1
-      caption         =   "AA and hinting:"
-      forecolor       =   0
+      _ExtentX        =   2408
+      _ExtentY        =   503
+      Alignment       =   1
+      Caption         =   "AA and hinting:"
+      ForeColor       =   0
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
       Index           =   6
-      Left            =   10200
-      Top             =   570
+      Left            =   10320
+      Top             =   1020
       Width           =   1365
-      _extentx        =   2408
-      _extenty        =   503
-      alignment       =   1
-      caption         =   "AA clarity:"
-      forecolor       =   0
+      _ExtentX        =   2408
+      _ExtentY        =   503
+      Alignment       =   1
+      Caption         =   "AA clarity:"
+      ForeColor       =   0
+   End
+   Begin PhotoDemon.pdLabel lblText 
+      Height          =   240
+      Index           =   7
+      Left            =   10320
+      Top             =   120
+      Width           =   1365
+      _ExtentX        =   2408
+      _ExtentY        =   503
+      Alignment       =   1
+      Caption         =   "styles:"
+      ForeColor       =   0
+   End
+   Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+      Height          =   435
+      Index           =   1
+      Left            =   12360
+      TabIndex        =   7
+      Top             =   30
+      Width           =   450
+      _ExtentX        =   794
+      _ExtentY        =   767
+      StickyToggle    =   -1  'True
+   End
+   Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+      Height          =   435
+      Index           =   2
+      Left            =   12840
+      TabIndex        =   8
+      Top             =   30
+      Width           =   450
+      _ExtentX        =   794
+      _ExtentY        =   767
+      StickyToggle    =   -1  'True
+   End
+   Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+      Height          =   435
+      Index           =   3
+      Left            =   13320
+      TabIndex        =   9
+      Top             =   30
+      Width           =   450
+      _ExtentX        =   794
+      _ExtentY        =   767
+      StickyToggle    =   -1  'True
    End
 End
 Attribute VB_Name = "toolpanel_Text"
@@ -185,6 +243,44 @@ Attribute lastUsedSettings.VB_VarHelpID = -1
 
 'Current list of fonts, in pdStringStack format
 Private userFontList As pdStringStack
+
+Private Sub btnFontStyles_Click(Index As Integer)
+
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+    
+    'Update whichever style was toggled
+    Select Case Index
+    
+        'Bold
+        Case 0
+            pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_FontBold, btnFontStyles(Index).Value
+        
+        'Italic
+        Case 1
+            pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_FontItalic, btnFontStyles(Index).Value
+        
+        'Underline
+        Case 2
+            pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_FontUnderline, btnFontStyles(Index).Value
+        
+        'Strikeout
+        Case 3
+            pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_FontStrikeout, btnFontStyles(Index).Value
+    
+    End Select
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
 
 Private Sub cboTextFontFace_Click()
     
@@ -272,6 +368,12 @@ Private Sub Form_Load()
     cboTextRenderingHint.AddItem "Normal", 1
     cboTextRenderingHint.AddItem "Crisp", 2
     cboTextRenderingHint.ListIndex = 1
+    
+    'Draw font style buttons
+    btnFontStyles(0).AssignImage "TEXT_BOLD"
+    btnFontStyles(1).AssignImage "TEXT_ITALIC"
+    btnFontStyles(2).AssignImage "TEXT_UNDERLINE"
+    btnFontStyles(3).AssignImage "TEXT_STRIKE"
     
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
