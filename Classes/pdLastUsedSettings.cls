@@ -231,8 +231,8 @@ Public Function addPresetData(ByVal presetName As String, ByVal presetData As St
 End Function
 
 'This function is called when the user wants to read custom preset data from file
-Public Function retrievePresetData(ByVal presetName As String) As String
-    retrievePresetData = xmlEngine.getUniqueTag_String("custom:" & presetName, "", , "presetEntry", "id", curPresetEntry)
+Public Function retrievePresetData(ByVal presetName As String, Optional ByVal returnValueIfMissing As String = "") As String
+    retrievePresetData = xmlEngine.getUniqueTag_String("custom:" & presetName, returnValueIfMissing, , "presetEntry", "id", curPresetEntry)
 End Function
 
 'This sub will set the values of all controls on this form, using the values stored in the tool's XML file under the
