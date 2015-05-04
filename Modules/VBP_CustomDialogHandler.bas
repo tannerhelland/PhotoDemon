@@ -316,7 +316,7 @@ End Function
 ' retrieve the previous choice and silently return it.
 '
 'Returns a VbMsgBoxResult constant, with YES, NO, or CANCEL specified.
-Public Function promptGenericYesNoDialog(ByVal questionID As String, ByVal questionText As String, ByVal yesButtonText As String, ByVal noButtonText As String, ByVal cancelButtonText As String, Optional ByVal icon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel) As VbMsgBoxResult
+Public Function promptGenericYesNoDialog(ByVal questionID As String, ByVal questionText As String, ByVal yesButtonText As String, ByVal noButtonText As String, ByVal cancelButtonText As String, ByVal dialogTitleText As String, Optional ByVal icon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False) As VbMsgBoxResult
 
     'Convert the questionID to its XML-safe equivalent
     Dim xmlEngine As pdXML
@@ -332,7 +332,7 @@ Public Function promptGenericYesNoDialog(ByVal questionID As String, ByVal quest
     'The user has not saved a previous answer.  Display the full dialog.
     Else
     
-        dialog_GenericMemory.showDialog questionText, yesButtonText, noButtonText, cancelButtonText, icon, defaultAnswer
+        dialog_GenericMemory.showDialog questionText, yesButtonText, noButtonText, cancelButtonText, dialogTitleText, icon, defaultAnswer, defaultRemember
         
         'Retrieve the user's answer
         promptGenericYesNoDialog = dialog_GenericMemory.DialogResult

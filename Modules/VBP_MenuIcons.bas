@@ -283,8 +283,9 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "ADDTRANS", 4, 11, 0     'Add alpha channel
         addMenuIcon "GREENSCREEN", 4, 11, 1  'Color to alpha
         addMenuIcon "REMOVETRANS", 4, 11, 3  'Remove alpha channel
-    addMenuIcon "FLATTEN", 4, 13         'Flatten image
-    addMenuIcon "MERGEVISIBLE", 4, 14   'Merge visible layers
+    'addMenuIcon "RASTERIZE", 4, 13       'Rasterize layer
+    addMenuIcon "FLATTEN", 4, 15         'Flatten image
+    addMenuIcon "MERGEVISIBLE", 4, 16    'Merge visible layers
     
     'Select Menu
     addMenuIcon "SELECTALL", 5, 0       'Select all

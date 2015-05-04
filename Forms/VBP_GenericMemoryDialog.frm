@@ -5,7 +5,7 @@ Begin VB.Form dialog_GenericMemory
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " "
-   ClientHeight    =   4335
+   ClientHeight    =   4455
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   7185
@@ -21,7 +21,7 @@ Begin VB.Form dialog_GenericMemory
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   289
+   ScaleHeight     =   297
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   479
    ShowInTaskbar   =   0   'False
@@ -40,7 +40,7 @@ Begin VB.Form dialog_GenericMemory
       Index           =   2
       Left            =   240
       TabIndex        =   3
-      Top             =   2880
+      Top             =   3120
       Width           =   6780
    End
    Begin VB.CommandButton cmdAnswer 
@@ -58,7 +58,7 @@ Begin VB.Form dialog_GenericMemory
       Index           =   1
       Left            =   240
       TabIndex        =   0
-      Top             =   2100
+      Top             =   2280
       Width           =   6780
    End
    Begin VB.CommandButton cmdAnswer 
@@ -76,29 +76,29 @@ Begin VB.Form dialog_GenericMemory
       Index           =   0
       Left            =   240
       TabIndex        =   2
-      Top             =   1320
+      Top             =   1440
       Width           =   6780
    End
    Begin PhotoDemon.smartCheckBox chkRemember 
       Height          =   330
       Left            =   240
       TabIndex        =   1
-      Top             =   3840
+      Top             =   4020
       Width           =   6735
-      _extentx        =   11880
-      _extenty        =   582
-      caption         =   " "
+      _ExtentX        =   11880
+      _ExtentY        =   582
+      Caption         =   " In the future, always apply this action"
    End
    Begin PhotoDemon.pdLabel lblExplanation 
-      Height          =   765
+      Height          =   1125
       Left            =   960
-      Top             =   270
+      Top             =   150
       Width           =   6015
-      _extentx        =   0
-      _extenty        =   0
-      caption         =   "%1 contains multiple pages (%2 in total).  How would you like to proceed?"
-      forecolor       =   2105376
-      layout          =   1
+      _ExtentX        =   10610
+      _ExtentY        =   1984
+      Caption         =   ""
+      ForeColor       =   2105376
+      Layout          =   1
    End
 End
 Attribute VB_Name = "dialog_GenericMemory"
@@ -141,7 +141,7 @@ End Property
 
 
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
-Public Sub showDialog(ByVal questionText As String, ByVal yesButtonText As String, ByVal noButtonText As String, ByVal cancelButtonText As String, Optional ByVal icon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False)
+Public Sub showDialog(ByVal questionText As String, ByVal yesButtonText As String, ByVal noButtonText As String, ByVal cancelButtonText As String, ByVal dialogTitleText As String, Optional ByVal icon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False)
 
     'On the off chance that this dialog is raised during long-running processing, make a note of the cursor prior to displaying the dialog.
     ' We will restore the hourglass cursor (as necessary) when the dialog exits.
@@ -166,6 +166,7 @@ Public Sub showDialog(ByVal questionText As String, ByVal yesButtonText As Strin
     cmdAnswer(0).Caption = yesButtonText
     cmdAnswer(1).Caption = noButtonText
     cmdAnswer(2).Caption = cancelButtonText
+    Me.Caption = dialogTitleText
 
     'The caller can specify whether "remember my choice" is checked by default
     If defaultRemember Then

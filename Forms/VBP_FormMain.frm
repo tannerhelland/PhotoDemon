@@ -598,12 +598,20 @@ Begin VB.Form FormMain
          Index           =   12
       End
       Begin VB.Menu MnuLayer 
-         Caption         =   "Flatten image"
+         Caption         =   "Rasterize (convert to image layer)"
          Index           =   13
       End
       Begin VB.Menu MnuLayer 
-         Caption         =   "Merge visible layers"
+         Caption         =   "-"
          Index           =   14
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "Flatten image"
+         Index           =   15
+      End
+      Begin VB.Menu MnuLayer 
+         Caption         =   "Merge visible layers"
+         Index           =   16
       End
    End
    Begin VB.Menu MnuSelectTop 
@@ -2017,12 +2025,26 @@ Private Sub MnuLayer_Click(Index As Integer)
         '<separator>
         Case 12
         
-        'Flatten layers
+        'Rasterize
         Case 13
+            
+            'Before processing rasterization, ask the user for confirmation
+            If Layer_Handler.askIfOkayToRasterizeLayer(pdImages(g_CurrentImage).getActiveLayer.getLayerType, , False) = vbYes Then
+                
+                pdMsgBox "Sorry, I haven't implemented rasterization yet.  It should be here in the next few days!", vbCritical Or vbOKOnly, "Under construction"
+                
+                'Process "Rasterize layer", , , UNDO_LAYER
+            End If
+        
+        '<separator>
+        Case 14
+        
+        'Flatten layers
+        Case 15
             Process "Flatten image", , , UNDO_IMAGE
         
         'Merge visible layers
-        Case 14
+        Case 16
             Process "Merge visible layers", , , UNDO_IMAGE
         
     End Select

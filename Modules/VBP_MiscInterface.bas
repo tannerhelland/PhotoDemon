@@ -327,6 +327,9 @@ Public Sub syncInterfaceToCurrentImage()
                     'If non-destructive FX are active on the current layer, update the non-destructive tool enablement to match
                     metaToggle tNonDestructiveFX, True
                     
+                    'Layer rasterization depends on the current layer type
+                    FormMain.MnuLayer(13).Enabled = pdImages(g_CurrentImage).getActiveLayer.isLayerVector
+                    
                 End If
                 
                 'If only one layer is present, a number of layer menu items (Delete, Flatten, Merge, Order) will be disabled.
@@ -343,10 +346,10 @@ Public Sub syncInterfaceToCurrentImage()
                     FormMain.MnuLayer(5).Enabled = False
                     
                     'Flatten
-                    FormMain.MnuLayer(13).Enabled = False
+                    FormMain.MnuLayer(15).Enabled = False
                     
                     'Merge visible
-                    FormMain.MnuLayer(14).Enabled = False
+                    FormMain.MnuLayer(16).Enabled = False
                     
                 'This image contains multiple layers.  Enable many menu items (if they aren't already).
                 Else
@@ -408,16 +411,16 @@ Public Sub syncInterfaceToCurrentImage()
                     
                     'Flatten is only available if one or more layers are visible
                     If pdImages(g_CurrentImage).getNumOfVisibleLayers > 0 Then
-                        If Not FormMain.MnuLayer(13).Enabled Then FormMain.MnuLayer(13).Enabled = True
+                        If Not FormMain.MnuLayer(15).Enabled Then FormMain.MnuLayer(15).Enabled = True
                     Else
-                        FormMain.MnuLayer(13).Enabled = False
+                        FormMain.MnuLayer(15).Enabled = False
                     End If
                     
                     'Merge visible is only available if two or more layers are visible
                     If pdImages(g_CurrentImage).getNumOfVisibleLayers > 1 Then
-                        If Not FormMain.MnuLayer(14).Enabled Then FormMain.MnuLayer(14).Enabled = True
+                        If Not FormMain.MnuLayer(16).Enabled Then FormMain.MnuLayer(16).Enabled = True
                     Else
-                        FormMain.MnuLayer(14).Enabled = False
+                        FormMain.MnuLayer(16).Enabled = False
                     End If
                     
                 End If
@@ -429,7 +432,7 @@ Public Sub syncInterfaceToCurrentImage()
             
             Else
             
-                'Most layer menus are disabled if an image does not contain layers.  PD isn't setup to allow 0-layer images,
+                'Most layer menus are disabled if an image does not contain layers.  PD isn't designed to allow 0-layer images,
                 ' so this is primarily included as a fail-safe.
                 FormMain.MnuLayer(1).Enabled = False
                 FormMain.MnuLayer(3).Enabled = False
@@ -440,7 +443,8 @@ Public Sub syncInterfaceToCurrentImage()
                 FormMain.MnuLayer(9).Enabled = False
                 FormMain.MnuLayer(11).Enabled = False
                 FormMain.MnuLayer(13).Enabled = False
-                FormMain.MnuLayer(14).Enabled = False
+                FormMain.MnuLayer(15).Enabled = False
+                FormMain.MnuLayer(16).Enabled = False
                 metaToggle tNonDestructiveFX, False
             
             End If
