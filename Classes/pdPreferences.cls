@@ -423,6 +423,12 @@ Private Sub createNewPreferencesFile()
     xmlEngine.closeTag "Core"
     xmlEngine.writeBlankLine
     
+    'Write out a blank "dialogs" block.  Dialogs that offer to remember the user's current choice will store the given choice here.
+    ' We don't prepopulate it with all possible choices; instead, choices are added as the user encounters those dialogs.
+    xmlEngine.writeTag "Dialogs", "", True
+    xmlEngine.closeTag "Dialogs"
+    xmlEngine.writeBlankLine
+    
     'Write out the "file format" block of preferences:
     xmlEngine.writeTag "FileFormats", "", True
         xmlEngine.writeTag "BitmapRLE", "False"
@@ -657,7 +663,7 @@ End Sub
 Public Function doesValueExist(ByRef preferenceSection As String, ByRef preferenceName As String) As Boolean
     Dim tmpString As String
     tmpString = GetPreference(preferenceSection, preferenceName)
-    If Len(tmpString) = 0 Then doesValueExist = False Else doesValueExist = True
+    doesValueExist = CBool(Len(tmpString) <> 0)
 End Function
 
 'Read a value from the preferences file and return it (as a string)

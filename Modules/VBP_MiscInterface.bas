@@ -897,7 +897,7 @@ Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     'Register the window with the window manager, which will also make it a top-most window
     If g_WindowManager.getFloatState(TOOLBAR_WINDOW) Then g_WindowManager.requestTopmostWindow dialogHwnd, getModalOwner().hWnd
     
-    'Use VB to actually display the dialog
+    'Use VB to actually display the dialog.  Note that the sub will pause here until the form is closed.
     dialogForm.Show dialogModality, FormMain 'getModalOwner()
     
     'De-register this hWnd with the window manager
