@@ -820,7 +820,6 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     End If
     
     'That's all there is to it!  Write the completed pdPackage out to file.
-    Debug.Print secondPassDirectoryCompression
     SavePhotoDemonImage = pdiWriter.writePackageToFile(PDIPath, secondPassDirectoryCompression, secondPassDataCompression)
     
     If Not suppressMessages Then Message "%1 save complete.", sFileType

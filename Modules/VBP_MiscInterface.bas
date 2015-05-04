@@ -773,7 +773,7 @@ Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             End If
             
             'Free the tool engine
-            Tool_Support.setToolBusyState True
+            Tool_Support.setToolBusyState False
         
         'Non-destructive FX are effects that the user can apply to a layer, without permanently modifying the layer
         Case tNonDestructiveFX

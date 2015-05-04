@@ -2565,6 +2565,9 @@ Private Function isCanvasInteractionAllowed() As Boolean
     'If our own internal redraw suspension flag is set, exit
     If m_suspendRedraws Then isCanvasInteractionAllowed = False
     
+    'If canvas interactions are disallowed, exit immediately
+    If Not isCanvasInteractionAllowed Then Exit Function
+    
     'If the current image does not exist, exit
     If pdImages(g_CurrentImage) Is Nothing Then
         isCanvasInteractionAllowed = False
