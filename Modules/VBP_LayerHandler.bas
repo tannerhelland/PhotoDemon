@@ -1095,3 +1095,36 @@ Public Function askIfOkayToRasterizeLayer(Optional ByVal srcLayerType As LAYER_T
     askIfOkayToRasterizeLayer = Dialog_Handler.promptGenericYesNoDialog(questionID, questionText, yesText, noText, cancelText, dialogTitle, IDI_EXCLAMATION, vbYes)
 
 End Function
+
+'Rasterize a given layer.  Pass -1 to rasterize all vector layers.
+Public Sub RasterizeLayer(Optional ByVal srcLayerIndex As Long = -1)
+
+    '-1 tells us to rasterize all vector layers
+    If srcLayerIndex = -1 Then
+    
+        Dim i As Long
+        For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
+            If pdImages(g_CurrentImage).getLayerByIndex(i).isLayerVector Then
+            
+                'Rasterize this layer, and notify the parent image of the change
+                pdImages(g_CurrentImage).getLayerByIndex(i).rasterizeVectorData
+                pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, i
+            
+            End If
+        Next i
+    
+    Else
+        
+        'Rasterize just this one layer, and notify the parent image of the change
+        pdImages(g_CurrentImage).getLayerByIndex(srcLayerIndex).rasterizeVectorData
+        pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, srcLayerIndex
+        
+    End If
+    
+    'Re-sync the interface
+    syncInterfaceToCurrentImage
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub

@@ -334,6 +334,28 @@ Public Function isLayerRaster() As Boolean
     isLayerRaster = Not isLayerVector()
 End Function
 
+'Rasterize a layer.  In the future, it may be possible to "Undo" this (e.g. restore the original vector state, since that data is
+' easy to retain), but I haven't implemented it at present.  Rasterization is immutable, short of the Undo/Redo menu.
+Public Sub rasterizeVectorData()
+
+    'If the layer is already rasterized, ignore this request
+    If Me.isLayerRaster Then
+        Debug.Print "WARNING!  You just requested rasterization of a raster layer.  Fix this!"
+        Exit Sub
+    End If
+    
+    'Rasterizing is a lot simpler than it looks.  Basically, we just change the layer type to PDL_IMAGE and discard any superfluous vector data.
+    myLayerType = PDL_IMAGE
+    
+    'Erase any instances related to now-unnecessary vector data
+    Set myTextRenderer = Nothing
+    
+    'While possibly unnecessary for some vector layer types, rasterization is a serious enough change that it's wise to regenerate
+    ' any/all internal caches.
+    Me.notifyOfDestructiveChanges
+
+End Sub
+
 'Get/set name
 Public Function getLayerName() As String
     getLayerName = myLayerData.l_Name
