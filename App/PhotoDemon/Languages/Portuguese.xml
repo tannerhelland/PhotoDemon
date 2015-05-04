@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.26</langversion>
+<langversion>6.7.27</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -13276,7 +13276,7 @@ or os menus File> Open e File> Import.</translation>
 <!-- BEGIN text for VBP_ToolPanel_Text.frm (toolpanel_Text) -->
 
 <phrase>
-<original>(this tool is under construction)</original>
+<original>(this tool is under constr- uction)</original>
 <translation></translation>
 </phrase>
 
@@ -13296,22 +13296,22 @@ or os menus File> Open e File> Import.</translation>
 </phrase>
 
 <phrase>
-<original>font color</original>
+<original>font style</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>AA and hinting</original>
+<original>antialiasing</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>AA clarity</original>
-<translation></translation>
+<original>clarity</original>
+<translation>clareza</translation>
 </phrase>
 
 <phrase>
-<original>styles</original>
+<original>alignment</original>
 <translation></translation>
 </phrase>
 
@@ -13320,7 +13320,7 @@ or os menus File> Open e File> Import.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_Text.frm contains 11 phrases. 2 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- VBP_ToolPanel_Text.frm contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_Text.frm-->
 
@@ -13538,11 +13538,6 @@ or os menus File> Open e File> Import.</translation>
 </phrase>
 
 <phrase>
-<original>clarity</original>
-<translation>clareza</translation>
-</phrase>
-
-<phrase>
 <original>all</original>
 <translation></translation>
 </phrase>
@@ -13562,7 +13557,7 @@ or os menus File> Open e File> Import.</translation>
 <translation>Faça ajustes de correção rápida permanente. Esta ação não é obrigatório, mas se a renderização viewport é lento e muitos ajustes de correção rápida são ativos, pode melhorar o desempenho.</translation>
 </phrase>
 
-<!-- VBP_ToolPanel_NDFX.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- VBP_ToolPanel_NDFX.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_NDFX.frm-->
 
@@ -13644,10 +13639,10 @@ or os menus File> Open e File> Import.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2369</phrasecount>
+<phrasecount>2368</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4047 phrases. -->
-<!-- 1678 are duplicates, so only 2369 unique phrases have been written to file. -->
-<!-- These 2369 phrases contain approximately 13467 total words. -->
+<!-- As of this build, PhotoDemon contains 4048 phrases. -->
+<!-- 1680 are duplicates, so only 2368 unique phrases have been written to file. -->
+<!-- These 2368 phrases contain approximately 13464 total words. -->
 
 </pdData>
