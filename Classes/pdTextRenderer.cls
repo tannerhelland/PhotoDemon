@@ -1405,6 +1405,22 @@ Private Function getDrawTextAlignmentFlags() As Long
 
 End Function
 
+'If this class is no longer required but the caller doesn't want to fully release it, they can call this sub to have us release all
+' caches and system handles (hFonts, GDI+ fonts, etc).  Note that the class needs to be FULLY reinitialized after this function is called.
+Public Sub releaseAsManyResourcesAsPossible()
+    
+    'Release any GDI+ objects that are easily re-created
+    If m_GDIPlusFont <> 0 Then GdipDeleteFont m_GDIPlusFont
+    If m_GDIPlusFontFamily <> 0 Then GdipDeleteFontFamily m_GDIPlusFontFamily
+    
+    'Release any GDI objects that are easily re-created
+    If m_GDIFont <> 0 Then DeleteObject m_GDIFont
+    
+    'Free our glyph collection, if one exists
+    Set m_GlyphCollection = Nothing
+    
+End Sub
+
 Private Sub Class_Initialize()
     
     'TEMPORARY!  Force the default, basic rendering engine while we get the basic text tool sorted out.
