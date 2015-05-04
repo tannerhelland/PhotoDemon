@@ -85,9 +85,6 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     g_AllowViewportRendering = True
         
     'Now fix scrollbars and everything
-    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "FitOnScreen"
-        
-    'Now fix scrollbars and everything
     If Not suppressRendering Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "FitImageToViewport"
     
 End Sub
@@ -148,6 +145,18 @@ Public Function fullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
         End If
         
         fullPDImageUnload = True
+    End If
+    
+    'If no images are open, take additional steps to free memory
+    If g_OpenImageCount = 0 Then
+        
+        'Reset the main image array
+        ReDim pdImages(0) As pdImage
+        g_CurrentImage = 0
+        
+        'Unload the backbuffer of the primary canvas
+        Viewport_Engine.eraseViewportBuffers
+        
     End If
     
 End Function

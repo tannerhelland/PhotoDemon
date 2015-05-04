@@ -1847,6 +1847,8 @@ Public Function evaluateImageCheckpoint() As Boolean
     
     'See if the specified layer's settings have changed since the last time a processor request was made.  If they have,
     ' trigger an Undo/Redo point to capture those changes.
+    If previousImageID > UBound(pdImages) Then Exit Function
+    
     If (Not pdImages(previousImageID) Is Nothing) Then
         If (Not pdImages(previousImageID).getLayerByID(previousLayerID) Is Nothing) Then
             If (Not pdImages(previousImageID).undoManager Is Nothing) Then

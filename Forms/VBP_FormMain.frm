@@ -2951,7 +2951,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     Dim i As Long
     If g_NumOfImagesLoaded > 0 Then
     
-        For i = 0 To g_NumOfImagesLoaded
+        For i = 0 To UBound(pdImages)
             If (Not pdImages(i) Is Nothing) Then
                 If pdImages(i).IsActive Then
                 
