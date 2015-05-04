@@ -253,7 +253,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   2175
       _ExtentX        =   3836
       _ExtentY        =   503
-      Caption         =   "vector"
+      Caption         =   "text"
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -525,10 +525,10 @@ Private Sub reflowToolboxLayout()
     
     'We're also going to mark the right boundary for images, which allows for some padding when reflowing the interface
     Dim rightBoundary As Long
-    rightBoundary = Me.ScaleWidth - 1
+    rightBoundary = Me.ScaleWidth - 3
     
     'Reflow label width first; they are easy because they simply match the width of the form
-    For i = 0 To lblCategories.ubound
+    For i = 0 To lblCategories.UBound
         lblCategories(i).Width = rightBoundary - (lblCategories(i).Left + fixDPI(2))
     Next i
     
@@ -558,7 +558,7 @@ Private Sub reflowToolboxLayout()
     buttonMarginRight = 0           'Distance between buttons
     
     'If category labels are displayed, make them visible now
-    For i = 0 To lblCategories.ubound
+    For i = 0 To lblCategories.UBound
         If lblCategories(i).Visible <> m_ShowCategoryLabels Then lblCategories(i).Visible = m_ShowCategoryLabels
     Next i
     
@@ -697,8 +697,8 @@ Private Sub reflowToolboxLayout()
     Next i
     
     'Macro recording message
-    If vOffset < cmdTools(cmdTools.ubound).Top + cmdTools(cmdTools.ubound).Height Then
-        vOffset = cmdTools(cmdTools.ubound).Top + cmdTools(cmdTools.ubound).Height + buttonMarginBottom
+    If vOffset < cmdTools(cmdTools.UBound).Top + cmdTools(cmdTools.UBound).Height Then
+        vOffset = cmdTools(cmdTools.UBound).Top + cmdTools(cmdTools.UBound).Height + buttonMarginBottom
     End If
     
     vOffset = vOffset + labelMarginTop
@@ -1032,13 +1032,13 @@ Public Sub updateButtonSize(ByVal newSize As Long, Optional ByVal suppressRedraw
     'Update all buttons to match
     Dim i As Long
     
-    For i = 0 To cmdFile.ubound
+    For i = 0 To cmdFile.UBound
         If (cmdFile(i).Width <> m_ButtonWidth) Or (cmdFile(i).Height <> m_ButtonHeight) Then
             cmdFile(i).Move cmdFile(i).Left, cmdFile(i).Top, m_ButtonWidth, m_ButtonHeight
         End If
     Next i
     
-    For i = 0 To cmdTools.ubound
+    For i = 0 To cmdTools.UBound
         If (cmdTools(i).Width <> m_ButtonWidth) Or (cmdTools(i).Height <> m_ButtonHeight) Then
             cmdTools(i).Move cmdTools(i).Left, cmdTools(i).Top, m_ButtonWidth, m_ButtonHeight
         End If
