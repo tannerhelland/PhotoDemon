@@ -3,8 +3,8 @@ Attribute VB_Name = "Dialog_Handler"
 'Custom Dialog Interface
 'Copyright 2012-2015 by Tanner Helland
 'Created: 30/November/12
-'Last updated: 05/December/14
-'Last update: finish support for the new tone-mapping dialog
+'Last updated: 04/May/15
+'Last update: start work on a generic "remember my choice" dialog, which will greatly simplify future tasks
 '
 'Module for handling all custom dialog forms used by PhotoDemon.  There are quite a few already, and I expect
 ' the number to grow as I phase out generic message boxes in favor of more descriptive (and usable) dialogs
@@ -299,5 +299,53 @@ Public Function promptNewPreset(ByRef srcPresetManager As pdToolPreset, ByRef pa
     
     Unload dialog_AddPreset
     Set dialog_AddPreset = Nothing
+
+End Function
+
+'Present a generic Yes/No dialog with an option to remember the current setting.  Once the option to remember has been set,
+' it cannot be unset short of using the Reset button in the Tools > Options panel.
+'
+'The caller must supply a unique "questionID" string.  This is the string used to identify this dialog in the XML file,
+' so it will be forced to an XML-safe equivalent.  As such, do not do something stupid like having two IDs that are so similar,
+' their XML-safe variants become identical.
+'
+'Prompt text, "yes button" text, "no button" text, "cancel button" text, and icon choice must be provided.  The bottom
+' "Remember my decision" text is universal and cannot be changed by the caller.
+'
+'If the user has previously ticked the "remember my decision" box, this function should still be called, but it will simply
+' retrieve the previous choice and silently return it.
+'
+'Returns a VbMsgBoxResult constant, with YES, NO, or CANCEL specified.
+Public Function promptGenericYesNoDialog(ByVal questionID As String, ByVal questionText As String, ByVal yesButtonText As String, ByVal noButtonText As String, ByVal cancelButtonText As String, Optional ByVal icon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel) As VbMsgBoxResult
+
+    'Convert the questionID to its XML-safe equivalent
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    questionID = xmlEngine.getXMLSafeTagName(questionID)
+    
+    'See if the user has already answered this question in the past.
+    If g_UserPreferences.doesValueExist("Dialogs", questionID) Then
+        
+        'The user has already answered this question and saved their answer.  Retrieve the previous answer and exit.
+        promptGenericYesNoDialog = g_UserPreferences.GetPref_Long("Dialogs", questionID, defaultAnswer)
+        
+    'The user has not saved a previous answer.  Display the full dialog.
+    Else
+    
+        dialog_GenericMemory.showDialog questionText, yesButtonText, noButtonText, cancelButtonText, icon, defaultAnswer
+        
+        'Retrieve the user's answer
+        promptGenericYesNoDialog = dialog_GenericMemory.DialogResult
+        
+        'If the user wants us to permanently remember this action, save their preference now.
+        If dialog_GenericMemory.getRememberAnswerState Then
+            g_UserPreferences.WritePreference "Dialogs", questionID, Trim$(Str(promptGenericYesNoDialog))
+        End If
+        
+        'Release the dialog form
+        Unload dialog_GenericMemory
+        Set dialog_GenericMemory = Nothing
+    
+    End If
 
 End Function
