@@ -598,8 +598,16 @@ Begin VB.Form FormMain
          Index           =   12
       End
       Begin VB.Menu MnuLayer 
-         Caption         =   "Rasterize (convert to image layer)"
+         Caption         =   "Rasterize"
          Index           =   13
+         Begin VB.Menu MnuLayerRasterize 
+            Caption         =   "Current layer"
+            Index           =   0
+         End
+         Begin VB.Menu MnuLayerRasterize 
+            Caption         =   "All layers"
+            Index           =   1
+         End
       End
       Begin VB.Menu MnuLayer 
          Caption         =   "-"
@@ -2025,16 +2033,8 @@ Private Sub MnuLayer_Click(Index As Integer)
         '<separator>
         Case 12
         
-        'Rasterize
+        'Rasterize (top-level)
         Case 13
-            
-            'Before processing rasterization, ask the user for confirmation
-            If Layer_Handler.askIfOkayToRasterizeLayer(pdImages(g_CurrentImage).getActiveLayer.getLayerType, , False) = vbYes Then
-                
-                pdMsgBox "Sorry, I haven't implemented rasterization yet.  It should be here in the next few days!", vbCritical Or vbOKOnly, "Under construction"
-                
-                'Process "Rasterize layer", , , UNDO_LAYER
-            End If
         
         '<separator>
         Case 14
@@ -2164,6 +2164,30 @@ Private Sub MnuLayerOrientation_Click(Index As Integer)
     
     End Select
 
+End Sub
+
+Private Sub MnuLayerRasterize_Click(Index As Integer)
+    
+    Select Case Index
+    
+        'Current layer
+        Case 0
+            
+            'Before processing rasterization, ask the user for confirmation
+            If Layer_Handler.askIfOkayToRasterizeLayer(pdImages(g_CurrentImage).getActiveLayer.getLayerType, , False) = vbYes Then
+                Process "Rasterize layer", , , UNDO_LAYER
+            End If
+        
+        'All layers
+        Case 1
+        
+            'Before processing rasterization, ask the user for confirmation
+            If Layer_Handler.askIfOkayToRasterizeLayer(pdImages(g_CurrentImage).getActiveLayer.getLayerType, , True) = vbYes Then
+                Process "Rasterize all layers", , , UNDO_IMAGE
+            End If
+    
+    End Select
+    
 End Sub
 
 Private Sub MnuLayerSize_Click(Index As Integer)

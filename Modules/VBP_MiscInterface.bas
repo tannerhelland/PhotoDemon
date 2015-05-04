@@ -328,7 +328,8 @@ Public Sub syncInterfaceToCurrentImage()
                     metaToggle tNonDestructiveFX, True
                     
                     'Layer rasterization depends on the current layer type
-                    FormMain.MnuLayer(13).Enabled = pdImages(g_CurrentImage).getActiveLayer.isLayerVector
+                    FormMain.MnuLayerRasterize(0).Enabled = pdImages(g_CurrentImage).getActiveLayer.isLayerVector
+                    FormMain.MnuLayerRasterize(1).Enabled = CBool(pdImages(g_CurrentImage).getNumOfVectorLayers > 0)
                     
                 End If
                 

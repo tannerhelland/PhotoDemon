@@ -705,6 +705,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 ConvertImageColorDepth 24, cParams.GetLong(1)
             End If
         
+        'Rasterizing
+        Case "Rasterize layer"
+            Layer_Handler.RasterizeLayer pdImages(g_CurrentImage).getActiveLayerIndex
+        
+        Case "Rasterize all layers"
+            Layer_Handler.RasterizeLayer -1
+        
         'Flatten image
         Case "Flatten image"
             Layer_Handler.flattenImage

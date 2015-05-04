@@ -428,25 +428,25 @@ Public Function getLayerByID(ByVal requestedID As Long) As pdLayer
 End Function
 
 'Simple function for moving a given layer up/down in the layer stack.
-Public Sub moveLayerByIndex(ByVal srcLayerIndex As Long, ByVal moveLayerUp As Boolean)
+Public Sub moveLayerByIndex(ByVal srclayerIndex As Long, ByVal moveLayerUp As Boolean)
 
     'Before doing anything else, make sure the requested move is a valid one
     If moveLayerUp Then
-        If srcLayerIndex = m_numOfLayers - 1 Then Exit Sub
+        If srclayerIndex = m_numOfLayers - 1 Then Exit Sub
     Else
-        If srcLayerIndex = 0 Then Exit Sub
+        If srclayerIndex = 0 Then Exit Sub
     End If
     
     'Process the actual move
     If moveLayerUp Then
     
         'Move the selected layer UP.
-        swapTwoLayers srcLayerIndex, srcLayerIndex + 1
+        swapTwoLayers srclayerIndex, srclayerIndex + 1
     
     Else
     
         'Move the selected layer DOWN.
-        swapTwoLayers srcLayerIndex, srcLayerIndex - 1
+        swapTwoLayers srclayerIndex, srclayerIndex - 1
     
     End If
 
@@ -456,15 +456,15 @@ End Sub
 ' The destination layer index will be the *new* index of the source layer.  If the two indices match, the function will terminate.
 '
 'The function will return TRUE if the layers were moved successfully.
-Public Function moveLayerToArbitraryIndex(ByVal srcLayerIndex As Long, ByVal dstLayerIndex As Long) As Boolean
+Public Function moveLayerToArbitraryIndex(ByVal srclayerIndex As Long, ByVal dstLayerIndex As Long) As Boolean
 
     'Before doing anything else, make sure the requested move is a valid one
-    If srcLayerIndex = dstLayerIndex Then
+    If srclayerIndex = dstLayerIndex Then
         moveLayerToArbitraryIndex = False
         Exit Function
     End If
         
-    If (srcLayerIndex < 0) Or (srcLayerIndex > m_numOfLayers - 1) Then
+    If (srclayerIndex < 0) Or (srclayerIndex > m_numOfLayers - 1) Then
         moveLayerToArbitraryIndex = False
         Exit Function
     End If
@@ -481,12 +481,12 @@ Public Function moveLayerToArbitraryIndex(ByVal srcLayerIndex As Long, ByVal dst
     Dim i As Long
     
     'We can now process the actual layer rearranging, and we will do so in two separate chunks of code: up vs down.
-    If dstLayerIndex > srcLayerIndex Then
+    If dstLayerIndex > srclayerIndex Then
     
         'The source layer is moving HIGHER in the stack
     
         'Iterate through all layers between the current position and the new one, swapping layers as we go
-        For i = srcLayerIndex To dstLayerIndex - 1
+        For i = srclayerIndex To dstLayerIndex - 1
             swapTwoLayers i, i + 1
         Next i
     
@@ -495,7 +495,7 @@ Public Function moveLayerToArbitraryIndex(ByVal srcLayerIndex As Long, ByVal dst
         'The source layer is moving LOWER in the stack
     
         'Iterate through all layers between the current position and the new one, swapping layers as we go
-        For i = srcLayerIndex To dstLayerIndex + 1 Step -1
+        For i = srclayerIndex To dstLayerIndex + 1 Step -1
             swapTwoLayers i, i - 1
         Next i
     
@@ -524,17 +524,17 @@ Public Sub swapTwoLayers(ByVal srcLayerIndex_1 As Long, ByVal srcLayerIndex_2 As
 End Sub
 
 'Delete a given layer.  The pdLayers stack will automatically be resized to match.
-Public Sub deleteLayerByIndex(ByVal srcLayerIndex As Long)
+Public Sub deleteLayerByIndex(ByVal srclayerIndex As Long)
 
     'Validate the layer index
-    If srcLayerIndex < 0 Or srcLayerIndex >= m_numOfLayers Then Exit Sub
+    If srclayerIndex < 0 Or srclayerIndex >= m_numOfLayers Then Exit Sub
     
     'If this is the last remaining layer, exit
     If m_numOfLayers = 1 Then Exit Sub
     
     'Shift all layer references above this one downward
     Dim i As Long
-    For i = srcLayerIndex To m_numOfLayers - 2
+    For i = srclayerIndex To m_numOfLayers - 2
         Set imgLayers(i) = imgLayers(i + 1)
     Next i
     
@@ -997,13 +997,13 @@ End Sub
 ' mind as to whether it's an issue that needs resolving or not.  I will revisit in the future, once I have a better idea of
 ' the workflow implications.
 ' TODO: determine if off-image layer cropping is an acceptable solution in all scenarios.
-Public Sub retrieveNullPaddedLayer(ByRef dstDIB As pdDIB, ByVal srcLayerIndex As Long)
+Public Sub retrieveNullPaddedLayer(ByRef dstDIB As pdDIB, ByVal srclayerIndex As Long)
 
     'Create a blank destination DIB at the size of the image
     dstDIB.createBlank Width, Height, 32, 0
     
     'Copy the source layer into the blank DIB
-    BitBlt dstDIB.getDIBDC, imgLayers(srcLayerIndex).getLayerOffsetX, imgLayers(srcLayerIndex).getLayerOffsetY, imgLayers(srcLayerIndex).getLayerWidth(False), imgLayers(srcLayerIndex).getLayerHeight(False), imgLayers(srcLayerIndex).layerDIB.getDIBDC, 0, 0, vbSrcCopy
+    BitBlt dstDIB.getDIBDC, imgLayers(srclayerIndex).getLayerOffsetX, imgLayers(srclayerIndex).getLayerOffsetY, imgLayers(srclayerIndex).getLayerWidth(False), imgLayers(srclayerIndex).getLayerHeight(False), imgLayers(srclayerIndex).layerDIB.getDIBDC, 0, 0, vbSrcCopy
     
 End Sub
 
@@ -1304,5 +1304,33 @@ Public Function estimateRAMUsage() As Long
     
     'Assume a 10% overhead for the pdImage as a whole, to cover things like metadata, loose ICC profiles, class instances, and more
     estimateRAMUsage = estimateRAMUsage * 1.1
+
+End Function
+
+'Helper function to identify the presence of vector layers.  PD's UI synchonization service makes use of this.
+Public Function getNumOfVectorLayers() As Long
+
+    Dim i As Long, vectorLayerCount As Long
+    vectorLayerCount = 0
+    
+    For i = 0 To m_numOfLayers - 1
+        If imgLayers(i).isLayerVector Then vectorLayerCount = vectorLayerCount + 1
+    Next i
+    
+    getNumOfVectorLayers = vectorLayerCount
+
+End Function
+
+'Helper function to identify the presence of raster layers.  PD's UI synchonization service makes use of this.
+Public Function getNumOfRasterLayers() As Long
+
+    Dim i As Long, rasterLayerCount As Long
+    rasterLayerCount = 0
+    
+    For i = 0 To m_numOfLayers - 1
+        If imgLayers(i).isLayerRaster Then rasterLayerCount = rasterLayerCount + 1
+    Next i
+    
+    getNumOfRasterLayers = rasterLayerCount
 
 End Function
