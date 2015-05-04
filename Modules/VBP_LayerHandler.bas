@@ -1057,3 +1057,41 @@ Public Sub CropLayerToSelection(ByVal layerIndex As Long)
     Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Crop layer to selection"
     
 End Sub
+
+'If a function must rasterize a vector or text layer, it needs to call this function first.  This function will display a dialog
+' asking the user for permission to rasterize the layer(s) in question.  Note that CANCEL is a valid return, so any callers need
+' to handle that case gracefully!
+Public Function askIfOkayToRasterizeLayer(Optional ByVal srcLayerType As LAYER_TYPE = PDL_TEXT, Optional ByVal questionID As String = "RasterizeLayer", Optional ByVal multipleLayersInvolved As Boolean = False) As VbMsgBoxResult
+    
+    Dim questionText As String, yesText As String, noText As String, cancelText As String, dialogTitle As String
+    
+    'Generate customized question text based on layer type
+    Select Case srcLayerType
+    
+        Case PDL_TEXT
+        
+            'Modify the text depending on the involvement of multiple text layers
+            If multipleLayersInvolved Then
+                questionText = g_Language.TranslateMessage("These text layers will be changed to image (raster) layers, meaning you can no longer modify their text or font settings.")
+                questionText = questionText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Are you sure you want to continue?")
+                yesText = g_Language.TranslateMessage("Yes.  Please convert these text layers.")
+                noText = g_Language.TranslateMessage("No.  Leave these text layers as they are.")
+            Else
+                questionText = g_Language.TranslateMessage("This text layer will be changed to an image (raster) layer, meaning you can no longer modify its text or font settings.")
+                questionText = questionText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Are you sure you want to continue?")
+                yesText = g_Language.TranslateMessage("Yes.  Please convert this text layer.")
+                noText = g_Language.TranslateMessage("No.  Leave this text layer as it is.")
+            End If
+            
+            cancelText = g_Language.TranslateMessage("I can't decide.  Cancel this action.")
+            dialogTitle = "Rasterization required"
+            
+        Case Else
+            Debug.Print "WARNING!  Unknown or invalid layer type passed to askIfOkayToRasterizeLayer!"
+    
+    End Select
+    
+    'Display the dialog and return the result
+    askIfOkayToRasterizeLayer = Dialog_Handler.promptGenericYesNoDialog(questionID, questionText, yesText, noText, cancelText, dialogTitle, IDI_EXCLAMATION, vbYes)
+
+End Function
