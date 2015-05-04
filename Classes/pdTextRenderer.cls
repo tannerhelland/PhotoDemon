@@ -451,13 +451,10 @@ End Function
 
 Friend Sub setHorizontalAlignment(ByVal newAlignment As GdiPlusStringAlignment)
     
-    If m_HorizontalAlignment <> newAlignment Then
-        m_HorizontalAlignment = newAlignment
-        
-        'If using GDI+, set this format immediately, as it's inexpensive to do so
-        If m_GDIPlusStringFormat <> 0 Then GdipSetStringFormatAlign m_GDIPlusStringFormat, newAlignment
-        
-    End If
+    If m_HorizontalAlignment <> newAlignment Then m_HorizontalAlignment = newAlignment
+    
+    'If using GDI+, set this format immediately, as it's inexpensive to do so
+    If m_GDIPlusStringFormat <> 0 Then GdipSetStringFormatAlign m_GDIPlusStringFormat, newAlignment
     
 End Sub
 
@@ -467,13 +464,10 @@ End Function
 
 Friend Sub setVerticalAlignment(ByVal newAlignment As GdiPlusStringAlignment)
     
-    If m_VerticalAlignment <> newAlignment Then
-        m_VerticalAlignment = newAlignment
-        
-        'If using GDI+, set this format immediately, as it's inexpensive to do so
-        If m_GDIPlusStringFormat <> 0 Then GdipSetStringFormatLineAlign m_GDIPlusStringFormat, newAlignment
-        
-    End If
+    If m_VerticalAlignment <> newAlignment Then m_VerticalAlignment = newAlignment
+    
+    'If using GDI+, set this format immediately, as it's inexpensive to do so
+    If m_GDIPlusStringFormat <> 0 Then GdipSetStringFormatLineAlign m_GDIPlusStringFormat, newAlignment
     
 End Sub
 
@@ -1184,7 +1178,7 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     
     'Use DrawText for the actual rendering
     Dim retDrawText As Long
-    retDrawText = DrawText(m_TmpGdiDIB.getDIBDC, StrPtr(srcString), Len(srcString), tmpRect, DT_WORDBREAK Or getDrawTextAlignmentFlags())
+    retDrawText = DrawText(m_TmpGdiDIB.getDIBDC, StrPtr(srcString), Len(srcString), tmpRect, DT_WORDBREAK Or DT_NOCLIP Or getDrawTextAlignmentFlags())
     
     'We can actually determine a return value now
     renderTextToDIB_GDI = CBool(retDrawText <> 0)

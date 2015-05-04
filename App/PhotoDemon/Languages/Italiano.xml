@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.26</langversion>
+<langversion>6.7.27</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -13272,7 +13272,7 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- BEGIN text for VBP_ToolPanel_Text.frm (toolpanel_Text) -->
 
 <phrase>
-<original>(this tool is under construction)</original>
+<original>(this tool is under constr- uction)</original>
 <translation></translation>
 </phrase>
 
@@ -13292,22 +13292,22 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>font color</original>
+<original>font style</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>AA and hinting</original>
+<original>antialiasing</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>AA clarity</original>
-<translation></translation>
+<original>clarity</original>
+<translation>chiarezza</translation>
 </phrase>
 
 <phrase>
-<original>styles</original>
+<original>alignment</original>
 <translation></translation>
 </phrase>
 
@@ -13316,7 +13316,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_Text.frm contains 11 phrases. 2 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- VBP_ToolPanel_Text.frm contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_Text.frm-->
 
@@ -13534,11 +13534,6 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>clarity</original>
-<translation>chiarezza</translation>
-</phrase>
-
-<phrase>
 <original>all</original>
 <translation></translation>
 </phrase>
@@ -13558,7 +13553,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation>Crea le regolazioni della soluzione automatica permanenti.  Questa azione non è mai necessaria, ma se la resa di visualizzazione è lenta e molti aggiustamenti della soluzione automatica sono attivi, potrebbe migliorare le prestazioni.</translation>
 </phrase>
 
-<!-- VBP_ToolPanel_NDFX.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- VBP_ToolPanel_NDFX.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_NDFX.frm-->
 
@@ -13640,10 +13635,10 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2369</phrasecount>
+<phrasecount>2368</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4047 phrases. -->
-<!-- 1678 are duplicates, so only 2369 unique phrases have been written to file. -->
-<!-- These 2369 phrases contain approximately 13467 total words. -->
+<!-- As of this build, PhotoDemon contains 4048 phrases. -->
+<!-- 1680 are duplicates, so only 2368 unique phrases have been written to file. -->
+<!-- These 2368 phrases contain approximately 13464 total words. -->
 
 </pdData>

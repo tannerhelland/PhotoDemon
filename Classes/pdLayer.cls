@@ -1227,11 +1227,11 @@ Public Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
                     .tld_HorizontalAlignment = xmlEngine.getUniqueTag_Long("TextLayerHorizontalAlignment", StringAlignmentNear)
                     .tld_VerticalAlignment = xmlEngine.getUniqueTag_Long("TextLayerVerticalAlignment", StringAlignmentNear)
                     .tld_TextAntialiasing = xmlEngine.getUniqueTag_Long("TextLayerAntialiasing", pdta_Standard)
-                    .tld_TextContrast = xmlEngine.getUniqueTag_Long("TextLayerContrast", 4)
+                    .tld_TextContrast = xmlEngine.getUniqueTag_Long("TextLayerContrast", 5)
                 End With
                 
         End Select
-        
+                
         'Note that all internal layer caches are no longer valid; this will also cause the raster cache to be marked unclean
         Me.notifyOfDestructiveChanges
         
