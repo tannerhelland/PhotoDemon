@@ -647,7 +647,7 @@ Private Function getWidthOfCharCode(ByVal srcCharCode As Long) As Single
 End Function
 
 'Reset the current glyph collection.  This forces all glyphs to be recreated from scratch, so use only if absolutely necessary.
-Private Sub resetGlyphCollection()
+Public Sub resetGlyphCollection()
     
     'If the glyph collection exists, manually wipe it
     If m_NumOfGlyphs > 0 Then
@@ -713,4 +713,11 @@ Private Sub Class_Initialize()
     Set m_tmpDIB = New pdDIB
     m_tmpDIB.createBlank 4, 4
     
+End Sub
+
+Private Sub Class_Terminate()
+
+    'Manually release our glyph collection
+    resetGlyphCollection
+
 End Sub
