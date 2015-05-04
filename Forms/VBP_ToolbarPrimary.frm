@@ -354,11 +354,15 @@ Private m_ButtonWidth As Long, m_ButtonHeight As Long
 'The currently active tool panel and ID key will be mirrored to this reference
 Private m_ActiveToolPanelKey As String
 
+'This form supports a variety of resize modes, and we use cMouseEvents to handle cursor duties
+Private WithEvents cMouseEvents As pdInputMouse
+Attribute cMouseEvents.VB_VarHelpID = -1
+
 Private Sub cmdFile_Click(Index As Integer)
         
     'If the user is dragging the mouse in from the right, and the toolbox has been shrunk from its default setting, the class cursor
     ' for forms may get stuck on the west/east "resize" cursor.  To avoid this, reset it after any button click.
-    setArrowCursor Me
+    cMouseEvents.setSystemCursor IDC_ARROW
         
     Select Case Index
     
@@ -396,6 +400,68 @@ Private Sub cmdFile_Click(Index As Integer)
 
 End Sub
 
+'When the mouse leaves this toolbox, reset it to an arrow (so other forms don't magically acquire the west/east resize cursor, as the mouse is
+' likely to leave off the right side of this form)
+Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    cMouseEvents.setSystemCursor IDC_ARROW
+End Sub
+
+Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+    'If the mouse is near the resizable edge of the toolbar (the left edge, currently), allow the user to resize
+    ' the layer toolbox.
+    Dim mouseInResizeTerritory As Boolean
+    
+    'How close does the mouse have to be to the form border to allow resizing; currently we use 7 pixels, while accounting
+    ' for DPI variance (e.g. 7 pixels at 96 dpi)
+    Dim resizeBorderAllowance As Long
+    resizeBorderAllowance = fixDPI(7)
+    
+    Dim hitCode As Long
+    
+    'Check the mouse position to see if it's in resize territory (along the left edge of the toolbox)
+    If (y > 0) And (y < Me.ScaleHeight) And (x > (Me.ScaleWidth - resizeBorderAllowance)) Then
+        mouseInResizeTerritory = True
+        hitCode = HTRIGHT
+    End If
+    
+    'If the left mouse button is down, and the mouse is in resize territory, initiate an API resize event
+    If mouseInResizeTerritory Then
+    
+        'Change the cursor to a resize cursor
+        cMouseEvents.setSystemCursor IDC_SIZEWE
+        
+        If (Button = vbLeftButton) Then
+            m_WeAreResponsibleForResize = True
+            ReleaseCapture
+            SendMessage Me.hWnd, WM_NCLBUTTONDOWN, hitCode, ByVal 0&
+            
+            'A premature exit is required, because the end of this sub contains code to detect the release of the
+            ' mouse after a drag event.  Because the event is not being initiated normally, we can't detect a standard
+            ' MouseUp event, so instead, we mimic it by checking MouseMove and m_WeAreResponsibleForResize = TRUE.
+            Exit Sub
+            
+        End If
+        
+    Else
+        cMouseEvents.setSystemCursor IDC_ARROW
+    End If
+    
+    'Check for mouse release; we will only reach this point if the mouse is *not* in resize territory, which in turn
+    ' means we can free the release code and resize the window now.  (On some OS/theme combinations, the canvas will
+    ' live-resize as the mouse is moved.  On others, the canvas won't redraw until the mouse is released.)
+    If m_WeAreResponsibleForResize Then
+        
+        m_WeAreResponsibleForResize = False
+        
+        'If theming is disabled, window performance is so poor that the window manager will automatically
+        ' disable canvas updates until the mouse is released.  Request a full update now.
+        If (Not g_IsThemingEnabled) Then g_WindowManager.notifyToolboxResized Me.hWnd, True
+        
+    End If
+
+End Sub
+
 Private Sub Form_Load()
     
     'Initialize file tool button images
@@ -422,6 +488,10 @@ Private Sub Form_Load()
     
     cmdTools(VECTOR_TEXT).AssignImage "TV_TEXT", , , 50
     
+    'Initialize a mouse handler
+    Set cMouseEvents = New pdInputMouse
+    cMouseEvents.addInputTracker Me.hWnd, True, True, , True
+    
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
     lastUsedSettings.setParentForm Me
@@ -440,63 +510,7 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub Form_LostFocus()
-    setArrowCursor Me
-End Sub
-
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-
-    'If the mouse is near the resizable edge of the toolbar (the left edge, currently), allow the user to resize
-    ' the layer toolbox.
-    Dim mouseInResizeTerritory As Boolean
-    
-    'How close does the mouse have to be to the form border to allow resizing; currently we use 7 pixels, while accounting
-    ' for DPI variance (e.g. 7 pixels at 96 dpi)
-    Dim resizeBorderAllowance As Long
-    resizeBorderAllowance = fixDPI(7)
-    
-    Dim hitCode As Long
-    
-    'Check the mouse position to see if it's in resize territory (along the left edge of the toolbox)
-    If (y > 0) And (y < Me.ScaleHeight) And (x > (Me.ScaleWidth - resizeBorderAllowance)) Then
-        mouseInResizeTerritory = True
-        hitCode = HTRIGHT
-    End If
-    
-    'If the left mouse button is down, and the mouse is in resize territory, initiate an API resize event
-    If mouseInResizeTerritory Then
-    
-        'Change the cursor to a resize cursor
-        setSizeWECursor Me
-        
-        If (Button = vbLeftButton) Then
-            m_WeAreResponsibleForResize = True
-            ReleaseCapture
-            SendMessage Me.hWnd, WM_NCLBUTTONDOWN, hitCode, ByVal 0&
-            
-            'A premature exit is required, because the end of this sub contains code to detect the release of the
-            ' mouse after a drag event.  Because the event is not being initiated normally, we can't detect a standard
-            ' MouseUp event, so instead, we mimic it by checking MouseMove and m_WeAreResponsibleForResize = TRUE.
-            Exit Sub
-            
-        End If
-        
-    Else
-        setArrowCursor Me
-    End If
-    
-    'Check for mouse release; we will only reach this point if the mouse is *not* in resize territory, which in turn
-    ' means we can free the release code and resize the window now.  (On some OS/theme combinations, the canvas will
-    ' live-resize as the mouse is moved.  On others, the canvas won't redraw until the mouse is released.)
-    If m_WeAreResponsibleForResize Then
-        
-        m_WeAreResponsibleForResize = False
-        
-        'If theming is disabled, window performance is so poor that the window manager will automatically
-        ' disable canvas updates until the mouse is released.  Request a full update now.
-        If (Not g_IsThemingEnabled) Then g_WindowManager.notifyToolboxResized Me.hWnd, True
-        
-    End If
-
+    cMouseEvents.setSystemCursor IDC_ARROW
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
@@ -763,7 +777,8 @@ Private Sub newToolSelected()
         
     End Select
     
-    'Finally, because tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas
+    'Finally, because tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas.
+    ' (Note that we can use a very late pipeline stage, as only tool-specific overlays need to be redrawn.)
     Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
@@ -930,6 +945,9 @@ Public Sub resetToolButtonStates()
     ' on a picture box (specifically, combo boxes which do not drop-down properly unless a picture box or its child already
     ' has focus).  Sometimes, VB will inexplicably fail to set focus, and it will raise an Error 5 to match; as this is not
     ' a crucial error, just a VB quirk, I don't mind using OERN here.
+    '
+    'DISABLED PENDING ADDITIONAL TESTING WITH THE NEW PER-WINDOW OPTIONS PANEL SYSTEM (APRIL 2015)
+    '
     'On Error Resume Next
     'For i = 0 To toolbar_Options.picTools.Count - 1
     '    If i = activeToolPanel Then
@@ -952,7 +970,7 @@ Private Sub cmdTools_Click(Index As Integer)
         
     'If the user is dragging the mouse in from the right, and the toolbox has been shrunk from its default setting, the class cursor
     ' for forms may get stuck on the west/east "resize" cursor.  To avoid this, reset it after any button click.
-    setArrowCursor Me
+    cMouseEvents.setSystemCursor IDC_ARROW
         
     'Before changing to the new tool, see if the previously active layer has had any non-destructive changes made.
     If Processor.evaluateImageCheckpoint() Then syncInterfaceToCurrentImage
@@ -1096,13 +1114,7 @@ Public Sub updateAgainstCurrentTheme()
     
     cmdFile(FILE_SAVEAS_LAYERS).assignTooltip "Use this to quickly save a lossless copy of the current image.  The lossless copy will be saved in PDI format, in the image's current folder, using the current filename (plus an auto-incremented number, as necessary).", "Save lossless copy"
     cmdFile(FILE_SAVEAS_FLAT).assignTooltip "The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image.", "Save As (export to new format or filename)"
-    
-    'The Undo, Fade, and Redo buttons have their tooltips assigned in the master syncInterface function.  It generates custom tooltips
-    ' based on past actions.
-    'cmdFile(FILE_UNDO).assignTooltip "Undo last action"
-    'cmdFile(FILE_FADE).assignTooltip "Fade last action"
-    'cmdFile(FILE_REDO).assignTooltip "Redo previous action"
-    
+        
     'Non-destructive tool buttons are next
     cmdTools(NAV_DRAG).assignTooltip "Hand (click-and-drag image scrolling)"
     cmdTools(NAV_MOVE).assignTooltip "Move and resize image layers"
