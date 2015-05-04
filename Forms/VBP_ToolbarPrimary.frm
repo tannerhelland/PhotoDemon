@@ -6,7 +6,7 @@ Begin VB.Form toolbar_Toolbox
    ClientHeight    =   9810
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   2085
+   ClientWidth     =   2115
    ClipControls    =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -22,7 +22,7 @@ Begin VB.Form toolbar_Toolbox
    MinButton       =   0   'False
    ScaleHeight     =   654
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   139
+   ScaleWidth      =   141
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.pdLabel lblCategories 
