@@ -243,7 +243,7 @@ Public Function notifyImageChanged(ByVal typeOfChange As PD_UNDO_TYPE, Optional 
         Case UNDO_IMAGEHEADER
             m_CompositeCacheClean = False
         
-        Case UNDO_LAYER
+        Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
             m_CompositeCacheClean = False
             
             If layerIndex <> -1 Then

@@ -2661,7 +2661,7 @@ Public Function saveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
             Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, IIf(g_UndoCompressionLevel = 0, False, True), False, False, True
         
         'Layer data only (full layer header + full layer DIB).
-        Case UNDO_LAYER
+        Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
             Saving.SavePhotoDemonLayer srcPDImage.getLayerByID(targetLayerID), dstUndoFilename & ".layer", True, True, IIf(g_UndoCompressionLevel = 0, False, True), False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel)
         
         'Layer header data only (e.g. DO NOT WRITE OUT THE LAYER DIB)

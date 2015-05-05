@@ -93,7 +93,7 @@ Private redoState As Boolean
 '     processID As String             'Name of the associated action (e.g. "Gaussian blur")
 '     processParamString As String    'Processor string supplied to the action
 '     undoType As PD_UNDO_TYPE        'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)
-'     undoLayerID As Long             'If the undoType is UNDO_LAYER or UNDO_LAYERHEADER, this value will note the ID (NOT THE INDEX) of the affected layer
+'     undoLayerID As Long             'If the undoType is UNDO_LAYER, UNDO_LAYER_VECTORSAFE, or UNDO_LAYERHEADER, this value will note the ID (NOT THE INDEX) of the affected layer
 '     relevantTool As Long            'If a tool was associated with this action, it can be set here.  This value is not currently used.
 '     thumbnailSmall As pdDIB         'A small thumbnail associated with the current action.  In the future, this will be used by the Undo History window.
 '     thumbnailLarge As pdDIB         'A large thumbnail associated with the current action.
@@ -209,7 +209,7 @@ Public Sub createUndoData(ByVal processID As String, ByVal pParamString As Strin
         Case UNDO_IMAGEHEADER
             parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, fixDPI(UNDO_THUMB_LARGE)
         
-        Case UNDO_LAYER
+        Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
             parentPDImage.getLayerByID(targetLayerID).requestThumbnail undoStack(undoNum).thumbnailLarge, fixDPI(UNDO_THUMB_LARGE)
         
         Case UNDO_LAYERHEADER
@@ -434,11 +434,11 @@ Public Sub restoreUndoData()
     ' against their most recent diff patch(es).  To prevent the screen from flickering like crazy while we do all this background
     ' processing, we forcibly suspend all screen redraws until our work is complete.
     '
-    'Similarly, if we are undoing a single layer action (UNDO_LAYER), we may need to apply an optional UNDO_LAYERHEADER diff after
-    ' the fact, to make sure the layer's header is up-to-date against any header-only changes that occurred since the latest full
-    ' layer DIB write-to-file.
+    'Similarly, if we are undoing a single layer action (UNDO_LAYER, UNDO_LAYER_VECTORSAFE), we may need to apply an optional
+    ' UNDO_LAYERHEADER diff after the fact, to make sure the layer's header is up-to-date against any header-only changes that occurred
+    ' since the latest full layer DIB write-to-file.
     Dim suspendRedraws As Boolean
-    If (undoStack(undoNum).undoType = UNDO_EVERYTHING) Or (undoStack(undoNum).undoType = UNDO_IMAGE) Or (undoStack(undoNum).undoType = UNDO_IMAGEHEADER) Or (undoStack(undoNum).undoType = UNDO_LAYER) Then
+    If (undoStack(undoNum).undoType = UNDO_EVERYTHING) Or (undoStack(undoNum).undoType = UNDO_IMAGE) Or (undoStack(undoNum).undoType = UNDO_IMAGEHEADER) Or (undoStack(undoNum).undoType = UNDO_LAYER) Or (undoStack(undoNum).undoType = UNDO_LAYER_VECTORSAFE) Then
         
         'If we are reverting the image to its original state, we do not need to process any extra layer data, as we already know
         ' the the source file will be accurate (because a full copy of the image is always created at Undo point 0).
@@ -494,13 +494,27 @@ Public Sub restoreUndoData()
                 'Grab the current layer ID (all undo functions operate on layer ID, not index, as index may change unexpectedly)
                 curLayerID = pdImages(g_CurrentImage).getLayerByIndex(i).getLayerID
             
-                'Start by reconstructing the layer DIB
+                'Start by reconstructing a layer DIB using the default UNDO_LAYER type
                 nearestLayerDiffDIB = findNearestDiffIndex(undoNum, UNDO_LAYER, curLayerID)
+                
+                'Vector layers can also be modified by the UNDO_LAYER_VECTORSAFE type, which simply signifies layer changes
+                ' that don't require rasterization.  If a newer version of the undo for this layer exists under this type,
+                ' take it instead.
+                Dim vectorCheck As Long
+                vectorCheck = findNearestDiffIndex(undoNum, UNDO_LAYER_VECTORSAFE, curLayerID)
+                
+                If vectorCheck > nearestLayerDiffDIB Then nearestLayerDiffDIB = vectorCheck
                 
                 'If the nearest diff for this layer is *not* the same as the nearest diff for the full image, apply this diff
                 ' to the layer in question.
                 If (nearestLayerDiffDIB > nearestDiffIndex) Then
-                    LoadUndo generateUndoFilename(nearestLayerDiffDIB), undoStack(nearestLayerDiffDIB).undoType, UNDO_LAYER, curLayerID, suspendRedraws
+                
+                    If vectorCheck = nearestLayerDiffDIB Then
+                        LoadUndo generateUndoFilename(nearestLayerDiffDIB), undoStack(nearestLayerDiffDIB).undoType, UNDO_LAYER_VECTORSAFE, curLayerID, suspendRedraws
+                    Else
+                        LoadUndo generateUndoFilename(nearestLayerDiffDIB), undoStack(nearestLayerDiffDIB).undoType, UNDO_LAYER, curLayerID, suspendRedraws
+                    End If
+                    
                 End If
                 
                 'Next, we must reconstruct the layer header, as it too may have changed (for example, if the user moved the layer
@@ -516,7 +530,7 @@ Public Sub restoreUndoData()
         
         'If this is a just a layer Undo, we simply need to verify the layer header against any diffs more recent than the last
         ' full DIB reconstruction for this layer.
-        ElseIf (undoStack(undoNum).undoType = UNDO_LAYER) Then
+        ElseIf (undoStack(undoNum).undoType = UNDO_LAYER) Or (undoStack(undoNum).undoType = UNDO_LAYER_VECTORSAFE) Then
         
             'Grab the current layer ID (all undo functions operate on layer ID, not index, as index may change unexpectedly)
             curLayerID = undoStack(undoNum).undoLayerID
@@ -595,7 +609,18 @@ Private Function findNearestDiffIndex(ByVal undoIndex As Long, ByVal undoTypeChe
             'UNDO_LAYER contains relevant diff information for matching UNDO_LAYER and UNDO_LAYER_HEADER actions,
             ' but *only if the layer ID matches the requested one!*
             Case UNDO_LAYER
-                If ((undoTypeCheck = UNDO_LAYER) Or (undoTypeCheck = UNDO_LAYERHEADER)) Then
+                If ((undoTypeCheck = UNDO_LAYER) Or (undoTypeCheck = UNDO_LAYER_VECTORSAFE) Or (undoTypeCheck = UNDO_LAYERHEADER)) Then
+                    
+                    If (relevantLayerID = undoStack(i).undoLayerID) Then
+                        findNearestDiffIndex = i
+                        Exit For
+                    End If
+                    
+                End If
+                
+            'UNDO_LAYER_VECTORSAFE is identical to UNDO_LAYER
+            Case UNDO_LAYER_VECTORSAFE
+                If ((undoTypeCheck = UNDO_LAYER) Or (undoTypeCheck = UNDO_LAYER_VECTORSAFE) Or (undoTypeCheck = UNDO_LAYERHEADER)) Then
                     
                     If (relevantLayerID = undoStack(i).undoLayerID) Then
                         findNearestDiffIndex = i
@@ -709,7 +734,7 @@ Public Function fillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLay
         'A layer-specific edit has been found.  This is the last action the user committed that modified a layer, so it will contain
         ' a copy of the image as it appeared *after the change was made*.  What this function needs to do is find the state of this
         ' layer *prior to the change* - and now that we know which layer is affected, we can do that!
-        If undoStack(i).undoType = UNDO_LAYER Then
+        If (undoStack(i).undoType = UNDO_LAYER) Or (undoStack(i).undoType = UNDO_LAYER_VECTORSAFE) Then
             
             'Certain actions are irrelevant to this function; in particular, "Fade" and "Repeat" cannot be "faded" or "repeated".
             ' In these instances, we want to continue searching backward, to find the original function that was faded or repeated.
@@ -740,11 +765,20 @@ Public Function fillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLay
         Dim relevantDiffIndex As Long
         relevantDiffIndex = findNearestDiffIndex(layerChangeIndex, UNDO_LAYER, affectedLayerID)
         
+        'Check also for vector-safe actions, which are identical to UNDO_LAYER but for operations that support vector-safe modifications.
+        Dim relevantVectorIndex As Long
+        relevantVectorIndex = findNearestDiffIndex(layerChangeIndex, UNDO_LAYER_VECTORSAFE, affectedLayerID)
+        
         'relevantDiffIndex will now contain the index in the UndoStack array corresponding to the previous state of the affected layer.
         ' Load the relevant portion of that Undo file into the target DIB.
         Dim tmpLayer As pdLayer
         Set tmpLayer = New pdLayer
-        LoadUndo generateUndoFilename(relevantDiffIndex), undoStack(relevantDiffIndex).undoType, UNDO_LAYER, affectedLayerID, True, tmpLayer
+        
+        If relevantVectorIndex > relevantDiffIndex Then
+            LoadUndo generateUndoFilename(relevantVectorIndex), undoStack(relevantVectorIndex).undoType, UNDO_LAYER_VECTORSAFE, affectedLayerID, True, tmpLayer
+        Else
+            LoadUndo generateUndoFilename(relevantDiffIndex), undoStack(relevantDiffIndex).undoType, UNDO_LAYER, affectedLayerID, True, tmpLayer
+        End If
         
         'tmpLayer will now contain a copy of the relevant DIB (inside .layerDIB).  Copy it into the destination DIB, then exit.
         Set dstDIB = New pdDIB

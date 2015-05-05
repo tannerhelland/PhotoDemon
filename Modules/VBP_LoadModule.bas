@@ -2380,11 +2380,11 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
             ' current image state.  This step is handled by the Undo/Redo engine, which will call this LoadUndo function
             ' as many times as necessary to reconstruct each individual layer against its most recent diff.
         
-        'UNDO_LAYER: a full copy of the saved layer data at this position.
+        'UNDO_LAYER, UNDO_LAYER_VECTORSAFE: a full copy of the saved layer data at this position.
         '             Because the underlying file data can be different types (layer data can be loaded from standalone layer saves,
         '             or from a full pdImage stack save), we must check the undo type of the saved file, and modify our load
         '             behavior accordingly.
-        Case UNDO_LAYER
+        Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
             
             'New as of 11 July '14 is the ability for the caller to supply their own destination layer for layer-specific Undo data.
             ' Check this optional parameter, and if it is NOT supplied, point it at the relevant layer in the parent pdImage object.
@@ -2394,7 +2394,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
             Select Case undoTypeOfFile
             
                 'The underlying save file is a standalone layer entry.  Simply overwrite the target layer with the data from the file.
-                Case UNDO_LAYER
+                Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
                     Loading.LoadPhotoDemonLayer undoFile & ".layer", customLayerDestination, False
             
                 'The underlying save file is a full pdImage stack.  Extract only the relevant layer data from the stack.
@@ -2414,7 +2414,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
             
                 'The underlying save file is a standalone layer entry.  Simply overwrite the target layer header with the
                 ' header data from this file.
-                Case UNDO_LAYER, UNDO_LAYERHEADER
+                Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE, UNDO_LAYERHEADER
                     Loading.LoadPhotoDemonLayer undoFile & ".layer", pdImages(g_CurrentImage).getLayerByID(targetLayerID), True
             
                 'The underlying save file is a full pdImage stack.  Extract only the relevant layer data from the stack.
