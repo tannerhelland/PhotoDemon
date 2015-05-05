@@ -336,7 +336,7 @@ Private m_InHookNow As Boolean
 Private m_TextBackup As String
 
 'Additional helpers for rendering themed and multiline tooltips
-Private m_ToolTip As clsToolTip
+Private m_Tooltip As clsToolTip
 Private m_ToolString As String
 
 'hWnds aren't exposed by default
@@ -671,8 +671,8 @@ Private Sub UserControl_Show()
 
     If m_ToolString <> "" Then
 
-        Set m_ToolTip = New clsToolTip
-        With m_ToolTip
+        Set m_Tooltip = New clsToolTip
+        With m_Tooltip
 
             .Create Me
             .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
@@ -1650,9 +1650,20 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         'When the control receives focus, initialize a keyboard hook.  This prevents accelerators from working, but it is the
         ' only way to bypass VB's internal message translator, which will forcibly convert certain Unicode chars to ANSI.
         Case WM_SETFOCUS
-            InstallHookConditional
             
+            'Forcibly disable PD's main accelerator control
+            FormMain.ctlAccelerator.Enabled = False
+            
+            'Start hooking keypresses so we can grab Unicode chars before VB eats 'em
+            InstallHookConditional
+                        
         Case WM_KILLFOCUS
+        
+            'Re-enable PD's main accelerator control
+            FormMain.ctlAccelerator.Enabled = True
+            
+            'Release our hook.  In some circumstances, we can't do this immediately, so we set a timer that will release the hook
+            ' as soon as the system allows.
             If m_InHookNow Then
                 tmrHookRelease.Enabled = True
             Else

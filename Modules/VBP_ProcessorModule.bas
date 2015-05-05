@@ -135,53 +135,60 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     '
     '(Also: if this is a showDialog operation, we skip this step, so the user can play around without being bombarded by
     ' rasterization prompts.)
-    Dim okayToRasterize As VbMsgBoxResult
-    okayToRasterize = vbCancel
+    '
+    'Obviously, we skip this step if no images are loaded
     
-    'First, check for the case of operations that modify an entire image (e.g. "Flatten").  If vector layers are present in the image,
-    ' raise a warning about rasterizing all vector layers.
-    If (Not showDialog) And (pdImages(g_CurrentImage).getNumOfVectorLayers > 0) And ((createUndo = UNDO_IMAGE) Or (createUndo = UNDO_EVERYTHING)) Then
+    If g_OpenImageCount > 0 Then
+    
+        Dim okayToRasterize As VbMsgBoxResult
+        okayToRasterize = vbCancel
         
-        okayToRasterize = Layer_Handler.askIfOkayToRasterizeLayer(pdImages(g_CurrentImage).getActiveLayer.getLayerType, , True)
-        
-        'If rasterization is okay, apply it to all layers immediately
-        If okayToRasterize = vbYes Then
-        
-            Layer_Handler.RasterizeLayer -1
-        
-        'If the user doesn't want rasterization, bail immediately.
-        Else
+        'First, check for the case of operations that modify an entire image (e.g. "Flatten").  If vector layers are present in the image,
+        ' raise a warning about rasterizing all vector layers.
+        If (Not showDialog) And (pdImages(g_CurrentImage).getNumOfVectorLayers > 0) And ((createUndo = UNDO_IMAGE) Or (createUndo = UNDO_EVERYTHING)) Then
             
-            'Reset default tracking values and/or UI states prior to exiting
-            Processing = False
-            Screen.MousePointer = vbDefault
-            FormMain.Enabled = True
+            okayToRasterize = Layer_Handler.askIfOkayToRasterizeLayer(pdImages(g_CurrentImage).getActiveLayer.getLayerType, , True)
             
-            Exit Sub
+            'If rasterization is okay, apply it to all layers immediately
+            If okayToRasterize = vbYes Then
+            
+                Layer_Handler.RasterizeLayer -1
+            
+            'If the user doesn't want rasterization, bail immediately.
+            Else
+                
+                'Reset default tracking values and/or UI states prior to exiting
+                Processing = False
+                Screen.MousePointer = vbDefault
+                FormMain.Enabled = True
+                
+                Exit Sub
+                
+            End If
             
         End If
         
-    End If
-    
-    'Next, if this operation modifies just one layer, raise a "rasterize single layer" dialog.
-    If (Not showDialog) And (pdImages(g_CurrentImage).getActiveLayer.isLayerVector) And ((createUndo = UNDO_LAYER) Or (createUndo = UNDO_IMAGE) Or (createUndo = UNDO_EVERYTHING)) Then
-        
-        okayToRasterize = Layer_Handler.askIfOkayToRasterizeLayer(pdImages(g_CurrentImage).getActiveLayer.getLayerType)
-        
-        'If rasterization is okay, apply it immediately
-        If okayToRasterize = vbYes Then
-        
-            Layer_Handler.RasterizeLayer pdImages(g_CurrentImage).getActiveLayerIndex
-        
-        'If the user doesn't want rasterization, bail immediately.
-        Else
+        'Next, if this operation modifies just one layer, raise a "rasterize single layer" dialog.
+        If (Not showDialog) And (pdImages(g_CurrentImage).getActiveLayer.isLayerVector) And ((createUndo = UNDO_LAYER) Or (createUndo = UNDO_IMAGE) Or (createUndo = UNDO_EVERYTHING)) Then
             
-            'Reset default tracking values and/or UI states prior to exiting
-            Processing = False
-            Screen.MousePointer = vbDefault
-            FormMain.Enabled = True
+            okayToRasterize = Layer_Handler.askIfOkayToRasterizeLayer(pdImages(g_CurrentImage).getActiveLayer.getLayerType)
             
-            Exit Sub
+            'If rasterization is okay, apply it immediately
+            If okayToRasterize = vbYes Then
+            
+                Layer_Handler.RasterizeLayer pdImages(g_CurrentImage).getActiveLayerIndex
+            
+            'If the user doesn't want rasterization, bail immediately.
+            Else
+                
+                'Reset default tracking values and/or UI states prior to exiting
+                Processing = False
+                Screen.MousePointer = vbDefault
+                FormMain.Enabled = True
+                
+                Exit Sub
+                
+            End If
             
         End If
         
