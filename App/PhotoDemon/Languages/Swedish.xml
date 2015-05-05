@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.27</langversion>
+<langversion>6.7.28</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -2351,6 +2351,16 @@ You kan använda MenuTest () sub i Filters_Miscellaneous modulen för att testa 
 </phrase>
 
 <phrase>
+<original>Rasterize</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>All layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Flatten image</original>
 <translation>Platta bild</translation>
 </phrase>
@@ -3424,6 +3434,16 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 </phrase>
 
 <phrase>
+<original>Rasterize layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Rasterize all layers</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Reset layer size</original>
 <translation>Återställ skiktet storlek</translation>
 </phrase>
@@ -3866,7 +3886,7 @@ Note förändrats framgångsrikt: några mindre program kan inte vara levande up
 <translation>Ta bort alfakanal</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 553 phrases. 165 were duplicates of existing phrases, so only 388 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 558 phrases. 166 were duplicates of existing phrases, so only 392 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -11059,7 +11079,7 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 </phrase>
 
 <phrase>
-<original>vector</original>
+<original>text</original>
 <translation></translation>
 </phrase>
 
@@ -11985,7 +12005,47 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_LayerHandler.bas contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<phrase>
+<original>These text layers will be changed to image (raster) layers, meaning you can no longer modify their text or font settings.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Are you sure you want to continue?</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Yes.  Please convert these text layers.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>No.  Leave these text layers as they are.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>This text layer will be changed to an image (raster) layer, meaning you can no longer modify its text or font settings.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Yes.  Please convert this text layer.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>No.  Leave this text layer as it is.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>I can't decide.  Cancel this action.</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_LayerHandler.bas contains 30 phrases. 18 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for VBP_LayerHandler.bas-->
 
@@ -13281,11 +13341,6 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
-<original>text</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>font face</original>
 <translation></translation>
 </phrase>
@@ -13320,7 +13375,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_Text.frm contains 12 phrases. 3 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- VBP_ToolPanel_Text.frm contains 12 phrases. 4 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_Text.frm-->
 
@@ -13637,12 +13692,38 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <!-- END text for VBP_ToolPanel_MoveSize.frm-->
 
+<!-- BEGIN text for VBP_GenericMemoryDialog.frm (dialog_GenericMemory) -->
+
+<phrase>
+<original>Cancel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>No</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Yes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>In the future, always apply this action</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_GenericMemoryDialog.frm contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+
+<!-- END text for VBP_GenericMemoryDialog.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2368</phrasecount>
+<phrasecount>2383</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4048 phrases. -->
-<!-- 1680 are duplicates, so only 2368 unique phrases have been written to file. -->
-<!-- These 2368 phrases contain approximately 13464 total words. -->
+<!-- As of this build, PhotoDemon contains 4075 phrases. -->
+<!-- 1692 are duplicates, so only 2383 unique phrases have been written to file. -->
+<!-- These 2383 phrases contain approximately 13569 total words. -->
 
 </pdData>

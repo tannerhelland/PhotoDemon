@@ -269,20 +269,10 @@ Private Function getStringForUndoType(ByVal typeOfUndo As PD_UNDO_TYPE, Optional
         Case UNDO_EVERYTHING
             newText = ""
             
-        Case UNDO_IMAGE
+        Case UNDO_IMAGE, UNDO_IMAGEHEADER
             newText = ""
             
-        Case UNDO_IMAGEHEADER
-            newText = ""
-            
-        Case UNDO_LAYER
-            If Not (pdImages(g_CurrentImage).getLayerByID(layerID) Is Nothing) Then
-                newText = pdImages(g_CurrentImage).getLayerByID(layerID).getLayerName()
-            Else
-                newText = ""
-            End If
-        
-        Case UNDO_LAYERHEADER
+        Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE, UNDO_LAYERHEADER
             If Not (pdImages(g_CurrentImage).getLayerByID(layerID) Is Nothing) Then
                 newText = pdImages(g_CurrentImage).getLayerByID(layerID).getLayerName()
             Else

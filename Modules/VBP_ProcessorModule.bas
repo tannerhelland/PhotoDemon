@@ -64,7 +64,7 @@ Private previousLayerParamString As String
 'INPUTS (asterisks denote optional parameters):
 ' - processID: a string identifying the action to be performed, e.g. "Blur"
 ' - *showDialog: some functions can be run with or without a dialog; for example, "Blur", "True" will display a blur settings dialog,
-'                while "Blur", "False" will actually apply the blur.  If showDialog is true, no Undo will be created for the action.
+'                while "Blur", "False" will actually apply the blur.  When showDialog is true, Undo data is *not* created.
 ' - *processParameters: all parameters for this function, concatenated into a single string.  The processor will automatically parse out
 '                       individual parameters as necessary.
 ' - *createUndo: ID describing what kind of Undo entry to create for this action.  This value is set to "do not create Undo" by default,

@@ -184,12 +184,14 @@ Public Enum PD_UNDO_TYPE
     UNDO_IMAGE = 1
     UNDO_IMAGEHEADER = 2
     UNDO_LAYER = 3
-    UNDO_LAYERHEADER = 4
-    UNDO_SELECTION = 5
+    UNDO_LAYER_VECTORSAFE = 4
+    UNDO_LAYERHEADER = 5
+    UNDO_SELECTION = 6
 End Enum
 
 #If False Then
-    Const UNDO_NOTHING = -1, UNDO_EVERYTHING = 0, UNDO_IMAGE = 1, UNDO_IMAGEHEADER = 2, UNDO_LAYER = 3, UNDO_LAYERHEADER = 4, UNDO_SELECTION = 5
+    Const UNDO_NOTHING = -1, UNDO_EVERYTHING = 0, UNDO_IMAGE = 1, UNDO_IMAGEHEADER = 2, UNDO_LAYER = 3
+    Const UNDO_LAYER_VECTORSAFE = 4, UNDO_LAYERHEADER = 5, UNDO_SELECTION = 6
 #End If
 
 'Enums for App Command messages, which are (optionally) returned by the pdInput class
@@ -292,7 +294,7 @@ Public Type undoEntry
     processID As String             'Name of the associated action (e.g. "Gaussian blur")
     processParamString As String    'Processor string supplied to the action
     undoType As PD_UNDO_TYPE        'What type of Undo/Redo data was stored for this action (e.g. Image or Selection data)
-    undoLayerID As Long             'If the undoType is UNDO_LAYER or UNDO_LAYERHEADER, this value will note the ID (NOT THE INDEX) of the affected layer
+    undoLayerID As Long             'If the undoType is UNDO_LAYER, UNDO_LAYER_VECTORSAFE, or UNDO_LAYERHEADER, this value will note the ID (NOT THE INDEX) of the affected layer
     relevantTool As Long            'If a tool was associated with this action, it can be set here.  This value is not currently used.
     thumbnailSmall As pdDIB         'A small thumbnail associated with the current action.  In the future, this will be used by the Undo History window.
     thumbnailLarge As pdDIB         'A large thumbnail associated with the current action.
