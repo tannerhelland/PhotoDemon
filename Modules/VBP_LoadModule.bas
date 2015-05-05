@@ -2354,10 +2354,10 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
             pdImages(g_CurrentImage).mainSelection.readSelectionFromFile undoFile & ".selection"
             selectionDataLoaded = True
             
-        'UNDO_IMAGE: a full copy of the pdImage stack is wanted
-        '             Because the underlying file data must be of type UNDO_EVERYTHING or UNDO_IMAGE, we don't have to do
-        '             any special processing to the file - just load the whole damn thing.
-        Case UNDO_IMAGE
+        'UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE: a full copy of the pdImage stack is wanted
+        '             Because the underlying file data must be of type UNDO_EVERYTHING or UNDO_IMAGE/_VECTORSAFE, we
+        '             don't have to do any special processing to the file - just load the whole damn thing.
+        Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
             Loading.LoadPhotoDemonImage undoFile, tmpDIB, pdImages(g_CurrentImage), True
             
             'Once the full image has been loaded, we now know that at least the *existence* of all layers is correct.
@@ -2398,7 +2398,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
                     Loading.LoadPhotoDemonLayer undoFile & ".layer", customLayerDestination, False
             
                 'The underlying save file is a full pdImage stack.  Extract only the relevant layer data from the stack.
-                Case UNDO_EVERYTHING, UNDO_IMAGE
+                Case UNDO_EVERYTHING, UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
                     Loading.LoadSingleLayerFromPDI undoFile, customLayerDestination, targetLayerID, False
                 
             End Select
@@ -2418,7 +2418,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
                     Loading.LoadPhotoDemonLayer undoFile & ".layer", pdImages(g_CurrentImage).getLayerByID(targetLayerID), True
             
                 'The underlying save file is a full pdImage stack.  Extract only the relevant layer data from the stack.
-                Case UNDO_EVERYTHING, UNDO_IMAGE, UNDO_IMAGEHEADER
+                Case UNDO_EVERYTHING, UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE, UNDO_IMAGEHEADER
                     Loading.LoadSingleLayerFromPDI undoFile, pdImages(g_CurrentImage).getLayerByID(targetLayerID), targetLayerID, True
                 
             End Select
@@ -2562,7 +2562,7 @@ Public Sub LoadAccelerators()
         .AddAccelerator vbKeyC, vbCtrlMask, "Copy", FormMain.MnuEdit(9), True, True, False, UNDO_NOTHING
         .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Copy from layer", FormMain.MnuEdit(10), True, True, False, UNDO_NOTHING
         .AddAccelerator vbKeyV, vbCtrlMask, "Paste as new image", FormMain.MnuEdit(11), True, False, False, UNDO_NOTHING
-        .AddAccelerator vbKeyV, vbCtrlMask Or vbShiftMask, "Paste as new layer", FormMain.MnuEdit(12), True, False, False, UNDO_IMAGE
+        .AddAccelerator vbKeyV, vbCtrlMask Or vbShiftMask, "Paste as new layer", FormMain.MnuEdit(12), True, False, False, UNDO_IMAGE_VECTORSAFE
         
         
         'View menu

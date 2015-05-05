@@ -237,7 +237,7 @@ Public Function notifyImageChanged(ByVal typeOfChange As PD_UNDO_TYPE, Optional 
     
     Select Case typeOfChange
     
-        Case UNDO_IMAGE
+        Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
             m_CompositeCacheClean = False
         
         Case UNDO_IMAGEHEADER
@@ -428,25 +428,25 @@ Public Function getLayerByID(ByVal requestedID As Long) As pdLayer
 End Function
 
 'Simple function for moving a given layer up/down in the layer stack.
-Public Sub moveLayerByIndex(ByVal srclayerIndex As Long, ByVal moveLayerUp As Boolean)
+Public Sub moveLayerByIndex(ByVal srcLayerIndex As Long, ByVal moveLayerUp As Boolean)
 
     'Before doing anything else, make sure the requested move is a valid one
     If moveLayerUp Then
-        If srclayerIndex = m_numOfLayers - 1 Then Exit Sub
+        If srcLayerIndex = m_numOfLayers - 1 Then Exit Sub
     Else
-        If srclayerIndex = 0 Then Exit Sub
+        If srcLayerIndex = 0 Then Exit Sub
     End If
     
     'Process the actual move
     If moveLayerUp Then
     
         'Move the selected layer UP.
-        swapTwoLayers srclayerIndex, srclayerIndex + 1
+        swapTwoLayers srcLayerIndex, srcLayerIndex + 1
     
     Else
     
         'Move the selected layer DOWN.
-        swapTwoLayers srclayerIndex, srclayerIndex - 1
+        swapTwoLayers srcLayerIndex, srcLayerIndex - 1
     
     End If
 
@@ -456,15 +456,15 @@ End Sub
 ' The destination layer index will be the *new* index of the source layer.  If the two indices match, the function will terminate.
 '
 'The function will return TRUE if the layers were moved successfully.
-Public Function moveLayerToArbitraryIndex(ByVal srclayerIndex As Long, ByVal dstLayerIndex As Long) As Boolean
+Public Function moveLayerToArbitraryIndex(ByVal srcLayerIndex As Long, ByVal dstLayerIndex As Long) As Boolean
 
     'Before doing anything else, make sure the requested move is a valid one
-    If srclayerIndex = dstLayerIndex Then
+    If srcLayerIndex = dstLayerIndex Then
         moveLayerToArbitraryIndex = False
         Exit Function
     End If
         
-    If (srclayerIndex < 0) Or (srclayerIndex > m_numOfLayers - 1) Then
+    If (srcLayerIndex < 0) Or (srcLayerIndex > m_numOfLayers - 1) Then
         moveLayerToArbitraryIndex = False
         Exit Function
     End If
@@ -481,12 +481,12 @@ Public Function moveLayerToArbitraryIndex(ByVal srclayerIndex As Long, ByVal dst
     Dim i As Long
     
     'We can now process the actual layer rearranging, and we will do so in two separate chunks of code: up vs down.
-    If dstLayerIndex > srclayerIndex Then
+    If dstLayerIndex > srcLayerIndex Then
     
         'The source layer is moving HIGHER in the stack
     
         'Iterate through all layers between the current position and the new one, swapping layers as we go
-        For i = srclayerIndex To dstLayerIndex - 1
+        For i = srcLayerIndex To dstLayerIndex - 1
             swapTwoLayers i, i + 1
         Next i
     
@@ -495,7 +495,7 @@ Public Function moveLayerToArbitraryIndex(ByVal srclayerIndex As Long, ByVal dst
         'The source layer is moving LOWER in the stack
     
         'Iterate through all layers between the current position and the new one, swapping layers as we go
-        For i = srclayerIndex To dstLayerIndex + 1 Step -1
+        For i = srcLayerIndex To dstLayerIndex + 1 Step -1
             swapTwoLayers i, i - 1
         Next i
     
@@ -524,17 +524,17 @@ Public Sub swapTwoLayers(ByVal srcLayerIndex_1 As Long, ByVal srcLayerIndex_2 As
 End Sub
 
 'Delete a given layer.  The pdLayers stack will automatically be resized to match.
-Public Sub deleteLayerByIndex(ByVal srclayerIndex As Long)
+Public Sub deleteLayerByIndex(ByVal srcLayerIndex As Long)
 
     'Validate the layer index
-    If srclayerIndex < 0 Or srclayerIndex >= m_numOfLayers Then Exit Sub
+    If srcLayerIndex < 0 Or srcLayerIndex >= m_numOfLayers Then Exit Sub
     
     'If this is the last remaining layer, exit
     If m_numOfLayers = 1 Then Exit Sub
     
     'Shift all layer references above this one downward
     Dim i As Long
-    For i = srclayerIndex To m_numOfLayers - 2
+    For i = srcLayerIndex To m_numOfLayers - 2
         Set imgLayers(i) = imgLayers(i + 1)
     Next i
     
@@ -997,13 +997,13 @@ End Sub
 ' mind as to whether it's an issue that needs resolving or not.  I will revisit in the future, once I have a better idea of
 ' the workflow implications.
 ' TODO: determine if off-image layer cropping is an acceptable solution in all scenarios.
-Public Sub retrieveNullPaddedLayer(ByRef dstDIB As pdDIB, ByVal srclayerIndex As Long)
+Public Sub retrieveNullPaddedLayer(ByRef dstDIB As pdDIB, ByVal srcLayerIndex As Long)
 
     'Create a blank destination DIB at the size of the image
     dstDIB.createBlank Width, Height, 32, 0
     
     'Copy the source layer into the blank DIB
-    BitBlt dstDIB.getDIBDC, imgLayers(srclayerIndex).getLayerOffsetX, imgLayers(srclayerIndex).getLayerOffsetY, imgLayers(srclayerIndex).getLayerWidth(False), imgLayers(srclayerIndex).getLayerHeight(False), imgLayers(srclayerIndex).layerDIB.getDIBDC, 0, 0, vbSrcCopy
+    BitBlt dstDIB.getDIBDC, imgLayers(srcLayerIndex).getLayerOffsetX, imgLayers(srcLayerIndex).getLayerOffsetY, imgLayers(srcLayerIndex).getLayerWidth(False), imgLayers(srcLayerIndex).getLayerHeight(False), imgLayers(srcLayerIndex).layerDIB.getDIBDC, 0, 0, vbSrcCopy
     
 End Sub
 

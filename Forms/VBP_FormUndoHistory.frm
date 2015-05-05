@@ -269,7 +269,7 @@ Private Function getStringForUndoType(ByVal typeOfUndo As PD_UNDO_TYPE, Optional
         Case UNDO_EVERYTHING
             newText = ""
             
-        Case UNDO_IMAGE, UNDO_IMAGEHEADER
+        Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE, UNDO_IMAGEHEADER
             newText = ""
             
         Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE, UNDO_LAYERHEADER

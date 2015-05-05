@@ -41,7 +41,7 @@ Public Sub addBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType 
     pdImages(g_CurrentImage).setActiveLayerByID newLayerID
     
     'Notify the parent of the change
-    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE_VECTORSAFE
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.forceRedraw True
@@ -173,7 +173,7 @@ Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
     End If
     
     'Notify the parent of the change
-    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE_VECTORSAFE
     
     'Redraw the main viewport (if requested)
     If Not suspendRedraws Then
@@ -199,7 +199,7 @@ Public Sub loadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal image
         'Retrieve a filepath
         Dim imgFilePath As String
         If File_Menu.PhotoDemon_OpenImageDialog_Simple(imgFilePath, FormMain.hWnd) Then
-            Process "New layer from file", False, imgFilePath, UNDO_IMAGE
+            Process "New layer from file", False, imgFilePath, UNDO_IMAGE_VECTORSAFE
         End If
     
     'If showDialog is FALSE, the user has already selected a file, and we just need to load it
@@ -229,11 +229,11 @@ Public Sub loadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal image
             Debug.Print "Layer created successfully (ID# " & pdImages(g_CurrentImage).getLayerByID(newLayerID).getLayerName & ")"
             
             'Notify the parent image that the entire image now needs to be recomposited
-            pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
+            pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE_VECTORSAFE
             
             'If the user wants us to manually create an Undo point (as required when pasting, for example), do so now
             If createUndo Then
-                pdImages(g_CurrentImage).undoManager.createUndoData "Add layer", "", UNDO_IMAGE, pdImages(g_CurrentImage).getActiveLayerID, -1
+                pdImages(g_CurrentImage).undoManager.createUndoData "Add layer", "", UNDO_IMAGE_VECTORSAFE, pdImages(g_CurrentImage).getActiveLayerID, -1
             End If
             
             'Render the new image to screen
@@ -376,7 +376,7 @@ Public Sub duplicateLayerByIndex(ByVal dLayerIndex As Long)
     pdImages(g_CurrentImage).setActiveLayerByID newLayerID
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE_VECTORSAFE
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.forceRedraw True
@@ -524,7 +524,7 @@ Public Sub deleteLayer(ByVal dLayerIndex As Long)
     setActiveLayerByIndex curLayerIndex, False
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE_VECTORSAFE
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.forceRedraw True
@@ -575,7 +575,7 @@ Public Sub deleteHiddenLayers()
     End If
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE_VECTORSAFE
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
     toolbar_Layers.forceRedraw True
@@ -599,7 +599,7 @@ Public Sub moveLayerAdjacent(ByVal dLayerIndex As Long, ByVal directionIsUp As B
     setActiveLayerByID curActiveLayerID, False
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE_VECTORSAFE
     
     If updateInterface Then
         
@@ -647,7 +647,7 @@ Public Sub moveLayerToEndOfStack(ByVal dLayerIndex As Long, ByVal moveToTopOfSta
     setActiveLayerByID curActiveLayerID, False
     
     'Notify the parent image that the entire image now needs to be recomposited
-    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE_VECTORSAFE
     
     If updateInterface Then
     
@@ -1063,36 +1063,42 @@ End Sub
 ' to handle that case gracefully!
 Public Function askIfOkayToRasterizeLayer(Optional ByVal srcLayerType As LAYER_TYPE = PDL_TEXT, Optional ByVal questionID As String = "RasterizeLayer", Optional ByVal multipleLayersInvolved As Boolean = False) As VbMsgBoxResult
     
-    Dim questionText As String, yesText As String, noText As String, cancelText As String, dialogTitle As String
+    Dim questionText As String, yesText As String, noText As String, cancelText As String, rememberText As String, dialogTitle As String
     
-    'Generate customized question text based on layer type
-    Select Case srcLayerType
+    'If multiple layers are involved, we don't care about the current layer type
+    If multipleLayersInvolved Then
     
-        Case PDL_TEXT
-        
-            'Modify the text depending on the involvement of multiple text layers
-            If multipleLayersInvolved Then
-                questionText = g_Language.TranslateMessage("These text layers will be changed to image (raster) layers, meaning you can no longer modify their text or font settings.")
-                questionText = questionText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Are you sure you want to continue?")
-                yesText = g_Language.TranslateMessage("Yes.  Please convert these text layers.")
-                noText = g_Language.TranslateMessage("No.  Leave these text layers as they are.")
-            Else
+        questionText = g_Language.TranslateMessage("This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.")
+        questionText = questionText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Are you sure you want to continue?")
+        yesText = g_Language.TranslateMessage("Yes.  Convert text and vector layers to image (raster) layers.")
+        noText = g_Language.TranslateMessage("No.  Leave text and vector layers as they are.")
+    
+    'If a single layer is involved, we'll further customize the prompt on a per-layer-type basis
+    Else
+    
+        'Generate customized question text based on layer type
+        Select Case srcLayerType
+    
+            Case PDL_TEXT
                 questionText = g_Language.TranslateMessage("This text layer will be changed to an image (raster) layer, meaning you can no longer modify its text or font settings.")
                 questionText = questionText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Are you sure you want to continue?")
                 yesText = g_Language.TranslateMessage("Yes.  Please convert this text layer.")
                 noText = g_Language.TranslateMessage("No.  Leave this text layer as it is.")
-            End If
             
-            cancelText = g_Language.TranslateMessage("I can't decide.  Cancel this action.")
-            dialogTitle = "Rasterization required"
-            
-        Case Else
-            Debug.Print "WARNING!  Unknown or invalid layer type passed to askIfOkayToRasterizeLayer!"
+            Case Else
+                Debug.Print "WARNING!  Unknown or invalid layer type passed to askIfOkayToRasterizeLayer!"
     
-    End Select
+        End Select
+    
+    End If
+    
+    'Cancel text, "remember in the future" check box text, and dialog title are universal
+    cancelText = g_Language.TranslateMessage("I can't decide.  Cancel this action.")
+    rememberText = g_Language.TranslateMessage("In the future, automatically rasterize without prompting me")
+    dialogTitle = "Rasterization required"
     
     'Display the dialog and return the result
-    askIfOkayToRasterizeLayer = Dialog_Handler.promptGenericYesNoDialog(questionID, questionText, yesText, noText, cancelText, dialogTitle, IDI_EXCLAMATION, vbYes)
+    askIfOkayToRasterizeLayer = Dialog_Handler.promptGenericYesNoDialog_SingleOutcome(questionID, questionText, yesText, noText, cancelText, rememberText, dialogTitle, vbYes, IDI_EXCLAMATION, vbYes)
 
 End Function
 

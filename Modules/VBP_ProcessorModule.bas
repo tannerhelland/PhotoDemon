@@ -91,7 +91,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     'If we are applying an action to the image (e.g. not just showing a dialog), and the action is likely to take awhile
     ' (e.g. it is processing an image, and not just modifying a layer header) display a busy cursor.
     If (Not showDialog) Then
-        If (createUndo = UNDO_EVERYTHING) Or (createUndo = UNDO_IMAGE) Or (createUndo = UNDO_LAYER) Then Screen.MousePointer = vbHourglass
+        If (createUndo = UNDO_EVERYTHING) Or (createUndo = UNDO_IMAGE) Or (createUndo = UNDO_IMAGE_VECTORSAFE) Or (createUndo = UNDO_LAYER) Then Screen.MousePointer = vbHourglass
     End If
     
     'This central processor is a convenient place to check for any hot-patches that may have occurred in the background.
@@ -133,12 +133,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     ' This gives the user a chance to back out before permanently ruining the layer.  (Note that the raised dialog offers a "remember
     ' my choice" setting, which the user can use to avoid this step entirely.)
     '
-    '(If this is a showDialog operation, we skip this step, so the user can play around without being bombarded by rasterization messages.)
+    '(Also: if this is a showDialog operation, we skip this step, so the user can play around without being bombarded by
+    ' rasterization prompts.)
     Dim okayToRasterize As VbMsgBoxResult
     okayToRasterize = vbCancel
     
     'First, check for the case of operations that modify an entire image (e.g. "Flatten").  If vector layers are present in the image,
-    ' raise a warning about flattening every single vector layer.
+    ' raise a warning about rasterizing all vector layers.
     If (Not showDialog) And (pdImages(g_CurrentImage).getNumOfVectorLayers > 0) And ((createUndo = UNDO_IMAGE) Or (createUndo = UNDO_EVERYTHING)) Then
         
         okayToRasterize = Layer_Handler.askIfOkayToRasterizeLayer(pdImages(g_CurrentImage).getActiveLayer.getLayerType, , True)

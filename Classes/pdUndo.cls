@@ -203,7 +203,7 @@ Public Sub createUndoData(ByVal processID As String, ByVal pParamString As Strin
         Case UNDO_EVERYTHING
             parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, fixDPI(UNDO_THUMB_LARGE)
             
-        Case UNDO_IMAGE
+        Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
             parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, fixDPI(UNDO_THUMB_LARGE)
         
         Case UNDO_IMAGEHEADER
@@ -438,7 +438,7 @@ Public Sub restoreUndoData()
     ' UNDO_LAYERHEADER diff after the fact, to make sure the layer's header is up-to-date against any header-only changes that occurred
     ' since the latest full layer DIB write-to-file.
     Dim suspendRedraws As Boolean
-    If (undoStack(undoNum).undoType = UNDO_EVERYTHING) Or (undoStack(undoNum).undoType = UNDO_IMAGE) Or (undoStack(undoNum).undoType = UNDO_IMAGEHEADER) Or (undoStack(undoNum).undoType = UNDO_LAYER) Or (undoStack(undoNum).undoType = UNDO_LAYER_VECTORSAFE) Then
+    If (undoStack(undoNum).undoType = UNDO_EVERYTHING) Or (undoStack(undoNum).undoType = UNDO_IMAGE) Or (undoStack(undoNum).undoType = UNDO_IMAGE_VECTORSAFE) Or (undoStack(undoNum).undoType = UNDO_IMAGEHEADER) Or (undoStack(undoNum).undoType = UNDO_LAYER) Or (undoStack(undoNum).undoType = UNDO_LAYER_VECTORSAFE) Then
         
         'If we are reverting the image to its original state, we do not need to process any extra layer data, as we already know
         ' the the source file will be accurate (because a full copy of the image is always created at Undo point 0).
@@ -466,10 +466,11 @@ Public Sub restoreUndoData()
         'The amount of diffs we need to reconstruct varies by Undo type.
         
         'If this is a full image Undo, all layers need to be checked against their most recent diffs.
-        If (undoStack(undoNum).undoType = UNDO_EVERYTHING) Or (undoStack(undoNum).undoType = UNDO_IMAGE) Or (undoStack(undoNum).undoType = UNDO_IMAGEHEADER) Then
+        If (undoStack(undoNum).undoType = UNDO_EVERYTHING) Or (undoStack(undoNum).undoType = UNDO_IMAGE) Or (undoStack(undoNum).undoType = UNDO_IMAGE_VECTORSAFE) Or (undoStack(undoNum).undoType = UNDO_IMAGEHEADER) Then
         
-            'For UNDO_EVERYTHING and UNDO_IMAGE entries, we may need to reconstruct the layer stack before any further processing occurs.
-            If (undoStack(undoNum).undoType = UNDO_EVERYTHING) Or (undoStack(undoNum).undoType = UNDO_IMAGE) Then
+            'For UNDO_EVERYTHING, UNDO_IMAGE, and UNDO_IMAGE_VECTORSAFE entries, we may need to reconstruct the layer stack
+            ' before any further processing occurs.
+            If (undoStack(undoNum).undoType = UNDO_EVERYTHING) Or (undoStack(undoNum).undoType = UNDO_IMAGE) Or (undoStack(undoNum).undoType = UNDO_IMAGE_VECTORSAFE) Then
             
                 'Search for the nearest relevant pdImage header diff, as it may have changed independent of the rest
                 ' of the pdImage stack (for example, if the user has rearranged layer order)
@@ -594,6 +595,13 @@ Private Function findNearestDiffIndex(ByVal undoIndex As Long, ByVal undoTypeChe
             
             'UNDO_IMAGE contains relevant diff information for everything but selections
             Case UNDO_IMAGE
+                If (undoTypeCheck <> UNDO_SELECTION) Then
+                    findNearestDiffIndex = i
+                    Exit For
+                End If
+                
+            'UNDO_IMAGE_VECTORSAFE is identical to UNDO_IMAGE
+            Case UNDO_IMAGE_VECTORSAFE
                 If (undoTypeCheck <> UNDO_SELECTION) Then
                     findNearestDiffIndex = i
                     Exit For

@@ -2653,7 +2653,7 @@ Public Function saveUndoData(ByRef srcPDImage As pdImage, ByRef dstUndoFilename 
             srcPDImage.mainSelection.writeSelectionToFile dstUndoFilename & ".selection"
             
         'A full copy of the pdImage stack
-        Case UNDO_IMAGE
+        Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
             Saving.SavePhotoDemonImage srcPDImage, dstUndoFilename, True, True, IIf(g_UndoCompressionLevel = 0, False, True), False, False, False, IIf(g_UndoCompressionLevel = 0, -1, g_UndoCompressionLevel)
         
         'A full copy of the pdImage stack, *without any layer DIB data*

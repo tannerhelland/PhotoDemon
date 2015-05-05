@@ -316,7 +316,7 @@ End Function
 ' retrieve the previous choice and silently return it.
 '
 'Returns a VbMsgBoxResult constant, with YES, NO, or CANCEL specified.
-Public Function promptGenericYesNoDialog(ByVal questionID As String, ByVal questionText As String, ByVal yesButtonText As String, ByVal noButtonText As String, ByVal cancelButtonText As String, ByVal dialogTitleText As String, Optional ByVal icon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False) As VbMsgBoxResult
+Public Function promptGenericYesNoDialog(ByVal questionID As String, ByVal questionText As String, ByVal yesButtonText As String, ByVal noButtonText As String, ByVal cancelButtonText As String, ByVal rememberCheckBoxText As String, ByVal dialogTitleText As String, Optional ByVal icon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False) As VbMsgBoxResult
 
     'Convert the questionID to its XML-safe equivalent
     Dim xmlEngine As pdXML
@@ -332,7 +332,7 @@ Public Function promptGenericYesNoDialog(ByVal questionID As String, ByVal quest
     'The user has not saved a previous answer.  Display the full dialog.
     Else
     
-        dialog_GenericMemory.showDialog questionText, yesButtonText, noButtonText, cancelButtonText, dialogTitleText, icon, defaultAnswer, defaultRemember
+        dialog_GenericMemory.showDialog questionText, yesButtonText, noButtonText, cancelButtonText, rememberCheckBoxText, dialogTitleText, icon, defaultAnswer, defaultRemember
         
         'Retrieve the user's answer
         promptGenericYesNoDialog = dialog_GenericMemory.DialogResult
@@ -340,6 +340,43 @@ Public Function promptGenericYesNoDialog(ByVal questionID As String, ByVal quest
         'If the user wants us to permanently remember this action, save their preference now.
         If dialog_GenericMemory.getRememberAnswerState Then
             g_UserPreferences.WritePreference "Dialogs", questionID, Trim$(Str(promptGenericYesNoDialog))
+        End If
+        
+        'Release the dialog form
+        Unload dialog_GenericMemory
+        Set dialog_GenericMemory = Nothing
+    
+    End If
+
+End Function
+
+'Identical to promptGenericYesNoDialog(), above, with the caveat that only ONE possible outcome can be remembered.  This is relevant for
+' Yes/No/Cancel situations where No and Cancel prevent a workflow from proceeding.  If we allowed those values to be stored, the user
+' could never proceed with an operation in the future!
+Public Function promptGenericYesNoDialog_SingleOutcome(ByVal questionID As String, ByVal questionText As String, ByVal yesButtonText As String, ByVal noButtonText As String, ByVal cancelButtonText As String, ByVal rememberCheckBoxText As String, ByVal dialogTitleText As String, Optional ByVal choiceAllowedToRemember As VbMsgBoxResult = vbYes, Optional ByVal icon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False) As VbMsgBoxResult
+
+    'Convert the questionID to its XML-safe equivalent
+    Dim xmlEngine As pdXML
+    Set xmlEngine = New pdXML
+    questionID = xmlEngine.getXMLSafeTagName(questionID)
+    
+    'See if the user has already answered this question in the past.
+    If g_UserPreferences.doesValueExist("Dialogs", questionID) Then
+        
+        'The user has already answered this question and saved their answer.  Retrieve the previous answer and exit.
+        promptGenericYesNoDialog_SingleOutcome = g_UserPreferences.GetPref_Long("Dialogs", questionID, defaultAnswer)
+        
+    'The user has not saved a previous answer.  Display the full dialog.
+    Else
+    
+        dialog_GenericMemory.showDialog questionText, yesButtonText, noButtonText, cancelButtonText, rememberCheckBoxText, dialogTitleText, icon, defaultAnswer, defaultRemember
+        
+        'Retrieve the user's answer
+        promptGenericYesNoDialog_SingleOutcome = dialog_GenericMemory.DialogResult
+        
+        'If the user wants us to permanently remember this action, save their preference now.
+        If dialog_GenericMemory.getRememberAnswerState Then
+            g_UserPreferences.WritePreference "Dialogs", questionID, Trim$(Str(choiceAllowedToRemember))
         End If
         
         'Release the dialog form
