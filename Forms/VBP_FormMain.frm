@@ -2172,20 +2172,12 @@ Private Sub MnuLayerRasterize_Click(Index As Integer)
     
         'Current layer
         Case 0
+            Process "Rasterize layer", , , UNDO_LAYER
             
-            'Before processing rasterization, ask the user for confirmation
-            If Layer_Handler.askIfOkayToRasterizeLayer(pdImages(g_CurrentImage).getActiveLayer.getLayerType, , False) = vbYes Then
-                Process "Rasterize layer", , , UNDO_LAYER
-            End If
-        
         'All layers
         Case 1
-        
-            'Before processing rasterization, ask the user for confirmation
-            If Layer_Handler.askIfOkayToRasterizeLayer(pdImages(g_CurrentImage).getActiveLayer.getLayerType, , True) = vbYes Then
-                Process "Rasterize all layers", , , UNDO_IMAGE
-            End If
-    
+            Process "Rasterize all layers", , , UNDO_IMAGE
+            
     End Select
     
 End Sub
