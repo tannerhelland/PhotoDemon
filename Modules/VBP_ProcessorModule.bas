@@ -95,10 +95,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     End If
     
     'This central processor is a convenient place to check for any hot-patches that may have occurred in the background.
-    ' Trigger a few refresh functions; each of these has already determined if any internals need to be updated to match
-    ' various update processes, so there is no performance penalty if hot-patches are not required.
-    '
-    '(Note that language files must be patched PRIOR to the main form being disabled; if we don't do this, interface items won't update correctly
+    
+    'Notify the live language updater that it is free to apply an immediate refresh.  (It will have already determined if any internals need to be
+    ' updated to match various update processes, so there is no performance penalty if hot-patches are not required.)
+    ' (Additionally, note that language files must be patched PRIOR to the main form being disabled; if we don't do this, interface items won't
+    '  update correctly.)
     If (MacroStatus <> MacroBATCH) Then
         
         'Hot-patch the currently active language
@@ -126,6 +127,63 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         createUndo = LastProcess.MakeUndo
         relevantTool = LastProcess.Tool
         recordAction = LastProcess.Recorded
+    End If
+    
+    'If the current layer is a vector layer, and the requested operation is *not* vector-safe, raise a rasterization warning.
+    ' This gives the user a chance to back out before permanently ruining the layer.  (Note that the raised dialog offers a "remember
+    ' my choice" setting, which the user can use to avoid this step entirely.)
+    '
+    '(If this is a showDialog operation, we skip this step, so the user can play around without being bombarded by rasterization messages.)
+    Dim okayToRasterize As VbMsgBoxResult
+    okayToRasterize = vbCancel
+    
+    'First, check for the case of operations that modify an entire image (e.g. "Flatten").  If vector layers are present in the image,
+    ' raise a warning about flattening every single vector layer.
+    If (Not showDialog) And (pdImages(g_CurrentImage).getNumOfVectorLayers > 0) And ((createUndo = UNDO_IMAGE) Or (createUndo = UNDO_EVERYTHING)) Then
+        
+        okayToRasterize = Layer_Handler.askIfOkayToRasterizeLayer(pdImages(g_CurrentImage).getActiveLayer.getLayerType, , True)
+        
+        'If rasterization is okay, apply it to all layers immediately
+        If okayToRasterize = vbYes Then
+        
+            Layer_Handler.RasterizeLayer -1
+        
+        'If the user doesn't want rasterization, bail immediately.
+        Else
+            
+            'Reset default tracking values and/or UI states prior to exiting
+            Processing = False
+            Screen.MousePointer = vbDefault
+            FormMain.Enabled = True
+            
+            Exit Sub
+            
+        End If
+        
+    End If
+    
+    'Next, if this operation modifies just one layer, raise a "rasterize single layer" dialog.
+    If (Not showDialog) And (pdImages(g_CurrentImage).getActiveLayer.isLayerVector) And ((createUndo = UNDO_LAYER) Or (createUndo = UNDO_IMAGE) Or (createUndo = UNDO_EVERYTHING)) Then
+        
+        okayToRasterize = Layer_Handler.askIfOkayToRasterizeLayer(pdImages(g_CurrentImage).getActiveLayer.getLayerType)
+        
+        'If rasterization is okay, apply it immediately
+        If okayToRasterize = vbYes Then
+        
+            Layer_Handler.RasterizeLayer pdImages(g_CurrentImage).getActiveLayerIndex
+        
+        'If the user doesn't want rasterization, bail immediately.
+        Else
+            
+            'Reset default tracking values and/or UI states prior to exiting
+            Processing = False
+            Screen.MousePointer = vbDefault
+            FormMain.Enabled = True
+            
+            Exit Sub
+            
+        End If
+        
     End If
     
     'If a selection is active, certain functions (primarily transformations) will remove it before proceeding. This is typically
