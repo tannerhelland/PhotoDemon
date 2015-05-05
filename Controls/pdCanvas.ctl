@@ -833,7 +833,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                     'Delete key: delete the active layer (if allowed)
                     If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).getNumOfLayers > 1 Then
                         markEventHandled = True
-                        Process "Delete layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE
+                        Process "Delete layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
                     End If
                     
                     'Insert: raise Add New Layer dialog
@@ -1771,7 +1771,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     
                     'Process the addition of the new layer; this will create proper Undo/Redo data for the entire image (required, as the layer order
                     ' has changed due to this new addition).
-                    Process "New text layer", , , UNDO_IMAGE
+                    Process "New text layer", , , UNDO_IMAGE_VECTORSAFE
                     
                     'Manually synchronize menu, layer toolbox, and other UI settings against the newly created layer.
                     syncInterfaceToCurrentImage

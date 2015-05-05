@@ -421,7 +421,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
         
         'Delete key: delete the active layer (if allowed)
         If (vkCode = VK_DELETE) And pdImages(g_CurrentImage).getNumOfLayers > 1 Then
-            Process "Delete layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE
+            Process "Delete layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
         End If
         
         'Insert: raise Add New Layer dialog
@@ -499,7 +499,7 @@ Private Sub cmdLayerAction_Click(Index As Integer)
             Process "Add new layer", True
         
         Case LYR_BTN_DELETE
-            Process "Delete layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, UNDO_IMAGE
+            Process "Delete layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, UNDO_IMAGE_VECTORSAFE
         
         Case LYR_BTN_MOVE_UP
             Process "Raise layer", False, pdImages(g_CurrentImage).getActiveLayerIndex, UNDO_IMAGEHEADER
@@ -540,7 +540,7 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
             'Duplicate rectangle?
             ElseIf isPointInRect(x, y, m_DuplicateRect) Then
             
-                Process "Duplicate Layer", False, Str(clickedLayer), UNDO_IMAGE
+                Process "Duplicate Layer", False, Str(clickedLayer), UNDO_IMAGE_VECTORSAFE
                 actionInitiated = True
             
             'Merge down rectangle?

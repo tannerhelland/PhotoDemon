@@ -49,29 +49,29 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0   'False
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _ExtentX        =   873
-      _ExtentY        =   873
+      _extentx        =   873
+      _extenty        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
       Top             =   3360
-      _ExtentX        =   635
-      _ExtentY        =   635
-      ErrAsOut        =   0   'False
-      PollInterval    =   5
+      _extentx        =   635
+      _extenty        =   635
+      errasout        =   0   'False
+      pollinterval    =   5
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -2058,11 +2058,11 @@ Private Sub MnuLayerDelete_Click(Index As Integer)
     
         'Delete current layer
         Case 0
-            Process "Delete layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE
+            Process "Delete layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
         
         'Delete all hidden layers
         Case 1
-            Process "Delete hidden layers", False, , UNDO_IMAGE
+            Process "Delete hidden layers", False, , UNDO_IMAGE_VECTORSAFE
         
     End Select
 
@@ -2075,18 +2075,18 @@ Private Sub MnuLayerNew_Click(Index As Integer)
     
         'Blank layer
         Case 0
-            Process "Add blank layer", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE
+            Process "Add blank layer", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
         
         'Duplicate of current layer
         Case 1
-            Process "Duplicate Layer", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE
+            Process "Duplicate Layer", False, Str(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_IMAGE_VECTORSAFE
         
         '<separator>
         Case 2
         
         'Import from clipboard
         Case 3
-            Process "Paste as new layer", False, , UNDO_IMAGE, , False
+            Process "Paste as new layer", False, , UNDO_IMAGE_VECTORSAFE, , False
         
         'Import from file
         Case 4
@@ -3623,7 +3623,7 @@ Private Sub MnuEdit_Click(Index As Integer)
         
         'Paste as new layer
         Case 12
-            Process "Paste as new layer", False, , UNDO_IMAGE, , False
+            Process "Paste as new layer", False, , UNDO_IMAGE_VECTORSAFE, , False
         
         '<separator>
         Case 13

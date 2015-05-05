@@ -5,7 +5,7 @@ Begin VB.Form dialog_GenericMemory
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " "
-   ClientHeight    =   4455
+   ClientHeight    =   4665
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   7185
@@ -21,7 +21,7 @@ Begin VB.Form dialog_GenericMemory
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   297
+   ScaleHeight     =   311
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   479
    ShowInTaskbar   =   0   'False
@@ -40,7 +40,7 @@ Begin VB.Form dialog_GenericMemory
       Index           =   2
       Left            =   240
       TabIndex        =   3
-      Top             =   3120
+      Top             =   3240
       Width           =   6780
    End
    Begin VB.CommandButton cmdAnswer 
@@ -58,7 +58,7 @@ Begin VB.Form dialog_GenericMemory
       Index           =   1
       Left            =   240
       TabIndex        =   0
-      Top             =   2280
+      Top             =   2400
       Width           =   6780
    End
    Begin VB.CommandButton cmdAnswer 
@@ -76,26 +76,26 @@ Begin VB.Form dialog_GenericMemory
       Index           =   0
       Left            =   240
       TabIndex        =   2
-      Top             =   1440
+      Top             =   1560
       Width           =   6780
    End
    Begin PhotoDemon.smartCheckBox chkRemember 
       Height          =   330
       Left            =   240
       TabIndex        =   1
-      Top             =   4020
+      Top             =   4200
       Width           =   6735
       _ExtentX        =   11880
       _ExtentY        =   582
-      Caption         =   " In the future, always apply this action"
+      Caption         =   " "
    End
    Begin PhotoDemon.pdLabel lblExplanation 
-      Height          =   1125
+      Height          =   1290
       Left            =   960
       Top             =   150
       Width           =   6015
       _ExtentX        =   10610
-      _ExtentY        =   1984
+      _ExtentY        =   2275
       Caption         =   ""
       ForeColor       =   2105376
       Layout          =   1
@@ -141,7 +141,7 @@ End Property
 
 
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
-Public Sub showDialog(ByVal questionText As String, ByVal yesButtonText As String, ByVal noButtonText As String, ByVal cancelButtonText As String, ByVal dialogTitleText As String, Optional ByVal icon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False)
+Public Sub showDialog(ByVal questionText As String, ByVal yesButtonText As String, ByVal noButtonText As String, ByVal cancelButtonText As String, ByVal rememberCheckBoxText As String, ByVal dialogTitleText As String, Optional ByVal icon As SystemIconConstants = IDI_QUESTION, Optional ByVal defaultAnswer As VbMsgBoxResult = vbCancel, Optional ByVal defaultRemember As Boolean = False)
 
     'On the off chance that this dialog is raised during long-running processing, make a note of the cursor prior to displaying the dialog.
     ' We will restore the hourglass cursor (as necessary) when the dialog exits.
@@ -166,8 +166,9 @@ Public Sub showDialog(ByVal questionText As String, ByVal yesButtonText As Strin
     cmdAnswer(0).Caption = yesButtonText
     cmdAnswer(1).Caption = noButtonText
     cmdAnswer(2).Caption = cancelButtonText
+    chkRemember.Caption = rememberCheckBoxText
     Me.Caption = dialogTitleText
-
+    
     'The caller can specify whether "remember my choice" is checked by default
     If defaultRemember Then
         chkRemember.Value = vbChecked
@@ -226,6 +227,10 @@ Private Sub Form_Activate()
             cmdAnswer(2).SetFocus
     
     End Select
+    
+    'With the proper button set, we must reset the "userAnswer" variable to vbCancel, in case the user closes the dialog by
+    ' some mechanism other than clicking a button (e.g. the corner x).
+    userAnswer = vbCancel
 
 End Sub
 

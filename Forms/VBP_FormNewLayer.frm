@@ -242,7 +242,7 @@ Private Sub cmdBar_OKClick()
         End If
     Next i
     
-    Process "Add new layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex, PDL_IMAGE, newLayerType, colorPicker.Color, cboPosition.ListIndex, CBool(chkAutoSelectLayer), txtLayerName), UNDO_IMAGE
+    Process "Add new layer", False, buildParams(pdImages(g_CurrentImage).getActiveLayerIndex, PDL_IMAGE, newLayerType, colorPicker.Color, cboPosition.ListIndex, CBool(chkAutoSelectLayer), txtLayerName), UNDO_IMAGE_VECTORSAFE
     
 End Sub
 
