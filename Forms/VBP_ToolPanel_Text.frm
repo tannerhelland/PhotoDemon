@@ -43,7 +43,7 @@ Begin VB.Form toolpanel_Text
       Width           =   450
       _extentx        =   794
       _extenty        =   767
-      stickytoggle    =   -1
+      stickytoggle    =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltTextClarity 
       Height          =   435
@@ -88,7 +88,7 @@ Begin VB.Form toolpanel_Text
       _extentx        =   9340
       _extenty        =   2434
       fontsize        =   9
-      multiline       =   -1
+      multiline       =   -1  'True
    End
    Begin PhotoDemon.pdComboBox cboTextFontFace 
       Height          =   375
@@ -111,7 +111,7 @@ Begin VB.Form toolpanel_Text
       caption         =   "(this tool is under constr- uction)"
       forecolor       =   255
       layout          =   1
-      usecustomforecolor=   -1
+      usecustomforecolor=   -1  'True
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -215,7 +215,7 @@ Begin VB.Form toolpanel_Text
       Width           =   450
       _extentx        =   794
       _extenty        =   767
-      stickytoggle    =   -1
+      stickytoggle    =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox btnFontStyles 
       Height          =   435
@@ -226,7 +226,7 @@ Begin VB.Form toolpanel_Text
       Width           =   450
       _extentx        =   794
       _extenty        =   767
-      stickytoggle    =   -1
+      stickytoggle    =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox btnFontStyles 
       Height          =   435
@@ -237,7 +237,7 @@ Begin VB.Form toolpanel_Text
       Width           =   450
       _extentx        =   794
       _extenty        =   767
-      stickytoggle    =   -1
+      stickytoggle    =   -1  'True
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -314,6 +314,56 @@ Private Sub btnFontStyles_Click(Index As Integer)
 
 End Sub
 
+Private Sub btnFontStyles_GotFocus(Index As Integer)
+    
+    'Set Undo/Redo markers for whichever button was toggled
+    Select Case Index
+    
+        'Bold
+        Case 0
+            Processor.flagInitialNDFXState_Text ptp_FontBold, btnFontStyles(Index).Value, pdImages(g_CurrentImage).getActiveLayerID
+            
+        'Italic
+        Case 1
+            Processor.flagInitialNDFXState_Text ptp_FontItalic, btnFontStyles(Index).Value, pdImages(g_CurrentImage).getActiveLayerID
+        
+        'Underline
+        Case 2
+            Processor.flagInitialNDFXState_Text ptp_FontUnderline, btnFontStyles(Index).Value, pdImages(g_CurrentImage).getActiveLayerID
+        
+        'Strikeout
+        Case 3
+            Processor.flagInitialNDFXState_Text ptp_FontStrikeout, btnFontStyles(Index).Value, pdImages(g_CurrentImage).getActiveLayerID
+    
+    End Select
+    
+End Sub
+
+Private Sub btnFontStyles_LostFocus(Index As Integer)
+    
+    'Evaluate Undo/Redo markers for whichever button was toggled
+    Select Case Index
+    
+        'Bold
+        Case 0
+            If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FontBold, btnFontStyles(Index).Value
+            
+        'Italic
+        Case 1
+            If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FontItalic, btnFontStyles(Index).Value
+        
+        'Underline
+        Case 2
+            If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FontUnderline, btnFontStyles(Index).Value
+        
+        'Strikeout
+        Case 3
+            If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FontStrikeout, btnFontStyles(Index).Value
+    
+    End Select
+    
+End Sub
+
 Private Sub btsHAlignment_Click(ByVal buttonIndex As Long)
     
     'If tool changes are not allowed, exit.
@@ -334,6 +384,14 @@ Private Sub btsHAlignment_Click(ByVal buttonIndex As Long)
     
 End Sub
 
+Private Sub btsHAlignment_GotFocus()
+    Processor.flagInitialNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub btsHAlignment_LostFocus()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex
+End Sub
+
 Private Sub btsVAlignment_Click(ByVal buttonIndex As Long)
     
     'If tool changes are not allowed, exit.
@@ -352,6 +410,14 @@ Private Sub btsVAlignment_Click(ByVal buttonIndex As Long)
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
+End Sub
+
+Private Sub btsVAlignment_GotFocus()
+    Processor.flagInitialNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub btsVAlignment_LostFocus()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex
 End Sub
 
 Private Sub cboTextFontFace_Click()
