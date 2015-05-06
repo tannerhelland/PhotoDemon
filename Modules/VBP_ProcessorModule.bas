@@ -3,9 +3,8 @@ Attribute VB_Name = "Processor"
 'Program Sub-Processor and Error Handler
 'Copyright 2001-2015 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 02/June/14
-'Last update: minimize use of the busy cursor; it should now only be triggered for actions that affect DIBs directly
-'              (anything else should be fast enough to process in real-time)
+'Last updated: 06/May/15
+'Last update: new functions for processing non-destructive changes
 '
 'Module for controlling calls to the various program functions.  Any action the program takes has to pass
 ' through here.  Why go to all that extra work?  A couple of reasons:

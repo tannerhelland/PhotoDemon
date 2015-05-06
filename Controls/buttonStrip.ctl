@@ -100,9 +100,9 @@ Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect A
 ' via a pdFont object.
 Private curFont As pdFont
 
-'If a given caption needs to be dynamically shrunk (because it's too long to fit, and DrawText can't hyphenate it for whatever reason),
-' we fall back to a temporary font object.  This is preferable to overwriting the main font object, as font creation is expensive, and we
-' can simply skip creating this font if text fits okay (as it does for en-US).
+'If a given caption needs to be dynamically shrunk (because it's too long to fit, and DrawText can't wrap it for whatever reason),
+' we fall back to a temporary font object.  This is preferable to overwriting the main font object, as font creation is expensive,
+' and we can simply skip creating this font if text fits okay (as it does for en-US).
 Private shrinkFont As pdFont
 
 'Rather than use an StdFont container (which requires VB to create redundant font objects), we track font properties manually,
@@ -149,6 +149,20 @@ Private m_FocusRectActive As Long
 'Additional helper for rendering themed and multiline tooltips
 Private toolTipManager As pdToolTip
 
+'Color mode.  Buttons with text are easier to read if the background color is extremely dark and text is inverted over the top.
+' On the main window interface, we use some button strips that are image-only, and the images are lost on such a dark background.
+' For these, we specify an alternate coloring mode.
+Public Enum PD_BTS_COLOR_SCHEME
+    CM_DEFAULT = 0
+    CM_LIGHT = 1
+End Enum
+
+#If False Then
+    Private Const CM_DEFAULT = 0, CM_LIGHT = 1
+#End If
+
+Private m_ColoringMode As PD_BTS_COLOR_SCHEME
+
 'Padding between images (if any) and text.  This is automatically adjusted according to DPI, so set this value as it would be at the
 ' Windows default of 96 DPI
 Private Const IMG_TEXT_PADDING As Long = 4
@@ -166,6 +180,24 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     
     'Redraw the control
     redrawBackBuffer
+    
+End Property
+
+'Color scheme should be left at default values *except* for image-only strips
+Public Property Get ColorScheme() As PD_BTS_COLOR_SCHEME
+    ColorScheme = m_ColoringMode
+End Property
+
+Public Property Let ColorScheme(ByVal newScheme As PD_BTS_COLOR_SCHEME)
+    
+    If m_ColoringMode <> newScheme Then
+        
+        m_ColoringMode = newScheme
+        
+        'Redraw the control
+        redrawBackBuffer
+        
+    End If
     
 End Property
 
@@ -435,7 +467,7 @@ Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long =
     m_Buttons(itemIndex).btCaptionEn = srcString
     
     'We must also determine a translated caption, if any
-    If Not (g_Language Is Nothing) Then
+    If (Not (g_Language Is Nothing)) And (Len(srcString) <> 0) Then
     
         If g_Language.translationActive Then
             m_Buttons(itemIndex).btCaptionTranslated = g_Language.TranslateMessage(m_Buttons(itemIndex).btCaptionEn)
@@ -588,6 +620,9 @@ Private Sub UserControl_InitProperties()
     m_FontBold = False
     m_FontSize = 10
     
+    'Set default coloring scheme
+    m_ColoringMode = CM_DEFAULT
+    
 End Sub
 
 'When the control loses focus, erase any focus rects it may have active
@@ -615,6 +650,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         ListIndex = .ReadProperty("ListIndex", 0)
         FontBold = .ReadProperty("FontBold", False)
         FontSize = .ReadProperty("FontSize", 10)
+        ColorScheme = .ReadProperty("ColorScheme", CM_DEFAULT)
     End With
 
 End Sub
@@ -698,86 +734,104 @@ Private Sub updateControlSize()
         'Calculate the width of this button (which may deviate by 1px between buttons, due to integer truncation)
         buttonWidth = m_Buttons(i).btBounds.Right - m_Buttons(i).btBounds.Left
         
-        'If a button has an image, we have to alter its sizing somewhat.  To make sure word-wrap is calculated correctly,
-        ' remove the width of the image, plus padding, in advance.
-        If Not (m_Buttons(i).btImage Is Nothing) Then
-            buttonWidth = buttonWidth - (m_Buttons(i).btImage.getDIBWidth + fixDPI(IMG_TEXT_PADDING))
-        End If
+        'Next, we are going to calculate all text metrics.  We can skip this step for buttons without captions.
+        If Len(m_Buttons(i).btCaptionTranslated) <> 0 Then
         
-        'Retrieve the expected size of the string, in pixels
-        strWidth = curFont.getWidthOfString(m_Buttons(i).btCaptionTranslated)
-                
-        'If the string is too long for its containing button, activate word wrap and measure again
-        If strWidth > buttonWidth Then
-            
-            strWidth = buttonWidth
-            strHeight = curFont.getHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth)
-            
-            'As a failsafe for ultra-long captions, restrict their size to the button size.  Truncation will (necessarily) occur.
-            If (strHeight > buttonHeight) Then
-                strHeight = buttonHeight
-                
-            'As a second failsafe, if word-wrapping didn't solve the problem (because the text is a single word, for example, as is common
-            ' in German), we will forcibly set a smaller font size for this caption alone.
-            ElseIf curFont.getHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth) = curFont.getHeightOfString(m_Buttons(i).btCaptionTranslated) Then
-            
-                'Create and initialize the shrinkFont renderer
-                If (shrinkFont Is Nothing) Then
-                    Set shrinkFont = New pdFont
-                Else
-                    shrinkFont.releaseFromDC
-                End If
-                
-                m_Buttons(i).btFontSize = shrinkFont.getMaxFontSizeToFitStringWidth(m_Buttons(i).btCaptionTranslated, buttonWidth, m_FontSize)
-                
-                'The .btFontSize value now contains the font size required to render this button correctly.  In most cases, only a single button
-                ' will require this kind of special treatment, so initialize a matching shrinkFont now.  (If necessary, the object will be
-                ' recreated on the fly for other buttons.)
-                shrinkFont.setFontBold m_FontBold
-                shrinkFont.setFontSize m_Buttons(i).btFontSize
-                shrinkFont.createFontObject
-                
-                'Also note the new string height
-                strHeight = shrinkFont.getHeightOfString(m_Buttons(i).btCaptionTranslated)
-                
+            'If a button has an image, we have to alter its sizing somewhat.  To make sure word-wrap is calculated correctly,
+            ' remove the width of the image, plus padding, in advance.
+            If Not (m_Buttons(i).btImage Is Nothing) Then
+                buttonWidth = buttonWidth - (m_Buttons(i).btImage.getDIBWidth + fixDPI(IMG_TEXT_PADDING))
             End If
             
-        Else
-            strHeight = curFont.getHeightOfString(m_Buttons(i).btCaptionTranslated)
+            'Retrieve the expected size of the string, in pixels
+            strWidth = curFont.getWidthOfString(m_Buttons(i).btCaptionTranslated)
+                    
+            'If the string is too long for its containing button, activate word wrap and measure again
+            If strWidth > buttonWidth Then
+                
+                strWidth = buttonWidth
+                strHeight = curFont.getHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth)
+                
+                'As a failsafe for ultra-long captions, restrict their size to the button size.  Truncation will (necessarily) occur.
+                If (strHeight > buttonHeight) Then
+                    strHeight = buttonHeight
+                    
+                'As a second failsafe, if word-wrapping didn't solve the problem (because the text is a single word, for example, as is common
+                ' in German), we will forcibly set a smaller font size for this caption alone.
+                ElseIf curFont.getHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth) = curFont.getHeightOfString(m_Buttons(i).btCaptionTranslated) Then
+                
+                    'Create and initialize the shrinkFont renderer
+                    If (shrinkFont Is Nothing) Then
+                        Set shrinkFont = New pdFont
+                    Else
+                        shrinkFont.releaseFromDC
+                    End If
+                    
+                    m_Buttons(i).btFontSize = shrinkFont.getMaxFontSizeToFitStringWidth(m_Buttons(i).btCaptionTranslated, buttonWidth, m_FontSize)
+                    
+                    'The .btFontSize value now contains the font size required to render this button correctly.  In most cases, only a single button
+                    ' will require this kind of special treatment, so initialize a matching shrinkFont now.  (If necessary, the object will be
+                    ' recreated on the fly for other buttons.)
+                    shrinkFont.setFontBold m_FontBold
+                    shrinkFont.setFontSize m_Buttons(i).btFontSize
+                    shrinkFont.createFontObject
+                    
+                    'Also note the new string height
+                    strHeight = shrinkFont.getHeightOfString(m_Buttons(i).btCaptionTranslated)
+                    
+                End If
+                
+            Else
+                strHeight = curFont.getHeightOfString(m_Buttons(i).btCaptionTranslated)
+            End If
+            
         End If
         
         'Use the size of the string, the size of the button's image (if any), and the size of the button itself to determine
         ' optimal painting position (using top-left alignment).
         With m_Buttons(i)
-        
-            'No image...
-            If (.btImage Is Nothing) Then
-                .btCaptionRect.Left = .btBounds.Left
             
-            'Image...
-            Else
+            'Again, handling branches according to the presence of a caption
+            If Len(.btCaptionTranslated) <> 0 Then
+            
+                'No image...
+                If (.btImage Is Nothing) Then
+                    .btCaptionRect.Left = .btBounds.Left
                 
-                If strWidth < buttonWidth Then
-                    .btCaptionRect.Left = .btBounds.Left + m_Buttons(i).btImage.getDIBWidth + fixDPI(IMG_TEXT_PADDING)
+                'Image...
                 Else
-                    .btCaptionRect.Left = .btBounds.Left + m_Buttons(i).btImage.getDIBWidth + fixDPI(IMG_TEXT_PADDING) * 2
+                    
+                    If strWidth < buttonWidth Then
+                        .btCaptionRect.Left = .btBounds.Left + m_Buttons(i).btImage.getDIBWidth + fixDPI(IMG_TEXT_PADDING)
+                    Else
+                        .btCaptionRect.Left = .btBounds.Left + m_Buttons(i).btImage.getDIBWidth + fixDPI(IMG_TEXT_PADDING) * 2
+                    End If
+                    
+                    '.btCaptionRect.Left = .btBounds.Left + fixDPI(IMG_TEXT_PADDING) * 2 + m_Buttons(i).btImage.getDIBWidth
+                
                 End If
                 
-                '.btCaptionRect.Left = .btBounds.Left + fixDPI(IMG_TEXT_PADDING) * 2 + m_Buttons(i).btImage.getDIBWidth
-            
+                .btCaptionRect.Top = .btBounds.Top + (buttonHeight - strHeight) \ 2
+                .btCaptionRect.Right = .btBounds.Right
+                .btCaptionRect.Bottom = .btBounds.Bottom
+                
             End If
-            
-            .btCaptionRect.Top = .btBounds.Top + (buttonHeight - strHeight) \ 2
-            .btCaptionRect.Right = .btBounds.Right
-            .btCaptionRect.Bottom = .btBounds.Bottom
         
             'Calculate a position for the button image, if any
             If Not (.btImage Is Nothing) Then
-            
-                If strWidth < buttonWidth Then
-                    .btImageCoords.x = .btBounds.Left + ((.btCaptionRect.Right - .btCaptionRect.Left) - strWidth) \ 2
+                
+                'X-positioning is dependent on the presence of a caption.  If a caption exists, it gets placement preference.
+                If Len(.btCaptionTranslated) <> 0 Then
+                
+                    If strWidth < buttonWidth Then
+                        .btImageCoords.x = .btBounds.Left + ((.btCaptionRect.Right - .btCaptionRect.Left) - strWidth) \ 2
+                    Else
+                        .btImageCoords.x = .btBounds.Left + fixDPI(IMG_TEXT_PADDING)
+                    End If
+                    
+                'If no caption exists, center the image horizontally
                 Else
-                    .btImageCoords.x = .btBounds.Left + fixDPI(IMG_TEXT_PADDING)
+                    .btImageCoords.x = .btBounds.Left + ((.btBounds.Right - .btBounds.Left) - .btImage.getDIBWidth) \ 2
                 End If
                 
                 .btImageCoords.y = .btBounds.Top + (buttonHeight - .btImage.getDIBHeight) \ 2
@@ -800,6 +854,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "ListIndex", ListIndex, 0
         .WriteProperty "FontBold", m_FontBold, False
         .WriteProperty "FontSize", m_FontSize, 10
+        .WriteProperty "ColorScheme", m_ColoringMode, CM_DEFAULT
     End With
     
 End Sub
@@ -826,11 +881,25 @@ Private Sub redrawBackBuffer()
     If Not g_Themer Is Nothing Then
     
         If Me.Enabled Then
-    
-            btnColorInactiveBorder = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
-            btnColorInactiveFill = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-            btnColorActiveBorder = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
-            btnColorActiveFill = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+            
+            'This control has a unique "ColorScheme" property that is used for image-only button strips (as the invert
+            ' color scheme tends to drown out the images themselves, and we don't need to invert any text).
+            
+            If m_ColoringMode = CM_DEFAULT Then
+            
+                btnColorInactiveBorder = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
+                btnColorInactiveFill = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                btnColorActiveBorder = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+                btnColorActiveFill = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+                
+            Else
+            
+                btnColorInactiveBorder = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                btnColorInactiveFill = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                btnColorActiveBorder = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
+                btnColorActiveFill = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
+            
+            End If
             
             fontColorInactive = g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
             fontColorActive = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
@@ -891,40 +960,44 @@ Private Sub redrawBackBuffer()
                     
                 End If
                 
-                'Paint the caption
-                If i = m_ButtonIndex Then
-                    curColor = fontColorActive
-                Else
-                    If i = m_ButtonHoverIndex Then
-                        curColor = fontColorHover
+                'Paint the caption, if one exists
+                If Len(.btCaptionTranslated) <> 0 Then
+                
+                    If i = m_ButtonIndex Then
+                        curColor = fontColorActive
                     Else
-                        curColor = fontColorInactive
-                    End If
-                End If
-                
-                If .btFontSize = 0 Then
-                    curFont.setFontColor curColor
-                    curFont.drawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
-                Else
-                
-                    'Release the main font object
-                    curFont.releaseFromDC
-                
-                    'Recreate shrinkFont as necessary
-                    If shrinkFont.getFontSize <> .btFontSize Then
-                        shrinkFont.setFontSize .btFontSize
-                        shrinkFont.createFontObject
+                        If i = m_ButtonHoverIndex Then
+                            curColor = fontColorHover
+                        Else
+                            curColor = fontColorInactive
+                        End If
                     End If
                     
-                    'Select shrinkFont into the DC and render the text accordingly
-                    shrinkFont.attachToDC m_BackBuffer.getDIBDC
-                    shrinkFont.setFontColor curColor
-                    shrinkFont.drawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
+                    If .btFontSize = 0 Then
+                        curFont.setFontColor curColor
+                        curFont.drawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
+                    Else
                     
-                    'Restore curFont
-                    shrinkFont.releaseFromDC
-                    curFont.attachToDC m_BackBuffer.getDIBDC
+                        'Release the main font object
+                        curFont.releaseFromDC
                     
+                        'Recreate shrinkFont as necessary
+                        If shrinkFont.getFontSize <> .btFontSize Then
+                            shrinkFont.setFontSize .btFontSize
+                            shrinkFont.createFontObject
+                        End If
+                        
+                        'Select shrinkFont into the DC and render the text accordingly
+                        shrinkFont.attachToDC m_BackBuffer.getDIBDC
+                        shrinkFont.setFontColor curColor
+                        shrinkFont.drawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
+                        
+                        'Restore curFont
+                        shrinkFont.releaseFromDC
+                        curFont.attachToDC m_BackBuffer.getDIBDC
+                        
+                    End If
+                
                 End If
                 
                 'Paint the button image, if any
