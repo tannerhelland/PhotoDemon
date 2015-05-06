@@ -36,8 +36,8 @@ Begin VB.UserControl textUpDown
       TabIndex        =   1
       Top             =   15
       Width           =   750
-      _ExtentX        =   1323
-      _ExtentY        =   556
+      _extentx        =   1323
+      _extenty        =   556
    End
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
@@ -104,6 +104,10 @@ Option Explicit
 'This object can raise a Change (which triggers when the Value property is changed by ANY means)
 Public Event Change()
 
+'Because we have multiple components on this user control, including an API text box, we report our own Got/Lost focus events.
+Public Event GotFocusAPI()
+Public Event LostFocusAPI()
+
 'For performance reasons, this object can always raise an event I call "FinalChange".  This triggers under the same conditions as Change,
 ' *EXCEPT* when the mouse button is held down.  FinalChange will not fire until the mouse button is released, which makes it ideal
 ' for things like syncing time-consuming UI elements.
@@ -111,8 +115,6 @@ Public Event FinalChange()
 
 'The only exposed font setting is size.  All other settings are handled automatically, by the themer.
 Private m_FontSize As Single
-
-Private origForecolor As Long
 
 'Additional helper for rendering themed and multiline tooltips
 Private toolTipManager As pdToolTip
@@ -145,6 +147,11 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 'Mouse state for the spin button area
 Private m_MouseDownUpButton As Boolean, m_MouseDownDownButton As Boolean
 Private m_MouseOverUpButton As Boolean, m_MouseOverDownButton As Boolean
+
+'Tracks whether the control (any component) has focus.  This is helpful as we must synchronize between VB's focus events and API
+' focus events.  Every time an individual component gains focus, we increment this counter by 1.  Every time an individual component
+' loses focus, we decrement the counter by 1.  When the counter hits 0, we report a control-wide Got/LostFocusAPI event.
+Private m_ControlFocusCount As Long
 
 Private Declare Function IntersectRect Lib "user32" (ByRef lpDestRect As RECTL, ByRef lpSrc1Rect As RECTL, ByRef lpSrc2Rect As RECTL) As Long
 
@@ -299,6 +306,16 @@ Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, By
     
 End Sub
 
+Private Sub picScroll_GotFocus()
+    m_ControlFocusCount = m_ControlFocusCount + 1
+    evaluateFocusCount True
+End Sub
+
+Private Sub picScroll_LostFocus()
+    m_ControlFocusCount = m_ControlFocusCount - 1
+    evaluateFocusCount False
+End Sub
+
 Private Sub tmrDownButton_Timer()
 
     'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
@@ -346,6 +363,21 @@ Private Sub txtPrimary_Change()
         If Me.Enabled Then shpError.Visible = True
     End If
     
+End Sub
+
+Private Sub txtPrimary_GotFocusAPI()
+    
+    m_ControlFocusCount = m_ControlFocusCount + 1
+    evaluateFocusCount True
+    
+    'As a convenience to the user, select all text when first clicked
+    txtPrimary.selectAll
+    
+End Sub
+
+Private Sub txtPrimary_LostFocusAPI()
+    m_ControlFocusCount = m_ControlFocusCount - 1
+    evaluateFocusCount False
 End Sub
 
 Private Sub txtPrimary_Resize()
@@ -469,20 +501,6 @@ Public Property Let SigDigits(ByVal newValue As Long)
     
 End Property
 
-'Forecolor may be used in the future as part of theming, but right now it serves no purpose
-Public Property Get ForeColor() As OLE_COLOR
-    ForeColor = origForecolor
-End Property
-
-Public Property Let ForeColor(ByVal newColor As OLE_COLOR)
-    origForecolor = newColor
-    PropertyChanged "ForeColor"
-End Property
-
-Private Sub txtPrimary_GotFocus()
-    txtPrimary.selectAll
-End Sub
-
 'Mirror the code from the change event, but force a formatted text sync
 Private Sub txtPrimary_Validate(Cancel As Boolean)
     If IsTextEntryValid() Then
@@ -493,9 +511,12 @@ Private Sub txtPrimary_Validate(Cancel As Boolean)
     End If
 End Sub
 
+Private Sub UserControl_GotFocus()
+    m_ControlFocusCount = m_ControlFocusCount + 1
+    evaluateFocusCount True
+End Sub
+
 Private Sub UserControl_Initialize()
-    
-    origForecolor = ForeColor
         
     'Prepare a default font size
     m_FontSize = 10
@@ -513,6 +534,9 @@ Private Sub UserControl_Initialize()
     Set cMouseEvents = New pdInputMouse
     If g_IsProgramRunning Then cMouseEvents.addInputTracker picScroll.hWnd, True, True, False, True, False
     
+    'Reset the focus count
+    m_ControlFocusCount = 0
+    
     'Create a tooltip engine
     Set toolTipManager = New pdToolTip
                     
@@ -522,10 +546,7 @@ Private Sub UserControl_InitProperties()
     
     FontSize = 10
     m_FontSize = 10
-    
-    ForeColor = &H404040
-    origForecolor = ForeColor
-    
+        
     Value = 0
     controlVal = 0
     
@@ -538,6 +559,11 @@ Private Sub UserControl_InitProperties()
     SigDigits = 0
     significantDigits = 0
     
+End Sub
+
+Private Sub UserControl_LostFocus()
+    m_ControlFocusCount = m_ControlFocusCount - 1
+    evaluateFocusCount False
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -801,6 +827,25 @@ Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = Fa
     End If
     
 End Function
+
+'After a component of this control gets or loses focus, it needs to call this function.  This function is responsible for raising
+' Got/LostFocusAPI events, which are important as an API text box is part of this control.
+Private Sub evaluateFocusCount(ByVal focusCountJustIncremented As Boolean)
+
+    If focusCountJustIncremented Then
+        
+        'If just incremented from 0 to 1, raise a GotFocusAPI event
+        If m_ControlFocusCount = 1 Then RaiseEvent GotFocusAPI
+        
+    Else
+    
+        'If just decremented from 1 to 0, raise a LostFocusAPI event
+        If m_ControlFocusCount = 0 Then RaiseEvent LostFocusAPI
+    
+    End If
+
+End Sub
+
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub updateAgainstCurrentTheme()
