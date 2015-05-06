@@ -71,6 +71,8 @@ Option Explicit
 Public Event Change()
 Public Event KeyPress(ByVal vKey As Long, ByRef preventFurtherHandling As Boolean)
 Public Event Resize()
+Public Event GotFocusAPI()
+Public Event LostFocusAPI()
 
 'Window styles
 Private Enum enWindowStyles
@@ -310,6 +312,11 @@ Private m_HasFocus As Boolean
 ' we capture Tab keypresses.  This prevents faulty Tab-key handling.
 Private m_TimeAtFocusEnter As Long
 Private m_FocusDirection As Long
+
+'Tracks whether the control (any component) has focus.  This is helpful as we must synchronize between VB's focus events and API
+' focus events.  This value is deliberately kept separate from m_HasFocus, above, as we only use this value to raise our own
+' Got/Lost focus events when the *entire control* loses focus (vs any one individual component).
+Private m_ControlHasFocus As Boolean
 
 'Persistent back buffer, which we manage internally
 Private m_BackBuffer As pdDIB
@@ -554,6 +561,12 @@ End Sub
 'When the control receives focus, forcibly forward focus to the edit window
 Private Sub UserControl_GotFocus()
     
+    'Mark the control-wide focus state
+    If Not m_ControlHasFocus Then
+        m_ControlHasFocus = True
+        RaiseEvent GotFocusAPI
+    End If
+    
     'The user control itself should never have focus.  Forward it to the API edit box.
     If m_EditBoxHwnd <> 0 Then
         SetForegroundWindow m_EditBoxHwnd
@@ -604,6 +617,16 @@ Private Sub UserControl_InitProperties()
     FontSize = 10
     Multiline = False
     Text = ""
+End Sub
+
+Private Sub UserControl_LostFocus()
+    
+    'Mark the control-wide focus state
+    If m_ControlHasFocus Then
+        m_ControlHasFocus = False
+        RaiseEvent LostFocusAPI
+    End If
+    
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -1654,6 +1677,12 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             'Forcibly disable PD's main accelerator control
             FormMain.ctlAccelerator.Enabled = False
             
+            'Mark the control-wide focus state
+            If Not m_ControlHasFocus Then
+                m_ControlHasFocus = True
+                RaiseEvent GotFocusAPI
+            End If
+            
             'Start hooking keypresses so we can grab Unicode chars before VB eats 'em
             InstallHookConditional
                         
@@ -1661,6 +1690,12 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         
             'Re-enable PD's main accelerator control
             FormMain.ctlAccelerator.Enabled = True
+            
+            'Mark the control-wide focus state
+            If m_ControlHasFocus Then
+                m_ControlHasFocus = False
+                RaiseEvent LostFocusAPI
+            End If
             
             'Release our hook.  In some circumstances, we can't do this immediately, so we set a timer that will release the hook
             ' as soon as the system allows.

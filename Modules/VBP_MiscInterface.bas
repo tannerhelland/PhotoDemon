@@ -111,8 +111,6 @@ Public Sub syncInterfaceToCurrentImage()
         metaToggle tSave, False
         metaToggle tSaveAs, False
         metaToggle tClose, False
-        metaToggle tUndo, False, True
-        metaToggle tRedo, False, True
         metaToggle tCopy, False
         metaToggle tView, False
         metaToggle tImageOps, False
@@ -129,17 +127,8 @@ Public Sub syncInterfaceToCurrentImage()
         toolpanel_MoveSize.cboLayerResizeQuality.Enabled = False
         toolpanel_MoveSize.cboLayerResizeQuality.Enabled = False
         
-        'Undo history is disabled when no images are loaded
-        FormMain.MnuEdit(2).Enabled = False
-        
-        '"Repeat..." and "Fade..." in the Edit menu are disabled when no images are loaded
-        FormMain.MnuEdit(4).Enabled = False
-        FormMain.MnuEdit(5).Enabled = False
-        toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = False
-        
-        FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
-        FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
-        toolbar_Toolbox.cmdFile(FILE_FADE).assignTooltip g_Language.TranslateMessage("Fade last action")
+        'Reset all Undo/Redo and related menus as well
+        syncUndoRedoInterfaceElements True
                 
         'All relevant menu icons can now be redrawn.  (This must be redone after menu captions change, as icons are associated
         ' with captions.)
@@ -215,50 +204,12 @@ Public Sub syncInterfaceToCurrentImage()
             
             'Note that all of these functions rely on the g_CurrentImage value to function.
             
-            'Save is a bit funny, because if the image HAS been saved to file, we DISABLE the save button.
-            metaToggle tSave, Not pdImages(g_CurrentImage).getSaveState(pdSE_AnySave)
+            'Reset all Undo/Redo and related menus.  (Note that this also controls the SAVE BUTTON, as the image's save state is modified
+            ' by PD's Undo/Redo engine.)
+            syncUndoRedoInterfaceElements True
             
-            'Undo, Redo, Repeat and Fade are all closely related
-            If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then
-            
-                metaToggle tUndo, pdImages(g_CurrentImage).undoManager.getUndoState, True
-                metaToggle tRedo, pdImages(g_CurrentImage).undoManager.getRedoState, True
-                
-                'Undo history is enabled if either Undo or Redo is active
-                If pdImages(g_CurrentImage).undoManager.getUndoState Or pdImages(g_CurrentImage).undoManager.getRedoState Then
-                    FormMain.MnuEdit(2).Enabled = True
-                Else
-                    FormMain.MnuEdit(2).Enabled = False
-                End If
-                
-                '"Edit > Repeat..." and "Edit > Fade..." are also handled by the current image's undo manager (as it
-                ' maintains the list of changes applied to the image, and links to copies of previous image state DIBs).
-                Dim tmpDIB As pdDIB, tmpLayerIndex As Long, tmpActionName As String
-                
-                'See if the "Find last relevant layer action" function in the Undo manager returns TRUE or FALSE.  If it returns TRUE,
-                ' enable both Repeat and Fade, and rename each menu caption so the user knows what is being repeated/faded.
-                If pdImages(g_CurrentImage).undoManager.fillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
-                    FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(tmpActionName))
-                    FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade: %1...", g_Language.TranslateMessage(tmpActionName))
-                    toolbar_Toolbox.cmdFile(FILE_FADE).assignTooltip pdImages(g_CurrentImage).undoManager.getUndoProcessID, "Fade last action"
-                    
-                    toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = True
-                    FormMain.MnuEdit(4).Enabled = True
-                    FormMain.MnuEdit(5).Enabled = True
-                Else
-                    FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
-                    FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
-                    toolbar_Toolbox.cmdFile(FILE_FADE).assignTooltip "Fade last action"
-                    
-                    toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = False
-                    FormMain.MnuEdit(4).Enabled = False
-                    FormMain.MnuEdit(5).Enabled = False
-                End If
-                
-                'Because these changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
-                resetMenuIcons
-            
-            End If
+            'Because those changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
+            resetMenuIcons
             
             'Determine whether metadata is present, and dis/enable metadata menu items accordingly
             If Not pdImages(g_CurrentImage).imgMetadata Is Nothing Then
@@ -508,6 +459,85 @@ Public Sub syncInterfaceToCurrentImage()
     'Redraw the layer box
     toolbar_Layers.forceRedraw
         
+End Sub
+
+'Some non-destructive actions need to synchronize *only* Undo/Redo buttons and menus (and their related counterparts, e.g. "Fade").
+' To make these actions snappier, I have pulled all Undo/Redo UI sync code out of syncInterfaceToImage, and into this separate sub,
+' which can be called on-demand as necessary.
+'
+'If the caller will be calling resetMenuIcons after using this function, make sure to pass the optional suspendAssociatedRedraws as TRUE
+' to prevent unnecessary redraws.
+Public Sub syncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws As Boolean = False)
+
+    If g_OpenImageCount = 0 Then
+    
+        metaToggle tUndo, False, True
+        metaToggle tRedo, False, True
+        
+        'Undo history is disabled when no images are loaded
+        FormMain.MnuEdit(2).Enabled = False
+        
+        '"Repeat..." and "Fade..." in the Edit menu are disabled when no images are loaded
+        FormMain.MnuEdit(4).Enabled = False
+        FormMain.MnuEdit(5).Enabled = False
+        toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = False
+        
+        FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
+        FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
+        toolbar_Toolbox.cmdFile(FILE_FADE).assignTooltip g_Language.TranslateMessage("Fade last action")
+        
+        'Redraw menu icons as requested
+        If Not suspendAssociatedRedraws Then resetMenuIcons
+    
+    Else
+    
+        'Save is a bit funny, because if the image HAS been saved to file, we DISABLE the save button.
+        metaToggle tSave, Not pdImages(g_CurrentImage).getSaveState(pdSE_AnySave)
+        
+        'Undo, Redo, Repeat and Fade are all closely related
+        If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then
+        
+            metaToggle tUndo, pdImages(g_CurrentImage).undoManager.getUndoState, True
+            metaToggle tRedo, pdImages(g_CurrentImage).undoManager.getRedoState, True
+            
+            'Undo history is enabled if either Undo or Redo is active
+            If pdImages(g_CurrentImage).undoManager.getUndoState Or pdImages(g_CurrentImage).undoManager.getRedoState Then
+                FormMain.MnuEdit(2).Enabled = True
+            Else
+                FormMain.MnuEdit(2).Enabled = False
+            End If
+            
+            '"Edit > Repeat..." and "Edit > Fade..." are also handled by the current image's undo manager (as it
+            ' maintains the list of changes applied to the image, and links to copies of previous image state DIBs).
+            Dim tmpDIB As pdDIB, tmpLayerIndex As Long, tmpActionName As String
+            
+            'See if the "Find last relevant layer action" function in the Undo manager returns TRUE or FALSE.  If it returns TRUE,
+            ' enable both Repeat and Fade, and rename each menu caption so the user knows what is being repeated/faded.
+            If pdImages(g_CurrentImage).undoManager.fillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
+                FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(tmpActionName))
+                FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade: %1...", g_Language.TranslateMessage(tmpActionName))
+                toolbar_Toolbox.cmdFile(FILE_FADE).assignTooltip pdImages(g_CurrentImage).undoManager.getUndoProcessID, "Fade last action"
+                
+                toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = True
+                FormMain.MnuEdit(4).Enabled = True
+                FormMain.MnuEdit(5).Enabled = True
+            Else
+                FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
+                FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
+                toolbar_Toolbox.cmdFile(FILE_FADE).assignTooltip "Fade last action"
+                
+                toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = False
+                FormMain.MnuEdit(4).Enabled = False
+                FormMain.MnuEdit(5).Enabled = False
+            End If
+            
+            'Because these changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
+            If Not suspendAssociatedRedraws Then resetMenuIcons
+        
+        End If
+    
+    End If
+
 End Sub
 
 'metaToggle enables or disables a swath of controls related to a simple keyword (e.g. "Undo", which affects multiple menu items

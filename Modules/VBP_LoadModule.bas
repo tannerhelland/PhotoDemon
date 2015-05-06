@@ -1546,7 +1546,7 @@ PDI_Load_Continuation:
         
         'Also, set an initial image checkpoint, in case the user decides to immediately start applying non-destructive
         ' edits to the image.
-        Processor.setImageCheckpoint
+        processor.setImageCheckpoint
         
         
         '*************************************************************************************************************************************
@@ -2118,13 +2118,36 @@ Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer A
         
             If pdiReader.getNodeDataByID(targetLayerID, False, retBytes, True) Then
             
-                'Pass the raw bytes to the target layer's DIB, which will copy the bytes over its existing DIB data.
-                dstLayer.layerDIB.copyStreamOverImageArray retBytes
+                'How we handle this data varies by layer type.
                 
-                'Notify the parent of the change target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
-                ' WARNING!  Normally, this happens through the parent pdImage object, so the image can be recomposited.  Callers of this
-                ' function need to be aware of this behavior, so they can manually notify the parent of the change (as the parent is not
-                ' passed to this function, by design).
+                'Image (raster) layers
+                If dstLayer.isLayerRaster Then
+                
+                    'This chunk of data is a raw stream of the target layer's DIB.  Ask the target layer's DIB to copy
+                    ' the byte array over its existing DIB data (which will have been initialized to zero by the
+                    ' CreateNewLayerFromXML() call, above).
+                    dstLayer.layerDIB.copyStreamOverImageArray retBytes
+                    
+                'Text and other vector layers
+                ElseIf dstLayer.isLayerVector Then
+                    
+                    'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
+                    ' as vector layers were implemented after pdPackager was given Unicode compatibility.
+                    retString = Space$((UBound(retBytes) + 1) \ 2)
+                    CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
+                    
+                    'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
+                    If Not dstLayer.CreateVectorDataFromXML(retString) Then
+                        Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
+                    End If
+                
+                'In the future, additional layer types can be handled here
+                Else
+                    Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstLayer.getLayerType
+                
+                End If
+                
+                'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
                 dstLayer.notifyOfDestructiveChanges
                 
             'Bytes could not be read, or alternately, checksums didn't match for the first node.
