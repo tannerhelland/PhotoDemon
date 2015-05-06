@@ -74,6 +74,8 @@ Option Explicit
 ' but I have used Click() throughout VB due to the behavior of the old combo box - and rather than rewrite all that code, I've simply
 ' used the same semantics here.  Note, however, that "Click" will also return changes to the combo box that originate from the keyboard.
 Public Event Click()
+Public Event GotFocusAPI()
+Public Event LostFocusAPI()
 
 'Flicker-free window painter; note that two painters are (probably? TODO!) required: one for the edit portion of the control (including its button),
 ' and another for the drop-down list (only the border is relevant here, as individual items draw their own background).
@@ -243,6 +245,11 @@ Private m_HasFocus As Boolean
 ' we capture Tab keypresses.  This prevents faulty Tab-key handling.
 Private m_TimeAtFocusEnter As Long
 Private m_FocusDirection As Long
+
+'Tracks whether the control (any component) has focus.  This is helpful as we must synchronize between VB's focus events and API
+' focus events.  This value is deliberately kept separate from m_HasFocus, above, as we only use this value to raise our own
+' Got/Lost focus events when the *entire control* loses focus (vs any one individual component).
+Private m_ControlHasFocus As Boolean
 
 'If the user resizes a combo box, the control's back buffer needs to be redrawn.  If we resize the combo box as part of an internal
 ' AutoSize calculation, however, we will already be in the midst of resizing the backbuffer - so we override the behavior of the
@@ -833,6 +840,12 @@ End Sub
 'When the control receives focus, forcibly forward focus to the edit window
 Private Sub UserControl_GotFocus()
     
+    'Mark the control-wide focus state
+    If Not m_ControlHasFocus Then
+        m_ControlHasFocus = True
+        RaiseEvent GotFocusAPI
+    End If
+    
     'The user control itself should never have focus.  Forward it to the API edit box.
     If m_ComboBoxHwnd <> 0 Then
         SetForegroundWindow m_ComboBoxHwnd
@@ -875,6 +888,16 @@ End Sub
 Private Sub UserControl_InitProperties()
     Enabled = True
     FontSize = 10
+End Sub
+
+Private Sub UserControl_LostFocus()
+    
+    'Mark the control-wide focus state
+    If m_ControlHasFocus Then
+        m_ControlHasFocus = False
+        RaiseEvent LostFocusAPI
+    End If
+    
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -2167,10 +2190,26 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         ' only way to bypass VB's internal message translator, which will forcibly intercept dialog keys (arrows, etc).
         ' Note that focus changes also force a repaint of the control.
         Case WM_SETFOCUS
+        
+            'Mark the control-wide focus state
+            If Not m_ControlHasFocus Then
+                m_ControlHasFocus = True
+                RaiseEvent GotFocusAPI
+            End If
+            
             InstallHookConditional
             cPainterBox.requestRepaint
             
         Case WM_KILLFOCUS
+            
+            'Mark the control-wide focus state
+            If m_ControlHasFocus Then
+                m_ControlHasFocus = False
+                RaiseEvent LostFocusAPI
+            End If
+            
+            'Release our hook.  In some circumstances, we can't do this immediately, so we set a timer that will release the hook
+            ' as soon as the system allows.
             If m_InHookNow Then
                 tmrHookRelease.Enabled = True
             Else
