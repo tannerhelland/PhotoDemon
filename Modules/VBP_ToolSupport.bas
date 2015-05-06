@@ -427,8 +427,8 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                     .btnFontStyles(1).Value = CBool(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontItalic))
                     .btnFontStyles(2).Value = CBool(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontUnderline))
                     .btnFontStyles(3).Value = CBool(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontStrikeout))
-                    .setCurrentAlignment True, pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_HorizontalAlignment)
-                    .setCurrentAlignment False, pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_VerticalAlignment)
+                    .btsHAlignment.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_HorizontalAlignment)
+                    .btsVAlignment.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_VerticalAlignment)
                 End With
         
         End Select
@@ -501,8 +501,8 @@ Public Sub syncCurrentLayerToToolOptionsUI()
                     .setTextLayerProperty ptp_FontItalic, toolpanel_Text.btnFontStyles(1).Value
                     .setTextLayerProperty ptp_FontUnderline, toolpanel_Text.btnFontStyles(2).Value
                     .setTextLayerProperty ptp_FontStrikeout, toolpanel_Text.btnFontStyles(3).Value
-                    .setTextLayerProperty ptp_HorizontalAlignment, toolpanel_Text.getCurrentAlignment(True)
-                    .setTextLayerProperty ptp_VerticalAlignment, toolpanel_Text.getCurrentAlignment(False)
+                    .setTextLayerProperty ptp_HorizontalAlignment, toolpanel_Text.btsHAlignment.ListIndex
+                    .setTextLayerProperty ptp_VerticalAlignment, toolpanel_Text.btsVAlignment.ListIndex
                 End With
         
         End Select
