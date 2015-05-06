@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.28</langversion>
+<langversion>6.7.29</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -12005,7 +12005,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>These text layers will be changed to image (raster) layers, meaning you can no longer modify their text or font settings.</original>
+<original>This action will convert text and vector layers to image (raster) layers, meaning you can no longer modify layer-specific settings like text, font, color or shape.</original>
 <translation></translation>
 </phrase>
 
@@ -12015,12 +12015,12 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>Yes.  Please convert these text layers.</original>
+<original>Yes.  Convert text and vector layers to image (raster) layers.</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>No.  Leave these text layers as they are.</original>
+<original>No.  Leave text and vector layers as they are.</original>
 <translation></translation>
 </phrase>
 
@@ -12044,7 +12044,12 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_LayerHandler.bas contains 30 phrases. 18 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<phrase>
+<original>In the future, automatically rasterize without prompting me</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_LayerHandler.bas contains 32 phrases. 19 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for VBP_LayerHandler.bas-->
 
@@ -13708,12 +13713,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>In the future, always apply this action</original>
-<translation></translation>
-</phrase>
-
-<!-- VBP_GenericMemoryDialog.frm contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
+<!-- VBP_GenericMemoryDialog.frm contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for VBP_GenericMemoryDialog.frm-->
 
@@ -13721,8 +13721,8 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <phrasecount>2383</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4075 phrases. -->
-<!-- 1692 are duplicates, so only 2383 unique phrases have been written to file. -->
-<!-- These 2383 phrases contain approximately 13569 total words. -->
+<!-- As of this build, PhotoDemon contains 4076 phrases. -->
+<!-- 1693 are duplicates, so only 2383 unique phrases have been written to file. -->
+<!-- These 2383 phrases contain approximately 13580 total words. -->
 
 </pdData>

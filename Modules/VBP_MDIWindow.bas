@@ -191,9 +191,11 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
                 If g_ProgramShuttingDown Or g_ClosingAllImages Then
                     
                     Dim i As Long
-                    For i = 1 To g_NumOfImagesLoaded
-                        If pdImages(i).IsActive And (Not pdImages(i).forInternalUseOnly) And (Not pdImages(i).getSaveState(pdSE_AnySave)) Then
-                            g_NumOfUnsavedImages = g_NumOfUnsavedImages + 1
+                    For i = 1 To UBound(pdImages)
+                        If Not (pdImages(i) Is Nothing) Then
+                            If pdImages(i).IsActive And (Not pdImages(i).forInternalUseOnly) And (Not pdImages(i).getSaveState(pdSE_AnySave)) Then
+                                g_NumOfUnsavedImages = g_NumOfUnsavedImages + 1
+                            End If
                         End If
                     Next i
                     
@@ -335,7 +337,7 @@ Public Sub activatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
     
         'Before switching to a new image, check for any non-destructive edits on the current image.  If any have occurred,
         ' add them to the Undo/Redo chain before switching.
-        Processor.evaluateImageCheckpoint
+        processor.evaluateImageCheckpoint
     
         'Update the current form variable
         g_CurrentImage = imageID
@@ -369,7 +371,7 @@ Public Sub activatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
         
         'As we have not invoked PD's central processor, we need to manually add an image checkpoint now.  This allows the processor
         ' to capture any non-destructive edits that occur before the next processor request.
-        Processor.evaluateImageCheckpoint
+        processor.evaluateImageCheckpoint
         
     End If
     

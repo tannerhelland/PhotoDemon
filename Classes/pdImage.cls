@@ -423,6 +423,7 @@ Public Function getLayerByID(ByVal requestedID As Long) As pdLayer
     Next i
     
     'If we made it all the way here, the requested layer was not found.  Return Nothing.
+    Debug.Print "WARNING!  getLayerByID received an invalid ID: " & requestedID
     Set getLayerByID = Nothing
     
 End Function

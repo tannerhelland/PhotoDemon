@@ -251,8 +251,8 @@ Public Sub createUndoData(ByVal processID As String, ByVal pParamString As Strin
     writeUndoDataToXML generateUndoHeaderFilename()
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
-    'debugUndo "new Undo entry created"
-    Debug.Print "Undo created successfully."
+    debugUndo "new Undo entry created"
+    'Debug.Print "Undo created successfully."
     
 End Sub
 
@@ -362,11 +362,8 @@ Public Sub moveToSpecificUndoPoint(ByVal undoIndex As Long)
     
 End Sub
 
-'Restore an undo entry, e.g. "the user just clicked Undo".
-' Optionally, a specific position in the Undo/Redo chain can be specified if the user wants to revert to
-' a specific state in an image's history.  (For example, the File -> Revert command calls this function
-' with an undoPosition of 0.)
-Public Sub restoreUndoData()
+'Restore the last undo entry, e.g. "the user just clicked Undo".
+Public Sub RestoreUndoData()
     
     'Some external actions must be deactivated while Undo/Redo processing occurs.  Such asynchronous functions can check
     ' this global variable to determine if they should fire, so we must set it before doing anything else.
@@ -501,20 +498,20 @@ Public Sub restoreUndoData()
                 'Vector layers can also be modified by the UNDO_LAYER_VECTORSAFE type, which simply signifies layer changes
                 ' that don't require rasterization.  If a newer version of the undo for this layer exists under this type,
                 ' take it instead.
-                Dim vectorCheck As Long
-                vectorCheck = findNearestDiffIndex(undoNum, UNDO_LAYER_VECTORSAFE, curLayerID)
+                'Dim vectorCheck As Long
+                'vectorCheck = findNearestDiffIndex(undoNum, UNDO_LAYER_VECTORSAFE, curLayerID)
                 
-                If vectorCheck > nearestLayerDiffDIB Then nearestLayerDiffDIB = vectorCheck
+                'If vectorCheck > nearestLayerDiffDIB Then nearestLayerDiffDIB = vectorCheck
                 
                 'If the nearest diff for this layer is *not* the same as the nearest diff for the full image, apply this diff
                 ' to the layer in question.
                 If (nearestLayerDiffDIB > nearestDiffIndex) Then
                 
-                    If vectorCheck = nearestLayerDiffDIB Then
-                        LoadUndo generateUndoFilename(nearestLayerDiffDIB), undoStack(nearestLayerDiffDIB).undoType, UNDO_LAYER_VECTORSAFE, curLayerID, suspendRedraws
-                    Else
+                    'If vectorCheck = nearestLayerDiffDIB Then
+                    '    LoadUndo generateUndoFilename(nearestLayerDiffDIB), undoStack(nearestLayerDiffDIB).undoType, UNDO_LAYER_VECTORSAFE, curLayerID, suspendRedraws
+                    'Else
                         LoadUndo generateUndoFilename(nearestLayerDiffDIB), undoStack(nearestLayerDiffDIB).undoType, UNDO_LAYER, curLayerID, suspendRedraws
-                    End If
+                    'End If
                     
                 End If
                 
@@ -553,7 +550,7 @@ Public Sub restoreUndoData()
     End If
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
-    'debugUndo "user clicked Undo"
+    debugUndo "user clicked Undo"
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
@@ -702,7 +699,7 @@ Public Sub RestoreRedoData()
     LoadUndo generateUndoFilename(undoNum - 1), getUndoProcessType, getUndoProcessType, undoStack(undoNum - 1).undoLayerID
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
-    'debugUndo "user clicked Redo"
+    debugUndo "user clicked Redo"
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
@@ -953,9 +950,9 @@ Public Sub debugUndo(ByVal sourceOfDebugRequest As String)
     Debug.Print "  (Displaying because " & sourceOfDebugRequest & ")"
     For i = 0 To UBound(undoStack)
         If i = undoNum - 1 Then
-            Debug.Print "  * " & i & ": " & undoStack(i).processID & ", " & undoStack(i).undoType
+            Debug.Print "  * " & i & ": " & undoStack(i).processID & ", T:" & undoStack(i).undoType & ", L:" & undoStack(i).undoLayerID
         Else
-            Debug.Print "  " & i & ": " & undoStack(i).processID & ", " & undoStack(i).undoType
+            Debug.Print "  " & i & ": " & undoStack(i).processID & ", T:" & undoStack(i).undoType & ", L:" & undoStack(i).undoLayerID
         End If
     Next i
     Debug.Print "---"

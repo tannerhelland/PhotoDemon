@@ -281,7 +281,7 @@ Public Sub notifyOfDestructiveChanges()
     m_DIBChangedSinceLastHashRequest = True
     
     'If this is a vector layer, note that the backing DIB is now out of sync
-    If myLayerType = PDL_TEXT Then m_VectorDIBSynched = False
+    m_VectorDIBSynched = False
     
 End Sub
 
@@ -1237,6 +1237,7 @@ Public Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
             Case PDL_TEXT
             
                 With myTextData
+                    Debug.Print "RETRIEVED TEXT VALUE FROM FILE: " & xmlEngine.getUniqueTag_String("TextLayerText", "")
                     .tld_Text = xmlEngine.getUniqueTag_String("TextLayerText", "")
                     .tld_FontColor = xmlEngine.getUniqueTag_Long("TextLayerColor", 0)
                     .tld_FontFace = xmlEngine.getUniqueTag_String("TextLayerFontFace", g_InterfaceFont)

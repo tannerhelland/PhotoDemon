@@ -1749,6 +1749,9 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                 ' image stack Undo/Redo), or whether we are simply modifying an existing layer.
                 If Tool_Support.getCustomToolState = PD_TEXT_TOOL_CREATED_NEW_LAYER Then
                     
+                    'Mark the current tool as busy to prevent any unwanted UI syncing
+                    Tool_Support.setToolBusyState True
+                    
                     'See if this was just a click (as it might be at creation time).
                     If ClickEventAlsoFiring Or (hasMouseMoved <= 2) Or (pdImages(g_CurrentImage).getActiveLayer.getLayerWidth < 4) Or (pdImages(g_CurrentImage).getActiveLayer.getLayerHeight < 4) Then
                         
@@ -1756,10 +1759,13 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                         pdImages(g_CurrentImage).getActiveLayer.setLayerWidth Abs(pdImages(g_CurrentImage).Width - pdImages(g_CurrentImage).getActiveLayer.getLayerOffsetX)
                         pdImages(g_CurrentImage).getActiveLayer.setLayerHeight Abs(pdImages(g_CurrentImage).Height - pdImages(g_CurrentImage).getActiveLayer.getLayerOffsetY)
                         
+                        'If the current text box is empty, set some new text to orient the user
+                        If Len(toolpanel_Text.txtTextTool.Text) = 0 Then
+                            toolpanel_Text.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
+                        End If
+                        
                         'Manually synchronize the new size values against their on-screen UI elements
-                        Tool_Support.setToolBusyState True
                         Tool_Support.syncToolOptionsUIToCurrentLayer
-                        Tool_Support.setToolBusyState False
                         
                         'Manually force a viewport redraw
                         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -1768,6 +1774,9 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     Else
                         transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask)
                     End If
+                    
+                    'Release the tool engine
+                    Tool_Support.setToolBusyState False
                     
                     'Process the addition of the new layer; this will create proper Undo/Redo data for the entire image (required, as the layer order
                     ' has changed due to this new addition).
@@ -1778,10 +1787,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     
                     'Finally, set focus to the text layer text entry box
                     toolpanel_Text.txtTextTool.SetFocus
-                    If Len(toolpanel_Text.txtTextTool.Text) = 0 Then
-                        toolpanel_Text.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
-                        toolpanel_Text.txtTextTool.selectAll
-                    End If
+                    toolpanel_Text.txtTextTool.selectAll
                     
                 'The user is simply editing an existing layer.
                 Else
@@ -2581,6 +2587,6 @@ Private Function isCanvasInteractionAllowed() As Boolean
     End If
     
     'If the central processor is active, exit
-    If Processor.Processing Then isCanvasInteractionAllowed = False
+    If processor.Processing Then isCanvasInteractionAllowed = False
     
 End Function

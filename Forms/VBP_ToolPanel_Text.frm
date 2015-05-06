@@ -33,7 +33,7 @@ Begin VB.Form toolpanel_Text
       Width           =   450
       _extentx        =   794
       _extenty        =   767
-      stickytoggle    =   -1
+      stickytoggle    =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltTextClarity 
       Height          =   435
@@ -78,7 +78,7 @@ Begin VB.Form toolpanel_Text
       _extentx        =   9340
       _extenty        =   2434
       fontsize        =   9
-      multiline       =   -1
+      multiline       =   -1  'True
    End
    Begin PhotoDemon.pdComboBox cboTextFontFace 
       Height          =   375
@@ -101,7 +101,7 @@ Begin VB.Form toolpanel_Text
       caption         =   "(this tool is under constr- uction)"
       forecolor       =   255
       layout          =   1
-      usecustomforecolor=   -1
+      usecustomforecolor=   -1  'True
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -205,7 +205,7 @@ Begin VB.Form toolpanel_Text
       Width           =   450
       _extentx        =   794
       _extenty        =   767
-      stickytoggle    =   -1
+      stickytoggle    =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox btnFontStyles 
       Height          =   435
@@ -216,7 +216,7 @@ Begin VB.Form toolpanel_Text
       Width           =   450
       _extentx        =   794
       _extenty        =   767
-      stickytoggle    =   -1
+      stickytoggle    =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox btnFontStyles 
       Height          =   435
@@ -227,7 +227,7 @@ Begin VB.Form toolpanel_Text
       Width           =   450
       _extentx        =   794
       _extenty        =   767
-      stickytoggle    =   -1
+      stickytoggle    =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox btnHAlignment 
       Height          =   435
@@ -676,4 +676,12 @@ Public Sub updateAgainstCurrentTheme()
     ' any common controls that may still exist in the program.)
     makeFormPretty Me
 
+End Sub
+
+Private Sub txtTextTool_GotFocusAPI()
+    processor.flagInitialNDFXState_Text ptp_Text, txtTextTool.Text, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub txtTextTool_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then processor.flagFinalNDFXState_Text ptp_Text, txtTextTool.Text
 End Sub
