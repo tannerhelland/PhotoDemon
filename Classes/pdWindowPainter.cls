@@ -45,12 +45,12 @@ Public Event PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winW
 'Subclassing is used to better optimize the control's painting; this also requires manual validation of the control rect.
 Private Const WM_PAINT As Long = &HF
 Private Const WM_ERASEBKGND As Long = &H14
-Private Declare Function ValidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECT) As Long
-Private Declare Function InvalidateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECT, ByVal bErase As Long) As Long
-Private Declare Function GetClientRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECT) As Long
-Private Declare Function EndPaint Lib "user32" (ByVal targetHWnd As Long, ByRef lpPaint As PAINTSTRUCT) As Long
-Private Declare Function BeginPaint Lib "user32" (ByVal targetHWnd As Long, ByRef lpPaint As PAINTSTRUCT) As Long
-Private Declare Function GetUpdateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECT, ByVal bErase As Long) As Long
+Private Declare Function ValidateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As RECT) As Long
+Private Declare Function InvalidateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As RECT, ByVal bErase As Long) As Long
+Private Declare Function GetClientRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As RECT) As Long
+Private Declare Function EndPaint Lib "user32" (ByVal targetHwnd As Long, ByRef lpPaint As PAINTSTRUCT) As Long
+Private Declare Function BeginPaint Lib "user32" (ByVal targetHwnd As Long, ByRef lpPaint As PAINTSTRUCT) As Long
+Private Declare Function GetUpdateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As RECT, ByVal bErase As Long) As Long
 
 'The window being subclassed
 Private m_hWnd As Long
@@ -83,14 +83,15 @@ End Sub
 ' load this class.
 Public Sub startPainter(ByVal srcHwnd As Long)
     
-    m_hWnd = srcHwnd
-    
-    'Subclass all necessary messages for proper window painting
+    'Release the existing subclasser, if any
     If Not (cSubclass Is Nothing) And (m_hWnd <> 0) Then
         cSubclass.ssc_UnSubclass m_hWnd
         cSubclass.ssc_Terminate
     End If
     
+    m_hWnd = srcHwnd
+    
+    'Subclass all necessary messages for proper window painting
     If (m_hWnd <> 0) Then
         Set cSubclass = New cSelfSubHookCallback
         cSubclass.ssc_Subclass m_hWnd, , , Me
