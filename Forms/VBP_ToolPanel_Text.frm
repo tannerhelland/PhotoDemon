@@ -317,6 +317,9 @@ End Sub
 
 Private Sub btnFontStyles_GotFocus(Index As Integer)
     
+    'Non-destructive effects are obviously not tracked if no images are loaded
+    If g_OpenImageCount = 0 Then Exit Sub
+    
     'Set Undo/Redo markers for whichever button was toggled
     Select Case Index
     
@@ -386,6 +389,7 @@ Private Sub btsHAlignment_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub btsHAlignment_GotFocus()
+    If g_OpenImageCount = 0 Then Exit Sub
     Processor.flagInitialNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
 End Sub
 
@@ -414,6 +418,7 @@ Private Sub btsVAlignment_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub btsVAlignment_GotFocus()
+    If g_OpenImageCount = 0 Then Exit Sub
     Processor.flagInitialNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
 End Sub
 
@@ -442,6 +447,7 @@ Private Sub cboTextFontFace_Click()
 End Sub
 
 Private Sub cboTextFontFace_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
     Processor.flagInitialNDFXState_Text ptp_FontFace, cboTextFontFace.List(cboTextFontFace.ListIndex), pdImages(g_CurrentImage).getActiveLayerID
 End Sub
 
@@ -480,6 +486,7 @@ Private Sub cboTextRenderingHint_Click()
 End Sub
 
 Private Sub cboTextRenderingHint_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
     Processor.flagInitialNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
 End Sub
 
@@ -616,6 +623,7 @@ Private Sub tudTextFontSize_Change()
 End Sub
 
 Private Sub tudTextFontSize_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
     Processor.flagInitialNDFXState_Text ptp_FontSize, tudTextFontSize.Value, pdImages(g_CurrentImage).getActiveLayerID
 End Sub
 
@@ -644,6 +652,7 @@ Private Sub txtTextTool_Change()
 End Sub
 
 Private Sub txtTextTool_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
     Processor.flagInitialNDFXState_Text ptp_Text, txtTextTool.Text, pdImages(g_CurrentImage).getActiveLayerID
 End Sub
 

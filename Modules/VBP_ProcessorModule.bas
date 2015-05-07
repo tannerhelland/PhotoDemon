@@ -1966,6 +1966,9 @@ End Sub
 ' and notify the macro recorder (if active).
 Public Sub flagFinalNDFXState_Text(ByVal textSettingID As PDLAYER_TEXT_PROPERTY, ByVal textSettingValue As Variant)
     
+    'Ignore all requests if no images are loaded
+    If g_OpenImageCount = 0 Then Exit Sub
+    
     'First, make sure this setting ID matches our previously stored one.  If it doesn't, a focus tracking error has occurred.
     If textSettingID = prevSettingID Then
     
