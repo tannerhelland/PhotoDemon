@@ -65,6 +65,12 @@ Public Event MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Sh
 Private WithEvents cPainter As pdWindowPainter
 Attribute cPainter.VB_VarHelpID = -1
 
+'Reliable focus detection requires a specialized subclasser
+Private WithEvents cFocusDetector As pdFocusDetector
+Attribute cFocusDetector.VB_VarHelpID = -1
+Public Event GotFocusAPI()
+Public Event LostFocusAPI()
+
 'Retrieve the width and height of a string
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpStrPointer As Long, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
 
@@ -236,6 +242,32 @@ Private Sub refreshFont()
         
     'Also, each button needs to be rebuilt to reflect the new font metrics
     updateControlSize
+
+End Sub
+
+'When the control receives focus, if the focus isn't received via mouse click, display a focus rect
+Private Sub cFocusDetector_GotFocusReliable()
+    
+    'If the mouse is *not* over the user control, assume focus was set via keyboard
+    If Not m_MouseInsideUC Then
+        m_FocusRectActive = m_ButtonIndex
+        redrawBackBuffer
+    End If
+    
+    RaiseEvent GotFocusAPI
+    
+End Sub
+
+'When the control loses focus, erase any focus rects it may have active
+Private Sub cFocusDetector_LostFocusReliable()
+    
+    'If a focus rect has been drawn, remove it now
+    If (m_FocusRectActive >= 0) Then
+        m_FocusRectActive = -1
+        redrawBackBuffer
+    End If
+    
+    RaiseEvent LostFocusAPI
 
 End Sub
 
@@ -545,17 +577,6 @@ Public Sub updateAgainstCurrentTheme()
     
 End Sub
 
-'When the control receives focus, if the focus isn't received via mouse click, display a focus rect
-Private Sub UserControl_GotFocus()
-
-    'If the mouse is *not* over the user control, assume focus was set via keyboard
-    If Not m_MouseInsideUC Then
-        m_FocusRectActive = m_ButtonIndex
-        redrawBackBuffer
-    End If
-
-End Sub
-
 'INITIALIZE control
 Private Sub UserControl_Initialize()
     
@@ -578,6 +599,10 @@ Private Sub UserControl_Initialize()
         'Also start a flicker-free window painter
         Set cPainter = New pdWindowPainter
         cPainter.startPainter Me.hWnd
+        
+        'Also start a focus detector
+        Set cFocusDetector = New pdFocusDetector
+        cFocusDetector.startFocusTracking Me.hWnd
         
         'Create a tooltip engine
         Set toolTipManager = New pdToolTip
@@ -607,17 +632,6 @@ Private Sub UserControl_InitProperties()
     m_FontBold = False
     m_FontSize = 10
     
-End Sub
-
-'When the control loses focus, erase any focus rects it may have active
-Private Sub UserControl_LostFocus()
-
-    'If a focus rect has been drawn, remove it now
-    If (m_FocusRectActive >= 0) Then
-        m_FocusRectActive = -1
-        redrawBackBuffer
-    End If
-
 End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
