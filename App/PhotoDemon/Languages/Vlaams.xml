@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.29</langversion>
+<langversion>6.7.30</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -1417,7 +1417,72 @@ Wanneer voltooid, klikt u op de knop Verzenden. Dank je wel!</translation>
 <translation>Bug report instructies</translation>
 </phrase>
 
-<!-- VBP_ProcessorModule.bas contains 29 phrases. 6 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<phrase>
+<original>text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font: color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font: face</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font: size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font: size unit</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>style: bold</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>style: italic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>style: underline</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>style: strikeout</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>horizontal alignment</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical alignment</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>text: antialiasing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>text: clarity</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_ProcessorModule.bas contains 55 phrases. 19 were duplicates of existing phrases, so only 36 new phrases were written to file. -->
 
 <!-- END text for VBP_ProcessorModule.bas-->
 
@@ -6686,6 +6751,11 @@ Geef een numerieke waarde.</translation>
 <!-- BEGIN text for VBP_MiscInterface.bas -->
 
 <phrase>
+<original>Please load or import an image to begin editing.</original>
+<translation>Gelieve een afbeelding te laden of importeren om de bewerking te beginnen.</translation>
+</phrase>
+
+<phrase>
 <original>Repeat</original>
 <translation>Herhaal</translation>
 </phrase>
@@ -6693,11 +6763,6 @@ Geef een numerieke waarde.</translation>
 <phrase>
 <original>Fade last action</original>
 <translation>Vervaag laatste actie</translation>
-</phrase>
-
-<phrase>
-<original>Please load or import an image to begin editing.</original>
-<translation>Gelieve een afbeelding te laden of importeren om de bewerking te beginnen.</translation>
 </phrase>
 
 <phrase>
@@ -11078,11 +11143,6 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 </phrase>
 
 <phrase>
-<original>text</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>macro recording in progress</original>
 <translation>Macro-opname aan de gang</translation>
 </phrase>
@@ -11187,7 +11247,7 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 <translation>Toverstaf Selectie</translation>
 </phrase>
 
-<!-- VBP_ToolbarPrimary.frm contains 44 phrases. 18 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
+<!-- VBP_ToolbarPrimary.frm contains 44 phrases. 19 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarPrimary.frm-->
 
@@ -11837,12 +11897,12 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 </phrase>
 
 <phrase>
-<original>New text layer</original>
+<original>(enter text here)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>(enter text here)</original>
+<original>New text layer</original>
 <translation></translation>
 </phrase>
 
@@ -13719,10 +13779,10 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2383</phrasecount>
+<phrasecount>2395</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4076 phrases. -->
-<!-- 1693 are duplicates, so only 2383 unique phrases have been written to file. -->
-<!-- These 2383 phrases contain approximately 13580 total words. -->
+<!-- As of this build, PhotoDemon contains 4102 phrases. -->
+<!-- 1707 are duplicates, so only 2395 unique phrases have been written to file. -->
+<!-- These 2395 phrases contain approximately 13605 total words. -->
 
 </pdData>
