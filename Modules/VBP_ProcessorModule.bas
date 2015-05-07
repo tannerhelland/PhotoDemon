@@ -1968,6 +1968,7 @@ Public Sub flagInitialNDFXState_Text(ByVal textSettingID As PDLAYER_TEXT_PROPERT
     
     'This function is easy; just store the values we are passed
     prevTextSetting(textSettingID) = textSettingValue
+    'Debug.Print "NEW VALUE: " & CStr(textSettingValue)
     
     'As a failsafe against layer changes occurring simultaneous with focus changes, also make a note of the current layer.
     If prevTextLayerID <> targetLayerID Then
@@ -1989,7 +1990,7 @@ Public Sub flagFinalNDFXState_Text(ByVal textSettingID As PDLAYER_TEXT_PROPERTY,
     ' (if they're currently being recorded, obviously)
     If StrComp(CStr(textSettingValue), CStr(prevTextSetting(textSettingID)), vbBinaryCompare) <> 0 Then
         
-        'Debug.Print "OLD VALUE: " & CStr(prevSettingValue) & ", NEW VALUE: " & CStr(textSettingValue)
+        'Debug.Print "OLD VALUE: " & CStr(prevTextSetting(textSettingID)) & ", NEW VALUE: " & CStr(textSettingValue)
         
         'Raise a generic "text setting change" processor request
         MiniProcess_NDFXOnly "Modify text layer", , buildParams(textSettingID, textSettingValue), UNDO_LAYER_VECTORSAFE, , , prevTextLayerID
