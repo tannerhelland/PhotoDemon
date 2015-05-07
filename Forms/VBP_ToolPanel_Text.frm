@@ -101,20 +101,6 @@ Begin VB.Form toolpanel_Text
       _ExtentY        =   635
    End
    Begin PhotoDemon.pdLabel lblText 
-      Height          =   1080
-      Index           =   0
-      Left            =   0
-      Top             =   360
-      Width           =   765
-      _ExtentX        =   1349
-      _ExtentY        =   1905
-      Alignment       =   2
-      Caption         =   "(this tool is under constr- uction)"
-      ForeColor       =   255
-      Layout          =   1
-      UseCustomForeColor=   -1  'True
-   End
-   Begin PhotoDemon.pdLabel lblText 
       Height          =   240
       Index           =   1
       Left            =   120
@@ -278,7 +264,7 @@ Attribute lastUsedSettings.VB_VarHelpID = -1
 Private userFontList As pdStringStack
 
 Private Sub btnFontStyles_Click(Index As Integer)
-
+    
     'If tool changes are not allowed, exit.
     ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
     If Not Tool_Support.canvasToolsAllowed Then Exit Sub
@@ -315,7 +301,7 @@ Private Sub btnFontStyles_Click(Index As Integer)
 
 End Sub
 
-Private Sub btnFontStyles_GotFocus(Index As Integer)
+Private Sub btnFontStyles_GotFocusAPI(Index As Integer)
     
     'Non-destructive effects are obviously not tracked if no images are loaded
     If g_OpenImageCount = 0 Then Exit Sub
@@ -343,7 +329,7 @@ Private Sub btnFontStyles_GotFocus(Index As Integer)
     
 End Sub
 
-Private Sub btnFontStyles_LostFocus(Index As Integer)
+Private Sub btnFontStyles_LostFocusAPI(Index As Integer)
     
     'Evaluate Undo/Redo markers for whichever button was toggled
     Select Case Index
@@ -512,6 +498,15 @@ Private Sub csTextFontColor_ColorChanged()
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
+End Sub
+
+Private Sub csTextFontColor_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_FontColor, csTextFontColor.Color, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub csTextFontColor_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FontColor, csTextFontColor.Color
 End Sub
 
 Private Sub Form_Load()

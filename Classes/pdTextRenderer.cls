@@ -196,6 +196,25 @@ End Enum
     Private Const TextRenderingHintAntiAliasGridFit = 3, TextRenderingHintAntiAlias = 4, TextRenderingHintClearTypeGridFit = 5
 #End If
 
+'String format settings
+Private Enum StringFormatFlags
+    StringFormatFlagsDirectionRightToLeft = &H1
+    StringFormatFlagsDirectionVertical = &H2
+    StringFormatFlagsFitBlackBox = &H4
+    StringFormatFlagsDisplayFormatControl = &H20
+    StringFormatFlagsNoFontFallback = &H400
+    StringFormatFlagsMeasureTrailingSpaces = &H800
+    StringFormatFlagsNoWrap = &H1000
+    StringFormatFlagsLineLimit = &H2000
+    StringFormatFlagsNoClip = &H4000
+End Enum
+
+#If False Then
+    Private Const StringFormatFlagsDirectionRightToLeft = &H1, StringFormatFlagsDirectionVertical = &H2, StringFormatFlagsFitBlackBox = &H4, StringFormatFlagsDisplayFormatControl = &H20
+    Private Const StringFormatFlagsNoFontFallback = &H400, StringFormatFlagsMeasureTrailingSpaces = &H800, StringFormatFlagsNoWrap = &H1000, StringFormatFlagsLineLimit = &H2000
+    Private Const StringFormatFlagsNoClip = &H4000
+#End If
+
 'Font style settings
 Private Enum FontStyle
     FontStyleRegular = 0
@@ -233,8 +252,11 @@ Private Declare Function GdipDeleteFont Lib "gdiplus" (ByVal srcFont As Long) As
 'GDI+ string format functions
 Private Declare Function GdipStringFormatGetGenericTypographic Lib "gdiplus" (ByRef dstStringFormat As Long) As Long
 Private Declare Function GdipDeleteStringFormat Lib "gdiplus" (ByVal srcStringFormat As Long) As Long
+Private Declare Function GdipSetStringFormatFlags Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newFlags As Long) As Long
+Private Declare Function GdipGetStringFormatFlags Lib "gdiplus" (ByVal srcStringFormat As Long, ByRef dstFlags As Long) As Long
 Private Declare Function GdipSetStringFormatAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newAlignment As GdiPlusStringAlignment) As Long
 Private Declare Function GdipSetStringFormatLineAlign Lib "gdiplus" (ByVal dstStringFormat As Long, ByVal newLineAlignment As GdiPlusStringAlignment) As Long
+Private Declare Function GdipMeasureString Lib "gdiplus" (ByVal srcGraphics As Long, ByVal ptrToString As Long, ByVal numCharsInString As Long, ByVal srcFontObject As Long, ByRef srcLayoutRect As RECTF, ByVal srcStringFormat As Long, ByRef dstBoundingBox As RECTF, ByRef optNumCharactersFitted As Long, ByRef optNumLinesFitted As Long) As Long
 
 'GDI+ graphics container font functions
 Private Declare Function GdipSetTextRenderingHint Lib "gdiplus" (ByVal dstGraphics As Long, ByVal newRenderHintMode As GdiPlusTextRenderingHint) As Long
@@ -988,6 +1010,14 @@ Private Function renderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
         .Height = textHeight
     End With
     
+    'Hypothetically, we could attempt to retrieve a bounding box for the string.  This would be relevant when compensating for overhang
+    ' on the left side, for synthesized fonts like Times New Roman - Italic.  Unfortunately, GDI+ is stupid and it doesn't report
+    ' left-bound overhang, so this function isn't helpful at all.
+    'Dim stringRect As RECTF
+    'If getStringBoundingBox(dstGraphics, srcString, boundingRect, stringRect) Then
+    '    offsetX = stringRect.Left
+    'End If
+    
     'Finally, use GDI+ to render the actual string
     Dim gdipReturn As Long
     gdipReturn = GdipDrawString(dstGraphics, StrPtr(srcString), Len(srcString), m_GDIPlusFont, boundingRect, m_GDIPlusStringFormat, gdipBrush)
@@ -1005,6 +1035,23 @@ Private Function renderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
     GDI_Plus.releaseGDIPlusGraphics dstGraphics
 
 End Function
+
+'Use GdipMeasureString to return the bounding box of a given string and assembled GDI+ objects.  This is helpful for knowing how the string
+' fits into the desired target rect.
+Private Function getStringBoundingBox(ByRef srcGraphics As Long, ByRef srcString As String, ByRef srcLayoutRect As RECTF, ByRef dstBoundRect As RECTF) As Boolean
+
+    If m_GDIPlusFont <> 0 Then
+        
+        Dim gdipReturn As Long
+        gdipReturn = GdipMeasureString(srcGraphics, StrPtr(srcString), Len(srcString), m_GDIPlusFont, srcLayoutRect, m_GDIPlusStringFormat, dstBoundRect, ByVal 0&, ByVal 0&)
+        getStringBoundingBox = CBool(gdipReturn = 0)
+        
+    Else
+        getStringBoundingBox = 0
+    End If
+
+End Function
+
 
 'Render text using GDI+, and a glyph collection properly assembled inside m_GlyphCollection.
 Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString As String, ByVal crColor As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
@@ -1438,6 +1485,12 @@ Private Sub Class_Initialize()
     ' DigitSubstitutionMethod: User
     ' DigitSubstitutionLanguage: 0
     GdipStringFormatGetGenericTypographic m_GDIPlusStringFormat
+    
+    'Make a few adjustments to allow partially visible lines to still appear
+    Dim tmpCopyFlags As Long
+    GdipGetStringFormatFlags m_GDIPlusStringFormat, tmpCopyFlags
+    tmpCopyFlags = tmpCopyFlags And (Not StringFormatFlagsLineLimit)
+    GdipSetStringFormatFlags m_GDIPlusStringFormat, tmpCopyFlags
     
     'Mark the current font cache as dirty
     m_FontCacheClean = False
