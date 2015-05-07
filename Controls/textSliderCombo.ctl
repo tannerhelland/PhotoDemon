@@ -93,6 +93,10 @@ Option Explicit
 ' - Change (which triggers when either the scrollbar or text box is modified in any way)
 Public Event Change()
 
+'Because we have multiple components on this user control, including an API text box, we report our own Got/Lost focus events.
+Public Event GotFocusAPI()
+Public Event LostFocusAPI()
+
 'Flicker-free window painter
 Private WithEvents cPainter As pdWindowPainter
 Attribute cPainter.VB_VarHelpID = -1
@@ -205,6 +209,11 @@ Private m_SliderBackgroundDIB As pdDIB
 
 'Final back buffer DIB, with the entire slider composited atop it
 Private m_BackBuffer As pdDIB
+
+'Tracks whether the control (any component) has focus.  This is helpful as we must synchronize between VB's focus events and API
+' focus events.  Every time an individual component gains focus, we increment this counter by 1.  Every time an individual component
+' loses focus, we decrement the counter by 1.  When the counter hits 0, we report a control-wide Got/LostFocusAPI event.
+Private m_ControlFocusCount As Long
 
 Public Property Get FontSize() As Single
     FontSize = m_FontSize
@@ -596,12 +605,37 @@ Public Property Let ForeColor(ByVal newColor As OLE_COLOR)
     PropertyChanged "ForeColor"
 End Property
 
+Private Sub picScroll_GotFocus()
+    m_ControlFocusCount = m_ControlFocusCount + 1
+    evaluateFocusCount True
+End Sub
+
+Private Sub picScroll_LostFocus()
+    m_ControlFocusCount = m_ControlFocusCount - 1
+    evaluateFocusCount False
+End Sub
+
 Private Sub tudPrimary_Change()
     If tudPrimary.IsValid(False) Then
         textBoxInitiated = True
         Me.Value = tudPrimary.Value
         textBoxInitiated = False
     End If
+End Sub
+
+Private Sub tudPrimary_GotFocusAPI()
+    m_ControlFocusCount = m_ControlFocusCount + 1
+    evaluateFocusCount True
+End Sub
+
+Private Sub tudPrimary_LostFocusAPI()
+    m_ControlFocusCount = m_ControlFocusCount - 1
+    evaluateFocusCount False
+End Sub
+
+Private Sub UserControl_GotFocus()
+    m_ControlFocusCount = m_ControlFocusCount + 1
+    evaluateFocusCount True
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -696,6 +730,11 @@ Private Sub UserControl_InitProperties()
     NotchValueCustom = 0
     customNotchValue = 0
     
+End Sub
+
+Private Sub UserControl_LostFocus()
+    m_ControlFocusCount = m_ControlFocusCount - 1
+    evaluateFocusCount False
 End Sub
 
 Private Sub UserControl_Paint()
@@ -1240,6 +1279,24 @@ Public Sub sizeDIBToTrackArea(ByRef targetDIB As pdDIB)
     Set targetDIB = New pdDIB
     targetDIB.createBlank (getTrackMaxPos - getTrackMinPos) + m_trackDiameter, m_SliderAreaHeight, 32, ConvertSystemColor(vbWindowBackground), 255
     
+End Sub
+
+'After a component of this control gets or loses focus, it needs to call this function.  This function is responsible for raising
+' Got/LostFocusAPI events, which are important as an API text box is part of this control.
+Private Sub evaluateFocusCount(ByVal focusCountJustIncremented As Boolean)
+
+    If focusCountJustIncremented Then
+        
+        'If just incremented from 0 to 1, raise a GotFocusAPI event
+        If m_ControlFocusCount = 1 Then RaiseEvent GotFocusAPI
+        
+    Else
+    
+        'If just decremented from 1 to 0, raise a LostFocusAPI event
+        If m_ControlFocusCount = 0 Then RaiseEvent LostFocusAPI
+    
+    End If
+
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
