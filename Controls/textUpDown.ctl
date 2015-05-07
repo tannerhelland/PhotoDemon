@@ -36,8 +36,8 @@ Begin VB.UserControl textUpDown
       TabIndex        =   1
       Top             =   15
       Width           =   750
-      _extentx        =   1323
-      _extenty        =   556
+      _ExtentX        =   1323
+      _ExtentY        =   556
    End
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
@@ -107,6 +107,10 @@ Public Event Change()
 'Because we have multiple components on this user control, including an API text box, we report our own Got/Lost focus events.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
+
+'Reliable focus detection on the spin control requires a specialized subclasser
+Private WithEvents cFocusDetector As pdFocusDetector
+Attribute cFocusDetector.VB_VarHelpID = -1
 
 'For performance reasons, this object can always raise an event I call "FinalChange".  This triggers under the same conditions as Change,
 ' *EXCEPT* when the mouse button is held down.  FinalChange will not fire until the mouse button is released, which makes it ideal
@@ -204,6 +208,16 @@ Public Property Let FontSize(ByVal newSize As Single)
         PropertyChanged "FontSize"
     End If
 End Property
+
+Private Sub cFocusDetector_GotFocusReliable()
+    m_ControlFocusCount = m_ControlFocusCount + 1
+    evaluateFocusCount True
+End Sub
+
+Private Sub cFocusDetector_LostFocusReliable()
+    m_ControlFocusCount = m_ControlFocusCount - 1
+    evaluateFocusCount False
+End Sub
 
 Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
@@ -304,16 +318,6 @@ Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, By
         BitBlt cPainter.getPaintStructDC, 0, 0, buttonDIB.getDIBWidth, buttonDIB.getDIBHeight, buttonDIB.getDIBDC, 0, 0, vbSrcCopy
     End If
     
-End Sub
-
-Private Sub picScroll_GotFocus()
-    m_ControlFocusCount = m_ControlFocusCount + 1
-    evaluateFocusCount True
-End Sub
-
-Private Sub picScroll_LostFocus()
-    m_ControlFocusCount = m_ControlFocusCount - 1
-    evaluateFocusCount False
 End Sub
 
 Private Sub tmrDownButton_Timer()
@@ -533,6 +537,10 @@ Private Sub UserControl_Initialize()
     'Prepare an input handler for the spin button area
     Set cMouseEvents = New pdInputMouse
     If g_IsProgramRunning Then cMouseEvents.addInputTracker picScroll.hWnd, True, True, False, True, False
+    
+    'Also start a focus detector for the spinner picture box
+    Set cFocusDetector = New pdFocusDetector
+    cFocusDetector.startFocusTracking picScroll.hWnd
     
     'Reset the focus count
     m_ControlFocusCount = 0

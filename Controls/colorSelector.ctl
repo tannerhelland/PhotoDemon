@@ -60,6 +60,12 @@ Public Event ColorChanged()
 Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
 
+'Reliable focus detection requires a specialized subclasser
+Private WithEvents cFocusDetector As pdFocusDetector
+Attribute cFocusDetector.VB_VarHelpID = -1
+Public Event GotFocusAPI()
+Public Event LostFocusAPI()
+
 'The control's current color
 Private curColor As OLE_COLOR
 
@@ -96,6 +102,16 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
     cMouseEvents.setSystemCursor IDC_DEFAULT
 End Sub
 
+'When the control receives focus, relay the event externally
+Private Sub cFocusDetector_GotFocusReliable()
+    RaiseEvent GotFocusAPI
+End Sub
+
+'When the control loses focus, relay the event externally
+Private Sub cFocusDetector_LostFocusReliable()
+    RaiseEvent LostFocusAPI
+End Sub
+
 Private Sub UserControl_Click()
 
     isDialogLive = True
@@ -120,9 +136,16 @@ Private Sub UserControl_Initialize()
     drawControlBorders
     
     If g_IsProgramRunning Then
+        
+        'Initialize mouse handling
         Set cMouseEvents = New pdInputMouse
         cMouseEvents.addInputTracker UserControl.hWnd, True, , , True
         cMouseEvents.setSystemCursor IDC_HAND
+        
+        'Also start a focus detector
+        Set cFocusDetector = New pdFocusDetector
+        cFocusDetector.startFocusTracking Me.hWnd
+        
     End If
     
 End Sub

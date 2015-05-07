@@ -66,6 +66,12 @@ Public Event Click()
 Private WithEvents cPainter As pdWindowPainter
 Attribute cPainter.VB_VarHelpID = -1
 
+'Reliable focus detection requires a specialized subclasser
+Private WithEvents cFocusDetector As pdFocusDetector
+Attribute cFocusDetector.VB_VarHelpID = -1
+Public Event GotFocusAPI()
+Public Event LostFocusAPI()
+
 'Retrieve the width and height of a string
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpStrPointer As Long, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
 
@@ -201,6 +207,30 @@ Private Sub refreshFont()
     'Also, the back buffer needs to be rebuilt to reflect the new font metrics
     updateControlSize
 
+End Sub
+
+Private Sub cFocusDetector_GotFocusReliable()
+    
+    'If the mouse is *not* over the user control, assume focus was set via keyboard
+    If Not m_MouseInsideUC Then
+        m_FocusRectActive = True
+        redrawBackBuffer
+    End If
+    
+    RaiseEvent GotFocusAPI
+    
+End Sub
+
+Private Sub cFocusDetector_LostFocusReliable()
+    
+    'If a focus rect has been drawn, remove it now
+    If (Not m_MouseInsideUC) And m_FocusRectActive Then
+        m_FocusRectActive = False
+        redrawBackBuffer
+    End If
+    
+    RaiseEvent LostFocusAPI
+    
 End Sub
 
 'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
@@ -365,16 +395,6 @@ Attribute Caption.VB_UserMemId = -518
     
 End Property
 
-Private Sub UserControl_GotFocus()
-
-    'If the mouse is *not* over the user control, assume focus was set via keyboard
-    If Not m_MouseInsideUC Then
-        m_FocusRectActive = True
-        redrawBackBuffer
-    End If
-
-End Sub
-
 Private Sub UserControl_Initialize()
     
     'Initialize the internal font object
@@ -391,6 +411,10 @@ Private Sub UserControl_Initialize()
         'Also start a flicker-free window painter
         Set cPainter = New pdWindowPainter
         cPainter.startPainter Me.hWnd
+        
+        'Also start a focus detector
+        Set cFocusDetector = New pdFocusDetector
+        cFocusDetector.startFocusTracking Me.hWnd
         
         'Create a tooltip engine
         Set toolTipManager = New pdToolTip
@@ -421,16 +445,6 @@ Private Sub UserControl_KeyPress(KeyAscii As Integer)
 
     If (KeyAscii = vbKeySpace) And (Not Me.Value) Then
         Me.Value = True
-    End If
-
-End Sub
-
-Private Sub UserControl_LostFocus()
-
-    'If a focus rect has been drawn, remove it now
-    If (Not m_MouseInsideUC) And m_FocusRectActive Then
-        m_FocusRectActive = False
-        redrawBackBuffer
     End If
 
 End Sub
