@@ -1596,7 +1596,7 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                     curFont.attachToDC targetDC
                     
                     With cbiCombo.rcItem
-                        curFont.fastRenderTextWithClipping .Left + 4, .Top, (.Right - .Left) - 4, (.Bottom - .Top) - 2, tmpString, False
+                        curFont.fastRenderTextWithClipping .Left + 4, .Top, (.Right - .Left) - fixDPIFloat(8), (.Bottom - .Top) - 2, tmpString, True
                     End With
                     
                     curFont.releaseFromDC
