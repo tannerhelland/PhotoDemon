@@ -97,6 +97,10 @@ Public Event Change()
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
+'Reliable focus detection on the slider picture box requires a specialized subclasser
+Private WithEvents cFocusDetector As pdFocusDetector
+Attribute cFocusDetector.VB_VarHelpID = -1
+
 'Flicker-free window painter
 Private WithEvents cPainter As pdWindowPainter
 Attribute cPainter.VB_VarHelpID = -1
@@ -372,6 +376,16 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     
 End Property
 
+Private Sub cFocusDetector_GotFocusReliable()
+    m_ControlFocusCount = m_ControlFocusCount + 1
+    evaluateFocusCount True
+End Sub
+
+Private Sub cFocusDetector_LostFocusReliable()
+    m_ControlFocusCount = m_ControlFocusCount - 1
+    evaluateFocusCount False
+End Sub
+
 'Arrow keys can be used to "nudge" the control value in single-unit increments.
 Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
 
@@ -605,16 +619,6 @@ Public Property Let ForeColor(ByVal newColor As OLE_COLOR)
     PropertyChanged "ForeColor"
 End Property
 
-Private Sub picScroll_GotFocus()
-    m_ControlFocusCount = m_ControlFocusCount + 1
-    evaluateFocusCount True
-End Sub
-
-Private Sub picScroll_LostFocus()
-    m_ControlFocusCount = m_ControlFocusCount - 1
-    evaluateFocusCount False
-End Sub
-
 Private Sub tudPrimary_Change()
     If tudPrimary.IsValid(False) Then
         textBoxInitiated = True
@@ -655,6 +659,10 @@ Private Sub UserControl_Initialize()
         'Set up keyboard events
         Set cKeyEvents = New pdInputKeyboard
         cKeyEvents.createKeyboardTracker "Slider/Text UC", picScroll.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN
+        
+        'Also start a focus detector for the slider picture box
+        Set cFocusDetector = New pdFocusDetector
+        cFocusDetector.startFocusTracking picScroll.hWnd
         
         'Create a tooltip engine
         Set toolTipManager = New pdToolTip

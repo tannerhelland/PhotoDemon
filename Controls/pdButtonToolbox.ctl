@@ -72,6 +72,12 @@ Attribute cKeyEvents.VB_VarHelpID = -1
 Private WithEvents cPainter As pdWindowPainter
 Attribute cPainter.VB_VarHelpID = -1
 
+'Reliable focus detection requires a specialized subclasser
+Private WithEvents cFocusDetector As pdFocusDetector
+Attribute cFocusDetector.VB_VarHelpID = -1
+Public Event GotFocusAPI()
+Public Event LostFocusAPI()
+
 'Current button state
 Private m_ButtonState As Boolean
 
@@ -173,6 +179,32 @@ End Property
 Public Property Let StickyToggle(ByVal newValue As Boolean)
     m_StickyToggle = newValue
 End Property
+
+'When the control receives focus, if the focus isn't received via mouse click, display a focus rect
+Private Sub cFocusDetector_GotFocusReliable()
+    
+    'If the mouse is *not* over the user control, assume focus was set via keyboard
+    If Not m_MouseInsideUC Then
+        m_FocusRectActive = True
+        redrawBackBuffer
+    End If
+    
+    RaiseEvent GotFocusAPI
+    
+End Sub
+
+'When the control loses focus, erase any focus rects it may have active
+Private Sub cFocusDetector_LostFocusReliable()
+    
+    'If a focus rect has been drawn, remove it now
+    If m_FocusRectActive Then
+        m_FocusRectActive = False
+        redrawBackBuffer
+    End If
+    
+    RaiseEvent LostFocusAPI
+
+End Sub
 
 'A few key events are also handled
 Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
@@ -397,17 +429,6 @@ Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, By
     
 End Sub
 
-'When the control receives focus, if the focus isn't received via mouse click, display a focus rect
-Private Sub UserControl_GotFocus()
-
-    'If the mouse is *not* over the user control, assume focus was set via keyboard
-    If Not m_MouseInsideUC Then
-        m_FocusRectActive = True
-        redrawBackBuffer
-    End If
-
-End Sub
-
 'INITIALIZE control
 Private Sub UserControl_Initialize()
     
@@ -424,6 +445,10 @@ Private Sub UserControl_Initialize()
         'Also start a flicker-free window painter
         Set cPainter = New pdWindowPainter
         cPainter.startPainter Me.hWnd
+        
+        'Also start a focus detector
+        Set cFocusDetector = New pdFocusDetector
+        cFocusDetector.startFocusTracking Me.hWnd
         
         'Create a tooltip engine
         Set toolTipManager = New pdToolTip
@@ -450,17 +475,6 @@ Private Sub UserControl_InitProperties()
     StickyToggle = False
     DontHighlightDownState = False
     
-End Sub
-
-'When the control loses focus, erase any focus rects it may have active
-Private Sub UserControl_LostFocus()
-
-    'If a focus rect has been drawn, remove it now
-    If m_FocusRectActive Then
-        m_FocusRectActive = False
-        redrawBackBuffer
-    End If
-
 End Sub
 
 'Because VB is very dumb about focus handling, it is sometimes necessary for external functions to notify of focus loss.
