@@ -388,12 +388,12 @@ Private Sub btsHAlignment_Click(ByVal buttonIndex As Long)
     
 End Sub
 
-Private Sub btsHAlignment_GotFocus()
+Private Sub btsHAlignment_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
     Processor.flagInitialNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
 End Sub
 
-Private Sub btsHAlignment_LostFocus()
+Private Sub btsHAlignment_LostFocusAPI()
     If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_HorizontalAlignment, btsHAlignment.ListIndex
 End Sub
 
@@ -417,12 +417,12 @@ Private Sub btsVAlignment_Click(ByVal buttonIndex As Long)
     
 End Sub
 
-Private Sub btsVAlignment_GotFocus()
+Private Sub btsVAlignment_GotFocusAPI()
     If g_OpenImageCount = 0 Then Exit Sub
     Processor.flagInitialNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
 End Sub
 
-Private Sub btsVAlignment_LostFocus()
+Private Sub btsVAlignment_LostFocusAPI()
     If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_VerticalAlignment, btsVAlignment.ListIndex
 End Sub
 
