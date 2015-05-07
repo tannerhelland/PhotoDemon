@@ -62,7 +62,7 @@ Private previousLayerParamString As String
 ' Also: that the seemingly arbitrary array size matches the number of unique entries in the PDLAYER_TEXT_PROPERTY enum.  We track each
 ' property separately, as GotFocus events are raised before LostFocus events, which screws up tracking otherwise.
 Private Const NUM_OF_TEXT_PROPERTY_ENUMS As Long = 13
-Private prevTextLayerID As Long, prevTextSetting(0 To NUM_OF_TEXT_PROPERTY_ENUMS) As Variant
+Private prevTextLayerID As Long, prevTextSetting() As Variant
 
 'PhotoDemon's software processor.  (Almost) every action the program takes is first routed through this method.  This processor is what
 ' makes recording and playing back macros possible, as well as a host of other features.  (See comment at top of page for more details.)
@@ -1951,6 +1951,15 @@ Public Function evaluateImageCheckpoint() As Boolean
 
 End Function
 
+'Any internal structures that need to be generated can do so here.
+Public Sub initializeProcessor()
+    
+    'Reset all non-destructive request tracking data
+    prevTextLayerID = -1
+    ReDim prevTextSetting(NUM_OF_TEXT_PROPERTY_ENUMS) As Variant
+    
+End Sub
+
 'I'm now testing a better method for tracking non-destructive changes to image settings.
 
 'When a control tied to a non-destructive effect receives focus, it should call this function with its current value (translated as appropriate).
@@ -1958,8 +1967,13 @@ End Function
 Public Sub flagInitialNDFXState_Text(ByVal textSettingID As PDLAYER_TEXT_PROPERTY, ByVal textSettingValue As Variant, ByVal targetLayerID As Long)
     
     'This function is easy; just store the values we are passed
-    prevTextLayerID = targetLayerID
     prevTextSetting(textSettingID) = textSettingValue
+    
+    'As a failsafe against layer changes occurring simultaneous with focus changes, also make a note of the current layer.
+    If prevTextLayerID <> targetLayerID Then
+        prevTextLayerID = targetLayerID
+        'Debug.Print "NOTE: non-destructive layer tracker has received a change notification."
+    End If
     
 End Sub
 
@@ -2063,8 +2077,9 @@ Private Sub MiniProcess_NDFXOnly(ByVal processID As String, Optional showDialog 
         Dim affectedLayerID As Long
         affectedLayerID = targetLayerID
         
-        'Create the Undo data
-        pdImages(g_CurrentImage).undoManager.createUndoData processID, processParameters, createUndo, affectedLayerID, relevantTool
+        'Create the Undo data; note that this line uniquely notifies the undo manager that it is allowed to coalesce identical
+        ' processID requests.
+        pdImages(g_CurrentImage).undoManager.createUndoData processID, processParameters, createUndo, affectedLayerID, relevantTool, True
         
     End If
     

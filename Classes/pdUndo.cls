@@ -164,7 +164,27 @@ End Function
 '     it determines what type of Undo data is saved (e.g. full layers stack, single layer, selection, etc).
 '  3) optionally, the tool associated with this action.  This value is not currently used, but in the future it could
 '     be helpful for automatically selecting the tool associated with a given Undo/Redo point.
-Public Sub createUndoData(ByVal processID As String, ByVal pParamString As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal targetLayerID As Long = -1, Optional ByVal curTool As Long = -1)
+'  4) optionally, setting coalescenceAllowed to TRUE lets the Undo engine know that it is acceptable to overwrite the
+'     previous Undo entry with this new one, if the layer ID and processID match.  The caller must have *explicit* knowledge
+'     that this behavior is appropriate, as there is no way to retrieve the overwritten Undo entry.  (PD uses this for
+'     non-destructive changes to a layer, if the non-destructive type doesn't change between Undo requests.)
+Public Sub createUndoData(ByVal processID As String, ByVal pParamString As String, ByVal processType As PD_UNDO_TYPE, Optional ByVal targetLayerID As Long = -1, Optional ByVal curTool As Long = -1, Optional ByVal coalescenceAllowed As Boolean = False)
+    
+    'If the caller is okay with us coalescing this into the previous entry, test for coalescence acceptability
+    If coalescenceAllowed And (undoNum > 0) Then
+        
+        'If this processID and layerID match the previous ones, we are okay to just overwrite that entry with this one.
+        If (StrComp(processID, undoStack(undoNum - 1).processID, vbBinaryCompare) = 0) And (targetLayerID = undoStack(undoNum - 1).undoLayerID) Then
+            
+            'As an additional failsafe, make sure the Undo type is layer-safe, and vector-safe.  This guarantees that only
+            ' non-destructive changes are allowed to coalesce.
+            If (processType = UNDO_LAYER_VECTORSAFE) And (undoStack(undoNum - 1).undoType = UNDO_LAYER_VECTORSAFE) Then
+                undoNum = undoNum - 1
+            End If
+            
+        End If
+        
+    End If
     
     'Forward a save request to the actual saveUndoData function.  It handles the messy business of actually writing the correct
     ' filetypes (which it determines based on the current processType and targetLayer)
@@ -175,7 +195,7 @@ Public Sub createUndoData(ByVal processID As String, ByVal pParamString As Strin
     'Debug.Print "Saved " & getCurrentUndoFilename() & " as Undo file #" & undoNum & "."
     
     'Store all relevant information about this Undo action, so we can access it in the future if necessary
-    ReDim Preserve undoStack(0 To undoNum) As undoEntry
+    If undoNum <> UBound(undoStack) Then ReDim Preserve undoStack(0 To undoNum) As undoEntry
     With undoStack(undoNum)
         .processID = processID
         .processParamString = pParamString

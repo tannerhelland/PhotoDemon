@@ -341,8 +341,8 @@ Public Sub LoadTheProgram()
     
     LoadMessage "Building font cache..."
         
-    'Two font caches are actually built: one compatible with GDI+, and a second one, compatible across all fonts.  PD uses the two
-    ' different caches for two different text tools.
+    'Previously, two font caches were built: one compatible with GDI+, and a second one, compatible across all fonts.  PD has since been
+    ' modified to generate a single cache, and it will dynamically switch between rendering engines as necessary to support a given font.
     Font_Management.buildFontCache
     
     
@@ -424,8 +424,12 @@ Public Sub LoadTheProgram()
     
     LoadMessage "Initializing image tools..."
         
-    'Note that selection tools are initialized in the Tool toolbar's Form_Load event
-        
+    'As of May 2015, tool panels are now loaded on-demand.  This improves the program's startup performance, and it saves a bit of memory
+    ' if a user doesn't use a tool during a given session.
+    
+    'Also, while here, prep the specialized non-destructive tool handler in the central processor
+    Processor.initializeProcessor
+    
     
     '*************************************************************************************************************************************
     ' PhotoDemon's complex interface requires a lot of things to be generated at run-time.
@@ -1546,7 +1550,7 @@ PDI_Load_Continuation:
         
         'Also, set an initial image checkpoint, in case the user decides to immediately start applying non-destructive
         ' edits to the image.
-        processor.setImageCheckpoint
+        Processor.setImageCheckpoint
         
         
         '*************************************************************************************************************************************
