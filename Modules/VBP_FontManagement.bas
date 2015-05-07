@@ -77,6 +77,13 @@ End Type
 '****************************************************************************************
 
 'Retrieve specific metrics on a font (in our case, crucial for aligning button images against the font baseline and ascender)
+Private Declare Function GetCharABCWidthsFloat Lib "gdi32" Alias "GetCharABCWidthsFloatW" (ByVal hDC As Long, ByVal firstCharCodePoint As Long, ByVal secondCharCodePoint As Long, ByVal ptrToABCFloatArray As Long) As Long
+Public Type ABCFLOAT
+    abcfA As Single
+    abcfB As Single
+    abcfC As Single
+End Type
+
 Private Declare Function GetTextMetrics Lib "gdi32" Alias "GetTextMetricsW" (ByVal hDC As Long, ByRef lpMetrics As TEXTMETRIC) As Long
 Public Type TEXTMETRIC
     tmHeight As Long
@@ -161,8 +168,10 @@ Private Const NONANTIALIASED_QUALITY As Long = 3
 Private Const ANTIALIASED_QUALITY As Long = 4
 Private Const CLEARTYPE_QUALITY As Byte = 5
 
-'GDI font creation
+'GDI font creation and management
 Private Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectW" (ByRef lpLogFont As LOGFONTW) As Long
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
+Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 
 'Various non-font-specific WAPI functions helpful for font assembly
 Private Const LOGPIXELSX = 88
@@ -502,4 +511,38 @@ End Function
 Public Function createGDIFont(ByRef srcLogFont As LOGFONTW, ByRef dstFontHandle As Long) As Boolean
     dstFontHandle = CreateFontIndirect(srcLogFont)
     createGDIFont = CBool(dstFontHandle <> 0)
+End Function
+
+'Given a GDI font handle and a Unicode code point, return an ABC float for the corresponding glyph.
+' By default, the passed font handle MUST NOT BE SELECTED INTO A DC.  However, to make interaction easier with GDI rendering code,
+' you can set the optional fontHandleIsReallyDC value to TRUE, and obviously pass in a DC instead of font handle, and this function
+' will assume you have already selected the relevant font into the DC for it.
+Public Function getABCWidthOfGlyph(ByVal srcFontHandle As Long, ByVal charCodeInQuestion As Long, ByRef dstABCFloat As ABCFLOAT, Optional ByVal fontHandleIsReallyDC As Boolean = False) As Boolean
+    
+    Dim gdiReturn As Long
+    
+    'If the user has selected the font into a DC for us, this function is incredibly simple
+    If fontHandleIsReallyDC Then
+    
+        'Retrieve the character positioning values
+        gdiReturn = GetCharABCWidthsFloat(srcFontHandle, charCodeInQuestion, charCodeInQuestion, VarPtr(dstABCFloat))
+    
+    'If the user only has a bare font handle, we have to handle the DC step ourselves, unfortunately
+    Else
+        
+        'Temporarily select the font into our local DC
+        Dim origFont As Long
+        origFont = SelectObject(m_TestDIB.getDIBDC, srcFontHandle)
+        
+        'Retrieve the character positioning values
+        gdiReturn = GetCharABCWidthsFloat(m_TestDIB.getDIBDC, charCodeInQuestion, charCodeInQuestion, VarPtr(dstABCFloat))
+        
+        'Release the font
+        SelectObject m_TestDIB.getDIBDC, origFont
+    
+    End If
+    
+    'GetCharABCWidthsFloat() returns a non-zero value if successful
+    getABCWidthOfGlyph = CBool(gdiReturn <> 0)
+    
 End Function

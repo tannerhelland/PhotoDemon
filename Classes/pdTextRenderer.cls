@@ -668,7 +668,7 @@ Public Function createFontObject() As Boolean
         ' them from a DC prior to removal.
         Dim gdiCheck As Long
         gdiCheck = DeleteObject(m_GDIFont)
-        Debug.Print "FYI: DeleteObject on m_GDIFont returned " & gdiCheck
+        'Debug.Print "FYI: DeleteObject on m_GDIFont returned " & gdiCheck
         m_GDIFont = 0
         
     End If
@@ -691,6 +691,10 @@ Public Function createFontObject() As Boolean
         m_CurrentBackend = fb_GDIPLUS
         m_FontCacheClean = True
         createFontObject = True
+        
+        'For text metric purposes, we create a duplicate GDI font.  This is a hassle, but it's necessary to retrieve detailed metrics on
+        ' individual glyphs, as GDI+ doesn't expose that level of font functionality.
+        createGDIFont
         
     'If GDI+ failed, fall back to GDI and try again.
     Else
@@ -850,9 +854,6 @@ End Sub
 'Attempt to create a GDI font matching the current class settings
 Private Function createGDIFont() As Boolean
     
-    'Reset the current font cache state, as we're about to wipe any existing font handles
-    m_FontCacheClean = False
-    
     Debug.Print "Attempting to create GDI font object matching the current pdTextRenderer settings..."
     
     'If a GDI font handle already exists, free it.  Note that the font must have been unselected from a DC; this is typically handled
@@ -872,8 +873,6 @@ Private Function createGDIFont() As Boolean
         
         'Success!  Note that GDI is an acceptable engine for this font, and return success
         Debug.Print "GDI font creation worked!  Proceeding with rendering."
-        m_CurrentBackend = fb_GDI
-        m_FontCacheClean = True
         createGDIFont = True
         
     Else
@@ -881,8 +880,6 @@ Private Function createGDIFont() As Boolean
         'Failure!  PD doesn't have a fallback beyond GDI, so this whole request is doomed.
         ' (This shouldn't technically be possible, but if it is, I'd rather laugh than cry.)
         Debug.Print "GDI font creation failed miserably!  Everything is falling apart!  AAAAHHHH!"
-        m_CurrentBackend = fb_UNKNOWN
-        m_FontCacheClean = False
         createGDIFont = False
     
     End If
@@ -1012,12 +1009,18 @@ Private Function renderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
     
     'Hypothetically, we could attempt to retrieve a bounding box for the string.  This would be relevant when compensating for overhang
     ' on the left side, for synthesized fonts like Times New Roman - Italic.  Unfortunately, GDI+ is stupid and it doesn't report
-    ' left-bound overhang, so this function isn't helpful at all.
-    'Dim stringRect As RECTF
-    'If getStringBoundingBox(dstGraphics, srcString, boundingRect, stringRect) Then
-    '    offsetX = stringRect.Left
-    'End If
+    ' left-bound overhang, so our internal function getStringBoundingBox() isn't helpful at all.
     
+    'We can, however, use GDI to calculate it instead.  (TODO: cache this value, and only re-check it if the string and/or font changes.)
+    Dim firstCharABCWidth As ABCFLOAT
+    If Font_Management.getABCWidthOfGlyph(m_GDIFont, AscW(Left$(srcString, 1)), firstCharABCWidth) Then
+        
+        'If the offset value is negative, we want to increase our rendering offset proportionally.  (Note that we add an
+        ' extra pixel to account for possible antialiasing along the border.)
+        If firstCharABCWidth.abcfA < 0 Then boundingRect.Left = boundingRect.Left + Abs(firstCharABCWidth.abcfA) + 1
+        
+    End If
+        
     'Finally, use GDI+ to render the actual string
     Dim gdipReturn As Long
     gdipReturn = GdipDrawString(dstGraphics, StrPtr(srcString), Len(srcString), m_GDIPlusFont, boundingRect, m_GDIPlusStringFormat, gdipBrush)
@@ -1159,28 +1162,45 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     
     'We now need to figure out the size of our drawn text.  Wordwrap is supported if the text extends past the horizontal boundary
     ' of the target DIB.
+    
+    'Start by retrieving default size values
     Dim targetWidth As Long, targetHeight As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 m_TmpGdiDIB.getDIBDC, StrPtr(srcString), Len(srcString), txtSize
     
     Dim tmpRect As RECT
+    tmpRect.Left = 0
+    
+    'A left-side overhang is possible on some fonts, particularly fonts where italics have to be synthesized.
+    ' There's no automatic way to handle this, so we do it manually (as usual).
+    Dim firstCharABCWidth As ABCFLOAT
+    If Font_Management.getABCWidthOfGlyph(m_TmpGdiDIB.getDIBDC, AscW(Left$(srcString, 1)), firstCharABCWidth, True) Then
+        
+        'If the offset value is negative, we want to increase our rendering offset proportionally.  (Note that we add an
+        ' extra pixel to account for possible antialiasing along the border.)
+        If firstCharABCWidth.abcfA < 0 Then
+            tmpRect.Left = tmpRect.Left + Abs(firstCharABCWidth.abcfA) + 1
+        End If
+        
+    End If
+        
     
     'If the width of this string (in the current font) is less than the width of the target DIB, we will use the string's
     ' precise render dimensions for our target DIB.
-    If txtSize.x < dstDIB.getDIBWidth Then
+    If txtSize.x + tmpRect.Left < dstDIB.getDIBWidth Then
         
         'GDI adds 1/6 em width to account for glyph overhang.  Italic mode doubles the default overhang (and we apply that correction
         ' by default, to cover fonts where italics is the only available mode).
-        targetWidth = txtSize.x + CLng((CDbl(txtSize.y) / 6 + 1) * 2)
+        targetWidth = txtSize.x + CLng((CDbl(txtSize.y) / 6 + 1) * 2) + tmpRect.Left
         If targetWidth > dstDIB.getDIBWidth Then targetWidth = dstDIB.getDIBWidth
+        
         targetHeight = txtSize.y + 1
     
     'The string extends beyond the width of the DIB. Wordwrap is required.  Calculate height now.
     Else
     
         targetWidth = dstDIB.getDIBWidth - 1
-    
-        tmpRect.Left = 0
+        
         tmpRect.Top = 0
         tmpRect.Bottom = 0
         tmpRect.Right = targetWidth
@@ -1196,6 +1216,7 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     
     End If
     
+    'Recreate the target DIB, as necessary
     If (m_TmpGdiDIB.getDIBWidth <> targetWidth) Or (m_TmpGdiDIB.getDIBHeight <> targetHeight) Then
     
         'Remove the font from the temporary DC, because we are about to create it.
@@ -1217,9 +1238,7 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
         m_TmpGdiDIB.resetDIB
     End If
     
-    'GDI rendering requires an integer rect; populate one now
-    tmpRect.Left = 0
-    tmpRect.Top = 0
+    'Populate our clipping rect with the final width and height values we generated
     tmpRect.Right = targetWidth
     tmpRect.Bottom = targetHeight
     
