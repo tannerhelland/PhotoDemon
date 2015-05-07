@@ -602,6 +602,15 @@ Private Sub sltTextClarity_Change()
 
 End Sub
 
+Private Sub sltTextClarity_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_TextContrast, sltTextClarity.Value, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub sltTextClarity_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_TextContrast, sltTextClarity.Value
+End Sub
+
 Private Sub tudTextFontSize_Change()
     
     'If tool changes are not allowed, exit.
