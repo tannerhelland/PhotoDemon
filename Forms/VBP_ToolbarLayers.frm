@@ -32,8 +32,8 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   5
       Top             =   675
       Width           =   2775
-      _ExtentX        =   4895
-      _ExtentY        =   635
+      _extentx        =   4895
+      _extenty        =   635
    End
    Begin PhotoDemon.pdTextBox txtLayerName 
       Height          =   315
@@ -42,8 +42,8 @@ Begin VB.Form toolbar_Layers
       Top             =   6360
       Visible         =   0   'False
       Width           =   3255
-      _ExtentX        =   5741
-      _ExtentY        =   556
+      _extentx        =   5741
+      _extenty        =   556
    End
    Begin PhotoDemon.pdLabel lblLayerSettings 
       Height          =   240
@@ -51,10 +51,10 @@ Begin VB.Form toolbar_Layers
       Left            =   120
       Top             =   240
       Width           =   675
-      _ExtentX        =   1191
-      _ExtentY        =   423
-      Caption         =   "opacity:"
-      Layout          =   2
+      _extentx        =   1191
+      _extenty        =   423
+      caption         =   "opacity:"
+      layout          =   2
    End
    Begin VB.VScrollBar vsLayer 
       Height          =   4905
@@ -87,9 +87,9 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   6
          Top             =   0
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   900
-         AutoToggle      =   -1  'True
+         _extentx        =   953
+         _extenty        =   900
+         autotoggle      =   -1
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
          Height          =   510
@@ -98,9 +98,9 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   7
          Top             =   0
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   900
-         AutoToggle      =   -1  'True
+         _extentx        =   953
+         _extenty        =   900
+         autotoggle      =   -1
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
          Height          =   510
@@ -109,9 +109,9 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   8
          Top             =   0
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   900
-         AutoToggle      =   -1  'True
+         _extentx        =   953
+         _extenty        =   900
+         autotoggle      =   -1
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
          Height          =   510
@@ -120,9 +120,9 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   9
          Top             =   0
          Width           =   540
-         _ExtentX        =   953
-         _ExtentY        =   900
-         AutoToggle      =   -1  'True
+         _extentx        =   953
+         _extenty        =   900
+         autotoggle      =   -1
       End
    End
    Begin VB.PictureBox picLayers 
@@ -148,11 +148,11 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   0
       Top             =   120
       Width           =   2760
-      _ExtentX        =   4868
-      _ExtentY        =   873
-      Max             =   100
-      NotchPosition   =   2
-      NotchValueCustom=   100
+      _extentx        =   4868
+      _extenty        =   873
+      max             =   100
+      notchposition   =   2
+      notchvaluecustom=   100
    End
    Begin PhotoDemon.pdLabel lblLayerSettings 
       Height          =   240
@@ -160,10 +160,10 @@ Begin VB.Form toolbar_Layers
       Left            =   120
       Top             =   720
       Width           =   540
-      _ExtentX        =   953
-      _ExtentY        =   423
-      Caption         =   "blend:"
-      Layout          =   2
+      _extentx        =   953
+      _extenty        =   423
+      caption         =   "blend:"
+      layout          =   2
    End
    Begin VB.Line lnSeparatorLeft 
       X1              =   0
@@ -387,6 +387,15 @@ Private Sub cboBlendMode_Click()
     
     End If
 
+End Sub
+
+Private Sub cboBlendMode_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Generic pgp_BlendMode, cboBlendMode.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub cboBlendMode_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Generic pgp_BlendMode, cboBlendMode.ListIndex
 End Sub
 
 Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
@@ -1443,6 +1452,15 @@ Private Sub sltLayerOpacity_Change()
     
     End If
 
+End Sub
+
+Private Sub sltLayerOpacity_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Generic pgp_Opacity, sltLayerOpacity.Value, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub sltLayerOpacity_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Generic pgp_Opacity, sltLayerOpacity.Value
 End Sub
 
 Private Sub txtLayerName_KeyPress(ByVal vKey As Long, preventFurtherHandling As Boolean)

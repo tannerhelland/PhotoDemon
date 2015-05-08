@@ -290,7 +290,7 @@ Public Sub setActiveLayerByID(ByVal newLayerID As Long, Optional ByVal alsoRedra
     If pdImages(g_CurrentImage).getActiveLayerID = newLayerID Then Exit Sub
     
     'Before changing to the new active layer, see if the previously active layer has had any non-destructive changes made.
-    Processor.evaluateImageCheckpoint
+    'Processor.evaluateImageCheckpoint
 
     'Notify the parent PD image of the change
     pdImages(g_CurrentImage).setActiveLayerByID newLayerID
@@ -299,7 +299,7 @@ Public Sub setActiveLayerByID(ByVal newLayerID As Long, Optional ByVal alsoRedra
     If alsoSyncInterface Then syncInterfaceToCurrentImage
     
     'Set a new image checkpoint (necessary to do this manually, as we haven't invoked PD's central processor)
-    Processor.setImageCheckpoint
+    'Processor.setImageCheckpoint
     
     'Redraw the viewport, but only if requested
     If alsoRedrawViewport Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -313,7 +313,7 @@ Public Sub setActiveLayerByIndex(ByVal newLayerIndex As Long, Optional ByVal als
     If pdImages(g_CurrentImage).getActiveLayerID = pdImages(g_CurrentImage).getLayerByIndex(newLayerIndex).getLayerID Then Exit Sub
     
     'Before changing to the new active layer, see if the previously active layer has had any non-destructive changes made.
-    Processor.evaluateImageCheckpoint
+    'Processor.evaluateImageCheckpoint
     
     'Notify the parent PD image of the change
     pdImages(g_CurrentImage).setActiveLayerByIndex newLayerIndex
@@ -322,7 +322,7 @@ Public Sub setActiveLayerByIndex(ByVal newLayerIndex As Long, Optional ByVal als
     If alsoSyncInterface Then syncInterfaceToCurrentImage
         
     'Set a new image checkpoint (necessary to do this manually, as we haven't invoked PD's central processor)
-    Processor.setImageCheckpoint
+    'Processor.setImageCheckpoint
         
     'Redraw the viewport, but only if requested
     If alsoRedrawViewport Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)

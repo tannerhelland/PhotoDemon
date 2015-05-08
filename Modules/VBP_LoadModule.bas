@@ -1550,7 +1550,7 @@ PDI_Load_Continuation:
         
         'Also, set an initial image checkpoint, in case the user decides to immediately start applying non-destructive
         ' edits to the image.
-        Processor.setImageCheckpoint
+        'Processor.setImageCheckpoint
         
         
         '*************************************************************************************************************************************

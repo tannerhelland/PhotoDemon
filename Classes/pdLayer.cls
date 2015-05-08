@@ -134,6 +134,28 @@ End Type
 'Local instance of layer data for this layer
 Private myLayerData As LayerData
 
+'This class supports getting/setting layer properties via generic Get/SetGenericLayerProperty functions.  This enum is
+' used to differentiate between layer properties, and any additions to LayerData, above, should be mirrored here.
+Public Enum PDLAYER_GENERIC_PROPERTY
+    pgp_Name = 0
+    pgp_GroupID = 1
+    pgp_Opacity = 2
+    pgp_BlendMode = 3
+    pgp_OffsetX = 4
+    pgp_OffsetY = 5
+    pgp_CanvasXModifier = 6
+    pgp_CanvasYModifier = 7
+    pgp_Angle = 8
+    pgp_Visibility = 9
+    pgp_NonDestructiveFXActive = 10
+    pgp_ResizeQuality = 11
+End Enum
+
+#If False Then
+    Const pgp_Name = 0, pgp_GroupID = 1, pgp_Opacity = 2, pgp_BlendMode = 3, pgp_OffsetX = 4, pgp_OffsetY = 5, pgp_CanvasXModifier = 6
+    Const pgp_CanvasYModifier = 7, pgp_Angle = 8, pgp_Visibility = 9, pgp_NonDestructiveFXActive = 10, pgp_ResizeQuality = 11
+#End If
+
 'Non-destructive edits currently supported by the program.
 Public Enum LAYER_NONDESTRUCTIVE_FX
     NDFX_EXPOSURE = 0
@@ -200,25 +222,25 @@ Private myTextData As textLayerData
 
 'To simplify the process of setting/getting text settings for a given layer, this Enum is used to pass text properties
 Public Enum PDLAYER_TEXT_PROPERTY
-    ptp_Text
-    ptp_FontColor
-    ptp_FontFace
-    ptp_FontSize
-    ptp_FontSizeUnit
-    ptp_FontBold
-    ptp_FontItalic
-    ptp_FontUnderline
-    ptp_FontStrikeout
-    ptp_HorizontalAlignment
-    ptp_VerticalAlignment
-    ptp_TextAntialiasing
-    ptp_TextContrast
+    ptp_Text = 0
+    ptp_FontColor = 1
+    ptp_FontFace = 2
+    ptp_FontSize = 3
+    ptp_FontSizeUnit = 4
+    ptp_FontBold = 5
+    ptp_FontItalic = 6
+    ptp_FontUnderline = 7
+    ptp_FontStrikeout = 8
+    ptp_HorizontalAlignment = 9
+    ptp_VerticalAlignment = 10
+    ptp_TextAntialiasing = 11
+    ptp_TextContrast = 12
 End Enum
 
 #If False Then
-    Const ptp_Text = 0, ptp_FontColor = 0, ptp_FontFace = 0, ptp_FontSize = 0, ptp_FontSizeUnit = 0, ptp_FontBold = 0, ptp_FontItalic = 0
-    Const ptp_FontUnderline = 0, ptp_FontStrikeout = 0, ptp_HorizontalAlignment = 0, ptp_VerticalAlignment = 0, ptp_TextAntialiasing = 0
-    Const ptp_TextContrast = 0
+    Const ptp_Text = 0, ptp_FontColor = 1, ptp_FontFace = 2, ptp_FontSize = 3, ptp_FontSizeUnit = 4, ptp_FontBold = 5, ptp_FontItalic = 6
+    Const ptp_FontUnderline = 7, ptp_FontStrikeout = 8, ptp_HorizontalAlignment = 9, ptp_VerticalAlignment = 10, ptp_TextAntialiasing = 11
+    Const ptp_TextContrast = 12
 #End If
 
 'A dedicated text renderer is used to render the backer layer for text layers
@@ -335,7 +357,7 @@ Public Function isLayerRaster() As Boolean
 End Function
 
 'Rasterize a layer.  In the future, it may be possible to "Undo" this (e.g. restore the original vector state, since that data is
-' easy to retain), but I haven't implemented it at present.  Rasterization is immutable, short of the Undo/Redo menu.
+' easy to retain), but I haven't implemented it at present.  Rasterization is currently immutable, short of the Undo/Redo menu.
 Public Sub rasterizeVectorData()
 
     'If the layer is already rasterized, ignore this request
@@ -692,6 +714,98 @@ Public Sub setLayerNonDestructiveFXState(ByVal ndEffect As LAYER_NONDESTRUCTIVE_
     Else
         myLayerData.l_NonDestructiveFXActive = True
     End If
+    
+End Sub
+
+'Generic layer properties can be get/set via these singular functions.  Note that these functions get and return Variants,
+' as layer properties include a lot of different types.  As such, these aren't suitable for use inside a performance-sensitive
+' loop (like pdCompositor, for example).  Instead, these are primarily used by UI elements and the Undo/Redo processor, where
+' it is much simpler to use a single generic function.
+Friend Function getGenericLayerProperty(ByVal desiredProperty As PDLAYER_GENERIC_PROPERTY) As Variant
+
+    Select Case desiredProperty
+    
+        Case pgp_Name
+            getGenericLayerProperty = myLayerData.l_Name
+            
+        Case pgp_GroupID
+            getGenericLayerProperty = myLayerData.l_GroupID
+            
+        Case pgp_Opacity
+            getGenericLayerProperty = myLayerData.l_Opacity
+            
+        Case pgp_BlendMode
+            getGenericLayerProperty = myLayerData.l_BlendMode
+            
+        Case pgp_OffsetX
+            getGenericLayerProperty = myLayerData.l_OffsetX
+            
+        Case pgp_OffsetY
+            getGenericLayerProperty = myLayerData.l_OffsetY
+            
+        Case pgp_CanvasXModifier
+            getGenericLayerProperty = myLayerData.l_CanvasXModifier
+            
+        Case pgp_CanvasYModifier
+            getGenericLayerProperty = myLayerData.l_CanvasYModifier
+            
+        Case pgp_Angle
+            getGenericLayerProperty = myLayerData.l_Angle
+            
+        Case pgp_Visibility
+            getGenericLayerProperty = myLayerData.l_Visibility
+            
+        Case pgp_NonDestructiveFXActive
+            getGenericLayerProperty = myLayerData.l_NonDestructiveFXActive
+            
+        Case pgp_ResizeQuality
+            getGenericLayerProperty = myLayerData.l_ResizeQuality
+    
+    End Select
+
+End Function
+
+Friend Sub setGenericLayerProperty(ByVal desiredProperty As PDLAYER_GENERIC_PROPERTY, ByVal newValue As Variant)
+
+    Select Case desiredProperty
+        
+        Case pgp_Name
+            If myLayerData.l_Name <> CStr(newValue) Then myLayerData.l_Name = CStr(newValue)
+            
+        Case pgp_GroupID
+            If myLayerData.l_GroupID <> CLng(newValue) Then myLayerData.l_GroupID = CLng(newValue)
+            
+        Case pgp_Opacity
+            If myLayerData.l_Opacity <> CLng(newValue) Then Me.setLayerOpacity CLng(newValue)
+            
+        Case pgp_BlendMode
+            If myLayerData.l_BlendMode <> CLng(newValue) Then myLayerData.l_BlendMode = CLng(newValue)
+            
+        Case pgp_OffsetX
+            If myLayerData.l_OffsetX <> CDbl(newValue) Then myLayerData.l_OffsetX = CDbl(newValue)
+            
+        Case pgp_OffsetY
+            If myLayerData.l_OffsetY <> CDbl(newValue) Then myLayerData.l_OffsetY = CDbl(newValue)
+            
+        Case pgp_CanvasXModifier
+            If myLayerData.l_CanvasXModifier <> CDbl(newValue) Then Me.setLayerCanvasXModifier CDbl(newValue)
+            
+        Case pgp_CanvasYModifier
+            If myLayerData.l_CanvasYModifier <> CDbl(newValue) Then Me.setLayerCanvasYModifier CDbl(newValue)
+            
+        Case pgp_Angle
+            If myLayerData.l_Angle <> CDbl(newValue) Then myLayerData.l_Angle = CDbl(newValue)
+            
+        Case pgp_Visibility
+            If myLayerData.l_Visibility <> CBool(newValue) Then myLayerData.l_Visibility = CBool(newValue)
+            
+        Case pgp_NonDestructiveFXActive
+            If myLayerData.l_NonDestructiveFXActive <> CBool(newValue) Then myLayerData.l_NonDestructiveFXActive = CBool(newValue)
+            
+        Case pgp_ResizeQuality
+            If myLayerData.l_ResizeQuality <> CLng(newValue) Then myLayerData.l_ResizeQuality = CLng(newValue)
+        
+    End Select
     
 End Sub
 
