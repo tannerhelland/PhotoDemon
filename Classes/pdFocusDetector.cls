@@ -85,6 +85,21 @@ Public Sub startFocusTracking(ByVal srcHwnd As Long)
     
 End Sub
 
+'Outside functions can use this to retrieve the current "has focus" state of the tracked control
+Public Function HasFocus() As Boolean
+    HasFocus = m_HasFocus
+End Function
+
+'If an outside function received a mouse or keyboard event but the control does *not* have focus, they can call this function
+' to force an immedate GotFocus event.  (Windows will process hooks prior to focus messages, so some of PD's controls may raise
+' input events prior to receiving focus events; this function gives us a way to work around that.)
+Public Sub setFocusManually()
+    If Not m_HasFocus Then
+        m_HasFocus = True
+        RaiseEvent GotFocusReliable
+    End If
+End Sub
+
 'All events subclassed by this window are processed here.
 Private Sub myWndProc(ByVal bBefore As Boolean, _
                       ByRef bHandled As Boolean, _
@@ -116,49 +131,39 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         
         Case WM_ACTIVATE, WM_NCACTIVATE
             
-            'If uMsg = WM_ACTIVATE Then
-            '    Debug.Print "WM_ACTIVATE received"
-            'Else
-            '    Debug.Print "WM_NCACTIVATE received"
-            'End If
-            
             'wParam contains a notification of whether we are gaining or losing focus.
             Select Case wParam
                     
                 'Window is losing focus
                 Case WA_INACTIVE
                     If m_HasFocus Then
-                        RaiseEvent LostFocusReliable
                         m_HasFocus = False
+                        RaiseEvent LostFocusReliable
                     End If
                     
                 'Window is gaining focus
                 Case Else
                     If Not m_HasFocus Then
-                        RaiseEvent GotFocusReliable
                         m_HasFocus = True
+                        RaiseEvent GotFocusReliable
                     End If
                     
             End Select
         
         'Window is losing focus
         Case WM_KILLFOCUS
-        
-            'Debug.Print "WM_KILLFOCUS received"
             
             If m_HasFocus Then
-                RaiseEvent LostFocusReliable
                 m_HasFocus = False
+                RaiseEvent LostFocusReliable
             End If
         
         'Window is gaining focus
         Case WM_SETFOCUS
-        
-            'Debug.Print "WM_SETFOCUS received"
             
             If Not m_HasFocus Then
-                RaiseEvent GotFocusReliable
                 m_HasFocus = True
+                RaiseEvent GotFocusReliable
             End If
         
     End Select

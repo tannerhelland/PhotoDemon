@@ -336,6 +336,9 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     m_FocusRectActive = -1
     
     If Me.Enabled And (mouseClickIndex >= 0) Then
+    
+        'Ensure that a focus event has been raised, if it wasn't already
+        If Not cFocusDetector.HasFocus Then cFocusDetector.setFocusManually
         
         If m_ButtonIndex <> mouseClickIndex Then
             ListIndex = mouseClickIndex
