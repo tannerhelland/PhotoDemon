@@ -337,7 +337,7 @@ Public Sub activatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
     
         'Before switching to a new image, check for any non-destructive edits on the current image.  If any have occurred,
         ' add them to the Undo/Redo chain before switching.
-        processor.evaluateImageCheckpoint
+        'Processor.evaluateImageCheckpoint
     
         'Update the current form variable
         g_CurrentImage = imageID
@@ -371,7 +371,7 @@ Public Sub activatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
         
         'As we have not invoked PD's central processor, we need to manually add an image checkpoint now.  This allows the processor
         ' to capture any non-destructive edits that occur before the next processor request.
-        processor.evaluateImageCheckpoint
+        'Processor.setImageCheckpoint
         
     End If
     

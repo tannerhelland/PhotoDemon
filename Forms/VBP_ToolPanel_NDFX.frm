@@ -262,7 +262,7 @@ Private Sub cmdQuickFix_Click(Index As Integer)
             If pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState Then
                 
                 'Back-up the current quick-fix settings (because they will be reset after being applied to the image)
-                evaluateImageCheckpoint
+                'evaluateImageCheckpoint
                 
                 'Now we do something odd; we reset all sliders, then forcibly set an image checkpoint.  This prevents PD's internal
                 ' processor from auto-detecting the slider resets and applying *another* entry to the Undo/Redo chain.
@@ -270,7 +270,7 @@ Private Sub cmdQuickFix_Click(Index As Integer)
                     sltQuickFix(i).Value = 0
                 Next i
                 
-                setImageCheckpoint
+                'setImageCheckpoint
                 
                 'Ask the central processor to permanently apply the quick-fix changes
                 Process "Make quick-fixes permanent", , , UNDO_LAYER

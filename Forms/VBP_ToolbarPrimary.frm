@@ -973,7 +973,7 @@ Private Sub cmdTools_Click(Index As Integer)
     cMouseEvents.setSystemCursor IDC_ARROW
         
     'Before changing to the new tool, see if the previously active layer has had any non-destructive changes made.
-    If Processor.evaluateImageCheckpoint() Then syncInterfaceToCurrentImage
+    'If Processor.evaluateImageCheckpoint() Then syncInterfaceToCurrentImage
     
     'Update the previous and current tool entries
     g_PreviousTool = g_CurrentTool
@@ -983,7 +983,7 @@ Private Sub cmdTools_Click(Index As Integer)
     resetToolButtonStates
     
     'Set a new image checkpoint (necessary to do this manually, as we haven't invoked PD's central processor)
-    Processor.setImageCheckpoint
+    'Processor.setImageCheckpoint
         
 End Sub
 

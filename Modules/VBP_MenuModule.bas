@@ -580,7 +580,7 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     
     'Also, set an initial image checkpoint, in case the user decides to immediately start applying non-destructive
     ' edits to the image.
-    Processor.setImageCheckpoint
+    'Processor.setImageCheckpoint
     
     'Re-enable the main form
     FormMain.Enabled = True
