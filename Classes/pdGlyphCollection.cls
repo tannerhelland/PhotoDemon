@@ -110,6 +110,7 @@ Private Type pdGlyph
     glyphPath As pdGraphicsPath     'GDI+ GraphicsPath wrapper containing the fully translated font outline
     charIsWhiteSpace As Boolean     'If this character has no drawable glyph (e.g. " "), this will be set to TRUE.
     whiteSpaceWidth As Single       'For whitespace characters, we must retrieve their width using other means (as the glyph isn't helpful!)
+    charABCWidth As ABCFLOAT
 End Type
 
 'Current glyph collection.  Because glyph generation is very expensive, we store glyphs as we translate them.  If the font
@@ -235,6 +236,9 @@ Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal u
                             
                         End If
                         
+                        'While we're here, retrieve an ABC width for this glyph
+                        Font_Management.getABCWidthOfGlyph m_tmpDIB.getDIBDC, curChar, m_GlyphCollection(m_NumOfGlyphs).charABCWidth, True
+                        
                         'Note that this glyph is valid; this will move the collection pointer to the next entry in the stack
                         glyphAdded = True
                         
@@ -253,9 +257,10 @@ Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal u
                     
                     'Debug.Print "FAILURE: " & ChrW$(curChar) & ":" & UBound(rawGlyphBytes)
                     
-                    'Mark the whitespace flag, retrieve a default width, and note that this glyph is valid.
+                    'Mark the whitespace flag, retrieve a default width, an ABC width, and note that this glyph is valid.
                     m_GlyphCollection(m_NumOfGlyphs).charIsWhiteSpace = True
                     m_GlyphCollection(m_NumOfGlyphs).whiteSpaceWidth = m_TextMetrics.tmAveCharWidth
+                    Font_Management.getABCWidthOfGlyph m_tmpDIB.getDIBDC, curChar, m_GlyphCollection(m_NumOfGlyphs).charABCWidth, True
                     glyphAdded = True
                 
                 End If
