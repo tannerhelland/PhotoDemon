@@ -349,7 +349,7 @@ End Sub
 
 'To improve responsiveness, MouseDown is used instead of Click
 Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-
+        
     Dim mouseClickIndex As Long
     mouseClickIndex = isMouseOverButton(x, y)
     
@@ -357,6 +357,9 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     m_FocusRectActive = -1
     
     If Me.Enabled And (mouseClickIndex >= 0) Then
+    
+        'Ensure that a focus event has been raised, if it wasn't already
+        If Not cFocusDetector.HasFocus Then cFocusDetector.setFocusManually
         
         If m_ButtonIndex <> mouseClickIndex Then
             ListIndex = mouseClickIndex

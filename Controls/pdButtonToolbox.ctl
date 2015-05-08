@@ -257,6 +257,9 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
 
     If Me.Enabled Then
     
+        'Ensure that a focus event has been raised, if it wasn't already
+        If Not cFocusDetector.HasFocus Then cFocusDetector.setFocusManually
+    
         'Sticky toggle allows the button to operate as a checkbox
         If m_StickyToggle Then
         
