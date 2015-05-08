@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.33</langversion>
+<langversion>6.7.34</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -13401,11 +13401,6 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <!-- BEGIN text for VBP_ToolPanel_Text.frm (toolpanel_Text) -->
 
 <phrase>
-<original>(this tool is under constr- uction)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>font face</original>
 <translation></translation>
 </phrase>
@@ -13440,7 +13435,7 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_Text.frm contains 12 phrases. 4 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- VBP_ToolPanel_Text.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_Text.frm-->
 
@@ -13778,12 +13773,18 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <!-- END text for VBP_GenericMemoryDialog.frm-->
 
+<!-- BEGIN text for pdFocusDetector.cls -->
+
+<!-- pdFocusDetector.cls contains 0 phrases. -->
+
+<!-- END text for pdFocusDetector.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2395</phrasecount>
+<phrasecount>2394</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4102 phrases. -->
-<!-- 1707 are duplicates, so only 2395 unique phrases have been written to file. -->
-<!-- These 2395 phrases contain approximately 13605 total words. -->
+<!-- As of this build, PhotoDemon contains 4101 phrases. -->
+<!-- 1707 are duplicates, so only 2394 unique phrases have been written to file. -->
+<!-- These 2394 phrases contain approximately 13599 total words. -->
 
 </pdData>
