@@ -1237,7 +1237,6 @@ Public Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
             Case PDL_TEXT
             
                 With myTextData
-                    Debug.Print "RETRIEVED TEXT VALUE FROM FILE: " & xmlEngine.getUniqueTag_String("TextLayerText", "")
                     .tld_Text = xmlEngine.getUniqueTag_String("TextLayerText", "")
                     .tld_FontColor = xmlEngine.getUniqueTag_Long("TextLayerColor", 0)
                     .tld_FontFace = xmlEngine.getUniqueTag_String("TextLayerFontFace", g_InterfaceFont)

@@ -1780,7 +1780,9 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     
                     'Process the addition of the new layer; this will create proper Undo/Redo data for the entire image (required, as the layer order
                     ' has changed due to this new addition).
-                    Process "New text layer", , , UNDO_IMAGE_VECTORSAFE
+                    With pdImages(g_CurrentImage).getActiveLayer
+                        Process "New text layer", , buildParams(.getLayerOffsetX, .getLayerOffsetY, .getLayerWidth, .getLayerHeight, .getVectorDataAsXML), UNDO_IMAGE_VECTORSAFE
+                    End With
                     
                     'Manually synchronize menu, layer toolbox, and other UI settings against the newly created layer.
                     syncInterfaceToCurrentImage
@@ -2587,6 +2589,6 @@ Private Function isCanvasInteractionAllowed() As Boolean
     End If
     
     'If the central processor is active, exit
-    If processor.Processing Then isCanvasInteractionAllowed = False
+    If Processor.Processing Then isCanvasInteractionAllowed = False
     
 End Function
