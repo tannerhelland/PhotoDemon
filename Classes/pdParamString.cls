@@ -101,11 +101,11 @@ Public Function doesParamExist(ByVal pIndex As Long) As Boolean
 End Function
 
 'Change the value at a given location.  (This assumes setParamString has already been called, obviously.)
-Public Sub setNewValueAtLocation(ByVal pIndex As Long, ByVal NewValue As String)
+Public Sub setNewValueAtLocation(ByVal pIndex As Long, ByVal newValue As String)
     
     'Replace the entry at pIndex with the new string value
     If pIndex <= m_numOfParams Then
-        m_Params(pIndex - 1) = NewValue
+        m_Params(pIndex - 1) = newValue
     End If
 
 End Sub
@@ -247,6 +247,21 @@ Public Function GetString(ByVal pIndex As Long, Optional ByVal defaultReturn As 
             GetString = m_Params(pIndex - 1)
         Else
             GetString = defaultReturn
+        End If
+    End If
+
+End Function
+
+'Retrieve a variant-type parameter
+Public Function GetVariant(ByVal pIndex As Long, Optional ByVal defaultReturn As Variant = Empty) As Variant
+
+    If m_numOfParams = 1 Then
+        GetVariant = m_ParamString
+    Else
+        If doesParamExist(pIndex) Then
+            GetVariant = CVar(m_Params(pIndex - 1))
+        Else
+            GetVariant = defaultReturn
         End If
     End If
 

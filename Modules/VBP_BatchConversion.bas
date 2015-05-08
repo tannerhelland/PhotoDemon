@@ -37,6 +37,7 @@ Public MacroStatus As Byte
 Public Const MacroSTOP As Long = 0
 Public Const MacroSTART As Long = 1
 Public Const MacroBATCH As Long = 2
+Public Const MacroPLAYBACK As Long = 3
 Public Const MacroCANCEL As Long = 128
 Public MacroMessage As String
 
@@ -291,10 +292,18 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
     
     'Now we run a loop through the macro structure, calling the software processor with all the necessary information for each action
     Message "Processing macro data..."
+    
+    MacroStatus = MacroPLAYBACK
+    
     Dim tProc As Long
     For tProc = 0 To ProcessCount - 1
         Process Processes(tProc).Id, Processes(tProc).Dialog, Processes(tProc).Parameters, Processes(tProc).MakeUndo, Processes(tProc).Tool, Processes(tProc).Recorded
     Next tProc
+    
+    MacroStatus = MacroSTOP
+    
+    'Some processor requests may not manually update the screen; as such, perform a manual update now
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     'Our work here is complete!
     Message "Macro complete!"

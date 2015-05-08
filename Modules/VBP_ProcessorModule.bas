@@ -664,8 +664,31 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             End If
         
         Case "New text layer"
-            '"New text layer" is a dummy entry used by the on-canvas text tool.  It is called *after* a new layer has already been created,
-            ' and the sole purpose of the function is to add the newly created text layer to the Undo/Redo chain.
+            'During normal usage, "New text layer" is a dummy entry used by the on-canvas text tool.  It is called *after* a new layer
+            ' has already been created, and the sole purpose of the function is to add the newly created text layer to the Undo/Redo chain.
+            '
+            'During macro playback, "New text layer" becomes more important, as we do actually need to create the layer!
+            If (MacroStatus = MacroPLAYBACK) Or (MacroStatus = MacroBATCH) Then
+                
+                'Start by creating a new layer
+                Layer_Handler.addNewLayer pdImages(g_CurrentImage).getActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, "", 0, 0, True
+                
+                'Five parameters are passed during text layer creation:
+                ' 1, 2) X, Y offset
+                With pdImages(g_CurrentImage).getActiveLayer
+                    .setLayerOffsetX cParams.GetSingle(1)
+                    .setLayerOffsetY cParams.GetSingle(2)
+                
+                ' 3, 4) Width, Height
+                    .setLayerWidth cParams.GetSingle(3)
+                    .setLayerHeight cParams.GetSingle(4)
+                    
+                ' 5) Vector XML data
+                    .CreateVectorDataFromXML cParams.GetString(5)
+                
+                End With
+                
+            End If
         
         Case "New layer from file"
             Layer_Handler.loadImageAsNewLayer showDialog, processParameters
@@ -1678,11 +1701,31 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Do nothing"
         
         
-        'DEBUG FAILSAFE
-        ' This function should never be passed a process ID it can't parse, but if that happens, ask the user to report the unparsed ID
+        'Other specialized returns are handled here
         Case Else
-            If Len(processID) <> 0 Then pdMsgBox "Unknown processor request submitted: %1" & vbCrLf & vbCrLf & "Please report this bug via the Help -> Submit Bug Report menu.", vbCritical + vbOKOnly + vbApplicationModal, "Processor Error", processID
         
+            Select Case processID
+            
+                'Text layer modifications are handled by their own specialized non-destructive processor (below).  The only way this case
+                ' will ever be triggered is during macro playback.  If encountered, all "modify text layer" instructions follow the same
+                ' basic structure: the first parameter is a text setting ID, and the second is a text setting value.
+                Case "Modify text layer"
+                    
+                    If (MacroStatus = MacroPLAYBACK) Or (MacroStatus = MacroBATCH) Then
+                    
+                        If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
+                            pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty cParams.GetLong(1), cParams.GetVariant(2)
+                        End If
+                    
+                    End If
+            
+                Case Else
+                    'DEBUG FAILSAFE
+                    ' This function should never be passed a process ID it can't parse, but if that happens, ask the user to report the unparsed ID
+                    If Len(processID) <> 0 Then pdMsgBox "Unknown processor request submitted: %1" & vbCrLf & vbCrLf & "Please report this bug via the Help -> Submit Bug Report menu.", vbCritical + vbOKOnly + vbApplicationModal, "Processor Error", processID
+            
+            End Select
+            
     End Select
     
     'If the user wants us to time this action, display the results now.  (Note - only do this for actions that will change the image
