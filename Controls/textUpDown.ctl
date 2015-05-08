@@ -540,7 +540,7 @@ Private Sub UserControl_Initialize()
     
     'Also start a focus detector for the spinner picture box
     Set cFocusDetector = New pdFocusDetector
-    cFocusDetector.startFocusTracking picScroll.hWnd
+    If g_IsProgramRunning Then cFocusDetector.startFocusTracking picScroll.hWnd
     
     'Reset the focus count
     m_ControlFocusCount = 0
