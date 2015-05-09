@@ -261,16 +261,11 @@ Private Sub cmdQuickFix_Click(Index As Integer)
             'First, make sure at least one or more quick-fixes are active
             If pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState Then
                 
-                'Back-up the current quick-fix settings (because they will be reset after being applied to the image)
-                'evaluateImageCheckpoint
-                
                 'Now we do something odd; we reset all sliders, then forcibly set an image checkpoint.  This prevents PD's internal
                 ' processor from auto-detecting the slider resets and applying *another* entry to the Undo/Redo chain.
                 For i = 0 To sltQuickFix.Count - 1
                     sltQuickFix(i).Value = 0
                 Next i
-                
-                'setImageCheckpoint
                 
                 'Ask the central processor to permanently apply the quick-fix changes
                 Process "Make quick-fixes permanent", , , UNDO_LAYER
@@ -376,4 +371,13 @@ Public Sub updateAgainstCurrentTheme()
     ' any common controls that may still exist in the program.)
     makeFormPretty Me
 
+End Sub
+
+Private Sub sltQuickFix_GotFocusAPI(Index As Integer)
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_NDFX Index, sltQuickFix(Index).Value, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub sltQuickFix_LostFocusAPI(Index As Integer)
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_NDFX Index, sltQuickFix(Index).Value
 End Sub

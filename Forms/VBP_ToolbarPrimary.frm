@@ -971,9 +971,6 @@ Private Sub cmdTools_Click(Index As Integer)
     'If the user is dragging the mouse in from the right, and the toolbox has been shrunk from its default setting, the class cursor
     ' for forms may get stuck on the west/east "resize" cursor.  To avoid this, reset it after any button click.
     cMouseEvents.setSystemCursor IDC_ARROW
-        
-    'Before changing to the new tool, see if the previously active layer has had any non-destructive changes made.
-    'If Processor.evaluateImageCheckpoint() Then syncInterfaceToCurrentImage
     
     'Update the previous and current tool entries
     g_PreviousTool = g_CurrentTool
@@ -982,9 +979,6 @@ Private Sub cmdTools_Click(Index As Integer)
     'Update the tool options area to match the newly selected tool
     resetToolButtonStates
     
-    'Set a new image checkpoint (necessary to do this manually, as we haven't invoked PD's central processor)
-    'Processor.setImageCheckpoint
-        
 End Sub
 
 Private Sub lastUsedSettings_AddCustomPresetData()
