@@ -32,8 +32,8 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   5
       Top             =   675
       Width           =   2775
-      _extentx        =   4895
-      _extenty        =   635
+      _ExtentX        =   4895
+      _ExtentY        =   635
    End
    Begin PhotoDemon.pdTextBox txtLayerName 
       Height          =   315
@@ -42,8 +42,8 @@ Begin VB.Form toolbar_Layers
       Top             =   6360
       Visible         =   0   'False
       Width           =   3255
-      _extentx        =   5741
-      _extenty        =   556
+      _ExtentX        =   5741
+      _ExtentY        =   556
    End
    Begin PhotoDemon.pdLabel lblLayerSettings 
       Height          =   240
@@ -51,10 +51,10 @@ Begin VB.Form toolbar_Layers
       Left            =   120
       Top             =   240
       Width           =   675
-      _extentx        =   1191
-      _extenty        =   423
-      caption         =   "opacity:"
-      layout          =   2
+      _ExtentX        =   1191
+      _ExtentY        =   423
+      Caption         =   "opacity:"
+      Layout          =   2
    End
    Begin VB.VScrollBar vsLayer 
       Height          =   4905
@@ -87,9 +87,9 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   6
          Top             =   0
          Width           =   540
-         _extentx        =   953
-         _extenty        =   900
-         autotoggle      =   -1
+         _ExtentX        =   953
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
          Height          =   510
@@ -98,9 +98,9 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   7
          Top             =   0
          Width           =   540
-         _extentx        =   953
-         _extenty        =   900
-         autotoggle      =   -1
+         _ExtentX        =   953
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
          Height          =   510
@@ -109,9 +109,9 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   8
          Top             =   0
          Width           =   540
-         _extentx        =   953
-         _extenty        =   900
-         autotoggle      =   -1
+         _ExtentX        =   953
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdLayerAction 
          Height          =   510
@@ -120,9 +120,9 @@ Begin VB.Form toolbar_Layers
          TabIndex        =   9
          Top             =   0
          Width           =   540
-         _extentx        =   953
-         _extenty        =   900
-         autotoggle      =   -1
+         _ExtentX        =   953
+         _ExtentY        =   900
+         AutoToggle      =   -1  'True
       End
    End
    Begin VB.PictureBox picLayers 
@@ -148,11 +148,11 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   0
       Top             =   120
       Width           =   2760
-      _extentx        =   4868
-      _extenty        =   873
-      max             =   100
-      notchposition   =   2
-      notchvaluecustom=   100
+      _ExtentX        =   4868
+      _ExtentY        =   873
+      Max             =   100
+      NotchPosition   =   2
+      NotchValueCustom=   100
    End
    Begin PhotoDemon.pdLabel lblLayerSettings 
       Height          =   240
@@ -160,10 +160,10 @@ Begin VB.Form toolbar_Layers
       Left            =   120
       Top             =   720
       Width           =   540
-      _extentx        =   953
-      _extenty        =   423
-      caption         =   "blend:"
-      layout          =   2
+      _ExtentX        =   953
+      _ExtentY        =   423
+      Caption         =   "blend:"
+      Layout          =   2
    End
    Begin VB.Line lnSeparatorLeft 
       X1              =   0
@@ -604,6 +604,9 @@ Private Sub cMouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstant
         txtLayerName.Text = pdImages(g_CurrentImage).getLayerByIndex(getLayerAtPosition(x, y)).getLayerName
         txtLayerName.selectAll
         
+        'Set an Undo/Redo marker for the existing layer name
+        Processor.flagInitialNDFXState_Generic pgp_Name, pdImages(g_CurrentImage).getLayerByIndex(getLayerAtPosition(x, y)).getLayerName, pdImages(g_CurrentImage).getLayerByIndex(getLayerAtPosition(x, y)).getLayerID
+        
         txtLayerName.SetFocus
     
     Else
@@ -654,7 +657,7 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
     m_MouseOverLayerBox = False
 
     'Note that no layer is currently hovered
-    curLayerHover = -1
+    updateHoveredLayer -1
     
     'Redraw the layer box, which no longer has anything hovered
     redrawLayerBox
@@ -720,10 +723,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     End If
     
     'If a layer other than the active one is being hovered, highlight that box
-    If curLayerHover <> getLayerAtPosition(x, y) Then
-        curLayerHover = getLayerAtPosition(x, y)
-        redrawLayerBox
-    End If
+    updateHoveredLayer getLayerAtPosition(x, y)
     
     'Update the tooltip contingent on the mouse position.
     Dim toolString As String
@@ -855,8 +855,8 @@ Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstan
                 vsLayer.Value = vsLayer.Value + vsLayer.LargeChange
             End If
             
-            curLayerHover = getLayerAtPosition(x, y)
-            redrawLayerBox
+            'If a layer other than the active one is being hovered, highlight that box
+            updateHoveredLayer getLayerAtPosition(x, y)
         
         ElseIf scrollAmount > 0 Then
             
@@ -866,8 +866,8 @@ Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstan
                 vsLayer.Value = vsLayer.Value - vsLayer.LargeChange
             End If
             
-            curLayerHover = getLayerAtPosition(x, y)
-            redrawLayerBox
+            'If a layer other than the active one is being hovered, highlight that box
+            updateHoveredLayer getLayerAtPosition(x, y)
             
         End If
         
@@ -919,7 +919,7 @@ Private Sub Form_Load()
     cMouseEventsForm.setCursorOverrideState True
     
     'No layer has been hovered yet
-    curLayerHover = -1
+    updateHoveredLayer -1
     
     'Rearranging mode is not active
     m_LayerRearrangingMode = False
@@ -1157,6 +1157,7 @@ Private Sub redrawLayerBox()
     scrollOffset = vsLayer.Value
     
     'Erase the current DIB
+    If bufferDIB Is Nothing Then Set bufferDIB = New pdDIB
     bufferDIB.createBlank m_BufferWidth, m_BufferHeight, 24
     
     'If the image has one or more layers, render them to the list.
@@ -1475,6 +1476,9 @@ Private Sub txtLayerName_KeyPress(ByVal vKey As Long, preventFurtherHandling As 
         txtLayerName.Text = ""
         txtLayerName.Visible = False
         
+        'If the user changed the name, set an Undo/Redo point now
+        If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Generic pgp_Name, pdImages(g_CurrentImage).getActiveLayer.getLayerName
+        
         'Re-enable hotkeys now that editing is finished
         FormMain.ctlAccelerator.Enabled = True
         
@@ -1482,7 +1486,7 @@ Private Sub txtLayerName_KeyPress(ByVal vKey As Long, preventFurtherHandling As 
         redrawLayerBox
         
         'Transfer focus back to the layer box
-        picLayers.SetFocus
+        g_WindowManager.SetFocusAPI picLayers.hWnd
         
     End If
 
@@ -1502,6 +1506,34 @@ End Sub
 
 Private Sub vsLayer_Scroll()
     redrawLayerBox
+End Sub
+
+'Update the currently hovered layer
+Private Sub updateHoveredLayer(ByVal newLayerUnderMouse As Long)
+
+    'If a layer other than the active one is being hovered, highlight that box
+    If curLayerHover <> newLayerUnderMouse Then
+        
+        'Finalize any Undo/Redo changes to the existing layer (curLayerHover)
+        If g_OpenImageCount > 0 Then
+            If (curLayerHover > -1) And (curLayerHover < pdImages(g_CurrentImage).getNumOfLayers) And Tool_Support.canvasToolsAllowed Then
+                Processor.flagFinalNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).getLayerByIndex(curLayerHover).getLayerVisibility
+            End If
+        End If
+        
+        curLayerHover = newLayerUnderMouse
+        
+        'Mark the current state of the newly selected layer (newLayerUnderMouse)
+        If g_OpenImageCount > 0 Then
+            If (curLayerHover > -1) And (curLayerHover < pdImages(g_CurrentImage).getNumOfLayers) Then
+                Processor.flagInitialNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).getLayerByIndex(curLayerHover).getLayerVisibility, pdImages(g_CurrentImage).getLayerByIndex(curLayerHover).getLayerID
+            End If
+        End If
+        
+        redrawLayerBox
+        
+    End If
+
 End Sub
 
 'Whenever the layer toolbox is resized, we must reflow all objects to fill the available space.  Note that we do not do

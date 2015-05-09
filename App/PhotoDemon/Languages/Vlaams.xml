@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.31</langversion>
+<langversion>6.7.32</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -1418,6 +1418,61 @@ Wanneer voltooid, klikt u op de knop Verzenden. Dank je wel!</translation>
 </phrase>
 
 <phrase>
+<original>name</original>
+<translation>naam</translation>
+</phrase>
+
+<phrase>
+<original>group</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>opacity</original>
+<translation>ondoorzichtigheid</translation>
+</phrase>
+
+<phrase>
+<original>blend moe</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>X offset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Y offset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>width</original>
+<translation>breedte</translation>
+</phrase>
+
+<phrase>
+<original>height</original>
+<translation>hoogte</translation>
+</phrase>
+
+<phrase>
+<original>angle</original>
+<translation>hoek</translation>
+</phrase>
+
+<phrase>
+<original>visibility</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive effect</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>text</original>
 <translation></translation>
 </phrase>
@@ -1482,7 +1537,7 @@ Wanneer voltooid, klikt u op de knop Verzenden. Dank je wel!</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ProcessorModule.bas contains 55 phrases. 19 were duplicates of existing phrases, so only 36 new phrases were written to file. -->
+<!-- VBP_ProcessorModule.bas contains 79 phrases. 32 were duplicates of existing phrases, so only 47 new phrases were written to file. -->
 
 <!-- END text for VBP_ProcessorModule.bas-->
 
@@ -5704,11 +5759,6 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 </phrase>
 
 <phrase>
-<original>angle</original>
-<translation>hoek</translation>
-</phrase>
-
-<phrase>
 <original>base color</original>
 <translation>basiskleur</translation>
 </phrase>
@@ -5723,7 +5773,7 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <translation>Reliëf afbeelding</translation>
 </phrase>
 
-<!-- VBP_FormEmbossEngrave.frm contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<!-- VBP_FormEmbossEngrave.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_FormEmbossEngrave.frm-->
 
@@ -6436,16 +6486,6 @@ Sta het programma toe om deze gratis, open-source insteekmodule(s) automatisch t
 </phrase>
 
 <phrase>
-<original>width</original>
-<translation>breedte</translation>
-</phrase>
-
-<phrase>
-<original>height</original>
-<translation>hoogte</translation>
-</phrase>
-
-<phrase>
 <original>pixels</original>
 <translation>pixels</translation>
 </phrase>
@@ -6490,7 +6530,7 @@ Sta het programma toe om deze gratis, open-source insteekmodule(s) automatisch t
 <translation>de uiteindelijke afbeelding zal %1 %3 breed en %2 %3 hoog zijn.</translation>
 </phrase>
 
-<!-- VBP_FormTile.frm contains 35 phrases. 22 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- VBP_FormTile.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for VBP_FormTile.frm-->
 
@@ -12116,11 +12156,6 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <!-- BEGIN text for VBP_ToolbarLayers.frm (toolbar_Layers) -->
 
 <phrase>
-<original>opacity</original>
-<translation>ondoorzichtigheid</translation>
-</phrase>
-
-<phrase>
 <original>blend</original>
 <translation>mengsel</translation>
 </phrase>
@@ -12210,7 +12245,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation>Verplaats laag neerwaarts</translation>
 </phrase>
 
-<!-- VBP_ToolbarLayers.frm contains 41 phrases. 22 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- VBP_ToolbarLayers.frm contains 41 phrases. 23 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarLayers.frm-->
 
@@ -12447,11 +12482,6 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>name</original>
-<translation>naam</translation>
-</phrase>
-
-<phrase>
 <original>Layer %1</original>
 <translation>Laag %1</translation>
 </phrase>
@@ -12481,7 +12511,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation>onderkant van lagenstack</translation>
 </phrase>
 
-<!-- VBP_FormNewLayer.frm contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- VBP_FormNewLayer.frm contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for VBP_FormNewLayer.frm-->
 
@@ -13780,10 +13810,10 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2394</phrasecount>
+<phrasecount>2400</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4101 phrases. -->
-<!-- 1707 are duplicates, so only 2394 unique phrases have been written to file. -->
-<!-- These 2394 phrases contain approximately 13599 total words. -->
+<!-- As of this build, PhotoDemon contains 4125 phrases. -->
+<!-- 1725 are duplicates, so only 2400 unique phrases have been written to file. -->
+<!-- These 2400 phrases contain approximately 13609 total words. -->
 
 </pdData>

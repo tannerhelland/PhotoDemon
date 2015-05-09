@@ -1788,6 +1788,10 @@ Public Sub requestActivation(ByVal hWndToActivate As Long)
     SetWindowPos hWndToActivate, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_SHOWWINDOW Or SWP_NOOWNERZORDER
 End Sub
 
+Public Sub SetFocusAPI(ByVal hWndToReceiveFocus As Long)
+    SetFocus hWndToReceiveFocus
+End Sub
+
 'External objects can call this function to activate system-level double-buffering for a given hWnd.
 Public Sub activateDoubleBuffering(ByVal srcHwnd As Long)
     
