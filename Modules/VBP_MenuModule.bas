@@ -578,10 +578,6 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     ' manual save (e.g. AutoSave).
     pdImages(g_CurrentImage).undoManager.createUndoData g_Language.TranslateMessage("Original image"), "", UNDO_EVERYTHING
     
-    'Also, set an initial image checkpoint, in case the user decides to immediately start applying non-destructive
-    ' edits to the image.
-    'Processor.setImageCheckpoint
-    
     'Re-enable the main form
     FormMain.Enabled = True
     
