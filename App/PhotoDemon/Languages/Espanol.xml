@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.34</langversion>
+<langversion>6.7.35</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -1419,6 +1419,61 @@ When terminado, haga clic en el botón Enviar. Gracias!</translation>
 </phrase>
 
 <phrase>
+<original>name</original>
+<translation>nombre</translation>
+</phrase>
+
+<phrase>
+<original>group</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>opacity</original>
+<translation>opacidad</translation>
+</phrase>
+
+<phrase>
+<original>blend moe</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>X offset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Y offset</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>width</original>
+<translation>ancho</translation>
+</phrase>
+
+<phrase>
+<original>height</original>
+<translation>altura</translation>
+</phrase>
+
+<phrase>
+<original>angle</original>
+<translation>ángulo</translation>
+</phrase>
+
+<phrase>
+<original>visibility</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive effect</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>text</original>
 <translation></translation>
 </phrase>
@@ -1483,7 +1538,7 @@ When terminado, haga clic en el botón Enviar. Gracias!</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ProcessorModule.bas contains 55 phrases. 19 were duplicates of existing phrases, so only 36 new phrases were written to file. -->
+<!-- VBP_ProcessorModule.bas contains 79 phrases. 32 were duplicates of existing phrases, so only 47 new phrases were written to file. -->
 
 <!-- END text for VBP_ProcessorModule.bas-->
 
@@ -5705,11 +5760,6 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 </phrase>
 
 <phrase>
-<original>angle</original>
-<translation>ángulo</translation>
-</phrase>
-
-<phrase>
 <original>base color</original>
 <translation>color base</translation>
 </phrase>
@@ -5724,7 +5774,7 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <translation>Relieve imagen</translation>
 </phrase>
 
-<!-- VBP_FormEmbossEngrave.frm contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
+<!-- VBP_FormEmbossEngrave.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_FormEmbossEngrave.frm-->
 
@@ -6437,16 +6487,6 @@ To mejorar su experiencia de usuario, por favor, deje que el programa descarga a
 </phrase>
 
 <phrase>
-<original>width</original>
-<translation>ancho</translation>
-</phrase>
-
-<phrase>
-<original>height</original>
-<translation>altura</translation>
-</phrase>
-
-<phrase>
 <original>pixels</original>
 <translation>píxeles</translation>
 </phrase>
@@ -6491,7 +6531,7 @@ To mejorar su experiencia de usuario, por favor, deje que el programa descarga a
 <translation>la nueva imagen será %1 %3 de ancho por %2 %3 de altura</translation>
 </phrase>
 
-<!-- VBP_FormTile.frm contains 35 phrases. 22 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- VBP_FormTile.frm contains 35 phrases. 24 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for VBP_FormTile.frm-->
 
@@ -12117,11 +12157,6 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <!-- BEGIN text for VBP_ToolbarLayers.frm (toolbar_Layers) -->
 
 <phrase>
-<original>opacity</original>
-<translation>opacidad</translation>
-</phrase>
-
-<phrase>
 <original>blend</original>
 <translation>mezcla</translation>
 </phrase>
@@ -12211,7 +12246,7 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <translation>Capa Mover hacia abajo</translation>
 </phrase>
 
-<!-- VBP_ToolbarLayers.frm contains 41 phrases. 22 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- VBP_ToolbarLayers.frm contains 41 phrases. 23 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarLayers.frm-->
 
@@ -12448,11 +12483,6 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>name</original>
-<translation>nombre</translation>
-</phrase>
-
-<phrase>
 <original>Layer %1</original>
 <translation>Capa 1%</translation>
 </phrase>
@@ -12482,7 +12512,7 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <translation>parte inferior de la pila de capas</translation>
 </phrase>
 
-<!-- VBP_FormNewLayer.frm contains 18 phrases. 5 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- VBP_FormNewLayer.frm contains 18 phrases. 6 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for VBP_FormNewLayer.frm-->
 
@@ -13781,10 +13811,10 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2394</phrasecount>
+<phrasecount>2400</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4101 phrases. -->
-<!-- 1707 are duplicates, so only 2394 unique phrases have been written to file. -->
-<!-- These 2394 phrases contain approximately 13599 total words. -->
+<!-- As of this build, PhotoDemon contains 4125 phrases. -->
+<!-- 1725 are duplicates, so only 2400 unique phrases have been written to file. -->
+<!-- These 2400 phrases contain approximately 13609 total words. -->
 
 </pdData>
