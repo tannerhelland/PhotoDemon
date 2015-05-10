@@ -93,9 +93,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
 
     'Main error handler for the software processor is initialized by this line
     On Error GoTo MainErrHandler
-    
-    'Mark the software processor as busy, but only when we're not showing a dialog.
-    If Not showDialog Then Processing = True
         
     'If we are applying an action to the image (e.g. not just showing a dialog), and the action is likely to take awhile
     ' (e.g. it is processing an image, and not just modifying a layer header) display a busy cursor.
@@ -116,7 +113,17 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     End If
     
-    'Disable the main form to prevent the user from clicking additional menus or tools while this action is processing
+    'PD provides two failsafes to avoid unwanted user interaction during processing. First, we forcibly remove keyboard focus from the thread.
+    Dim focusHwnd As Long
+    focusHwnd = g_WindowManager.GetFocusAPI
+    g_WindowManager.SetFocusAPI 0
+    
+    'With focus removed from any valid objects, now is a good time to mark the software processor as busy
+    ' (but only when we're not showing a dialog!)
+    If Not showDialog Then Processing = True
+    
+    'Next, complete part two of our "unwanted user interaction" failsafe: disable the main form to prevent the user from clicking additional
+    ' menus or tools while this action is processing
     FormMain.Enabled = False
         
     #If DEBUGMODE = 1 Then
@@ -1696,6 +1703,16 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
             Select Case processID
             
+                'Non-destructive layer header modifications are handled by their own specialized non-destructive processor (below).
+                ' The only way this case will ever be triggered in *this function * is during macro playback.  If encountered, all
+                ' "modify layer" instructions follow the same basic structure: the first parameter is a generic layer header setting
+                ' ID, and the second is a layer setting value.
+                Case "Modify layer"
+                    
+                    If (MacroStatus = MacroPLAYBACK) Or (MacroStatus = MacroBATCH) Then
+                        pdImages(g_CurrentImage).getActiveLayer.setGenericLayerProperty cParams.GetLong(1), cParams.GetVariant(2)
+                    End If
+                
                 'Text layer modifications are handled by their own specialized non-destructive processor (below).  The only way this case
                 ' will ever be triggered is during macro playback.  If encountered, all "modify text layer" instructions follow the same
                 ' basic structure: the first parameter is a text setting ID, and the second is a text setting value.
@@ -1707,6 +1724,12 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                             pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty cParams.GetLong(1), cParams.GetVariant(2)
                         End If
                     
+                    End If
+                    
+                'Non-destructive "quick-fix" type effects follow the same logic as above.
+                Case "Non-destructive effect"
+                    If (MacroStatus = MacroPLAYBACK) Or (MacroStatus = MacroBATCH) Then
+                        pdImages(g_CurrentImage).getActiveLayer.setLayerNonDestructiveFXState cParams.GetLong(1), cParams.GetVariant(2)
                     End If
             
                 Case Else
@@ -1808,7 +1831,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'Unlock the main form
     If MacroStatus <> MacroBATCH Then FormMain.Enabled = True
-    
+        
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
     If (createUndo <> UNDO_NOTHING) Then
     
@@ -1825,7 +1848,10 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     syncInterfaceToCurrentImage
         
     'Finally, after all our work is done, return focus to the main PD window
-    If (MacroStatus <> MacroBATCH) Then g_WindowManager.requestActivation FormMain.hWnd
+    'If (MacroStatus <> MacroBATCH) Then g_WindowManager.requestActivation FormMain.hWnd
+    
+    '...and then restore focus to whichever control had it previously
+    If focusHwnd <> 0 Then g_WindowManager.SetFocusAPI focusHwnd
     
     'If an update is available, and we haven't displayed a notification yet, do so now
     If g_ShowUpdateNotification Then Software_Updater.displayUpdateNotification
@@ -1940,6 +1966,9 @@ End Sub
 ' as appropriate).  This function will make a note of that value, which can easily be compared when the control loses focus.
 Public Sub flagInitialNDFXState_Generic(ByVal layerSettingID As PDLAYER_GENERIC_PROPERTY, ByVal layerSettingValue As Variant, ByVal targetLayerID As Long)
     
+    'Debug messages can be helpful with this function
+    'Debug.Print "ENTRANCE -- LayerSettingID: " & layerSettingID & ", LayerSettingValue: " & layerSettingValue
+    
     'This function is easy; just store the values we are passed
     prevGenericSetting(layerSettingID) = layerSettingValue
     
@@ -1952,6 +1981,9 @@ End Sub
 ' as appropriate).  This function will compare the value against its previously stored value, and if the two do not match, this function
 ' will add an Undo entry and notify the macro recorder (if active).
 Public Sub flagFinalNDFXState_Generic(ByVal layerSettingID As PDLAYER_GENERIC_PROPERTY, ByVal layerSettingValue As Variant)
+    
+    'Debug messages can be helpful with this function
+    'Debug.Print "EXIT -- LayerSettingID: " & layerSettingID & ", LayerSettingValue: " & layerSettingValue
     
     'Ignore all requests if no images are loaded
     If g_OpenImageCount = 0 Then Exit Sub

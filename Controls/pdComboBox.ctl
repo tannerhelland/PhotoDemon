@@ -2190,7 +2190,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         ' only way to bypass VB's internal message translator, which will forcibly intercept dialog keys (arrows, etc).
         ' Note that focus changes also force a repaint of the control.
         Case WM_SETFOCUS
-        
+            
             'Mark the control-wide focus state
             If Not m_ControlHasFocus Then
                 m_ControlHasFocus = True
