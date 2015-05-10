@@ -1514,8 +1514,8 @@ Private Sub updateHoveredLayer(ByVal newLayerUnderMouse As Long)
     'If a layer other than the active one is being hovered, highlight that box
     If curLayerHover <> newLayerUnderMouse Then
         
-        'Finalize any Undo/Redo changes to the existing layer (curLayerHover)
-        If g_OpenImageCount > 0 Then
+        'If this control has focus, finalize any Undo/Redo changes to the existing layer (curLayerHover)
+        If (g_OpenImageCount > 0) And (g_WindowManager.GetFocusAPI = picLayers.hWnd) Then
             If (curLayerHover > -1) And (curLayerHover < pdImages(g_CurrentImage).getNumOfLayers) And Tool_Support.canvasToolsAllowed Then
                 Processor.flagFinalNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).getLayerByIndex(curLayerHover).getLayerVisibility
             End If
@@ -1523,8 +1523,8 @@ Private Sub updateHoveredLayer(ByVal newLayerUnderMouse As Long)
         
         curLayerHover = newLayerUnderMouse
         
-        'Mark the current state of the newly selected layer (newLayerUnderMouse)
-        If g_OpenImageCount > 0 Then
+        'If this control has focus, mark the current state of the newly selected layer (newLayerUnderMouse)
+        If (g_OpenImageCount > 0) And (g_WindowManager.GetFocusAPI = picLayers.hWnd) Then
             If (curLayerHover > -1) And (curLayerHover < pdImages(g_CurrentImage).getNumOfLayers) Then
                 Processor.flagInitialNDFXState_Generic pgp_Visibility, pdImages(g_CurrentImage).getLayerByIndex(curLayerHover).getLayerVisibility, pdImages(g_CurrentImage).getLayerByIndex(curLayerHover).getLayerID
             End If

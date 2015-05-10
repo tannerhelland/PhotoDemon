@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.32</langversion>
+<langversion>6.7.33</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -1433,8 +1433,8 @@ Wanneer voltooid, klikt u op de knop Verzenden. Dank je wel!</translation>
 </phrase>
 
 <phrase>
-<original>blend moe</original>
-<translation></translation>
+<original>blend mode</original>
+<translation>mengmodus</translation>
 </phrase>
 
 <phrase>
@@ -1478,42 +1478,42 @@ Wanneer voltooid, klikt u op de knop Verzenden. Dank je wel!</translation>
 </phrase>
 
 <phrase>
-<original>font: color</original>
+<original>font (color)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>font: face</original>
+<original>font (face)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>font: size</original>
+<original>font (size)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>font: size unit</original>
+<original>font (size unit)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>style: bold</original>
+<original>style (bold)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>style: italic</original>
+<original>style (italic)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>style: underline</original>
+<original>style (underline)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>style: strikeout</original>
+<original>style (strikeout)</original>
 <translation></translation>
 </phrase>
 
@@ -1528,16 +1528,41 @@ Wanneer voltooid, klikt u op de knop Verzenden. Dank je wel!</translation>
 </phrase>
 
 <phrase>
-<original>text: antialiasing</original>
+<original>antialiasing</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>text: clarity</original>
+<original>antialiasing clarity</original>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ProcessorModule.bas contains 79 phrases. 32 were duplicates of existing phrases, so only 47 new phrases were written to file. -->
+<phrase>
+<original>exposure</original>
+<translation>blootstelling</translation>
+</phrase>
+
+<phrase>
+<original>clarity</original>
+<translation>duidelijkheid</translation>
+</phrase>
+
+<phrase>
+<original>vibrance</original>
+<translation>trilling</translation>
+</phrase>
+
+<phrase>
+<original>temperature</original>
+<translation>temperatuur</translation>
+</phrase>
+
+<phrase>
+<original>tint</original>
+<translation>tint</translation>
+</phrase>
+
+<!-- VBP_ProcessorModule.bas contains 91 phrases. 39 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
 
 <!-- END text for VBP_ProcessorModule.bas-->
 
@@ -10322,16 +10347,11 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 <!-- BEGIN text for VBP_FormVibrance.frm (FormVibrance) -->
 
 <phrase>
-<original>vibrance</original>
-<translation>trilling</translation>
-</phrase>
-
-<phrase>
 <original>Adjusting color vibrance</original>
 <translation>Aanpassen kleurtrilling</translation>
 </phrase>
 
-<!-- VBP_FormVibrance.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- VBP_FormVibrance.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for VBP_FormVibrance.frm-->
 
@@ -12671,16 +12691,11 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <!-- BEGIN text for VBP_FormTint.frm (FormTint) -->
 
 <phrase>
-<original>tint</original>
-<translation>tint</translation>
-</phrase>
-
-<phrase>
 <original>Re-tinting image</original>
 <translation>Her-verven afbeelding</translation>
 </phrase>
 
-<!-- VBP_FormTint.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- VBP_FormTint.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for VBP_FormTint.frm-->
 
@@ -12740,11 +12755,6 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <!-- BEGIN text for VBP_FormFadeLast.frm (FormFadeLast) -->
 
 <phrase>
-<original>blend mode</original>
-<translation>mengmodus</translation>
-</phrase>
-
-<phrase>
 <original>Fading previous action (%1)</original>
 <translation>Vervagen vorige actie ( %1)</translation>
 </phrase>
@@ -12754,7 +12764,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation>Vervaging compleet.</translation>
 </phrase>
 
-<!-- VBP_FormFadeLast.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_FormFadeLast.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormFadeLast.frm-->
 
@@ -12976,11 +12986,6 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>exposure</original>
-<translation>blootstelling</translation>
-</phrase>
-
-<phrase>
 <original>adaptation</original>
 <translation>aanpassing</translation>
 </phrase>
@@ -13050,7 +13055,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation>Reinhard</translation>
 </phrase>
 
-<!-- VBP_FormToneMapping.frm contains 24 phrases. 6 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- VBP_FormToneMapping.frm contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for VBP_FormToneMapping.frm-->
 
@@ -13445,16 +13450,6 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>antialiasing</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>clarity</original>
-<translation>duidelijkheid</translation>
-</phrase>
-
-<phrase>
 <original>alignment</original>
 <translation></translation>
 </phrase>
@@ -13464,7 +13459,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_Text.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- VBP_ToolPanel_Text.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_Text.frm-->
 
@@ -13677,11 +13672,6 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <!-- BEGIN text for VBP_ToolPanel_NDFX.frm (toolpanel_NDFX) -->
 
 <phrase>
-<original>temperature</original>
-<translation>temperatuur</translation>
-</phrase>
-
-<phrase>
 <original>all</original>
 <translation></translation>
 </phrase>
@@ -13701,7 +13691,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation>Maak quick-fix aanpassingen permanent. Deze actie is nooit verplicht, maar als het viewport translateren traag is en vele quick-fix aanpassingen actief zijn, kan dit de prestaties verbeteren.</translation>
 </phrase>
 
-<!-- VBP_ToolPanel_NDFX.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- VBP_ToolPanel_NDFX.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_NDFX.frm-->
 
@@ -13810,10 +13800,10 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2400</phrasecount>
+<phrasecount>2398</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4125 phrases. -->
-<!-- 1725 are duplicates, so only 2400 unique phrases have been written to file. -->
-<!-- These 2400 phrases contain approximately 13609 total words. -->
+<!-- As of this build, PhotoDemon contains 4137 phrases. -->
+<!-- 1739 are duplicates, so only 2398 unique phrases have been written to file. -->
+<!-- These 2398 phrases contain approximately 13605 total words. -->
 
 </pdData>

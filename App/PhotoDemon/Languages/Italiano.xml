@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.32</langversion>
+<langversion>6.7.33</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -1431,8 +1431,8 @@ Quando hai finito, fai clic sul pulsante Submit.  Grazie!</translation>
 </phrase>
 
 <phrase>
-<original>blend moe</original>
-<translation></translation>
+<original>blend mode</original>
+<translation>modalità di fusione</translation>
 </phrase>
 
 <phrase>
@@ -1476,42 +1476,42 @@ Quando hai finito, fai clic sul pulsante Submit.  Grazie!</translation>
 </phrase>
 
 <phrase>
-<original>font: color</original>
+<original>font (color)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>font: face</original>
+<original>font (face)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>font: size</original>
+<original>font (size)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>font: size unit</original>
+<original>font (size unit)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>style: bold</original>
+<original>style (bold)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>style: italic</original>
+<original>style (italic)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>style: underline</original>
+<original>style (underline)</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>style: strikeout</original>
+<original>style (strikeout)</original>
 <translation></translation>
 </phrase>
 
@@ -1526,16 +1526,41 @@ Quando hai finito, fai clic sul pulsante Submit.  Grazie!</translation>
 </phrase>
 
 <phrase>
-<original>text: antialiasing</original>
+<original>antialiasing</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>text: clarity</original>
+<original>antialiasing clarity</original>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ProcessorModule.bas contains 79 phrases. 32 were duplicates of existing phrases, so only 47 new phrases were written to file. -->
+<phrase>
+<original>exposure</original>
+<translation>esposizione</translation>
+</phrase>
+
+<phrase>
+<original>clarity</original>
+<translation>chiarezza</translation>
+</phrase>
+
+<phrase>
+<original>vibrance</original>
+<translation>vividezza</translation>
+</phrase>
+
+<phrase>
+<original>temperature</original>
+<translation>temperatura</translation>
+</phrase>
+
+<phrase>
+<original>tint</original>
+<translation>tinta</translation>
+</phrase>
+
+<!-- VBP_ProcessorModule.bas contains 91 phrases. 39 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
 
 <!-- END text for VBP_ProcessorModule.bas-->
 
@@ -10319,16 +10344,11 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare u
 <!-- BEGIN text for VBP_FormVibrance.frm (FormVibrance) -->
 
 <phrase>
-<original>vibrance</original>
-<translation>vividezza</translation>
-</phrase>
-
-<phrase>
 <original>Adjusting color vibrance</original>
 <translation>Aggiustamento della vividezza del colore</translation>
 </phrase>
 
-<!-- VBP_FormVibrance.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- VBP_FormVibrance.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for VBP_FormVibrance.frm-->
 
@@ -12668,16 +12688,11 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- BEGIN text for VBP_FormTint.frm (FormTint) -->
 
 <phrase>
-<original>tint</original>
-<translation>tinta</translation>
-</phrase>
-
-<phrase>
 <original>Re-tinting image</original>
 <translation>Ritinteggiatura dell'immagine</translation>
 </phrase>
 
-<!-- VBP_FormTint.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- VBP_FormTint.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for VBP_FormTint.frm-->
 
@@ -12737,11 +12752,6 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- BEGIN text for VBP_FormFadeLast.frm (FormFadeLast) -->
 
 <phrase>
-<original>blend mode</original>
-<translation>modalità di fusione</translation>
-</phrase>
-
-<phrase>
 <original>Fading previous action (%1)</original>
 <translation>Dissolvenza dell'azione precedente (%1)</translation>
 </phrase>
@@ -12751,7 +12761,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation>Dissolvenza completa.</translation>
 </phrase>
 
-<!-- VBP_FormFadeLast.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- VBP_FormFadeLast.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for VBP_FormFadeLast.frm-->
 
@@ -12973,11 +12983,6 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>exposure</original>
-<translation>esposizione</translation>
-</phrase>
-
-<phrase>
 <original>adaptation</original>
 <translation>adattamento</translation>
 </phrase>
@@ -13047,7 +13052,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation>Reinhard</translation>
 </phrase>
 
-<!-- VBP_FormToneMapping.frm contains 24 phrases. 6 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- VBP_FormToneMapping.frm contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for VBP_FormToneMapping.frm-->
 
@@ -13442,16 +13447,6 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>antialiasing</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>clarity</original>
-<translation>chiarezza</translation>
-</phrase>
-
-<phrase>
 <original>alignment</original>
 <translation></translation>
 </phrase>
@@ -13461,7 +13456,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_Text.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- VBP_ToolPanel_Text.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_Text.frm-->
 
@@ -13674,11 +13669,6 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- BEGIN text for VBP_ToolPanel_NDFX.frm (toolpanel_NDFX) -->
 
 <phrase>
-<original>temperature</original>
-<translation>temperatura</translation>
-</phrase>
-
-<phrase>
 <original>all</original>
 <translation></translation>
 </phrase>
@@ -13698,7 +13688,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation>Crea le regolazioni della soluzione automatica permanenti.  Questa azione non è mai necessaria, ma se la resa di visualizzazione è lenta e molti aggiustamenti della soluzione automatica sono attivi, potrebbe migliorare le prestazioni.</translation>
 </phrase>
 
-<!-- VBP_ToolPanel_NDFX.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- VBP_ToolPanel_NDFX.frm contains 10 phrases. 6 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_NDFX.frm-->
 
@@ -13807,10 +13797,10 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2400</phrasecount>
+<phrasecount>2398</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4125 phrases. -->
-<!-- 1725 are duplicates, so only 2400 unique phrases have been written to file. -->
-<!-- These 2400 phrases contain approximately 13609 total words. -->
+<!-- As of this build, PhotoDemon contains 4137 phrases. -->
+<!-- 1739 are duplicates, so only 2398 unique phrases have been written to file. -->
+<!-- These 2398 phrases contain approximately 13605 total words. -->
 
 </pdData>

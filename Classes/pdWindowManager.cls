@@ -310,6 +310,7 @@ Private Declare Function UpdateWindow Lib "user32" (ByVal targetHwnd As Long) As
 Private Declare Function AdjustWindowRect Lib "user32" (ByRef lpRect As winRect, ByVal dwStyle As Long, ByVal bMenu As Long) As Long
 Private Declare Function SetWindowText Lib "user32" Alias "SetWindowTextA" (ByVal targetHwnd As Long, ByVal lpString As String) As Long
 Private Declare Function AnimateWindow Lib "user32" (ByVal targetHwnd As Long, ByVal dwTime As Long, ByVal dwFlags As Long) As Long
+Private Declare Function GetFocus Lib "user32" () As Long
 Private Declare Function SetFocus Lib "user32" (ByVal targetHwnd As Long) As Long
 Private Declare Function SendMessageA Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, ByVal lprcUpdateRectPtr As Long, ByVal hrgnUpdate As Long, ByVal fuRedraw As Long) As Long
@@ -1787,6 +1788,11 @@ End Sub
 Public Sub requestActivation(ByVal hWndToActivate As Long)
     SetWindowPos hWndToActivate, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_SHOWWINDOW Or SWP_NOOWNERZORDER
 End Sub
+
+'VB makes getting and setting focus an error-prone pain, so I prefer to use the API and deal strictly with hWnds.
+Public Function GetFocusAPI() As Long
+    GetFocusAPI = GetFocus()
+End Function
 
 Public Sub SetFocusAPI(ByVal hWndToReceiveFocus As Long)
     SetFocus hWndToReceiveFocus

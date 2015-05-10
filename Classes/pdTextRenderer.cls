@@ -651,7 +651,7 @@ Public Function createFontObject() As Boolean
     'Reset the current text engine marker, as we won't know which engine is required until we try to create the font.
     m_CurrentBackend = fb_UNKNOWN
     
-    'If we have already created any font objects (in either engine), free them now
+    'If we have already created any font objects (in any engine), free them now
     If m_GDIPlusFont <> 0 Then
         GdipDeleteFont m_GDIPlusFont
         m_GDIPlusFont = 0
@@ -663,37 +663,28 @@ Public Function createFontObject() As Boolean
     End If
     
     If m_GDIFont <> 0 Then
-        
-        'I've added some debug code here, just to make absolutely certain that we're not leaking GDI objects by forgetting to unselect
-        ' them from a DC prior to removal.
-        Dim gdiCheck As Long
-        gdiCheck = DeleteObject(m_GDIFont)
-        'Debug.Print "FYI: DeleteObject on m_GDIFont returned " & gdiCheck
+        DeleteObject m_GDIFont
         m_GDIFont = 0
-        
     End If
     
     'First, try to create a GDI+ font family.  This saves us a lot of grief.
     ' (Note that this step is skipped if manual rendering mode is activated; in that case, we will only use GDI fonts)
     Dim fontCreationSuccess As Boolean
+    fontCreationSuccess = False
     
-    If m_RenderingEngine = tre_WAPI Then
-        fontCreationSuccess = createGDIPlusFont()
-    Else
-        fontCreationSuccess = False
-    End If
+    If m_RenderingEngine = tre_WAPI Then fontCreationSuccess = createGDIPlusFont()
     
-    'GDI+ reported success, and we obtained a valid GDI+ font handle, carry on
+    'GDI+ reported success, and we obtained a valid GDI+ font handle.
     If fontCreationSuccess And (m_GDIPlusFont <> 0) Then
         
-        'Note that GDI+ works fine for this particular combination of settings, and return success
+        'Note that GDI+ works fine for this particular combination of settings, and return success.
         Debug.Print "GDI+ is now set as the active font handling backend."
         m_CurrentBackend = fb_GDIPLUS
         m_FontCacheClean = True
         createFontObject = True
         
-        'For text metric purposes, we create a duplicate GDI font.  This is a hassle, but it's necessary to retrieve detailed metrics on
-        ' individual glyphs, as GDI+ doesn't expose that level of font functionality.
+        'For text metric purposes, we create a duplicate font in GDI format.  This is a hassle, but it's necessary to retrieve
+        ' detailed metrics on individual glyphs, as GDI+ doesn't expose very detailed font information.
         createGDIFont
         
     'If GDI+ failed, fall back to GDI and try again.
