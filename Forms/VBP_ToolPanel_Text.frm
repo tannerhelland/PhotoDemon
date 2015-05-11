@@ -24,6 +24,15 @@ Begin VB.Form toolpanel_Text
    ScaleWidth      =   1231
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdComboBox_Font cboFontTest 
+      Height          =   375
+      Left            =   14640
+      TabIndex        =   12
+      Top             =   960
+      Width           =   3615
+      _ExtentX        =   6376
+      _ExtentY        =   661
+   End
    Begin PhotoDemon.buttonStrip btsHAlignment 
       Height          =   435
       Left            =   15720
@@ -513,7 +522,10 @@ Private Sub Form_Load()
 
     'Generate a list of fonts
     If g_IsProgramRunning Then
-    
+        
+        'TEST ONLY FOR NEW FONT DROPDOWN
+        cboFontTest.initializeFontList
+        
         'Retrieve a copy of the current system font cache
         Font_Management.getCopyOfFontCache userFontList
         

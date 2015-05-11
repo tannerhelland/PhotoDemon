@@ -119,6 +119,17 @@ Public Function GetString(ByVal strIndex As Long, Optional ByVal assumeLocaleInv
 
 End Function
 
+'Retrieve a string pointer from the stack; helpful for API interactions
+Public Function GetStringPointer(ByVal strIndex As Long) As Long
+
+    If (strIndex >= 0) And (strIndex < m_NumOfStrings) Then
+        GetStringPointer = StrPtr(m_Strings(strIndex))
+    Else
+        Debug.Print "WARNING!  Someone asked pdStringStack for a string outside stack bounds.  Fix this!"
+    End If
+
+End Function
+
 'Locale-unaware check for strings that can successfully be converted to numbers.  Thank you to
 ' http://stackoverflow.com/questions/18368680/vb6-isnumeric-behaviour-in-windows-8-windows-2012
 ' for the code.  (Note that the original function listed there is buggy!  I had to add some
