@@ -1410,12 +1410,10 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
             'We don't need to retrieve red and green, as they are identical to blue.
             
             'Populate the destination pixel at this point with our lookup table values.
-            g = aLookup(g)
-            
             dstImageData(xStrideDst, y + yOffset) = bLookup(g)
             dstImageData(xStrideDst + 1, y + yOffset) = gLookUp(g)
             dstImageData(xStrideDst + 2, y + yOffset) = rLookup(g)
-            dstImageData(xStrideDst + 3, y + yOffset) = g
+            dstImageData(xStrideDst + 3, y + yOffset) = aLookup(g)
         
         End If
         
