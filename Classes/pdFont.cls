@@ -193,6 +193,10 @@ Private m_origFontSize As Single
 Private m_origFontBold As Boolean
 Private m_origFontItalic As Boolean
 
+'Sometimes, the caller wants us to measure fonts for them.  GDI requires that a font be selected into a DC prior to calculating
+' specific metrics, so if the caller doesn't hand us a DC of their own, we'll use an internal one.
+Private m_TmpDIB As pdDIB
+
 'This function draws horizontally and vertically centered text onto the attached DC, and it does it without modifying any of the current
 ' font settings (including alignment).  It is designed for one-off renderings of centered text.
 Public Sub drawCenteredText(ByRef srcString As String, Optional ByVal customWidth As Long = -1, Optional ByVal customHeight As Long = -1)
@@ -507,10 +511,7 @@ Public Function getWidthOfString(ByVal srcString As String) As Long
     If curDC = 0 Then
         
         'If we're not currently selected into a DC, we'll create a temporary one, for measurement purposes only
-        Dim tmpDIB As pdDIB
-        Set tmpDIB = New pdDIB
-        tmpDIB.createBlank 8, 8, 24
-        attachToDC tmpDIB.getDIBDC
+        attachToDC m_TmpDIB.getDIBDC
         
         GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
         getWidthOfString = txtSize.x
@@ -532,10 +533,7 @@ Public Function getHeightOfString(ByVal srcString As String) As Long
     If curDC = 0 Then
         
         'If we're not currently selected into a DC, we'll create a temporary one, for measurement purposes only
-        Dim tmpDIB As pdDIB
-        Set tmpDIB = New pdDIB
-        tmpDIB.createBlank 8, 8, 24
-        attachToDC tmpDIB.getDIBDC
+        attachToDC m_TmpDIB.getDIBDC
         
         GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
         getHeightOfString = txtSize.y
@@ -619,12 +617,21 @@ Private Sub Class_Initialize()
     fontColor = 0
     curTextAlignment = TA_LEFT
     
+    'Also, create a temporary DC we can use for metrics
+    If g_IsProgramRunning Then
+        Set m_TmpDIB = New pdDIB
+        m_TmpDIB.createBlank 4, 4, 32
+    End If
+    
 End Sub
 
 Private Sub Class_Terminate()
 
     'Free any remaining font resources
     deleteCurrentFont
+    
+    'Free our temporary metrics DC
+    Set m_TmpDIB = Nothing
     
 End Sub
 
@@ -694,10 +701,7 @@ Public Function getMaxFontSizeToFitStringWidth(ByVal srcString As String, ByVal 
     backupDC = curDC
     
     If curDC = 0 Then
-        Dim tmpDIB As pdDIB
-        Set tmpDIB = New pdDIB
-        tmpDIB.createBlank 8, 8, 24
-        targetDC = tmpDIB.getDIBDC
+        targetDC = m_TmpDIB.getDIBDC
     Else
         targetDC = curDC
     End If

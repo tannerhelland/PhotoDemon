@@ -1248,6 +1248,7 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     
     'Start by clearing the destination DIB
     dstDIB.resetDIB
+    dstDIB.setInitialAlphaPremultiplicationState True
         
     'Next, we need to prepare lookup tables based on the translation of gray pixels (since we rendered white text to a black background)
     ' to the target color, with alpha accounted for.  Note that alpha is easy - the grayscale value of the temporary DIB represents

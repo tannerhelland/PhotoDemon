@@ -50,10 +50,10 @@ Attribute VB_Exposed = False
 'A few notes on this font selection drop-down (combo) box control, specifically:
 '
 ' 1) Any changes to the core pdComboBox control should be evaluated for merge here.  The controls are implemented
-'    quite differently (since this one manages its own list) but core things like API interactions should be 
+'    quite differently (since this one manages its own list) but core things like API interactions should be
 '    nearly identical.
-' 2) This class does not query the system for a font list.  A public font cache is generated once, by the
-'    Font_Manager module.  This dropdown simply queries that module for a copy of its font list.
+' 2) This UC does not query the system for a font list.  A public font cache is generated once, by the Font_Manager
+'    module.  This dropdown simply queries that module for a copy of the list it has generated.
 ' 3) To allow use of arrow keys and other control keys, this control must hook the keyboard.  (If it does not, VB will
 '    eat control keypresses, because it doesn't know about windows created via the API!)  A byproduct of this is that
 '    accelerators flat-out WILL NOT WORK while this control has focus.  I haven't yet settled on a good way to handle
@@ -74,6 +74,8 @@ Option Explicit
 ' but I have used Click() throughout VB due to the behavior of the old combo box - and rather than rewrite all that code, I've simply
 ' used the same semantics here.  Note, however, that "Click" will also return changes to the combo box that originate from the keyboard.
 Public Event Click()
+Public Event GotFocusAPI()
+Public Event LostFocusAPI()
 
 'Flicker-free window painter; note that two painters are (probably? TODO!) required: one for the edit portion of the control (including its button),
 ' and another for the drop-down list (only the border is relevant here, as individual items draw their own background).
@@ -244,6 +246,11 @@ Private m_HasFocus As Boolean
 Private m_TimeAtFocusEnter As Long
 Private m_FocusDirection As Long
 
+'Tracks whether the control (any component) has focus.  This is helpful as we must synchronize between VB's focus events and API
+' focus events.  This value is deliberately kept separate from m_HasFocus, above, as we only use this value to raise our own
+' Got/Lost focus events when the *entire control* loses focus (vs any one individual component).
+Private m_ControlHasFocus As Boolean
+
 'If the user resizes a combo box, the control's back buffer needs to be redrawn.  If we resize the combo box as part of an internal
 ' AutoSize calculation, however, we will already be in the midst of resizing the backbuffer - so we override the behavior of the
 ' UserControl_Resize event, using this variable.
@@ -257,25 +264,21 @@ Private m_ComboBoxBrush As Long
 ' crucial actions (like releasing the hook) until the hook proc has exited.
 Private m_InHookNow As Boolean
 
-'If the user attempts to add items to the combo box before it is created (e.g. when the control is invisible), we will back up the
-' items to this string.  When the combo box is created, this list will be automatically be added to the control.
-Private Type backupComboEntry
-    entryIndex As Long
-    apiIndex As Long
-    followedByDivider As Boolean
-    entryStringEn As String
-    entryStringTranslated As String
-End Type
-
-Private m_BackupEntries() As backupComboEntry
-Private m_NumBackupEntries As Long
+'If the user attempts to change the ListIndex property before the combo box is created, we'll track the requested index here.
 Private m_BackupListIndex As Long
+
+'The size of the list at last font refresh.  If the font list changes, we need to find the largest string width in the list.  This serves
+' as our baseline for calculating the width of the dropdown.
+Private m_CountAtLastFontRefresh As Long
 
 'The combo box now supports dividing lines between categories.  The number of dividers must be counted so we can calculate an accurate
 ' total drop-down size.
 Private Const COMBO_BOX_DIVIDER_HEIGHT As Double = 0.75
 Private m_InsideAddString As Boolean, m_LastInternalIndex As Long
-Private m_DropDownCalculatedHeight As Long
+Private m_DropDownCalculatedWidth As Long, m_DropDownCalculatedHeight As Long
+
+'Largest width of a rendered string in the dropdown list, using the current interface font
+Private m_LargestWidth As Long
 
 'Additional helpers for rendering themed and multiline tooltips
 Private toolTipManager As pdToolTip
@@ -394,146 +397,43 @@ Private m_PrevClassCursorHandle As Long
 Private m_HwndListBox As Long
 Private m_ListPositionSet As Boolean
 
+'String stack that mirrors the current program font cache.
+Private m_listOfFonts As pdStringStack
+
 'Basic combo box interaction functions
 
-'Add an item to the combo box
-Public Sub AddItem(ByVal srcItem As String, Optional ByVal itemIndex As Long = -1, Optional ByVal addDivider As Boolean = False)
+'Initialize the combo box.  This must be called once, by the caller, prior to display.  The combo box will internally cache its
+' own copy of the font list, and if for some reason the list changes, this function can be called again to reset the font list.
+Public Sub initializeFontList()
+
+    'Clear the existing list, if any
+    Me.Clear
     
-    'Because Windows automatically converts to ANSI the Unicode contents of a Unicode combo box inside an ANSI project, we cannot simply add
-    ' Unicode strings directly to the combo box.  Instead, we manage our own Unicode-friendly copies of the combo box contents, as a backup.
-    ' This way, the combo box manages storage (with support for accessibility, just ANSI-only), and as far as rendering the actual strings goes,
-    ' we handle that part ourselves.
+    'Retrieve a copy of the current system font cache
+    Font_Management.getCopyOfFontCache m_listOfFonts
     
-    'Resize the backup array as necessary
-    'If m_NumBackupEntries = 0 Then ReDim m_BackupEntries(0 To 15) As backupComboEntry
-    If m_NumBackupEntries > UBound(m_BackupEntries) Then ReDim Preserve m_BackupEntries(0 To m_NumBackupEntries * 2 - 1) As backupComboEntry
-    
-    'Add this item to the backup array
-    m_BackupEntries(m_NumBackupEntries).entryIndex = itemIndex
-    m_BackupEntries(m_NumBackupEntries).entryStringEn = srcItem
-    
-    'Add a translated copy as well; this will be the string actually rendered onto the screen.
-    If Not g_Language Is Nothing Then
-        If g_Language.translationActive Then
-            m_BackupEntries(m_NumBackupEntries).entryStringTranslated = g_Language.TranslateMessage(srcItem)
-        Else
-            m_BackupEntries(m_NumBackupEntries).entryStringTranslated = srcItem
-        End If
-    Else
-        m_BackupEntries(m_NumBackupEntries).entryStringTranslated = srcItem
-    End If
-    
-    'Check for a divider line request.  Now that we custom draw our own combo boxes, we are able to add dividing lines between combo categories,
-    ' as relevant.  (The blend mode box uses this, for example.)
-    m_BackupEntries(m_NumBackupEntries).followedByDivider = addDivider
-    m_LastInternalIndex = m_NumBackupEntries
-    
-    m_NumBackupEntries = m_NumBackupEntries + 1
-    
-    'Add this item to the API combo box.
-    copyStringToComboBox m_NumBackupEntries - 1
+    'Add the list of fonts into the API combo box, for accessibility reasons
+    copyFontsToComboBox
     
     'Note that the dropdown size is dirty, because the list's contents have changed
     m_DropDownSizeIsClean = False
-    
+
 End Sub
-
-'Remove an item from the combo box
-Public Sub RemoveItem(ByVal itemIndex As Long)
-    
-    'First, make sure the requested index is valid
-    If (itemIndex >= 0) And (itemIndex < m_NumBackupEntries) Then
-    
-        'Cache the current .ListIndex; we will need this later on, to prevent the "-1" .ListIndex scenario
-        Dim priorListIndex As Long
-        priorListIndex = Me.ListIndex
-                
-        'Modify our internal string storage first
-        Dim i As Long
-        For i = itemIndex To m_NumBackupEntries - 1
-        
-            If (i + 1) < UBound(m_BackupEntries) Then
-                m_BackupEntries(i) = m_BackupEntries(i + 1)
-                
-                'Copy the index value of our backup array (for this string) into the new itemdata slot.  This allows us to retrieve the Unicode
-                ' version of the string, if any, at render time.
-                If m_ComboBoxHwnd <> 0 Then SendMessage m_ComboBoxHwnd, CB_SETITEMDATA, i, ByVal i
-                
-            End If
-            
-        Next i
-        
-        m_NumBackupEntries = m_NumBackupEntries - 1
-        
-        'Forward the request to the API box as well
-        If m_ComboBoxHwnd <> 0 Then SendMessage m_ComboBoxHwnd, CB_DELETESTRING, itemIndex, ByVal 0&
-        
-        'Note that the dropdown size is dirty, because the list's contents have changed
-        m_DropDownSizeIsClean = False
-        
-        'If the removal affected the current ListIndex, update it to match
-        If itemIndex <= priorListIndex Then
-            
-            'Make sure there is at least one valid entry in the drop-down
-            If Me.ListCount >= 0 Then
-            
-                If priorListIndex > 0 Then
-                    Me.ListIndex = priorListIndex - 1
-                Else
-                    Me.ListIndex = 0
-                End If
-                
-            End If
-            
-        End If
-    
-    End If
-    
-End Sub
-
-'Because VB's main wndproc is ANSI-only, we have to use some trickery to provide full Unicode support for combo boxes.  Specifically, we must track
-' all string entries internally, rather than relying on the API to manage them for us.  If you need to retrieve an internal index from an API index
-' (for example, in response to a wndproc call), use this function.
-Private Function getInternalIndexFromAPIIndex(ByVal apiIndex As Long) As Long
-
-    Dim i As Long
-    For i = 0 To m_NumBackupEntries - 1
-        If m_BackupEntries(i).apiIndex = apiIndex Then
-            getInternalIndexFromAPIIndex = i
-            Exit Function
-        End If
-    Next i
-
-End Function
 
 'Duplicate a given string inside the API combo box.  We don't actually use this copy of the string (we use our own, so we can support Unicode),
 ' but this provides a fallback for accessibility technology.
-Private Sub copyStringToComboBox(ByVal strIndex As Long)
+Private Sub copyFontsToComboBox()
 
     'Add this item to the combo box exists
     If (m_ComboBoxHwnd <> 0) Then
-    
-        'If no index is specified, let the default combo box handler decide order; otherwise, request the placement we were given.
-        Dim newIndex As Long
         
-        'Because the SendMessage() call below will instantly trigger a WM_MEASUREITEM message, the wndproc needs a way to identify the
-        ' internal storage index of the measure item.  By setting a module-level flag, it will knows to retrieve the last-added index via
-        ' m_NumBackupEntries, rather than relying on the ItemData of the MIS object (which hasn't been set by the time the WM_MEASUREITEM
-        ' notification is fired).
         m_InsideAddString = True
         
-        If m_BackupEntries(strIndex).entryIndex = -1 Then
-            newIndex = SendMessage(m_ComboBoxHwnd, CB_ADDSTRING, 0, ByVal StrPtr(m_BackupEntries(strIndex).entryStringTranslated))
-        Else
-            newIndex = SendMessage(m_ComboBoxHwnd, CB_INSERTSTRING, m_BackupEntries(strIndex).entryIndex, ByVal StrPtr(m_BackupEntries(strIndex).entryStringTranslated))
-        End If
-        
-        'Track the API index as well, to simplify interacting with window messages that use that value.
-        m_BackupEntries(strIndex).apiIndex = newIndex
-        
-        'Copy the index value of our backup array (for this string) into the itemdata slot.  This allows us to retrieve the Unicode
-        ' version of the string, if any, at render time.
-        SendMessage m_ComboBoxHwnd, CB_SETITEMDATA, newIndex, ByVal strIndex
+        'Iterate through the string stack, adding fonts as we go
+        Dim i As Long
+        For i = 0 To m_listOfFonts.getNumOfStrings - 1
+            SendMessage m_ComboBoxHwnd, CB_INSERTSTRING, i, ByVal m_listOfFonts.GetStringPointer(i)
+        Next i
         
         m_InsideAddString = False
                 
@@ -542,7 +442,7 @@ Private Sub copyStringToComboBox(ByVal strIndex As Long)
 End Sub
 
 'When the list's contents change, use this function to reset the dropdown height
-Private Sub dynamicallyFitDropDownHeight()
+Private Sub dynamicallyFitDropDownHeight(ByVal listHwnd As Long)
 
     'Only proceed if the combo box has been created
     If m_ComboBoxHwnd <> 0 Then
@@ -550,38 +450,42 @@ Private Sub dynamicallyFitDropDownHeight()
         'Rather than forcing combo boxes to a predetermined size, we dynamically adjust their size as items are added.
         ' To do this, we must start by getting the window rect of the current combo box.
         Dim comboRect As RECTL
-        GetClientRect Me.hWnd, comboRect
+        GetWindowRect m_ComboBoxHwnd, comboRect
         
         'Next, resize the combo box to match the number of items currently in the box.
         Dim totalHeight As Long
         totalHeight = 0
         
-        'Dividers introduce some funny business into the measurement technique, so we have no choice but to manually tally the reported
-        ' height of all available combo box entries
-        If m_NumBackupEntries > 0 Then
-        
-            Dim i As Long
-            For i = 0 To m_NumBackupEntries - 1
-                
-                'All entries have the same base size
-                totalHeight = totalHeight + (m_ItemHeight + 2)
-                        'Dividers add an extra chunk of padding
-                If m_BackupEntries(i).followedByDivider Then totalHeight = totalHeight + CLng(m_ItemHeight * COMBO_BOX_DIVIDER_HEIGHT)
-                
-            Next i
+        'All entries have the same base size
+        If m_listOfFonts.getNumOfStrings > 12 Then
+            totalHeight = (m_ItemHeight + 2) * 12
+        Else
+            totalHeight = (m_ItemHeight + 2) * m_listOfFonts.getNumOfStrings
         End If
         
         'The final height measurement includes two pixels for the non-client border of the drop-down
         totalHeight = totalHeight + 2
         
-        'Cache the calculated value; the wndProc will use this to set the actual dropdown size, whenever the dropdown is raised.
+        'If we haven't calcualted a largest width yet, do so now
+        If m_LargestWidth = 0 Then refreshFont
+        
+        'Figure out if the combo box width is larger than the minimum width required by the font preview; take the larger of the two
+        Dim dropWidth As Long
+        If m_LargestWidth > comboRect.Right - comboRect.Left Then
+            dropWidth = m_LargestWidth
+        Else
+            dropWidth = comboRect.Right - comboRect.Left
+        End If
+        
+        'Cache the calculated values; the wndProc will use this to set the actual dropdown size, whenever the dropdown is raised.
+        m_DropDownCalculatedWidth = dropWidth
         m_DropDownCalculatedHeight = totalHeight
         
         'Apply a temporary resize.  Windows's internal combo box handler checks to see if the total combo box height (edit + dropdown)
         ' is larger than the edit box itself.  If it isn't, the dropdown isn't raised at all.  As such, we specify a size 1px larger than
-        ' the edit box itself.  This seems to convince the combo box handler to raise the dropdown.  The actual size is set when the
+        ' the edit box itself.  This seems to convince the combo box handler to raise the dropdown.  The actual position is set when the
         ' dropdown actually appears, inside the wndProc.
-        SetWindowPos m_ComboBoxHwnd, 0, comboRect.Left, comboRect.Top, comboRect.Right - comboRect.Left, m_ItemHeight + 9, SWP_FRAMECHANGED Or SWP_NOZORDER Or SWP_NOOWNERZORDER Or SWP_NOACTIVATE
+        SetWindowPos listHwnd, 0, comboRect.Left, comboRect.Top, dropWidth, m_ItemHeight + 9, SWP_FRAMECHANGED Or SWP_NOZORDER Or SWP_NOOWNERZORDER Or SWP_NOACTIVATE
          
     End If
     
@@ -590,10 +494,11 @@ End Sub
 'Clear all entries from the combo box
 Public Sub Clear()
 
+    'Reset the API content list
     If m_ComboBoxHwnd <> 0 Then SendMessage m_ComboBoxHwnd, CB_RESETCONTENT, 0, ByVal 0&
     
-    m_NumBackupEntries = 0
-    ReDim m_BackupEntries(0 To 15) As backupComboEntry
+    'Reset our internal content list
+    Set m_listOfFonts = New pdStringStack
     
     'Note that the dropdown size is dirty, because the list's contents have changed
     m_DropDownSizeIsClean = False
@@ -607,23 +512,16 @@ Public Function ListCount() As Long
     If m_ComboBoxHwnd <> 0 Then
         ListCount = SendMessage(m_ComboBoxHwnd, CB_GETCOUNT, 0, ByVal 0&)
     Else
-        ListCount = m_NumBackupEntries
+        ListCount = m_listOfFonts.getNumOfStrings
     End If
     
 End Function
 
 'Retrieve a specified list item
-Public Property Get List(ByVal indexOfItem As Long, Optional ByVal returnTranslatedText As Boolean = False) As String
+Public Property Get List(ByVal indexOfItem As Long) As String
     
-    'We do not track ListCount persistently.  It is requested on-demand from the combo box.
-    If (indexOfItem >= 0) And (indexOfItem < m_NumBackupEntries) Then
-        
-        If returnTranslatedText Then
-            List = m_BackupEntries(indexOfItem).entryStringTranslated
-        Else
-            List = m_BackupEntries(indexOfItem).entryStringEn
-        End If
-        
+    If (indexOfItem >= 0) And (indexOfItem < m_listOfFonts.getNumOfStrings) Then
+        List = m_listOfFonts.GetString(indexOfItem)
     Else
         List = ""
     End If
@@ -672,18 +570,19 @@ Public Property Let ListIndex(ByVal newIndex As Long)
 End Property
 
 'As a convenience, this class also allows the user to set the list index by string.  The combo box will automatically find the matching
-' entry in the list.  If a match cannot be found, the list index will remain unchanged
+' entry in the list.  If a match cannot be found, the list index will remain unchanged.  (Note that this is especially useful for a font
+' combo box, as name is more important than position when choosing fonts.)
 Public Sub setListIndexByString(ByVal listString As String, Optional ByVal compareMode As VbCompareMethod = vbBinaryCompare)
     
     'Look for this string in our current array
-    If m_NumBackupEntries > 0 Then
+    If m_listOfFonts.getNumOfStrings > 0 Then
         
         Dim newIndex As Long
         newIndex = -1
         
         Dim i As Long
-        For i = 0 To UBound(m_BackupEntries)
-            If StrComp(listString, m_BackupEntries(i).entryStringEn, compareMode) = 0 Then
+        For i = 0 To m_listOfFonts.getNumOfStrings - 1
+            If StrComp(listString, m_listOfFonts.GetString(i), compareMode) = 0 Then
                 newIndex = i
                 Exit For
             End If
@@ -724,7 +623,6 @@ End Sub
 
 'hWnds aren't exposed by default
 Public Property Get hWnd() As Long
-Attribute hWnd.VB_UserMemId = -515
     hWnd = UserControl.hWnd
 End Property
 
@@ -735,7 +633,6 @@ End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
-Attribute Enabled.VB_UserMemId = -514
     Enabled = UserControl.Enabled
 End Property
 
@@ -833,6 +730,12 @@ End Sub
 'When the control receives focus, forcibly forward focus to the edit window
 Private Sub UserControl_GotFocus()
     
+    'Mark the control-wide focus state
+    If Not m_ControlHasFocus Then
+        m_ControlHasFocus = True
+        RaiseEvent GotFocusAPI
+    End If
+    
     'The user control itself should never have focus.  Forward it to the API edit box.
     If m_ComboBoxHwnd <> 0 Then
         SetForegroundWindow m_ComboBoxHwnd
@@ -849,7 +752,7 @@ End Sub
 Private Sub UserControl_Initialize()
 
     m_ComboBoxHwnd = 0
-    ReDim m_BackupEntries(0 To 15) As backupComboEntry
+    Set m_listOfFonts = New pdStringStack
     
     Set curFont = New pdFont
     
@@ -875,6 +778,16 @@ End Sub
 Private Sub UserControl_InitProperties()
     Enabled = True
     FontSize = 10
+End Sub
+
+Private Sub UserControl_LostFocus()
+    
+    'Mark the control-wide focus state
+    If m_ControlHasFocus Then
+        m_ControlHasFocus = False
+        RaiseEvent LostFocusAPI
+    End If
+    
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -953,7 +866,7 @@ Private Function getIdealStringHeight() As Long
         curFont.attachToDC tmpDIB.getDIBDC
         
         'Determine a standard string height
-        getIdealStringHeight = curFont.getHeightOfString("tbpj1234567890")
+        getIdealStringHeight = curFont.getHeightOfString("FfAaBbCctbpqjy1234567890")
         
         'Remove the font and release our temporary DIB
         curFont.releaseFromDC
@@ -1128,13 +1041,9 @@ Private Function createComboBox() As Boolean
     refreshFont True
     
     'If we backed up previous combo box entries at some point, we must restore those entries now.
-    If m_NumBackupEntries > 0 Then
+    If m_listOfFonts.getNumOfStrings > 0 Then
         
-        Dim i As Long
-        For i = 0 To m_NumBackupEntries - 1
-            m_LastInternalIndex = i
-            copyStringToComboBox i
-        Next i
+        copyFontsToComboBox
         
         'Also set a list index, if any.  (If none were specifed, the first entry in the list wil be selected.)
         Me.ListIndex = m_BackupListIndex
@@ -1217,13 +1126,15 @@ Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
         curFont.setFontFace g_InterfaceFont
     End If
     
-    'In the future, I may switch to GDI+ for font rendering, as it supports floating-point font sizes.  In the meantime, we check
-    ' parity using an Int() conversion, as GDI only supports integer font sizes.
-    If Int(m_FontSize) <> Int(curFont.getFontSize) Then
+    'See if this size differs from the current one
+    If m_FontSize <> curFont.getFontSize Then
         fontRefreshRequired = True
         curFont.setFontSize m_FontSize
     End If
-        
+    
+    'If a forcible refresh isn't required, but the list has changed since our last refresh, refresh it again now
+    If (Not forceRefresh) And (m_CountAtLastFontRefresh <> m_listOfFonts.getNumOfStrings) Then forceRefresh = True
+    
     'Request a new font, if one or more settings have changed
     If (fontRefreshRequired Or forceRefresh) And g_IsProgramRunning Then
         
@@ -1231,6 +1142,30 @@ Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
         
         'Whenever the font is recreated, we need to reassign it to the combo box.  This is done via the WM_SETFONT message.
         If m_ComboBoxHwnd <> 0 Then SendMessage m_ComboBoxHwnd, WM_SETFONT, curFont.getFontHandle, IIf(UserControl.Extender.Visible, 1, 0)
+        
+        'We also need to recalculate the width of the largest string in the list.  This is used to determine the width of the drop-down box.
+        m_LargestWidth = 0
+        
+        'Create a temporary DIB so we don't have to constantly re-select the font into a DC of its own making.
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.createBlank 4, 4, 32
+        curFont.attachToDC tmpDIB.getDIBDC
+        
+        Dim i As Long, tmpWidth As Long
+        For i = 0 To m_listOfFonts.getNumOfStrings - 1
+            tmpWidth = curFont.getWidthOfString(m_listOfFonts.GetString(i))
+            If tmpWidth > m_LargestWidth Then m_LargestWidth = tmpWidth
+        Next i
+        
+        curFont.releaseFromDC
+        Set tmpDIB = Nothing
+        
+        'TESTING ONLY; I'm still working out how to assess the "best" width of the dropdown
+        m_LargestWidth = m_LargestWidth * 2 '1.5
+        
+        'Remember the current list count, so we don't unnecessarily refresh the font in the future
+        m_CountAtLastFontRefresh = m_listOfFonts.getNumOfStrings
                     
     End If
     
@@ -1250,33 +1185,7 @@ End Sub
 Public Sub updateAgainstCurrentTheme()
     
     If g_IsProgramRunning Then
-        
-        'Regenerate translated text for all entries, as the active language may have changed.
-        If m_NumBackupEntries > 0 Then
-        
-            Dim isTranslationActive As Boolean
-            
-            If Not (g_Language Is Nothing) Then
-                If g_Language.translationActive Then
-                    isTranslationActive = True
-                Else
-                    isTranslationActive = False
-                End If
-            Else
-                isTranslationActive = False
-            End If
-            
-            Dim i As Long
-            For i = 0 To m_NumBackupEntries - 1
-                If isTranslationActive Then
-                    m_BackupEntries(i).entryStringTranslated = g_Language.TranslateMessage(m_BackupEntries(i).entryStringEn)
-                Else
-                    m_BackupEntries(i).entryStringTranslated = m_BackupEntries(i).entryStringEn
-                End If
-            Next i
-            
-        End If
-        
+                
         'Update the current font, as necessary.  We must do this prior to creating the combo box, as the font object's size determines
         ' the height of individual combo box entries.
         refreshFont
@@ -1560,10 +1469,8 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                 
                 'Retrieve the string for the active combo box entry.
                 Dim stringIndex As Long, tmpString As String
-                stringIndex = SendMessage(m_ComboBoxHwnd, CB_GETITEMDATA, m_CurrentListIndex, ByVal 0&)
-                If stringIndex >= 0 Then
-                    tmpString = m_BackupEntries(stringIndex).entryStringTranslated
-                End If
+                stringIndex = m_CurrentListIndex
+                If stringIndex >= 0 Then tmpString = m_listOfFonts.GetString(stringIndex)
                 
                 'Prepare a font renderer, then render the text
                 If Not curFont Is Nothing Then
@@ -1573,7 +1480,7 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                     curFont.attachToDC targetDC
                     
                     With cbiCombo.rcItem
-                        curFont.fastRenderTextWithClipping .Left + 4, .Top, (.Right - .Left) - 4, (.Bottom - .Top) - 2, tmpString, False
+                        curFont.fastRenderTextWithClipping .Left + 4, .Top, (.Right - .Left) - fixDPIFloat(8), (.Bottom - .Top) - 2, tmpString, True
                     End With
                     
                     curFont.releaseFromDC
@@ -1659,8 +1566,8 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
             
             'Retrieve the string for the active combo box entry.
             Dim stringIndex As Long, tmpString As String
-            stringIndex = SendMessage(m_ComboBoxHwnd, CB_GETITEMDATA, srcDIS.itemID, ByVal 0&)
-            tmpString = m_BackupEntries(stringIndex).entryStringTranslated
+            stringIndex = srcDIS.itemID
+            tmpString = m_listOfFonts.GetString(stringIndex)
             
             'Prepare a font renderer, then render the text
             If Not (curFont Is Nothing) Then
@@ -1683,21 +1590,11 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
                 FrameRect srcDIS.hDC, srcDIS.rcItem, tmpBackBrush
                 DeleteObject tmpBackBrush
             End If
-            
-            'If the item occurs right before a dividing line, draw the divider now
-            If m_BackupEntries(stringIndex).followedByDivider Then
-            
-                Dim lineY As Single
-                lineY = srcDIS.rcItem.Bottom + CLng(m_ItemHeight * COMBO_BOX_DIVIDER_HEIGHT) \ 2
-                
-                GDI_Plus.GDIPlusDrawLineToDC srcDIS.hDC, srcDIS.rcItem.Left + fixDPI(12), lineY, srcDIS.rcItem.Right - fixDPI(12), lineY, g_Themer.getThemeColor(PDTC_GRAY_ULTRALIGHT), 255
-            
-            End If
-            
+                        
             'Note that we have handled the draw request successfully
             drawSuccess = True
             
-        'The combo box is empty (TODO: do we still need to render a background here??)
+        'The combo box is empty
         Else
         
             drawSuccess = False
@@ -1730,13 +1627,13 @@ Public Sub requestNewWidth(Optional ByVal newWidth As Long = 100, Optional ByVal
         Dim maxTextWidth As Long, testWidth As Long
         maxTextWidth = 0
         
-        If m_NumBackupEntries > 0 Then
+        If m_listOfFonts.getNumOfStrings > 0 Then
         
             Dim i As Long
-            For i = 0 To m_NumBackupEntries - 1
+            For i = 0 To m_listOfFonts.getNumOfStrings - 1
                 
                 'Calculate an ideal width for this string, using the current font
-                testWidth = getIdealStringWidth(m_BackupEntries(i).entryStringTranslated)
+                testWidth = getIdealStringWidth(m_listOfFonts.GetString(i))
                 
                 'Track the largest encountered width
                 If testWidth > maxTextWidth Then maxTextWidth = testWidth
@@ -1818,6 +1715,54 @@ Private Sub RemoveHookConditional()
         cSubclass.shk_UnHook WH_KEYBOARD
                 
     End If
+    
+End Sub
+
+'Prior to displaying the drop-down, this sub must be called.  It determines the list box window rect.
+Private Sub moveDropDownIntoPosition(ByRef editRect As RECTL, ByRef listRect As RECTL)
+
+    Dim finalReportedWidth As Long, finalReportedHeight As Long
+    finalReportedWidth = m_DropDownCalculatedWidth
+    finalReportedHeight = m_DropDownCalculatedHeight
+    
+    'If the drop down is gonna extend past the bottom edge of the screen, display it above the edit box (instead of below).
+    If editRect.Bottom + m_DropDownCalculatedHeight > g_cMonitors.DesktopHeight Then
+        listRect.Top = editRect.Top - m_DropDownCalculatedHeight + 1
+        
+        'Perform a second check; if the box *still* extends past the edge of the screen, we have no choice but to shrink it
+        ' and display a scroll bar.
+        If listRect.Top < 0 Then
+        
+            'Find the greater available area, up or down, and use that as our extension dimension.
+            If Abs(listRect.Top) < Abs(g_cMonitors.DesktopHeight - (editRect.Bottom + m_DropDownCalculatedHeight)) Then
+                
+                'Top is larger; use it
+                listRect.Top = 0
+                finalReportedHeight = editRect.Top
+                
+            Else
+            
+                'Bottom is larger; use it
+                listRect.Top = editRect.Bottom
+                finalReportedHeight = g_cMonitors.DesktopHeight - listRect.Top
+            
+            End If
+        
+        End If
+        
+    Else
+        listRect.Top = editRect.Bottom
+    End If
+    
+    'Repeat the above steps, but for the right edge of the screen.  Note that this is much simpler, as we simply need to "bump"
+    ' the list over.
+    If editRect.Left + m_DropDownCalculatedWidth > g_cMonitors.DesktopWidth Then
+        listRect.Left = g_cMonitors.DesktopWidth - m_DropDownCalculatedWidth
+    End If
+    
+    'Complete the rect by using our calculated left/right values, and width/height values
+    listRect.Right = listRect.Left + finalReportedWidth
+    listRect.Bottom = listRect.Top + finalReportedHeight
     
 End Sub
 
@@ -1975,7 +1920,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     
                     'Set the combo box to always display the full list amount in the drop-down.  (This may need to be revisited if PD ever contains
                     ' a combo box with an enormous list of entries, e.g. a size large enough to extend past the edges of the screen.)
-                    dynamicallyFitDropDownHeight
+                    dynamicallyFitDropDownHeight cbiCombo.hWndList
                                         
                 End If
                 
@@ -2000,7 +1945,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 'If the current dropdown size calculation is dirty, solve for a new one immediately.
                 ' (The calculated value will lie inside m_DropDownCalculatedHeight.)
                 If Not m_DropDownSizeIsClean Then
-                    dynamicallyFitDropDownHeight
+                    dynamicallyFitDropDownHeight m_HwndListBox
                     m_DropDownSizeIsClean = True
                 End If
                 
@@ -2012,41 +1957,12 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 Dim listRect As RECTL
                 GetWindowRect m_HwndListBox, listRect
                 
-                Dim finalReportedHeight As Long
-                finalReportedHeight = m_DropDownCalculatedHeight
+                'Calculate positioning of the drop-down; this is important to ensure the box doesn't fall off any side of the screen.
+                moveDropDownIntoPosition editRect, listRect
                 
-                'If the combo box is gonna extend past the edge of the screen, display it above the edit box (instead of below).
-                If editRect.Bottom + m_DropDownCalculatedHeight > g_cMonitors.DesktopHeight Then
-                    listRect.Top = editRect.Top - m_DropDownCalculatedHeight + 1
-                    
-                    'Perform a second check; if the box *still* extends past the edge of the screen, we have no choice but to shrink it
-                    ' and display a scroll bar.
-                    If listRect.Top < 0 Then
-                    
-                        'Find the greater available area, up or down, and use that as our extension dimension.
-                        If Abs(listRect.Top) < Abs(g_cMonitors.DesktopHeight - (editRect.Bottom + m_DropDownCalculatedHeight)) Then
-                            
-                            'Top is larger; use it
-                            listRect.Top = 0
-                            finalReportedHeight = editRect.Top
-                            
-                        Else
-                        
-                            'Bottom is larger; use it
-                            listRect.Top = editRect.Bottom
-                            finalReportedHeight = g_cMonitors.DesktopHeight - listRect.Top
-                            
-                        End If
-                    
-                    End If
-                    
-                Else
-                    listRect.Top = editRect.Bottom
-                End If
-                                        
-                'Move the window into position
+                'listRect has the final, best-calculated position for the dropdown.  Move it into position now.
                 With listRect
-                    SetWindowPos m_HwndListBox, 0, .Left, .Top, (.Right - .Left), finalReportedHeight, SWP_FRAMECHANGED Or SWP_NOACTIVATE Or SWP_NOZORDER Or SWP_NOOWNERZORDER
+                    SetWindowPos m_HwndListBox, 0, .Left, .Top, .Right - .Left, .Bottom - .Top, SWP_FRAMECHANGED Or SWP_NOACTIVATE Or SWP_NOZORDER Or SWP_NOOWNERZORDER
                 End With
                 
                 m_ListPositionSet = True
@@ -2105,21 +2021,6 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         'Fill the height parameter; note that m_ItemHeight is the literal height of a string using the current font.
                         ' Any padding values must be added here.  (I've gone with 1px on either side.)
                         MIS.itemHeight = m_ItemHeight + 2
-                        
-                        'If a divider line is in use, add those pixels as well
-                        Dim itemIndex As Long, entryIndexRetrieval As Long
-                        
-                        If m_InsideAddString Then
-                            itemIndex = m_LastInternalIndex
-                        Else
-                            itemIndex = getInternalIndexFromAPIIndex(MIS.itemID)
-                        End If
-                        
-                        If itemIndex < m_NumBackupEntries Then
-                            If m_BackupEntries(itemIndex).followedByDivider Then
-                                MIS.itemHeight = m_ItemHeight + 2 + CLng(m_ItemHeight * COMBO_BOX_DIVIDER_HEIGHT)
-                            End If
-                        End If
                                                 
                     End If
                     
@@ -2167,10 +2068,26 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         ' only way to bypass VB's internal message translator, which will forcibly intercept dialog keys (arrows, etc).
         ' Note that focus changes also force a repaint of the control.
         Case WM_SETFOCUS
+            
+            'Mark the control-wide focus state
+            If Not m_ControlHasFocus Then
+                m_ControlHasFocus = True
+                RaiseEvent GotFocusAPI
+            End If
+            
             InstallHookConditional
             cPainterBox.requestRepaint
             
         Case WM_KILLFOCUS
+            
+            'Mark the control-wide focus state
+            If m_ControlHasFocus Then
+                m_ControlHasFocus = False
+                RaiseEvent LostFocusAPI
+            End If
+            
+            'Release our hook.  In some circumstances, we can't do this immediately, so we set a timer that will release the hook
+            ' as soon as the system allows.
             If m_InHookNow Then
                 tmrHookRelease.Enabled = True
             Else
@@ -2204,3 +2121,5 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
 '   add this warning banner to the last routine in your class
 ' *************************************************************
 End Sub
+
+
