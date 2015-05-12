@@ -452,7 +452,6 @@ Private m_FontCollection As pdFontCollection
 ' (In the future, I'd like to offer language-specific previews, but I'm not sure how to easily assume a locale from a font name... TODO!)
 Private m_PreviewText_En As String
 
-
 'Basic combo box interaction functions
 
 'Initialize the combo box.  This must be called once, by the caller, prior to display.  The combo box will internally cache its
@@ -830,7 +829,7 @@ Private Sub UserControl_Initialize()
     ' text on the right side of the font dropdown.
     Set m_FontCollection = New pdFontCollection
     
-    'Create a demo string, to be rendered in the drop-down using the current font face
+    'Create demo strings, to be rendered in the drop-down using the current font face
     m_PreviewText_En = "Sample AaBbCc 123"
     
 End Sub
@@ -1667,7 +1666,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
                 'Select the font into the target DC
                 Dim oldFont As Long
                 oldFont = SelectObject(srcDIS.hDC, fontHandle)
-    
+                        
                 'Generate a destination rect, inside which we will right-align the text.  For the left boundary, we use the length of the
                 ' font name (as drawn in the UI font), plus a few extra pixels for padding
                 Dim previewRect As RECT

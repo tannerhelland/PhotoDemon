@@ -108,6 +108,34 @@ Public Type TEXTMETRIC
     tmCharSet As Byte
 End Type
 
+'Possible charsets for the tmCharSet byte, above
+Public Enum FONT_CHARSETS
+    CS_ANSI = 0
+    CS_DEFAULT = 1
+    CS_SYMBOL = 2
+    CS_MAC = 77
+    CS_SHIFTJIS = 128
+    CS_HANGEUL = 129
+    CS_JOHAB = 130
+    CS_GB2312 = 134
+    CS_CHINESEBIG5 = 136
+    CS_GREEK = 161
+    CS_TURKISH = 162
+    CS_HEBREW = 177
+    CS_ARABIC = 178
+    CS_BALTIC = 186
+    CS_RUSSIAN = 204
+    CS_THAI = 222
+    CS_EASTEUROPE = 238
+    CS_OEM = 255
+End Enum
+
+#If False Then
+    Private Const CS_ANSI = 0, CS_DEFAULT = 1, CS_SYMBOL = 2, CS_MAC = 77, CS_SHIFTJIS = 128, CS_HANGEUL = 129, CS_JOHAB = 130
+    Private Const CS_GB2312 = 134, CS_CHINESEBIG5 = 136, CS_GREEK = 161, CS_TURKISH = 162, CS_HEBREW = 177, CS_ARABIC = 178
+    Private Const CS_BALTIC = 186, CS_RUSSIAN = 204, CS_THAI = 222, CS_EASTEUROPE = 238, CS_OEM = 255
+#End If
+
 'Font enumeration types
 Private Const LF_FACESIZEA = 32
 Private Const DEFAULT_CHARSET = 1
@@ -192,6 +220,10 @@ Private m_LastFontAdded As String
 
 'Temporary DIB (more importantly - DC) for testing and/or applying font settings
 Private m_TestDIB As pdDIB
+
+'Some external functions retrieve specific data from a TextMetrics struct.  We cache our own struct so we can use it
+' on such function calls.
+Private m_TmpTextMetric As TEXTMETRIC
 
 'If functions want their own copy of available fonts, call this function
 Public Function getCopyOfFontCache(ByRef dstStringStack As pdStringStack, Optional ByVal getTrueTypeOnly As Boolean = False) As Boolean
@@ -387,6 +419,12 @@ Private Function TrimNull(ByRef origString As String) As String
        TrimNull = origString
     End If
   
+End Function
+
+'Given a DC with a font selected into it, return the primary charset for that DC
+Public Function getCharsetOfDC(ByRef srcDC As Long) As FONT_CHARSETS
+    GetTextMetrics srcDC, m_TmpTextMetric
+    getCharsetOfDC = m_TmpTextMetric.tmCharSet
 End Function
 
 'Given some standard font characteristics (font face, style, etc), fill a corresponding LOGFONTW struct with matching values.
