@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.33</langversion>
+<langversion>6.7.34</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -13797,6 +13797,12 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <!-- pdFocusDetector.cls contains 0 phrases. -->
 
 <!-- END text for pdFocusDetector.cls-->
+
+<!-- BEGIN text for pdFontCollection.cls -->
+
+<!-- pdFontCollection.cls contains 0 phrases. -->
+
+<!-- END text for pdFontCollection.cls-->
 
 <!-- Automatic text extraction complete. -->
 
