@@ -195,7 +195,13 @@ Private m_origFontItalic As Boolean
 
 'Sometimes, the caller wants us to measure fonts for them.  GDI requires that a font be selected into a DC prior to calculating
 ' specific metrics, so if the caller doesn't hand us a DC of their own, we'll use an internal one.
-Private m_TmpDIB As pdDIB
+Private m_tmpDIB As pdDIB
+
+'If the user wants to call DrawText manually, they can use this function.  Note that hDC is *not* part of the call, as it's assumed
+' the caller has already selected this object into the relevant DC!
+Friend Function DrawTextWrapper(ByVal lpStr As Long, ByVal nCount As Long, ByRef lpRect As RECT, ByVal wFormat As Long) As Long
+    DrawText curDC, lpStr, nCount, lpRect, wFormat
+End Function
 
 'This function draws horizontally and vertically centered text onto the attached DC, and it does it without modifying any of the current
 ' font settings (including alignment).  It is designed for one-off renderings of centered text.
@@ -470,7 +476,13 @@ Public Sub setFontSize(ByVal newFontSize As Single)
 End Sub
 
 Private Function convertFontSize(ByVal sizeInPoints As Single) As Long
-    convertFontSize = -1 * MulDiv(sizeInPoints, curLogPixelsY, 72)
+    convertFontSize = -1 * internal_MulDiv(sizeInPoints, curLogPixelsY, 72)
+End Function
+
+'It really isn't necessary to rely on the system MulDiv values for the sizes used for fonts.  By using CLng, we can mimic
+' MulDiv's rounding behavior as well.
+Private Function internal_MulDiv(ByVal srcNumber As Single, ByVal srcNumerator As Single, ByVal srcDenominator As Single) As Long
+    internal_MulDiv = CLng((srcNumber * srcNumerator) / srcDenominator)
 End Function
 
 Public Sub setFontStrikeout(ByVal newStrikeout As Boolean)
@@ -511,7 +523,7 @@ Public Function getWidthOfString(ByVal srcString As String) As Long
     If curDC = 0 Then
         
         'If we're not currently selected into a DC, we'll create a temporary one, for measurement purposes only
-        attachToDC m_TmpDIB.getDIBDC
+        attachToDC m_tmpDIB.getDIBDC
         
         GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
         getWidthOfString = txtSize.x
@@ -533,7 +545,7 @@ Public Function getHeightOfString(ByVal srcString As String) As Long
     If curDC = 0 Then
         
         'If we're not currently selected into a DC, we'll create a temporary one, for measurement purposes only
-        attachToDC m_TmpDIB.getDIBDC
+        attachToDC m_tmpDIB.getDIBDC
         
         GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
         getHeightOfString = txtSize.y
@@ -619,8 +631,8 @@ Private Sub Class_Initialize()
     
     'Also, create a temporary DC we can use for metrics
     If g_IsProgramRunning Then
-        Set m_TmpDIB = New pdDIB
-        m_TmpDIB.createBlank 4, 4, 32
+        Set m_tmpDIB = New pdDIB
+        m_tmpDIB.createBlank 4, 4, 32
     End If
     
 End Sub
@@ -631,7 +643,7 @@ Private Sub Class_Terminate()
     deleteCurrentFont
     
     'Free our temporary metrics DC
-    Set m_TmpDIB = Nothing
+    Set m_tmpDIB = Nothing
     
 End Sub
 
@@ -647,21 +659,27 @@ Public Function getFontHandle() As Long
     getFontHandle = curFont
 End Function
 
-Private Sub deleteCurrentFont()
+Public Sub deleteCurrentFont()
     
     'If a font was created, delete it now
     If curFont <> 0 Then
-        If curDC <> 0 Then SelectObject curDC, oldFont
+        
+        'If the font is inside a DC, remove it (otherwise we can't delete it)
+        If curDC <> 0 Then
+            'Debug.Print "HEY!  Font was not removed from DC - please do that before deleting it!"
+            releaseFromDC
+        End If
         
         #If DEBUGMODE = 1 Then
             If DeleteObject(curFont) = 0 Then
-                Debug.Print "WARNING! Could not delete font resource - is it selected into a DC??"
+                'Debug.Print "WARNING! Could not delete font resource - is it selected into a DC??"
             Else
                 g_FontsDestroyed = g_FontsDestroyed + 1
             End If
         #Else
             DeleteObject curFont
         #End If
+        
     End If
     
 End Sub
@@ -701,7 +719,7 @@ Public Function getMaxFontSizeToFitStringWidth(ByVal srcString As String, ByVal 
     backupDC = curDC
     
     If curDC = 0 Then
-        targetDC = m_TmpDIB.getDIBDC
+        targetDC = m_tmpDIB.getDIBDC
     Else
         targetDC = curDC
     End If

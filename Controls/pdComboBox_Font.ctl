@@ -186,6 +186,50 @@ Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextW" (ByVa
 Private Declare Function GetWindowTextLength Lib "user32" Alias "GetWindowTextLengthW" (ByVal hWnd As Long) As Long
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 
+'DrawText functions
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
+Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
+Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, ByRef lpRect As RECT, ByVal wFormat As Long) As Long
+
+'GDI text alignment flags
+Private Const TA_LEFT = 0
+Private Const TA_RIGHT = 2
+Private Const TA_CENTER = 6
+
+Private Const TA_TOP = 0
+Private Const TA_BOTTOM = 8
+Private Const TA_BASELINE = 24
+
+Private Const TA_UPDATECP = 1
+Private Const TA_NOUPDATECP = 0
+
+'Back color modes (not useful here except during debug mode)
+Private Const FONT_TRANSPARENT = &H1
+Private Const FONT_OPAQUE = &H2
+
+'Formatting constants for DrawText
+Private Const DT_TOP = &H0
+Private Const DT_LEFT = &H0
+Private Const DT_CENTER = &H1
+Private Const DT_RIGHT = &H2
+Private Const DT_VCENTER = &H4
+Private Const DT_BOTTOM = &H8
+Private Const DT_WORDBREAK = &H10
+Private Const DT_SINGLELINE = &H20
+Private Const DT_EXPANDTABS = &H40
+Private Const DT_TABSTOP = &H80
+Private Const DT_NOCLIP = &H100
+Private Const DT_EXTERNALLEADING = &H200
+Private Const DT_CALCRECT = &H400
+Private Const DT_NOPREFIX = &H800
+Private Const DT_INTERNAL = &H1000
+Private Const DT_EDITCONTROL = &H2000
+Private Const DT_PATH_ELLIPSIS = &H4000
+Private Const DT_END_ELLIPSIS = &H8000
+Private Const DT_MODIFYSTRING = &H10000
+Private Const DT_RTLREADING = &H20000
+Private Const DT_WORD_ELLIPSIS = &H40000
+
 'Handle to the system combo box wrapped by this control
 Private m_ComboBoxHwnd As Long
 
@@ -400,6 +444,15 @@ Private m_ListPositionSet As Boolean
 'String stack that mirrors the current program font cache.
 Private m_listOfFonts As pdStringStack
 
+'This UC will be generating an enormous amount of fonts.  We attempt to alleviate this burden by maintaining a persistent collection of the
+' past N fonts we've created, on the assumption that we can reuse them at least a few times as the user scrolls the dropdown.
+Private m_FontCollection As pdFontCollection
+
+'Preview string to demo each font face.  This is arbitrary, and currently set during the Initialize event.
+' (In the future, I'd like to offer language-specific previews, but I'm not sure how to easily assume a locale from a font name... TODO!)
+Private m_PreviewText_En As String
+
+
 'Basic combo box interaction functions
 
 'Initialize the combo box.  This must be called once, by the caller, prior to display.  The combo box will internally cache its
@@ -442,7 +495,7 @@ Private Sub copyFontsToComboBox()
 End Sub
 
 'When the list's contents change, use this function to reset the dropdown height
-Private Sub dynamicallyFitDropDownHeight(ByVal listHwnd As Long)
+Private Sub dynamicallyFitDropDown(ByVal listHwnd As Long)
 
     'Only proceed if the combo box has been created
     If m_ComboBoxHwnd <> 0 Then
@@ -659,11 +712,11 @@ Public Property Let Enabled(ByVal newValue As Boolean)
 End Property
 
 'Font properties; only a subset are used, as PD handles most font settings automatically
-Public Property Get FontSize() As Single
-    FontSize = m_FontSize
+Public Property Get fontSize() As Single
+    fontSize = m_FontSize
 End Property
 
-Public Property Let FontSize(ByVal newSize As Single)
+Public Property Let fontSize(ByVal newSize As Single)
     
     If newSize <> m_FontSize Then
         
@@ -770,14 +823,21 @@ Private Sub UserControl_Initialize()
         Set g_Themer = New pdVisualThemes
     End If
     
-    'Create an initial font object
+    'Create an initial font object.  This uses the current system font, and it renders all font names consistently.
     refreshFont
+    
+    'Initialize our font collection.  This is used to store a copy of each font face, as it's encountered, which we use to render preview
+    ' text on the right side of the font dropdown.
+    Set m_FontCollection = New pdFontCollection
+    
+    'Create a demo string, to be rendered in the drop-down using the current font face
+    m_PreviewText_En = "Sample AaBbCc 123"
     
 End Sub
 
 Private Sub UserControl_InitProperties()
     Enabled = True
-    FontSize = 10
+    fontSize = 10
 End Sub
 
 Private Sub UserControl_LostFocus()
@@ -794,7 +854,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
         Enabled = .ReadProperty("Enabled", True)
-        FontSize = .ReadProperty("FontSize", 10)
+        fontSize = .ReadProperty("FontSize", 10)
     End With
 
 End Sub
@@ -852,10 +912,6 @@ End Sub
 Private Function getIdealStringHeight() As Long
     
     If g_IsProgramRunning Then
-    
-        Dim attachedDC As Long
-        attachedDC = curFont.getAttachedDC
-        curFont.releaseFromDC
         
         'Create a temporary DC
         Dim tmpDIB As pdDIB
@@ -870,7 +926,6 @@ Private Function getIdealStringHeight() As Long
         
         'Remove the font and release our temporary DIB
         curFont.releaseFromDC
-        curFont.attachToDC attachedDC
         
     'Return a dummy value in the IDE
     Else
@@ -885,10 +940,6 @@ End Function
 Private Function getIdealStringWidth(ByVal srcString As String) As Long
     
     If g_IsProgramRunning Then
-    
-        Dim attachedDC As Long
-        attachedDC = curFont.getAttachedDC
-        curFont.releaseFromDC
         
         'Create a temporary DC
         Dim tmpDIB As pdDIB
@@ -903,7 +954,6 @@ Private Function getIdealStringWidth(ByVal srcString As String) As Long
         
         'Remove the font and release our temporary DIB
         curFont.releaseFromDC
-        curFont.attachToDC attachedDC
         
     'Return a dummy value in the IDE
     Else
@@ -1138,10 +1188,14 @@ Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
     'Request a new font, if one or more settings have changed
     If (fontRefreshRequired Or forceRefresh) And g_IsProgramRunning Then
         
+        'Create the system font copy
         curFont.createFontObject
         
         'Whenever the font is recreated, we need to reassign it to the combo box.  This is done via the WM_SETFONT message.
-        If m_ComboBoxHwnd <> 0 Then SendMessage m_ComboBoxHwnd, WM_SETFONT, curFont.getFontHandle, IIf(UserControl.Extender.Visible, 1, 0)
+        'If m_ComboBoxHwnd <> 0 Then SendMessage m_ComboBoxHwnd, WM_SETFONT, curFont.getFontHandle, IIf(UserControl.Extender.Visible, 1, 0)
+        
+        'Reset our font cache, as the per-font previews are also invalid now
+        If Not (m_FontCollection Is Nothing) Then m_FontCollection.resetCache
         
         'We also need to recalculate the width of the largest string in the list.  This is used to determine the width of the drop-down box.
         m_LargestWidth = 0
@@ -1161,8 +1215,10 @@ Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
         curFont.releaseFromDC
         Set tmpDIB = Nothing
         
-        'TESTING ONLY; I'm still working out how to assess the "best" width of the dropdown
-        m_LargestWidth = m_LargestWidth * 2 '1.5
+        'The "best" width of the dropdown is a little sketchy, due to the font previews on the right.  At present,
+        ' Use the width of the largest font name (which can only be 32 chars), multiplied by 2 (so an equal amount of size is allotted for
+        ' the preview), plus a few extra pixels for padding, so a long font name with a long font preview don't "smash" together.
+        m_LargestWidth = m_LargestWidth * 2.1
         
         'Remember the current list count, so we don't unnecessarily refresh the font in the future
         m_CountAtLastFontRefresh = m_listOfFonts.getNumOfStrings
@@ -1475,7 +1531,6 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                 'Prepare a font renderer, then render the text
                 If Not curFont Is Nothing Then
                     
-                    curFont.releaseFromDC
                     curFont.setFontColor cboTextColor
                     curFont.attachToDC targetDC
                     
@@ -1539,9 +1594,6 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
         ' so attempting to retrieve text entries will fail.
         If (srcDIS.itemID <> -1) Then
             
-            'Forcibly set a highlight area.  This is important for entries with variable spacing (e.g. those followed by dividers).
-            srcDIS.rcItem.Bottom = srcDIS.rcItem.Top + m_ItemHeight + 2
-            
             'Determine colors.  Obviously these vary depending on the selection state of the current entry
             Dim itemBackColor As Long, itemTextColor As Long
             Dim isMouseOverItem As Boolean
@@ -1569,21 +1621,58 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
             stringIndex = srcDIS.itemID
             tmpString = m_listOfFonts.GetString(stringIndex)
             
-            'Prepare a font renderer, then render the text
+            'Prepare a font renderer, then render the font name using the current system font
             If Not (curFont Is Nothing) Then
                 
-                curFont.releaseFromDC
                 curFont.setFontColor itemTextColor
                 curFont.attachToDC srcDIS.hDC
                 
-                With srcDIS.rcItem
-                    curFont.fastRenderTextWithClipping .Left + 4, .Top, (.Right - .Left) - 4, (.Bottom - .Top) - 2, tmpString, False
+                'Manually call DrawText with our own constants
+                Dim tmpRect As RECT
+                With tmpRect
+                    .Left = srcDIS.rcItem.Left + 4
+                    .Top = srcDIS.rcItem.Top
+                    .Right = srcDIS.rcItem.Right - 4
+                    .Bottom = srcDIS.rcItem.Bottom
                 End With
                 
+                curFont.DrawTextWrapper StrPtr(tmpString), Len(tmpString), tmpRect, DT_LEFT Or DT_VCENTER Or DT_SINGLELINE Or DT_NOPREFIX
+                
+                'Release the font
                 curFont.releaseFromDC
                 
+                'Next, we want to draw a font preview.  Instead of using a pdFont object, we handle this manually, as there are unique layout needs
+                ' depending on the associated font.
+                
+                'Start by creating this font, as necessary
+                Dim fontIndex As Long
+                fontIndex = m_FontCollection.addFontToCache(tmpString, m_FontSize + 1)
+    
+                'Retrieve a handle to the created font
+                Dim fontHandle As Long
+                fontHandle = m_FontCollection.getFontHandleByPosition(fontIndex)
+    
+                'Select the font into the target DC
+                Dim oldFont As Long
+                oldFont = SelectObject(srcDIS.hDC, fontHandle)
+    
+                'Generate a destination rect, inside which we will right-align the text
+                Dim previewRect As RECT
+                With previewRect
+                    .Left = srcDIS.rcItem.Left + 4 + ((srcDIS.rcItem.Right - srcDIS.rcItem.Left - 8) \ 2)
+                    .Right = srcDIS.rcItem.Right - 4
+                    .Top = srcDIS.rcItem.Top
+                    .Bottom = srcDIS.rcItem.Bottom
+                End With
+    
+                'Render right-aligned preview text
+                DrawText srcDIS.hDC, StrPtr(m_PreviewText_En), Len(m_PreviewText_En), previewRect, DT_RIGHT Or DT_VCENTER Or DT_SINGLELINE Or DT_NOPREFIX
+    
+                'Release our font
+                SelectObject srcDIS.hDC, oldFont
+                
             End If
-                        
+            
             'If the item has focus, draw a rectangular frame around the item.
             If isMouseOverItem Then
                 tmpBackBrush = CreateSolidBrush(g_Themer.getThemeColor(PDTC_ACCENT_SHADOW))
@@ -1920,7 +2009,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     
                     'Set the combo box to always display the full list amount in the drop-down.  (This may need to be revisited if PD ever contains
                     ' a combo box with an enormous list of entries, e.g. a size large enough to extend past the edges of the screen.)
-                    dynamicallyFitDropDownHeight cbiCombo.hWndList
+                    dynamicallyFitDropDown cbiCombo.hWndList
                                         
                 End If
                 
@@ -1945,7 +2034,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 'If the current dropdown size calculation is dirty, solve for a new one immediately.
                 ' (The calculated value will lie inside m_DropDownCalculatedHeight.)
                 If Not m_DropDownSizeIsClean Then
-                    dynamicallyFitDropDownHeight m_HwndListBox
+                    dynamicallyFitDropDown m_HwndListBox
                     m_DropDownSizeIsClean = True
                 End If
                 
@@ -2019,8 +2108,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     Else
                         
                         'Fill the height parameter; note that m_ItemHeight is the literal height of a string using the current font.
-                        ' Any padding values must be added here.  (I've gone with 1px on either side.)
-                        MIS.itemHeight = m_ItemHeight + 2
+                        ' Any padding values must be added here.  (I've gone with 1px on either side, and 1.5x enlargement vertically,
+                        ' so font previews have a little more room to breathe.)
+                        MIS.itemHeight = m_ItemHeight * 1.5 + 2
                                                 
                     End If
                     
