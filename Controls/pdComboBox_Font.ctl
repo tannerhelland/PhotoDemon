@@ -1667,11 +1667,24 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
                 Dim oldFont As Long
                 oldFont = SelectObject(srcDIS.hDC, fontHandle)
                         
-                'Generate a destination rect, inside which we will right-align the text.  For the left boundary, we use the length of the
-                ' font name (as drawn in the UI font), plus a few extra pixels for padding
+                'Generate a destination rect, inside which we will right-align the text.
                 Dim previewRect As RECT
                 With previewRect
-                    .Left = srcDIS.rcItem.Left + 4 + fontNameWidth + fixDPI(12)
+                    
+                    'For the left boundary, we use the larger of...
+                    ' 1) the length of the font name (as drawn in the UI font), plus a few extra pixels for padding
+                    ' 2) the halfway point in the drop-down area
+                    Dim calcLeft As Long, calcLeftAlternate As Long
+                    calcLeft = srcDIS.rcItem.Left + 4 + fontNameWidth + fixDPI(32)
+                    calcLeftAlternate = srcDIS.rcItem.Left + 4 + (srcDIS.rcItem.Right - srcDIS.rcItem.Left - 8) \ 2
+                    
+                    If calcLeft > calcLeftAlternate Then
+                        .Left = calcLeftAlternate
+                    Else
+                        .Left = calcLeft
+                    End If
+                    
+                    'Right/top/bottom are all self-explanatory
                     .Right = srcDIS.rcItem.Right - 4
                     .Top = srcDIS.rcItem.Top
                     .Bottom = srcDIS.rcItem.Bottom

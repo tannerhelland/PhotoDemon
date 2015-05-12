@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.33</langversion>
+<langversion>6.7.34</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -13794,6 +13794,12 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- pdFocusDetector.cls contains 0 phrases. -->
 
 <!-- END text for pdFocusDetector.cls-->
+
+<!-- BEGIN text for pdFontCollection.cls -->
+
+<!-- pdFontCollection.cls contains 0 phrases. -->
+
+<!-- END text for pdFontCollection.cls-->
 
 <!-- Automatic text extraction complete. -->
 
