@@ -24,19 +24,19 @@ Begin VB.Form toolpanel_Text
    ScaleWidth      =   1231
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdComboBox_Font cboFontTest 
+   Begin PhotoDemon.pdComboBox_Font cboTextFontFace 
       Height          =   375
-      Left            =   14640
-      TabIndex        =   12
-      Top             =   960
-      Width           =   3615
-      _ExtentX        =   6376
+      Left            =   7680
+      TabIndex        =   11
+      Top             =   60
+      Width           =   2415
+      _ExtentX        =   4260
       _ExtentY        =   661
    End
    Begin PhotoDemon.buttonStrip btsHAlignment 
       Height          =   435
       Left            =   15720
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   30
       Width           =   1455
       _ExtentX        =   2566
@@ -47,7 +47,7 @@ Begin VB.Form toolpanel_Text
       Height          =   435
       Index           =   0
       Left            =   7680
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   930
       Width           =   450
       _ExtentX        =   794
@@ -57,7 +57,7 @@ Begin VB.Form toolpanel_Text
    Begin PhotoDemon.sliderTextCombo sltTextClarity 
       Height          =   435
       Left            =   11880
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   930
       Width           =   2415
       _ExtentX        =   4260
@@ -99,15 +99,6 @@ Begin VB.Form toolpanel_Text
       _ExtentY        =   2434
       FontSize        =   9
       Multiline       =   -1  'True
-   End
-   Begin PhotoDemon.pdComboBox cboTextFontFace 
-      Height          =   375
-      Left            =   7680
-      TabIndex        =   3
-      Top             =   60
-      Width           =   2415
-      _ExtentX        =   4260
-      _ExtentY        =   635
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -160,7 +151,7 @@ Begin VB.Form toolpanel_Text
    Begin PhotoDemon.pdComboBox cboTextRenderingHint 
       Height          =   375
       Left            =   11880
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   525
       Width           =   2415
       _ExtentX        =   4260
@@ -206,7 +197,7 @@ Begin VB.Form toolpanel_Text
       Height          =   435
       Index           =   1
       Left            =   8160
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   930
       Width           =   450
       _ExtentX        =   794
@@ -217,7 +208,7 @@ Begin VB.Form toolpanel_Text
       Height          =   435
       Index           =   2
       Left            =   8640
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   930
       Width           =   450
       _ExtentX        =   794
@@ -228,7 +219,7 @@ Begin VB.Form toolpanel_Text
       Height          =   435
       Index           =   3
       Left            =   9120
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   930
       Width           =   450
       _ExtentX        =   794
@@ -250,7 +241,7 @@ Begin VB.Form toolpanel_Text
    Begin PhotoDemon.buttonStrip btsVAlignment 
       Height          =   435
       Left            =   15720
-      TabIndex        =   11
+      TabIndex        =   10
       Top             =   480
       Width           =   1455
       _ExtentX        =   2566
@@ -523,22 +514,11 @@ Private Sub Form_Load()
     'Generate a list of fonts
     If g_IsProgramRunning Then
         
-        'TEST ONLY FOR NEW FONT DROPDOWN
-        cboFontTest.initializeFontList
+        'Initialize the font list
+        cboTextFontFace.initializeFontList
         
-        'Retrieve a copy of the current system font cache
-        Font_Management.getCopyOfFontCache userFontList
-        
-        'Populate the font selection combo box
-        Dim tmpFontName As String, relevantListIndex As Long
-        
-        Dim i As Long
-        For i = 0 To userFontList.getNumOfStrings - 1
-            cboTextFontFace.AddItem userFontList.GetString(i)
-            If StrComp(userFontList.GetString(i), g_InterfaceFont) = 0 Then relevantListIndex = i
-        Next i
-        
-        cboTextFontFace.ListIndex = relevantListIndex
+        'Set the system font as the default
+        cboTextFontFace.setListIndexByString g_InterfaceFont, vbBinaryCompare
         
     End If
     

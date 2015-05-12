@@ -422,7 +422,7 @@ Public Sub fillLogFontW_Basic(ByRef dstLogFontW As LOGFONTW, ByRef srcFontFace A
 End Sub
 
 'Fill a LOGFONTW struct with a matching PD font size (typically in pixels, but points are also supported)
-Public Sub fillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal FontSize As Single, ByVal fontMeasurementUnit As pdFontUnit)
+Public Sub fillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal fontSize As Single, ByVal fontMeasurementUnit As pdFontUnit)
 
     With dstLogFontW
         
@@ -433,14 +433,14 @@ Public Sub fillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal FontSize As Si
             Case pdfu_Pixel
                 
                 'Convert font size to points
-                FontSize = FontSize * 0.75      '(72 / 96, technically, where 96 is the current screen DPI)
+                fontSize = fontSize * 0.75      '(72 / 96, technically, where 96 is the current screen DPI)
                 
                 'Use the standard point-based formula
-                .lfHeight = -1 * internal_MulDiv(FontSize, curLogPixelsY, 72)
+                .lfHeight = -1 * internal_MulDiv(fontSize, curLogPixelsY, 72)
                 
             'Points are converted using a standard Windows formula; see https://msdn.microsoft.com/en-us/library/dd145037%28v=vs.85%29.aspx
             Case pdfu_Point
-                .lfHeight = -1 * internal_MulDiv(FontSize, curLogPixelsY, 72)
+                .lfHeight = -1 * internal_MulDiv(fontSize, curLogPixelsY, 72)
         
         End Select
         
@@ -511,6 +511,11 @@ End Function
 Public Function createGDIFont(ByRef srcLogFont As LOGFONTW, ByRef dstFontHandle As Long) As Boolean
     dstFontHandle = CreateFontIndirect(srcLogFont)
     createGDIFont = CBool(dstFontHandle <> 0)
+End Function
+
+'Delete a GDI font; returns TRUE if successful
+Public Function deleteGDIFont(ByVal srcFontHandle As Long) As Boolean
+    deleteGDIFont = CBool(DeleteObject(srcFontHandle) <> 0)
 End Function
 
 'Given a GDI font handle and a Unicode code point, return an ABC float for the corresponding glyph.

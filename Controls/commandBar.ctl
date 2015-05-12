@@ -28,9 +28,9 @@ Begin VB.UserControl commandBar
       TabIndex        =   3
       Top             =   90
       Width           =   630
-      _ExtentX        =   1111
-      _ExtentY        =   1005
-      AutoToggle      =   -1  'True
+      _extentx        =   1111
+      _extenty        =   1005
+      autotoggle      =   -1
    End
    Begin PhotoDemon.pdComboBox cboPreset 
       Height          =   345
@@ -382,7 +382,7 @@ Private Sub RandomizeSettings()
                 eControl.ListIndex = Int(Rnd * eControl.ListCount)
                 
             'List boxes and combo boxes are assigned a random ListIndex
-            Case "ListBox", "ComboBox", "pdComboBox"
+            Case "ListBox", "ComboBox", "pdComboBox", "pdComboBox_Font"
             
                 'Make sure the combo box is not the preset box on this control!
                 If (eControl.hWnd <> cboPreset.hWnd) Then
@@ -482,7 +482,7 @@ Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
     Set CmdOK.Font = mFont
     Set CmdCancel.Font = mFont
-    cboPreset.FontSize = mFont.Size
+    cboPreset.fontSize = mFont.Size
 End Sub
 
 'Backcolor is used to control the color of the base user control; nothing else is affected by it
@@ -499,7 +499,7 @@ Public Property Let BackColor(ByVal newColor As OLE_COLOR)
     
     'Update all button backgrounds to match
     Dim i As Long
-    For i = cmdAction.lBound To cmdAction.UBound
+    For i = cmdAction.lBound To cmdAction.ubound
         cmdAction(i).BackColor = UserControl.BackColor
     Next i
     
@@ -644,6 +644,10 @@ Private Sub ResetSettings()
                 If (eControl.hWnd <> cboPreset.hWnd) Then
                     eControl.ListIndex = 0
                 End If
+                
+            'PD's font combo box is reset to the current system font
+            Case "pdComboBox_Font"
+                eControl.setListIndexByString g_InterfaceFont
             
             'Text boxes are set to 0
             Case "TextBox", "pdTextBox"
@@ -913,7 +917,7 @@ Private Sub storePreset(Optional ByVal presetName As String = "last-used setting
                 controlValue = Str(eControl.Value)
             
             'Listboxes and Combo Boxes return a .ListIndex property
-            Case "ListBox", "ComboBox", "pdComboBox"
+            Case "ListBox", "ComboBox", "pdComboBox", "pdComboBox_Font"
             
                 'Note that we don't store presets for the preset combo box itself!
                 If (eControl.hWnd <> cboPreset.hWnd) Then controlValue = Str(eControl.ListIndex)
@@ -1088,7 +1092,7 @@ Private Function loadPreset(Optional ByVal presetName As String = "last-used set
                         eControl.Value = CLng(controlValue)
                     
                     'List boxes, combo boxes, and pdComboBox all use a Long-type .ListIndex property
-                    Case "ListBox", "ComboBox", "pdComboBox"
+                    Case "ListBox", "ComboBox", "pdComboBox", "pdComboBox_Font"
                     
                         'Validate range before setting
                         If CLng(controlValue) < eControl.ListCount Then
