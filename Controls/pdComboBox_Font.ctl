@@ -1627,8 +1627,19 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
                 curFont.setFontColor itemTextColor
                 curFont.attachToDC srcDIS.hDC
                 
+                Dim fontNameWidth As Long
+                
                 'Manually call DrawText with our own constants
                 Dim tmpRect As RECT
+                
+                'Start by retrieving the width of the font name.  We know that this will be less than 1/2 the total width of the rect,
+                ' because we created the rect size using the drawn length of the longest font name!
+                curFont.DrawTextWrapper StrPtr(tmpString), Len(tmpString), tmpRect, DT_LEFT Or DT_VCENTER Or DT_SINGLELINE Or DT_NOPREFIX Or DT_CALCRECT
+                
+                'Make a note of the text width, as we're going to use it below
+                fontNameWidth = (tmpRect.Right - tmpRect.Left)
+                
+                'Populate our own rect now
                 With tmpRect
                     .Left = srcDIS.rcItem.Left + 4
                     .Top = srcDIS.rcItem.Top
@@ -1636,9 +1647,10 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
                     .Bottom = srcDIS.rcItem.Bottom
                 End With
                 
+                'Draw the font name using the current UI font
                 curFont.DrawTextWrapper StrPtr(tmpString), Len(tmpString), tmpRect, DT_LEFT Or DT_VCENTER Or DT_SINGLELINE Or DT_NOPREFIX
                 
-                'Release the font
+                'Release the UI font from this DC
                 curFont.releaseFromDC
                 
                 'Next, we want to draw a font preview.  Instead of using a pdFont object, we handle this manually, as there are unique layout needs
@@ -1656,10 +1668,11 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
                 Dim oldFont As Long
                 oldFont = SelectObject(srcDIS.hDC, fontHandle)
     
-                'Generate a destination rect, inside which we will right-align the text
+                'Generate a destination rect, inside which we will right-align the text.  For the left boundary, we use the length of the
+                ' font name (as drawn in the UI font), plus a few extra pixels for padding
                 Dim previewRect As RECT
                 With previewRect
-                    .Left = srcDIS.rcItem.Left + 4 + ((srcDIS.rcItem.Right - srcDIS.rcItem.Left - 8) \ 2)
+                    .Left = srcDIS.rcItem.Left + 4 + fontNameWidth + fixDPI(12)
                     .Right = srcDIS.rcItem.Right - 4
                     .Top = srcDIS.rcItem.Top
                     .Bottom = srcDIS.rcItem.Bottom
