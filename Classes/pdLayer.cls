@@ -216,6 +216,7 @@ Private Type textLayerData
     tld_VerticalAlignment As GdiPlusStringAlignment
     tld_TextAntialiasing As pdTextAA
     tld_TextContrast As Long
+    tld_RenderingEngine As TEXT_RENDERING_ENGINE
 End Type
 
 Private myTextData As textLayerData
@@ -235,12 +236,13 @@ Public Enum PDLAYER_TEXT_PROPERTY
     ptp_VerticalAlignment = 10
     ptp_TextAntialiasing = 11
     ptp_TextContrast = 12
+    ptp_RenderingEngine = 13
 End Enum
 
 #If False Then
     Const ptp_Text = 0, ptp_FontColor = 1, ptp_FontFace = 2, ptp_FontSize = 3, ptp_FontSizeUnit = 4, ptp_FontBold = 5, ptp_FontItalic = 6
     Const ptp_FontUnderline = 7, ptp_FontStrikeout = 8, ptp_HorizontalAlignment = 9, ptp_VerticalAlignment = 10, ptp_TextAntialiasing = 11
-    Const ptp_TextContrast = 12
+    Const ptp_TextContrast = 12, ptp_RenderingEngine = 13
 #End If
 
 'A dedicated text renderer is used to render the backer layer for text layers
@@ -852,6 +854,9 @@ Friend Function getTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPE
         
         Case ptp_TextContrast
             getTextLayerProperty = myTextData.tld_TextContrast
+            
+        Case ptp_RenderingEngine
+            getTextLayerProperty = myTextData.tld_RenderingEngine
     
     End Select
 
@@ -936,6 +941,12 @@ Friend Sub setTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPERTY, 
         Case ptp_TextContrast
             If myTextData.tld_TextContrast <> CLng(newValue) Then
                 myTextData.tld_TextContrast = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
+            
+        Case ptp_RenderingEngine
+            If myTextData.tld_RenderingEngine <> CLng(newValue) Then
+                myTextData.tld_RenderingEngine = CLng(newValue)
                 m_VectorDIBSynched = False
             End If
     
@@ -1318,6 +1329,7 @@ Public Function getVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
                 .writeTag "TextLayerVerticalAlignment", myTextData.tld_VerticalAlignment
                 .writeTag "TextLayerAntialiasing", myTextData.tld_TextAntialiasing
                 .writeTag "TextLayerContrast", myTextData.tld_TextContrast
+                .writeTag "TextRenderingEngine", myTextData.tld_RenderingEngine
             End With
         
     End Select
@@ -1364,6 +1376,7 @@ Public Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
                     .tld_VerticalAlignment = xmlEngine.getUniqueTag_Long("TextLayerVerticalAlignment", StringAlignmentNear)
                     .tld_TextAntialiasing = xmlEngine.getUniqueTag_Long("TextLayerAntialiasing", pdta_Standard)
                     .tld_TextContrast = xmlEngine.getUniqueTag_Long("TextLayerContrast", 5)
+                    .tld_RenderingEngine = xmlEngine.getUniqueTag_Long("TextRenderingEngine", tre_WAPI)
                 End With
                 
         End Select
@@ -1980,6 +1993,7 @@ Public Function syncInternalDIB() As Boolean
                 .setVerticalAlignment myTextData.tld_VerticalAlignment
                 .setTextAntialiasing myTextData.tld_TextAntialiasing
                 .setTextContrast myTextData.tld_TextContrast
+                .setRenderingEngine myTextData.tld_RenderingEngine
             End With
             
             'Initialize the backer DIB as necessary

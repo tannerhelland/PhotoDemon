@@ -783,15 +783,25 @@ Private Sub newToolSelected()
                 End If
                 
             End If
+            
+            'Finally, because tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas.
+            ' (Note that we can use a very late pipeline stage, as only tool-specific overlays need to be redrawn.)
+            Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 
+        Case VECTOR_TEXT, VECTOR_FANCYTEXT
+        
+            'Switching text tools may require us to redraw the text buffer, as the font rendering engine changes depending
+            ' on the current text tool.
+            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        
         Case Else
         
+            'Finally, because tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas.
+            ' (Note that we can use a very late pipeline stage, as only tool-specific overlays need to be redrawn.)
+            Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        
     End Select
-    
-    'Finally, because tools may do some custom rendering atop the image canvas, now is a good time to redraw the canvas.
-    ' (Note that we can use a very late pipeline stage, as only tool-specific overlays need to be redrawn.)
-    Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    
+        
 End Sub
 
 
@@ -955,7 +965,7 @@ Public Sub resetToolButtonStates()
         Next i
         
     End If
-    
+        
     'Display the current tool options panel, while hiding all inactive ones.  The On Error Resume statement is used to fix
     ' trouble with the .SetFocus line, below.  That .SetFocus line is helpful for fixing some VB issues with controls embedded
     ' on a picture box (specifically, combo boxes which do not drop-down properly unless a picture box or its child already

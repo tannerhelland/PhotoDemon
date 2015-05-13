@@ -431,6 +431,10 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                     .btsVAlignment.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_VerticalAlignment)
                 End With
                 
+                'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.
+                ' This is because this property changes according to the active text tool.
+                pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_RenderingEngine, tre_WAPI
+                
             Case VECTOR_FANCYTEXT
                 
                 With toolpanel_FancyText
@@ -447,6 +451,10 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                     .btsHAlignment.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_HorizontalAlignment)
                     .btsVAlignment.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_VerticalAlignment)
                 End With
+                
+                'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.
+                ' This is because this property changes according to the active text tool.
+                pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_RenderingEngine, tre_PHOTODEMON
         
         End Select
         
@@ -521,6 +529,10 @@ Public Sub syncCurrentLayerToToolOptionsUI()
                     .setTextLayerProperty ptp_HorizontalAlignment, toolpanel_Text.btsHAlignment.ListIndex
                     .setTextLayerProperty ptp_VerticalAlignment, toolpanel_Text.btsVAlignment.ListIndex
                 End With
+                
+                'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.
+                ' This is because this property changes according to the active text tool.
+                pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_RenderingEngine, tre_WAPI
             
             Case VECTOR_FANCYTEXT
                 
@@ -538,6 +550,10 @@ Public Sub syncCurrentLayerToToolOptionsUI()
                     .setTextLayerProperty ptp_HorizontalAlignment, toolpanel_FancyText.btsHAlignment.ListIndex
                     .setTextLayerProperty ptp_VerticalAlignment, toolpanel_FancyText.btsVAlignment.ListIndex
                 End With
+                
+                'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.
+                ' This is because this property changes according to the active text tool.
+                pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_RenderingEngine, tre_PHOTODEMON
         
         End Select
         
