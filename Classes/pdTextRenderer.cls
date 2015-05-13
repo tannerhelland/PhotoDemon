@@ -1008,7 +1008,19 @@ Private Function renderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
         
         'If the offset value is negative, we want to increase our rendering offset proportionally.  (Note that we add an
         ' extra pixel to account for possible antialiasing along the border.)
-        If firstCharABCWidth.abcfA < 0 Then boundingRect.Left = boundingRect.Left + Abs(firstCharABCWidth.abcfA) + 1
+        If firstCharABCWidth.abcfA < 0 Then
+            
+            Dim newLeft As Long, newWidth As Long
+            newLeft = boundingRect.Left + Abs(firstCharABCWidth.abcfA) + 1
+            boundingRect.Left = newLeft
+            
+            'Because fonts with a significant left overhang are likely to have a large right overhang as well, mirror the
+            ' overhang to the right boundary as well.  (We do this because GDI+ word wrap is unpredictable, and we can't retrieve
+            ' where it decides to wordwrap - so we have to make assumptions like this.)
+            newWidth = boundingRect.Width - (Abs(firstCharABCWidth.abcfC) + 1)
+            If newWidth > 0 Then boundingRect.Width = newWidth
+            
+        End If
         
     End If
         
@@ -1170,7 +1182,10 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
         'If the offset value is negative, we want to increase our rendering offset proportionally.  (Note that we add an
         ' extra pixel to account for possible antialiasing along the border.)
         If firstCharABCWidth.abcfA < 0 Then
-            tmpRect.Left = tmpRect.Left + Abs(firstCharABCWidth.abcfA) + 1
+        
+            Dim newLeft As Long
+            newLeft = tmpRect.Left + Abs(firstCharABCWidth.abcfA) + 1
+            
         End If
         
     End If
@@ -1232,6 +1247,15 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     'Populate our clipping rect with the final width and height values we generated
     tmpRect.Right = targetWidth
     tmpRect.Bottom = targetHeight
+    
+    'If overhang is present on the first glyph, it's likely to be present on other glyphs as well.  Mirror the left overhang (if any)
+    ' across the right border.  (We do this because GDI word wrap is unpredictable, and we can't retrieve where it decides to
+    ' wordwrap - so we have to make assumptions like this.)
+    If firstCharABCWidth.abcfA < 0 Then
+        Dim newRight As Long
+        newRight = tmpRect.Right - (Abs(firstCharABCWidth.abcfC) + 1)
+        If newRight > tmpRect.Left Then tmpRect.Right = newRight
+    End If
     
     'Use DrawText for the actual rendering
     Dim retDrawText As Long
