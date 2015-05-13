@@ -529,6 +529,18 @@ Public Sub setTextContrast(ByVal newContrast As Long)
     
 End Sub
 
+'Get/set the text rendering engine.  This class currently supports two engines: WAPI (which will use GDI or GDI+, as appropriate), and PHOTODEMON,
+' which uses GDI and Uniscribe to retrieve individual glyphs, but then does all positioning and rendering manually.
+'
+'Note that this setting does not initiate a font refresh, as PD generates a GDI font copy by default, regardless of rendering engine or font backend.
+Public Function getRenderingEngine() As TEXT_RENDERING_ENGINE
+    getRenderingEngine = m_RenderingEngine
+End Function
+
+Public Sub setRenderingEngine(ByVal newEngine As TEXT_RENDERING_ENGINE)
+    m_RenderingEngine = newEngine
+End Sub
+
 'TODO: XML get/set functions for getting/setting all parameters at once
 Public Function getAllFontSettingsAsXML(Optional ByVal ignoreFluffEntries As Boolean = False) As String
 
@@ -556,6 +568,7 @@ Public Function getAllFontSettingsAsXML(Optional ByVal ignoreFluffEntries As Boo
     xmlEngine.writeTag "FontVerticalAlignment", m_VerticalAlignment
     xmlEngine.writeTag "FontAntialiasing", m_TextAntialiasing
     xmlEngine.writeTag "FontContrast", m_TextContrast
+    xmlEngine.writeTag "FontRenderingEngine", m_RenderingEngine
     
     'Return the completed XML string
     getAllFontSettingsAsXML = xmlEngine.returnCurrentXMLString
@@ -580,7 +593,7 @@ Public Function setAllFontSettingsFromXML(ByRef srcXMLString As String) As Boole
             ' XML string), supply a default value.
             
             'TODO: raise some kind of error or message if the listed font is not available.  This is a possibility for PDI images
-            ' traded between users.
+            ' traded between PCs.
             setFontFace xmlEngine.getUniqueTag_String("FontFace", g_InterfaceFont)
             setFontSize xmlEngine.getUniqueTag_Double("FontSize", 16)
             setFontSizeUnit xmlEngine.getUniqueTag_Long("FontSizeUnit", pdfu_Pixel)
@@ -592,6 +605,7 @@ Public Function setAllFontSettingsFromXML(ByRef srcXMLString As String) As Boole
             setVerticalAlignment xmlEngine.getUniqueTag_Long("FontVerticalAlignment", StringAlignmentNear)
             setTextAntialiasing xmlEngine.getUniqueTag_Long("FontAntialiasing", pdta_Standard)
             setTextContrast xmlEngine.getUniqueTag_Long("FontContrast", 5)
+            setRenderingEngine xmlEngine.getUniqueTag_Long("FontRenderingEngine", tre_WAPI)
             
             'Return success!
             setAllFontSettingsFromXML = True
