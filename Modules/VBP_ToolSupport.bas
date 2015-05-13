@@ -386,7 +386,7 @@ Public Sub syncToolOptionsUIToCurrentLayer()
         Case NAV_MOVE
             layerToolActive = True
         
-        Case VECTOR_TEXT
+        Case VECTOR_TEXT, VECTOR_FANCYTEXT
             If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then layerToolActive = True
         
         Case Else
@@ -430,6 +430,23 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                     .btsHAlignment.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_HorizontalAlignment)
                     .btsVAlignment.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_VerticalAlignment)
                 End With
+                
+            Case VECTOR_FANCYTEXT
+                
+                With toolpanel_FancyText
+                    .txtTextTool.Text = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_Text)
+                    .cboTextFontFace.setListIndexByString pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontFace)
+                    .tudTextFontSize.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontSize)
+                    .csTextFontColor.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontColor)
+                    .cboTextRenderingHint.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextAntialiasing)
+                    .sltTextClarity.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextContrast)
+                    .btnFontStyles(0).Value = CBool(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontBold))
+                    .btnFontStyles(1).Value = CBool(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontItalic))
+                    .btnFontStyles(2).Value = CBool(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontUnderline))
+                    .btnFontStyles(3).Value = CBool(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontStrikeout))
+                    .btsHAlignment.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_HorizontalAlignment)
+                    .btsVAlignment.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_VerticalAlignment)
+                End With
         
         End Select
         
@@ -458,7 +475,7 @@ Public Sub syncCurrentLayerToToolOptionsUI()
         Case NAV_MOVE
             layerToolActive = True
         
-        Case VECTOR_TEXT
+        Case VECTOR_TEXT, VECTOR_FANCYTEXT
             If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then layerToolActive = True
         
         Case Else
@@ -503,6 +520,23 @@ Public Sub syncCurrentLayerToToolOptionsUI()
                     .setTextLayerProperty ptp_FontStrikeout, toolpanel_Text.btnFontStyles(3).Value
                     .setTextLayerProperty ptp_HorizontalAlignment, toolpanel_Text.btsHAlignment.ListIndex
                     .setTextLayerProperty ptp_VerticalAlignment, toolpanel_Text.btsVAlignment.ListIndex
+                End With
+            
+            Case VECTOR_FANCYTEXT
+                
+                With pdImages(g_CurrentImage).getActiveLayer
+                    .setTextLayerProperty ptp_Text, toolpanel_FancyText.txtTextTool.Text
+                    .setTextLayerProperty ptp_FontFace, toolpanel_FancyText.cboTextFontFace.List(toolpanel_FancyText.cboTextFontFace.ListIndex)
+                    .setTextLayerProperty ptp_FontSize, toolpanel_FancyText.tudTextFontSize.Value
+                    .setTextLayerProperty ptp_FontColor, toolpanel_FancyText.csTextFontColor.Color
+                    .setTextLayerProperty ptp_TextAntialiasing, toolpanel_FancyText.cboTextRenderingHint.ListIndex
+                    .setTextLayerProperty ptp_TextContrast, toolpanel_FancyText.sltTextClarity.Value
+                    .setTextLayerProperty ptp_FontBold, toolpanel_FancyText.btnFontStyles(0).Value
+                    .setTextLayerProperty ptp_FontItalic, toolpanel_FancyText.btnFontStyles(1).Value
+                    .setTextLayerProperty ptp_FontUnderline, toolpanel_FancyText.btnFontStyles(2).Value
+                    .setTextLayerProperty ptp_FontStrikeout, toolpanel_FancyText.btnFontStyles(3).Value
+                    .setTextLayerProperty ptp_HorizontalAlignment, toolpanel_FancyText.btsHAlignment.ListIndex
+                    .setTextLayerProperty ptp_VerticalAlignment, toolpanel_FancyText.btsVAlignment.ListIndex
                 End With
         
         End Select

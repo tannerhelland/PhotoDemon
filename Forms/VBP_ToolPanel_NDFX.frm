@@ -217,6 +217,20 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'***************************************************************************
+'PhotoDemon Non-Destructive Effect (NDFX) Tool Panel
+'Copyright 2013-2015 by Tanner Helland
+'Created: 02/Oct/13
+'Last updated: 13/May/15
+'Last update: finish migrating all relevant controls to this dedicated form
+'
+'This form includes all user-editable settings for the "Quick Fix" canvas tools.
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+'
+'***************************************************************************
+
 Option Explicit
 
 'The value of all controls on this form are saved and loaded to file by this class

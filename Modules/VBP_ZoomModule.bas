@@ -114,7 +114,7 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             
         'Text tools currently draw layer boundaries at all times; I'm working on this (TODO!)
                 'The nav tool provides two render options at present: draw layer borders, and draw layer transform nodes
-        Case VECTOR_TEXT
+        Case VECTOR_TEXT, VECTOR_FANCYTEXT
             
             If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
                 Drawing.drawLayerBoundaries srcImage.getActiveLayerIndex

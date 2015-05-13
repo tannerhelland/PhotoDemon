@@ -1,5 +1,5 @@
 VERSION 5.00
-Begin VB.Form toolpanel_Text 
+Begin VB.Form toolpanel_FancyText 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
@@ -249,19 +249,19 @@ Begin VB.Form toolpanel_Text
       ColorScheme     =   1
    End
 End
-Attribute VB_Name = "toolpanel_Text"
+Attribute VB_Name = "toolpanel_FancyText"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon Basic Text Tool Panel
+'PhotoDemon Advanced Typography Tool Panel
 'Copyright 2013-2015 by Tanner Helland
 'Created: 02/Oct/13
 'Last updated: 13/May/15
 'Last update: finish migrating all relevant controls to this dedicated form
 '
-'This form includes all user-editable settings for the Basic Text tool.
+'This form includes all user-editable settings for PD's Advanced Typography text tool.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
