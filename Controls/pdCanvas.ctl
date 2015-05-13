@@ -1280,7 +1280,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
                 
             'Text layer behavior varies depending on whether the current layer is a text layer or not
-            Case VECTOR_TEXT
+            Case VECTOR_TEXT, VECTOR_FANCYTEXT
                 
                 'One of two things can happen when the mouse is clicked in text mode:
                 ' 1) The current layer is a text layer, and the user wants to edit it (move it around, resize, etc)
@@ -1448,7 +1448,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                 End If
                 
             'Text layers are identical to the move tool
-            Case NAV_MOVE, VECTOR_TEXT
+            Case NAV_MOVE, VECTOR_TEXT, VECTOR_FANCYTEXT
                 Message "Shift key: preserve layer aspect ratio"
                 transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask)
             
@@ -1504,8 +1504,8 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
             'Selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO, SELECT_WAND
             
-            'Text tool
-            Case VECTOR_TEXT
+            'Text tools
+            Case VECTOR_TEXT, VECTOR_FANCYTEXT
             
             Case Else
             
@@ -1741,7 +1741,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                 End If
                 
             'Text layers
-            Case VECTOR_TEXT
+            Case VECTOR_TEXT, VECTOR_FANCYTEXT
                 
                 'Pass a final transform request to the layer handler.  This will initiate Undo/Redo creation, among other things.
                 
@@ -1760,8 +1760,18 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                         pdImages(g_CurrentImage).getActiveLayer.setLayerHeight Abs(pdImages(g_CurrentImage).Height - pdImages(g_CurrentImage).getActiveLayer.getLayerOffsetY)
                         
                         'If the current text box is empty, set some new text to orient the user
-                        If Len(toolpanel_Text.txtTextTool.Text) = 0 Then
-                            toolpanel_Text.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
+                        If g_CurrentTool = VECTOR_TEXT Then
+                            
+                            If Len(toolpanel_Text.txtTextTool.Text) = 0 Then
+                                toolpanel_Text.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
+                            End If
+                            
+                        Else
+                        
+                            If Len(toolpanel_FancyText.txtTextTool.Text) = 0 Then
+                                toolpanel_FancyText.txtTextTool.Text = g_Language.TranslateMessage("(enter text here)")
+                            End If
+                        
                         End If
                         
                         'Manually synchronize the new size values against their on-screen UI elements
@@ -1788,8 +1798,13 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     syncInterfaceToCurrentImage
                     
                     'Finally, set focus to the text layer text entry box
-                    toolpanel_Text.txtTextTool.SetFocus
-                    toolpanel_Text.txtTextTool.selectAll
+                    If g_CurrentTool = VECTOR_TEXT Then
+                        toolpanel_Text.txtTextTool.SetFocus
+                        toolpanel_Text.txtTextTool.selectAll
+                    Else
+                        toolpanel_FancyText.txtTextTool.SetFocus
+                        toolpanel_FancyText.txtTextTool.selectAll
+                    End If
                     
                 'The user is simply editing an existing layer.
                 Else
@@ -2505,7 +2520,7 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                     
             End Select
         
-        Case VECTOR_TEXT
+        Case VECTOR_TEXT, VECTOR_FANCYTEXT
 
             'The text tool bears a lot of similarity to the Move / Size tool, although the resulting behavior is
             ' obviously quite different.

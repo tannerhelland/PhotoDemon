@@ -265,6 +265,16 @@ Begin VB.Form toolbar_Toolbox
       _ExtentX        =   1270
       _ExtentY        =   1058
    End
+   Begin PhotoDemon.pdButtonToolbox cmdTools 
+      Height          =   600
+      Index           =   10
+      Left            =   840
+      TabIndex        =   20
+      Top             =   5400
+      Width           =   720
+      _ExtentX        =   1270
+      _ExtentY        =   1058
+   End
    Begin VB.Line lnRightSeparator 
       X1              =   136
       X2              =   136
@@ -487,6 +497,7 @@ Private Sub Form_Load()
     cmdTools(SELECT_WAND).AssignImage "T_SELWAND"
     
     cmdTools(VECTOR_TEXT).AssignImage "TV_TEXT", , , 50
+    cmdTools(VECTOR_FANCYTEXT).AssignImage "TV_FANCYTEXT", , , 50
     
     'Initialize a mouse handler
     Set cMouseEvents = New pdInputMouse
@@ -696,7 +707,7 @@ Private Sub reflowToolboxLayout()
         
     End If
     
-    For i = VECTOR_TEXT To VECTOR_TEXT
+    For i = VECTOR_TEXT To VECTOR_FANCYTEXT
         
         'Move this button into position
         cmdTools(i).Move hOffset, vOffset
@@ -838,6 +849,10 @@ Public Sub resetToolButtonStates()
             Load toolpanel_Text
             m_ActiveToolPanelKey = "Text"
             
+        Case VECTOR_FANCYTEXT
+            Load toolpanel_FancyText
+            m_ActiveToolPanelKey = "FancyText"
+            
         'If a tool does not require an extra settings panel, set the active panel to -1.  This will hide all panels.
         Case Else
             m_ActiveToolPanelKey = "NoPanels"
@@ -914,6 +929,7 @@ Public Sub resetToolButtonStates()
     If Not (toolpanel_NDFX Is Nothing) Then toolPanelCollection.AddEntry "NDFX", toolpanel_NDFX.hWnd
     If Not (toolpanel_Selections Is Nothing) Then toolPanelCollection.AddEntry "Selections", toolpanel_Selections.hWnd
     If Not (toolpanel_Text Is Nothing) Then toolPanelCollection.AddEntry "Text", toolpanel_Text.hWnd
+    If Not (toolpanel_FancyText Is Nothing) Then toolPanelCollection.AddEntry "FancyText", toolpanel_FancyText.hWnd
     
     g_WindowManager.deactivateToolPanel False
     
@@ -1123,7 +1139,8 @@ Public Sub updateAgainstCurrentTheme()
     cmdTools(SELECT_WAND).assignTooltip "Magic Wand Selection"
     
     '...then vector tools...
-    cmdTools(VECTOR_TEXT).assignTooltip "Text"
+    cmdTools(VECTOR_TEXT).assignTooltip "Basic text"
+    cmdTools(VECTOR_FANCYTEXT).assignTooltip "Advanced typography"
     
     'The right separator line is colored according to the current shadow accent color
     If Not g_Themer Is Nothing Then
