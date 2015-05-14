@@ -443,7 +443,7 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                     .tudTextFontSize.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontSize)
                     .csTextFontColor.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontColor)
                     .cboTextRenderingHint.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextAntialiasing)
-                    .sltTextClarity.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextContrast)
+                    .chkHinting.Value = IIf(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextHinting), vbChecked, vbUnchecked)
                     .btnFontStyles(0).Value = CBool(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontBold))
                     .btnFontStyles(1).Value = CBool(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontItalic))
                     .btnFontStyles(2).Value = CBool(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontUnderline))
@@ -542,7 +542,7 @@ Public Sub syncCurrentLayerToToolOptionsUI()
                     .setTextLayerProperty ptp_FontSize, toolpanel_FancyText.tudTextFontSize.Value
                     .setTextLayerProperty ptp_FontColor, toolpanel_FancyText.csTextFontColor.Color
                     .setTextLayerProperty ptp_TextAntialiasing, toolpanel_FancyText.cboTextRenderingHint.ListIndex
-                    .setTextLayerProperty ptp_TextContrast, toolpanel_FancyText.sltTextClarity.Value
+                    .setTextLayerProperty ptp_TextHinting, CBool(toolpanel_FancyText.chkHinting.Value)
                     .setTextLayerProperty ptp_FontBold, toolpanel_FancyText.btnFontStyles(0).Value
                     .setTextLayerProperty ptp_FontItalic, toolpanel_FancyText.btnFontStyles(1).Value
                     .setTextLayerProperty ptp_FontUnderline, toolpanel_FancyText.btnFontStyles(2).Value
