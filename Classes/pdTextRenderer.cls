@@ -357,6 +357,9 @@ Private m_VerticalAlignment As GdiPlusStringAlignment
 Private m_TextAntialiasing As pdTextAA
 Private m_TextContrast As Long
 
+'The per-glyph PHOTODEMON renderer supports variable hinting
+Private m_TextHinting As Boolean
+
 'For performance reasons, this class caches various font objects and handles from both GDI and GDI+.  This spares us from
 ' having to recreate expensive font data during rendering steps.
 Private m_GDIPlusFont As Long
@@ -527,6 +530,16 @@ Public Sub setTextContrast(ByVal newContrast As Long)
     
     m_TextContrast = newContrast
     
+End Sub
+
+'Get/set hinting.  Note that variable hinting is only supported by the PHOTODEMON text rendering engine.
+Public Function getTextHinting() As Boolean
+    getTextHinting = m_TextHinting
+End Function
+
+Public Sub setTextHinting(ByVal newHinting As Boolean)
+    m_TextHinting = newHinting
+    m_FontCacheClean = False
 End Sub
 
 'Get/set the text rendering engine.  This class currently supports two engines: WAPI (which will use GDI or GDI+, as appropriate), and PHOTODEMON,
@@ -955,7 +968,7 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String
         'Next, pass the glyph collection our target string.  The glyph collection will generate a list of required glyphs and
         ' automatically retrieve any glyph geometry it hasn't already calculated.  (For example, if the last request it received
         ' was "cat", but this request is "cats", only the 's' needs to be newly retrieved.)
-        m_GlyphCollection.buildGlyphCollection srcString, True
+        m_GlyphCollection.buildGlyphCollection srcString, m_TextHinting
         
         'After all glyphs have been created, it's *very important* that we regain control over our GDI font, as we need it for
         ' the actual rendering step!

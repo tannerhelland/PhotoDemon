@@ -6,7 +6,7 @@ Begin VB.Form toolpanel_FancyText
    ClientHeight    =   1515
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   18465
+   ClientWidth     =   17295
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   9.75
@@ -21,78 +21,22 @@ Begin VB.Form toolpanel_FancyText
    MinButton       =   0   'False
    ScaleHeight     =   101
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1231
+   ScaleWidth      =   1153
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdComboBox_Font cboTextFontFace 
-      Height          =   375
-      Left            =   7680
-      TabIndex        =   11
-      Top             =   60
-      Width           =   2415
-      _ExtentX        =   4260
-      _ExtentY        =   661
-   End
-   Begin PhotoDemon.buttonStrip btsHAlignment 
-      Height          =   435
-      Left            =   15720
-      TabIndex        =   9
-      Top             =   30
-      Width           =   1455
-      _ExtentX        =   2566
-      _ExtentY        =   767
-      ColorScheme     =   1
-   End
-   Begin PhotoDemon.pdButtonToolbox btnFontStyles 
-      Height          =   435
-      Index           =   0
-      Left            =   7680
-      TabIndex        =   5
-      Top             =   930
-      Width           =   450
-      _ExtentX        =   794
-      _ExtentY        =   767
-      StickyToggle    =   -1  'True
-   End
-   Begin PhotoDemon.sliderTextCombo sltTextClarity 
-      Height          =   435
-      Left            =   11880
-      TabIndex        =   4
-      Top             =   930
-      Width           =   2415
-      _ExtentX        =   4260
-      _ExtentY        =   767
-      Value           =   5
-      NotchPosition   =   2
-      NotchValueCustom=   5
-   End
-   Begin PhotoDemon.colorSelector csTextFontColor 
-      Height          =   390
-      Left            =   11880
-      TabIndex        =   0
-      Top             =   60
-      Width           =   2415
-      _ExtentX        =   4260
-      _ExtentY        =   688
-      curColor        =   0
-   End
-   Begin PhotoDemon.textUpDown tudTextFontSize 
-      Height          =   345
-      Left            =   7680
+   Begin PhotoDemon.buttonStripVertical btsCategory 
+      Height          =   1380
+      Left            =   6240
       TabIndex        =   1
-      Top             =   510
-      Width           =   2415
-      _ExtentX        =   4260
-      _ExtentY        =   609
-      Min             =   1
-      Max             =   1000
-      SigDigits       =   1
-      Value           =   16
+      Top             =   30
+      Width           =   2295
+      _ExtentX        =   4048
+      _ExtentY        =   2434
    End
    Begin PhotoDemon.pdTextBox txtTextTool 
       Height          =   1380
       Left            =   840
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   30
       Width           =   5295
       _ExtentX        =   9340
@@ -112,141 +56,232 @@ Begin VB.Form toolpanel_FancyText
       Caption         =   "text:"
       ForeColor       =   0
    End
-   Begin PhotoDemon.pdLabel lblText 
-      Height          =   240
-      Index           =   3
-      Left            =   6360
-      Top             =   120
-      Width           =   1125
-      _ExtentX        =   1984
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "font face:"
-      ForeColor       =   0
-   End
-   Begin PhotoDemon.pdLabel lblText 
-      Height          =   240
-      Index           =   4
-      Left            =   6360
-      Top             =   570
-      Width           =   1125
-      _ExtentX        =   1984
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "font size:"
-      ForeColor       =   0
-   End
-   Begin PhotoDemon.pdLabel lblText 
-      Height          =   240
-      Index           =   2
-      Left            =   6360
-      Top             =   1020
-      Width           =   1125
-      _ExtentX        =   1984
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "font style:"
-      ForeColor       =   0
-   End
-   Begin PhotoDemon.pdComboBox cboTextRenderingHint 
-      Height          =   375
-      Left            =   11880
-      TabIndex        =   3
-      Top             =   525
-      Width           =   2415
-      _ExtentX        =   4260
-      _ExtentY        =   635
-   End
-   Begin PhotoDemon.pdLabel lblText 
-      Height          =   240
-      Index           =   5
-      Left            =   10320
-      Top             =   570
-      Width           =   1365
-      _ExtentX        =   2408
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "antialiasing:"
-      ForeColor       =   0
-   End
-   Begin PhotoDemon.pdLabel lblText 
-      Height          =   240
-      Index           =   6
-      Left            =   10320
-      Top             =   1020
-      Width           =   1365
-      _ExtentX        =   2408
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "clarity:"
-      ForeColor       =   0
-   End
-   Begin PhotoDemon.pdLabel lblText 
-      Height          =   240
-      Index           =   7
-      Left            =   10320
-      Top             =   120
-      Width           =   1365
-      _ExtentX        =   2408
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "color:"
-      ForeColor       =   0
-   End
-   Begin PhotoDemon.pdButtonToolbox btnFontStyles 
-      Height          =   435
-      Index           =   1
-      Left            =   8160
-      TabIndex        =   6
-      Top             =   930
-      Width           =   450
-      _ExtentX        =   794
-      _ExtentY        =   767
-      StickyToggle    =   -1  'True
-   End
-   Begin PhotoDemon.pdButtonToolbox btnFontStyles 
-      Height          =   435
+   Begin VB.PictureBox picCategory 
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      Height          =   1500
       Index           =   2
       Left            =   8640
-      TabIndex        =   7
-      Top             =   930
-      Width           =   450
-      _ExtentX        =   794
-      _ExtentY        =   767
-      StickyToggle    =   -1  'True
+      ScaleHeight     =   100
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   729
+      TabIndex        =   13
+      Top             =   0
+      Width           =   10935
+      Begin PhotoDemon.colorSelector csTextFontColor 
+         Height          =   390
+         Left            =   1320
+         TabIndex        =   14
+         Top             =   60
+         Width           =   2415
+         _ExtentX        =   4260
+         _ExtentY        =   688
+         curColor        =   0
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   7
+         Left            =   0
+         Top             =   150
+         Width           =   1125
+         _ExtentX        =   1984
+         _ExtentY        =   423
+         Alignment       =   1
+         Caption         =   "color:"
+         ForeColor       =   0
+      End
    End
-   Begin PhotoDemon.pdButtonToolbox btnFontStyles 
-      Height          =   435
-      Index           =   3
-      Left            =   9120
-      TabIndex        =   8
-      Top             =   930
-      Width           =   450
-      _ExtentX        =   794
-      _ExtentY        =   767
-      StickyToggle    =   -1  'True
-   End
-   Begin PhotoDemon.pdLabel lblText 
-      Height          =   240
-      Index           =   8
-      Left            =   14400
-      Top             =   120
-      Width           =   1125
-      _ExtentX        =   1984
-      _ExtentY        =   503
-      Alignment       =   1
-      Caption         =   "alignment:"
-      ForeColor       =   0
-   End
-   Begin PhotoDemon.buttonStrip btsVAlignment 
-      Height          =   435
-      Left            =   15720
+   Begin VB.PictureBox picCategory 
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      Height          =   1500
+      Index           =   1
+      Left            =   8640
+      ScaleHeight     =   100
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   729
       TabIndex        =   10
-      Top             =   480
-      Width           =   1455
-      _ExtentX        =   2566
-      _ExtentY        =   767
-      ColorScheme     =   1
+      Top             =   0
+      Width           =   10935
+      Begin PhotoDemon.buttonStrip btsHAlignment 
+         Height          =   435
+         Left            =   1320
+         TabIndex        =   11
+         Top             =   60
+         Width           =   1455
+         _ExtentX        =   2566
+         _ExtentY        =   767
+         ColorScheme     =   1
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   8
+         Left            =   0
+         Top             =   150
+         Width           =   1125
+         _ExtentX        =   1984
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "alignment:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.buttonStrip btsVAlignment 
+         Height          =   435
+         Left            =   1320
+         TabIndex        =   12
+         Top             =   510
+         Width           =   1455
+         _ExtentX        =   2566
+         _ExtentY        =   767
+         ColorScheme     =   1
+      End
+   End
+   Begin VB.PictureBox picCategory 
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      Height          =   1500
+      Index           =   0
+      Left            =   8640
+      ScaleHeight     =   100
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   729
+      TabIndex        =   2
+      Top             =   0
+      Width           =   10935
+      Begin PhotoDemon.pdComboBox_Font cboTextFontFace 
+         Height          =   375
+         Left            =   1320
+         TabIndex        =   3
+         Top             =   60
+         Width           =   2415
+         _ExtentX        =   4260
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+         Height          =   435
+         Index           =   0
+         Left            =   1320
+         TabIndex        =   4
+         Top             =   930
+         Width           =   450
+         _ExtentX        =   794
+         _ExtentY        =   767
+         StickyToggle    =   -1  'True
+      End
+      Begin PhotoDemon.textUpDown tudTextFontSize 
+         Height          =   345
+         Left            =   1320
+         TabIndex        =   5
+         Top             =   510
+         Width           =   2415
+         _ExtentX        =   4260
+         _ExtentY        =   609
+         Min             =   1
+         Max             =   1000
+         SigDigits       =   1
+         Value           =   16
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   3
+         Left            =   0
+         Top             =   120
+         Width           =   1125
+         _ExtentX        =   1984
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "font face:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   4
+         Left            =   0
+         Top             =   570
+         Width           =   1125
+         _ExtentX        =   1984
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "font size:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   2
+         Left            =   0
+         Top             =   1020
+         Width           =   1125
+         _ExtentX        =   1984
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "font style:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+         Height          =   435
+         Index           =   1
+         Left            =   1800
+         TabIndex        =   6
+         Top             =   930
+         Width           =   450
+         _ExtentX        =   794
+         _ExtentY        =   767
+         StickyToggle    =   -1  'True
+      End
+      Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+         Height          =   435
+         Index           =   2
+         Left            =   2280
+         TabIndex        =   7
+         Top             =   930
+         Width           =   450
+         _ExtentX        =   794
+         _ExtentY        =   767
+         StickyToggle    =   -1  'True
+      End
+      Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+         Height          =   435
+         Index           =   3
+         Left            =   2760
+         TabIndex        =   8
+         Top             =   930
+         Width           =   450
+         _ExtentX        =   794
+         _ExtentY        =   767
+         StickyToggle    =   -1  'True
+      End
+      Begin PhotoDemon.smartCheckBox chkHinting 
+         Height          =   330
+         Left            =   4200
+         TabIndex        =   9
+         Top             =   510
+         Width           =   1815
+         _ExtentX        =   2990
+         _ExtentY        =   582
+         Caption         =   "hinting"
+         Value           =   0
+      End
+      Begin PhotoDemon.pdComboBox cboTextRenderingHint 
+         Height          =   375
+         Left            =   5400
+         TabIndex        =   15
+         Top             =   60
+         Width           =   2415
+         _ExtentX        =   4260
+         _ExtentY        =   635
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   5
+         Left            =   3840
+         Top             =   120
+         Width           =   1365
+         _ExtentX        =   2408
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "antialiasing:"
+         ForeColor       =   0
+      End
    End
 End
 Attribute VB_Name = "toolpanel_FancyText"
@@ -368,6 +403,16 @@ Private Sub btnFontStyles_LostFocusAPI(Index As Integer)
     
 End Sub
 
+Private Sub btsCategory_Click(ByVal buttonIndex As Long)
+    
+    'When the current category is changed, show the relevant panel and hide all others
+    Dim i As Long
+    For i = 0 To btsCategory.ListCount - 1
+        picCategory(i).Visible = CBool(i = buttonIndex)
+    Next i
+    
+End Sub
+
 Private Sub btsHAlignment_Click(ByVal buttonIndex As Long)
     
     'If tool changes are not allowed, exit.
@@ -456,17 +501,7 @@ Private Sub cboTextFontFace_LostFocusAPI()
 End Sub
 
 Private Sub cboTextRenderingHint_Click()
-        
-    'We show/hide the AA clarity option depending on this tool's setting.  (AA clarity doesn't make much sense
-    ' if AA is disabled.)
-    If cboTextRenderingHint.ListIndex = 0 Then
-        sltTextClarity.Visible = False
-        lblText(6).Visible = False
-    Else
-        sltTextClarity.Visible = True
-        lblText(6).Visible = True
-    End If
-        
+    
     'If tool changes are not allowed, exit.
     ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
     If Not Tool_Support.canvasToolsAllowed Then Exit Sub
@@ -492,6 +527,35 @@ End Sub
 
 Private Sub cboTextRenderingHint_LostFocusAPI()
     If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_TextAntialiasing, cboTextRenderingHint.ListIndex
+End Sub
+
+Private Sub chkHinting_Click()
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+    
+    'Update the current layer text
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_TextHinting, CBool(chkHinting.Value)
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+Private Sub chkHinting_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_TextHinting, CBool(chkHinting.Value), pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub chkHinting_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_TextHinting, CBool(chkHinting.Value)
 End Sub
 
 Private Sub csTextFontColor_ColorChanged()
@@ -536,6 +600,12 @@ Private Sub Form_Load()
         
     End If
     
+    'Draw the category selector
+    btsCategory.AddItem "character", 0
+    btsCategory.AddItem "paragraph", 1
+    btsCategory.AddItem "color", 2
+    
+    'Fill AA options
     cboTextRenderingHint.Clear
     cboTextRenderingHint.AddItem "None", 0
     cboTextRenderingHint.AddItem "Normal", 1
@@ -581,35 +651,6 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     lastUsedSettings.saveAllControlValues
     lastUsedSettings.setParentForm Nothing
     
-End Sub
-
-Private Sub sltTextClarity_Change()
-
-    'If tool changes are not allowed, exit.
-    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
-    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
-    
-    'Mark the tool engine as busy
-    Tool_Support.setToolBusyState True
-    
-    'Update the current layer text
-    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_TextContrast, sltTextClarity.Value
-    
-    'Free the tool engine
-    Tool_Support.setToolBusyState False
-    
-    'Redraw the viewport
-    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-
-End Sub
-
-Private Sub sltTextClarity_GotFocusAPI()
-    If g_OpenImageCount = 0 Then Exit Sub
-    Processor.flagInitialNDFXState_Text ptp_TextContrast, sltTextClarity.Value, pdImages(g_CurrentImage).getActiveLayerID
-End Sub
-
-Private Sub sltTextClarity_LostFocusAPI()
-    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_TextContrast, sltTextClarity.Value
 End Sub
 
 Private Sub tudTextFontSize_Change()
