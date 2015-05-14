@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.34</langversion>
+<langversion>6.7.36</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -11304,7 +11304,17 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <translation>Selezione Bacchetta Magica</translation>
 </phrase>
 
-<!-- VBP_ToolbarPrimary.frm contains 44 phrases. 19 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<phrase>
+<original>Text (basic)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Typography (advanced)</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_ToolbarPrimary.frm contains 45 phrases. 18 were duplicates of existing phrases, so only 27 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolbarPrimary.frm-->
 
@@ -11994,7 +12004,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation>cm</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 52 phrases. 30 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 54 phrases. 32 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -13801,12 +13811,33 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- END text for pdFontCollection.cls-->
 
+<!-- BEGIN text for VBP_ToolPanel_FancyText.frm (toolpanel_FancyText) -->
+
+<phrase>
+<original>hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>character</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>paragraph</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_ToolPanel_FancyText.frm contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for VBP_ToolPanel_FancyText.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2398</phrasecount>
+<phrasecount>2403</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4137 phrases. -->
-<!-- 1739 are duplicates, so only 2398 unique phrases have been written to file. -->
-<!-- These 2398 phrases contain approximately 13605 total words. -->
+<!-- As of this build, PhotoDemon contains 4154 phrases. -->
+<!-- 1751 are duplicates, so only 2403 unique phrases have been written to file. -->
+<!-- These 2403 phrases contain approximately 13612 total words. -->
 
 </pdData>

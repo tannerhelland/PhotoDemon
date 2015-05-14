@@ -1149,8 +1149,8 @@ Public Sub updateAgainstCurrentTheme()
     cmdTools(SELECT_WAND).assignTooltip "Magic Wand Selection"
     
     '...then vector tools...
-    cmdTools(VECTOR_TEXT).assignTooltip "Basic text"
-    cmdTools(VECTOR_FANCYTEXT).assignTooltip "Advanced typography"
+    cmdTools(VECTOR_TEXT).assignTooltip "Text (basic)"
+    cmdTools(VECTOR_FANCYTEXT).assignTooltip "Typography (advanced)"
     
     'The right separator line is colored according to the current shadow accent color
     If Not g_Themer Is Nothing Then
