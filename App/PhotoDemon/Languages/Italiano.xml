@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.36</langversion>
+<langversion>6.7.37</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -13831,6 +13831,12 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- VBP_ToolPanel_FancyText.frm contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_FancyText.frm-->
+
+<!-- BEGIN text for VBP_UniscribeInterface.bas -->
+
+<!-- VBP_UniscribeInterface.bas contains 0 phrases. -->
+
+<!-- END text for VBP_UniscribeInterface.bas-->
 
 <!-- Automatic text extraction complete. -->
 

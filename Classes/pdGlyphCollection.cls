@@ -286,6 +286,13 @@ Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal u
         
     Next i
     
+    'TESTING ONLY!  Test our Uniscribe wrappers to see what values they return.
+    Uniscribe_Interface.Step1_ScriptItemize srcString
+    Uniscribe_Interface.Step2_ScriptLayout
+    Uniscribe_Interface.Step3_ScriptShape m_tmpDIB.getDIBDC
+    Uniscribe_Interface.Step4_ScriptPlace m_tmpDIB.getDIBDC
+    Uniscribe_Interface.freeUniscribeCaches
+    
     'Before exiting, remove the active font into our temporary "testing" DC
     SelectObject m_tmpDIB.getDIBDC, m_oldFontHandle
 
