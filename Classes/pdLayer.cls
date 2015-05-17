@@ -1389,7 +1389,7 @@ Public Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
                     .tld_TextAntialiasing = xmlEngine.getUniqueTag_Long("TextLayerAntialiasing", pdta_Standard)
                     .tld_TextContrast = xmlEngine.getUniqueTag_Long("TextLayerContrast", 5)
                     .tld_RenderingEngine = xmlEngine.getUniqueTag_Long("TextRenderingEngine", tre_WAPI)
-                    .tld_TextHinting = xmlEngine.getUniqueTag_Long("TextHinting", 0)
+                    .tld_TextHinting = xmlEngine.getUniqueTag_Boolean("TextHinting", False)
                 End With
                 
         End Select

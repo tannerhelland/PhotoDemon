@@ -271,8 +271,7 @@ Public Sub createUndoData(ByVal processID As String, ByVal pParamString As Strin
     writeUndoDataToXML generateUndoHeaderFilename()
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
-    debugUndo "new Undo entry created"
-    'Debug.Print "Undo created successfully."
+    'debugUndo "new Undo entry created"
     
 End Sub
 
@@ -570,7 +569,7 @@ Public Sub RestoreUndoData()
     End If
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
-    debugUndo "user clicked Undo"
+    'debugUndo "user clicked Undo"
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
@@ -719,7 +718,7 @@ Public Sub RestoreRedoData()
     LoadUndo generateUndoFilename(undoNum - 1), getUndoProcessType, getUndoProcessType, undoStack(undoNum - 1).undoLayerID
     
     'To inspect the current state of the Undo/Redo stack, uncomment this line.
-    debugUndo "user clicked Redo"
+    'debugUndo "user clicked Redo"
     
     'New to version 6.4 is our persistent creation of Undo XML header files.  These are extraordinarily helpful
     ' for both regular Undo/Redo behavior, as well as AutoSave recreation.
