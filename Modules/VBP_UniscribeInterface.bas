@@ -354,6 +354,16 @@ Private Declare Function ScriptStringXtoCP Lib "usp10" (ByVal ssa As Long, ByVal
 
 'Internal storage stuff written by Tanner (specifically for PD)
 
+'Glyph data used by PhotoDemon.  An array of this custom struct is filled when the caller requests a copy of our internal Uniscribe data.
+' A fair amount of work is required to pull data out of the various incredibly complicated Uniscribe returns, so don't request copies of
+' this data any more than is absolutely necessary.
+Public Type pdGlyphUniscribe
+    GlyphIndex As Long
+    AdvanceWidth As Long
+    isZeroWidth As Boolean
+    GlyphOffset As GOFFSET
+End Type
+
 'Current string associated with our cache; if this doesn't change, we can skip most Uniscribe processing.
 Private m_CurrentString As String
 
@@ -1136,3 +1146,49 @@ Public Function Step4_ScriptPlace(ByRef srcDC As Long) As Boolean
     End If
 
 End Function
+
+'Retrieve a copy of the currently calculated glyph cache, in a custom PD format.
+'
+' Returns a value >= 0 indicating the number of glyphs in the returned struct.  0 indicated failure or an empty string.
+Public Function getCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe) As Long
+    
+    ReDim dstGlyphArray(0 To m_NumOfGlyphs - 1) As pdGlyphUniscribe
+    
+    Dim i As Long
+    For i = 0 To m_NumOfGlyphs - 1
+    
+        With dstGlyphArray(i)
+            .GlyphIndex = m_GlyphCache(i)
+            .AdvanceWidth = m_AdvanceWidthCache(i)
+            .GlyphOffset = m_GlyphOffsetCache(i)
+            .isZeroWidth = False
+        End With
+    
+    Next i
+    
+    getCopyOfGlyphCache = m_NumOfGlyphs
+    
+End Function
+
+Public Sub printDebugInfo()
+    
+    Dim tmpGlyphCache() As pdGlyphUniscribe
+    Dim numOfGlyphs As Long
+    numOfGlyphs = getCopyOfGlyphCache(tmpGlyphCache)
+    
+    Debug.Print "-- Glyph data returned by Uniscribe --"
+    
+    If numOfGlyphs > 0 Then
+    
+        Dim i As Long
+        For i = 0 To numOfGlyphs - 1
+            With tmpGlyphCache(i)
+                Debug.Print i & ": " & .GlyphIndex & " (" & .AdvanceWidth & ")  (" & .GlyphOffset.du & ", " & .GlyphOffset.dv & ")"
+            End With
+        Next i
+        
+    End If
+    
+    Debug.Print "-- End of glyph data  --"
+    
+End Sub
