@@ -292,6 +292,7 @@ Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal u
     Uniscribe_Interface.Step3_ScriptShape m_tmpDIB.getDIBDC
     Uniscribe_Interface.Step4_ScriptPlace m_tmpDIB.getDIBDC
     Uniscribe_Interface.freeUniscribeCaches
+    printDebugInfo
     
     'Before exiting, remove the active font into our temporary "testing" DC
     SelectObject m_tmpDIB.getDIBDC, m_oldFontHandle
@@ -565,7 +566,7 @@ Friend Function assembleCompositePath(ByVal srcString As String, ByRef dstPath A
         
         'Add more in the future, perhaps...?
         
-        Dim i As Long, glyphIndex As Long, srcPathHandle As Long
+        Dim i As Long, GlyphIndex As Long, srcPathHandle As Long
         Dim xOffset As Single, yOffset As Single
         yOffset = 0
         xOffset = 0
@@ -574,19 +575,19 @@ Friend Function assembleCompositePath(ByVal srcString As String, ByRef dstPath A
         For i = 0 To Len(srcString) - 1
             
             'Start by retrieving this glyph index
-            glyphIndex = getGlyphIndex(AscW(Mid$(srcString, i + 1, 1)))
+            GlyphIndex = getGlyphIndex(AscW(Mid$(srcString, i + 1, 1)))
             
-            If glyphIndex >= 0 Then
+            If GlyphIndex >= 0 Then
                 
                 'Retrieve a handle to this glyph's path.  If the handle is zero, there are two possible explanations:
                 ' 1) The glyph is a whitespace character
                 ' 2) The glyph couldn't be generated
                 
                 '(1) is common, and (2) should never happen.  Process accordingly.
-                If m_GlyphCollection(glyphIndex).charIsWhiteSpace Then
+                If m_GlyphCollection(GlyphIndex).charIsWhiteSpace Then
                     
                     'Line feeds are a special case of white space.
-                    If m_GlyphCollection(glyphIndex).charCode = AscW(vbLf) Then
+                    If m_GlyphCollection(GlyphIndex).charCode = AscW(vbLf) Then
                     
                         yOffset = yOffset + m_TextMetrics.tmHeight + m_TextMetrics.tmExternalLeading
                         xOffset = 0
@@ -595,14 +596,14 @@ Friend Function assembleCompositePath(ByVal srcString As String, ByRef dstPath A
                     Else
                     
                         'Add the manually retrieved glyph width to the running offset
-                        xOffset = xOffset + m_GlyphCollection(glyphIndex).whiteSpaceWidth
+                        xOffset = xOffset + m_GlyphCollection(GlyphIndex).whiteSpaceWidth
                         
                     End If
                     
                 Else
                     
                     'See if this glyph extends past the end of the line.  If it does, push us down to the next line.
-                    If xOffset + m_GlyphCollection(glyphIndex).gMetrics.gmCellIncX > boundingRect.Width Then
+                    If xOffset + m_GlyphCollection(GlyphIndex).gMetrics.gmCellIncX > boundingRect.Width Then
                         yOffset = yOffset + m_TextMetrics.tmHeight + m_TextMetrics.tmExternalLeading
                         xOffset = 0
                     End If
@@ -612,13 +613,13 @@ Friend Function assembleCompositePath(ByVal srcString As String, ByRef dstPath A
                     'If this is the start of a line, look for characters that hang off the left side of the bounding box, and push them
                     ' in-bounds.
                     If xOffset = 0 Then
-                        If m_GlyphCollection(glyphIndex).gMetrics.gmptGlyphOrigin.x < 0 Then xOffset = Abs(m_GlyphCollection(glyphIndex).gMetrics.gmptGlyphOrigin.x)
+                        If m_GlyphCollection(GlyphIndex).gMetrics.gmptGlyphOrigin.x < 0 Then xOffset = Abs(m_GlyphCollection(GlyphIndex).gMetrics.gmptGlyphOrigin.x)
                     End If
                     
-                    dstPath.addPath m_GlyphCollection(glyphIndex).glyphPath, xOffset, yOffset
+                    dstPath.addPath m_GlyphCollection(GlyphIndex).glyphPath, xOffset, yOffset
                     
                     'Add the glyph's width to the running x-direction offset.
-                    xOffset = xOffset + m_GlyphCollection(glyphIndex).gMetrics.gmCellIncX
+                    xOffset = xOffset + m_GlyphCollection(GlyphIndex).gMetrics.gmCellIncX
                 
                 End If
                 
@@ -679,10 +680,10 @@ End Sub
 
 'Return a copy of a path handle for an assembled glyph.  Returns 0 if no path data exists.  Note that 0 is valid output,
 ' as whitespace characters do not have glyphs (for most fonts, anyway).
-Public Function getGlyphPathHandle(ByVal glyphIndex As Long) As Long
+Public Function getGlyphPathHandle(ByVal GlyphIndex As Long) As Long
     
-    If Not m_GlyphCollection(glyphIndex).glyphPath Is Nothing Then
-        getGlyphPathHandle = m_GlyphCollection(glyphIndex).glyphPath.getCopyOfPathHandle
+    If Not m_GlyphCollection(GlyphIndex).glyphPath Is Nothing Then
+        getGlyphPathHandle = m_GlyphCollection(GlyphIndex).glyphPath.getCopyOfPathHandle
     Else
         getGlyphPathHandle = 0
     End If
