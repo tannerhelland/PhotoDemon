@@ -15,28 +15,40 @@ Attribute VB_Exposed = False
 'PhotoDemon GDI+ Text Manager and Renderer
 'Copyright 2015-2015 by Tanner Helland
 'Created: 22/April/15
-'Last updated: 02/May/15
-'Last update: get GDI antialiasing settings to (roughly) match GDI+ results
+'Last updated: 19/May/15
+'Last update: various changes to improve compatibility with the new Uniscribe backend (see pdGlyphCollection)
 '
-'This class handles the messy business of font management for PD's new text layers.  It switches between GDI and GDI+ as
-' necessary to provide a comprehensive text rendering solution.
+'This class handles the messy business of font management for PD's new text layers.  It intermixes GDI, GDI+, and Uniscribe
+' as necessary to provide a comprehensive text rendering solution.
 '
-'I had originally planned to split this class in two, as a GDI-specific backend and a separate GDI+-specific backend.
-' But there are complications with this.  GDI and GDI+ have different strengths and weaknesses (GDI has no 32-bpp rendering
-' support, while GDI+ doesn't support OpenType), so to really provide a decent font experience without native libraries,
-' one must utilize both libraries.
+'I had originally planned to split this class in two, as a GDI-specific backend and a separate GDI+-specific backend (with
+' Uniscribe stuff handled totally separately).  But there are complications with this.  GDI and GDI+ have different strengths
+' and weaknesses (GDI has no 32-bpp rendering support, while GDI+ doesn't support OpenType), so to really provide a decent
+' font experience without native libraries, one must utilize parts of all the libraries.
 '
 'Hence this class.  Here's the basic setup:
 '
-'For TrueType fonts, GDI+ is used.  This saves us a lot of grief, and lets us make use of some nice, typographic-specific
+'For the WAPI text rendering engine...
+'
+' - With TrueType fonts, GDI+ is used.  This saves us a lot of grief, and lets us make use of some nice, typographic-specific
 ' features (like variable antialiasing contrast).
 '
-'For OpenType fonts, GDI is used out of necessity.  Individual glyphs are retrieved, parsed, and converted into a usable
+' - WithOpenType fonts, GDI is used out of necessity.  Individual glyphs are retrieved, parsed, and converted into a usable
 ' format (e.g. OpenType's quadratic B-splines are converted into GDI+'s native cubic Bézier curve format).  The final,
 ' resultant shape(s) are then passed to GDI+ as a generic path object, which we can render with any of GDI+'s native
 ' features (antialiasing, fancy gradients, etc).
 '
 'This unpleasant hybrid approach is part of the shit we deal with as Windows developers, I guess.
+'
+'For the PHOTODEMON text rendering engine...
+'
+' - A comprehensive Uniscribe interface is used for text shaping, layout, and placement.  This allows us to make use of just
+'   about every possible OpenType font feature, which is amazing!
+'
+' - Glyph paths are retrieved via GDI, and manually parsed into GDI+ path objects.  The details are handled by the
+'   pdGlyphCollection class.
+'
+' - Actual rendering duties are handled by GDI+.
 '
 'Dependencies:
 '  - Font_Management module, which handles some of the messier bits of GDI interaction
@@ -1138,7 +1150,7 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     'Retrieve a full, composite path from the glyph collector.  It handles messy business like character positioning,
     ' and simply hands us a fully composited path, ready for rendering.
     Dim finalTextPath As pdGraphicsPath
-    If m_GlyphCollection.assembleCompositePath(srcString, finalTextPath, boundingRect) Then
+    If m_GlyphCollection.assembleCompositePath(finalTextPath, boundingRect) Then
         
         Dim gdipReturn As Long
         

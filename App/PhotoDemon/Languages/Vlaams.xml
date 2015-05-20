@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.37</langversion>
+<langversion>6.7.38</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -13835,11 +13835,11 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- END text for VBP_ToolPanel_FancyText.frm-->
 
-<!-- BEGIN text for VBP_UniscribeInterface.bas -->
+<!-- BEGIN text for pdUniscribe.cls -->
 
-<!-- VBP_UniscribeInterface.bas contains 0 phrases. -->
+<!-- pdUniscribe.cls contains 0 phrases. -->
 
-<!-- END text for VBP_UniscribeInterface.bas-->
+<!-- END text for pdUniscribe.cls-->
 
 <!-- Automatic text extraction complete. -->
 

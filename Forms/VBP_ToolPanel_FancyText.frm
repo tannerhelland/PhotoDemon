@@ -60,86 +60,6 @@ Begin VB.Form toolpanel_FancyText
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       Height          =   1500
-      Index           =   2
-      Left            =   8640
-      ScaleHeight     =   100
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   729
-      TabIndex        =   13
-      Top             =   0
-      Width           =   10935
-      Begin PhotoDemon.colorSelector csTextFontColor 
-         Height          =   390
-         Left            =   1320
-         TabIndex        =   14
-         Top             =   60
-         Width           =   2415
-         _ExtentX        =   4260
-         _ExtentY        =   688
-         curColor        =   0
-      End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   240
-         Index           =   7
-         Left            =   0
-         Top             =   150
-         Width           =   1125
-         _ExtentX        =   1984
-         _ExtentY        =   423
-         Alignment       =   1
-         Caption         =   "color:"
-         ForeColor       =   0
-      End
-   End
-   Begin VB.PictureBox picCategory 
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      Height          =   1500
-      Index           =   1
-      Left            =   8640
-      ScaleHeight     =   100
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   729
-      TabIndex        =   10
-      Top             =   0
-      Width           =   10935
-      Begin PhotoDemon.buttonStrip btsHAlignment 
-         Height          =   435
-         Left            =   1320
-         TabIndex        =   11
-         Top             =   60
-         Width           =   1455
-         _ExtentX        =   2566
-         _ExtentY        =   767
-         ColorScheme     =   1
-      End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   240
-         Index           =   8
-         Left            =   0
-         Top             =   150
-         Width           =   1125
-         _ExtentX        =   1984
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "alignment:"
-         ForeColor       =   0
-      End
-      Begin PhotoDemon.buttonStrip btsVAlignment 
-         Height          =   435
-         Left            =   1320
-         TabIndex        =   12
-         Top             =   510
-         Width           =   1455
-         _ExtentX        =   2566
-         _ExtentY        =   767
-         ColorScheme     =   1
-      End
-   End
-   Begin VB.PictureBox picCategory 
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      Height          =   1500
       Index           =   0
       Left            =   8640
       ScaleHeight     =   100
@@ -178,7 +98,6 @@ Begin VB.Form toolpanel_FancyText
          _ExtentY        =   609
          Min             =   1
          Max             =   1000
-         SigDigits       =   1
          Value           =   16
       End
       Begin PhotoDemon.pdLabel lblText 
@@ -281,6 +200,88 @@ Begin VB.Form toolpanel_FancyText
          Alignment       =   1
          Caption         =   "antialiasing:"
          ForeColor       =   0
+      End
+   End
+   Begin VB.PictureBox picCategory 
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      Height          =   1500
+      Index           =   2
+      Left            =   8640
+      ScaleHeight     =   100
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   729
+      TabIndex        =   13
+      Top             =   0
+      Visible         =   0   'False
+      Width           =   10935
+      Begin PhotoDemon.colorSelector csTextFontColor 
+         Height          =   390
+         Left            =   1320
+         TabIndex        =   14
+         Top             =   60
+         Width           =   2415
+         _ExtentX        =   4260
+         _ExtentY        =   688
+         curColor        =   0
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   7
+         Left            =   0
+         Top             =   150
+         Width           =   1125
+         _ExtentX        =   1984
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "color:"
+         ForeColor       =   0
+      End
+   End
+   Begin VB.PictureBox picCategory 
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      Height          =   1500
+      Index           =   1
+      Left            =   8640
+      ScaleHeight     =   100
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   729
+      TabIndex        =   10
+      Top             =   0
+      Visible         =   0   'False
+      Width           =   10935
+      Begin PhotoDemon.buttonStrip btsHAlignment 
+         Height          =   435
+         Left            =   1320
+         TabIndex        =   11
+         Top             =   60
+         Width           =   1455
+         _ExtentX        =   2566
+         _ExtentY        =   767
+         ColorScheme     =   1
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   8
+         Left            =   0
+         Top             =   150
+         Width           =   1125
+         _ExtentX        =   1984
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "alignment:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.buttonStrip btsVAlignment 
+         Height          =   435
+         Left            =   1320
+         TabIndex        =   12
+         Top             =   510
+         Width           =   1455
+         _ExtentX        =   2566
+         _ExtentY        =   767
+         ColorScheme     =   1
       End
    End
 End
@@ -651,6 +652,13 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     lastUsedSettings.saveAllControlValues
     lastUsedSettings.setParentForm Nothing
     
+End Sub
+
+Private Sub lastUsedSettings_ReadCustomPresetData()
+
+    'Make sure the right panel is shown
+    btsCategory_Click btsCategory.ListIndex
+
 End Sub
 
 Private Sub tudTextFontSize_Change()

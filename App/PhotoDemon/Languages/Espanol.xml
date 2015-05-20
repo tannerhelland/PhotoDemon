@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.40</langversion>
+<langversion>6.7.41</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -13836,11 +13836,11 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <!-- END text for VBP_ToolPanel_FancyText.frm-->
 
-<!-- BEGIN text for VBP_UniscribeInterface.bas -->
+<!-- BEGIN text for pdUniscribe.cls -->
 
-<!-- VBP_UniscribeInterface.bas contains 0 phrases. -->
+<!-- pdUniscribe.cls contains 0 phrases. -->
 
-<!-- END text for VBP_UniscribeInterface.bas-->
+<!-- END text for pdUniscribe.cls-->
 
 <!-- Automatic text extraction complete. -->
 
