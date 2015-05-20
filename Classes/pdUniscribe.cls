@@ -62,6 +62,9 @@ Private Declare Function ScriptXtoCP Lib "usp10" (ByVal iX As Long, ByVal cChars
 
 'For relevant type declarations, look in the Uniscribe_API_Decs module.
 
+'ScriptItemize allows you to specify a language ID you want to use for itemizing.  We default to the current user setting.
+Private Const LANG_USER_DEFAULT As Integer = &H400&
+
 'Current string associated with our cache; if this doesn't change, we can skip most Uniscribe processing.
 Private m_CurrentString As String
 
@@ -235,8 +238,10 @@ Private Function getBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) A
         'Create a bitmask, using flagPosition to determine bit offset
         Dim longMask As Long
         If flagPosition < 31 Then longMask = 2 ^ flagPosition Else longMask = &H80000000
+        getBitFlag = CBool(CLng(srcLong And longMask) <> 0)
         
-        getBitFlag = ((srcLong And longMask) <> 0)
+        'If you're curious about how this function works (and what it returns), you can uncomment the line below
+        'Debug.Print "getBitFlag: " & srcLong & " : " & longMask & " (" & CStr(getBitFlag) & ")"
         
     Else
         Debug.Print "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
@@ -301,14 +306,15 @@ Public Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
     
     ReDim m_ScriptItemsCache(0 To numScriptItems) As SCRIPT_ITEM
     
-    'SCRIPT_CONTROL and SCRIPT_STATE primarily deal with extremely technical details of localization and glyph runs.  They are not relevant
-    ' to our usage in PD.  For more details, see:
+    'SCRIPT_CONTROL and SCRIPT_STATE primarily deal with extremely technical details of localization and glyph runs.  They are not
+    ' generally relevant to our usage in PD.  For more details, see:
     ' SCRIPT_CONTROL: https://msdn.microsoft.com/en-us/library/windows/desktop/dd368800%28v=vs.85%29.aspx
     ' SCRIPT_STATE: https://msdn.microsoft.com/en-us/library/windows/desktop/dd374043%28v=vs.85%29.aspx
     '
     '(That said, if complaints ever arise in the future, we can revisit using tips from http://www.catch22.net/tuts/uniscribe-mysteries)
     Dim dummyScriptControl As SCRIPT_CONTROL
     Dim dummyScriptState As SCRIPT_STATE
+    dummyScriptControl.uDefaultLanguage = LANG_USER_DEFAULT
     
     Dim numItemsFilled As Long
     
@@ -321,7 +327,7 @@ Public Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
         'Double the allotted cache size and try again
         numScriptItems = numScriptItems * 2
         ReDim m_ScriptItemsCache(0 To numScriptItems - 1) As SCRIPT_ITEM
-        unsReturn = ScriptItemize(StrPtr(srcString), Len(srcString), numScriptItems, ByVal 0&, ByVal 0&, VarPtr(m_ScriptItemsCache(0)), numItemsFilled)
+        unsReturn = ScriptItemize(StrPtr(srcString), Len(srcString), numScriptItems, VarPtr(dummyScriptControl), VarPtr(dummyScriptState), VarPtr(m_ScriptItemsCache(0)), numItemsFilled)
         
     Loop
     
@@ -381,9 +387,9 @@ Public Function Step2_ScriptLayout() As Boolean
     'Run embedding levels were automatically calculated by Step 1.  These values are buried deep within the item cache, unfortunately,
     ' so we need to retrieve them and store them in their own array.
     '
-    'Note also that this structure must be DWORD-aligned, to avoid access issues
+    'Also, I'm not sure if this structure needs to be DWORD-aligned, but it doesn't hurt to enforce it
     Dim elBound As Long
-    elBound = ((numOfRuns * 4) + 3) \ 4
+    elBound = (numOfRuns + 3) And &HFFFFFFFC
     
     Dim embeddingLevels() As Byte
     ReDim embeddingLevels(0 To elBound - 1) As Byte
@@ -402,11 +408,18 @@ Public Function Step2_ScriptLayout() As Boolean
         'Technically the bitfield contains 5 bits for potential values on the range [0, 31].  But there are really only values on the
         ' range [0, 3], basically every combination of LTR and RTL text embedded within each other.  As such, we only need to retrieve
         ' the bottom 2 of 5 bytes.
-        tmpFlag = getBitFlag(3, tmpPBLevel)
+        tmpFlag = getBitFlag(0, tmpPBLevel)
         If tmpFlag Then extractedPBLevel = 1 Else extractedPBLevel = 0
         
-        tmpFlag = getBitFlag(4, tmpPBLevel)
+        tmpFlag = getBitFlag(1, tmpPBLevel)
         If tmpFlag Then extractedPBLevel = extractedPBLevel + 2
+        
+        'Curious about the bidi levels we've extracted?  Display our analysis using this line of code:
+        'Debug.Print i & ": RTL marked as " & extractedPBLevel
+        
+        'As an additional confirmation, you can read the RTL bit from the SCRIPT_ANALYSIS portion of the item cache.
+        ' If the bidi level is marked as 1, this value should also be 1/TRUE.
+        'Debug.Print "RTL? " & CStr(getBitFlag(2, m_ScriptItemsCache(i).analysis.fBitFields2))
         
         'Store the calculated value in our embeddingLevels() result array
         embeddingLevels(i) = extractedPBLevel
@@ -427,7 +440,10 @@ Public Function Step2_ScriptLayout() As Boolean
     Dim unsReturn As HRESULT
     unsReturn = ScriptLayout(numOfRuns, VarPtr(embeddingLevels(0)), ptrToVLO, ptrToLVO)
     
-    'unsReturn = ScriptLayout(numOfRuns, VarPtr(embeddingLevels(0)), ByVal 0&, ByVal 0&)
+    'Debugging output can be helpful:
+    For i = 0 To numOfRuns - 1
+        Debug.Print i & ":" & m_VisualToLogicalOrder(i) & ":" & m_LogicalToVisualOrder(i)
+    Next i
     
     If unsReturn = S_OK Then
         
