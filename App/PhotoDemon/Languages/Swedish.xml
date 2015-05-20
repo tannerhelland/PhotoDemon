@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.37</langversion>
+<langversion>6.7.38</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -13836,11 +13836,11 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <!-- END text for VBP_ToolPanel_FancyText.frm-->
 
-<!-- BEGIN text for VBP_UniscribeInterface.bas -->
+<!-- BEGIN text for pdUniscribe.cls -->
 
-<!-- VBP_UniscribeInterface.bas contains 0 phrases. -->
+<!-- pdUniscribe.cls contains 0 phrases. -->
 
-<!-- END text for VBP_UniscribeInterface.bas-->
+<!-- END text for pdUniscribe.cls-->
 
 <!-- Automatic text extraction complete. -->
 

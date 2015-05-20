@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.37</langversion>
+<langversion>6.7.38</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -13832,11 +13832,11 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- END text for VBP_ToolPanel_FancyText.frm-->
 
-<!-- BEGIN text for VBP_UniscribeInterface.bas -->
+<!-- BEGIN text for pdUniscribe.cls -->
 
-<!-- VBP_UniscribeInterface.bas contains 0 phrases. -->
+<!-- pdUniscribe.cls contains 0 phrases. -->
 
-<!-- END text for VBP_UniscribeInterface.bas-->
+<!-- END text for pdUniscribe.cls-->
 
 <!-- Automatic text extraction complete. -->
 

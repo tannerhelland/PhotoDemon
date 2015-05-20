@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Glyph Collection Interface
 'Copyright 2015-2015 by Tanner Helland
 'Created: 27/April/15
-'Last updated: 27/April/15
-'Last update: initial build
+'Last updated: 19/May/15
+'Last update: overhaul of the Uniscribe interface to use a class system (m_Uniscribe is the relevant instance)
 'Dependencies: pdGraphicsPath (for storing GDI+ path data after translating glyphs from TrueType or OpenType format)
 '
 'This class is currently under heavy construction.
@@ -24,8 +24,7 @@ Attribute VB_Exposed = False
 'The goal of this class is to manage the creation and storage of individual text glyphs.  These glyphs are used by PD's text tool
 ' (and its corresponding class, pdTextRenderer) to enable advanced text features.
 '
-'Still TODO:
-' - Enable hinting control via toggling GGO_UNHINTED.  (Right now, unhinted glyphs are explicitly specified.)
+'This class leans HEAVILY on pdUniscribe, PhotoDemon's comprehensive Uniscribe interface.  The relevant internal instance is m_Uniscribe.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -98,34 +97,48 @@ Private Declare Function GetCharWidthFloat Lib "gdi32" Alias "GetCharWidthFloatW
 Private Const GGO_METRICS As Long = 0
 Private Const GGO_NATIVE As Long = 2
 Private Const GGO_BEZIER As Long = 3
+Private Const GGO_GLYPH_INDEX As Long = &H80
 Private Const GGO_UNHINTED As Long = &H100
 Private Const GDI_ERROR As Long = &HFFFF
 Private Declare Function GetGlyphOutline Lib "gdi32" Alias "GetGlyphOutlineW" (ByVal hDC As Long, ByVal uChar As Long, ByVal uFormat As Long, ByRef lpgm As GLYPHMETRICS, ByVal cbBuffer As Long, ByVal ptrToBuffer As Long, ByRef lpmat2 As MAT2) As Long
 
-'This type is the minimum amount of data required to properly store and render a given glyph.  The pdGraphicsPath instance
+'This type is the minimum amount of data required to properly store and render a given glyph outline.  The pdGraphicsPath instance
 ' will be filled with a corresponding GDI+ GraphicsPath, assuming translation was successful.
-Private Type pdGlyph
-    charCode As Long                'Unicode entry point of this glyph
-    gMetrics As GLYPHMETRICS        'Copy of the GLYPHMETRICS struct returned by GetGlyphMetrics
+' (TODO: trim unneeded data from this struct, as we've replaced various pieces of GDI data with Uniscribe.)
+Private Type pdGlyphOutline
+    glyphIndex As Long              'Index of the current glyph inside this font.  This is not guaranteed to have a 1:1 mapping to character codes!
+                                    ' Note also that PD no longer stores character code values, as they are not relevant during rendering.
     glyphPath As pdGraphicsPath     'GDI+ GraphicsPath wrapper containing the fully translated font outline
-    charIsWhiteSpace As Boolean     'If this character has no drawable glyph (e.g. " "), this will be set to TRUE.
-    whiteSpaceWidth As Single       'For whitespace characters, we must retrieve their width using other means (as the glyph isn't helpful!)
-    charABCWidth As ABCFLOAT
+    gMetrics As GLYPHMETRICS        'Copy of the GLYPHMETRICS struct returned by GetGlyphMetrics
+    hasOutline As Boolean           'If an outline is successfully retrieved and parsed, this will be set to TRUE.  If a value cannot be parsed
+                                    ' (whitespace chars, control chars, etc), this will be FALSE.
 End Type
 
-'Current glyph collection.  Because glyph generation is very expensive, we store glyphs as we translate them.  If the font
+'Current glyph outline collection.  Because glyph generation is very expensive, we store glyphs as we translate them.  If the font
 ' doesn't change, we can reuse glyphs from past calculations.
-Private m_GlyphCollection() As pdGlyph
+Private m_GlyphOutlines() As pdGlyphOutline
+
+'New glyph collection format, using Uniscribe for generation
+Private m_Glyphs() As pdGlyphUniscribe
 
 'Current number of generated glyphs.  This does not correspond to the UBound() of the glyph collection.
 Private m_NumOfGlyphs As Long
 Private Const INITIAL_GLYPH_COLLECTION_SIZE As Long = 128
+
+'Current number of generated glyph outlines.  This does not correspond to the UBound() of the glyph outline collection,
+' or to m_NumOfGlyphs, above.  PD only stores one copy of each UNIQUE glyph outline, whereas m_Glyphs() stores positioning
+' data on each occurrence of each glyph.
+Private m_NumOfGlyphOutlines As Long
 
 'Generic identity matrix, as required by GetGlyphOutline
 Private m_IdentityMatrix As MAT2
 
 'Tiny temporary DIB, created once and cached; the target font is selected into this DIB prior to retrieving glyph outlines.
 Private m_tmpDIB As pdDIB
+
+'Uniscribe interface.  Uniscribe is used for pretty much all script itemizing, shaping, layout and placement (although we do our
+' own glyph rendering).
+Private m_Uniscribe As pdUniscribe
 
 'Metrics for the current font.  These are crucial because font path coordinate are all relative to the font baseline, but when rendering
 ' the path to the screen, we need to orient the points against the top-left corner of the image.  It's faster to apply this coordinate
@@ -151,6 +164,9 @@ Public Sub notifyOfGDIFontChoice(ByVal srcGDIFontHandle As Long)
         'Copy the font handle
         m_GDIFont = srcGDIFontHandle
         
+        'Notify our Uniscribe manager that it needs to generate a new script cache, too
+        m_Uniscribe.updateFont
+        
     End If
     
     'Select the font into our temporary DC.  (Many GDI functions operate on DCs instead of hFonts, so this is important.)
@@ -172,28 +188,44 @@ End Sub
 'Given a source string, add all glyphs from that string to our current collection
 Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal useHinting As Boolean = False) As Boolean
     
-    Dim curChar As Long
+    Dim curGlyphIndex As Long
     Dim charAlreadyExists As Boolean
     Dim rawGlyphBytes() As Long
     Dim glyphAdded As Boolean
     
-    'Start iterating through the string, one character at a time.
+    'Use Uniscribe to process a list of required glyphs and their relevant positions.
+    m_Uniscribe.Step1_ScriptItemize srcString
+    m_Uniscribe.Step2_ScriptLayout
+    m_Uniscribe.Step3_ScriptShape m_tmpDIB.getDIBDC
+    m_Uniscribe.Step4_ScriptPlace m_tmpDIB.getDIBDC
+    
+    'Retrieve a copy of Uniscribe's data in a PD-friendly format.
+    m_NumOfGlyphs = m_Uniscribe.getCopyOfGlyphCache(m_Glyphs)
+    
+    'Curious about what pdUniscribe returns?  Uncomment this line for a nice intro.
+    'm_Uniscribe.printUniscribeDebugInfo
+    
+    'Start iterating through the glyph collection returned by Uniscribe.  For any glyph indices that do not exist in our current
+    ' outline collection, retrieve a raw outline buffer and convert it to a pdGraphicsPath object.
+    '
+    'IMPORTANT NOTE!  The glyph collection and glyph outline collections do *NOT* have a 1:1 mapping.  Because glyph retrieval
+    ' is expensive, we only store one copy of each unique glyph outline.  So for the text AAAaaa, the m_Glyphs collection
+    ' will have six entries (one for each glyph), while the m_GlyphOutline collection will have two entries (one for each
+    ' *UNIQUE* glyph).  Mapping between the two arrays is done by matching .GlyphIndex values in the respective structs.
     Dim i As Long, j As Long
-    For i = 0 To Len(srcString) - 1
+    For i = 0 To m_NumOfGlyphs - 1
         
         charAlreadyExists = False
         glyphAdded = False
+        curGlyphIndex = m_Glyphs(i).glyphIndex
         
-        'Retrieve the current character code
-        curChar = AscW(Mid$(srcString, i + 1, 1))
-        
-        'See if the code already exists in our collection
+        'See if this glyph index already exists in our outline collection
         If m_NumOfGlyphs > 0 Then
             
-            For j = 0 To m_NumOfGlyphs - 1
+            For j = 0 To m_NumOfGlyphOutlines - 1
                 
                 'If this glyph already exists, mark it and exit immediately
-                If curChar = m_GlyphCollection(j).charCode Then
+                If curGlyphIndex = m_GlyphOutlines(j).glyphIndex Then
                     charAlreadyExists = True
                     Exit For
                 End If
@@ -205,108 +237,91 @@ Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal u
         'If the current character isn't in our collection, retrieve it now
         If (Not charAlreadyExists) Then
             
-            'Store this character code
-            m_GlyphCollection(m_NumOfGlyphs).charCode = curChar
+            'Mark the glyph index (index into the *font file*), so we can match individual glyphs in the string to this outline
+            m_GlyphOutlines(m_NumOfGlyphOutlines).glyphIndex = curGlyphIndex
             
-            'Start by retrieving the raw glyph buffer.
-            If getRawGlyphBuffer(curChar, rawGlyphBytes, useHinting) Then
+            'Retrieve the raw glyph buffer.  This step will fail for any non-display characters (e.g. control chars, like linefeeds, as well
+            ' as whitespace characters like spaces or tabs), so failure is not a bad thing.  What makes handling tricky is that failure can
+            ' occur at a lot of different places; the function itself may fail, or it may succeed but return a zero-length buffer, or it may
+            ' succeed but return a blank outline (an empty square or square with an x through it).  We don't care about *why* it fails,
+            ' just that it gives us a useful outline or not!
+            If getRawGlyphBuffer(curGlyphIndex, rawGlyphBytes, useHinting) Then
                 
                 'With the raw buffer retrieved, we can now walk the byte array and retrieve individual line and curve metrics.
                 
-                'Before doing that, see if the buffer size is non-zero.  This is valid output for whitespace characters (e.g. spaces).
+                'Before doing that, see if the buffer size is non-zero.  A zero-size buffer is valid output for whitespace
+                ' characters (e.g. spaces).
                 If UBound(rawGlyphBytes) > 0 Then
                     
                     'Debug.Print ChrW$(curChar) & ":" & UBound(rawGlyphBytes)
                     
                     'Proceed with parsing this glyph
-                    If parseRawGlyphBuffer(rawGlyphBytes, m_GlyphCollection(m_NumOfGlyphs).glyphPath) Then
+                    If parseRawGlyphBuffer(rawGlyphBytes, m_GlyphOutlines(m_NumOfGlyphOutlines).glyphPath) Then
                         
-                        'Some missing glyphs are supplied with a box shape.  Check for a few obvious ones and replace them now.
-                        If curChar = AscW(vbLf) Then
-                            m_GlyphCollection(m_NumOfGlyphs).charIsWhiteSpace = True
-                        Else
-                        
-                            'Clear the whitespace flag and note that this glyph is valid.
-                            m_GlyphCollection(m_NumOfGlyphs).charIsWhiteSpace = False
-                            
-                            'Want to see this character's GLYPHMETRICS struct?  Uncomment the block below
-                            'With m_GlyphCollection(m_NumOfGlyphs).gMetrics
-                            '    Debug.Print "CHAR: " & ChrW$(curChar) & ", " & .gmBlackBoxX & ", " & .gmBlackBoxY & ", " & .gmCellIncX & ", " & .gmCellIncY & ", " & .gmptGlyphOrigin.x & ", " & .gmptGlyphOrigin.y
-                            'End With
-                            
-                        End If
-                        
-                        'While we're here, retrieve an ABC width for this glyph
-                        Font_Management.getABCWidthOfGlyph m_tmpDIB.getDIBDC, curChar, m_GlyphCollection(m_NumOfGlyphs).charABCWidth, True
+                        'This glyph exists in the font and has some kind of drawable shape.  Yay!
+                        m_GlyphOutlines(m_NumOfGlyphOutlines).hasOutline = True
                         
                         'Note that this glyph is valid; this will move the collection pointer to the next entry in the stack
                         glyphAdded = True
                         
                     'Glyph buffer parsing failed
                     Else
+                    
                         #If DEBUGMODE = 1 Then
-                            pdDebug.LogAction "WARNING!  parseRawGlyphBuffer failed for character code " & curChar
+                            pdDebug.LogAction "WARNING!  parseRawGlyphBuffer failed for glyph index " & curGlyphIndex
                         #End If
                         
+                        m_GlyphOutlines(m_NumOfGlyphOutlines).hasOutline = False
                         glyphAdded = False
                         
                     End If
                 
-                'This is likely a whitespace character.
+                'This is likely a control character.  We still add it (to avoid attempted parsing on future attempts), but we
+                ' specifically note that it doesn't have a renderable outline.
                 Else
                     
-                    'Debug.Print "FAILURE: " & ChrW$(curChar) & ":" & UBound(rawGlyphBytes)
+                    'Debug.Print "Zero-length glyph buffer: " & curGlyphIndex & ":" & UBound(rawGlyphBytes)
                     
-                    'Mark the whitespace flag, retrieve a default width, an ABC width, and note that this glyph is valid.
-                    m_GlyphCollection(m_NumOfGlyphs).charIsWhiteSpace = True
-                    m_GlyphCollection(m_NumOfGlyphs).whiteSpaceWidth = m_TextMetrics.tmAveCharWidth
-                    Font_Management.getABCWidthOfGlyph m_tmpDIB.getDIBDC, curChar, m_GlyphCollection(m_NumOfGlyphs).charABCWidth, True
+                    m_GlyphOutlines(m_NumOfGlyphOutlines).hasOutline = False
                     glyphAdded = True
                 
                 End If
             
-            'Raw glyph buffer retrieval failed.  This is a valid return for some whitespace characters.
+            'Raw glyph buffer retrieval failed.  This is a valid return for some control characters.  To avoid future attempts at
+            ' parsing an outline, we *still* add it to the collection, but we note that it isn't renderable.
             Else
                 
-                'Mark the whitespace flag, retrieve a default width, and note that this glyph is valid.
-                m_GlyphCollection(m_NumOfGlyphs).charIsWhiteSpace = True
-                m_GlyphCollection(m_NumOfGlyphs).whiteSpaceWidth = getWidthOfCharCode(curChar)
+                'Debug.Print "getRawGlyphBuffer full-on failed: " & curGlyphIndex
+                
+                m_GlyphOutlines(m_NumOfGlyphOutlines).hasOutline = False
                 glyphAdded = True
                 
             End If
             
             'If a glyph was successfully added to the collection, increment the current glyph count and resize the collection as necessary.
             If glyphAdded Then
-                m_NumOfGlyphs = m_NumOfGlyphs + 1
-                If m_NumOfGlyphs > UBound(m_GlyphCollection) Then ReDim Preserve m_GlyphCollection(0 To m_NumOfGlyphs * 2 - 1) As pdGlyph
+                m_NumOfGlyphOutlines = m_NumOfGlyphOutlines + 1
+                If m_NumOfGlyphOutlines > UBound(m_GlyphOutlines) Then ReDim Preserve m_GlyphOutlines(0 To m_NumOfGlyphOutlines * 2 - 1) As pdGlyphOutline
             End If
             
         '(End "If Not charAlreadyExists")
         End If
         
     Next i
-    
-    'TESTING ONLY!  Test our Uniscribe wrappers to see what values they return.
-    Uniscribe_Interface.Step1_ScriptItemize srcString
-    Uniscribe_Interface.Step2_ScriptLayout
-    Uniscribe_Interface.Step3_ScriptShape m_tmpDIB.getDIBDC
-    Uniscribe_Interface.Step4_ScriptPlace m_tmpDIB.getDIBDC
-    Uniscribe_Interface.freeUniscribeCaches
-    printDebugInfo
-    
+        
     'Before exiting, remove the active font into our temporary "testing" DC
     SelectObject m_tmpDIB.getDIBDC, m_oldFontHandle
 
 End Function
 
 'Given a Unicode entry point, fill a buffer with the raw output of GetGlyphOutline
-Private Function getRawGlyphBuffer(ByVal curChar As Long, ByRef dstBuffer() As Long, Optional ByVal useHinting As Boolean = False) As Boolean
+Private Function getRawGlyphBuffer(ByVal curGlyphIndex As Long, ByRef dstBuffer() As Long, Optional ByVal useHinting As Boolean = False) As Boolean
     
     'We could start by retrieving glyph metrics, which are plugged directly into the current glyph entry in the master collection.
     ' (These metrics are separate from the glyph shape; we use them to control inter-character spacing, among other things.)
     
     'To grab these, use the following line of code:
-    'ggoReturn = GetGlyphOutline(m_tmpDIB.getDIBDC, curChar, GGO_METRICS, m_GlyphCollection(m_NumOfGlyphs).gMetrics, 0, 0, m_IdentityMatrix)
+    'ggoReturn = GetGlyphOutline(m_tmpDIB.getDIBDC, curChar, GGO_METRICS, m_glyphoutlines(m_NumOfGlyphs).gMetrics, 0, 0, m_IdentityMatrix)
     
     'The reason I don't do this is that the metrics will be retrieved anyway by our next call, which requests length of the raw
     ' glyph buffer.  For performance reasons, we kill two birds with one stone on that call.
@@ -314,14 +329,14 @@ Private Function getRawGlyphBuffer(ByVal curChar As Long, ByRef dstBuffer() As L
     'Prior to retrieving metrics, set the hinting flag.  Note that hinting is optional, and its presence (or lack thereof)
     ' has consequences for glyph shape and positioning.
     Dim formatFlags As Long
-    formatFlags = GGO_BEZIER
+    formatFlags = GGO_BEZIER Or GGO_GLYPH_INDEX
     If (Not useHinting) Then formatFlags = formatFlags Or GGO_UNHINTED
     
     'Next, we want to retrieve the required size of the glyph shape buffer.  FYI, for complex glyphs, this can be fairly large.
     ' Note also that we explicitly request bezier curve format.  This makes our subsequent parsing much easier, and improves the
     ' output fidelity of OpenType fonts.
     Dim ggoReturn As Long, byteSizeOfBuffer As Long
-    ggoReturn = GetGlyphOutline(m_tmpDIB.getDIBDC, curChar, formatFlags, m_GlyphCollection(m_NumOfGlyphs).gMetrics, 0, 0, m_IdentityMatrix)
+    ggoReturn = GetGlyphOutline(m_tmpDIB.getDIBDC, curGlyphIndex, formatFlags, m_GlyphOutlines(m_NumOfGlyphOutlines).gMetrics, 0, 0, m_IdentityMatrix)
     
     'ggoReturn should be > 0, which tells us the required size of the destination buffer.
     If ggoReturn <= 0 Then
@@ -344,7 +359,7 @@ Private Function getRawGlyphBuffer(ByVal curChar As Long, ByRef dstBuffer() As L
     ReDim dstBuffer(0 To (byteSizeOfBuffer \ 4) - 1) As Long
     
     'Now we can retrieve the actual data buffer!
-    ggoReturn = GetGlyphOutline(m_tmpDIB.getDIBDC, curChar, formatFlags, m_GlyphCollection(m_NumOfGlyphs).gMetrics, byteSizeOfBuffer, VarPtr(dstBuffer(0)), m_IdentityMatrix)
+    ggoReturn = GetGlyphOutline(m_tmpDIB.getDIBDC, curGlyphIndex, formatFlags, m_GlyphOutlines(m_NumOfGlyphOutlines).gMetrics, byteSizeOfBuffer, VarPtr(dstBuffer(0)), m_IdentityMatrix)
     
     'Per MSDN, successful queries return a value > 0
     getRawGlyphBuffer = CBool(ggoReturn > 0)
@@ -550,81 +565,79 @@ End Function
 
 'After assembling a full glyph collection, this function can be called to generate a totally complete graphics path, with all
 ' characters laid out according to the passed rect.
-Friend Function assembleCompositePath(ByVal srcString As String, ByRef dstPath As pdGraphicsPath, ByRef boundingRect As RECTF) As Boolean
+Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef boundingRect As RECTF) As Boolean
     
     'Initialize the destination path as necessary
     If dstPath Is Nothing Then Set dstPath = New pdGraphicsPath
     
     'Only proceed if the source string is non-empty
-    If Len(srcString) <> 0 Then
+    If m_NumOfGlyphs > 0 Then
         
         'Before processing the string, let's do some preprocessing to it.
         
+        'TODO: move all preprocessing earlier in the chain, so we don't have to deal with character-specific data
+        ' during path assembly.
+        
         'First, normalize all linebreaks to vbLf
-        If InStr(1, srcString, vbCrLf, vbBinaryCompare) <> 0 Then srcString = Replace$(srcString, vbCrLf, vbLf)
-        If InStr(1, srcString, vbCr, vbBinaryCompare) <> 0 Then srcString = Replace$(srcString, vbCr, vbLf)
+        'If InStr(1, srcString, vbCrLf, vbBinaryCompare) <> 0 Then srcString = Replace$(srcString, vbCrLf, vbLf)
+        'If InStr(1, srcString, vbCr, vbBinaryCompare) <> 0 Then srcString = Replace$(srcString, vbCr, vbLf)
         
         'Add more in the future, perhaps...?
         
-        Dim i As Long, GlyphIndex As Long, srcPathHandle As Long
+        Dim i As Long, curGlyph As Long, curGlyphOutline As Long, srcPathHandle As Long
         Dim xOffset As Single, yOffset As Single
         yOffset = 0
         xOffset = 0
         
+        Dim glyphIsRenderable As Boolean
+        
         'Start iterating through the source string, one character at a time.
-        For i = 0 To Len(srcString) - 1
+        For i = 0 To m_NumOfGlyphs - 1
             
             'Start by retrieving this glyph index
-            GlyphIndex = getGlyphIndex(AscW(Mid$(srcString, i + 1, 1)))
+            curGlyph = i
+            curGlyphOutline = getGlyphOutlineIndex(curGlyph)
             
-            If GlyphIndex >= 0 Then
-                
-                'Retrieve a handle to this glyph's path.  If the handle is zero, there are two possible explanations:
-                ' 1) The glyph is a whitespace character
-                ' 2) The glyph couldn't be generated
-                
-                '(1) is common, and (2) should never happen.  Process accordingly.
-                If m_GlyphCollection(GlyphIndex).charIsWhiteSpace Then
+            glyphIsRenderable = CBool(curGlyphOutline >= 0)
+            
+            'If this glyph exists in our cache, we need to see if a path was successfully generated.  Some whitespace characters
+            ' have no outline, so we don't render them directly - but we still need to process their spacing and size requirements.
+            If glyphIsRenderable Then glyphIsRenderable = m_GlyphOutlines(curGlyphOutline).hasOutline
+            
+            'If an outline exists for this glyph, render it now.
+            If glyphIsRenderable Then
                     
-                    'Line feeds are a special case of white space.
-                    If m_GlyphCollection(GlyphIndex).charCode = AscW(vbLf) Then
-                    
-                        yOffset = yOffset + m_TextMetrics.tmHeight + m_TextMetrics.tmExternalLeading
-                        xOffset = 0
-                    
-                    'For other whitespace chars, plug in a default space value
-                    Else
-                    
-                        'Add the manually retrieved glyph width to the running offset
-                        xOffset = xOffset + m_GlyphCollection(GlyphIndex).whiteSpaceWidth
-                        
-                    End If
-                    
-                Else
-                    
-                    'See if this glyph extends past the end of the line.  If it does, push us down to the next line.
-                    If xOffset + m_GlyphCollection(GlyphIndex).gMetrics.gmCellIncX > boundingRect.Width Then
-                        yOffset = yOffset + m_TextMetrics.tmHeight + m_TextMetrics.tmExternalLeading
-                        xOffset = 0
-                    End If
-                    
-                    'Add this glyph to the current path at the running x-offset
-                    
-                    'If this is the start of a line, look for characters that hang off the left side of the bounding box, and push them
-                    ' in-bounds.
-                    If xOffset = 0 Then
-                        If m_GlyphCollection(GlyphIndex).gMetrics.gmptGlyphOrigin.x < 0 Then xOffset = Abs(m_GlyphCollection(GlyphIndex).gMetrics.gmptGlyphOrigin.x)
-                    End If
-                    
-                    dstPath.addPath m_GlyphCollection(GlyphIndex).glyphPath, xOffset, yOffset
-                    
-                    'Add the glyph's width to the running x-direction offset.
-                    xOffset = xOffset + m_GlyphCollection(GlyphIndex).gMetrics.gmCellIncX
-                
+                'For now, implement a "poor man's" wordwrap so we can test line sizes.  (Basically, if this glyph extends past the end
+                ' of the line, push it down to the next line.)
+                If xOffset + m_Glyphs(curGlyph).AdvanceWidth > boundingRect.Width Then
+                    yOffset = yOffset + m_TextMetrics.tmHeight + m_TextMetrics.tmExternalLeading
+                    xOffset = 0
                 End If
                 
+                'Add this glyph to the current path at the running x-offset
+                
+                'If this is the start of a line, look for characters that hang off the left side of the bounding box, and push them
+                ' in-bounds.  (TODO, using Uniscribe to retrieve sizes.)
+                If xOffset = 0 Then
+                    'If m_GlyphOutlines(GlyphIndex).gMetrics.gmptGlyphOrigin.x < 0 Then xOffset = Abs(m_GlyphOutlines(GlyphIndex).gMetrics.gmptGlyphOrigin.x)
+                End If
+                
+                dstPath.addPath m_GlyphOutlines(curGlyphOutline).glyphPath, xOffset + m_Glyphs(curGlyph).GlyphOffset.du, yOffset + m_Glyphs(curGlyph).GlyphOffset.dv
+                
+                'Add the glyph's width to the running x-direction offset.
+                xOffset = xOffset + m_Glyphs(curGlyph).AdvanceWidth
+                
             Else
-                Debug.Print "for some reason, that glyph doesn't exist???"
+                
+                'This glyph is not renderable, meaning it's most likely whitespace or a control character.  Increment our current
+                ' position pointer, but don't actually draw anything to the screen.
+                xOffset = xOffset + m_Glyphs(curGlyph).AdvanceWidth
+                
+                'TODO!  Check for linefeeds and other control characters that need to be manually handled.
+                
+                'If debugging is desired:
+                'Debug.Print "WARNING!  Unmarked glyph received -- see why #" & curGlyphOutline & " doesn't show up in the cache!"
+                
             End If
             
         Next i
@@ -659,53 +672,57 @@ Private Function getWidthOfCharCode(ByVal srcCharCode As Long) As Single
     GetCharWidthFloat m_tmpDIB.getDIBDC, srcCharCode, srcCharCode, getWidthOfCharCode
 End Function
 
+'Given an index in m_Glyphs(), returning a matching glyph outline index from m_GlyphOutlines.  (Because outline assembly is expensive,
+' we only maintain one outline copy for each unique glyphs.)
+Private Function getGlyphOutlineIndex(ByVal origGlyphPosition As Long) As Long
+
+    Dim i As Long
+    For i = 0 To m_NumOfGlyphOutlines - 1
+        
+        If m_Glyphs(origGlyphPosition).glyphIndex = m_GlyphOutlines(i).glyphIndex Then
+            getGlyphOutlineIndex = i
+            Exit Function
+        End If
+        
+    Next i
+    
+    'If we made it here, the outline doesn't exist.  This shouldn't happen, but if it does, return -1.
+    getGlyphOutlineIndex = -1
+
+End Function
+
 'Reset the current glyph collection.  This forces all glyphs to be recreated from scratch, so use only if absolutely necessary.
 Public Sub resetGlyphCollection()
     
-    'If the glyph collection exists, manually wipe it
-    If m_NumOfGlyphs > 0 Then
+    'If the glyph outline collection exists, manually wipe it
+    If m_NumOfGlyphOutlines > 0 Then
         
         Dim i As Long
-        For i = 0 To m_NumOfGlyphs - 1
-            Set m_GlyphCollection(i).glyphPath = Nothing
+        For i = 0 To m_NumOfGlyphOutlines - 1
+            Set m_GlyphOutlines(i).glyphPath = Nothing
         Next i
         
     End If
     
-    'Resize the array to default values
+    'Resize all arrays to default values
     m_NumOfGlyphs = 0
-    ReDim m_GlyphCollection(0 To INITIAL_GLYPH_COLLECTION_SIZE - 1) As pdGlyph
+    m_NumOfGlyphOutlines = 0
+    ReDim m_GlyphOutlines(0 To INITIAL_GLYPH_COLLECTION_SIZE - 1) As pdGlyphOutline
+    ReDim m_Glyphs(0 To INITIAL_GLYPH_COLLECTION_SIZE - 1) As pdGlyphUniscribe
     
 End Sub
 
 'Return a copy of a path handle for an assembled glyph.  Returns 0 if no path data exists.  Note that 0 is valid output,
 ' as whitespace characters do not have glyphs (for most fonts, anyway).
-Public Function getGlyphPathHandle(ByVal GlyphIndex As Long) As Long
+'
+'TODO: fix this function to correctly map between glyph outlines and glyphs themselves!
+Public Function getGlyphPathHandle(ByVal glyphIndex As Long) As Long
     
-    If Not m_GlyphCollection(GlyphIndex).glyphPath Is Nothing Then
-        getGlyphPathHandle = m_GlyphCollection(GlyphIndex).glyphPath.getCopyOfPathHandle
+    If Not m_GlyphOutlines(glyphIndex).glyphPath Is Nothing Then
+        getGlyphPathHandle = m_GlyphOutlines(glyphIndex).glyphPath.getCopyOfPathHandle
     Else
         getGlyphPathHandle = 0
     End If
-    
-End Function
-
-'Given a Unicode entry point, return the matching glyph index.  Returns -1 if the glyph is missing from the current collection.
-Public Function getGlyphIndex(ByVal srcCharValue As Long) As Long
-    
-    'Start iterating through the glyph collection, looking for the matching value
-    Dim i As Long
-    For i = 0 To m_NumOfGlyphs - 1
-    
-        If srcCharValue = m_GlyphCollection(i).charCode Then
-            getGlyphIndex = i
-            Exit Function
-        End If
-    
-    Next i
-    
-    'If we made it all the way here, the glyph does not exist.  Oops?
-    getGlyphIndex = -1
     
 End Function
 
@@ -726,11 +743,17 @@ Private Sub Class_Initialize()
     Set m_tmpDIB = New pdDIB
     m_tmpDIB.createBlank 4, 4
     
+    'Create a Uniscribe interface
+    Set m_Uniscribe = New pdUniscribe
+    
 End Sub
 
 Private Sub Class_Terminate()
 
     'Manually release our glyph collection
     resetGlyphCollection
+    
+    'Manually release our Uniscribe interface
+    Set m_Uniscribe = Nothing
 
 End Sub

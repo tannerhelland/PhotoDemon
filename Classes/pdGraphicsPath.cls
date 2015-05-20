@@ -182,6 +182,12 @@ End Sub
 
 Public Sub addPath(ByRef srcGraphicsPath As pdGraphicsPath, Optional ByVal offsetX As Single = 0, Optional ByVal offsetY As Single = 0, Optional ByVal connectToLastPointOfThisPath As Boolean = False)
     
+    'Make sure the glyph exists
+    If srcGraphicsPath Is Nothing Then
+        Debug.Print "WARNING!  pdGraphicsPath.addPath was handed a non-existent path."
+        Exit Sub
+    End If
+    
     'If no offsets are specified, copy the path as-is
     If (offsetX = 0) And (offsetY = 0) Then
     
@@ -293,6 +299,12 @@ Public Function getCopyOfPathHandle() As Long
 End Function
 
 Public Sub cloneExistingPath(ByRef srcPath As pdGraphicsPath)
+    
+    'Make sure the source path exists!
+    If srcPath Is Nothing Then
+        Debug.Print "WARNING!  cloneExistingPath was passed a non-existent path - FIX THIS!"
+        Exit Sub
+    End If
     
     'If we already have a path, delete it
     If m_PathHandle <> 0 Then GdipDeletePath m_PathHandle
