@@ -440,6 +440,7 @@ Private Declare Function GdipDrawImageFX Lib "gdiplus" (ByVal mGraphics As Long,
 Private Declare Function GdipCreateMatrix2 Lib "gdiplus" (ByVal mM11 As Single, ByVal mM12 As Single, ByVal mM21 As Single, ByVal mM22 As Single, ByVal mDx As Single, ByVal mDy As Single, ByRef mMatrix As Long) As Long
 Private Declare Function GdipDeleteMatrix Lib "gdiplus" (ByVal mMatrix As Long) As Long
 Private Declare Function GdipSetPenLineCap Lib "gdiplus" Alias "GdipSetPenLineCap197819" (ByVal mPen As Long, ByVal startCap As LineCap, ByVal endCap As LineCap, ByVal dCap As DashCap) As Long
+Private Declare Function GdipSetPenLineJoin Lib "gdiplus" (ByVal mPen As Long, ByVal newLineJoin As LineJoin) As Long
 Private Declare Function GdipSetInterpolationMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal mInterpolation As InterpolationMode) As Long
 Private Declare Function GdipSetCompositingMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal mCompositingMode As CompositingMode) As Long
 Private Declare Function GdipSetCompositingQuality Lib "gdiplus" (ByVal mGraphics As Long, ByVal mCompositingQuality As CompositingQuality) As Long
@@ -482,8 +483,8 @@ Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal 
 Private Declare Function GdipSetImageAttributesToIdentity Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType) As Long
 
 'Transforms
-Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal Order As Long) As Long
-Private Declare Function GdipTranslateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal dX As Single, ByVal dY As Single, ByVal Order As Long) As Long
+Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal order As Long) As Long
+Private Declare Function GdipTranslateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal dX As Single, ByVal dY As Single, ByVal order As Long) As Long
 
 'Helpful GDI functions for moving image data between GDI and GDI+
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
@@ -935,14 +936,15 @@ Public Sub releaseGDIPlusGraphics(ByVal srcHandle As Long)
 End Sub
 
 'Return a persistent handle to a GDI+ pen.  This can be useful if many drawing operations are going to be applied with the same pen.
-Public Function getGDIPlusPenHandle(ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal customLinecap As LineCap = 0) As Long
+Public Function getGDIPlusPenHandle(ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal customLineCap As LineCap = LineCapFlat, Optional ByVal customLineJoin As LineJoin = LineJoinMiter) As Long
 
     'Create the requested pen
     Dim iPen As Long
     GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
     
-    'If a custom line cap was specified, apply it now
-    If customLinecap > 0 Then GdipSetPenLineCap iPen, customLinecap, customLinecap, 0&
+    'If a custom line cap or join was specified, apply it now
+    If customLineCap <> LineCapFlat Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
+    If customLineJoin <> LineJoinMiter Then GdipSetPenLineJoin iPen, customLineJoin
     
     'Return the handle
     getGDIPlusPenHandle = iPen
@@ -979,7 +981,7 @@ Public Sub GDIPlusDrawLine_Fast(ByVal dstGraphics As Long, ByVal srcPen As Long,
 End Sub
 
 'Use GDI+ to render a line, with optional color, opacity, and antialiasing
-Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLinecap As LineCap = LineCapFlat) As Boolean
+Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLineCap As LineCap = LineCapFlat) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
@@ -991,7 +993,7 @@ Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByV
     GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
     
     'If a custom line cap was specified, apply it now
-    If customLinecap > 0 Then GdipSetPenLineCap iPen, customLinecap, customLinecap, 0&
+    If customLineCap > 0 Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
     
     'Render the line
     GdipDrawLine iGraphics, iPen, x1, y1, x2, y2
@@ -1028,7 +1030,7 @@ Public Function GDIPlusDrawFilledShapeToDC(ByVal dstDC As Long, ByVal numOfPoint
 End Function
 
 'Use GDI+ to render the outline of a closed shape, with optional color, opacity, antialiasing, curvature, and more
-Public Function GDIPlusStrokePathToDC(ByVal dstDC As Long, ByVal numOfPoints As Long, ByVal ptrToFloatArray As Long, ByVal autoCloseShape As Boolean, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal useAA As Boolean = True, Optional ByVal strokeWidth As Single = 1, Optional ByVal customLinecap As LineCap = 0, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5) As Boolean
+Public Function GDIPlusStrokePathToDC(ByVal dstDC As Long, ByVal numOfPoints As Long, ByVal ptrToFloatArray As Long, ByVal autoCloseShape As Boolean, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal useAA As Boolean = True, Optional ByVal strokeWidth As Single = 1, Optional ByVal customLineCap As LineCap = 0, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
@@ -1040,7 +1042,7 @@ Public Function GDIPlusStrokePathToDC(ByVal dstDC As Long, ByVal numOfPoints As 
     GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), strokeWidth, UnitPixel, iPen
     
     'If a custom line cap was specified, apply it now
-    If customLinecap > 0 Then GdipSetPenLineCap iPen, customLinecap, customLinecap, 0&
+    If customLineCap > 0 Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
         
     'We have a few different options for drawing the shape, based on the passed parameters.
     If autoCloseShape Then
@@ -1068,7 +1070,7 @@ Public Function GDIPlusStrokePathToDC(ByVal dstDC As Long, ByVal numOfPoints As 
 End Function
 
 'Use GDI+ to render a hollow rectangle, with optional color, opacity, and antialiasing
-Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectRight As Single, ByVal rectBottom As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLinecap As LineCap = 0) As Boolean
+Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectRight As Single, ByVal rectBottom As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLineCap As LineCap = 0) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
@@ -1080,7 +1082,7 @@ Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft A
     GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
     
     'If a custom line cap was specified, apply it now
-    If customLinecap > 0 Then GdipSetPenLineCap iPen, customLinecap, customLinecap, 0&
+    If customLineCap > 0 Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
     
     'Render the rectangle
     GdipDrawRectangle iGraphics, iPen, rectLeft, rectTop, rectRight - rectLeft, rectBottom - rectTop
@@ -2115,7 +2117,7 @@ End Function
 
 'Given an arbitrary array of points, use GDI+ to find a bounding rect for the region created from the closed shape formed by the points.
 ' This function is self-managing, meaning it will delete any GDI+ objects it generates.
-Public Function getGDIPlusBoundingRectFromPoints(ByVal numOfPoints As Long, ByVal ptrFloatArray As Long, Optional ByVal useFillMode As GDIFillMode = FillModeAlternate, Optional ByVal useCurveMode As Boolean = False, Optional ByVal curveTension As Single, Optional ByVal penWidth As Single = 1#, Optional ByVal customLinecap As LineCap = 0) As RECTF
+Public Function getGDIPlusBoundingRectFromPoints(ByVal numOfPoints As Long, ByVal ptrFloatArray As Long, Optional ByVal useFillMode As GDIFillMode = FillModeAlternate, Optional ByVal useCurveMode As Boolean = False, Optional ByVal curveTension As Single, Optional ByVal penWidth As Single = 1#, Optional ByVal customLineCap As LineCap = 0) As RECTF
 
     'Start by creating a blank GDI+ path object.
     Dim gdipRegionHandle As Long, gdipPathHandle As Long
@@ -2134,7 +2136,7 @@ Public Function getGDIPlusBoundingRectFromPoints(ByVal numOfPoints As Long, ByVa
     GdipCreatePen1 fillQuadWithVBRGB(0, 255), penWidth, UnitPixel, iPen
     
     'If a custom line cap was specified, apply it now
-    If customLinecap > 0 Then GdipSetPenLineCap iPen, customLinecap, customLinecap, 0&
+    If customLineCap > 0 Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
     
     'Using the generated pen, calculate a bounding rect for the path as drawn with that pen
     GdipGetPathWorldBounds gdipPathHandle, getGDIPlusBoundingRectFromPoints, 0, 0& 'iPen

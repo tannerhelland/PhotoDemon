@@ -622,7 +622,7 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
                     'If m_GlyphOutlines(GlyphIndex).gMetrics.gmptGlyphOrigin.x < 0 Then xOffset = Abs(m_GlyphOutlines(GlyphIndex).gMetrics.gmptGlyphOrigin.x)
                 End If
                 
-                dstPath.addPath m_GlyphOutlines(curGlyphOutline).glyphPath, xOffset + m_Glyphs(curGlyph).GlyphOffset.du, yOffset + m_Glyphs(curGlyph).GlyphOffset.dv
+                dstPath.addPath m_GlyphOutlines(curGlyphOutline).glyphPath, xOffset + m_Glyphs(curGlyph).GlyphOffset.du, yOffset - m_Glyphs(curGlyph).GlyphOffset.dv
                 
                 'Add the glyph's width to the running x-direction offset.
                 xOffset = xOffset + m_Glyphs(curGlyph).AdvanceWidth
