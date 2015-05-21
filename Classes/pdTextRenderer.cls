@@ -1136,7 +1136,7 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     
     'For fun, you can also stroke the path outline with a pen, using the following code
     Dim gdipPen As Long
-    'gdipPen = GDI_Plus.getGDIPlusPenHandle(crColor, 255, 1)
+    gdipPen = GDI_Plus.getGDIPlusPenHandle(crColor, 255, 4, LineCapRound, LineJoinBevel)
         
     'Convert the input rect to a RECTF
     Dim boundingRect As RECTF

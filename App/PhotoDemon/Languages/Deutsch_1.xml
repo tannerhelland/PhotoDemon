@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.38</langversion>
+<langversion>6.7.39</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -13839,6 +13839,18 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <!-- pdUniscribe.cls contains 0 phrases. -->
 
 <!-- END text for pdUniscribe.cls-->
+
+<!-- BEGIN text for VBP_UniscribeInterface.bas -->
+
+<!-- VBP_UniscribeInterface.bas contains 0 phrases. -->
+
+<!-- END text for VBP_UniscribeInterface.bas-->
+
+<!-- BEGIN text for pdUniscribeItem.cls -->
+
+<!-- pdUniscribeItem.cls contains 0 phrases. -->
+
+<!-- END text for pdUniscribeItem.cls-->
 
 <!-- Automatic text extraction complete. -->
 

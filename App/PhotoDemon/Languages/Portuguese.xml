@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.38</langversion>
+<langversion>6.7.39</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -13841,6 +13841,18 @@ or os menus File> Open e File> Import.</translation>
 <!-- pdUniscribe.cls contains 0 phrases. -->
 
 <!-- END text for pdUniscribe.cls-->
+
+<!-- BEGIN text for VBP_UniscribeInterface.bas -->
+
+<!-- VBP_UniscribeInterface.bas contains 0 phrases. -->
+
+<!-- END text for VBP_UniscribeInterface.bas-->
+
+<!-- BEGIN text for pdUniscribeItem.cls -->
+
+<!-- pdUniscribeItem.cls contains 0 phrases. -->
+
+<!-- END text for pdUniscribeItem.cls-->
 
 <!-- Automatic text extraction complete. -->
 

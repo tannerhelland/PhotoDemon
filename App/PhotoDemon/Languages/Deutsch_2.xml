@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (rk)</langname>
-<langversion>6.7.39</langversion>
+<langversion>6.7.40</langversion>
 <langstatus>Nicht abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -13841,6 +13841,18 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <!-- pdUniscribe.cls contains 0 phrases. -->
 
 <!-- END text for pdUniscribe.cls-->
+
+<!-- BEGIN text for VBP_UniscribeInterface.bas -->
+
+<!-- VBP_UniscribeInterface.bas contains 0 phrases. -->
+
+<!-- END text for VBP_UniscribeInterface.bas-->
+
+<!-- BEGIN text for pdUniscribeItem.cls -->
+
+<!-- pdUniscribeItem.cls contains 0 phrases. -->
+
+<!-- END text for pdUniscribeItem.cls-->
 
 <!-- Automatic text extraction complete. -->
 
