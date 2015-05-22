@@ -3,9 +3,9 @@ Attribute VB_Name = "Icon_and_Cursor_Handler"
 'PhotoDemon Icon and Cursor Handler
 'Copyright 2012-2015 by Tanner Helland
 'Created: 24/June/12
-'Last updated: 17/February/15
-'Last updated by: Raj
-'Last update: Added an icon for "Clear Recent Macros" menu
+'Last updated: 22/Tanner/15
+'Last updated by: Tanner
+'Last update: Shuffle all icons to account for changes to the Adjustments menu
 '
 'Because VB6 doesn't provide many mechanisms for working with icons, I've had to manually add a number of icon-related
 ' functions to PhotoDemon.  First is a way to add icons/bitmaps to menus, as originally written by Leandro Ascierto.
@@ -326,63 +326,64 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
     addMenuIcon "COLORBALANCE", 6, 5    'Color balance
     addMenuIcon "CURVES", 6, 6          'Curves
     addMenuIcon "LEVELS", 6, 7          'Levels
-    addMenuIcon "VIBRANCE", 6, 8        'Vibrance
-    addMenuIcon "WHITEBAL", 6, 9        'White Balance
+    addMenuIcon "SHDWHGHLGHT", 6, 8     'Shadow/highlight
+    addMenuIcon "VIBRANCE", 6, 9        'Vibrance
+    addMenuIcon "WHITEBAL", 6, 10       'White Balance
        
     'Channels
-    addMenuIcon "CHANNELMIX", 6, 11    'Channels top-level
-        addMenuIcon "CHANNELMIX", 6, 11, 0   'Channel mixer
-        addMenuIcon "RECHANNEL", 6, 11, 1    'Rechannel
-        addMenuIcon "CHANNELMAX", 6, 11, 3   'Channel max
-        addMenuIcon "CHANNELMIN", 6, 11, 4   'Channel min
-        addMenuIcon "COLORSHIFTL", 6, 11, 6  'Shift Left
-        addMenuIcon "COLORSHIFTR", 6, 11, 7  'Shift Right
+    addMenuIcon "CHANNELMIX", 6, 12    'Channels top-level
+        addMenuIcon "CHANNELMIX", 6, 12, 0   'Channel mixer
+        addMenuIcon "RECHANNEL", 6, 12, 1    'Rechannel
+        addMenuIcon "CHANNELMAX", 6, 12, 3   'Channel max
+        addMenuIcon "CHANNELMIN", 6, 12, 4   'Channel min
+        addMenuIcon "COLORSHIFTL", 6, 12, 6  'Shift Left
+        addMenuIcon "COLORSHIFTR", 6, 12, 7  'Shift Right
             
     'Color
-    addMenuIcon "HSL", 6, 12           'Color balance
-        addMenuIcon "COLORBALANCE", 6, 12, 0 'Color balance
-        addMenuIcon "WHITEBAL", 6, 12, 1     'White Balance
-        addMenuIcon "HSL", 6, 12, 3          'HSL adjustment
-        addMenuIcon "TEMPERATURE", 6, 12, 4  'Temperature
-        addMenuIcon "TINT", 6, 12, 5         'Tint
-        addMenuIcon "VIBRANCE", 6, 12, 6     'Vibrance
-        addMenuIcon "GRAYSCALE", 6, 12, 8    'Black and white
-        addMenuIcon "COLORIZE", 6, 12, 9     'Colorize
-        addMenuIcon "REPLACECLR", 6, 12, 10  'Replace color
-        addMenuIcon "SEPIA", 6, 12, 11       'Sepia
+    addMenuIcon "HSL", 6, 13           'Color balance
+        addMenuIcon "COLORBALANCE", 6, 13, 0 'Color balance
+        addMenuIcon "WHITEBAL", 6, 13, 1     'White Balance
+        addMenuIcon "HSL", 6, 13, 3          'HSL adjustment
+        addMenuIcon "TEMPERATURE", 6, 13, 4  'Temperature
+        addMenuIcon "TINT", 6, 13, 5         'Tint
+        addMenuIcon "VIBRANCE", 6, 13, 6     'Vibrance
+        addMenuIcon "GRAYSCALE", 6, 13, 8    'Black and white
+        addMenuIcon "COLORIZE", 6, 13, 9     'Colorize
+        addMenuIcon "REPLACECLR", 6, 13, 10  'Replace color
+        addMenuIcon "SEPIA", 6, 13, 11       'Sepia
     
     'Histogram
-    addMenuIcon "HISTOGRAM", 6, 13      'Histogram top-level
-        addMenuIcon "HISTOGRAM", 6, 13, 0     'Display Histogram
-        addMenuIcon "EQUALIZE", 6, 13, 2      'Equalize
-        addMenuIcon "STRETCH", 6, 13, 3       'Stretch
+    addMenuIcon "HISTOGRAM", 6, 14      'Histogram top-level
+        addMenuIcon "HISTOGRAM", 6, 14, 0     'Display Histogram
+        addMenuIcon "EQUALIZE", 6, 14, 2      'Equalize
+        addMenuIcon "STRETCH", 6, 14, 3       'Stretch
     
     'Invert
-    addMenuIcon "INVERT", 6, 14         'Invert top-level
-        addMenuIcon "INVCMYK", 6, 14, 0     'Invert CMYK
-        addMenuIcon "INVHUE", 6, 14, 1       'Invert Hue
-        addMenuIcon "INVRGB", 6, 14, 2       'Invert RGB
-        addMenuIcon "INVCOMPOUND", 6, 14, 4  'Compound Invert
+    addMenuIcon "INVERT", 6, 15         'Invert top-level
+        addMenuIcon "INVCMYK", 6, 15, 0     'Invert CMYK
+        addMenuIcon "INVHUE", 6, 15, 1       'Invert Hue
+        addMenuIcon "INVRGB", 6, 15, 2       'Invert RGB
+        addMenuIcon "INVCOMPOUND", 6, 15, 4  'Compound Invert
         
     'Lighting
-    addMenuIcon "LIGHTING", 6, 15       'Lighting top-level
-        addMenuIcon "BRIGHT", 6, 15, 0       'Brightness/Contrast
-        addMenuIcon "CURVES", 6, 15, 1       'Curves
-        addMenuIcon "GAMMA", 6, 15, 2        'Gamma Correction
-        addMenuIcon "LEVELS", 6, 15, 3       'Levels
-        addMenuIcon "SHDWHGHLGHT", 6, 15, 4  'Shadow/Highlight
+    addMenuIcon "LIGHTING", 6, 16       'Lighting top-level
+        addMenuIcon "BRIGHT", 6, 16, 0       'Brightness/Contrast
+        addMenuIcon "CURVES", 6, 16, 1       'Curves
+        addMenuIcon "GAMMA", 6, 16, 2        'Gamma Correction
+        addMenuIcon "LEVELS", 6, 16, 3       'Levels
+        addMenuIcon "SHDWHGHLGHT", 6, 16, 4  'Shadow/Highlight
         
     'Monochrome
-    addMenuIcon "MONOCHROME", 6, 16      'Monochrome
-        addMenuIcon "COLORTOMONO", 6, 16, 0   'Color to monochrome
-        addMenuIcon "MONOTOCOLOR", 6, 16, 1   'Monochrome to grayscale
+    addMenuIcon "MONOCHROME", 6, 17      'Monochrome
+        addMenuIcon "COLORTOMONO", 6, 17, 0   'Color to monochrome
+        addMenuIcon "MONOTOCOLOR", 6, 17, 1   'Monochrome to grayscale
         
     'Photography
-    addMenuIcon "PHOTOFILTER", 6, 17      'Photography top-level
-        addMenuIcon "EXPOSURE", 6, 17, 0     'Exposure
-        addMenuIcon "HDR", 6, 17, 1          'HDR
-        addMenuIcon "PHOTOFILTER", 6, 17, 2  'Photo filters
-        addMenuIcon "SPLITTONE", 6, 17, 3    'Split-toning
+    addMenuIcon "PHOTOFILTER", 6, 18      'Photography top-level
+        addMenuIcon "EXPOSURE", 6, 18, 0     'Exposure
+        addMenuIcon "HDR", 6, 18, 1          'HDR
+        addMenuIcon "PHOTOFILTER", 6, 18, 2  'Photo filters
+        addMenuIcon "SPLITTONE", 6, 18, 3    'Split-toning
     
     
     'Effects (Filters) Menu
