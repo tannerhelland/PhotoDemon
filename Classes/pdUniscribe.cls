@@ -41,7 +41,7 @@ Option Explicit
 ' for the kinds of tasks we tackle.
 Private Declare Function ScriptApplyDigitSubstitution Lib "usp10" (psds As SCRIPT_DIGITSUBSTITUTE, psc As SCRIPT_CONTROL, pss As SCRIPT_STATE) As Long
 Private Declare Function ScriptApplyLogicalWidth Lib "usp10" (piDx() As Long, ByVal cChars As Long, ByVal cGlyphs As Long, pwLogClust() As Integer, psva As SCRIPT_VISATTR, piAdvance() As Long, psa As SCRIPT_ANALYSIS, pABC As ABC, piJustify As Long) As Long
-Private Declare Function ScriptBreak Lib "usp10" (pwcChars As Long, ByVal cChars As Long, psa As SCRIPT_ANALYSIS, psla As SCRIPT_LOGATTR) As Long
+Private Declare Function ScriptBreak Lib "usp10" (ByVal ptrTopwcChars As Long, ByVal cChars As Long, ByVal ptrTopsa As Long, ByVal ptrTopsla As Long) As Long
 Private Declare Function ScriptCPtoX Lib "usp10" (ByVal iCP As Long, ByVal fTrailing As Long, ByVal cChars As Long, ByVal cGlyphs As Long, pwLogClust As Integer, psva As SCRIPT_VISATTR, piAdvance As Long, psa As SCRIPT_ANALYSIS, piX As Long) As Long
 Private Declare Function ScriptCacheGetHeight Lib "usp10" (ByVal srcDC As Long, psc As SCRIPT_CACHE, tmHeight As Long) As Long
 Private Declare Function ScriptFreeCache Lib "usp10" (psc As SCRIPT_CACHE) As Long
@@ -114,6 +114,9 @@ Private m_GlyphOffsetCache() As GOFFSET
 'On the first instantiation of a Uniscribe cache, we also retrieve some generic font information via ScriptGetFontProperties.  This lets
 ' us know things like which glyph to use for missing glyphs, which is crucial when intermixing scripts in a single string.
 Private m_ScriptFontProperties As SCRIPT_FONTPROPERTIES
+
+'ScriptBreak generates an array of SCRIPT_LOGATTR structures, one per Unicode codepoint in the original string.
+Private m_CharAttributesCache() As SCRIPT_LOGATTR
 
 Private Const DEFAULT_INITIAL_CACHE_SIZE As Long = 16
 
@@ -649,6 +652,7 @@ Public Function Step3_ScriptShape(ByRef srcDC As Long) As Boolean
                 m_Items(i).setShapingData m_LogicalClusterCache, m_NumOfGlyphs, m_GlyphCache, m_VisualAttributesCache
                 
                 Debug.Print "WARNING!  ScriptShape could not find some glyphs in this font.  Recommend font fallback."
+                
             Else
                 Debug.Print "WARNING!  ScriptShape returned failure code #" & Hex$(unsReturn) & " on item # " & i & ".  Please investigate."
             End If
@@ -745,6 +749,7 @@ Public Function Step4_ScriptPlace(ByRef srcDC As Long) As Boolean
             If unsReturn = S_OK Then
                 m_Items(i).setPlacementData m_AdvanceWidthCache, m_GlyphOffsetCache, tmpABC
             Else
+            
                 functionSuccess = False
                 
                 'In the future, we may be able to deal with some failure states
@@ -793,9 +798,53 @@ Public Function Step5_ScriptBreak() As Boolean
     ' cChars [In]: Number of Unicode characters to process.
     ' psa [In]: Pointer to the SCRIPT_ANALYSIS structure obtained from an earlier call to ScriptItemize.
     ' psla [out]: Pointer to a buffer in which this function retrieves the character attributes as a SCRIPT_LOGATTR structure.
-
     
+    'IMPORTANT NOTE: this function operates on *a single item at a time*.  This means we can't use module-level values like
+    ' m_CurrentString - instead, we must iterate through each m_Item() object and process it individually.
     
+    'This function returns success only if all items are successfully processed.  One or more failures results in a FALSE return,
+    ' even if some items were processed successfully.  In the future, the caller might use this for font fallback purposes.
+    Dim functionSuccess As Boolean
+    functionSuccess = True
+    
+    Dim lSubstring As Long, sSubstring As String
+    Dim unsReturn As HRESULT
+    
+    'Start iterating through our item collection
+    Dim i As Long
+    For i = 0 To m_NumOfItems - 1
+        
+        'Retrieve local copies of the relevant substring and length
+        sSubstring = m_Items(i).getSubstring
+        lSubstring = Len(sSubstring)
+        
+        If lSubstring > 0 Then
+            
+            'Like other caches in this class, PD doesn't trim them, and it only expands them as necessary.  This is important for performance.
+            If UBound(m_CharAttributesCache) < lSubstring Then ReDim m_CharAttributesCache(0 To lSubstring) As SCRIPT_LOGATTR
+            
+            unsReturn = ScriptBreak(StrPtr(sSubstring), lSubstring, m_Items(i).getScriptItemAnalysisPointer, VarPtr(m_CharAttributesCache(0)))
+            
+            'If the return was successful, copy all retrieved data into the item container
+            If unsReturn = S_OK Then
+                m_Items(i).setCharacterAttributeCache m_CharAttributesCache
+            Else
+                
+                functionSuccess = False
+                
+                'Because ScriptBreak operates is a pass/fail API, we don't have to worry about crap like guessing buffer sizes.
+                ' Failure is always unacceptable (and shouldn't happen unless the string contains only gibberish).
+                Debug.Print "WARNING!  ScriptBreak returned failure code #" & Hex$(unsReturn) & " on item # " & i & ".  Please investigate."
+                
+            End If
+                        
+        End If
+    
+    Next i
+    
+    'Return success/failure
+    If functionSuccess Then Debug.Print "Uniscribe calculated word breaks correctly."
+    Step5_ScriptBreak = functionSuccess
 
 End Function
 
@@ -830,9 +879,15 @@ Friend Function getCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe) A
             With dstGlyphArray(netGlyphOffset)
                 .glyphIndex = m_Items(i).getGlyphCacheAtPosition(j)
                 .AdvanceWidth = m_Items(i).getAdvanceWidthAtPosition(j)
-                m_Items(i).copyGlyphOffsetToPointer VarPtr(.GlyphOffset), j
                 .isZeroWidth = False
+                .isSoftBreak = m_Items(i).getSoftBreakAtPosition(j)
+                .isWhiteSpace = m_Items(i).getWhitespaceAtPosition(j)
+                m_Items(i).copyGlyphOffsetToPointer VarPtr(.GlyphOffset), j
             End With
+            
+            'Debug word breaks and/or whitespace:
+            'If dstGlyphArray(netGlyphOffset).isSoftBreak Then Debug.Print "word break at glyph #" & netGlyphOffset
+            'If dstGlyphArray(netGlyphOffset).isWhiteSpace Then Debug.Print "whitespace at glyph #" & netGlyphOffset
             
             netGlyphOffset = netGlyphOffset + 1
     
@@ -880,6 +935,7 @@ Private Sub Class_Initialize()
     ReDim m_VisualAttributesCache(0 To DEFAULT_INITIAL_CACHE_SIZE - 1) As SCRIPT_VISATTR
     ReDim m_AdvanceWidthCache(0 To DEFAULT_INITIAL_CACHE_SIZE - 1) As Long
     ReDim m_GlyphOffsetCache(0 To DEFAULT_INITIAL_CACHE_SIZE - 1) As GOFFSET
+    ReDim m_CharAttributesCache(0 To DEFAULT_INITIAL_CACHE_SIZE - 1) As SCRIPT_LOGATTR
         
 End Sub
 
