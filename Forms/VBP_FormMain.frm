@@ -49,21 +49,21 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0   'False
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _ExtentX        =   873
-      _ExtentY        =   873
+      _extentx        =   873
+      _extenty        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
@@ -760,20 +760,24 @@ Begin VB.Form FormMain
          Index           =   7
       End
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "Vibrance..."
+         Caption         =   "Shadows and highlights..."
          Index           =   8
       End
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "White balance..."
+         Caption         =   "Vibrance..."
          Index           =   9
       End
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "-"
+         Caption         =   "White balance..."
          Index           =   10
       End
       Begin VB.Menu MnuAdjustments 
-         Caption         =   "Channels"
+         Caption         =   "-"
          Index           =   11
+      End
+      Begin VB.Menu MnuAdjustments 
+         Caption         =   "Channels"
+         Index           =   12
          Begin VB.Menu MnuColorComponents 
             Caption         =   "Channel mixer..."
             Index           =   0
@@ -809,7 +813,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Color"
-         Index           =   12
+         Index           =   13
          Begin VB.Menu MnuColor 
             Caption         =   "Color balance..."
             Index           =   0
@@ -861,7 +865,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Histogram"
-         Index           =   13
+         Index           =   14
          Begin VB.Menu MnuHistogram 
             Caption         =   "Display histogram"
          End
@@ -877,7 +881,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Invert"
-         Index           =   14
+         Index           =   15
          Begin VB.Menu MnuNegative 
             Caption         =   "Invert CMYK (film negative)"
          End
@@ -896,7 +900,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Lighting"
-         Index           =   15
+         Index           =   16
          Begin VB.Menu MnuLighting 
             Caption         =   "Brightness and contrast..."
             Index           =   0
@@ -920,7 +924,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Monochrome"
-         Index           =   16
+         Index           =   17
          Begin VB.Menu MnuMonochrome 
             Caption         =   "Color to monochrome..."
             Index           =   0
@@ -932,7 +936,7 @@ Begin VB.Form FormMain
       End
       Begin VB.Menu MnuAdjustments 
          Caption         =   "Photography"
-         Index           =   17
+         Index           =   18
          Begin VB.Menu MnuAdjustmentsPhoto 
             Caption         =   "Exposure..."
             Index           =   0
@@ -3262,12 +3266,16 @@ Private Sub MnuAdjustments_Click(Index As Integer)
         Case 7
             Process "Levels", True
         
-        'Vibrance
+        'Shadows and highlights
         Case 8
+            Process "Shadow and highlight", True
+        
+        'Vibrance
+        Case 9
             Process "Vibrance", True
         
         'White balance
-        Case 9
+        Case 10
             Process "White balance", True
     
     End Select
