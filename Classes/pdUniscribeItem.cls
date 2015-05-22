@@ -188,6 +188,20 @@ Friend Sub setShapingData(ByRef logicalClusterCache() As Integer, ByVal numOfGly
     
 End Sub
 
+'If this item consists entirely of missing glyphs, we need to completely disable shaping.
+Friend Sub disableAllShaping()
+    
+    'Shaping is controlled by the lowest 10 bits of our script analysis structure.
+    m_ScriptItem.analysis.fBitFields1 = 0
+    
+    Dim tmpLong As Long
+    tmpLong = m_ScriptItem.analysis.fBitFields2
+    
+    tmpLong = tmpLong And (Not 3&)
+    m_ScriptItem.analysis.fBitFields2 = tmpLong And 255
+    
+End Sub
+
 'While we can set all of ScriptShape's generated information at once, retrieving it is more helpful if we do it on a per-item basis.
 Friend Function getNumOfGlyphs() As Long
     getNumOfGlyphs = m_NumOfGlyphs
