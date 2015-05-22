@@ -218,8 +218,10 @@ End Type
 Public Type pdGlyphUniscribe
     glyphIndex As Long
     AdvanceWidth As Long
-    isZeroWidth As Boolean
     GlyphOffset As GOFFSET
     glyphPath As pdGraphicsPath     'GDI+ GraphicsPath wrapper containing the fully translated font outline.  Note that this value is not
                                     ' filled by PD's Uniscribe interface; pdGlyphCollection actually handles that step.
+    isSoftBreak As Boolean
+    isWhiteSpace As Boolean
+    isZeroWidth As Boolean
 End Type

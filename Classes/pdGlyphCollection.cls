@@ -198,6 +198,7 @@ Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal u
     m_Uniscribe.Step2_ScriptLayout
     m_Uniscribe.Step3_ScriptShape m_tmpDIB.getDIBDC
     m_Uniscribe.Step4_ScriptPlace m_tmpDIB.getDIBDC
+    m_Uniscribe.Step5_ScriptBreak
     
     'Retrieve a copy of Uniscribe's data in a PD-friendly format.
     m_NumOfGlyphs = m_Uniscribe.getCopyOfGlyphCache(m_Glyphs)

@@ -120,6 +120,15 @@ Private m_GlyphOffsetCache() As GOFFSET
 ' 3) a single ABC measurement for the ENTIRE item.  (This is helpful when positioning the starts and ends of lines, to avoid glyph overhang.)
 Private m_ItemABCWidth As ABC
 
+'For each item, ScriptBreak generates one piece of data:
+
+' 1) A logical attributes cache, with one entry FOR EACH CHARACTER (NOT GLYPH)!
+Private m_CharAttributesCache() As SCRIPT_LOGATTR
+
+'... because we only care about glyphs when rendering, we manually convert this data into a per-glyph word break and whitespace indicators.
+Private m_GlyphSoftBreakCache() As Boolean
+Private m_GlyphWhitespaceCache() As Boolean
+
 'ByRef + CopyMemory is confusing, especially when trading bare pointers (as I am prone to doing), so I prefer to use a ByVal-only
 ' version of RtlMoveMemory, and forcibly supply pointers to avoid the risk of messing things up.
 Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
@@ -278,6 +287,104 @@ Friend Sub setPlacementData(ByRef advanceWidthCache() As Long, ByRef glyphOffset
     
 End Sub
 
+'ScriptBreak generates a per-character array of logical attributes.  This is a pain, as the renderer only cares about glyphs, not chars,
+' so we have to manually convert this array into something usable.
+Friend Sub setCharacterAttributeCache(ByRef charAttributesCache() As SCRIPT_LOGATTR)
+    
+    If m_SubstringLength > 0 Then
+    
+        'First, make an internal copy of the data
+        If UBound(m_CharAttributesCache) < m_SubstringLength Then ReDim m_CharAttributesCache(0 To m_SubstringLength) As SCRIPT_LOGATTR
+        CopyMemoryStrict VarPtr(m_CharAttributesCache(0)), VarPtr(charAttributesCache(0)), m_SubstringLength
+        
+        'Now, we need to convert the per-character list of attributes to a per-glyph attribute.  This is a pain, as characters and
+        ' glyphs do not necessarily have a 1:1 correlation.
+        
+        'Start by prepping our glyph softbreak cache
+        If UBound(m_GlyphSoftBreakCache) < m_NumOfGlyphs Then
+            ReDim m_GlyphSoftBreakCache(0 To m_NumOfGlyphs) As Boolean
+            ReDim m_GlyphWhitespaceCache(0 To m_NumOfGlyphs) As Boolean
+        End If
+        
+        'Forcibly set all soft break and whitespace markers to false, as we initialize these arrays lazily
+        Dim i As Long
+        For i = 0 To m_NumOfGlyphs
+            m_GlyphSoftBreakCache(i) = False
+            m_GlyphWhitespaceCache(i) = False
+        Next i
+        
+        Dim tmpLong As Long, tmpIndex As Long
+        
+        'Because our break information is per-character, we'll iterate the string by character (not glyph).  If any character in a
+        ' glyph is soft-breakable, we mark the ENTIRE glyph as breakable.
+        For i = 0 To m_SubstringLength - 1
+        
+            'Find the glyph that corresponds to this character
+            tmpIndex = m_LogicalClusterCache(i)
+            tmpLong = charAttributesCache(i).fBitFields
+            
+            'Like most horribly obnoxious Uniscribe structs, data is embedded at the bit level.  Retrieve the flag bit for soft breaks.
+            If getBitFlag(0, tmpLong) Then
+                
+                'Mark this glyph as soft-breakable.  This means that - if necessary - a line can be broken IMMEDIATELY BEFORE this glyph.
+                If tmpIndex >= 0 And tmpIndex < m_NumOfGlyphs Then
+                    m_GlyphSoftBreakCache(tmpIndex) = True
+                Else
+                    Debug.Print "WARNING!  m_LogicalClusterCache() returned a bogus value.  Please investigate!"
+                End If
+                
+            End If
+            
+            '...and the same thing, but for white space
+            If getBitFlag(1, tmpLong) Then
+                
+                'Mark this glyph as soft-breakable.  This means that - if necessary - a line can be broken IMMEDIATELY BEFORE this glyph.
+                If tmpIndex >= 0 And tmpIndex < m_NumOfGlyphs Then
+                    m_GlyphWhitespaceCache(tmpIndex) = True
+                Else
+                    Debug.Print "WARNING!  m_LogicalClusterCache() returned a bogus value.  Please investigate!"
+                End If
+                
+            End If
+        
+        Next i
+        
+    End If
+        
+End Sub
+
+Friend Function getSoftBreakAtPosition(ByVal gPos As Long) As Boolean
+    getSoftBreakAtPosition = m_GlyphSoftBreakCache(gPos)
+End Function
+
+Friend Function getWhitespaceAtPosition(ByVal gPos As Long) As Boolean
+    getWhitespaceAtPosition = m_GlyphWhitespaceCache(gPos)
+End Function
+
+'Retrieve an arbitrary 1-bit position [0-31] in a Long-type value.  Position 0 is the LEAST-SIGNIFICANT BIT, and Position 31
+' is the SIGN BIT for a standard VB Long.
+'
+' Inputs:
+'  1) position of the flag, which must be in the range [0, 31]
+'  2) The Long from which you want the bit retrieved
+Private Function getBitFlag(ByVal flagPosition As Long, ByVal srcLong As Long) As Boolean
+
+    If (flagPosition >= 0) And (flagPosition <= 31) Then
+    
+        'Create a bitmask, using flagPosition to determine bit offset
+        Dim longMask As Long
+        If flagPosition < 31 Then longMask = 2 ^ flagPosition Else longMask = &H80000000
+        getBitFlag = CBool(CLng(srcLong And longMask) <> 0)
+        
+        'If you're curious about how this function works (and what it returns), you can uncomment the line below
+        'Debug.Print "getBitFlag: " & srcLong & " : " & longMask & " (" & CStr(getBitFlag) & ")"
+        
+    Else
+        Debug.Print "C'mon - you know Longs only have 32 bits.  Flag positions must be on the range [0, 31]!"
+    End If
+
+End Function
+
 Private Sub Class_Initialize()
     
     'Size all arrays to a nice minimum size, to reduce churn if the user is only working with small strings
@@ -286,5 +393,8 @@ Private Sub Class_Initialize()
     ReDim m_VisualAttributesCache(0 To DEFAULT_INITIAL_CACHE_SIZE - 1) As SCRIPT_VISATTR
     ReDim m_AdvanceWidthCache(0 To DEFAULT_INITIAL_CACHE_SIZE - 1) As Long
     ReDim m_GlyphOffsetCache(0 To DEFAULT_INITIAL_CACHE_SIZE - 1) As GOFFSET
+    ReDim m_CharAttributesCache(0 To DEFAULT_INITIAL_CACHE_SIZE - 1) As SCRIPT_LOGATTR
+    ReDim m_GlyphSoftBreakCache(0 To DEFAULT_INITIAL_CACHE_SIZE - 1) As Boolean
+    ReDim m_GlyphWhitespaceCache(0 To DEFAULT_INITIAL_CACHE_SIZE - 1) As Boolean
         
 End Sub
