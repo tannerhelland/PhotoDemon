@@ -148,8 +148,8 @@ End Type
 
 Public Type SCRIPT_CONTROL
     uDefaultLanguage As Integer
-    fBitFields As Byte
-    fReserved As Integer
+    fBitFields1 As Byte
+    fBitFields2 As Byte
 End Type
 
 Public Type SCRIPT_STATE

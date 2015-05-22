@@ -87,6 +87,10 @@ Private m_ScriptItem As SCRIPT_ITEM
 Private m_Substring As String
 Private m_SubstringLength As Long
 
+'The relative start and end position of this substring, relative to the original string passed to pdUniscribe.
+' NOTE: in keeping with VB string measurements, these are 1-based, not 0-based.
+Private m_RelativeStartPos As Long, m_RelativeEndPos As Long
+
 'For each item created by ScriptItemize, ScriptLayout generates a corresponding Visual/Logical mapping order.  We don't store
 ' that order here (pdUniscribe manages it internally), but I mention this as a reminder that the order of these class instances
 ' inside pdUnicode's master array may not match their on-screen order, and you need to be aware of that if mapping from visual
@@ -149,10 +153,24 @@ Public Function getSubstring() As String
     getSubstring = m_Substring
 End Function
 
-Public Sub setSubstring(ByVal newSubstring As String)
+'When setting the substring, we set two other parameters as well: the relative start and end position of this substring, relative to
+' the whole string passed to pdUniscribe.  This is helpful for identifying the chunk of the main string that this item represents.
+'
+'IMPORTANT NOTE: StartPos and EndPos are in *VB STRING COORDINATES*, meaning they are 1-based, not 0-based!
+Public Sub setSubstring(ByVal newSubstring As String, ByVal relativeStartPos As Long, ByVal relativeEndPos As Long)
     m_Substring = newSubstring
     m_SubstringLength = Len(newSubstring)
+    m_RelativeStartPos = relativeStartPos
+    m_RelativeEndPos = relativeEndPos
 End Sub
+
+Public Function getRelativeStartPos() As Long
+    getRelativeStartPos = m_RelativeStartPos
+End Function
+
+Public Function getRelativeEndPos() As Long
+    getRelativeEndPos = m_RelativeEndPos
+End Function
 
 'ScriptShape generates three arrays for each item:
 ' 1) Logical cluster list (for mapping between characters and glyphs; same length as the substring)
