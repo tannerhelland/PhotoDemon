@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "String Stack" Class
 'Copyright 2014-2015 by Tanner Helland
 'Created: 05/February/15
-'Last updated: 05/February/15
-'Last update: initial build
+'Last updated: 23/May/15
+'Last update: add ability to remove duplicates during the sort step
 '
 'Per its name, this class provides a simple interface to a stack comprised of strings.  PD often has need to deal
 ' with large string collections (iterating folders, image metadata, etc), and rather than manually settings up
@@ -217,7 +217,7 @@ End Sub
 
 'Modified sort function based off "Snake Sort" by Ellis Dee.  Original source here:
 ' http://www.vbforums.com/showthread.php?473677-VB6-Sorting-algorithms-%28sort-array-sorting-arrays%29&p=2933240#post2933240
-Public Sub SortAlphabetically()
+Public Sub SortAlphabetically(Optional ByVal removeDuplicates As Boolean = False)
     
     Dim i As Long
     Dim iMin As Long
@@ -346,6 +346,44 @@ Public Sub SortAlphabetically()
         For i = iMin To iMax
             m_Strings(i) = varMirror(i)
         Next
+    End If
+    
+    'If the user wants duplicates removed, do so now
+    If removeDuplicates Then
+        
+        Dim itemsRemoved As Long
+        itemsRemoved = 0
+        
+        Dim itemCount As Long
+        itemCount = m_NumOfStrings - 1
+        
+        Dim j As Long
+        
+        For i = 0 To itemCount
+            
+            'If we've reached the point where the array ends due to shifting, exit now
+            If i = itemCount - itemsRemoved Then Exit For
+            
+            'If this string and the string above it match, shift everything above it downward
+            If StrComp(m_Strings(i), m_Strings(i + 1), vbBinaryCompare) = 0 Then
+                
+                #If DEBUGMODE = 1 Then
+                    Debug.Print "Duplicate string found: " & m_Strings(i)
+                #End If
+                
+                For j = i To UBound(m_Strings) - 1
+                    m_Strings(j) = m_Strings(j + 1)
+                Next j
+                
+                itemsRemoved = itemsRemoved + 1
+                
+            End If
+            
+        Next i
+        
+        'If one or more items were removed, mark the new array size accordingly
+        If itemsRemoved > 0 Then m_NumOfStrings = m_NumOfStrings - itemsRemoved
+        
     End If
     
 End Sub
