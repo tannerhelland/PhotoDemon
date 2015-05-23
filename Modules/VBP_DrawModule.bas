@@ -60,6 +60,12 @@ Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObj
 Private Declare Function SetBrushOrgEx Lib "gdi32" (ByVal targetDC As Long, ByVal nXOrg As Long, ByVal nYOrg As Long, ByVal refToPeviousPoint As Long) As Long
 Private Declare Function SetROP2 Lib "gdi32" (ByVal hDC As Long, ByVal nDrawMode As Long) As Long
 
+'DC API functions
+Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
+
 'API for converting between hWnd-specific coordinate spaces.  Note that the function technically accepts an
 ' array of POINTAPI points; the address passed to lpPoints should be the address of the first point in the array
 ' (e.g. ByRef PointArray(0)), while the cPoints parameter is the number of points in the array.  If two points are
@@ -150,10 +156,10 @@ Public Sub drawTextOnObject(ByRef dstObject As Object, ByVal sText As String, By
 
     dstObject.CurrentX = xPos
     dstObject.CurrentY = yPos
-    dstObject.FontSize = newFontSize
+    dstObject.fontSize = newFontSize
     dstObject.ForeColor = newFontColor
-    dstObject.FontBold = makeFontBold
-    dstObject.FontItalic = makeFontItalic
+    dstObject.fontBold = makeFontBold
+    dstObject.fontItalic = makeFontItalic
     dstObject.Print sText
 
 End Sub
@@ -650,4 +656,13 @@ Public Sub drawLayerNodes(ByVal layerIndex As Long)
         GDIPlusDrawCanvasCircle dstDC, .Left, .Top + .Height, circRadius, circAlpha
     End With
 
+End Sub
+
+'Need a quick and dirty DC for something?  Call this.  (Just remember to free the DC when you're done!)
+Public Function getTemporaryDC() As Long
+    getTemporaryDC = CreateCompatibleDC(0)
+End Function
+
+Public Sub freeTemporaryDC(ByVal srcDC As Long)
+    DeleteDC srcDC
 End Sub
