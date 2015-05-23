@@ -201,7 +201,7 @@ Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal u
     m_Uniscribe.Step5_ScriptBreak
     
     'Retrieve a copy of Uniscribe's data in a PD-friendly format.
-    m_NumOfGlyphs = m_Uniscribe.getCopyOfGlyphCache(m_Glyphs)
+    m_NumOfGlyphs = m_Uniscribe.getCopyOfGlyphCache(m_Glyphs, m_tmpDIB.getDIBDC)
     
     'Curious about what pdUniscribe returns?  Uncomment this line for a nice intro.
     'm_Uniscribe.printUniscribeDebugInfo
@@ -601,46 +601,64 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
             
             glyphIsRenderable = CBool(curGlyphOutline >= 0)
             
-            'If this glyph exists in our cache, we need to see if a path was successfully generated.  Some whitespace characters
-            ' have no outline, so we don't render them directly - but we still need to process their spacing and size requirements.
-            If glyphIsRenderable Then glyphIsRenderable = m_GlyphOutlines(curGlyphOutline).hasOutline
+            'Before proceeding, check some known control characters in advance
             
-            'If an outline exists for this glyph, render it now.
-            If glyphIsRenderable Then
-                    
-                'For now, implement a "poor man's" wordwrap so we can test line sizes.  (Basically, if this glyph extends past the end
-                ' of the line, push it down to the next line.)
-                If xOffset + m_Glyphs(curGlyph).AdvanceWidth > boundingRect.Width Then
-                    yOffset = yOffset + m_TextMetrics.tmHeight + m_TextMetrics.tmExternalLeading
-                    xOffset = 0
-                End If
+            'Linebreaks are handled early, to avoid screwing up glyph rendering later on
+            If m_Glyphs(curGlyph).isHardLineBreak Then
                 
-                'Add this glyph to the current path at the running x-offset
+                'Advance the line and reset the xOffset
+                yOffset = yOffset + m_TextMetrics.tmHeight + m_TextMetrics.tmExternalLeading
+                xOffset = 0
+            
+            'Zero-width non-linebreak characters can be safely ignored
+            ElseIf m_Glyphs(curGlyph).isZeroWidth Then
                 
-                'If this is the start of a line, look for characters that hang off the left side of the bounding box, and push them
-                ' in-bounds.  (TODO, using Uniscribe to retrieve sizes.)
-                If xOffset = 0 Then
-                    'If m_GlyphOutlines(GlyphIndex).gMetrics.gmptGlyphOrigin.x < 0 Then xOffset = Abs(m_GlyphOutlines(GlyphIndex).gMetrics.gmptGlyphOrigin.x)
-                End If
-                
-                dstPath.addPath m_GlyphOutlines(curGlyphOutline).glyphPath, xOffset + m_Glyphs(curGlyph).GlyphOffset.du, yOffset - m_Glyphs(curGlyph).GlyphOffset.dv
-                
-                'Add the glyph's width to the running x-direction offset.
-                xOffset = xOffset + m_Glyphs(curGlyph).AdvanceWidth
-                
+                'Do nothing
+            
+            'Anything beyond this point is a legitimate glyph (or an unknown control character, I guess)
             Else
+            
+                'If this glyph exists in our cache, we need to see if a path was successfully generated.  Some whitespace characters
+                ' have no outline, so we don't render them directly - but we still need to process their spacing and size requirements.
+                If glyphIsRenderable Then glyphIsRenderable = m_GlyphOutlines(curGlyphOutline).hasOutline
                 
-                'This glyph is not renderable, meaning it's most likely whitespace or a control character.  Increment our current
-                ' position pointer, but don't actually draw anything to the screen.
-                xOffset = xOffset + m_Glyphs(curGlyph).AdvanceWidth
-                
-                'TODO!  Check for linefeeds and other control characters that need to be manually handled.
-                
-                'If debugging is desired:
-                'Debug.Print "WARNING!  Unmarked glyph received -- see why #" & curGlyphOutline & " doesn't show up in the cache!"
-                
+                'If an outline exists for this glyph, render it now.
+                If glyphIsRenderable Then
+                        
+                    'For now, implement a "poor man's" wordwrap so we can test line sizes.  (Basically, if this glyph extends past the end
+                    ' of the line, push it down to the next line.)
+                    If xOffset + m_Glyphs(curGlyph).AdvanceWidth > boundingRect.Width Then
+                        yOffset = yOffset + m_TextMetrics.tmHeight + m_TextMetrics.tmExternalLeading
+                        xOffset = 0
+                    End If
+                    
+                    'Add this glyph to the current path at the running x-offset
+                    
+                    'If this is the start of a line, look for characters that hang off the left side of the bounding box, and push them
+                    ' in-bounds.  (TODO, using Uniscribe to retrieve sizes.)
+                    If xOffset = 0 Then
+                        'If m_GlyphOutlines(GlyphIndex).gMetrics.gmptGlyphOrigin.x < 0 Then xOffset = Abs(m_GlyphOutlines(GlyphIndex).gMetrics.gmptGlyphOrigin.x)
+                    End If
+                    
+                    dstPath.addPath m_GlyphOutlines(curGlyphOutline).glyphPath, xOffset + m_Glyphs(curGlyph).GlyphOffset.du, yOffset - m_Glyphs(curGlyph).GlyphOffset.dv
+                    
+                    'Add the glyph's width to the running x-direction offset.
+                    xOffset = xOffset + m_Glyphs(curGlyph).AdvanceWidth
+                    
+                Else
+                    
+                    'This glyph is not renderable, meaning it's most likely whitespace or a control character.  Increment our current
+                    ' position pointer, but don't actually draw anything to the screen.
+                    xOffset = xOffset + m_Glyphs(curGlyph).AdvanceWidth
+                    
+                    'If debugging is desired:
+                    'Debug.Print "WARNING!  Unmarked glyph received -- see why #" & curGlyphOutline & " doesn't show up in the cache!"
+                    
+                End If
+            
             End If
             
+        'Render the next glyph!
         Next i
         
     End If
