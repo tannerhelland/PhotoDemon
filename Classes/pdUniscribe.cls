@@ -47,7 +47,7 @@ Private Declare Function ScriptCacheGetHeight Lib "usp10" (ByVal srcDC As Long, 
 Private Declare Function ScriptFreeCache Lib "usp10" (psc As SCRIPT_CACHE) As Long
 Private Declare Function ScriptGetCMap Lib "usp10" (ByVal srcDC As Long, psc As SCRIPT_CACHE, ByVal pwcInChars As Long, ByVal cChars As Long, ByVal dwFlags As SCRIPT_GET_CMAP_FLAGS, pwOutGlyphs() As Integer) As Long
 Private Declare Function ScriptGetFontProperties Lib "usp10" (ByVal srcDC As Long, ByVal ptrToSCpsc As Long, ByVal ptrTosfp As Long) As Long
-Private Declare Function ScriptGetGlyphABCWidth Lib "usp10" (ByVal srcDC As Long, psc As SCRIPT_CACHE, ByVal wGlyph As Integer, pABC As ABC) As Long
+Private Declare Function ScriptGetGlyphABCWidth Lib "usp10" (ByVal srcDC As Long, ByVal ptrTopscScriptCache As Long, ByVal wGlyph As Integer, ByVal ptrToABC As Long) As Long
 Private Declare Function ScriptGetLogicalWidths Lib "usp10" (psa As SCRIPT_ANALYSIS, ByVal cChars As Long, ByVal cGlyphs As Long, piGlyphWidth() As Long, pwLogClust() As Integer, psva As SCRIPT_VISATTR, piDx As Long) As Long
 Private Declare Function ScriptGetProperties Lib "usp10" (ppSp As SCRIPT_PROPERTIES, piNumScripts As Long) As Long
 Private Declare Function ScriptIsComplex Lib "usp10" (ByVal pwcInChars As Long, ByVal cInChars As Long, ByVal dwFlags As SCRIPT_IS_COMPLEX_FLAGS) As Long
@@ -117,6 +117,12 @@ Private m_ScriptFontProperties As SCRIPT_FONTPROPERTIES
 
 'ScriptBreak generates an array of SCRIPT_LOGATTR structures, one per Unicode codepoint in the original string.
 Private m_CharAttributesCache() As SCRIPT_LOGATTR
+
+'If the incoming string contains hard line-breaks, this will be set to TRUE.  Hard line-breaks require extra processing, as Uniscribe
+' provides no native support for them.
+Private m_StringHasLinebreaks As Boolean
+Private m_NumOfLineBreaks As Long
+Private m_LineBreakPositions() As Long
 
 Private Const DEFAULT_INITIAL_CACHE_SIZE As Long = 16
 
@@ -281,7 +287,7 @@ Public Sub updateFont()
     
     'Reset our script property tracker, so it can be refreshed on the next call
     m_ScriptFontProperties.cBytes = 0
-
+    
 End Sub
 
 'Step1_ScriptItemize is the first step in processing a Uniscribe string.  It generates the crucial SCRIPT_ITEM array used for pretty much
@@ -292,11 +298,61 @@ Public Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
     
     m_ScriptItemCacheOK = False
     
-    'Uniscribe does not handle 0-length strings, so make sure at least one character is present
-    If Len(srcString) < 1 Then srcString = " "
+    Dim i As Long
     
     'Make a deep copy of the source string
     m_CurrentString = srcString
+    
+    'Uniscribe does not handle 0-length strings, so make sure at least one character is present
+    If Len(m_CurrentString) < 1 Then m_CurrentString = " "
+    
+    'While here, check for linebreaks.  If any exist, we need to normalize them to vbLf, make a note of their positions, then remove
+    ' them from the string.  (Uniscribe doesn't handle linebreaks.)
+    m_StringHasLinebreaks = False
+    
+    If InStr(1, m_CurrentString, vbCrLf, vbBinaryCompare) <> 0 Then
+        m_StringHasLinebreaks = True
+        m_CurrentString = Replace$(m_CurrentString, vbCrLf, vbLf, , , vbBinaryCompare)
+        
+    ElseIf InStr(1, m_CurrentString, vbCr, vbBinaryCompare) <> 0 Then
+        m_StringHasLinebreaks = True
+        m_CurrentString = Replace$(m_CurrentString, vbCr, vbLf, , , vbBinaryCompare)
+        
+    ElseIf InStr(1, m_CurrentString, vbLf, vbBinaryCompare) <> 0 Then
+        m_StringHasLinebreaks = True
+    End If
+    
+    'If linebreaks were found, apply relevant pre-processing now.
+    If m_StringHasLinebreaks Then
+        
+        Dim startPos As Long
+        startPos = 1
+        
+        If m_NumOfLineBreaks = 0 Then ReDim m_LineBreakPositions(0 To DEFAULT_INITIAL_CACHE_SIZE - 1) As Long
+        
+        'Find the first linefeed in the string
+        Dim lfPos As Long
+        lfPos = InStr(1, m_CurrentString, vbLf, vbBinaryCompare)
+        
+        'Normalize everything to vbLf
+        Do While lfPos <> 0
+        
+            m_LineBreakPositions(m_NumOfLineBreaks) = lfPos
+            m_NumOfLineBreaks = m_NumOfLineBreaks + 1
+            
+            If m_NumOfLineBreaks > UBound(m_LineBreakPositions) Then ReDim Preserve m_LineBreakPositions(0 To m_NumOfLineBreaks * 2 - 1) As Long
+            
+            lfPos = InStr(lfPos + 1, m_CurrentString, vbLf, vbBinaryCompare)
+        
+        Loop
+        
+        'For debugging purposes, you can choose to list calculated line break character positions:
+        
+        'Replace all linebreaks with zero-width non-joiner chars.  These force Uniscribe to break characters at these positions, and they are
+        m_CurrentString = Replace$(m_CurrentString, vbLf, ChrW(8204), , , vbBinaryCompare)
+        
+    End If
+    
     
     'Values we need to manually set:
     ' pwcInChars [In]: Pointer to a Unicode string to itemize.
@@ -324,7 +380,7 @@ Public Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
     '
     'Also, note that the buffer itself must be one larger than the number of SCRIPT_ITEM values passed, and it can never be less than two.
     Dim numScriptItems As Long
-    numScriptItems = Len(srcString) * 2
+    numScriptItems = Len(m_CurrentString) * 2
     
     If UBound(m_ScriptItemsCache) < numScriptItems Then ReDim m_ScriptItemsCache(0 To numScriptItems) As SCRIPT_ITEM
     
@@ -351,7 +407,7 @@ Public Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
     Dim numItemsFilled As Long
     
     Dim unsReturn As HRESULT
-    unsReturn = ScriptItemize(StrPtr(srcString), Len(srcString), numScriptItems, VarPtr(dummyScriptControl), VarPtr(dummyScriptState), VarPtr(m_ScriptItemsCache(0)), numItemsFilled)
+    unsReturn = ScriptItemize(StrPtr(m_CurrentString), Len(m_CurrentString), numScriptItems, VarPtr(dummyScriptControl), VarPtr(dummyScriptState), VarPtr(m_ScriptItemsCache(0)), numItemsFilled)
     
     'Account for potential out of memory errors
     Do While unsReturn = E_OUTOFMEMORY
@@ -359,14 +415,14 @@ Public Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
         'Double the allotted cache size and try again
         numScriptItems = numScriptItems * 2
         ReDim m_ScriptItemsCache(0 To numScriptItems - 1) As SCRIPT_ITEM
-        unsReturn = ScriptItemize(StrPtr(srcString), Len(srcString), numScriptItems, VarPtr(dummyScriptControl), VarPtr(dummyScriptState), VarPtr(m_ScriptItemsCache(0)), numItemsFilled)
+        unsReturn = ScriptItemize(StrPtr(m_CurrentString), Len(m_CurrentString), numScriptItems, VarPtr(dummyScriptControl), VarPtr(dummyScriptState), VarPtr(m_ScriptItemsCache(0)), numItemsFilled)
         
     Loop
     
     'If ScriptItemize still failed, it was not due to memory errors
     If unsReturn = S_OK Then
         
-        Debug.Print "Uniscribe itemized the string correctly.  " & numItemsFilled & " SCRIPT_ITEM structs were filled."
+        Debug.Print "Uniscribe itemized the string correctly.  (" & numItemsFilled & " SCRIPT_ITEM structs were filled.)"
         
         'Technically, we could trim our cache to its relevant size here (remembering that we MUST leave a spare entry at the end), but throughout
         ' this class I allow cache sizes to float.  Redimming them saves a tiny amount of memory at great cost to churn and performance, so instead,
@@ -378,9 +434,8 @@ Public Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
         m_NumOfItems = numItemsFilled
         If UBound(m_Items) < numItemsFilled Then ReDim m_Items(0 To numItemsFilled) As pdUniscribeItem
         
-        Dim startPos As Long, endPos As Long
+        Dim endPos As Long
         
-        Dim i As Long
         For i = 0 To numItemsFilled
             Set m_Items(i) = New pdUniscribeItem
             m_Items(i).setScriptItem m_ScriptItemsCache(i)
@@ -395,10 +450,10 @@ Public Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
             
                 startPos = m_ScriptItemsCache(i).iCharPos
                 endPos = m_ScriptItemsCache(i + 1).iCharPos
-                m_Items(i).setSubstring Mid$(srcString, startPos + 1, endPos - startPos), startPos + 1, endPos
+                m_Items(i).setSubstring Mid$(m_CurrentString, startPos + 1, endPos - startPos), startPos + 1, endPos
                 
                 'Curious about how the items are broken up by Uniscribe?  Uncomment this to see substrings and positions.
-                Debug.Print m_Items(i).getSubstring, startPos + 1, endPos
+                'Debug.Print m_Items(i).getSubstring, startPos + 1, endPos
                 
             End If
             
@@ -850,8 +905,10 @@ End Function
 
 'Retrieve a copy of the currently calculated glyph cache, in a custom PD format.
 '
+'If a source DC is passed, the function will automatically fill the ABC width of each glyph prior to returning it.
+'
 ' Returns a value >= 0 indicating the number of glyphs in the returned struct.  0 indicates failure or an empty string.
-Friend Function getCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe) As Long
+Friend Function getCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, Optional ByVal srcDC As Long = 0) As Long
     
     'Before doing anything else, we need to calculate a total number of glyphs in our current collection.
     Dim totalGlyphCount As Long
@@ -871,31 +928,72 @@ Friend Function getCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe) A
     'Next, iterate all items and copy the relevant glyph information from each item into the destination array
     Dim netGlyphOffset As Long
     netGlyphOffset = 0
-    
+        
     For i = 0 To m_NumOfItems - 1
     
         For j = 0 To m_Items(i).getNumOfGlyphs - 1
-    
-            With dstGlyphArray(netGlyphOffset)
-                .glyphIndex = m_Items(i).getGlyphCacheAtPosition(j)
-                .AdvanceWidth = m_Items(i).getAdvanceWidthAtPosition(j)
-                .isZeroWidth = False
-                .isSoftBreak = m_Items(i).getSoftBreakAtPosition(j)
-                .isWhiteSpace = m_Items(i).getWhitespaceAtPosition(j)
-                m_Items(i).copyGlyphOffsetToPointer VarPtr(.GlyphOffset), j
-            End With
             
-            'Debug word breaks and/or whitespace:
-            'If dstGlyphArray(netGlyphOffset).isSoftBreak Then Debug.Print "word break at glyph #" & netGlyphOffset
-            'If dstGlyphArray(netGlyphOffset).isWhiteSpace Then Debug.Print "whitespace at glyph #" & netGlyphOffset
+            'See if this is a zero-width glyph.  We can reduce render time by leaving out zero-width glyphs that don't convey
+            ' useful information to the renderer.
+            If m_Items(i).getZeroWidthAtPosition(j) Then
+                
+                'Skip further processing if linebreaks weren't found in the original string
+                If m_StringHasLinebreaks Then
+                    
+                    'See if the character position associated with this glyph was marked as a line-break character.
+                    If isCharPositionLinebreak(m_Items(i).getCorrespondingCharIndex(j)) Then
+                        
+                        'Fill this glyph with dummy information, while taking care to manually mark it as a hard line break
+                        With dstGlyphArray(netGlyphOffset)
+                            .glyphIndex = 0
+                            .AdvanceWidth = 0
+                            .isZeroWidth = True
+                            .isSoftBreak = True
+                            .isWhiteSpace = True
+                            .isHardLineBreak = True
+                            .GlyphOffset.du = 0
+                            .GlyphOffset.dv = 0
+                            .ABCWidth.abcA = 0
+                            .ABCWidth.abcB = 0
+                            .ABCWidth.abcC = 0
+                        End With
+                        
+                        netGlyphOffset = netGlyphOffset + 1
+                        
+                    End If
+                
+                End If
             
-            netGlyphOffset = netGlyphOffset + 1
-    
+            'This is not a zero-width glyph.  Treat it normally.
+            Else
+            
+                With dstGlyphArray(netGlyphOffset)
+                    .glyphIndex = m_Items(i).getGlyphCacheAtPosition(j)
+                    .AdvanceWidth = m_Items(i).getAdvanceWidthAtPosition(j)
+                    .isZeroWidth = False
+                    .isSoftBreak = m_Items(i).getSoftBreakAtPosition(j)
+                    .isWhiteSpace = m_Items(i).getWhitespaceAtPosition(j)
+                    .isHardLineBreak = False
+                    m_Items(i).copyGlyphOffsetToPointer VarPtr(.GlyphOffset), j
+                    
+                    'While here, we also collect the ABC width of each glyph
+                    If srcDC <> 0 Then ScriptGetGlyphABCWidth srcDC, VarPtr(m_ScriptCache), .glyphIndex, VarPtr(.ABCWidth)
+                
+                End With
+                
+                'Debug word breaks and/or whitespace with the following code:
+                'If dstGlyphArray(netGlyphOffset).isSoftBreak Then Debug.Print "word break at glyph #" & netGlyphOffset
+                'If dstGlyphArray(netGlyphOffset).isWhiteSpace Then Debug.Print "whitespace at glyph #" & netGlyphOffset
+                
+                netGlyphOffset = netGlyphOffset + 1
+            
+            End If
+            
         Next j
     
     Next i
     
-    getCopyOfGlyphCache = totalGlyphCount
+    getCopyOfGlyphCache = netGlyphOffset
     
 End Function
 
@@ -922,6 +1020,21 @@ Public Sub printUniscribeDebugInfo()
     Debug.Print "-- End of glyph data  --"
     
 End Sub
+
+'See if a given character position was marked as a hard linebreak prior to processing
+Private Function isCharPositionLinebreak(ByVal charPos As Long) As Boolean
+    
+    isCharPositionLinebreak = False
+    
+    Dim i As Long
+    For i = 0 To m_NumOfLineBreaks - 1
+        If charPos = m_LineBreakPositions(i) Then
+            isCharPositionLinebreak = True
+            Exit For
+        End If
+    Next i
+
+End Function
 
 Private Sub Class_Initialize()
     

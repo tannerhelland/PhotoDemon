@@ -158,9 +158,8 @@ Public Type SCRIPT_STATE
 End Type
 
 Public Type SCRIPT_VISATTR
-    uJustification As SCRIPT_JUSTIFY
     fBitFields1 As Byte
-    fBitFields2 As Byte
+    fBitFieldReserved As Byte
 End Type
 
 Public Type SCRIPT_ANALYSIS
@@ -224,6 +223,8 @@ Public Type pdGlyphUniscribe
     isSoftBreak As Boolean
     isWhiteSpace As Boolean
     isZeroWidth As Boolean
+    isHardLineBreak As Boolean
+    ABCWidth As ABC
 End Type
 
 'When retrieving OpenType tags, it's convenient to reduce the unsigned Longs into a 4-byte struct

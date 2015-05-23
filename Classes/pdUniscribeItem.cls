@@ -125,9 +125,11 @@ Private m_ItemABCWidth As ABC
 ' 1) A logical attributes cache, with one entry FOR EACH CHARACTER (NOT GLYPH)!
 Private m_CharAttributesCache() As SCRIPT_LOGATTR
 
-'... because we only care about glyphs when rendering, we manually convert this data into a per-glyph word break and whitespace indicators.
+'... because we only care about glyphs when rendering, we manually convert this data into a per-glyph list of attributes we need
+' while rendering.  Irrelevant parameters are ignored.
 Private m_GlyphSoftBreakCache() As Boolean
 Private m_GlyphWhitespaceCache() As Boolean
+Private m_GlyphZeroWidthCache() As Boolean
 
 'ByRef + CopyMemory is confusing, especially when trading bare pointers (as I am prone to doing), so I prefer to use a ByVal-only
 ' version of RtlMoveMemory, and forcibly supply pointers to avoid the risk of messing things up.
@@ -304,6 +306,7 @@ Friend Sub setCharacterAttributeCache(ByRef charAttributesCache() As SCRIPT_LOGA
         If UBound(m_GlyphSoftBreakCache) < m_NumOfGlyphs Then
             ReDim m_GlyphSoftBreakCache(0 To m_NumOfGlyphs) As Boolean
             ReDim m_GlyphWhitespaceCache(0 To m_NumOfGlyphs) As Boolean
+            ReDim m_GlyphZeroWidthCache(0 To m_NumOfGlyphs) As Boolean
         End If
         
         'Forcibly set all soft break and whitespace markers to false, as we initialize these arrays lazily
@@ -311,8 +314,9 @@ Friend Sub setCharacterAttributeCache(ByRef charAttributesCache() As SCRIPT_LOGA
         For i = 0 To m_NumOfGlyphs
             m_GlyphSoftBreakCache(i) = False
             m_GlyphWhitespaceCache(i) = False
+            m_GlyphZeroWidthCache(i) = False
         Next i
-        
+                
         Dim tmpLong As Long, tmpIndex As Long
         
         'Because our break information is per-character, we'll iterate the string by character (not glyph).  If any character in a
@@ -346,7 +350,23 @@ Friend Sub setCharacterAttributeCache(ByRef charAttributesCache() As SCRIPT_LOGA
                 End If
                 
             End If
+                                
+        Next i
         
+        'The zero-width marker is different.  It is stored on a per-glyph basis, so we iterate over each glyph directly.
+        For i = 0 To m_NumOfGlyphs - 1
+        
+            'Find the glyph that corresponds to this character
+            tmpLong = m_VisualAttributesCache(i).fBitFields1
+        
+            'Retrieve the zero-width bit
+            If getBitFlag(6, tmpLong) Then
+                
+                'Mark this glyph as soft-breakable.  This means that - if necessary - a line can be broken IMMEDIATELY BEFORE this glyph.
+                m_GlyphZeroWidthCache(i) = True
+                
+            End If
+            
         Next i
         
     End If
@@ -359,6 +379,14 @@ End Function
 
 Friend Function getWhitespaceAtPosition(ByVal gPos As Long) As Boolean
     getWhitespaceAtPosition = m_GlyphWhitespaceCache(gPos)
+End Function
+
+Friend Function getZeroWidthAtPosition(ByVal gPos As Long) As Boolean
+    getZeroWidthAtPosition = m_GlyphZeroWidthCache(gPos)
+End Function
+
+Friend Function getCorrespondingCharIndex(ByVal gPos As Long) As Long
+    getCorrespondingCharIndex = m_RelativeStartPos + m_LogicalClusterCache(gPos)
 End Function
 
 'Retrieve an arbitrary 1-bit position [0-31] in a Long-type value.  Position 0 is the LEAST-SIGNIFICANT BIT, and Position 31
@@ -396,5 +424,6 @@ Private Sub Class_Initialize()
     ReDim m_CharAttributesCache(0 To DEFAULT_INITIAL_CACHE_SIZE - 1) As SCRIPT_LOGATTR
     ReDim m_GlyphSoftBreakCache(0 To DEFAULT_INITIAL_CACHE_SIZE - 1) As Boolean
     ReDim m_GlyphWhitespaceCache(0 To DEFAULT_INITIAL_CACHE_SIZE - 1) As Boolean
+    ReDim m_GlyphZeroWidthCache(0 To DEFAULT_INITIAL_CACHE_SIZE - 1) As Boolean
         
 End Sub
