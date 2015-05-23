@@ -237,6 +237,7 @@ Public Type PD_FONT_PROPERTY
     Supports_CJK As Boolean
     Supports_Cyrillic As Boolean
     Supports_Hebrew As Boolean
+    Supports_Latin As Boolean
     Supports_Thai As Boolean
     numSupportedScripts As Byte
     SupportedScripts() As Long

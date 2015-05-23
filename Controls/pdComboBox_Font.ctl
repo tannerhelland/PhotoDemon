@@ -449,8 +449,12 @@ Private m_listOfFonts As pdStringStack
 Private m_FontCollection As pdFontCollection
 
 'Preview string to demo each font face.  This is arbitrary, and currently set during the Initialize event.
-' (In the future, I'd like to offer language-specific previews, but I'm not sure how to easily assume a locale from a font name... TODO!)
-Private m_PreviewText_En As String
+' (Adding additional scripts is on the TODO list!)
+Private m_Text_Default As String
+Private m_Text_EN As String
+Private m_Text_CJK As String
+Private m_Text_Arabic As String
+Private m_Text_Hebrew As String
 
 'Basic combo box interaction functions
 
@@ -509,10 +513,10 @@ Private Sub dynamicallyFitDropDown(ByVal listHwnd As Long)
         totalHeight = 0
         
         'All entries have the same base size
-        If m_listOfFonts.getNumOfStrings > 12 Then
-            totalHeight = (m_ItemHeight + 2) * 12
+        If m_listOfFonts.getNumOfStrings > 8 Then
+            totalHeight = (m_ItemHeight * 2 + 2) * 8
         Else
-            totalHeight = (m_ItemHeight + 2) * m_listOfFonts.getNumOfStrings
+            totalHeight = (m_ItemHeight * 2 + 2) * m_listOfFonts.getNumOfStrings
         End If
         
         'The final height measurement includes two pixels for the non-client border of the drop-down
@@ -830,7 +834,11 @@ Private Sub UserControl_Initialize()
     Set m_FontCollection = New pdFontCollection
     
     'Create demo strings, to be rendered in the drop-down using the current font face
-    m_PreviewText_En = "Sample AaBbCc 123"
+    m_Text_Default = "AaBbCc 123"
+    m_Text_EN = "Sample"
+    m_Text_CJK = ChrW(&H6837) & ChrW(&H672C)
+    m_Text_Arabic = ChrW(&H639) & ChrW(&H64A) & ChrW(&H646) & ChrW(&H629)
+    m_Text_Hebrew = ChrW(&H5D3) & ChrW(&H5D5) & ChrW(&H5BC) & ChrW(&H5D2) & ChrW(&H5DE) & ChrW(&H5B8) & ChrW(&H5D4)
     
 End Sub
 
@@ -1217,7 +1225,7 @@ Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
         'The "best" width of the dropdown is a little sketchy, due to the font previews on the right.  At present,
         ' Use the width of the largest font name (which can only be 32 chars), multiplied by 2 (so an equal amount of size is allotted for
         ' the preview), plus a few extra pixels for padding, so a long font name with a long font preview don't "smash" together.
-        m_LargestWidth = m_LargestWidth * 2.1
+        m_LargestWidth = m_LargestWidth * 2.35
         
         'Remember the current list count, so we don't unnecessarily refresh the font in the future
         m_CountAtLastFontRefresh = m_listOfFonts.getNumOfStrings
@@ -1616,7 +1624,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
             DeleteObject tmpBackBrush
             
             'Retrieve the string for the active combo box entry.
-            Dim stringIndex As Long, tmpString As String
+            Dim stringIndex As Long, tmpString As String, sampleText As String
             stringIndex = srcDIS.itemID
             tmpString = m_listOfFonts.GetString(stringIndex)
             
@@ -1657,7 +1665,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
                 
                 'Start by creating this font, as necessary
                 Dim fontIndex As Long
-                fontIndex = m_FontCollection.addFontToCache(tmpString, m_FontSize + 1)
+                fontIndex = m_FontCollection.addFontToCache(tmpString, m_FontSize + 4)
     
                 'Retrieve a handle to the created font
                 Dim fontHandle As Long
@@ -1689,9 +1697,23 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
                     .Top = srcDIS.rcItem.Top
                     .Bottom = srcDIS.rcItem.Bottom
                 End With
-    
+                
+                'Create sample text based on the scripts supported by this font.  If no special scripts are supported,
+                ' default English text is used.
+                If g_PDFontProperties(stringIndex).Supports_CJK Then
+                    sampleText = m_Text_Default & " " & m_Text_CJK
+                ElseIf g_PDFontProperties(stringIndex).Supports_Arabic Then
+                    sampleText = m_Text_Default & " " & m_Text_Arabic
+                ElseIf g_PDFontProperties(stringIndex).Supports_Hebrew Then
+                    sampleText = m_Text_Default & " " & m_Text_Hebrew
+                ElseIf g_PDFontProperties(stringIndex).Supports_Latin Then
+                    sampleText = m_Text_Default & " " & m_Text_EN
+                Else
+                    sampleText = m_Text_Default
+                End If
+                
                 'Render right-aligned preview text
-                DrawText srcDIS.hDC, StrPtr(m_PreviewText_En), Len(m_PreviewText_En), previewRect, DT_RIGHT Or DT_VCENTER Or DT_SINGLELINE Or DT_NOPREFIX
+                DrawText srcDIS.hDC, StrPtr(sampleText), Len(sampleText), previewRect, DT_RIGHT Or DT_VCENTER Or DT_SINGLELINE Or DT_NOPREFIX
     
                 'Release our font
                 SelectObject srcDIS.hDC, oldFont
@@ -2135,7 +2157,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         'Fill the height parameter; note that m_ItemHeight is the literal height of a string using the current font.
                         ' Any padding values must be added here.  (I've gone with 1px on either side, and 1.5x enlargement vertically,
                         ' so font previews have a little more room to breathe.)
-                        MIS.itemHeight = m_ItemHeight * 1.5 + 2
+                        MIS.itemHeight = m_ItemHeight * 2 + 2
                                                 
                     End If
                     

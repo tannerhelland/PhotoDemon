@@ -322,7 +322,8 @@ Public Function getScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
                             Case OST_HEBREW
                                 dstFontProperty.Supports_Hebrew = True
                                 
-                            'Case OST_LATIN
+                            Case OST_LATIN
+                                dstFontProperty.Supports_Latin = True
                             
                             Case OST_THAI
                                 dstFontProperty.Supports_Thai = True
