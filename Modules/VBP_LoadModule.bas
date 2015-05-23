@@ -345,7 +345,9 @@ Public Sub LoadTheProgram()
     ' modified to generate a single cache, and it will dynamically switch between rendering engines as necessary to support a given font.
     Font_Management.buildFontCache
     
-    
+    'Next, build a list of font properties, like supported scripts
+    Font_Management.buildFontCacheProperties
+        
     
     '*************************************************************************************************************************************
     ' Get the viewport engine ready
