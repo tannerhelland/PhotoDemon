@@ -149,6 +149,10 @@ Private m_TextMetrics As TEXTMETRIC
 ' screen coordinates.  We cache these values so we don't have to constantly retrieve them from the larger TEXTMETRIC struct.
 Private m_FontAscent As Long, m_FontDescent As Long, m_FontHeight As Long
 
+'Copy of the string, font, and DC used at our previous build.  If any of these change, we have to redo various Uniscribe steps, but we
+' can shortcut some steps if (for example) font setting change but the string does not.
+Private m_LastFont As Long, m_LastDC As Long, m_LastString As String
+
 'Prior to glyph generation, this class needs a copy of GDI font handle.  I have deliberately made this function separate
 ' AS A REMINDER TO REMOVE THE FONT FROM ANY ACTIVE DCs PRIOR TO GIVING THIS CLASS ACCESS.
 Public Sub notifyOfGDIFontChoice(ByVal srcGDIFontHandle As Long)
@@ -193,123 +197,145 @@ Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal u
     Dim rawGlyphBytes() As Long
     Dim glyphAdded As Boolean
     
-    'Use Uniscribe to process a list of required glyphs and their relevant positions.
-    m_Uniscribe.Step1_ScriptItemize srcString
-    m_Uniscribe.Step2_ScriptLayout
-    m_Uniscribe.Step3_ScriptShape m_tmpDIB.getDIBDC
-    m_Uniscribe.Step4_ScriptPlace m_tmpDIB.getDIBDC
-    m_Uniscribe.Step5_ScriptBreak
+    Dim stringChanged As Boolean, fontOrDCChanged As Boolean
     
-    'Retrieve a copy of Uniscribe's data in a PD-friendly format.
-    m_NumOfGlyphs = m_Uniscribe.getCopyOfGlyphCache(m_Glyphs, m_tmpDIB.getDIBDC)
+    stringChanged = CBool(StrComp(srcString, m_LastString, vbBinaryCompare) <> 0)
+    fontOrDCChanged = CBool(m_LastFont <> m_GDIFont) Or CBool(m_tmpDIB.getDIBDC <> m_LastDC)
     
-    'Curious about what pdUniscribe returns?  Uncomment this line for a nice intro.
-    'm_Uniscribe.printUniscribeDebugInfo
+    'If the string has changed since the last call, we must re-itemize it.
+    If stringChanged Then
     
-    'Start iterating through the glyph collection returned by Uniscribe.  For any glyph indices that do not exist in our current
-    ' outline collection, retrieve a raw outline buffer and convert it to a pdGraphicsPath object.
-    '
-    'IMPORTANT NOTE!  The glyph collection and glyph outline collections do *NOT* have a 1:1 mapping.  Because glyph retrieval
-    ' is expensive, we only store one copy of each unique glyph outline.  So for the text AAAaaa, the m_Glyphs collection
-    ' will have six entries (one for each glyph), while the m_GlyphOutline collection will have two entries (one for each
-    ' *UNIQUE* glyph).  Mapping between the two arrays is done by matching .GlyphIndex values in the respective structs.
-    Dim i As Long, j As Long
-    For i = 0 To m_NumOfGlyphs - 1
+        'Use Uniscribe to process a list of required glyphs and their relevant positions.
+        m_Uniscribe.Step1_ScriptItemize srcString
+        m_Uniscribe.Step2_ScriptLayout
+        m_LastString = srcString
         
-        charAlreadyExists = False
-        glyphAdded = False
-        curGlyphIndex = m_Glyphs(i).glyphIndex
+    End If
+    
+    'If the string or font has changed, we must recreate our glyph collection
+    If stringChanged Or fontOrDCChanged Then
+    
+        'Make a note of the string contents; if they don't change on the next glyph collection call, we can skip these steps
+        m_Uniscribe.Step3_ScriptShape m_tmpDIB.getDIBDC
+        m_Uniscribe.Step4_ScriptPlace m_tmpDIB.getDIBDC
+        m_Uniscribe.Step5_ScriptBreak
         
-        'See if this glyph index already exists in our outline collection
-        If m_NumOfGlyphs > 0 Then
-            
-            For j = 0 To m_NumOfGlyphOutlines - 1
-                
-                'If this glyph already exists, mark it and exit immediately
-                If curGlyphIndex = m_GlyphOutlines(j).glyphIndex Then
-                    charAlreadyExists = True
-                    Exit For
-                End If
-                
-            Next j
-            
-        End If
+        'Make a note of the font and DC used
+        m_LastFont = m_GDIFont
+        m_LastDC = m_tmpDIB.getDIBDC
         
-        'If the current character isn't in our collection, retrieve it now
-        If (Not charAlreadyExists) Then
+        'Retrieve a copy of Uniscribe's data in a PD-friendly format.
+        m_NumOfGlyphs = m_Uniscribe.getCopyOfGlyphCache(m_Glyphs, m_tmpDIB.getDIBDC)
+        
+        'Curious about what pdUniscribe returns?  Uncomment this line for a nice intro.
+        'm_Uniscribe.printUniscribeDebugInfo
+        
+        'Start iterating through the glyph collection returned by Uniscribe.  For any glyph indices that do not exist in our current
+        ' outline collection, retrieve a raw outline buffer and convert it to a pdGraphicsPath object.
+        '
+        'IMPORTANT NOTE!  The glyph collection and glyph outline collections do *NOT* have a 1:1 mapping.  Because glyph retrieval
+        ' is expensive, we only store one copy of each unique glyph outline.  So for the text AAAaaa, the m_Glyphs collection
+        ' will have six entries (one for each glyph), while the m_GlyphOutline collection will have two entries (one for each
+        ' *UNIQUE* glyph).  Mapping between the two arrays is done by matching .GlyphIndex values in the respective structs.
+        Dim i As Long, j As Long
+        For i = 0 To m_NumOfGlyphs - 1
             
-            'Mark the glyph index (index into the *font file*), so we can match individual glyphs in the string to this outline
-            m_GlyphOutlines(m_NumOfGlyphOutlines).glyphIndex = curGlyphIndex
+            charAlreadyExists = False
+            glyphAdded = False
+            curGlyphIndex = m_Glyphs(i).glyphIndex
             
-            'Retrieve the raw glyph buffer.  This step will fail for any non-display characters (e.g. control chars, like linefeeds, as well
-            ' as whitespace characters like spaces or tabs), so failure is not a bad thing.  What makes handling tricky is that failure can
-            ' occur at a lot of different places; the function itself may fail, or it may succeed but return a zero-length buffer, or it may
-            ' succeed but return a blank outline (an empty square or square with an x through it).  We don't care about *why* it fails,
-            ' just that it gives us a useful outline or not!
-            If getRawGlyphBuffer(curGlyphIndex, rawGlyphBytes, useHinting) Then
+            'See if this glyph index already exists in our outline collection
+            If m_NumOfGlyphs > 0 Then
                 
-                'With the raw buffer retrieved, we can now walk the byte array and retrieve individual line and curve metrics.
-                
-                'Before doing that, see if the buffer size is non-zero.  A zero-size buffer is valid output for whitespace
-                ' characters (e.g. spaces).
-                If UBound(rawGlyphBytes) > 0 Then
+                For j = 0 To m_NumOfGlyphOutlines - 1
                     
-                    'Debug.Print ChrW$(curChar) & ":" & UBound(rawGlyphBytes)
+                    'If this glyph already exists, mark it and exit immediately
+                    If curGlyphIndex = m_GlyphOutlines(j).glyphIndex Then
+                        charAlreadyExists = True
+                        Exit For
+                    End If
                     
-                    'Proceed with parsing this glyph
-                    If parseRawGlyphBuffer(rawGlyphBytes, m_GlyphOutlines(m_NumOfGlyphOutlines).glyphPath) Then
+                Next j
+                
+            End If
+            
+            'If the current character isn't in our collection, retrieve it now
+            If (Not charAlreadyExists) Then
+                
+                'Mark the glyph index (index into the *font file*), so we can match individual glyphs in the string to this outline
+                m_GlyphOutlines(m_NumOfGlyphOutlines).glyphIndex = curGlyphIndex
+                
+                'Retrieve the raw glyph buffer.  This step will fail for any non-display characters (e.g. control chars, like linefeeds, as well
+                ' as whitespace characters like spaces or tabs), so failure is not a bad thing.  What makes handling tricky is that failure can
+                ' occur at a lot of different places; the function itself may fail, or it may succeed but return a zero-length buffer, or it may
+                ' succeed but return a blank outline (an empty square or square with an x through it).  We don't care about *why* it fails,
+                ' just that it gives us a useful outline or not!
+                If getRawGlyphBuffer(curGlyphIndex, rawGlyphBytes, useHinting) Then
+                    
+                    'With the raw buffer retrieved, we can now walk the byte array and retrieve individual line and curve metrics.
+                    
+                    'Before doing that, see if the buffer size is non-zero.  A zero-size buffer is valid output for whitespace
+                    ' characters (e.g. spaces).
+                    If UBound(rawGlyphBytes) > 0 Then
                         
-                        'This glyph exists in the font and has some kind of drawable shape.  Yay!
-                        m_GlyphOutlines(m_NumOfGlyphOutlines).hasOutline = True
+                        'Debug.Print ChrW$(curChar) & ":" & UBound(rawGlyphBytes)
                         
-                        'Note that this glyph is valid; this will move the collection pointer to the next entry in the stack
-                        glyphAdded = True
+                        'Proceed with parsing this glyph
+                        If parseRawGlyphBuffer(rawGlyphBytes, m_GlyphOutlines(m_NumOfGlyphOutlines).glyphPath) Then
+                            
+                            'This glyph exists in the font and has some kind of drawable shape.  Yay!
+                            m_GlyphOutlines(m_NumOfGlyphOutlines).hasOutline = True
+                            
+                            'Note that this glyph is valid; this will move the collection pointer to the next entry in the stack
+                            glyphAdded = True
+                            
+                        'Glyph buffer parsing failed
+                        Else
                         
-                    'Glyph buffer parsing failed
+                            #If DEBUGMODE = 1 Then
+                                pdDebug.LogAction "WARNING!  parseRawGlyphBuffer failed for glyph index " & curGlyphIndex
+                            #End If
+                            
+                            m_GlyphOutlines(m_NumOfGlyphOutlines).hasOutline = False
+                            glyphAdded = False
+                            
+                        End If
+                    
+                    'This is likely a control character.  We still add it (to avoid attempted parsing on future attempts), but we
+                    ' specifically note that it doesn't have a renderable outline.
                     Else
-                    
-                        #If DEBUGMODE = 1 Then
-                            pdDebug.LogAction "WARNING!  parseRawGlyphBuffer failed for glyph index " & curGlyphIndex
-                        #End If
+                        
+                        'Debug.Print "Zero-length glyph buffer: " & curGlyphIndex & ":" & UBound(rawGlyphBytes)
                         
                         m_GlyphOutlines(m_NumOfGlyphOutlines).hasOutline = False
-                        glyphAdded = False
-                        
+                        glyphAdded = True
+                    
                     End If
                 
-                'This is likely a control character.  We still add it (to avoid attempted parsing on future attempts), but we
-                ' specifically note that it doesn't have a renderable outline.
+                'Raw glyph buffer retrieval failed.  This is a valid return for some control characters.  To avoid future attempts at
+                ' parsing an outline, we *still* add it to the collection, but we note that it isn't renderable.
                 Else
                     
-                    'Debug.Print "Zero-length glyph buffer: " & curGlyphIndex & ":" & UBound(rawGlyphBytes)
+                    'Debug.Print "getRawGlyphBuffer full-on failed: " & curGlyphIndex
                     
                     m_GlyphOutlines(m_NumOfGlyphOutlines).hasOutline = False
                     glyphAdded = True
-                
+                    
                 End If
-            
-            'Raw glyph buffer retrieval failed.  This is a valid return for some control characters.  To avoid future attempts at
-            ' parsing an outline, we *still* add it to the collection, but we note that it isn't renderable.
-            Else
                 
-                'Debug.Print "getRawGlyphBuffer full-on failed: " & curGlyphIndex
+                'If a glyph was successfully added to the collection, increment the current glyph count and resize the collection as necessary.
+                If glyphAdded Then
+                    m_NumOfGlyphOutlines = m_NumOfGlyphOutlines + 1
+                    If m_NumOfGlyphOutlines > UBound(m_GlyphOutlines) Then ReDim Preserve m_GlyphOutlines(0 To m_NumOfGlyphOutlines * 2 - 1) As pdGlyphOutline
+                End If
                 
-                m_GlyphOutlines(m_NumOfGlyphOutlines).hasOutline = False
-                glyphAdded = True
-                
+            '(End "If Not charAlreadyExists")
             End If
             
-            'If a glyph was successfully added to the collection, increment the current glyph count and resize the collection as necessary.
-            If glyphAdded Then
-                m_NumOfGlyphOutlines = m_NumOfGlyphOutlines + 1
-                If m_NumOfGlyphOutlines > UBound(m_GlyphOutlines) Then ReDim Preserve m_GlyphOutlines(0 To m_NumOfGlyphOutlines * 2 - 1) As pdGlyphOutline
-            End If
-            
-        '(End "If Not charAlreadyExists")
-        End If
+        Next i
         
-    Next i
-        
+    End If
+    
     'Before exiting, remove the active font into our temporary "testing" DC
     SelectObject m_tmpDIB.getDIBDC, m_oldFontHandle
 

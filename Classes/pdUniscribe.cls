@@ -347,8 +347,12 @@ Public Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
         Loop
         
         'For debugging purposes, you can choose to list calculated line break character positions:
+        'For i = 0 To m_NumOfLineBreaks - 1
+        '    Debug.Print "Linebreak at char # " & m_LineBreakPositions(i)
+        'Next i
         
         'Replace all linebreaks with zero-width non-joiner chars.  These force Uniscribe to break characters at these positions, and they are
+        ' easy to detect later, when it's time to return a glyph array to the actual renderer.
         m_CurrentString = Replace$(m_CurrentString, vbLf, ChrW(8204), , , vbBinaryCompare)
         
     End If
