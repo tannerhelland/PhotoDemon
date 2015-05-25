@@ -212,7 +212,7 @@ Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal u
         
     End If
     
-    'If the string or font has changed, we must recreate our glyph collection
+    'If the string *or* font has changed, we must recreate our glyph collection
     If stringChanged Or fontOrDCChanged Then
     
         'Make a note of the string contents; if they don't change on the next glyph collection call, we can skip these steps
@@ -592,7 +592,7 @@ End Function
 
 'After assembling a full glyph collection, this function can be called to generate a totally complete graphics path, with all
 ' characters laid out according to the passed rect.
-Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef boundingRect As RECTF) As Boolean
+Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef boundingRect As RECTF, Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords) As Boolean
     
     'Initialize the destination path as necessary
     If dstPath Is Nothing Then Set dstPath = New pdGraphicsPath
@@ -600,16 +600,13 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
     'Only proceed if the source string is non-empty
     If m_NumOfGlyphs > 0 Then
         
-        'Before processing the string, let's do some preprocessing to it.
+        'Path assembly happens in two steps.
+        ' 1) First, we precalculate all glyph (x, y) positions, including line-breaking.  Calculating positions in advance
+        '    *greatly* simplifies the main rendering loop.
+        ' 2) Once individual positions are calculated on a per-glyph basis, we perform the actual rendering.
         
-        'TODO: move all preprocessing earlier in the chain, so we don't have to deal with character-specific data
-        ' during path assembly.
-        
-        'First, normalize all linebreaks to vbLf
-        'If InStr(1, srcString, vbCrLf, vbBinaryCompare) <> 0 Then srcString = Replace$(srcString, vbCrLf, vbLf)
-        'If InStr(1, srcString, vbCr, vbBinaryCompare) <> 0 Then srcString = Replace$(srcString, vbCr, vbLf)
-        
-        'Add more in the future, perhaps...?
+        '(FYI: the glyph positioning algorithm fills the .finalX and .finalY entries for each glyph.)
+        calculateGlyphPositions lineWrapMode
         
         Dim i As Long, curGlyph As Long, curGlyphOutline As Long, srcPathHandle As Long
         Dim xOffset As Single, yOffset As Single
@@ -690,6 +687,37 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
     End If
         
     assembleCompositePath = True
+
+End Function
+
+Private Function calculateGlyphPositions(Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords) As Boolean
+    
+    'Calculating glyph positions happens in a few different steps.
+    
+    'First, we assign each glyph a line ID (0-based).  Until we know a) how many lines there are, and b) which glyphs sit on which lines,
+    ' we cannot calculate alignments.
+    
+    'Line-breaking is further complicated by the nastiness that is word-wrapping.  Since PD exposes a few different line-breaking options
+    ' to the user, we can greatly simplify this function if a simpler line-breaking algorithm is used.
+    
+    Select Case lineWrapMode
+    
+        'In non-break mode, all line breaks (even manual ones) are forcibly ignored
+        Case tre_None
+        
+        'In manual mode, only hard line breaks (e.g. \n) are respected
+        Case tre_ManualOnly
+        
+        'In character mode, lines are broken as soon as a character extends past a line
+        Case tre_AutoBreakCharacter
+        
+        'In word mode, traditional word-wrap rules are used
+        Case tre_AutoBreakWords
+    
+    End Select
+    
+    'This function doesn't currently have a fail state
+    calculateGlyphPositions = True
 
 End Function
 

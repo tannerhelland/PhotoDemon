@@ -218,6 +218,7 @@ Private Type textLayerData
     tld_TextContrast As Long
     tld_RenderingEngine As TEXT_RENDERING_ENGINE
     tld_TextHinting As Boolean
+    tld_WordWrap As TEXT_WORDWRAP_MODE
 End Type
 
 Private myTextData As textLayerData
@@ -239,12 +240,13 @@ Public Enum PDLAYER_TEXT_PROPERTY
     ptp_TextContrast = 12
     ptp_RenderingEngine = 13
     ptp_TextHinting = 14
+    ptp_WordWrap = 15
 End Enum
 
 #If False Then
     Const ptp_Text = 0, ptp_FontColor = 1, ptp_FontFace = 2, ptp_FontSize = 3, ptp_FontSizeUnit = 4, ptp_FontBold = 5, ptp_FontItalic = 6
     Const ptp_FontUnderline = 7, ptp_FontStrikeout = 8, ptp_HorizontalAlignment = 9, ptp_VerticalAlignment = 10, ptp_TextAntialiasing = 11
-    Const ptp_TextContrast = 12, ptp_RenderingEngine = 13, ptp_TextHinting = 14
+    Const ptp_TextContrast = 12, ptp_RenderingEngine = 13, ptp_TextHinting = 14, ptp_WordWrap = 15
 #End If
 
 'A dedicated text renderer is used to render the backer layer for text layers
@@ -862,6 +864,9 @@ Friend Function getTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPE
             
         Case ptp_TextHinting
             getTextLayerProperty = myTextData.tld_TextHinting
+            
+        Case ptp_WordWrap
+            getTextLayerProperty = myTextData.tld_WordWrap
     
     End Select
 
@@ -958,6 +963,12 @@ Friend Sub setTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPERTY, 
         Case ptp_TextHinting
             If myTextData.tld_TextHinting <> CBool(newValue) Then
                 myTextData.tld_TextHinting = CBool(newValue)
+                m_VectorDIBSynched = False
+            End If
+            
+        Case ptp_WordWrap
+            If myTextData.tld_WordWrap <> CLng(newValue) Then
+                myTextData.tld_WordWrap = CLng(newValue)
                 m_VectorDIBSynched = False
             End If
         
@@ -1342,6 +1353,7 @@ Public Function getVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
                 .writeTag "TextLayerContrast", myTextData.tld_TextContrast
                 .writeTag "TextRenderingEngine", myTextData.tld_RenderingEngine
                 .writeTag "TextHinting", myTextData.tld_TextHinting
+                .writeTag "TextWordWrap", myTextData.tld_WordWrap
             End With
         
     End Select
@@ -1390,6 +1402,7 @@ Public Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
                     .tld_TextContrast = xmlEngine.getUniqueTag_Long("TextLayerContrast", 5)
                     .tld_RenderingEngine = xmlEngine.getUniqueTag_Long("TextRenderingEngine", tre_WAPI)
                     .tld_TextHinting = xmlEngine.getUniqueTag_Boolean("TextHinting", False)
+                    .tld_WordWrap = xmlEngine.getUniqueTag_Long("TextWordWrap", tre_AutoBreakWords)
                 End With
                 
         End Select
@@ -1959,6 +1972,8 @@ Public Sub resetLayerParameters()
         .tld_VerticalAlignment = StringAlignmentNear
         .tld_TextAntialiasing = pdta_Standard
         .tld_TextContrast = 4
+        .tld_TextHinting = False
+        .tld_WordWrap = tre_AutoBreakWords
     End With
 
 End Sub

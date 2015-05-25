@@ -225,6 +225,9 @@ Public Type pdGlyphUniscribe
     isZeroWidth As Boolean
     isHardLineBreak As Boolean
     ABCWidth As ABC
+    finalX As Single        'Final (x, y) positioning has nothing to do with Uniscribe.  PD calculates this internally, using all the
+    finalY As Single        ' metrics supplied by Uniscribe, and all the metrics supplied by the user.
+    LineID As Long          'Which line (0-based) this glyph sits on.  PD pre-calculates this to make rendering easier.
 End Type
 
 'When retrieving OpenType tags, it's convenient to reduce the unsigned Longs into a 4-byte struct
