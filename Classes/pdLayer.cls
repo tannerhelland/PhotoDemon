@@ -2225,6 +2225,7 @@ Public Function syncInternalDIB() As Boolean
             
             With myTextRenderer
                 .setFontFace myTextData.tld_FontFace
+                .setFontColor myTextData.tld_FontColor
                 .setFontSize myTextData.tld_FontSize
                 .setFontSizeUnit myTextData.tld_FontSizeUnit
                 .setFontBold myTextData.tld_FontBold
@@ -2238,6 +2239,20 @@ Public Function syncInternalDIB() As Boolean
                 .setRenderingEngine myTextData.tld_RenderingEngine
                 .setTextHinting myTextData.tld_TextHinting
                 .setWordWrap myTextData.tld_WordWrap
+                .setFillMode myTextData.tld_FillMode
+                .setFillOpacity myTextData.tld_FillOpacity
+                .setFillPattern myTextData.tld_FillPattern
+                .setFillPatternColor1 myTextData.tld_PatternColor1
+                .setFillPatternColor2 myTextData.tld_PatternColor2
+                .setOutlineMode myTextData.tld_OutlineMode
+                .setOutlineColor myTextData.tld_OutlineColor
+                .setOutlineCorner myTextData.tld_OutlineCorner
+                .setOutlineCaps myTextData.tld_OutlineCaps
+                .setOutlineOpacity myTextData.tld_OutlineOpacity
+                .setOutlineWidth myTextData.tld_OutlineWidth
+                .setBackgroundMode myTextData.tld_BackgroundMode
+                .setBackgroundColor myTextData.tld_BackgroundColor
+                .setBackgroundOpacity myTextData.tld_BackgroundOpacity
             End With
             
             'Initialize the backer DIB as necessary
@@ -2264,11 +2279,13 @@ Public Function syncInternalDIB() As Boolean
             layerDIB.setInitialAlphaPremultiplicationState True
             
             'Use the text renderer to paint the string onto the backer DIB
-            If Len(myTextData.tld_Text) <> 0 Then
-                myTextRenderer.renderTextToDIB layerDIB, myTextData.tld_Text, myTextData.tld_FontColor, 0, 0, myVectorData.vd_Width, myVectorData.vd_Height
-            Else
-                Debug.Print "no text to print!"
-            End If
+            myTextRenderer.renderTextToDIB layerDIB, myTextData.tld_Text, 0, 0, myVectorData.vd_Width, myVectorData.vd_Height
+            
+            'If Len(myTextData.tld_Text) <> 0 Then
+            '
+            'Else
+            '    Debug.Print "no text to print!"
+            'End If
     
     End Select
     
