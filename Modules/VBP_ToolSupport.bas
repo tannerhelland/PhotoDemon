@@ -451,6 +451,20 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                     .btsHAlignment.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_HorizontalAlignment)
                     .btsVAlignment.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_VerticalAlignment)
                     .cboWordWrap.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_WordWrap)
+                    .cboFillMode.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FillMode)
+                    .sltFillOpacity.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FillOpacity)
+                    .cboFillPattern.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FillPattern)
+                    .csPattern(0).Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_PatternColor1)
+                    .csPattern(1).Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_PatternColor2)
+                    .cboOutlineMode.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_OutlineMode)
+                    .csOutline.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_OutlineColor)
+                    .cboOutlineCorner.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_OutlineCorner)
+                    .cboOutlineCaps.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_OutlineCaps)
+                    .sltOutlineOpacity.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_OutlineOpacity)
+                    .sltOutlineWidth.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_OutlineWidth)
+                    .chkBackground.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackgroundMode)
+                    .sltBackgroundOpacity.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackgroundOpacity)
+                    .csBackground.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackgroundColor)
                 End With
                 
                 'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.
@@ -551,6 +565,20 @@ Public Sub syncCurrentLayerToToolOptionsUI()
                     .setTextLayerProperty ptp_HorizontalAlignment, toolpanel_FancyText.btsHAlignment.ListIndex
                     .setTextLayerProperty ptp_VerticalAlignment, toolpanel_FancyText.btsVAlignment.ListIndex
                     .setTextLayerProperty ptp_WordWrap, toolpanel_FancyText.cboWordWrap.ListIndex
+                    .setTextLayerProperty ptp_FillMode, toolpanel_FancyText.cboFillMode.ListIndex
+                    .setTextLayerProperty ptp_FillOpacity, toolpanel_FancyText.sltFillOpacity.Value
+                    .setTextLayerProperty ptp_FillPattern, toolpanel_FancyText.cboFillPattern.ListIndex
+                    .setTextLayerProperty ptp_PatternColor1, toolpanel_FancyText.csPattern(0).Color
+                    .setTextLayerProperty ptp_PatternColor2, toolpanel_FancyText.csPattern(1).Color
+                    .setTextLayerProperty ptp_OutlineMode, toolpanel_FancyText.cboOutlineMode.ListIndex
+                    .setTextLayerProperty ptp_OutlineColor, toolpanel_FancyText.csOutline.Color
+                    .setTextLayerProperty ptp_OutlineCorner, toolpanel_FancyText.cboOutlineCorner.ListIndex
+                    .setTextLayerProperty ptp_OutlineCaps, toolpanel_FancyText.cboOutlineCaps.ListIndex
+                    .setTextLayerProperty ptp_OutlineOpacity, toolpanel_FancyText.sltOutlineOpacity.Value
+                    .setTextLayerProperty ptp_OutlineWidth, toolpanel_FancyText.sltOutlineWidth.Value
+                    .setTextLayerProperty ptp_BackgroundMode, toolpanel_FancyText.chkBackground.Value
+                    .setTextLayerProperty ptp_BackgroundOpacity, toolpanel_FancyText.sltBackgroundOpacity.Value
+                    .setTextLayerProperty ptp_BackgroundColor, toolpanel_FancyText.csBackground.Color
                 End With
                 
                 'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.

@@ -219,6 +219,20 @@ Private Type textLayerData
     tld_RenderingEngine As TEXT_RENDERING_ENGINE
     tld_TextHinting As Boolean
     tld_WordWrap As TEXT_WORDWRAP_MODE
+    tld_FillMode As Long
+    tld_FillOpacity As Single
+    tld_FillPattern As Long
+    tld_PatternColor1 As Long
+    tld_PatternColor2 As Long
+    tld_OutlineMode As Long
+    tld_OutlineColor As Long
+    tld_OutlineCorner As Long
+    tld_OutlineCaps As Long
+    tld_OutlineOpacity As Single
+    tld_OutlineWidth As Single
+    tld_BackgroundMode As Long
+    tld_BackgroundOpacity As Single
+    tld_BackgroundColor As Long
 End Type
 
 Private myTextData As textLayerData
@@ -241,12 +255,29 @@ Public Enum PDLAYER_TEXT_PROPERTY
     ptp_RenderingEngine = 13
     ptp_TextHinting = 14
     ptp_WordWrap = 15
+    ptp_FillMode = 16
+    ptp_FillOpacity = 17
+    ptp_FillPattern = 18
+    ptp_PatternColor1 = 19
+    ptp_PatternColor2 = 20
+    ptp_OutlineMode = 21
+    ptp_OutlineColor = 22
+    ptp_OutlineCorner = 23
+    ptp_OutlineCaps = 24
+    ptp_OutlineOpacity = 25
+    ptp_OutlineWidth = 26
+    ptp_BackgroundMode = 27
+    ptp_BackgroundOpacity = 28
+    ptp_BackgroundColor = 29
 End Enum
 
 #If False Then
     Const ptp_Text = 0, ptp_FontColor = 1, ptp_FontFace = 2, ptp_FontSize = 3, ptp_FontSizeUnit = 4, ptp_FontBold = 5, ptp_FontItalic = 6
     Const ptp_FontUnderline = 7, ptp_FontStrikeout = 8, ptp_HorizontalAlignment = 9, ptp_VerticalAlignment = 10, ptp_TextAntialiasing = 11
-    Const ptp_TextContrast = 12, ptp_RenderingEngine = 13, ptp_TextHinting = 14, ptp_WordWrap = 15
+    Const ptp_TextContrast = 12, ptp_RenderingEngine = 13, ptp_TextHinting = 14, ptp_WordWrap = 15, ptp_FillMode = 16, ptp_FillOpacity = 17
+    Const ptp_FillPattern = 18, ptp_PatternColor1 = 19, ptp_PatternColor2 = 20, ptp_OutlineMode = 21, ptp_OutlineColor = 22
+    Const ptp_OutlineCorner = 23, ptp_OutlineCaps = 24, ptp_OutlineOpacity = 25, ptp_OutlineWidth = 26, ptp_BackgroundMode = 27
+    Const ptp_BackgroundOpacity = 28, ptp_BackgroundColor = 29
 #End If
 
 'A dedicated text renderer is used to render the backer layer for text layers
@@ -867,6 +898,48 @@ Friend Function getTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPE
             
         Case ptp_WordWrap
             getTextLayerProperty = myTextData.tld_WordWrap
+            
+        Case ptp_FillMode
+            getTextLayerProperty = myTextData.tld_FillMode
+        
+        Case ptp_FillOpacity
+            getTextLayerProperty = myTextData.tld_FillOpacity
+        
+        Case ptp_FillPattern
+            getTextLayerProperty = myTextData.tld_FillPattern
+        
+        Case ptp_PatternColor1
+            getTextLayerProperty = myTextData.tld_PatternColor1
+        
+        Case ptp_PatternColor2
+            getTextLayerProperty = myTextData.tld_PatternColor2
+        
+        Case ptp_OutlineMode
+            getTextLayerProperty = myTextData.tld_OutlineMode
+        
+        Case ptp_OutlineColor
+            getTextLayerProperty = myTextData.tld_OutlineColor
+        
+        Case ptp_OutlineCorner
+            getTextLayerProperty = myTextData.tld_OutlineColor
+        
+        Case ptp_OutlineCaps
+            getTextLayerProperty = myTextData.tld_OutlineCaps
+        
+        Case ptp_OutlineOpacity
+            getTextLayerProperty = myTextData.tld_OutlineOpacity
+        
+        Case ptp_OutlineWidth
+            getTextLayerProperty = myTextData.tld_OutlineWidth
+        
+        Case ptp_BackgroundMode
+            getTextLayerProperty = myTextData.tld_BackgroundMode
+        
+        Case ptp_BackgroundOpacity
+            getTextLayerProperty = myTextData.tld_BackgroundOpacity
+        
+        Case ptp_BackgroundColor
+            getTextLayerProperty = myTextData.tld_BackgroundColor
     
     End Select
 
@@ -971,6 +1044,90 @@ Friend Sub setTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPERTY, 
                 myTextData.tld_WordWrap = CLng(newValue)
                 m_VectorDIBSynched = False
             End If
+            
+        Case ptp_FillMode
+            If myTextData.tld_FillMode <> CLng(newValue) Then
+                myTextData.tld_FillMode = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_FillOpacity
+            If myTextData.tld_FillOpacity <> CSng(newValue) Then
+                myTextData.tld_FillOpacity = CSng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_FillPattern
+            If myTextData.tld_FillPattern <> CLng(newValue) Then
+                myTextData.tld_FillPattern = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_PatternColor1
+            If myTextData.tld_PatternColor1 <> CLng(newValue) Then
+                myTextData.tld_PatternColor1 = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_PatternColor2
+            If myTextData.tld_PatternColor2 <> CLng(newValue) Then
+                myTextData.tld_PatternColor2 = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_OutlineMode
+            If myTextData.tld_OutlineMode <> CLng(newValue) Then
+                myTextData.tld_OutlineMode = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_OutlineColor
+            If myTextData.tld_OutlineColor <> CLng(newValue) Then
+                myTextData.tld_OutlineColor = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_OutlineCorner
+            If myTextData.tld_OutlineCorner <> CLng(newValue) Then
+                myTextData.tld_OutlineCorner = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_OutlineCaps
+            If myTextData.tld_OutlineCaps <> CLng(newValue) Then
+                myTextData.tld_OutlineCaps = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_OutlineOpacity
+            If myTextData.tld_OutlineOpacity <> CSng(newValue) Then
+                myTextData.tld_OutlineOpacity = CSng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_OutlineWidth
+            If myTextData.tld_OutlineWidth <> CSng(newValue) Then
+                myTextData.tld_OutlineWidth = CSng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_BackgroundMode
+            If myTextData.tld_BackgroundMode <> CLng(newValue) Then
+                myTextData.tld_BackgroundMode = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_BackgroundOpacity
+            If myTextData.tld_BackgroundOpacity <> CSng(newValue) Then
+                myTextData.tld_BackgroundOpacity = CSng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_BackgroundColor
+            If myTextData.tld_BackgroundColor <> CLng(newValue) Then
+                myTextData.tld_BackgroundColor = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
         
     End Select
     
@@ -1057,6 +1214,21 @@ Private Sub Class_Initialize()
         .tld_VerticalAlignment = StringAlignmentNear
         .tld_TextAntialiasing = pdta_Standard
         .tld_TextContrast = 4
+        .tld_WordWrap = tre_AutoBreakWords
+        .tld_FillMode = 1
+        .tld_FillOpacity = 100
+        .tld_FillPattern = 0
+        .tld_PatternColor1 = vbWhite
+        .tld_PatternColor2 = vbBlack
+        .tld_OutlineMode = 0
+        .tld_OutlineColor = vbBlack
+        .tld_OutlineCorner = 0
+        .tld_OutlineOpacity = 100
+        .tld_OutlineWidth = 1
+        .tld_OutlineCaps = 0
+        .tld_BackgroundMode = 0
+        .tld_BackgroundOpacity = 100
+        .tld_BackgroundColor = vbWhite
     End With
     
     'Initialize the layer's DIB
@@ -1354,6 +1526,20 @@ Public Function getVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
                 .writeTag "TextRenderingEngine", myTextData.tld_RenderingEngine
                 .writeTag "TextHinting", myTextData.tld_TextHinting
                 .writeTag "TextWordWrap", myTextData.tld_WordWrap
+                .writeTag "TextFillMode", myTextData.tld_FillMode
+                .writeTag "TextFillOpacity", myTextData.tld_FillOpacity
+                .writeTag "TextFillPattern", myTextData.tld_FillPattern
+                .writeTag "TextFillPatternColor1", myTextData.tld_PatternColor1
+                .writeTag "TextFillPatternColor2", myTextData.tld_PatternColor2
+                .writeTag "TextOutlineMode", myTextData.tld_OutlineMode
+                .writeTag "TextOutlineColor", myTextData.tld_OutlineColor
+                .writeTag "TextOutlineOpacity", myTextData.tld_OutlineOpacity
+                .writeTag "TextOutlineWidth", myTextData.tld_OutlineWidth
+                .writeTag "TextOutlineCorner", myTextData.tld_OutlineCorner
+                .writeTag "TextOutlineCaps", myTextData.tld_OutlineCaps
+                .writeTag "TextBackgroundMode", myTextData.tld_BackgroundMode
+                .writeTag "TextBackgroundColor", myTextData.tld_BackgroundColor
+                .writeTag "TextBackgroundOpacity", myTextData.tld_BackgroundOpacity
             End With
         
     End Select
@@ -1403,6 +1589,20 @@ Public Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
                     .tld_RenderingEngine = xmlEngine.getUniqueTag_Long("TextRenderingEngine", tre_WAPI)
                     .tld_TextHinting = xmlEngine.getUniqueTag_Boolean("TextHinting", False)
                     .tld_WordWrap = xmlEngine.getUniqueTag_Long("TextWordWrap", tre_AutoBreakWords)
+                    .tld_FillMode = xmlEngine.getUniqueTag_Long("TextFillMode", 1)
+                    .tld_FillOpacity = xmlEngine.getUniqueTag_Double("TextFillOpacity", 100)
+                    .tld_FillPattern = xmlEngine.getUniqueTag_Long("TextFillPattern", 0)
+                    .tld_PatternColor1 = xmlEngine.getUniqueTag_Long("TextFillPatternColor1", vbWhite)
+                    .tld_PatternColor2 = xmlEngine.getUniqueTag_Long("TextFillPatternColor2", vbBlack)
+                    .tld_OutlineMode = xmlEngine.getUniqueTag_Long("TextOutlineMode", 0)
+                    .tld_OutlineColor = xmlEngine.getUniqueTag_Long("TextOutlineColor", vbWhite)
+                    .tld_OutlineOpacity = xmlEngine.getUniqueTag_Long("TextOutlineOpacity", 100)
+                    .tld_OutlineWidth = xmlEngine.getUniqueTag_Long("TextOutlineWidth", 1)
+                    .tld_OutlineCorner = xmlEngine.getUniqueTag_Long("TextOutlineCorner", 0)
+                    .tld_OutlineCaps = xmlEngine.getUniqueTag_Long("TextOutlineCaps", 0)
+                    .tld_BackgroundMode = xmlEngine.getUniqueTag_Long("TextBackgroundMode", 0)
+                    .tld_BackgroundColor = xmlEngine.getUniqueTag_Long("TextBackgroundColor", vbWhite)
+                    .tld_BackgroundOpacity = xmlEngine.getUniqueTag_Long("TextBackgroundOpacity", 100)
                 End With
                 
         End Select
@@ -1974,6 +2174,20 @@ Public Sub resetLayerParameters()
         .tld_TextContrast = 4
         .tld_TextHinting = False
         .tld_WordWrap = tre_AutoBreakWords
+        .tld_FillMode = 1
+        .tld_FillOpacity = 100
+        .tld_FillPattern = 0
+        .tld_PatternColor1 = vbWhite
+        .tld_PatternColor2 = vbBlack
+        .tld_OutlineMode = 0
+        .tld_OutlineColor = vbBlack
+        .tld_OutlineCorner = 0
+        .tld_OutlineOpacity = 100
+        .tld_OutlineWidth = 1
+        .tld_OutlineCaps = 0
+        .tld_BackgroundMode = 0
+        .tld_BackgroundOpacity = 100
+        .tld_BackgroundColor = vbWhite
     End With
 
 End Sub
@@ -2023,6 +2237,7 @@ Public Function syncInternalDIB() As Boolean
                 .setTextContrast myTextData.tld_TextContrast
                 .setRenderingEngine myTextData.tld_RenderingEngine
                 .setTextHinting myTextData.tld_TextHinting
+                .setWordWrap myTextData.tld_WordWrap
             End With
             
             'Initialize the backer DIB as necessary
