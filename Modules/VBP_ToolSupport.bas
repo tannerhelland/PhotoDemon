@@ -441,7 +441,7 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                     .txtTextTool.Text = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_Text)
                     .cboTextFontFace.setListIndexByString pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontFace)
                     .tudTextFontSize.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontSize)
-                    .csTextFontColor.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontColor)
+                    .csFillColor.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontColor)
                     .cboTextRenderingHint.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextAntialiasing)
                     .chkHinting.Value = IIf(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextHinting), vbChecked, vbUnchecked)
                     .btnFontStyles(0).Value = CBool(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontBold))
@@ -450,6 +450,7 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                     .btnFontStyles(3).Value = CBool(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontStrikeout))
                     .btsHAlignment.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_HorizontalAlignment)
                     .btsVAlignment.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_VerticalAlignment)
+                    .cboWordWrap.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_WordWrap)
                 End With
                 
                 'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.
@@ -540,7 +541,7 @@ Public Sub syncCurrentLayerToToolOptionsUI()
                     .setTextLayerProperty ptp_Text, toolpanel_FancyText.txtTextTool.Text
                     .setTextLayerProperty ptp_FontFace, toolpanel_FancyText.cboTextFontFace.List(toolpanel_FancyText.cboTextFontFace.ListIndex)
                     .setTextLayerProperty ptp_FontSize, toolpanel_FancyText.tudTextFontSize.Value
-                    .setTextLayerProperty ptp_FontColor, toolpanel_FancyText.csTextFontColor.Color
+                    .setTextLayerProperty ptp_FontColor, toolpanel_FancyText.csFillColor.Color
                     .setTextLayerProperty ptp_TextAntialiasing, toolpanel_FancyText.cboTextRenderingHint.ListIndex
                     .setTextLayerProperty ptp_TextHinting, CBool(toolpanel_FancyText.chkHinting.Value)
                     .setTextLayerProperty ptp_FontBold, toolpanel_FancyText.btnFontStyles(0).Value
@@ -549,6 +550,7 @@ Public Sub syncCurrentLayerToToolOptionsUI()
                     .setTextLayerProperty ptp_FontStrikeout, toolpanel_FancyText.btnFontStyles(3).Value
                     .setTextLayerProperty ptp_HorizontalAlignment, toolpanel_FancyText.btsHAlignment.ListIndex
                     .setTextLayerProperty ptp_VerticalAlignment, toolpanel_FancyText.btsVAlignment.ListIndex
+                    .setTextLayerProperty ptp_WordWrap, toolpanel_FancyText.cboWordWrap.ListIndex
                 End With
                 
                 'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.

@@ -89,6 +89,18 @@ End Enum
 
 Private m_RenderingEngine As TEXT_RENDERING_ENGINE
 
+'This class's custom glyph renderer supports various wordwrap modes
+Public Enum TEXT_WORDWRAP_MODE
+    tre_None = 0
+    tre_ManualOnly = 1
+    tre_AutoBreakCharacter = 2
+    tre_AutoBreakWords = 3
+End Enum
+
+#If False Then
+    Private Const tre_None = 0, tre_ManualOnly = 1, tre_AutoBreakCharacter = 2, tre_AutoBreakWords = 3
+#End If
+
 'GDI+ font functions are prone to failure, for reasons both known (e.g. no OpenType support) and unknown (e.g. GDI+ font handling is
 ' a pile of garbage).  Here are a few common failure states.
 Private Const gdipFontFamilyNotFound As Long = 14
@@ -369,8 +381,9 @@ Private m_VerticalAlignment As GdiPlusStringAlignment
 Private m_TextAntialiasing As pdTextAA
 Private m_TextContrast As Long
 
-'The per-glyph PHOTODEMON renderer supports variable hinting
+'The per-glyph PHOTODEMON renderer supports a bunch of unique options
 Private m_TextHinting As Boolean
+Private m_WordWrap As TEXT_WORDWRAP_MODE
 
 'For performance reasons, this class caches various font objects and handles from both GDI and GDI+.  This spares us from
 ' having to recreate expensive font data during rendering steps.
@@ -552,6 +565,15 @@ End Function
 Public Sub setTextHinting(ByVal newHinting As Boolean)
     m_TextHinting = newHinting
     m_FontCacheClean = False
+End Sub
+
+'Get/set wordwrap.  Note that variable wordwrap is only supported by the PHOTODEMON text rendering engine.
+Public Function getWordWrap() As TEXT_WORDWRAP_MODE
+    getWordWrap = m_WordWrap
+End Function
+
+Public Sub setWordWrap(ByVal newWordWrap As TEXT_WORDWRAP_MODE)
+    m_WordWrap = newWordWrap
 End Sub
 
 'Get/set the text rendering engine.  This class currently supports two engines: WAPI (which will use GDI or GDI+, as appropriate), and PHOTODEMON,
@@ -1150,7 +1172,7 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     'Retrieve a full, composite path from the glyph collector.  It handles messy business like character positioning,
     ' and simply hands us a fully composited path, ready for rendering.
     Dim finalTextPath As pdGraphicsPath
-    If m_GlyphCollection.assembleCompositePath(finalTextPath, boundingRect) Then
+    If m_GlyphCollection.assembleCompositePath(finalTextPath, boundingRect, m_WordWrap) Then
         
         Dim gdipReturn As Long
         

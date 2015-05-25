@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.42</langversion>
+<langversion>6.7.44</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -3664,6 +3664,11 @@ The está procesando automáticamente en segundo plano. Usted recibirá una nuev
 </phrase>
 
 <phrase>
+<original>Shadow and highlight</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Figured glass</original>
 <translation>cristal adornado</translation>
 </phrase>
@@ -3862,11 +3867,6 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 </phrase>
 
 <phrase>
-<original>Shadow and highlight</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>No metadata available.</original>
 <translation>No hay metadatos disponibles.</translation>
 </phrase>
@@ -4031,7 +4031,7 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 <translation>Retire canal alfa</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 558 phrases. 166 were duplicates of existing phrases, so only 392 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 560 phrases. 168 were duplicates of existing phrases, so only 392 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -13818,6 +13818,46 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <!-- BEGIN text for VBP_ToolPanel_FancyText.frm (toolpanel_FancyText) -->
 
 <phrase>
+<original>mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>corners</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>caps</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color 1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color 2</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>texture</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill background</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>auto wrap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>hinting</original>
 <translation></translation>
 </phrase>
@@ -13832,7 +13872,132 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_FancyText.frm contains 14 phrases. 11 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>normal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>crisp</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>manual</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>characters</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>words</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outline</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pattern</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>forward diagonal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>backward diagonal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>cross</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>diagonal cross</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>invisible</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>solid</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dashes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dots</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dash + dot</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dash + dot + dot</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>miter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>bevel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>round</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>flat</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>square</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>triangle</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_ToolPanel_FancyText.frm contains 62 phrases. 26 were duplicates of existing phrases, so only 36 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_FancyText.frm-->
 
@@ -13856,10 +14021,10 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2403</phrasecount>
+<phrasecount>2436</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4154 phrases. -->
-<!-- 1751 are duplicates, so only 2403 unique phrases have been written to file. -->
-<!-- These 2403 phrases contain approximately 13612 total words. -->
+<!-- As of this build, PhotoDemon contains 4204 phrases. -->
+<!-- 1768 are duplicates, so only 2436 unique phrases have been written to file. -->
+<!-- These 2436 phrases contain approximately 13653 total words. -->
 
 </pdData>
