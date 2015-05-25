@@ -991,6 +991,118 @@ Private Sub cboFillMode_Click()
         picFillCategory(i).Visible = CBool((i + 1) = cboFillMode.ListIndex)
     Next i
     
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+        
+    'Update the current layer text alignment
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_FillMode, cboFillMode.ListIndex
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+Private Sub cboFillMode_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_FillMode, cboFillMode.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub cboFillMode_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FillMode, cboFillMode.ListIndex
+End Sub
+
+Private Sub cboFillPattern_Click()
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+        
+    'Update the current layer text alignment
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_FillPattern, cboFillPattern.ListIndex
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+Private Sub cboFillPattern_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_FillPattern, cboFillPattern.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub cboFillPattern_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FillPattern, cboFillPattern.ListIndex
+End Sub
+
+Private Sub cboOutlineCaps_Click()
+
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+        
+    'Update the current layer text alignment
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_OutlineCaps, cboOutlineCaps.ListIndex
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
+
+Private Sub cboOutlineCaps_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_OutlineCaps, cboOutlineCaps.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub cboOutlineCaps_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_OutlineCaps, cboOutlineCaps.ListIndex
+End Sub
+
+Private Sub cboOutlineCorner_Click()
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+        
+    'Update the current layer text alignment
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_OutlineCorner, cboOutlineCorner.ListIndex
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+Private Sub cboOutlineCorner_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_OutlineCorner, cboOutlineCorner.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub cboOutlineCorner_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_OutlineCorner, cboOutlineCorner.ListIndex
 End Sub
 
 Private Sub cboOutlineMode_Click()
@@ -1011,7 +1123,31 @@ Private Sub cboOutlineMode_Click()
     cboOutlineCorner.Visible = otherOptionsVisible
     cboOutlineCaps.Visible = otherOptionsVisible
     
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
     
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+        
+    'Update the current layer text alignment
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_OutlineMode, cboOutlineMode.ListIndex
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+Private Sub cboOutlineMode_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_OutlineMode, cboOutlineMode.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub cboOutlineMode_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_OutlineMode, cboOutlineMode.ListIndex
 End Sub
 
 Private Sub cboTextFontFace_Click()
@@ -1092,6 +1228,44 @@ Private Sub cboWordWrap_Click()
     
 End Sub
 
+Private Sub cboWordWrap_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_WordWrap, cboWordWrap.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub cboWordWrap_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_WordWrap, cboWordWrap.ListIndex
+End Sub
+
+Private Sub chkBackground_Click()
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+        
+    'Update the current layer text alignment
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_BackgroundMode, chkBackground.Value
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+Private Sub chkBackground_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_BackgroundMode, chkBackground.Value, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub chkBackground_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_BackgroundMode, chkBackground.Value
+End Sub
+
 Private Sub chkHinting_Click()
     
     'If tool changes are not allowed, exit.
@@ -1121,6 +1295,35 @@ Private Sub chkHinting_LostFocusAPI()
     If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_TextHinting, CBool(chkHinting.Value)
 End Sub
 
+Private Sub csBackground_ColorChanged()
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+        
+    'Update the current layer text alignment
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_BackgroundColor, csBackground.Color
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+Private Sub csBackground_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_BackgroundColor, csBackground.Color, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub csBackground_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_BackgroundColor, csBackground.Color
+End Sub
+
 Private Sub csFillColor_ColorChanged()
     
     'If tool changes are not allowed, exit.
@@ -1148,6 +1351,81 @@ End Sub
 
 Private Sub csFillColor_LostFocusAPI()
     If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FontColor, csFillColor.Color
+End Sub
+
+Private Sub csOutline_ColorChanged()
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+        
+    'Update the current layer text alignment
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_OutlineColor, csOutline.Color
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+Private Sub csOutline_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_OutlineColor, csOutline.Color, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub csOutline_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_OutlineColor, csOutline.Color
+End Sub
+
+Private Sub csPattern_ColorChanged(Index As Integer)
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+        
+    'Update the current layer text alignment
+    If Index = 0 Then
+        pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_PatternColor1, csPattern(Index).Color
+    Else
+        pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_PatternColor2, csPattern(Index).Color
+    End If
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+Private Sub csPattern_GotFocusAPI(Index As Integer)
+    
+    If g_OpenImageCount = 0 Then Exit Sub
+    
+    If Index = 0 Then
+        Processor.flagInitialNDFXState_Text ptp_PatternColor1, csPattern(Index).Color, pdImages(g_CurrentImage).getActiveLayerID
+    Else
+        Processor.flagInitialNDFXState_Text ptp_PatternColor2, csPattern(Index).Color, pdImages(g_CurrentImage).getActiveLayerID
+    End If
+    
+End Sub
+
+Private Sub csPattern_LostFocusAPI(Index As Integer)
+    If Tool_Support.canvasToolsAllowed Then
+        If Index = 0 Then
+            Processor.flagFinalNDFXState_Text ptp_PatternColor1, csPattern(Index).Color
+        Else
+            Processor.flagFinalNDFXState_Text ptp_PatternColor2, csPattern(Index).Color
+        End If
+    End If
 End Sub
 
 Private Sub Form_Load()
@@ -1280,6 +1558,122 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
     btsCategory_Click btsCategory.ListIndex
     btsAppearanceCategory_Click btsAppearanceCategory.ListIndex
 
+End Sub
+
+Private Sub sltBackgroundOpacity_Change()
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+        
+    'Update the current layer text alignment
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_BackgroundOpacity, sltBackgroundOpacity.Value
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+Private Sub sltBackgroundOpacity_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_BackgroundOpacity, sltBackgroundOpacity.Value, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub sltBackgroundOpacity_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_BackgroundOpacity, sltBackgroundOpacity.Value
+End Sub
+
+Private Sub sltFillOpacity_Change()
+
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+        
+    'Update the current layer text alignment
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_FillOpacity, sltFillOpacity.Value
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
+
+Private Sub sltFillOpacity_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_FillOpacity, sltFillOpacity.Value, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub sltFillOpacity_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_FillOpacity, sltFillOpacity.Value
+End Sub
+
+Private Sub sltOutlineOpacity_Change()
+
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+        
+    'Update the current layer text alignment
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_OutlineOpacity, sltOutlineOpacity.Value
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
+
+Private Sub sltOutlineOpacity_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_OutlineOpacity, sltOutlineOpacity.Value, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub sltOutlineOpacity_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_OutlineOpacity, sltOutlineOpacity.Value
+End Sub
+
+Private Sub sltOutlineWidth_Change()
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+        
+    'Update the current layer text alignment
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_OutlineWidth, sltOutlineWidth.Value
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+Private Sub sltOutlineWidth_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_OutlineWidth, sltOutlineWidth.Value, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub sltOutlineWidth_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_OutlineWidth, sltOutlineWidth.Value
 End Sub
 
 Private Sub tudTextFontSize_Change()
