@@ -260,6 +260,17 @@ End Enum
     Const DashStyleSolid = 0, DashStyleDash = 1, DashStyleDot = 2, DashStyleDashDot = 3, DashStyleDashDotDot = 4, DashStyleCustom = 5
 #End If
 
+Public Enum DashCap
+    DashCapFlat = 0
+    DashCapSquare = 0
+    DashCapRound = 2
+    DashCapTriangle = 3
+End Enum
+
+#If False Then
+    Const DashCapFlat = 0, DashCapSquare = 0, DashCapRound = 2, DashCapTriangle = 3
+#End If
+
 Private Enum ColorAdjustType
     ColorAdjustTypeDefault = 0
     ColorAdjustTypeBitmap = 1
@@ -284,13 +295,6 @@ End Enum
 #If False Then
     Const ColorMatrixFlagsDefault = 0, ColorMatrixFlagsSkipGrays = 1, ColorMatrixFlagsAltGray = 2
 #End If
-
-' Dash cap constants
-Public Enum DashCap
-   DashCapFlat = 0
-   DashCapRound = 2
-   DashCapTriangle = 3
-End Enum
 
 'GDI+ required types
 Private Type GdiplusStartupInput
@@ -481,6 +485,11 @@ Private Declare Function GdipDeleteRegion Lib "gdiplus" (ByVal hRegion As Long) 
 Private Declare Function GdipCreateTexture Lib "gdiplus" (ByVal hImage As Long, ByVal iWrapMode As WrapMode, ByRef hTexture As Long) As Long
 Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType, ByVal EnableFlag As Long, ByVal colorMatrixPointer As Long, ByVal grayMatrixPointer As Long, ByVal extraFlags As ColorMatrixFlags) As Long
 Private Declare Function GdipSetImageAttributesToIdentity Lib "gdiplus" (ByVal hImageAttributes As Long, ByVal clrAdjType As ColorAdjustType) As Long
+Private Declare Function GdipCreateHatchBrush Lib "gdiplus" (ByVal bHatchStyle As Long, ByVal bForeColor As Long, ByVal bBackColor As Long, ByRef dstBrush As Long) As Long
+Private Declare Function GdipSetPenDashStyle Lib "gdiplus" (ByVal dstPen As Long, ByVal newDashStyle As DashStyle) As Long
+Private Declare Function GdipSetPenDashCap197819 Lib "gdiplus" (ByVal dstPen As Long, ByVal newDashCap As DashCap) As Long
+Private Declare Function GdipSetPenMiterLimit Lib "gdiplus" (ByVal dstPen As Long, ByVal newMiterLimit As Single) As Long
+
 
 'Transforms
 Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal order As Long) As Long
@@ -936,7 +945,7 @@ Public Sub releaseGDIPlusGraphics(ByVal srcHandle As Long)
 End Sub
 
 'Return a persistent handle to a GDI+ pen.  This can be useful if many drawing operations are going to be applied with the same pen.
-Public Function getGDIPlusPenHandle(ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal customLineCap As LineCap = LineCapFlat, Optional ByVal customLineJoin As LineJoin = LineJoinMiter) As Long
+Public Function getGDIPlusPenHandle(ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal customLineCap As LineCap = LineCapFlat, Optional ByVal customLineJoin As LineJoin = LineJoinMiter, Optional ByVal customDashMode As DashStyle = DashStyleSolid, Optional ByVal penMiterLimit As Single = 3#) As Long
 
     'Create the requested pen
     Dim iPen As Long
@@ -945,6 +954,23 @@ Public Function getGDIPlusPenHandle(ByVal eColor As Long, Optional ByVal cTransp
     'If a custom line cap or join was specified, apply it now
     If customLineCap <> LineCapFlat Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
     If customLineJoin <> LineJoinMiter Then GdipSetPenLineJoin iPen, customLineJoin
+    If customDashMode <> DashStyleSolid Then
+        
+        GdipSetPenDashStyle iPen, customDashMode
+        
+        'Mirror the line cap across the dashes as well
+        If customLineCap > DashCapTriangle Then
+            GdipSetPenDashCap197819 iPen, CLng(customLineCap And &H3)
+        ElseIf customLineCap = LineCapSquare Then
+            GdipSetPenDashCap197819 iPen, DashCapFlat
+        Else
+            GdipSetPenDashCap197819 iPen, customLineCap
+        End If
+        
+    End If
+    
+    'To avoid major miter errors, we default to 3.0 for a miter limit.  (GDI+ defaults to 10, which can cause a lot of artifacts.)
+    GdipSetPenMiterLimit iPen, penMiterLimit
     
     'Return the handle
     getGDIPlusPenHandle = iPen
@@ -955,15 +981,27 @@ Public Sub releaseGDIPlusPen(ByVal srcPen As Long)
     GdipDeletePen srcPen
 End Sub
 
-'Return a persistent handle to a GDI+ brush.  This can be useful if many drawing operations are going to be applied with the same brush.
-Public Function getGDIPlusBrushHandle(ByVal eColor As Long, Optional ByVal cOpacity As Byte = 255) As Long
+'Return a persistent handle to various types of GDI+ brushes.  This can be useful if many drawing operations are going to be applied
+' with the same brush.
+Public Function getGDIPlusSolidBrushHandle(ByVal eColor As Long, Optional ByVal cOpacity As Byte = 255) As Long
 
     'Create the requested brush
     Dim iBrush As Long
     GdipCreateSolidFill fillQuadWithVBRGB(eColor, cOpacity), iBrush
     
     'Return the handle
-    getGDIPlusBrushHandle = iBrush
+    getGDIPlusSolidBrushHandle = iBrush
+
+End Function
+
+Public Function getGDIPlusPatternBrushHandle(ByVal hatchPatternID As Long, ByVal bFirstColor As Long, ByVal bFirstColorOpacity As Byte, ByVal bSecondColor As Long, ByVal bSecondColorOpacity As Byte) As Long
+
+    'Create the requested brush
+    Dim iBrush As Long
+    GdipCreateHatchBrush hatchPatternID, fillQuadWithVBRGB(bFirstColor, bFirstColorOpacity), fillQuadWithVBRGB(bSecondColor, bSecondColorOpacity), iBrush
+    
+    'Return the handle
+    getGDIPlusPatternBrushHandle = iBrush
 
 End Function
 

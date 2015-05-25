@@ -182,7 +182,7 @@ Begin VB.Form toolpanel_FancyText
             _ExtentX        =   4868
             _ExtentY        =   873
             Min             =   1
-            Max             =   500
+            Max             =   20
             SigDigits       =   1
             Value           =   1
             NotchPosition   =   1

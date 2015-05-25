@@ -293,6 +293,7 @@ Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal dstGraphics
 Private Declare Function GdipDrawString Lib "gdiplus" (ByVal dstGraphics As Long, ByVal ptrToString As Long, ByVal strLength As Long, ByVal gdipFontHandle As Long, ByRef layoutRect As RECTF, ByVal gdipStringFormat As Long, ByVal gdipBrush As Long) As Long
 Private Declare Function GdipDrawPath Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal srcPath As Long) As Long
 Private Declare Function GdipFillPath Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal srcPath As Long) As Long
+Private Declare Function GdipFillRectangleI Lib "gdiplus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mX As Long, ByVal mY As Long, ByVal mWidth As Long, ByVal mHeight As Long) As Long
 
 'GDI generic object management
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
@@ -352,6 +353,7 @@ Private Const DT_WORD_ELLIPSIS = &H40000
 'This class internally maintains various font properties.  These properties must be converted into specific GDI+ parameters via
 ' various means, but they are stored in human-friendly format to simplify serializing a class instance to an XML string.
 Private m_FontFace As String
+Private m_FontColor As Long
 Private m_FontSize As Single
 Private m_FontSizeUnit As pdFontUnit
 Private m_FontBold As Boolean
@@ -381,9 +383,23 @@ Private m_VerticalAlignment As GdiPlusStringAlignment
 Private m_TextAntialiasing As pdTextAA
 Private m_TextContrast As Long
 
-'The per-glyph PHOTODEMON renderer supports a bunch of unique options
+'The per-glyph PHOTODEMON renderer supports a bunch of unique options, including tons of appearance-related ones
 Private m_TextHinting As Boolean
 Private m_WordWrap As TEXT_WORDWRAP_MODE
+Private m_FillMode As Long
+Private m_FillOpacity As Single
+Private m_FillPattern As Long
+Private m_PatternColor1 As Long
+Private m_PatternColor2 As Long
+Private m_OutlineMode As Long
+Private m_OutlineColor As Long
+Private m_OutlineCorner As Long
+Private m_OutlineCaps As Long
+Private m_OutlineOpacity As Single
+Private m_OutlineWidth As Single
+Private m_BackgroundMode As Long
+Private m_BackgroundOpacity As Single
+Private m_BackgroundColor As Long
 
 'For performance reasons, this class caches various font objects and handles from both GDI and GDI+.  This spares us from
 ' having to recreate expensive font data during rendering steps.
@@ -406,6 +422,14 @@ Private m_TmpGdiDIB As pdDIB
 
 'Get functions for various font styles, and whether said styles are supported by the current font.
 ' (If no font name has been set, the function returns *will not be valid*)
+Public Function getFontColor() As Long
+    getFontColor = m_FontColor
+End Function
+
+Public Sub setFontColor(ByVal newColor As Long)
+    m_FontColor = newColor
+End Sub
+
 Public Function getFontBold() As Boolean
     getFontBold = m_FontBold
 End Function
@@ -574,6 +598,119 @@ End Function
 
 Public Sub setWordWrap(ByVal newWordWrap As TEXT_WORDWRAP_MODE)
     m_WordWrap = newWordWrap
+End Sub
+
+'Get/set various appearance options.  Note that these features are only supported by the PHOTODEMON text rendering engine.
+Public Function getFillMode() As Long
+    getFillMode = m_FillMode
+End Function
+
+Public Sub setFillMode(ByVal newSetting As Long)
+    m_FillMode = newSetting
+End Sub
+
+Public Function getFillOpacity() As Single
+    getFillOpacity = m_FillOpacity
+End Function
+
+Public Sub setFillOpacity(ByVal newSetting As Single)
+    m_FillOpacity = newSetting
+End Sub
+
+Public Function getFillPattern() As Long
+    getFillPattern = m_FillPattern
+End Function
+
+Public Sub setFillPattern(ByVal newSetting As Long)
+    m_FillPattern = newSetting
+End Sub
+
+Public Function getFillPatternColor1() As Long
+    getFillPatternColor1 = m_PatternColor1
+End Function
+
+Public Sub setFillPatternColor1(ByVal newSetting As Long)
+    m_PatternColor1 = newSetting
+End Sub
+
+Public Function getFillPatternColor2() As Long
+    getFillPatternColor2 = m_PatternColor2
+End Function
+
+Public Sub setFillPatternColor2(ByVal newSetting As Long)
+    m_PatternColor2 = newSetting
+End Sub
+
+Public Function getOutlineMode() As Long
+    getOutlineMode = m_OutlineMode
+End Function
+
+Public Sub setOutlineMode(ByVal newSetting As Long)
+    m_OutlineMode = newSetting
+End Sub
+
+Public Function getOutlineColor() As Long
+    getOutlineColor = m_OutlineColor
+End Function
+
+Public Sub setOutlineColor(ByVal newSetting As Long)
+    m_OutlineColor = newSetting
+End Sub
+
+Public Function getOutlineCorner() As Long
+    getOutlineCorner = m_OutlineCorner
+End Function
+
+Public Sub setOutlineCorner(ByVal newSetting As Long)
+    m_OutlineCorner = newSetting
+End Sub
+
+Public Function getOutlineCaps() As Long
+    getOutlineCaps = m_OutlineCaps
+End Function
+
+Public Sub setOutlineCaps(ByVal newSetting As Long)
+    m_OutlineCaps = newSetting
+End Sub
+
+Public Function getOutlineOpacity() As Single
+    getOutlineOpacity = m_OutlineOpacity
+End Function
+
+Public Sub setOutlineOpacity(ByVal newSetting As Single)
+    m_OutlineOpacity = newSetting
+End Sub
+
+Public Function getOutlineWidth() As Single
+    getOutlineWidth = m_OutlineWidth
+End Function
+
+Public Sub setOutlineWidth(ByVal newSetting As Single)
+    m_OutlineWidth = newSetting
+End Sub
+
+Public Function getBackgroundMode() As Long
+    getBackgroundMode = m_BackgroundMode
+End Function
+
+Public Sub setBackgroundMode(ByVal newSetting As Long)
+    m_BackgroundMode = newSetting
+End Sub
+
+Public Function getBackgroundOpacity() As Single
+    getBackgroundOpacity = m_BackgroundOpacity
+End Function
+
+Public Sub setBackgroundOpacity(ByVal newSetting As Single)
+    m_BackgroundOpacity = newSetting
+End Sub
+
+Public Function getBackgroundColor() As Long
+    getBackgroundColor = m_BackgroundColor
+End Function
+
+Public Sub setBackgroundColor(ByVal newSetting As Long)
+    m_BackgroundColor = newSetting
 End Sub
 
 'Get/set the text rendering engine.  This class currently supports two engines: WAPI (which will use GDI or GDI+, as appropriate), and PHOTODEMON,
@@ -943,7 +1080,7 @@ End Function
 ' not currently offer a function for that, FYI.)
 '
 'Note also that the crColor parameter should not include alpha; alpha in PD is handled by layers, not the text renderer.
-Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String, ByVal crColor As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
+Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
     
     'As a convenience to the user, create the font as necessary
     If (Not m_FontCacheClean) Then
@@ -963,26 +1100,31 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String
     'PD currently supports two rendering modes: WAPI (which uses GDI or GDI+ to render the text, and is thus limited by the settings
     ' those two engines provide), or an internal PHOTODEMON engine, which manually extracts font glyphs and renders them ourselves.
     If m_RenderingEngine = tre_WAPI Then
-    
-        'We should now know whether GDI or GDI+ is required for this combination of settings.
-        Select Case m_CurrentBackend
-            
-            'GDI+ is sufficient
-            Case fb_GDIPLUS
-                renderTextToDIB = renderTextToDIB_GDIPlus(dstDIB, srcString, crColor, x1, y1, textWidth, textHeight)
-            
-            'GDI is required
-            Case fb_GDI
-                renderTextToDIB = renderTextToDIB_GDI(dstDIB, srcString, crColor, x1, y1, textWidth, textHeight)
-                
-            'GDI and GDI+ both failed; at present, we have no fallback for this case
-            Case fb_UNKNOWN
-                Debug.Print "GDI and GDI+ both failed; something is probably wrong with this font.  Consider blacklisting it...?"
-                renderTextToDIB = False
-                
-        End Select
         
-        Debug.Print "FYI - renderTextToDIB returned " & CStr(renderTextToDIB)
+        'These backends have no reason to render if text isn't present
+        If Len(srcString) <> 0 Then
+        
+                'We should now know whether GDI or GDI+ is required for this combination of settings.
+            Select Case m_CurrentBackend
+                
+                'GDI+ is sufficient
+                Case fb_GDIPLUS
+                    renderTextToDIB = renderTextToDIB_GDIPlus(dstDIB, srcString, m_FontColor, x1, y1, textWidth, textHeight)
+                
+                'GDI is required
+                Case fb_GDI
+                    renderTextToDIB = renderTextToDIB_GDI(dstDIB, srcString, m_FontColor, x1, y1, textWidth, textHeight)
+                    
+                'GDI and GDI+ both failed; at present, we have no fallback for this case
+                Case fb_UNKNOWN
+                    Debug.Print "GDI and GDI+ both failed; something is probably wrong with this font.  Consider blacklisting it...?"
+                    renderTextToDIB = False
+                    
+            End Select
+            
+            'Debug.Print "FYI - renderTextToDIB returned " & CStr(renderTextToDIB)
+            
+        End If
     
     ElseIf m_RenderingEngine = tre_PHOTODEMON Then
     
@@ -1009,7 +1151,7 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String
         m_GlyphCollection.requestGDIFontRelease
         
         'With the glyph collection successfully assembled, proceed with rendering
-        renderTextToDIB = renderTextToDIB_Glyphs(dstDIB, srcString, crColor, x1, y1, textWidth, textHeight)
+        renderTextToDIB = renderTextToDIB_Glyphs(dstDIB, srcString, x1, y1, textWidth, textHeight)
     
     Else
         Debug.Print "WARNING!  Unknown rendering engine set in pdTextRenderer."
@@ -1048,7 +1190,7 @@ Private Function renderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
     
     'Create a solid fill brush.  (In the future, we'll add more impressive options!)
     Dim gdipBrush As Long
-    gdipBrush = GDI_Plus.getGDIPlusBrushHandle(crColor, 255)
+    gdipBrush = GDI_Plus.getGDIPlusSolidBrushHandle(crColor, 255)
     
     'Convert the input rect to a RECTF
     Dim boundingRect As RECTF
@@ -1121,7 +1263,7 @@ End Function
 
 
 'Render text using GDI+, and a glyph collection properly assembled inside m_GlyphCollection.
-Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString As String, ByVal crColor As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
+Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString As String, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
 
     'TESTING ONLY!  Fill with white prior to rendering
     'GDI_Plus.GDIPlusFillDIBRect dstDIB, 0, 0, dstDIB.getDIBWidth, dstDIB.getDIBHeight, vbWhite
@@ -1152,14 +1294,64 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
         
     End Select
         
-    'Create a solid fill brush.  (In the future, we'll add more impressive options!)
-    Dim gdipBrush As Long
-    gdipBrush = GDI_Plus.getGDIPlusBrushHandle(crColor, 255)
+    'If fill mode is active, create a relevant brush.  Note that not all brushes are currently implemented!
+    Dim gdipFillBrush As Long
     
-    'For fun, you can also stroke the path outline with a pen, using the following code
-    Dim gdipPen As Long
-    gdipPen = GDI_Plus.getGDIPlusPenHandle(crColor, 255, 4, LineCapRound, LineJoinBevel)
+    Select Case m_FillMode
+    
+        'No fill
+        Case 0
+            gdipFillBrush = 0
         
+        'Solid fill
+        Case 1
+            gdipFillBrush = GDI_Plus.getGDIPlusSolidBrushHandle(m_FontColor, m_FillOpacity * 2.55)
+        
+        'Gradient fill
+        Case 2
+            gdipFillBrush = GDI_Plus.getGDIPlusSolidBrushHandle(m_FontColor, m_FillOpacity * 2.55)
+        
+        'Pattern fill
+        Case 3
+            gdipFillBrush = GDI_Plus.getGDIPlusPatternBrushHandle(m_FillPattern, m_PatternColor1, m_FillOpacity * 2.55, m_PatternColor2, m_FillOpacity * 2.55)
+        
+        'Texture fill
+        Case 4
+            gdipFillBrush = GDI_Plus.getGDIPlusSolidBrushHandle(m_FontColor, m_FillOpacity * 2.55)
+    
+    End Select
+    
+    'If outline mode is active, create a relevant pen.
+    Dim gdipOutlinePen As Long
+    
+    Select Case m_OutlineMode
+    
+        'No outline
+        Case 0
+            gdipOutlinePen = 0
+        
+        'All other outlines
+        Case Else
+            gdipOutlinePen = GDI_Plus.getGDIPlusPenHandle(m_OutlineColor, m_OutlineOpacity * 2.55, m_OutlineWidth, m_OutlineCaps, m_OutlineCorner, m_OutlineMode - 1)
+    
+    End Select
+    
+    'If background mode is active, create a background-specific brush
+    Dim gdipBackgroundBrush As Long
+    
+    Select Case m_BackgroundMode
+    
+        'No fill
+        Case 0
+            gdipBackgroundBrush = 0
+        
+        'Solid fill
+        Case 1
+            gdipBackgroundBrush = GDI_Plus.getGDIPlusSolidBrushHandle(m_BackgroundColor, m_BackgroundOpacity * 2.55)
+            
+    End Select
+    
+    
     'Convert the input rect to a RECTF
     Dim boundingRect As RECTF
     With boundingRect
@@ -1175,22 +1367,33 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     If m_GlyphCollection.assembleCompositePath(finalTextPath, boundingRect, m_WordWrap) Then
         
         Dim gdipReturn As Long
+                
+        'If background mode is active, fill it now
+        If gdipBackgroundBrush <> 0 Then
+            gdipReturn = GdipFillRectangleI(dstGraphics, gdipBackgroundBrush, x1, y1, textWidth, textHeight)
+            If gdipReturn <> 0 Then Debug.Print "WARNING!  GdipFillPath failed; return code was " & gdipReturn
+        End If
+                
+        'If fill mode is active, draw the text now
+        If gdipFillBrush <> 0 Then
+            gdipReturn = GdipFillPath(dstGraphics, gdipFillBrush, finalTextPath.getCopyOfPathHandle)
+            If gdipReturn <> 0 Then Debug.Print "WARNING!  GdipFillPath failed; return code was " & gdipReturn
+        End If
         
-        'Draw the path
-        gdipReturn = GdipFillPath(dstGraphics, gdipBrush, finalTextPath.getCopyOfPathHandle)
-        
-        'For fun, you can stroke the path outline with a pen, using the following code
-        'gdipReturn = GdipDrawPath(dstGraphics, gdipPen, finalTextPath.getCopyOfPathHandle)
-        
-        If gdipReturn <> 0 Then Debug.Print "WARNING!  GdipFillPath failed; return code was " & gdipReturn
+        'If outline mode is active, stroke the text now
+        If gdipOutlinePen <> 0 Then
+            gdipReturn = GdipDrawPath(dstGraphics, gdipOutlinePen, finalTextPath.getCopyOfPathHandle)
+            If gdipReturn <> 0 Then Debug.Print "WARNING!  GdipDrawPath failed; return code was " & gdipReturn
+        End If
         
     Else
         Debug.Print "WARNING!  m_GlyphCollection.assembleCompositePath returned FALSE.  Please investigate."
     End If
     
     'Release the temporary GDI+ objects we created
-    If gdipPen <> 0 Then GDI_Plus.releaseGDIPlusPen gdipPen
-    If gdipBrush <> 0 Then GDI_Plus.releaseGDIPlusBrush gdipBrush
+    If gdipFillBrush <> 0 Then GDI_Plus.releaseGDIPlusBrush gdipFillBrush
+    If gdipBackgroundBrush <> 0 Then GDI_Plus.releaseGDIPlusBrush gdipBackgroundBrush
+    If gdipOutlinePen <> 0 Then GDI_Plus.releaseGDIPlusPen gdipOutlinePen
     GDI_Plus.releaseGDIPlusGraphics dstGraphics
     
     'Return success/failure contingent on the return of the GDI+ rendering call
