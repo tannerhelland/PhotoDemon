@@ -216,18 +216,26 @@ End Type
 ' this data more than is absolutely necessary.
 Public Type pdGlyphUniscribe
     glyphIndex As Long
-    AdvanceWidth As Long
     GlyphOffset As GOFFSET
+    
+    AdvanceWidth As Long
+    
     glyphPath As pdGraphicsPath     'GDI+ GraphicsPath wrapper containing the fully translated font outline.  Note that this value is not
                                     ' filled by PD's Uniscribe interface; pdGlyphCollection actually handles that step.
     isSoftBreak As Boolean
     isWhiteSpace As Boolean
     isZeroWidth As Boolean
     isHardLineBreak As Boolean
+    
     ABCWidth As ABC
+    
     finalX As Single        'Final (x, y) positioning has nothing to do with Uniscribe.  PD calculates this internally, using all the
     finalY As Single        ' metrics supplied by Uniscribe, and all the metrics supplied by the user.
-    LineID As Long          'Which line (0-based) this glyph sits on.  PD pre-calculates this to make rendering easier.
+    LineID As Long          'Which line (0-based) this glyph sits on.  PD marks this during the positioning loop to simplify rendering.
+    
+    isFirstGlyphOnLine As Boolean   'These two values could be inferred from LineID, but it's faster to simply mark them during
+    isLastGlyphOnLine As Boolean    ' processing.  We use these markers to account for ABC overhang on leading or trailing chars.
+    
 End Type
 
 'When retrieving OpenType tags, it's convenient to reduce the unsigned Longs into a 4-byte struct

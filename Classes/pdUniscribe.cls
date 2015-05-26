@@ -960,6 +960,8 @@ Friend Function getCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, O
                             .ABCWidth.abcA = 0
                             .ABCWidth.abcB = 0
                             .ABCWidth.abcC = 0
+                            .isFirstGlyphOnLine = False
+                            .isLastGlyphOnLine = False
                         End With
                         
                         netGlyphOffset = netGlyphOffset + 1
@@ -978,6 +980,8 @@ Friend Function getCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, O
                     .isSoftBreak = m_Items(i).getSoftBreakAtPosition(j)
                     .isWhiteSpace = m_Items(i).getWhitespaceAtPosition(j)
                     .isHardLineBreak = False
+                    .isFirstGlyphOnLine = False
+                    .isLastGlyphOnLine = False
                     m_Items(i).copyGlyphOffsetToPointer VarPtr(.GlyphOffset), j
                     
                     'While here, we also collect the ABC width of each glyph
