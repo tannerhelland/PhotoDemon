@@ -592,7 +592,7 @@ End Function
 
 'After assembling a full glyph collection, this function can be called to generate a totally complete graphics path, with all
 ' characters laid out according to the passed rect.
-Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef boundingRect As RECTF, Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords) As Boolean
+Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef boundingRect As RECTF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords) As Boolean
     
     'Initialize the destination path as necessary
     If dstPath Is Nothing Then Set dstPath = New pdGraphicsPath
@@ -603,10 +603,11 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
         'Path assembly happens in two steps.
         ' 1) First, we precalculate all glyph (x, y) positions, including line-breaking.  Calculating positions in advance
         '    *greatly* simplifies the main rendering loop.
-        ' 2) Once individual positions are calculated on a per-glyph basis, we perform the actual rendering.
+        ' 2) Once individual positions are calculated on a per-glyph basis, we perform the actual rendering.  Any glyph-specific features
+        '    that don't affect positioning (e.g. mirroring, per-char rotation, etc) can be applied here.
         
         '(FYI: the glyph positioning algorithm fills the .finalX and .finalY entries for each glyph.)
-        calculateGlyphPositions lineWrapMode
+        calculateGlyphPositions boundingRect, horizontalAlignment, verticalAlignment, lineWrapMode
         
         Dim i As Long, curGlyph As Long, curGlyphOutline As Long, srcPathHandle As Long
         Dim xOffset As Single, yOffset As Single
@@ -618,67 +619,31 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
         'Start iterating through the source string, one character at a time.
         For i = 0 To m_NumOfGlyphs - 1
             
+            'If m_Glyphs(i).isHardLineBreak Then Debug.Print "Hard break detected at character " & i
+            
             'Start by retrieving this glyph index
             curGlyph = i
             curGlyphOutline = getGlyphOutlineIndex(curGlyph)
             
-            glyphIsRenderable = CBool(curGlyphOutline >= 0)
+            'A glyph is renderable only if it...
+            ' 1) was successfully processed by GetGlyphOutline, and...
+            ' 2) GetGlyphOutline returned a shape with at least one line or curve
+            glyphIsRenderable = CBool(curGlyphOutline >= 0) And m_GlyphOutlines(curGlyphOutline).hasOutline
             
-            'Before proceeding, check some known control characters in advance
-            
-            'Linebreaks are handled early, to avoid screwing up glyph rendering later on
-            If m_Glyphs(curGlyph).isHardLineBreak Then
-                
-                'Advance the line and reset the xOffset
-                yOffset = yOffset + m_TextMetrics.tmHeight + m_TextMetrics.tmExternalLeading
-                xOffset = 0
-            
-            'Zero-width non-linebreak characters can be safely ignored
-            ElseIf m_Glyphs(curGlyph).isZeroWidth Then
-                
-                'Do nothing
-            
-            'Anything beyond this point is a legitimate glyph (or an unknown control character, I guess)
-            Else
-            
-                'If this glyph exists in our cache, we need to see if a path was successfully generated.  Some whitespace characters
-                ' have no outline, so we don't render them directly - but we still need to process their spacing and size requirements.
-                If glyphIsRenderable Then glyphIsRenderable = m_GlyphOutlines(curGlyphOutline).hasOutline
-                
-                'If an outline exists for this glyph, render it now.
-                If glyphIsRenderable Then
-                        
-                    'For now, implement a "poor man's" wordwrap so we can test line sizes.  (Basically, if this glyph extends past the end
-                    ' of the line, push it down to the next line.)
-                    If xOffset + m_Glyphs(curGlyph).AdvanceWidth > boundingRect.Width Then
-                        yOffset = yOffset + m_TextMetrics.tmHeight + m_TextMetrics.tmExternalLeading
-                        xOffset = 0
-                    End If
-                    
-                    'Add this glyph to the current path at the running x-offset
-                    
-                    'If this is the start of a line, look for characters that hang off the left side of the bounding box, and push them
-                    ' in-bounds.  (TODO, using Uniscribe to retrieve sizes.)
-                    If xOffset = 0 Then
-                        'If m_GlyphOutlines(GlyphIndex).gMetrics.gmptGlyphOrigin.x < 0 Then xOffset = Abs(m_GlyphOutlines(GlyphIndex).gMetrics.gmptGlyphOrigin.x)
-                    End If
-                    
-                    dstPath.addPath m_GlyphOutlines(curGlyphOutline).glyphPath, xOffset + m_Glyphs(curGlyph).GlyphOffset.du, yOffset - m_Glyphs(curGlyph).GlyphOffset.dv
-                    
-                    'Add the glyph's width to the running x-direction offset.
-                    xOffset = xOffset + m_Glyphs(curGlyph).AdvanceWidth
-                    
-                Else
-                    
-                    'This glyph is not renderable, meaning it's most likely whitespace or a control character.  Increment our current
-                    ' position pointer, but don't actually draw anything to the screen.
-                    xOffset = xOffset + m_Glyphs(curGlyph).AdvanceWidth
-                    
-                    'If debugging is desired:
-                    'Debug.Print "WARNING!  Unmarked glyph received -- see why #" & curGlyphOutline & " doesn't show up in the cache!"
-                    
+            'We also ignore things like spaces and control characters
+            If glyphIsRenderable Then
+                If (m_Glyphs(i).isHardLineBreak) Or (m_Glyphs(i).isWhiteSpace) Or (m_Glyphs(i).isZeroWidth) Then
+                    glyphIsRenderable = False
                 End If
+            End If
             
+            'If these characteristics are met, add this path to the master path, at the offsets pre-calculated by calculateGlyphPositions().
+            If glyphIsRenderable Then
+                        
+                With m_Glyphs(curGlyph)
+                    dstPath.addPath m_GlyphOutlines(curGlyphOutline).glyphPath, .finalX + .GlyphOffset.du, .finalY - .GlyphOffset.dv
+                End With
+                    
             End If
             
         'Render the next glyph!
@@ -690,31 +655,325 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
 
 End Function
 
-Private Function calculateGlyphPositions(Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords) As Boolean
+'Fill the official xOffset and yOffset parameters of every glyph.  Note that all the initial positioning data comes from Uniscribe;
+' this function is primarily responsible for line breaks, and any PD-specific positioning changes (e.g. modified character spacing).
+Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords) As Boolean
     
-    'Calculating glyph positions happens in a few different steps.
+    Dim i As Long, j As Long
+    Dim curGlyph As Long, curGlyphOutline As Long, srcPathHandle As Long
+    Dim glyphIsRenderable As Boolean, timeToBreakLine As Boolean
     
-    'First, we assign each glyph a line ID (0-based).  Until we know a) how many lines there are, and b) which glyphs sit on which lines,
-    ' we cannot calculate alignments.
+    Dim xOffset As Single, yOffset As Single
+    yOffset = 0
+    xOffset = 0
     
-    'Line-breaking is further complicated by the nastiness that is word-wrapping.  Since PD exposes a few different line-breaking options
-    ' to the user, we can greatly simplify this function if a simpler line-breaking algorithm is used.
-    
-    Select Case lineWrapMode
-    
-        'In non-break mode, all line breaks (even manual ones) are forcibly ignored
-        Case tre_None
+    Dim currentLine As Long, linebreakImpossible As Boolean
+    currentLine = 0
+    linebreakImpossible = False
         
-        'In manual mode, only hard line breaks (e.g. \n) are respected
-        Case tre_ManualOnly
-        
-        'In character mode, lines are broken as soon as a character extends past a line
-        Case tre_AutoBreakCharacter
-        
-        'In word mode, traditional word-wrap rules are used
-        Case tre_AutoBreakWords
+    'Prior to processing each glyph, we cache some unchanging values (like line increments)
+    Dim lineHeight As Single
+    lineHeight = m_TextMetrics.tmHeight + m_TextMetrics.tmExternalLeading
     
-    End Select
+    'Mark the first glyph as first on its line; we use this indicator to prevent infinite loops if wordwrap is activated, but we can't
+    ' fit an entire word on a line.  When this happens, we have no choice but to clip the word
+    m_Glyphs(0).isFirstGlyphOnLine = True
+    
+    'For performance reasons, we calculate all initial positioning in a single pass.  I had originally intended to make two passes - one to
+    ' determine line break positions, and a second to perform actual (x, y) positioning.  This would make for cleaner code, but it also
+    ' wastes time, so I've condensed everything into a single, multipurpose pass.
+    '
+    'Note that a second pass is still required for repositioning due to non-left or non-top alignments; this is a necessary evil, as we
+    ' can't apply specialized vertical positioning until we've calculated all linebreaks, and we can't calculate linebreaks until we calculate
+    ' all x-positioning.
+    
+    'Start iterating through the source string, one character at a time.
+    curGlyph = 0
+    
+    Do
+                
+        'How we determine line breaks depends on the current wordwrap modes.
+        If lineWrapMode = tre_None Then
+
+            'In non-break mode, all line breaks (even manual ones) are forcibly ignored
+            timeToBreakLine = False
+            
+        'In all other modes, hard breaks (e.g. \n) are respected
+        Else
+            
+            If m_Glyphs(curGlyph).isHardLineBreak Then
+                timeToBreakLine = True
+            
+            'If this is not a hard break, we only handle it if auto-breaking on characters or words is activated
+            Else
+                
+                'By default, assume a linebreak is *not* required
+                timeToBreakLine = False
+                
+                'Ignore whitespace characters when calculating breaks
+                'If Not m_Glyphs(curGlyph).isWhiteSpace Then
+                
+                    'Regardless of break mode, start by seeing if this character extends past the end of the line.  Note that this character's
+                    ' C-overhang is included, to avoid clipping on italicized characters.
+                    If xOffset + m_Glyphs(curGlyph).AdvanceWidth + m_Glyphs(curGlyph).ABCWidth.abcC > boundingRect.Width Then
+                    
+                        'This character doesn't fit.  Further handling is determined by wrap mode.
+                        Select Case lineWrapMode
+                    
+                            'In character mode, lines are broken as soon as a character extends past a line, so simply mark the
+                            ' break and move on.
+                            Case tre_AutoBreakCharacter
+                                timeToBreakLine = True
+                        
+                            'In word mode, traditional word-wrap rules are used.  This is complicated, because we have to forcibly retract
+                            ' the character pointer to the last viable breaking position.  If that happens to be the first character on
+                            ' the line, it means this word doesn't physically fit, so we have no choice but to break in the middle of the word.
+                            Case tre_AutoBreakWords
+                                
+                                'One way or another, we're going to apply a linebreak
+                                timeToBreakLine = True
+                                
+                                'If a legit linebreak isn't possible (e.g. a single word extends from the start of the line past the
+                                ' end of the line), we'll forcibly break the word in two.
+                                linebreakImpossible = False
+                                
+                                'If this glyph is breakable, awesome!  Break immediately.
+                                If m_Glyphs(curGlyph).isSoftBreak Then
+                                    
+                                    'No extra code required
+                                    
+                                'If this glyph is *not* breakable (meaning it sits in the middle of a word), loop backward until we find
+                                ' a glyph that *is* breakable.  Point the glyph pointer at that glyph; everything past it must be
+                                ' re-positioned on a new line.
+                                Else
+                                    
+                                    'Failsafe check for a line break being required on the initial glyph; this should never happen, but if
+                                    ' it does, skip linebreaking as there's no point.
+                                    If curGlyph = 0 Then
+                                    
+                                        'Do nothing
+                                        timeToBreakLine = False
+                                        
+                                    Else
+                                     
+                                        'Loop backward until we find a viable breaking position.
+                                        For j = curGlyph - 1 To 0 Step -1
+                                        
+                                            'To avoid infinite loops, it's important to check failure states first.
+                                            
+                                            'If we encounter a hard line break, this word is unbreakable.  Mark failure and exit.
+                                            If m_Glyphs(j).isHardLineBreak Then
+                                                linebreakImpossible = True
+                                                Exit For
+                                            End If
+                                            
+                                            'If we encounter the first character in this line (or the last character on a previous line,
+                                            ' as a failsafe), this word is unbreakable.  Mark failure and exit.
+                                            If m_Glyphs(j).isFirstGlyphOnLine Or m_Glyphs(j).isLastGlyphOnLine Then
+                                                linebreakImpossible = True
+                                                Exit For
+                                            End If
+                                            
+                                            'If we're still here, it means this character is a viable candidate for a valid break.
+                                            
+                                            'If this is a valid softbreak position, mark it and exit immediately
+                                            If m_Glyphs(j).isSoftBreak Or m_Glyphs(j).isWhiteSpace Then
+                                                curGlyph = j
+                                                Exit For
+                                            End If
+                                            
+                                        Next j
+                                        
+                                        'Note that j reaching 0 is okay; this just means we reached the start of the string, but didn't find
+                                        ' a valid breakpoint.
+                                        
+                                        'If a line break isn't possible, we have no choice but to break on this character.  Leave the curGlyph
+                                        ' pointer where it is; nothing else is required.
+                                        If linebreakImpossible Then
+                                            Debug.Print "Invalid word present; forcibly breaking mid-word as part of wordwrapping."
+                                        End If
+                                        
+                                    'End failsafe check (If/Else curGlyph = 0 and we're being forced to break)
+                                    End If
+                                
+                                'End If/Then for being able to break on the exact current character, or being forced to search for a new breakpoint.
+                                End If
+                                
+                        End Select
+                    
+                    'This character fits on the line.  Carry on!
+                    Else
+                        timeToBreakLine = False
+                    End If
+                    
+                'End If for whitespace characters (which are ignored by the wordwrap calculator)
+                'End If
+                
+            'End If/Else for hard line breaks
+            End If
+            
+        'End If/Else for lineBreakMode = no breaking
+        End If
+        
+        'If this glyph (or in the case of wordwrap, some previous glyph which the counter now points to) is marked for line breaking,
+        ' proceed to break the line now.
+        If timeToBreakLine Then
+        
+            'Increment the current line counter
+            currentLine = currentLine + 1
+            
+            'Increment the running y-offset by the preset lineheight, and reset the x-offset
+            yOffset = yOffset + lineHeight
+            xOffset = 0
+            
+            'We now need to mark the last character of the previous line, and the first character of this line.  This may or may not be the
+            ' current glyph, if the current glyph is a whitespace character.
+            
+            'First, deal with hard linebreaks.  They are a special circumstance, and if one is used, we ALWAYS mark it as the last glyph
+            ' of the preceding paragraph.  (This is necessary if the first glyph in the string is a linebreak, for example.)
+            If m_Glyphs(curGlyph).isHardLineBreak Then
+                
+                m_Glyphs(curGlyph).isLastGlyphOnLine = True
+                
+                'Automatically advance the glyph marker
+                ' (NOTE: I'm no longer sure this is advisable; awaiting removal pending additional testing of complex intermixed soft
+                '        and hard breaks...)
+                'curGlyph = curGlyph + 1
+                
+            'If we are not breaking on a hard line break, we mark the *previous* character as the last one on the line.
+            Else
+                
+                If curGlyph <> 0 Then
+                    m_Glyphs(curGlyph - 1).isLastGlyphOnLine = True
+                Else
+                    m_Glyphs(0).isLastGlyphOnLine = True
+                End If
+                
+            End If
+            
+            'Next, we need to mark the first glyph of this line.  We do this by advancing the glyph pointer until we encounter
+            ' a non-whitespace, non-hard-linebreak glyph.
+            
+            'Note that we must pre-check for the glyph pointer being valid; it may point beyond the end of the array if the last
+            ' character in a string is a hard line-break.
+            If curGlyph < m_NumOfGlyphs Then
+                
+                'If this glyph is a non-whitespace glyph, mark it as the start of this line.
+                If (Not m_Glyphs(curGlyph).isWhiteSpace) Then
+                    m_Glyphs(curGlyph).isFirstGlyphOnLine = True
+                
+                'If this glyph *is* a whitespace glyph, we have extra work to do.
+                Else
+                    
+                    Dim incrementGlyphPointer As Boolean
+                    incrementGlyphPointer = CBool(curGlyph < m_NumOfGlyphs)
+                                        
+                    'Advance the glyph pointer until we reach either...
+                    ' 1) a non-whitespace glyph, or
+                    ' 2) a hard line-break
+                    Do While incrementGlyphPointer
+                        
+                        'Exit on non-whitespace glyphs
+                        If (Not m_Glyphs(curGlyph).isWhiteSpace) Then Exit Do
+                        
+                        'Exit on hard linebreaks
+                        If m_Glyphs(curGlyph).isHardLineBreak Then Exit Do
+                        
+                        'If we're still here, this is a whitespace glyph.  Increment curGlyph and carry on.
+                        curGlyph = curGlyph + 1
+                        incrementGlyphPointer = CBool(curGlyph < m_NumOfGlyphs)
+                        
+                    Loop
+                    
+                    'We now have one of two cases:
+                    ' 1) curGlyph points beyond the end of the glyph array, because no acceptable starting line character was found.
+                    ' 2) curGlyph points at the first glyph of the new line.
+                    
+                    'Only the second case needs to be dealt with.
+                    If curGlyph < m_NumOfGlyphs Then m_Glyphs(curGlyph).isFirstGlyphOnLine = True
+                    
+                End If
+                    
+            End If
+            
+        'End of "If timeToBreakLine"...
+        End If
+        
+        'curGlyph now points at one of two things:
+        ' 1) The first glyph on this new line
+        ' 2) Somewhere past the end of the array
+        
+        'Only the first case needs to be dealt with
+        If curGlyph < m_NumOfGlyphs Then
+        
+            'With line breaks now accounted for, glyph positioning is pretty darn simple.
+            
+            'Y-positioning is universal, but X-positioning changes for characters who are first in line.
+            If m_Glyphs(curGlyph).isFirstGlyphOnLine Then
+                
+                'For initial glyphs on a line, we increment the x-offset artificially, using their A overhang.  This is important for
+                ' avoiding clipping on synthesized italic fonts (e.g. Times New Roman at large sizes)
+                xOffset = m_Glyphs(curGlyph).ABCWidth.abcA
+                
+            End If
+            
+            'This character can now be positioned!
+            With m_Glyphs(curGlyph)
+                .finalX = xOffset
+                .finalY = yOffset
+                .LineID = currentLine
+            End With
+            
+            'Increment the running x-offset with this character's width
+            xOffset = xOffset + m_Glyphs(curGlyph).AdvanceWidth
+                
+            'Advance to the next character
+            curGlyph = curGlyph + 1
+            
+        End If
+        
+    Loop While curGlyph < m_NumOfGlyphs
+    
+    'Find the last character in the string, and make sure it's marked as the last one on its line.
+    If m_NumOfGlyphs > 0 Then
+    
+        m_Glyphs(m_NumOfGlyphs - 1).isLastGlyphOnLine = True
+        
+        'POTENTIAL TODO: scan backward until we find a non-whitespace glyph, to make sure centering (etc) is valid on the last line, if
+        ' empty spaces have been appended.
+        
+'        Do While m_Glyphs(curGlyph).isWhiteSpace
+'            curGlyph = curGlyph - 1
+'            If curGlyph <= 0 Then
+'                curGlyph = 0
+'                Exit Do
+'            End If
+'        Loop
+        
+    Else
+        m_Glyphs(0).isLastGlyphOnLine = True
+    End If
+    
+    'At this point, each glyph is now correctly positioned according to a default left/top alignment.  We have also marked the first and
+    ' last glyph on every line, and assigned each glyph a line ID.
+    '
+    'If the text alignment is anything other than left/top, we now need to apply additional passes to the glyph collection.  The line
+    ' information assembled by our previous runs will be invaluable here.
+    Dim curLine As Long, numOfLines As Long
+    numOfLines = currentLine + 1
+        
+    'Start with horizontal alignment
+    If horizontalAlignment <> StringAlignmentNear Then
+        
+        Dim lineLeft As Long, lineRight As Long
+        
+        'For curLine = 0 To numOfLines - 1
+        
+            'Start by finding the first glyph on this line.
+        
+        'Next curLine
+        
+    End If
     
     'This function doesn't currently have a fail state
     calculateGlyphPositions = True
