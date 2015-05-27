@@ -330,6 +330,8 @@ Public Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
         
         If m_NumOfLineBreaks = 0 Then ReDim m_LineBreakPositions(0 To DEFAULT_INITIAL_CACHE_SIZE - 1) As Long
         
+        m_NumOfLineBreaks = 0
+        
         'Find the first linefeed in the string
         Dim lfPos As Long
         lfPos = InStr(1, m_CurrentString, vbLf, vbBinaryCompare)
@@ -347,13 +349,13 @@ Public Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
         Loop
         
         'For debugging purposes, you can choose to list calculated line break character positions:
-        'For i = 0 To m_NumOfLineBreaks - 1
-        '    Debug.Print "Linebreak at char # " & m_LineBreakPositions(i)
-        'Next i
+        For i = 0 To m_NumOfLineBreaks - 1
+            Debug.Print "ScriptItemize reports linebreak at char # " & m_LineBreakPositions(i)
+        Next i
         
-        'Replace all linebreaks with zero-width non-joiner chars.  These force Uniscribe to break characters at these positions, and they are
+        'Replace all linebreaks with zero-width space chars.  These force Uniscribe to break characters at these positions, and they are
         ' easy to detect later, when it's time to return a glyph array to the actual renderer.
-        m_CurrentString = Replace$(m_CurrentString, vbLf, ChrW(8204), , , vbBinaryCompare)
+        m_CurrentString = Replace$(m_CurrentString, vbLf, ChrW(8203), , , vbBinaryCompare)
         
     End If
     
@@ -930,9 +932,21 @@ Friend Function getCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, O
     End If
     
     'Next, iterate all items and copy the relevant glyph information from each item into the destination array
-    Dim netGlyphOffset As Long
+    Dim netGlyphOffset As Long, numOfGlyphsAtStartOfLine As Long
     netGlyphOffset = 0
-        
+    
+    'DEBUG ONLY!
+    'For i = 0 To m_NumOfItems - 1
+    '    For j = 0 To m_Items(i).getNumOfGlyphs - 1
+    '        Debug.Print "Post-Uniscribe linebreak: " & i & ", " & j & ", " & m_Items(i).getCorrespondingCharIndex(j)
+    '        netGlyphOffset = netGlyphOffset + 1
+    '    Next j
+    'Next i
+    '
+    'netGlyphOffset = 0
+    
+    'END DEBUG ONLY!
+    
     For i = 0 To m_NumOfItems - 1
     
         For j = 0 To m_Items(i).getNumOfGlyphs - 1
@@ -940,6 +954,8 @@ Friend Function getCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, O
             'See if this is a zero-width glyph.  We can reduce render time by leaving out zero-width glyphs that don't convey
             ' useful information to the renderer.
             If m_Items(i).getZeroWidthAtPosition(j) Then
+                
+                'Debug.Print "zero-width: " & netGlyphOffset & ", char-index: " & m_Items(i).getCorrespondingCharIndex(j) & ", start/end: " & m_Items(i).getRelativeStartPos & "," & m_Items(i).getRelativeEndPos
                 
                 'Skip further processing if linebreaks weren't found in the original string
                 If m_StringHasLinebreaks Then
@@ -986,7 +1002,7 @@ Friend Function getCopyOfGlyphCache(ByRef dstGlyphArray() As pdGlyphUniscribe, O
                     
                     'While here, we also collect the ABC width of each glyph
                     If srcDC <> 0 Then ScriptGetGlyphABCWidth srcDC, VarPtr(m_ScriptCache), .glyphIndex, VarPtr(.ABCWidth)
-                
+                    
                 End With
                 
                 'Debug word breaks and/or whitespace with the following code:
