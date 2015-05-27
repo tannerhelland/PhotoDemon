@@ -664,16 +664,19 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
     Dim glyphIsRenderable As Boolean, timeToBreakLine As Boolean
     
     Dim xOffset As Single, yOffset As Single
-    yOffset = 0
-    xOffset = 0
+    yOffset = boundingRect.Top
+    xOffset = boundingRect.Left
     
     Dim currentLine As Long, linebreakImpossible As Boolean
     currentLine = 0
     linebreakImpossible = False
-        
+    
     'Prior to processing each glyph, we cache some unchanging values (like line increments)
     Dim lineHeight As Single
-    lineHeight = m_TextMetrics.tmHeight + m_TextMetrics.tmExternalLeading
+    lineHeight = m_TextMetrics.tmHeight
+    
+    'Previously, the lineHeight calculation included the m_TextMetrics.tmExternalLeading value.  I no longer use this, as it causes some
+    ' fonts to greatly over-extend each line.
     
     'Mark the first glyph as first on its line; we use this indicator to prevent infinite loops if wordwrap is activated, but we can't
     ' fit an entire word on a line.  When this happens, we have no choice but to clip the word
@@ -824,7 +827,7 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
             
             'Increment the running y-offset by the preset lineheight, and reset the x-offset
             yOffset = yOffset + lineHeight
-            xOffset = 0
+            xOffset = boundingRect.Left
             
             'We now need to mark the last character of the previous line, and the first character of this line.  This may or may not be the
             ' current glyph, if the current glyph is a whitespace character.

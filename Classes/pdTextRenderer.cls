@@ -1110,7 +1110,10 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String
                 'GDI+ is sufficient
                 Case fb_GDIPLUS
                     renderTextToDIB = renderTextToDIB_GDIPlus(dstDIB, srcString, m_FontColor, x1, y1, textWidth, textHeight)
-                
+                    
+                    'GDI+ may fail when actually drawing (UGH).  If it does, silently fall back to GDI.
+                    If Not renderTextToDIB Then renderTextToDIB = renderTextToDIB_GDI(dstDIB, srcString, m_FontColor, x1, y1, textWidth, textHeight)
+                    
                 'GDI is required
                 Case fb_GDI
                     renderTextToDIB = renderTextToDIB_GDI(dstDIB, srcString, m_FontColor, x1, y1, textWidth, textHeight)
