@@ -465,6 +465,11 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                     .chkBackground.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackgroundMode)
                     .sltBackgroundOpacity.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackgroundOpacity)
                     .csBackground.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackgroundColor)
+                    .tudLineSpacing.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_LineSpacing)
+                    .tudMargin(0).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_MarginLeft)
+                    .tudMargin(1).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_MarginRight)
+                    .tudMargin(2).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_MarginTop)
+                    .tudMargin(3).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_MarginBottom)
                 End With
                 
                 'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.
@@ -579,6 +584,11 @@ Public Sub syncCurrentLayerToToolOptionsUI()
                     .setTextLayerProperty ptp_BackgroundMode, toolpanel_FancyText.chkBackground.Value
                     .setTextLayerProperty ptp_BackgroundOpacity, toolpanel_FancyText.sltBackgroundOpacity.Value
                     .setTextLayerProperty ptp_BackgroundColor, toolpanel_FancyText.csBackground.Color
+                    .setTextLayerProperty ptp_LineSpacing, toolpanel_FancyText.tudLineSpacing.Value
+                    .setTextLayerProperty ptp_MarginLeft, toolpanel_FancyText.tudMargin(0).Value
+                    .setTextLayerProperty ptp_MarginRight, toolpanel_FancyText.tudMargin(1).Value
+                    .setTextLayerProperty ptp_MarginTop, toolpanel_FancyText.tudMargin(2).Value
+                    .setTextLayerProperty ptp_MarginBottom, toolpanel_FancyText.tudMargin(3).Value
                 End With
                 
                 'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.

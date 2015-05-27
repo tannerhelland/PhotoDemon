@@ -401,6 +401,13 @@ Private m_BackgroundMode As Long
 Private m_BackgroundOpacity As Single
 Private m_BackgroundColor As Long
 
+'...as well as customized spacing and layout options
+Private m_LineSpacing As Single
+Private m_MarginLeft As Single
+Private m_MarginTop As Single
+Private m_MarginRight As Single
+Private m_MarginBottom As Single
+
 'For performance reasons, this class caches various font objects and handles from both GDI and GDI+.  This spares us from
 ' having to recreate expensive font data during rendering steps.
 Private m_GDIPlusFont As Long
@@ -711,6 +718,47 @@ End Function
 
 Public Sub setBackgroundColor(ByVal newSetting As Long)
     m_BackgroundColor = newSetting
+End Sub
+
+'Get/set various layout options.  Note that these features are only supported by the PHOTODEMON text rendering engine.
+Public Function getLineSpacing() As Single
+    getLineSpacing = m_LineSpacing
+End Function
+
+Public Sub setLineSpacing(ByVal newSetting As Single)
+    m_LineSpacing = newSetting
+End Sub
+
+Public Function getMarginLeft() As Single
+    getMarginLeft = m_MarginLeft
+End Function
+
+Public Sub setMarginLeft(ByVal newSetting As Single)
+    m_MarginLeft = newSetting
+End Sub
+
+Public Function getMarginTop() As Single
+    getMarginTop = m_MarginTop
+End Function
+
+Public Sub setMarginTop(ByVal newSetting As Single)
+    m_MarginTop = newSetting
+End Sub
+
+Public Function getMarginRight() As Single
+    getMarginRight = m_MarginRight
+End Function
+
+Public Sub setMarginRight(ByVal newSetting As Single)
+    m_MarginRight = newSetting
+End Sub
+
+Public Function getMarginBottom() As Single
+    getMarginBottom = m_MarginBottom
+End Function
+
+Public Sub setMarginBottom(ByVal newSetting As Single)
+    m_MarginBottom = newSetting
 End Sub
 
 'Get/set the text rendering engine.  This class currently supports two engines: WAPI (which will use GDI or GDI+, as appropriate), and PHOTODEMON,
@@ -1354,7 +1402,6 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
             
     End Select
     
-    
     'Convert the input rect to a RECTF
     Dim boundingRect As RECTF
     With boundingRect
@@ -1364,9 +1411,47 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
         .Height = textHeight
     End With
     
+    'Modify the rect according to a few different factors:
+    
+    '1) If outline mode is active, increase padding by 1/2 the outline size.  This ensures that the outlin is not cropped.
+    If m_OutlineMode <> 0 Then
+    
+        With boundingRect
+            .Left = .Left + m_OutlineWidth / 2
+            .Top = .Top + m_OutlineWidth / 2
+            .Width = .Width - m_OutlineWidth
+            .Height = .Height - m_OutlineWidth
+        End With
+    
+    End If
+    
+    '2) The caller can specify custom margin adjustments, either positive or negative.  Apply those now.
+    With boundingRect
+        .Left = .Left + m_MarginLeft
+        .Top = .Top + m_MarginTop
+        .Width = .Width - (m_MarginLeft + m_MarginRight)
+        .Height = .Height - (m_MarginTop + m_MarginBottom)
+    End With
+    
+    'After all boundary rect modifications are made, we need to perform a failsafe check to make sure width and height aren't negative.
+    With boundingRect
+        
+        If .Width < 0 Then
+            .Left = .Left + .Width
+            .Width = 0
+        End If
+        
+        If .Height < 0 Then
+            .Top = .Top + .Height
+            .Height = 0
+        End If
+        
+    End With
+    
     'Retrieve a full, composite path from the glyph collector.  It handles messy business like character positioning,
     ' and simply hands us a fully composited path, ready for rendering.
     Dim finalTextPath As pdGraphicsPath
+    m_GlyphCollection.notifyCustomLayoutSettings m_LineSpacing
     If m_GlyphCollection.assembleCompositePath(finalTextPath, boundingRect, m_HorizontalAlignment, m_VerticalAlignment, m_WordWrap) Then
         
         Dim gdipReturn As Long

@@ -69,6 +69,29 @@ Begin VB.Form toolpanel_FancyText
       Top             =   0
       Visible         =   0   'False
       Width           =   10935
+      Begin PhotoDemon.textUpDown tudLineSpacing 
+         Height          =   345
+         Left            =   4800
+         TabIndex        =   46
+         Top             =   1020
+         Width           =   1935
+         _ExtentX        =   3413
+         _ExtentY        =   609
+         Min             =   -10
+         SigDigits       =   2
+      End
+      Begin PhotoDemon.textUpDown tudMargin 
+         Height          =   345
+         Index           =   0
+         Left            =   4800
+         TabIndex        =   42
+         Top             =   90
+         Width           =   960
+         _ExtentX        =   1693
+         _ExtentY        =   609
+         Min             =   -100
+         Max             =   100
+      End
       Begin PhotoDemon.buttonStrip btsHAlignment 
          Height          =   435
          Left            =   1320
@@ -118,9 +141,81 @@ Begin VB.Form toolpanel_FancyText
          Left            =   1320
          TabIndex        =   16
          Top             =   1020
-         Width           =   2415
-         _ExtentX        =   4260
-         _ExtentY        =   635
+         Width           =   2070
+         _ExtentX        =   3651
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   23
+         Left            =   3000
+         Top             =   150
+         Width           =   1605
+         _ExtentX        =   2831
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "h. margins:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.textUpDown tudMargin 
+         Height          =   345
+         Index           =   1
+         Left            =   5760
+         TabIndex        =   43
+         Top             =   90
+         Width           =   960
+         _ExtentX        =   1693
+         _ExtentY        =   609
+         Min             =   -100
+         Max             =   100
+      End
+      Begin PhotoDemon.textUpDown tudMargin 
+         Height          =   345
+         Index           =   2
+         Left            =   4800
+         TabIndex        =   44
+         Top             =   570
+         Width           =   960
+         _ExtentX        =   1693
+         _ExtentY        =   609
+         Min             =   -100
+         Max             =   100
+      End
+      Begin PhotoDemon.textUpDown tudMargin 
+         Height          =   345
+         Index           =   3
+         Left            =   5760
+         TabIndex        =   45
+         Top             =   570
+         Width           =   960
+         _ExtentX        =   1693
+         _ExtentY        =   609
+         Min             =   -100
+         Max             =   100
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   24
+         Left            =   3000
+         Top             =   630
+         Width           =   1605
+         _ExtentX        =   2831
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "v. margins:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   25
+         Left            =   3480
+         Top             =   1080
+         Width           =   1170
+         _ExtentX        =   2064
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "line spacing:"
+         ForeColor       =   0
       End
    End
    Begin VB.PictureBox picCategory 
@@ -1482,7 +1577,7 @@ Private Sub Form_Load()
     'Fill wordwrap options
     cboWordWrap.Clear
     cboWordWrap.AddItem "none", 0
-    cboWordWrap.AddItem "manual", 1
+    cboWordWrap.AddItem "manual only", 1
     cboWordWrap.AddItem "characters", 2
     cboWordWrap.AddItem "words", 3
     cboWordWrap.ListIndex = 3
@@ -1656,7 +1751,7 @@ Private Sub sltOutlineWidth_Change()
     'Mark the tool engine as busy
     Tool_Support.setToolBusyState True
         
-    'Update the current layer text alignment
+    'Update the current setting
     pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_OutlineWidth, sltOutlineWidth.Value
     
     'Free the tool engine
@@ -1674,6 +1769,115 @@ End Sub
 
 Private Sub sltOutlineWidth_LostFocusAPI()
     If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_OutlineWidth, sltOutlineWidth.Value
+End Sub
+
+Private Sub tudLineSpacing_Change()
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+    
+    'Update the setting
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_LineSpacing, tudLineSpacing.Value
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+Private Sub tudLineSpacing_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_LineSpacing, tudLineSpacing.Value, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub tudLineSpacing_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_LineSpacing, tudLineSpacing.Value
+End Sub
+
+Private Sub tudMargin_Change(Index As Integer)
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+    
+    'Update the current setting
+    Select Case Index
+    
+        Case 0
+            pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_MarginLeft, tudMargin(Index).Value
+        
+        Case 1
+            pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_MarginRight, tudMargin(Index).Value
+        
+        Case 2
+            pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_MarginTop, tudMargin(Index).Value
+        
+        Case 3
+            pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_MarginBottom, tudMargin(Index).Value
+    
+    End Select
+        
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+Private Sub tudMargin_GotFocusAPI(Index As Integer)
+
+    If g_OpenImageCount = 0 Then Exit Sub
+    
+    Select Case Index
+    
+        Case 0
+            Processor.flagInitialNDFXState_Text ptp_MarginLeft, tudMargin(Index).Value, pdImages(g_CurrentImage).getActiveLayerID
+        
+        Case 1
+            Processor.flagInitialNDFXState_Text ptp_MarginRight, tudMargin(Index).Value, pdImages(g_CurrentImage).getActiveLayerID
+        
+        Case 2
+            Processor.flagInitialNDFXState_Text ptp_MarginTop, tudMargin(Index).Value, pdImages(g_CurrentImage).getActiveLayerID
+        
+        Case 3
+            Processor.flagInitialNDFXState_Text ptp_MarginBottom, tudMargin(Index).Value, pdImages(g_CurrentImage).getActiveLayerID
+        
+    End Select
+    
+End Sub
+
+Private Sub tudMargin_LostFocusAPI(Index As Integer)
+    
+    If Tool_Support.canvasToolsAllowed Then
+        
+        Select Case Index
+        
+            Case 0
+                Processor.flagFinalNDFXState_Text ptp_MarginLeft, tudMargin(Index).Value
+            
+            Case 1
+                Processor.flagFinalNDFXState_Text ptp_MarginRight, tudMargin(Index).Value
+            
+            Case 2
+                Processor.flagFinalNDFXState_Text ptp_MarginTop, tudMargin(Index).Value
+            
+            Case 3
+                Processor.flagFinalNDFXState_Text ptp_MarginBottom, tudMargin(Index).Value
+        
+        End Select
+        
+    End If
+    
 End Sub
 
 Private Sub tudTextFontSize_Change()
