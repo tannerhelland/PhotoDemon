@@ -158,6 +158,9 @@ Private m_LastFont As Long, m_LastDC As Long, m_LastString As String
 Private m_LineWidths() As Single
 Private Const DEFAULT_INITIAL_LINE_COUNT As Long = 16
 
+'This class now supports some custom layout settings, which the caller can supply prior to final path assembly.
+Private m_LineSpacing As Single
+
 'Prior to glyph generation, this class needs a copy of GDI font handle.  I have deliberately made this function separate
 ' AS A REMINDER TO REMOVE THE FONT FROM ANY ACTIVE DCs PRIOR TO GIVING THIS CLASS ACCESS.
 Public Sub notifyOfGDIFontChoice(ByVal srcGDIFontHandle As Long)
@@ -595,6 +598,11 @@ Private Function parseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
 
 End Function
 
+'Prior to calling assembleCompositePath, below, the caller can notify us of custom layout settings via this function
+Friend Function notifyCustomLayoutSettings(Optional ByVal customLineSpacing As Single = 0#)
+    m_LineSpacing = customLineSpacing
+End Function
+
 'After assembling a full glyph collection, this function can be called to generate a totally complete graphics path, with all
 ' characters laid out according to the passed rect.
 Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef boundingRect As RECTF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords) As Boolean
@@ -615,9 +623,6 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
         calculateGlyphPositions boundingRect, horizontalAlignment, verticalAlignment, lineWrapMode
         
         Dim i As Long, curGlyph As Long, curGlyphOutline As Long, srcPathHandle As Long
-        Dim xOffset As Single, yOffset As Single
-        yOffset = 0
-        xOffset = 0
         
         Dim glyphIsRenderable As Boolean
         
@@ -680,6 +685,7 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
     'Prior to processing each glyph, we cache some unchanging values (like line increments)
     Dim lineHeight As Single
     lineHeight = m_TextMetrics.tmHeight
+    lineHeight = lineHeight + (m_LineSpacing * lineHeight)
     
     'Previously, the lineHeight calculation included the m_TextMetrics.tmExternalLeading value.  I no longer use this, as it causes some
     ' fonts to greatly over-extend each line.
@@ -728,7 +734,7 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
                 
                     'Regardless of break mode, start by seeing if this character extends past the end of the line.  Note that this character's
                     ' C-overhang is included, to avoid clipping on italicized characters.
-                    If xOffset + m_Glyphs(curGlyph).AdvanceWidth + (-1 * m_Glyphs(curGlyph).ABCWidth.abcC) >= boundingRect.Width Then
+                    If xOffset + m_Glyphs(curGlyph).AdvanceWidth + (-1 * m_Glyphs(curGlyph).ABCWidth.abcC) >= (boundingRect.Left + boundingRect.Width) Then
                     
                         'This character doesn't fit.  Further handling is determined by wrap mode.
                         Select Case lineWrapMode
@@ -956,7 +962,7 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
                 
                 'For initial glyphs on a line, we increment the x-offset artificially, using their A overhang.  This is important for
                 ' avoiding clipping on synthesized italic fonts (e.g. Times New Roman at large sizes)
-                xOffset = 1 + (-1 * m_Glyphs(curGlyph).ABCWidth.abcA)
+                xOffset = boundingRect.Left + 1 + (-1 * m_Glyphs(curGlyph).ABCWidth.abcA)
                 
             End If
             
@@ -1162,6 +1168,9 @@ Private Sub Class_Initialize()
     
     'Create a default line width tracking array
     ReDim m_LineWidths(0 To DEFAULT_INITIAL_LINE_COUNT - 1) As Single
+    
+    'Reset any custom layout modifiers
+    m_LineSpacing = 0
     
 End Sub
 

@@ -233,6 +233,11 @@ Private Type textLayerData
     tld_BackgroundMode As Long
     tld_BackgroundOpacity As Single
     tld_BackgroundColor As Long
+    tld_LineSpacing As Single
+    tld_MarginLeft As Single
+    tld_MarginTop As Single
+    tld_MarginRight As Single
+    tld_MarginBottom As Single
 End Type
 
 Private myTextData As textLayerData
@@ -269,6 +274,11 @@ Public Enum PDLAYER_TEXT_PROPERTY
     ptp_BackgroundMode = 27
     ptp_BackgroundOpacity = 28
     ptp_BackgroundColor = 29
+    ptp_LineSpacing = 30
+    ptp_MarginLeft = 31
+    ptp_MarginTop = 32
+    ptp_MarginRight = 33
+    ptp_MarginBottom = 34
 End Enum
 
 #If False Then
@@ -277,7 +287,8 @@ End Enum
     Const ptp_TextContrast = 12, ptp_RenderingEngine = 13, ptp_TextHinting = 14, ptp_WordWrap = 15, ptp_FillMode = 16, ptp_FillOpacity = 17
     Const ptp_FillPattern = 18, ptp_PatternColor1 = 19, ptp_PatternColor2 = 20, ptp_OutlineMode = 21, ptp_OutlineColor = 22
     Const ptp_OutlineCorner = 23, ptp_OutlineCaps = 24, ptp_OutlineOpacity = 25, ptp_OutlineWidth = 26, ptp_BackgroundMode = 27
-    Const ptp_BackgroundOpacity = 28, ptp_BackgroundColor = 29
+    Const ptp_BackgroundOpacity = 28, ptp_BackgroundColor = 29, ptp_LineSpacing = 30, ptp_MarginLeft = 31, ptp_MarginTop = 32
+    Const ptp_MarginRight = 33, ptp_MarginBottom = 34
 #End If
 
 'A dedicated text renderer is used to render the backer layer for text layers
@@ -940,6 +951,21 @@ Friend Function getTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPE
         
         Case ptp_BackgroundColor
             getTextLayerProperty = myTextData.tld_BackgroundColor
+            
+        Case ptp_LineSpacing
+            getTextLayerProperty = myTextData.tld_LineSpacing
+            
+        Case ptp_MarginLeft
+            getTextLayerProperty = myTextData.tld_MarginLeft
+            
+        Case ptp_MarginTop
+            getTextLayerProperty = myTextData.tld_MarginTop
+            
+        Case ptp_MarginRight
+            getTextLayerProperty = myTextData.tld_MarginRight
+            
+        Case ptp_MarginBottom
+            getTextLayerProperty = myTextData.tld_MarginBottom
     
     End Select
 
@@ -1128,6 +1154,36 @@ Friend Sub setTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPERTY, 
                 myTextData.tld_BackgroundColor = CLng(newValue)
                 m_VectorDIBSynched = False
             End If
+            
+        Case ptp_LineSpacing
+            If myTextData.tld_LineSpacing <> CSng(newValue) Then
+                myTextData.tld_LineSpacing = CSng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_MarginLeft
+            If myTextData.tld_MarginLeft <> CSng(newValue) Then
+                myTextData.tld_MarginLeft = CSng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_MarginTop
+            If myTextData.tld_MarginTop <> CSng(newValue) Then
+                myTextData.tld_MarginTop = CSng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_MarginRight
+            If myTextData.tld_MarginRight <> CSng(newValue) Then
+                myTextData.tld_MarginRight = CSng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_MarginBottom
+            If myTextData.tld_MarginBottom <> CSng(newValue) Then
+                myTextData.tld_MarginBottom = CSng(newValue)
+                m_VectorDIBSynched = False
+            End If
         
     End Select
     
@@ -1229,6 +1285,11 @@ Private Sub Class_Initialize()
         .tld_BackgroundMode = 0
         .tld_BackgroundOpacity = 100
         .tld_BackgroundColor = vbWhite
+        .tld_LineSpacing = 0
+        .tld_MarginLeft = 0
+        .tld_MarginTop = 0
+        .tld_MarginRight = 0
+        .tld_MarginBottom = 0
     End With
     
     'Initialize the layer's DIB
@@ -1540,6 +1601,11 @@ Public Function getVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
                 .writeTag "TextBackgroundMode", myTextData.tld_BackgroundMode
                 .writeTag "TextBackgroundColor", myTextData.tld_BackgroundColor
                 .writeTag "TextBackgroundOpacity", myTextData.tld_BackgroundOpacity
+                .writeTag "TextLineSpacing", myTextData.tld_LineSpacing
+                .writeTag "TextMarginLeft", myTextData.tld_MarginLeft
+                .writeTag "TextMarginTop", myTextData.tld_MarginTop
+                .writeTag "TextMarginRight", myTextData.tld_MarginRight
+                .writeTag "TextMarginBottom", myTextData.tld_MarginBottom
             End With
         
     End Select
@@ -1603,6 +1669,11 @@ Public Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
                     .tld_BackgroundMode = xmlEngine.getUniqueTag_Long("TextBackgroundMode", 0)
                     .tld_BackgroundColor = xmlEngine.getUniqueTag_Long("TextBackgroundColor", vbWhite)
                     .tld_BackgroundOpacity = xmlEngine.getUniqueTag_Long("TextBackgroundOpacity", 100)
+                    .tld_LineSpacing = xmlEngine.getUniqueTag_Double("TextLineSpacing", 0)
+                    .tld_MarginLeft = xmlEngine.getUniqueTag_Double("TextMarginLeft", 0)
+                    .tld_MarginTop = xmlEngine.getUniqueTag_Double("TextMarginTop", 0)
+                    .tld_MarginRight = xmlEngine.getUniqueTag_Double("TextMarginRight", 0)
+                    .tld_MarginBottom = xmlEngine.getUniqueTag_Double("TextMarginBottom", 0)
                 End With
                 
         End Select
@@ -2188,6 +2259,11 @@ Public Sub resetLayerParameters()
         .tld_BackgroundMode = 0
         .tld_BackgroundOpacity = 100
         .tld_BackgroundColor = vbWhite
+        .tld_LineSpacing = 0
+        .tld_MarginLeft = 0
+        .tld_MarginTop = 0
+        .tld_MarginRight = 0
+        .tld_MarginBottom = 0
     End With
 
 End Sub
@@ -2253,6 +2329,11 @@ Public Function syncInternalDIB() As Boolean
                 .setBackgroundMode myTextData.tld_BackgroundMode
                 .setBackgroundColor myTextData.tld_BackgroundColor
                 .setBackgroundOpacity myTextData.tld_BackgroundOpacity
+                .setLineSpacing myTextData.tld_LineSpacing
+                .setMarginLeft myTextData.tld_MarginLeft
+                .setMarginTop myTextData.tld_MarginTop
+                .setMarginRight myTextData.tld_MarginRight
+                .setMarginBottom myTextData.tld_MarginBottom
             End With
             
             'Initialize the backer DIB as necessary
