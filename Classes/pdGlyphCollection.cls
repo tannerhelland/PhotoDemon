@@ -715,7 +715,7 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
                 
                     'Regardless of break mode, start by seeing if this character extends past the end of the line.  Note that this character's
                     ' C-overhang is included, to avoid clipping on italicized characters.
-                    If xOffset + m_Glyphs(curGlyph).AdvanceWidth + m_Glyphs(curGlyph).ABCWidth.abcC > boundingRect.Width Then
+                    If xOffset + m_Glyphs(curGlyph).AdvanceWidth + (-1 * m_Glyphs(curGlyph).ABCWidth.abcC) >= boundingRect.Width Then
                     
                         'This character doesn't fit.  Further handling is determined by wrap mode.
                         Select Case lineWrapMode
@@ -738,7 +738,7 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
                                 linebreakImpossible = False
                                 
                                 'If this glyph is breakable, awesome!  Break immediately.
-                                If m_Glyphs(curGlyph).isSoftBreak Then
+                                If m_Glyphs(curGlyph).isSoftBreak Or m_Glyphs(curGlyph).isWhiteSpace Then
                                     
                                     'No extra code required
                                     
@@ -913,7 +913,7 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
                 
                 'For initial glyphs on a line, we increment the x-offset artificially, using their A overhang.  This is important for
                 ' avoiding clipping on synthesized italic fonts (e.g. Times New Roman at large sizes)
-                xOffset = m_Glyphs(curGlyph).ABCWidth.abcA
+                xOffset = 1 + (-1 * m_Glyphs(curGlyph).ABCWidth.abcA)
                 
             End If
             

@@ -386,7 +386,20 @@ Friend Function getZeroWidthAtPosition(ByVal gPos As Long) As Boolean
 End Function
 
 Friend Function getCorrespondingCharIndex(ByVal gPos As Long) As Long
-    getCorrespondingCharIndex = m_RelativeStartPos + m_LogicalClusterCache(gPos)
+
+    'Search the logical cluster cache until we find a glyph position that matches.  Note that the relationship between characters
+    ' and glyphs is *not* 1:1, so one glyph may match to multiple characters!  This function will only return the first hit.
+    ' (In the future, I suppose we could return an LBound and UBound if relevant, but for our current tasks, this is good enough.)
+    Dim i As Long
+    For i = 0 To UBound(m_LogicalClusterCache)
+    
+        If m_LogicalClusterCache(i) = gPos Then
+            getCorrespondingCharIndex = m_RelativeStartPos + i
+            Exit For
+        End If
+    
+    Next i
+    
 End Function
 
 'Retrieve an arbitrary 1-bit position [0-31] in a Long-type value.  Position 0 is the LEAST-SIGNIFICANT BIT, and Position 31
