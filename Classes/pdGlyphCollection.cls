@@ -153,6 +153,11 @@ Private m_FontAscent As Long, m_FontDescent As Long, m_FontHeight As Long
 ' can shortcut some steps if (for example) font setting change but the string does not.
 Private m_LastFont As Long, m_LastDC As Long, m_LastString As String
 
+'When setting alignment, we improve performance in the inner loop by calculating running linewidths as we go.  To prevent churn,
+' we use a module-level array and only reset it as necessary.
+Private m_LineWidths() As Single
+Private Const DEFAULT_INITIAL_LINE_COUNT As Long = 16
+
 'Prior to glyph generation, this class needs a copy of GDI font handle.  I have deliberately made this function separate
 ' AS A REMINDER TO REMOVE THE FONT FROM ANY ACTIVE DCs PRIOR TO GIVING THIS CLASS ACCESS.
 Public Sub notifyOfGDIFontChoice(ByVal srcGDIFontHandle As Long)
@@ -660,7 +665,8 @@ End Function
 Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords) As Boolean
     
     Dim i As Long, j As Long
-    Dim curGlyph As Long, curGlyphOutline As Long, srcPathHandle As Long
+    Dim curGlyph As Long, curGlyphOutline As Long
+    Dim srcPathHandle As Long, glyphCheck As Long
     Dim glyphIsRenderable As Boolean, timeToBreakLine As Boolean
     
     Dim xOffset As Single, yOffset As Single
@@ -681,6 +687,7 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
     'Mark the first glyph as first on its line; we use this indicator to prevent infinite loops if wordwrap is activated, but we can't
     ' fit an entire word on a line.  When this happens, we have no choice but to clip the word
     m_Glyphs(0).isFirstGlyphOnLine = True
+    m_LineWidths(0) = 0
     
     'For performance reasons, we calculate all initial positioning in a single pass.  I had originally intended to make two passes - one to
     ' determine line break positions, and a second to perform actual (x, y) positioning.  This would make for cleaner code, but it also
@@ -688,13 +695,16 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
     '
     'Note that a second pass is still required for repositioning due to non-left or non-top alignments; this is a necessary evil, as we
     ' can't apply specialized vertical positioning until we've calculated all linebreaks, and we can't calculate linebreaks until we calculate
-    ' all x-positioning.
+    ' all x-positioning.  However, we do what we can to improve performance by caching calculated line widths as we go.
+    Dim curGlyphWidth As Single, lineWidthAdded As Single
+    curGlyphWidth = 0
+    lineWidthAdded = xOffset
     
     'Start iterating through the source string, one character at a time.
     curGlyph = 0
     
     Do
-                
+        
         'How we determine line breaks depends on the current wordwrap modes.
         If lineWrapMode = tre_None Then
 
@@ -779,6 +789,9 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
                                             
                                             'If we're still here, it means this character is a viable candidate for a valid break.
                                             
+                                            'Remove its width from the running line width counter
+                                            m_LineWidths(currentLine) = m_LineWidths(currentLine) - m_Glyphs(j).AdvanceWidth
+                                            
                                             'If this is a valid softbreak position, mark it and exit immediately
                                             If m_Glyphs(j).isSoftBreak Or m_Glyphs(j).isWhiteSpace Then
                                                 curGlyph = j
@@ -828,6 +841,7 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
             'Increment the running y-offset by the preset lineheight, and reset the x-offset
             yOffset = yOffset + lineHeight
             xOffset = boundingRect.Left
+            m_LineWidths(currentLine) = 0
             
             'We now need to mark the last character of the previous line, and the first character of this line.  This may or may not be the
             ' current glyph, if the current glyph is a whitespace character.
@@ -843,11 +857,37 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
                 '        and hard breaks...)
                 'curGlyph = curGlyph + 1
                 
-            'If we are not breaking on a hard line break, we mark the *previous* character as the last one on the line.
+            'If we are not breaking on a hard line break, we mark the *previous* non-whitespace character as the last one on the line.
             Else
                 
                 If curGlyph <> 0 Then
-                    m_Glyphs(curGlyph - 1).isLastGlyphOnLine = True
+                    
+                    'We now need to search backward for the last non-whitespace glyph.
+                    For glyphCheck = curGlyph - 1 To 0 Step -1
+                        
+                        If Not m_Glyphs(glyphCheck).isWhiteSpace Then
+                            m_Glyphs(glyphCheck).isLastGlyphOnLine = True
+                            Exit For
+                        Else
+                        
+                            'Remove this character's width from our running total
+                            m_LineWidths(currentLine - 1) = m_LineWidths(currentLine - 1) - m_Glyphs(glyphCheck).AdvanceWidth
+                        
+                        End If
+                        
+                    Next glyphCheck
+                    
+                    'If we made it all the way here, only whitespace character exist on the previous line.  Mark the last one.
+                    If glyphCheck = 0 Then
+                        m_Glyphs(curGlyph - 1).isLastGlyphOnLine = True
+                    Else
+                    
+                        'Add the "C" overhang from this character to the line width.  This is important for getting right-
+                        ' and center-aligned text just perfect.
+                        m_LineWidths(currentLine - 1) = m_LineWidths(currentLine - 1) - m_Glyphs(glyphCheck).ABCWidth.abcC
+                    
+                    End If
+                    
                 Else
                     m_Glyphs(0).isLastGlyphOnLine = True
                 End If
@@ -928,7 +968,15 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
             End With
             
             'Increment the running x-offset with this character's width
-            xOffset = xOffset + m_Glyphs(curGlyph).AdvanceWidth
+            curGlyphWidth = m_Glyphs(curGlyph).AdvanceWidth
+            xOffset = xOffset + curGlyphWidth
+            
+            'Keep a running tally of the current line widths; this makes our second alignment pass much faster.
+            If currentLine > UBound(m_LineWidths) Then ReDim Preserve m_LineWidths(0 To currentLine * 2 - 1) As Single
+            m_LineWidths(currentLine) = xOffset
+            
+            'Debug information can be helpful when dealing with such complicated measurement systems:
+            'Debug.Print "Glyph: " & curGlyph & ", line: " & currentLine & ", linewidth: " & m_LineWidths(currentLine) & ", offset: " & xOffset
                 
             'Advance to the next character
             curGlyph = curGlyph + 1
@@ -942,16 +990,9 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
     
         m_Glyphs(m_NumOfGlyphs - 1).isLastGlyphOnLine = True
         
-        'POTENTIAL TODO: scan backward until we find a non-whitespace glyph, to make sure centering (etc) is valid on the last line, if
-        ' empty spaces have been appended.
-        
-'        Do While m_Glyphs(curGlyph).isWhiteSpace
-'            curGlyph = curGlyph - 1
-'            If curGlyph <= 0 Then
-'                curGlyph = 0
-'                Exit Do
-'            End If
-'        Loop
+        'We also want to add the C measurement of this glyph to the running line width of the final line, since that's normally
+        ' handled by the "move to next line" code, above.
+        m_LineWidths(currentLine) = m_LineWidths(currentLine) - m_Glyphs(m_NumOfGlyphs - 1).ABCWidth.abcC
         
     Else
         m_Glyphs(0).isLastGlyphOnLine = True
@@ -961,20 +1002,58 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
     ' last glyph on every line, and assigned each glyph a line ID.
     '
     'If the text alignment is anything other than left/top, we now need to apply additional passes to the glyph collection.  The line
-    ' information assembled by our previous runs will be invaluable here.
+    ' information assembled by our previous runs is crucial here.
     Dim curLine As Long, numOfLines As Long
     numOfLines = currentLine + 1
+        
+    Dim lineDiff As Single
         
     'Start with horizontal alignment
     If horizontalAlignment <> StringAlignmentNear Then
         
-        Dim lineLeft As Long, lineRight As Long
+        'Because we kept a running tally of each line's width during the processing stages, its easy to calculate offsets now.
+        For curLine = 0 To numOfLines - 1
         
-        'For curLine = 0 To numOfLines - 1
+            'For each line, replace its calculated line width with the difference between the bounding rect and the actual size.
+            lineDiff = boundingRect.Width - m_LineWidths(curLine)
+            
+            Debug.Print "Line: " & curLine & ", width: " & m_LineWidths(curLine) & ", rect: " & boundingRect.Width
+            
+            If horizontalAlignment = StringAlignmentCenter Then
+                m_LineWidths(curLine) = lineDiff / 2
+            Else
+                m_LineWidths(curLine) = lineDiff
+            End If
         
-            'Start by finding the first glyph on this line.
+        Next curLine
         
-        'Next curLine
+        'Each line width tracker now contains the offset required to make alignment work.  Apply it to each glyph in turn.
+        For curGlyph = 0 To m_NumOfGlyphs - 1
+            
+            With m_Glyphs(curGlyph)
+                .finalX = .finalX + m_LineWidths(.LineID)
+            End With
+            
+        Next curGlyph
+        
+    End If
+    
+    'Next, vertical alignment
+    If verticalAlignment <> StringAlignmentNear Then
+        
+        'Because line heights are uniform, this process is much simpler, as we don't need to custom-measure anything.
+        lineDiff = boundingRect.Height - (numOfLines * lineHeight)
+        
+        If verticalAlignment = StringAlignmentCenter Then lineDiff = lineDiff / 2
+        
+        'Apply the vertical offset to each glyph in turn.
+        For curGlyph = 0 To m_NumOfGlyphs - 1
+            
+            With m_Glyphs(curGlyph)
+                .finalY = .finalY + lineDiff
+            End With
+            
+        Next curGlyph
         
     End If
     
@@ -1080,6 +1159,9 @@ Private Sub Class_Initialize()
     
     'Create a Uniscribe interface
     Set m_Uniscribe = New pdUniscribe
+    
+    'Create a default line width tracking array
+    ReDim m_LineWidths(0 To DEFAULT_INITIAL_LINE_COUNT - 1) As Single
     
 End Sub
 
