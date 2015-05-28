@@ -811,9 +811,9 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
                                         
                                         'If a line break isn't possible, we have no choice but to break on this character.  Leave the curGlyph
                                         ' pointer where it is; nothing else is required.
-                                        If linebreakImpossible Then
-                                            Debug.Print "Invalid word present; forcibly breaking mid-word as part of wordwrapping."
-                                        End If
+                                        'If linebreakImpossible Then
+                                        '    Debug.Print "Invalid word present; forcibly breaking mid-word as part of wordwrapping."
+                                        'End If
                                         
                                     'End failsafe check (If/Else curGlyph = 0 and we're being forced to break)
                                     End If
@@ -1022,8 +1022,6 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
         
             'For each line, replace its calculated line width with the difference between the bounding rect and the actual size.
             lineDiff = boundingRect.Width - m_LineWidths(curLine)
-            
-            Debug.Print "Line: " & curLine & ", width: " & m_LineWidths(curLine) & ", rect: " & boundingRect.Width
             
             If horizontalAlignment = StringAlignmentCenter Then
                 m_LineWidths(curLine) = lineDiff / 2
