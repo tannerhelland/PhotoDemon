@@ -126,92 +126,6 @@ Private m_LineBreakPositions() As Long
 
 Private Const DEFAULT_INITIAL_CACHE_SIZE As Long = 16
 
-Public Function ScriptIsComplexC(stIn As String, Optional Flags As SCRIPT_IS_COMPLEX_FLAGS) As Boolean
-    
-    Dim hr As Long
-   
-    hr = ScriptIsComplex(StrPtr(stIn), Len(stIn), Flags)
-    If hr = S_OK Then
-        ScriptIsComplexC = True
-    ElseIf hr = S_FALSE Then
-        ScriptIsComplexC = False
-    Else
-        Err.Raise hr
-    End If
-    
-End Function
-
-Friend Function ScriptRecordDigitSubstitutionC(Locale As Long) As SCRIPT_DIGITSUBSTITUTE
-    
-    Dim psds As SCRIPT_DIGITSUBSTITUTE
-
-    If ScriptRecordDigitSubstitution(Locale, psds) = S_OK Then
-        ScriptRecordDigitSubstitutionC = psds
-    End If
-    
-End Function
-
-'NOTE: the function below was originally written by Michael Kaplan.
-' (http://www.siao2.com/2006/06/12/628714.aspx)
-' I am keeping it here in case it proves helpful when working on PD's various word wrap options.
-
-'———————
-' IchBreakSpot
-'
-'   Find the appropriate place to break for this line. Here
-'   is the algorithm used:
-'
-'   1) If all text will fit or no line breaking is specified, then output the whole string
-'   2) If #1 is not true, find the first hard break within the text that could fit on the line
-'   3) If #2 could not be found, then look for the last softbreak or whitespace within the text that could fit on the line.
-'   4) If #3 is a whitespace, then break AFTER the character
-'   5) If #3 is a soft break, than break before the character
-'———————
-'Friend Function IchBreakSpot(st As String, rgsla() As SCRIPT_LOGATTR_VB, cch As Long, Optional fNoLineBreaks As Boolean = False) As Long
-'
-'    Dim ich As Long
-'
-'    ' First check for a hard break
-'    ich = InStr(1, st, vbCrLf, vbBinaryCompare) - 1
-'
-'    If ich >= 0 And ich <= cch - 1 Then
-'        ' Use the hard break that was found
-'        IchBreakSpot = ich
-'
-'    ElseIf Len(st) > cch Then
-'        ' There are more characters then there is space to output, on this line
-'        ' at least. So walk the string backwards, looking for a break character.
-'        For ich = cch - 1 To 0 Step -1
-'            With rgsla(ich)
-'                ' Check to see if its a soft break char or a white space char
-'                If .fWhiteSpace Or .fSoftBreak Then
-'                    If .fWhiteSpace Then
-'                        ' White space means break AFTER this character
-'                        IchBreakSpot = ich
-'                    ElseIf ich > 0 Then
-'                        ' Its a softbreak. If we have the characters to spare,
-'                        ' subtract one because we should be breaking BEFORE
-'                        ' the character, not AFTER.
-'                        IchBreakSpot = ich - 1
-'                    Else
-'                        ' There are not enough chars to go after. This probably should
-'                        ' never happen, but we may as well make sure.
-'                        IchBreakSpot = 0
-'                    End If
-'                    Exit For
-'                End If
-'            End With
-'        Next ich
-'    End If
-'
-'    ' Assume cch is where it's at if it has never been set
-'    If IchBreakSpot = 0 Then IchBreakSpot = cch
-'
-'End Function
-
-
-'START FUNCTIONS WRITTEN BY TANNER
-
 'Set an arbitrary 1-bit position [0-31] in a Long-type value to either 1 or 0.  Position 0 is the LEAST-SIGNIFICANT BIT, and Position 31
 ' is the SIGN BIT for a standard VB Long.
 '
@@ -349,9 +263,9 @@ Public Function Step1_ScriptItemize(ByRef srcString As String) As Boolean
         Loop
         
         'For debugging purposes, you can choose to list calculated line break character positions:
-        For i = 0 To m_NumOfLineBreaks - 1
-            Debug.Print "ScriptItemize reports linebreak at char # " & m_LineBreakPositions(i)
-        Next i
+        'For i = 0 To m_NumOfLineBreaks - 1
+        '    Debug.Print "ScriptItemize reports linebreak at char # " & m_LineBreakPositions(i)
+        'Next i
         
         'Replace all linebreaks with zero-width space chars.  These force Uniscribe to break characters at these positions, and they are
         ' easy to detect later, when it's time to return a glyph array to the actual renderer.

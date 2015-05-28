@@ -71,7 +71,7 @@ Begin VB.Form toolpanel_FancyText
       Width           =   10935
       Begin PhotoDemon.textUpDown tudLineSpacing 
          Height          =   345
-         Left            =   4800
+         Left            =   5160
          TabIndex        =   46
          Top             =   1020
          Width           =   1935
@@ -83,14 +83,14 @@ Begin VB.Form toolpanel_FancyText
       Begin PhotoDemon.textUpDown tudMargin 
          Height          =   345
          Index           =   0
-         Left            =   4800
+         Left            =   5160
          TabIndex        =   42
          Top             =   90
          Width           =   960
          _ExtentX        =   1693
          _ExtentY        =   609
-         Min             =   -100
-         Max             =   100
+         Min             =   -1000
+         Max             =   1000
       End
       Begin PhotoDemon.buttonStrip btsHAlignment 
          Height          =   435
@@ -148,61 +148,61 @@ Begin VB.Form toolpanel_FancyText
       Begin PhotoDemon.pdLabel lblText 
          Height          =   240
          Index           =   23
-         Left            =   3000
+         Left            =   3360
          Top             =   150
          Width           =   1605
          _ExtentX        =   2831
          _ExtentY        =   503
          Alignment       =   1
-         Caption         =   "h. margins:"
+         Caption         =   "h. padding:"
          ForeColor       =   0
       End
       Begin PhotoDemon.textUpDown tudMargin 
          Height          =   345
          Index           =   1
-         Left            =   5760
+         Left            =   6120
          TabIndex        =   43
          Top             =   90
          Width           =   960
          _ExtentX        =   1693
          _ExtentY        =   609
-         Min             =   -100
-         Max             =   100
+         Min             =   -1000
+         Max             =   1000
       End
       Begin PhotoDemon.textUpDown tudMargin 
          Height          =   345
          Index           =   2
-         Left            =   4800
+         Left            =   5160
          TabIndex        =   44
          Top             =   570
          Width           =   960
          _ExtentX        =   1693
          _ExtentY        =   609
-         Min             =   -100
-         Max             =   100
+         Min             =   -1000
+         Max             =   1000
       End
       Begin PhotoDemon.textUpDown tudMargin 
          Height          =   345
          Index           =   3
-         Left            =   5760
+         Left            =   6120
          TabIndex        =   45
          Top             =   570
          Width           =   960
          _ExtentX        =   1693
          _ExtentY        =   609
-         Min             =   -100
-         Max             =   100
+         Min             =   -1000
+         Max             =   1000
       End
       Begin PhotoDemon.pdLabel lblText 
          Height          =   240
          Index           =   24
-         Left            =   3000
+         Left            =   3360
          Top             =   630
          Width           =   1605
          _ExtentX        =   2831
          _ExtentY        =   503
          Alignment       =   1
-         Caption         =   "v. margins:"
+         Caption         =   "v. padding:"
          ForeColor       =   0
       End
       Begin PhotoDemon.pdLabel lblText 
@@ -210,8 +210,8 @@ Begin VB.Form toolpanel_FancyText
          Index           =   25
          Left            =   3480
          Top             =   1080
-         Width           =   1170
-         _ExtentX        =   2064
+         Width           =   1530
+         _ExtentX        =   2699
          _ExtentY        =   503
          Alignment       =   1
          Caption         =   "line spacing:"

@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.44</langversion>
+<langversion>6.7.45</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -13818,6 +13818,31 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <!-- BEGIN text for VBP_ToolPanel_FancyText.frm (toolpanel_FancyText) -->
 
 <phrase>
+<original>line wrap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>h. margins</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>v. margins</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>line spacing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>mode</original>
 <translation></translation>
 </phrase>
@@ -13853,16 +13878,6 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>auto wrap</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>hinting</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>character</original>
 <translation></translation>
 </phrase>
@@ -13883,7 +13898,7 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>manual</original>
+<original>manual only</original>
 <translation></translation>
 </phrase>
 
@@ -13997,7 +14012,7 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_FancyText.frm contains 62 phrases. 26 were duplicates of existing phrases, so only 36 new phrases were written to file. -->
+<!-- VBP_ToolPanel_FancyText.frm contains 65 phrases. 26 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_FancyText.frm-->
 
@@ -14021,10 +14036,10 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2436</phrasecount>
+<phrasecount>2439</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4204 phrases. -->
-<!-- 1768 are duplicates, so only 2436 unique phrases have been written to file. -->
-<!-- These 2436 phrases contain approximately 13653 total words. -->
+<!-- As of this build, PhotoDemon contains 4207 phrases. -->
+<!-- 1768 are duplicates, so only 2439 unique phrases have been written to file. -->
+<!-- These 2439 phrases contain approximately 13660 total words. -->
 
 </pdData>
