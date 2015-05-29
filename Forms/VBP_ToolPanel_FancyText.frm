@@ -60,168 +60,6 @@ Begin VB.Form toolpanel_FancyText
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       Height          =   1500
-      Index           =   1
-      Left            =   8520
-      ScaleHeight     =   100
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   729
-      TabIndex        =   10
-      Top             =   0
-      Visible         =   0   'False
-      Width           =   10935
-      Begin PhotoDemon.textUpDown tudLineSpacing 
-         Height          =   345
-         Left            =   5160
-         TabIndex        =   46
-         Top             =   1020
-         Width           =   1935
-         _ExtentX        =   3413
-         _ExtentY        =   609
-         Min             =   -10
-         SigDigits       =   2
-      End
-      Begin PhotoDemon.textUpDown tudMargin 
-         Height          =   345
-         Index           =   0
-         Left            =   5160
-         TabIndex        =   42
-         Top             =   90
-         Width           =   960
-         _ExtentX        =   1693
-         _ExtentY        =   609
-         Min             =   -1000
-         Max             =   1000
-      End
-      Begin PhotoDemon.buttonStrip btsHAlignment 
-         Height          =   435
-         Left            =   1320
-         TabIndex        =   11
-         Top             =   60
-         Width           =   1455
-         _ExtentX        =   2566
-         _ExtentY        =   767
-         ColorScheme     =   1
-      End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   240
-         Index           =   8
-         Left            =   0
-         Top             =   150
-         Width           =   1125
-         _ExtentX        =   1984
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "alignment:"
-         ForeColor       =   0
-      End
-      Begin PhotoDemon.buttonStrip btsVAlignment 
-         Height          =   435
-         Left            =   1320
-         TabIndex        =   12
-         Top             =   510
-         Width           =   1455
-         _ExtentX        =   2566
-         _ExtentY        =   767
-         ColorScheme     =   1
-      End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   240
-         Index           =   0
-         Left            =   0
-         Top             =   1080
-         Width           =   1125
-         _ExtentX        =   1984
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "line wrap:"
-         ForeColor       =   0
-      End
-      Begin PhotoDemon.pdComboBox cboWordWrap 
-         Height          =   375
-         Left            =   1320
-         TabIndex        =   16
-         Top             =   1020
-         Width           =   2070
-         _ExtentX        =   3651
-         _ExtentY        =   661
-      End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   240
-         Index           =   23
-         Left            =   3360
-         Top             =   150
-         Width           =   1605
-         _ExtentX        =   2831
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "h. padding:"
-         ForeColor       =   0
-      End
-      Begin PhotoDemon.textUpDown tudMargin 
-         Height          =   345
-         Index           =   1
-         Left            =   6120
-         TabIndex        =   43
-         Top             =   90
-         Width           =   960
-         _ExtentX        =   1693
-         _ExtentY        =   609
-         Min             =   -1000
-         Max             =   1000
-      End
-      Begin PhotoDemon.textUpDown tudMargin 
-         Height          =   345
-         Index           =   2
-         Left            =   5160
-         TabIndex        =   44
-         Top             =   570
-         Width           =   960
-         _ExtentX        =   1693
-         _ExtentY        =   609
-         Min             =   -1000
-         Max             =   1000
-      End
-      Begin PhotoDemon.textUpDown tudMargin 
-         Height          =   345
-         Index           =   3
-         Left            =   6120
-         TabIndex        =   45
-         Top             =   570
-         Width           =   960
-         _ExtentX        =   1693
-         _ExtentY        =   609
-         Min             =   -1000
-         Max             =   1000
-      End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   240
-         Index           =   24
-         Left            =   3360
-         Top             =   630
-         Width           =   1605
-         _ExtentX        =   2831
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "v. padding:"
-         ForeColor       =   0
-      End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   240
-         Index           =   25
-         Left            =   3480
-         Top             =   1080
-         Width           =   1530
-         _ExtentX        =   2699
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "line spacing:"
-         ForeColor       =   0
-      End
-   End
-   Begin VB.PictureBox picCategory 
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      Height          =   1500
       Index           =   0
       Left            =   8520
       ScaleHeight     =   100
@@ -230,138 +68,187 @@ Begin VB.Form toolpanel_FancyText
       TabIndex        =   2
       Top             =   0
       Width           =   10935
-      Begin PhotoDemon.pdComboBox_Font cboTextFontFace 
-         Height          =   375
-         Left            =   1320
-         TabIndex        =   3
-         Top             =   60
-         Width           =   2415
-         _ExtentX        =   4260
-         _ExtentY        =   661
-      End
-      Begin PhotoDemon.pdButtonToolbox btnFontStyles 
-         Height          =   435
+      Begin VB.PictureBox picCharCategory 
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         Height          =   1500
          Index           =   0
-         Left            =   1320
-         TabIndex        =   4
-         Top             =   930
-         Width           =   450
-         _ExtentX        =   794
-         _ExtentY        =   767
-         StickyToggle    =   -1  'True
-      End
-      Begin PhotoDemon.textUpDown tudTextFontSize 
-         Height          =   345
-         Left            =   1320
-         TabIndex        =   5
-         Top             =   510
-         Width           =   2415
-         _ExtentX        =   4260
-         _ExtentY        =   609
-         Min             =   1
-         Max             =   1000
-         Value           =   16
-      End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   240
-         Index           =   3
-         Left            =   0
-         Top             =   120
-         Width           =   1125
-         _ExtentX        =   1984
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "font face:"
-         ForeColor       =   0
-      End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   240
-         Index           =   4
-         Left            =   0
-         Top             =   570
-         Width           =   1125
-         _ExtentX        =   1984
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "font size:"
-         ForeColor       =   0
-      End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   240
-         Index           =   2
-         Left            =   0
-         Top             =   1020
-         Width           =   1125
-         _ExtentX        =   1984
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "font style:"
-         ForeColor       =   0
-      End
-      Begin PhotoDemon.pdButtonToolbox btnFontStyles 
-         Height          =   435
-         Index           =   1
-         Left            =   1800
-         TabIndex        =   6
-         Top             =   930
-         Width           =   450
-         _ExtentX        =   794
-         _ExtentY        =   767
-         StickyToggle    =   -1  'True
-      End
-      Begin PhotoDemon.pdButtonToolbox btnFontStyles 
-         Height          =   435
-         Index           =   2
-         Left            =   2280
-         TabIndex        =   7
-         Top             =   930
-         Width           =   450
-         _ExtentX        =   794
-         _ExtentY        =   767
-         StickyToggle    =   -1  'True
-      End
-      Begin PhotoDemon.pdButtonToolbox btnFontStyles 
-         Height          =   435
-         Index           =   3
-         Left            =   2760
-         TabIndex        =   8
-         Top             =   930
-         Width           =   450
-         _ExtentX        =   794
-         _ExtentY        =   767
-         StickyToggle    =   -1  'True
-      End
-      Begin PhotoDemon.smartCheckBox chkHinting 
-         Height          =   330
-         Left            =   4200
-         TabIndex        =   9
-         Top             =   510
-         Width           =   1815
-         _ExtentX        =   2990
-         _ExtentY        =   582
-         Caption         =   "hinting"
-         Value           =   0
-      End
-      Begin PhotoDemon.pdComboBox cboTextRenderingHint 
-         Height          =   375
-         Left            =   5400
-         TabIndex        =   14
+         Left            =   1920
+         ScaleHeight     =   100
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   729
+         TabIndex        =   40
          Top             =   60
-         Width           =   2415
-         _ExtentX        =   4260
-         _ExtentY        =   635
+         Visible         =   0   'False
+         Width           =   10935
+         Begin PhotoDemon.textUpDown tudTextFontSize 
+            Height          =   345
+            Left            =   1320
+            TabIndex        =   41
+            Top             =   450
+            Width           =   2415
+            _ExtentX        =   4260
+            _ExtentY        =   609
+            Min             =   1
+            Max             =   1000
+            Value           =   16
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   240
+            Index           =   3
+            Left            =   0
+            Top             =   60
+            Width           =   1125
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "font face:"
+            ForeColor       =   0
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   240
+            Index           =   4
+            Left            =   0
+            Top             =   510
+            Width           =   1125
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "font size:"
+            ForeColor       =   0
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   240
+            Index           =   2
+            Left            =   0
+            Top             =   960
+            Width           =   1125
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "font style:"
+            ForeColor       =   0
+         End
+         Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+            Height          =   435
+            Index           =   1
+            Left            =   1800
+            TabIndex        =   42
+            Top             =   870
+            Width           =   450
+            _ExtentX        =   794
+            _ExtentY        =   767
+            StickyToggle    =   -1  'True
+         End
+         Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+            Height          =   435
+            Index           =   2
+            Left            =   2280
+            TabIndex        =   43
+            Top             =   870
+            Width           =   450
+            _ExtentX        =   794
+            _ExtentY        =   767
+            StickyToggle    =   -1  'True
+         End
+         Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+            Height          =   435
+            Index           =   3
+            Left            =   2760
+            TabIndex        =   44
+            Top             =   870
+            Width           =   450
+            _ExtentX        =   794
+            _ExtentY        =   767
+            StickyToggle    =   -1  'True
+         End
+         Begin PhotoDemon.smartCheckBox chkHinting 
+            Height          =   330
+            Left            =   4200
+            TabIndex        =   45
+            Top             =   450
+            Width           =   1815
+            _ExtentX        =   2990
+            _ExtentY        =   582
+            Caption         =   "hinting"
+            Value           =   0
+         End
+         Begin PhotoDemon.pdComboBox cboTextRenderingHint 
+            Height          =   375
+            Left            =   5400
+            TabIndex        =   46
+            Top             =   0
+            Width           =   2415
+            _ExtentX        =   4260
+            _ExtentY        =   635
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   240
+            Index           =   5
+            Left            =   3840
+            Top             =   60
+            Width           =   1365
+            _ExtentX        =   2408
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "antialiasing:"
+            ForeColor       =   0
+         End
+         Begin PhotoDemon.pdComboBox_Font cboTextFontFace 
+            Height          =   375
+            Left            =   1320
+            TabIndex        =   47
+            Top             =   0
+            Width           =   2415
+            _ExtentX        =   4260
+            _ExtentY        =   661
+         End
+         Begin PhotoDemon.pdButtonToolbox btnFontStyles 
+            Height          =   435
+            Index           =   0
+            Left            =   1320
+            TabIndex        =   48
+            Top             =   870
+            Width           =   450
+            _ExtentX        =   794
+            _ExtentY        =   767
+            StickyToggle    =   -1  'True
+         End
       End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   240
-         Index           =   5
-         Left            =   3840
-         Top             =   120
-         Width           =   1365
-         _ExtentX        =   2408
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "antialiasing:"
-         ForeColor       =   0
+      Begin PhotoDemon.buttonStripVertical btsCharCategory 
+         Height          =   1380
+         Left            =   0
+         TabIndex        =   39
+         Top             =   30
+         Width           =   1815
+         _ExtentX        =   3201
+         _ExtentY        =   2434
+      End
+      Begin VB.PictureBox picCharCategory 
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         Height          =   1500
+         Index           =   1
+         Left            =   1920
+         ScaleHeight     =   100
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   729
+         TabIndex        =   49
+         Top             =   60
+         Visible         =   0   'False
+         Width           =   10935
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   240
+            Index           =   26
+            Left            =   0
+            Top             =   60
+            Width           =   1125
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "OpenType:"
+            ForeColor       =   0
+         End
       End
    End
    Begin VB.PictureBox picCategory 
@@ -373,7 +260,7 @@ Begin VB.Form toolpanel_FancyText
       ScaleHeight     =   100
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   729
-      TabIndex        =   15
+      TabIndex        =   7
       Top             =   0
       Visible         =   0   'False
       Width           =   10935
@@ -387,18 +274,91 @@ Begin VB.Form toolpanel_FancyText
       ScaleHeight     =   100
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   729
-      TabIndex        =   13
+      TabIndex        =   6
       Top             =   0
       Visible         =   0   'False
       Width           =   10935
       Begin PhotoDemon.buttonStripVertical btsAppearanceCategory 
          Height          =   1380
          Left            =   30
-         TabIndex        =   17
+         TabIndex        =   9
          Top             =   30
          Width           =   1815
          _ExtentX        =   3201
          _ExtentY        =   2434
+      End
+      Begin VB.PictureBox picAppearanceCategory 
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         Height          =   1500
+         Index           =   2
+         Left            =   1920
+         ScaleHeight     =   100
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   729
+         TabIndex        =   13
+         Top             =   0
+         Visible         =   0   'False
+         Width           =   10935
+         Begin PhotoDemon.smartCheckBox chkBackground 
+            Height          =   330
+            Left            =   915
+            TabIndex        =   26
+            Top             =   105
+            Width           =   2460
+            _ExtentX        =   4339
+            _ExtentY        =   582
+            Caption         =   "fill background"
+            Value           =   0
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   240
+            Index           =   16
+            Left            =   3480
+            Top             =   120
+            Width           =   885
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "opacity:"
+            ForeColor       =   0
+         End
+         Begin PhotoDemon.sliderTextCombo sltBackgroundOpacity 
+            CausesValidation=   0   'False
+            Height          =   495
+            Left            =   4440
+            TabIndex        =   25
+            Top             =   30
+            Width           =   2760
+            _ExtentX        =   4868
+            _ExtentY        =   873
+            Max             =   100
+            Value           =   100
+            NotchPosition   =   2
+            NotchValueCustom=   100
+         End
+         Begin PhotoDemon.colorSelector csBackground 
+            Height          =   840
+            Left            =   960
+            TabIndex        =   27
+            Top             =   540
+            Width           =   2415
+            _ExtentX        =   4260
+            _ExtentY        =   1508
+         End
+         Begin PhotoDemon.pdLabel lblText 
+            Height          =   720
+            Index           =   15
+            Left            =   0
+            Top             =   600
+            Width           =   885
+            _ExtentX        =   1561
+            _ExtentY        =   1270
+            Alignment       =   1
+            Caption         =   "color:"
+            ForeColor       =   0
+            Layout          =   1
+         End
       End
       Begin VB.PictureBox picAppearanceCategory 
          BackColor       =   &H80000005&
@@ -409,7 +369,7 @@ Begin VB.Form toolpanel_FancyText
          ScaleHeight     =   100
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   729
-         TabIndex        =   19
+         TabIndex        =   11
          Top             =   0
          Visible         =   0   'False
          Width           =   10935
@@ -428,7 +388,7 @@ Begin VB.Form toolpanel_FancyText
          Begin PhotoDemon.pdComboBox cboOutlineMode 
             Height          =   375
             Left            =   960
-            TabIndex        =   36
+            TabIndex        =   28
             Top             =   75
             Width           =   2415
             _ExtentX        =   4260
@@ -450,7 +410,7 @@ Begin VB.Form toolpanel_FancyText
             CausesValidation=   0   'False
             Height          =   495
             Left            =   4440
-            TabIndex        =   37
+            TabIndex        =   29
             Top             =   30
             Width           =   2760
             _ExtentX        =   4868
@@ -463,7 +423,7 @@ Begin VB.Form toolpanel_FancyText
          Begin PhotoDemon.colorSelector csOutline 
             Height          =   375
             Left            =   960
-            TabIndex        =   38
+            TabIndex        =   30
             Top             =   540
             Width           =   2415
             _ExtentX        =   4260
@@ -498,7 +458,7 @@ Begin VB.Form toolpanel_FancyText
             CausesValidation=   0   'False
             Height          =   495
             Left            =   4440
-            TabIndex        =   39
+            TabIndex        =   31
             Top             =   510
             Width           =   2760
             _ExtentX        =   4868
@@ -525,7 +485,7 @@ Begin VB.Form toolpanel_FancyText
          Begin PhotoDemon.pdComboBox cboOutlineCorner 
             Height          =   375
             Left            =   960
-            TabIndex        =   40
+            TabIndex        =   32
             Top             =   1035
             Width           =   2415
             _ExtentX        =   4260
@@ -546,7 +506,7 @@ Begin VB.Form toolpanel_FancyText
          Begin PhotoDemon.pdComboBox cboOutlineCaps 
             Height          =   375
             Left            =   4680
-            TabIndex        =   41
+            TabIndex        =   33
             Top             =   1035
             Width           =   2535
             _ExtentX        =   4471
@@ -562,7 +522,7 @@ Begin VB.Form toolpanel_FancyText
          ScaleHeight     =   100
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   729
-         TabIndex        =   18
+         TabIndex        =   10
          Top             =   0
          Visible         =   0   'False
          Width           =   10935
@@ -581,7 +541,7 @@ Begin VB.Form toolpanel_FancyText
          Begin PhotoDemon.pdComboBox cboFillMode 
             Height          =   375
             Left            =   960
-            TabIndex        =   20
+            TabIndex        =   12
             Top             =   75
             Width           =   2415
             _ExtentX        =   4260
@@ -603,7 +563,7 @@ Begin VB.Form toolpanel_FancyText
             CausesValidation=   0   'False
             Height          =   495
             Left            =   4440
-            TabIndex        =   22
+            TabIndex        =   14
             Top             =   30
             Width           =   2760
             _ExtentX        =   4868
@@ -622,7 +582,7 @@ Begin VB.Form toolpanel_FancyText
             ScaleHeight     =   68
             ScaleMode       =   3  'Pixel
             ScaleWidth      =   729
-            TabIndex        =   27
+            TabIndex        =   19
             Top             =   510
             Visible         =   0   'False
             Width           =   10935
@@ -630,7 +590,7 @@ Begin VB.Form toolpanel_FancyText
                Height          =   375
                Index           =   0
                Left            =   4440
-               TabIndex        =   28
+               TabIndex        =   20
                Top             =   30
                Width           =   2775
                _ExtentX        =   4895
@@ -652,7 +612,7 @@ Begin VB.Form toolpanel_FancyText
                Height          =   375
                Index           =   1
                Left            =   4440
-               TabIndex        =   31
+               TabIndex        =   23
                Top             =   480
                Width           =   2775
                _ExtentX        =   4895
@@ -686,7 +646,7 @@ Begin VB.Form toolpanel_FancyText
             Begin PhotoDemon.pdComboBox cboFillPattern 
                Height          =   375
                Left            =   960
-               TabIndex        =   32
+               TabIndex        =   24
                Top             =   45
                Width           =   2415
                _ExtentX        =   4260
@@ -702,7 +662,7 @@ Begin VB.Form toolpanel_FancyText
             ScaleHeight     =   68
             ScaleMode       =   3  'Pixel
             ScaleWidth      =   729
-            TabIndex        =   25
+            TabIndex        =   17
             Top             =   510
             Visible         =   0   'False
             Width           =   10935
@@ -710,7 +670,7 @@ Begin VB.Form toolpanel_FancyText
                Height          =   840
                Index           =   1
                Left            =   960
-               TabIndex        =   26
+               TabIndex        =   18
                Top             =   30
                Width           =   2415
                _ExtentX        =   4260
@@ -740,14 +700,14 @@ Begin VB.Form toolpanel_FancyText
             ScaleHeight     =   68
             ScaleMode       =   3  'Pixel
             ScaleWidth      =   729
-            TabIndex        =   23
+            TabIndex        =   15
             Top             =   510
             Visible         =   0   'False
             Width           =   10935
             Begin PhotoDemon.colorSelector csFillColor 
                Height          =   840
                Left            =   960
-               TabIndex        =   24
+               TabIndex        =   16
                Top             =   30
                Width           =   2415
                _ExtentX        =   4260
@@ -776,7 +736,7 @@ Begin VB.Form toolpanel_FancyText
             ScaleHeight     =   68
             ScaleMode       =   3  'Pixel
             ScaleWidth      =   729
-            TabIndex        =   29
+            TabIndex        =   21
             Top             =   510
             Visible         =   0   'False
             Width           =   10935
@@ -784,7 +744,7 @@ Begin VB.Form toolpanel_FancyText
                Height          =   840
                Index           =   0
                Left            =   960
-               TabIndex        =   30
+               TabIndex        =   22
                Top             =   30
                Width           =   2415
                _ExtentX        =   4260
@@ -806,78 +766,167 @@ Begin VB.Form toolpanel_FancyText
             End
          End
       End
-      Begin VB.PictureBox picAppearanceCategory 
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         Height          =   1500
+   End
+   Begin VB.PictureBox picCategory 
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      Height          =   1500
+      Index           =   1
+      Left            =   8520
+      ScaleHeight     =   100
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   729
+      TabIndex        =   3
+      Top             =   0
+      Visible         =   0   'False
+      Width           =   10935
+      Begin PhotoDemon.textUpDown tudLineSpacing 
+         Height          =   345
+         Left            =   5160
+         TabIndex        =   38
+         Top             =   1020
+         Width           =   1935
+         _ExtentX        =   3413
+         _ExtentY        =   609
+         Min             =   -10
+         SigDigits       =   2
+      End
+      Begin PhotoDemon.textUpDown tudMargin 
+         Height          =   345
+         Index           =   0
+         Left            =   5160
+         TabIndex        =   34
+         Top             =   90
+         Width           =   960
+         _ExtentX        =   1693
+         _ExtentY        =   609
+         Min             =   -1000
+         Max             =   1000
+      End
+      Begin PhotoDemon.buttonStrip btsHAlignment 
+         Height          =   435
+         Left            =   1320
+         TabIndex        =   4
+         Top             =   60
+         Width           =   1455
+         _ExtentX        =   2566
+         _ExtentY        =   767
+         ColorScheme     =   1
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   8
+         Left            =   0
+         Top             =   150
+         Width           =   1125
+         _ExtentX        =   1984
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "alignment:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.buttonStrip btsVAlignment 
+         Height          =   435
+         Left            =   1320
+         TabIndex        =   5
+         Top             =   510
+         Width           =   1455
+         _ExtentX        =   2566
+         _ExtentY        =   767
+         ColorScheme     =   1
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   0
+         Left            =   0
+         Top             =   1080
+         Width           =   1125
+         _ExtentX        =   1984
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "line wrap:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.pdComboBox cboWordWrap 
+         Height          =   375
+         Left            =   1320
+         TabIndex        =   8
+         Top             =   1020
+         Width           =   2070
+         _ExtentX        =   3651
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   23
+         Left            =   3360
+         Top             =   150
+         Width           =   1605
+         _ExtentX        =   2831
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "h. padding:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.textUpDown tudMargin 
+         Height          =   345
+         Index           =   1
+         Left            =   6120
+         TabIndex        =   35
+         Top             =   90
+         Width           =   960
+         _ExtentX        =   1693
+         _ExtentY        =   609
+         Min             =   -1000
+         Max             =   1000
+      End
+      Begin PhotoDemon.textUpDown tudMargin 
+         Height          =   345
          Index           =   2
-         Left            =   1920
-         ScaleHeight     =   100
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   729
-         TabIndex        =   21
-         Top             =   0
-         Visible         =   0   'False
-         Width           =   10935
-         Begin PhotoDemon.smartCheckBox chkBackground 
-            Height          =   330
-            Left            =   915
-            TabIndex        =   34
-            Top             =   105
-            Width           =   2460
-            _ExtentX        =   4339
-            _ExtentY        =   582
-            Caption         =   "fill background"
-            Value           =   0
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   240
-            Index           =   16
-            Left            =   3480
-            Top             =   120
-            Width           =   885
-            _ExtentX        =   1984
-            _ExtentY        =   503
-            Alignment       =   1
-            Caption         =   "opacity:"
-            ForeColor       =   0
-         End
-         Begin PhotoDemon.sliderTextCombo sltBackgroundOpacity 
-            CausesValidation=   0   'False
-            Height          =   495
-            Left            =   4440
-            TabIndex        =   33
-            Top             =   30
-            Width           =   2760
-            _ExtentX        =   4868
-            _ExtentY        =   873
-            Max             =   100
-            Value           =   100
-            NotchPosition   =   2
-            NotchValueCustom=   100
-         End
-         Begin PhotoDemon.colorSelector csBackground 
-            Height          =   840
-            Left            =   960
-            TabIndex        =   35
-            Top             =   540
-            Width           =   2415
-            _ExtentX        =   4260
-            _ExtentY        =   1508
-         End
-         Begin PhotoDemon.pdLabel lblText 
-            Height          =   720
-            Index           =   15
-            Left            =   0
-            Top             =   600
-            Width           =   885
-            _ExtentX        =   1561
-            _ExtentY        =   1270
-            Alignment       =   1
-            Caption         =   "color:"
-            ForeColor       =   0
-            Layout          =   1
-         End
+         Left            =   5160
+         TabIndex        =   36
+         Top             =   570
+         Width           =   960
+         _ExtentX        =   1693
+         _ExtentY        =   609
+         Min             =   -1000
+         Max             =   1000
+      End
+      Begin PhotoDemon.textUpDown tudMargin 
+         Height          =   345
+         Index           =   3
+         Left            =   6120
+         TabIndex        =   37
+         Top             =   570
+         Width           =   960
+         _ExtentX        =   1693
+         _ExtentY        =   609
+         Min             =   -1000
+         Max             =   1000
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   24
+         Left            =   3360
+         Top             =   630
+         Width           =   1605
+         _ExtentX        =   2831
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "v. padding:"
+         ForeColor       =   0
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   240
+         Index           =   25
+         Left            =   3480
+         Top             =   1080
+         Width           =   1530
+         _ExtentX        =   2699
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "line spacing:"
+         ForeColor       =   0
       End
    End
 End
@@ -1016,6 +1065,16 @@ Private Sub btsCategory_Click(ByVal buttonIndex As Long)
     Dim i As Long
     For i = 0 To btsCategory.ListCount - 1
         picCategory(i).Visible = CBool(i = buttonIndex)
+    Next i
+    
+End Sub
+
+Private Sub btsCharCategory_Click(ByVal buttonIndex As Long)
+    
+    'When the current category is changed, show the relevant panel and hide all others
+    Dim i As Long
+    For i = 0 To btsCharCategory.ListCount - 1
+        picCharCategory(i).Visible = CBool(i = buttonIndex)
     Next i
     
 End Sub
@@ -1539,10 +1598,14 @@ Private Sub Form_Load()
     'Draw the primary category selector
     btsCategory.AddItem "character", 0
     btsCategory.AddItem "paragraph", 1
-    btsCategory.AddItem "appearance", 2
+    btsCategory.AddItem "visual", 2
     
     'I've already stubbed out a 4th options panel, but the vertical button list is *really* cramped, so another solution might be necessary
-    'btsCategory.AddItem "font", 3
+    
+    'Draw the character sub-category selector
+    btsCharCategory.AddItem "font", 0
+    If g_IsVistaOrLater Then btsCharCategory.AddItem "OpenType", 1
+    btsCharCategory.ListIndex = 0
     
     'Fill AA options
     cboTextRenderingHint.Clear
@@ -1652,6 +1715,7 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
     'Make sure the correct panels are shown
     btsCategory_Click btsCategory.ListIndex
     btsAppearanceCategory_Click btsAppearanceCategory.ListIndex
+    btsCharCategory_Click btsCharCategory.ListIndex
 
 End Sub
 
