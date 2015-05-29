@@ -348,15 +348,19 @@ Public Function getScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
                     getScriptsSupportedByFont = numTagsReceived
                     
                     'Alternatively, if you're curious, you can dump a list of supported script names to the debug window
-'                    Dim tmpString As String
-'                    Dim tmpTag As pdOpenTypeTag
-'                    For i = 0 To numTagsReceived - 1
-'                        CopyMemory tmpTag, m_ScriptTags(i), 4
-'                        With tmpTag
-'                            tmpString = Chr(.byte1) & Chr(.byte2) & Chr(.byte3) & Chr(.byte4)
-'                        End With
-'                        Debug.Print tmpString
-'                    Next i
+                    'If srcFontName = "Cambria Math" Then
+                    '
+                    '    Dim tmpString As String
+                    '    Dim tmpTag As pdOpenTypeTag
+                    '    For i = 0 To numTagsReceived - 1
+                    '        CopyMemory tmpTag, m_ScriptTags(i), 4
+                    '        With tmpTag
+                    '            tmpString = Chr(.byte1) & Chr(.byte2) & Chr(.byte3) & Chr(.byte4)
+                    '        End With
+                    '        Debug.Print tmpString
+                    '    Next i
+                    '
+                    'End If
                     
                 'If no tags were received, mark this script as "undefined".  We generally assume Latin character support only
                 ' for such a font.
