@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.42</langversion>
+<langversion>6.7.43</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -13814,27 +13814,17 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- BEGIN text for VBP_ToolPanel_FancyText.frm (toolpanel_FancyText) -->
 
 <phrase>
-<original>line wrap</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>h. margins</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>v. margins</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>line spacing</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>OpenType</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill background</original>
 <translation></translation>
 </phrase>
 
@@ -13869,7 +13859,22 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>fill background</original>
+<original>line wrap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>h. padding</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>v. padding</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>line spacing</original>
 <translation></translation>
 </phrase>
 
@@ -13880,6 +13885,16 @@ o il menù File > Apri e File > Importa.</translation>
 
 <phrase>
 <original>paragraph</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>visual</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>font</original>
 <translation></translation>
 </phrase>
 
@@ -14008,7 +14023,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_FancyText.frm contains 65 phrases. 26 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
+<!-- VBP_ToolPanel_FancyText.frm contains 68 phrases. 26 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_FancyText.frm-->
 
@@ -14032,10 +14047,10 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2439</phrasecount>
+<phrasecount>2442</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4207 phrases. -->
-<!-- 1768 are duplicates, so only 2439 unique phrases have been written to file. -->
-<!-- These 2439 phrases contain approximately 13660 total words. -->
+<!-- As of this build, PhotoDemon contains 4210 phrases. -->
+<!-- 1768 are duplicates, so only 2442 unique phrases have been written to file. -->
+<!-- These 2442 phrases contain approximately 13663 total words. -->
 
 </pdData>
