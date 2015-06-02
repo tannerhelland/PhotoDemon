@@ -1714,7 +1714,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
                 
                 'Render right-aligned preview text
                 DrawText srcDIS.hDC, StrPtr(sampleText), Len(sampleText), previewRect, DT_RIGHT Or DT_VCENTER Or DT_SINGLELINE Or DT_NOPREFIX
-    
+                
                 'Release our font
                 SelectObject srcDIS.hDC, oldFont
                 

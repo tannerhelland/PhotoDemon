@@ -248,7 +248,7 @@ End Type
 
 'Some Uniscribe API declarations are script-independent.  These are nice for retrieving generic font or glyph information, so we declare
 ' them here (instead of inside the pdUniscribe class).
-Private Declare Function ScriptGetFontScriptTags Lib "usp10" (ByVal srcDC As Long, ByVal ptrToScriptCache As Long, ByVal ptrToScriptAnalysis As Long, ByVal cMaxTags As Long, ByVal ptrToScriptTagsArray As Long, ByRef numOfTags As Long) As Long
+Private Declare Function ScriptGetFontScriptTags Lib "usp10" (ByVal srcDC As Long, ByVal ptrToScriptCache As Long, ByVal ptrToScriptAnalysis As Long, ByVal cMaxTags As Long, ByVal ptrToScriptTagsArray As Long, ByVal ptrToNumOfTags As Long) As Long
 Private Declare Function ScriptFreeCache Lib "usp10" (psc As SCRIPT_CACHE) As Long
 
 'Quick memory wiping
@@ -256,7 +256,7 @@ Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal
 Private Declare Sub FillMemory Lib "kernel32" Alias "RtlFillMemory" (ByVal dstPointer As Long, ByVal Length As Long, ByVal Fill As Byte)
 
 'When checking font script tags, we only need to declare an array once, then simply clear it and reuse it.
-Private scriptCachesAreReady As Boolean
+Private m_ScriptCachesAreReady As Boolean
 Private m_ScriptTags() As Long
 Private Const OPENTYPE_MAX_NUM_SCRIPT_TAGS As Long = 114
 
@@ -282,25 +282,25 @@ Public Function getScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
         'Create a dummy font handle matching the current name
         Dim tmpFont As Long, tmpDC As Long
         If Font_Management.quickCreateFontAndDC(srcFontName, tmpFont, tmpDC) Then
-        
-            'Unfortunately, the nature of this function means it's impossible to take advantage of Uniscribe's internal
-            ' caching mechanisms.  As such, we basically have to submit a bunch of blank cache structs.
-            Dim tmpCache As SCRIPT_CACHE
             
             'As of May 2015, OpenType only supports 114 tags, so a font can't return more values than this!
             ' (We actually size it to 114 + 1, just in case Uniscribe gets picky about having a little extra breathing room.)
-            If Not scriptCachesAreReady Then
+            If Not m_ScriptCachesAreReady Then
                 ReDim m_ScriptTags(0 To OPENTYPE_MAX_NUM_SCRIPT_TAGS) As Long
-                scriptCachesAreReady = True
+                m_ScriptCachesAreReady = True
             Else
                 FillMemory VarPtr(m_ScriptTags(0)), OPENTYPE_MAX_NUM_SCRIPT_TAGS * 4, 0
             End If
+            
+            'Unfortunately, the nature of this function means it's impossible to take advantage of Uniscribe's internal
+            ' caching mechanisms.  As such, we basically have to submit a bunch of blank cache structs.
+            Dim tmpCache As SCRIPT_CACHE
             
             Dim numTagsReceived As Long
             
             'Retrieve a list of supported scripts
             Dim unsReturn As HRESULT
-            unsReturn = ScriptGetFontScriptTags(tmpDC, VarPtr(tmpCache), 0, OPENTYPE_MAX_NUM_SCRIPT_TAGS, VarPtr(m_ScriptTags(0)), numTagsReceived)
+            unsReturn = ScriptGetFontScriptTags(tmpDC, VarPtr(tmpCache), 0&, OPENTYPE_MAX_NUM_SCRIPT_TAGS, VarPtr(m_ScriptTags(0)), VarPtr(numTagsReceived))
             
             'Success!  Copy a list of relevant parameters into the destination font property object
             If unsReturn = S_OK Then
@@ -309,7 +309,7 @@ Public Function getScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
                 If numTagsReceived > 0 Then
                     
                     'Mark supported scripts as KNOWN
-                    dstFontProperty.ScriptUnknown = False
+                    dstFontProperty.ScriptsKnown = True
                     
                     'Copy all tags into the destination object
                     dstFontProperty.numSupportedScripts = numTagsReceived
@@ -365,11 +365,13 @@ Public Function getScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
                 'If no tags were received, mark this script as "undefined".  We generally assume Latin character support only
                 ' for such a font.
                 Else
-                    dstFontProperty.ScriptUnknown = True
+                    dstFontProperty.ScriptsKnown = False
                 End If
                 
             Else
-                Debug.Print "WARNING!  Couldn't retrieve supported script list for " & srcFontName
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "WARNING!  Couldn't retrieve supported script list for " & srcFontName
+                #End If
             End If
             
             'Remember to free our temporary font and DC when we're done with them
