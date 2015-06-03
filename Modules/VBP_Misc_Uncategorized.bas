@@ -186,25 +186,13 @@ End Function
 ' coordinates (e.g. location on the image) of the current mouse position.
 Public Sub displayImageCoordinates(ByVal x1 As Double, ByVal y1 As Double, ByRef srcImage As pdImage, ByRef srcCanvas As pdCanvas, Optional ByRef copyX As Double, Optional ByRef copyY As Double)
     
-    If srcImage.imgViewport Is Nothing Then Exit Sub
-    
-    'Grab the current zoom value
-    Dim zoomVal As Double
-    zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
-                
-    'Because the viewport is no longer assumed at position (0, 0) (due to the status bar and possibly
-    ' rulers), add any necessary offsets to the mouse coordinates before further calculations happen.
-    y1 = y1 - srcImage.imgViewport.getTopOffset
-    
-    'Calculate x and y positions, while taking into account zoom and scroll values
-    x1 = srcCanvas.getScrollValue(PD_HORIZONTAL) + Int((x1 - srcImage.imgViewport.targetLeft) / zoomVal)
-    y1 = srcCanvas.getScrollValue(PD_VERTICAL) + Int((y1 - srcImage.imgViewport.targetTop) / zoomVal)
-            
-    'If the user has requested copies of these coordinates, assign them now
-    copyX = x1
-    copyY = y1
-    
-    If g_OpenImageCount > 0 Then srcCanvas.displayCanvasCoordinates x1, y1
+    'This function simply wraps the relevant Drawing module function
+    If Drawing.convertCanvasCoordsToImageCoords(srcCanvas, srcImage, x1, y1, copyX, copyY) Then
+        
+        'If an image is open, relay the new coordinates to the relevant canvas; it will handle the actual drawing internally
+        If g_OpenImageCount > 0 Then srcCanvas.displayCanvasCoordinates copyX, copyY
+        
+    End If
     
 End Sub
 
