@@ -678,13 +678,23 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
     yOffset = boundingRect.Top
     xOffset = boundingRect.Left
     
+    'Pre-calculate right and bottom bounds, since we'll be using those a lot throughout this function
+    Dim boundingRectRight As Single, boundingRectBottom As Single
+    boundingRectRight = boundingRect.Left + boundingRect.Width
+    boundingRectBottom = boundingRect.Top + boundingRect.Height
+    
+    
     Dim currentLine As Long, linebreakImpossible As Boolean
     currentLine = 0
     linebreakImpossible = False
     
     'Prior to processing each glyph, we cache some unchanging values (like line increments)
     Dim lineHeight As Single
+    
+    'Default lineHeight is just the text metric height (not counting external leading; this method is identical to GDI, but differs from GDI+)
     lineHeight = m_TextMetrics.tmHeight
+    
+    'We further adjust line height by the user's specified line spacing modifier (where 0.0 means use default line height)
     lineHeight = lineHeight + (m_LineSpacing * lineHeight)
     
     'Previously, the lineHeight calculation included the m_TextMetrics.tmExternalLeading value.  I no longer use this, as it causes some
@@ -734,7 +744,7 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
                 
                     'Regardless of break mode, start by seeing if this character extends past the end of the line.  Note that this character's
                     ' C-overhang is included, to avoid clipping on italicized characters.
-                    If xOffset + m_Glyphs(curGlyph).AdvanceWidth + (-1 * m_Glyphs(curGlyph).ABCWidth.abcC) >= (boundingRect.Left + boundingRect.Width) Then
+                    If xOffset + m_Glyphs(curGlyph).AdvanceWidth + (-1 * m_Glyphs(curGlyph).ABCWidth.abcC) >= boundingRectRight Then
                     
                         'This character doesn't fit.  Further handling is determined by wrap mode.
                         Select Case lineWrapMode
@@ -811,9 +821,6 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
                                         
                                         'If a line break isn't possible, we have no choice but to break on this character.  Leave the curGlyph
                                         ' pointer where it is; nothing else is required.
-                                        'If linebreakImpossible Then
-                                        '    Debug.Print "Invalid word present; forcibly breaking mid-word as part of wordwrapping."
-                                        'End If
                                         
                                     'End failsafe check (If/Else curGlyph = 0 and we're being forced to break)
                                     End If
@@ -1021,7 +1028,8 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
         For curLine = 0 To numOfLines - 1
         
             'For each line, replace its calculated line width with the difference between the bounding rect and the actual size.
-            lineDiff = boundingRect.Width - m_LineWidths(curLine)
+            'lineDiff = boundingRect.Width - m_LineWidths(curLine)
+            lineDiff = boundingRectRight - m_LineWidths(curLine)
             
             If horizontalAlignment = StringAlignmentCenter Then
                 m_LineWidths(curLine) = lineDiff / 2
@@ -1046,7 +1054,14 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
     If verticalAlignment <> StringAlignmentNear Then
         
         'Because line heights are uniform, this process is much simpler, as we don't need to custom-measure anything.
-        lineDiff = boundingRect.Height - (numOfLines * lineHeight)
+        '
+        'Note, however, that we must modify the line size a bit uniquely.  The first line of text is always displayed using the raw,
+        ' untouched character height (m_TextMetrics.tmHeight).  Subsequent lines are offset by *our internal line spacing calculation*,
+        ' which is currently the default text height times some user-supplied modifier.
+        '
+        'This calculation ensures that a single line of text is still positioned correctly, as the user's line-spacing modification
+        ' only comes into play if *multiple lines of text* are present.
+        lineDiff = boundingRectBottom - (((numOfLines - 1) * lineHeight) + (m_TextMetrics.tmHeight))
         
         If verticalAlignment = StringAlignmentCenter Then lineDiff = lineDiff / 2
         

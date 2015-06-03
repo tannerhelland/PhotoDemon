@@ -1413,7 +1413,7 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     
     'Modify the rect according to a few different factors:
     
-    '1) If outline mode is active, increase padding by 1/2 the outline size.  This ensures that the outlin is not cropped.
+    '1) If outline mode is active, increase padding by 1/2 the outline size.  This ensures that the outline is not cropped.
     If m_OutlineMode <> 0 Then
     
         With boundingRect
