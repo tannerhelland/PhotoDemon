@@ -465,31 +465,37 @@ Public Sub fillDIBWithAlphaCheckerboard(ByRef srcDIB As pdDIB, ByVal x1 As Long,
 End Sub
 
 'Given an (x,y) pair on the current viewport, convert the value to coordinates on the image.
-Public Sub convertCanvasCoordsToImageCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal canvasX As Double, ByVal canvasY As Double, ByRef imgX As Double, ByRef imgY As Double, Optional ByVal forceInBounds As Boolean = False)
+Public Function convertCanvasCoordsToImageCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal canvasX As Double, ByVal canvasY As Double, ByRef imgX As Double, ByRef imgY As Double, Optional ByVal forceInBounds As Boolean = False) As Boolean
 
-    If srcImage.imgViewport Is Nothing Then Exit Sub
+    If Not (srcImage.imgViewport Is Nothing) Then
     
-    'Get the current zoom value from the source image
-    Dim zoomVal As Double
-    zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
-                
-    'Because the viewport is no longer assumed at position (0, 0) (due to the status bar and possibly
-    ' rulers), add any necessary offsets to the mouse coordinates before further calculations happen.
-    canvasY = canvasY - srcImage.imgViewport.getTopOffset
-    
-    'Calculate image x and y positions, while taking into account zoom and scroll values
-    imgX = srcCanvas.getScrollValue(PD_HORIZONTAL) + Int((canvasX - srcImage.imgViewport.targetLeft) / zoomVal)
-    imgY = srcCanvas.getScrollValue(PD_VERTICAL) + Int((canvasY - srcImage.imgViewport.targetTop) / zoomVal)
-    
-    'If the caller wants the coordinates bound-checked, apply it now
-    If forceInBounds Then
-        If imgX < 0 Then imgX = 0
-        If imgY < 0 Then imgY = 0
-        If imgX >= srcImage.Width Then imgX = srcImage.Width - 1
-        If imgY >= srcImage.Height Then imgY = srcImage.Height - 1
+        'Get the current zoom value from the source image
+        Dim zoomVal As Double
+        zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
+                    
+        'Because the viewport is no longer assumed at position (0, 0) (due to the status bar and possibly
+        ' rulers), add any necessary offsets to the mouse coordinates before further calculations happen.
+        canvasY = canvasY - srcImage.imgViewport.getTopOffset
+        
+        'Calculate image x and y positions, while taking into account zoom and scroll values
+        imgX = srcCanvas.getScrollValue(PD_HORIZONTAL) + Int((canvasX - srcImage.imgViewport.targetLeft) / zoomVal)
+        imgY = srcCanvas.getScrollValue(PD_VERTICAL) + Int((canvasY - srcImage.imgViewport.targetTop) / zoomVal)
+        
+        'If the caller wants the coordinates bound-checked, apply it now
+        If forceInBounds Then
+            If imgX < 0 Then imgX = 0
+            If imgY < 0 Then imgY = 0
+            If imgX >= srcImage.Width Then imgX = srcImage.Width - 1
+            If imgY >= srcImage.Height Then imgY = srcImage.Height - 1
+        End If
+        
+        convertCanvasCoordsToImageCoords = True
+        
+    Else
+        convertCanvasCoordsToImageCoords = False
     End If
     
-End Sub
+End Function
 
 'Given an (x,y) pair on the current image, convert the value to coordinates on the current viewport canvas.
 Public Sub convertImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal imgX As Double, ByVal imgY As Double, ByRef canvasX As Double, ByRef canvasY As Double, Optional ByVal forceInBounds As Boolean = False)
