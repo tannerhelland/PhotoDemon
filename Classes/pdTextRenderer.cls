@@ -292,6 +292,7 @@ Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal dstGraphics
 'GDI+ Render functions
 Private Declare Function GdipDrawString Lib "gdiplus" (ByVal dstGraphics As Long, ByVal ptrToString As Long, ByVal strLength As Long, ByVal gdipFontHandle As Long, ByRef layoutRect As RECTF, ByVal gdipStringFormat As Long, ByVal gdipBrush As Long) As Long
 Private Declare Function GdipDrawPath Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal srcPath As Long) As Long
+Private Declare Function GdipDrawRectangle Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcPen As Long, ByVal srcX As Single, ByVal srcW As Single, ByVal srcWidth As Single, ByVal srcHeight As Single) As Long
 Private Declare Function GdipFillPath Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcBrush As Long, ByVal srcPath As Long) As Long
 Private Declare Function GdipFillRectangleI Lib "gdiplus" (ByVal mGraphics As Long, ByVal mBrush As Long, ByVal mX As Long, ByVal mY As Long, ByVal mWidth As Long, ByVal mHeight As Long) As Long
 
@@ -400,6 +401,9 @@ Private m_OutlineWidth As Single
 Private m_BackgroundMode As Long
 Private m_BackgroundOpacity As Single
 Private m_BackgroundColor As Long
+Private m_BackBorderMode As Long
+Private m_BackBorderColor As Long
+Private m_BackBorderWidth As Long
 
 '...as well as customized spacing and layout options
 Private m_LineSpacing As Single
@@ -718,6 +722,30 @@ End Function
 
 Public Sub setBackgroundColor(ByVal newSetting As Long)
     m_BackgroundColor = newSetting
+End Sub
+
+Public Function getBackBorderMode() As Long
+    getBackBorderMode = m_BackBorderMode
+End Function
+
+Public Sub setBackBorderMode(ByVal newSetting As Long)
+    m_BackBorderMode = newSetting
+End Sub
+
+Public Function getBackBorderColor() As Long
+    getBackBorderColor = m_BackBorderColor
+End Function
+
+Public Sub setBackBorderColor(ByVal newSetting As Long)
+    m_BackBorderColor = newSetting
+End Sub
+
+Public Function getBackBorderWidth() As Single
+    getBackBorderWidth = m_BackBorderWidth
+End Function
+
+Public Sub setBackBorderWidth(ByVal newSetting As Single)
+    m_BackBorderWidth = newSetting
 End Sub
 
 'Get/set various layout options.  Note that these features are only supported by the PHOTODEMON text rendering engine.
@@ -1324,26 +1352,33 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     dstGraphics = GDI_Plus.getGDIPlusGraphicsFromDC(dstDIB.getDIBDC, False)
     
     'Next, set up all container-specific path settings
+    Dim targetSmoothingMode As GdiPlusSmoothingMode, targetOffsetMode As GdiPlusPixelOffsetMode
     
-    'Antialiasing affects a number of different settings
+    'Compositing quality does not change; GDI+ is unreliable in its handling of compositing quality (which affects gamma correction), and it
+    ' can cause premultiplied alpha to be calculated incorrectly, leading to random hot pixels.
+    GdipSetCompositingQuality dstGraphics, CompositingQualityHighSpeed
+    
+    'Antialiasing settings currently affect both smoothing mode and offset mode.  Offset mode is particularly relevant when working with
+    ' tiny text, as it greatly improves clarity to use half mode.  (Also, note that antialiasing affects *all drawing operations on the target*,
+    ' by design, so you cannot currently set different AA options for text vs background elements.)
     Select Case m_TextAntialiasing
         
         Case pdta_None
-            GdipSetCompositingQuality dstGraphics, CompositingQualityHighSpeed
-            GdipSetSmoothingMode dstGraphics, SmoothingModeHighSpeed
-            GdipSetPixelOffsetMode dstGraphics, PixelOffsetModeHighSpeed
+            targetSmoothingMode = SmoothingModeHighSpeed
+            targetOffsetMode = PixelOffsetModeHighSpeed
         
         Case pdta_Standard
-            GdipSetCompositingQuality dstGraphics, CompositingQualityHighSpeed
-            GdipSetSmoothingMode dstGraphics, SmoothingModeAntiAlias
-            GdipSetPixelOffsetMode dstGraphics, PixelOffsetModeHighSpeed
+            targetSmoothingMode = SmoothingModeAntiAlias
+            targetOffsetMode = PixelOffsetModeHighSpeed
         
         Case pdta_Crisp
-            GdipSetCompositingQuality dstGraphics, CompositingQualityHighSpeed
-            GdipSetSmoothingMode dstGraphics, SmoothingModeAntiAlias
-            GdipSetPixelOffsetMode dstGraphics, PixelOffsetModeHalf
+            targetSmoothingMode = SmoothingModeAntiAlias
+            targetOffsetMode = PixelOffsetModeHalf
         
     End Select
+    
+    'Note that we don't actually set container settings yet, because we first want to draw some generic elements (like the background fill)
+    ' at maximum speed.  Once those are finished, we'll set target smoothing and offset modes.
         
     'If fill mode is active, create a relevant brush.  Note that not all brushes are currently implemented!
     Dim gdipFillBrush As Long
@@ -1402,6 +1437,25 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
             
     End Select
     
+    'If a background outline is active, create a pen for that, too
+    Dim gdipBackBorderPen As Long
+    
+    Select Case m_BackBorderMode
+    
+        'No outline
+        Case 0
+            gdipBackBorderPen = 0
+        
+        'Solid outline.  We set these properties specially, as we don't want rounded corners if the user has set that property for the font outline.
+        Case 1
+            gdipBackBorderPen = GDI_Plus.getGDIPlusPenHandle(m_BackBorderColor, 255, m_BackBorderWidth, LineCapSquare, LineJoinMiter, m_BackBorderMode - 1)
+        
+        'All other outlines
+        Case Else
+            gdipBackBorderPen = GDI_Plus.getGDIPlusPenHandle(m_BackBorderColor, 255, m_BackBorderWidth, m_OutlineCaps, m_OutlineCorner, m_BackBorderMode - 1)
+    
+    End Select
+    
     'Convert the input rect to a RECTF
     Dim boundingRect As RECTF
     With boundingRect
@@ -1417,10 +1471,10 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     If m_OutlineMode <> 0 Then
     
         With boundingRect
-            .Left = .Left + m_OutlineWidth / 2
-            .Top = .Top + m_OutlineWidth / 2
-            .Width = .Width - m_OutlineWidth
-            .Height = .Height - m_OutlineWidth
+            .Left = .Left + m_OutlineWidth
+            .Top = .Top + m_OutlineWidth
+            .Width = .Width - m_OutlineWidth * 2
+            .Height = .Height - m_OutlineWidth * 2
         End With
     
     End If
@@ -1433,7 +1487,23 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
         .Height = .Height - (m_MarginTop + m_MarginBottom)
     End With
     
-    'After all boundary rect modifications are made, we need to perform a failsafe check to make sure width and height aren't negative.
+    '3) If a background border is active, we further modify the bounding rect by the size of the border
+    Dim halfPenWidth As Single
+    
+    If m_BackBorderMode <> 0 Then
+    
+        halfPenWidth = m_BackBorderWidth / 2
+        
+        With boundingRect
+            .Left = .Left + halfPenWidth
+            .Top = .Top + halfPenWidth
+            .Width = .Width - m_BackBorderWidth
+            .Height = .Height - m_BackBorderWidth
+        End With
+        
+    End If
+    
+    '4) After all boundary rect modifications are made, we need to perform a failsafe check to make sure width and height aren't negative.
     With boundingRect
         
         If .Width < 0 Then
@@ -1458,8 +1528,30 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
                 
         'If background mode is active, fill it now
         If gdipBackgroundBrush <> 0 Then
+            
+            'Prior to filling, set high-speed offset mode.
+            GdipSetPixelOffsetMode dstGraphics, PixelOffsetModeHighSpeed
+            
+            'If an outline is being drawn, we don't need antialiasing, which also improves performance
+            If gdipBackBorderPen <> 0 Then
+                GdipSetSmoothingMode dstGraphics, SmoothingModeHighSpeed
+            Else
+                GdipSetSmoothingMode dstGraphics, SmoothingModeAntiAlias
+            End If
+            
             gdipReturn = GdipFillRectangleI(dstGraphics, gdipBackgroundBrush, x1, y1, textWidth, textHeight)
             If gdipReturn <> 0 Then Debug.Print "WARNING!  GdipFillPath failed; return code was " & gdipReturn
+            
+        End If
+        
+        'Now we can set our desired smoothing and offset modes, which are constant for all remaining draw operations
+        GdipSetSmoothingMode dstGraphics, targetSmoothingMode
+        GdipSetPixelOffsetMode dstGraphics, targetOffsetMode
+                
+        'If background border is active, stroke it now
+        If gdipBackBorderPen <> 0 Then
+            gdipReturn = GdipDrawRectangle(dstGraphics, gdipBackBorderPen, x1 + halfPenWidth, y1 + halfPenWidth, textWidth - m_BackBorderWidth, textHeight - m_BackBorderWidth)
+            If gdipReturn <> 0 Then Debug.Print "WARNING!  GdipDrawRectangle failed; return code was " & gdipReturn
         End If
                 
         'If fill mode is active, draw the text now
@@ -1479,8 +1571,9 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     End If
     
     'Release the temporary GDI+ objects we created
-    If gdipFillBrush <> 0 Then GDI_Plus.releaseGDIPlusBrush gdipFillBrush
     If gdipBackgroundBrush <> 0 Then GDI_Plus.releaseGDIPlusBrush gdipBackgroundBrush
+    If gdipBackBorderPen <> 0 Then GDI_Plus.releaseGDIPlusPen gdipBackBorderPen
+    If gdipFillBrush <> 0 Then GDI_Plus.releaseGDIPlusBrush gdipFillBrush
     If gdipOutlinePen <> 0 Then GDI_Plus.releaseGDIPlusPen gdipOutlinePen
     GDI_Plus.releaseGDIPlusGraphics dstGraphics
     
