@@ -470,6 +470,9 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                     .tudMargin(1).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_MarginRight)
                     .tudMargin(2).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_MarginTop)
                     .tudMargin(3).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_MarginBottom)
+                    .cboBackBorderMode.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackBorderMode)
+                    .csBackBorder.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackBorderColor)
+                    .sltBackBorderWidth.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackBorderWidth)
                 End With
                 
                 'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.
@@ -589,6 +592,9 @@ Public Sub syncCurrentLayerToToolOptionsUI()
                     .setTextLayerProperty ptp_MarginRight, toolpanel_FancyText.tudMargin(1).Value
                     .setTextLayerProperty ptp_MarginTop, toolpanel_FancyText.tudMargin(2).Value
                     .setTextLayerProperty ptp_MarginBottom, toolpanel_FancyText.tudMargin(3).Value
+                    .setTextLayerProperty ptp_BackBorderMode, toolpanel_FancyText.cboBackBorderMode.ListIndex
+                    .setTextLayerProperty ptp_BackBorderColor, toolpanel_FancyText.csBackBorder.Color
+                    .setTextLayerProperty ptp_BackBorderWidth, toolpanel_FancyText.sltBackBorderWidth.Value
                 End With
                 
                 'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.

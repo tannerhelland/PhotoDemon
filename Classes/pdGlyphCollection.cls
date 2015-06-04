@@ -683,6 +683,7 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
     boundingRectRight = boundingRect.Left + boundingRect.Width
     boundingRectBottom = boundingRect.Top + boundingRect.Height
     
+    'Debug.Print "Bounds for this text region: (" & boundingRect.Left & ", " & boundingRect.Top & ") - (" & boundingRectRight & ", " & boundingRectBottom & ")"
     
     Dim currentLine As Long, linebreakImpossible As Boolean
     currentLine = 0

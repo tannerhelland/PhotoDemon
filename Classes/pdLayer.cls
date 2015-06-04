@@ -238,6 +238,9 @@ Private Type textLayerData
     tld_MarginTop As Single
     tld_MarginRight As Single
     tld_MarginBottom As Single
+    tld_BackBorderMode As Long
+    tld_BackBorderColor As Long
+    tld_BackBorderWidth As Single
 End Type
 
 Private myTextData As textLayerData
@@ -279,6 +282,9 @@ Public Enum PDLAYER_TEXT_PROPERTY
     ptp_MarginTop = 32
     ptp_MarginRight = 33
     ptp_MarginBottom = 34
+    ptp_BackBorderMode = 35
+    ptp_BackBorderColor = 36
+    ptp_BackBorderWidth = 37
 End Enum
 
 #If False Then
@@ -288,7 +294,7 @@ End Enum
     Const ptp_FillPattern = 18, ptp_PatternColor1 = 19, ptp_PatternColor2 = 20, ptp_OutlineMode = 21, ptp_OutlineColor = 22
     Const ptp_OutlineCorner = 23, ptp_OutlineCaps = 24, ptp_OutlineOpacity = 25, ptp_OutlineWidth = 26, ptp_BackgroundMode = 27
     Const ptp_BackgroundOpacity = 28, ptp_BackgroundColor = 29, ptp_LineSpacing = 30, ptp_MarginLeft = 31, ptp_MarginTop = 32
-    Const ptp_MarginRight = 33, ptp_MarginBottom = 34
+    Const ptp_MarginRight = 33, ptp_MarginBottom = 34, ptp_BackBorderMode = 35, ptp_BackBorderColor = 36, ptp_BackBorderWidth = 37
 #End If
 
 'A dedicated text renderer is used to render the backer layer for text layers
@@ -966,6 +972,15 @@ Friend Function getTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPE
             
         Case ptp_MarginBottom
             getTextLayerProperty = myTextData.tld_MarginBottom
+            
+        Case ptp_BackBorderMode
+            getTextLayerProperty = myTextData.tld_BackBorderMode
+            
+        Case ptp_BackBorderColor
+            getTextLayerProperty = myTextData.tld_BackBorderColor
+            
+        Case ptp_BackBorderWidth
+            getTextLayerProperty = myTextData.tld_BackBorderWidth
     
     End Select
 
@@ -1184,6 +1199,25 @@ Friend Sub setTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPERTY, 
                 myTextData.tld_MarginBottom = CSng(newValue)
                 m_VectorDIBSynched = False
             End If
+            
+        Case ptp_BackBorderMode
+            If myTextData.tld_BackBorderMode <> CLng(newValue) Then
+                myTextData.tld_BackBorderMode = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_BackBorderColor
+            If myTextData.tld_BackBorderColor <> CLng(newValue) Then
+                myTextData.tld_BackBorderColor = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_BackBorderWidth
+            If myTextData.tld_BackBorderWidth <> CSng(newValue) Then
+                myTextData.tld_BackBorderWidth = CSng(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
         
     End Select
     
@@ -1290,6 +1324,9 @@ Private Sub Class_Initialize()
         .tld_MarginTop = 0
         .tld_MarginRight = 0
         .tld_MarginBottom = 0
+        .tld_BackBorderMode = 0
+        .tld_BackBorderColor = 0
+        .tld_BackBorderWidth = 1
     End With
     
     'Initialize the layer's DIB
@@ -1606,6 +1643,9 @@ Public Function getVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
                 .writeTag "TextMarginTop", myTextData.tld_MarginTop
                 .writeTag "TextMarginRight", myTextData.tld_MarginRight
                 .writeTag "TextMarginBottom", myTextData.tld_MarginBottom
+                .writeTag "TextBackBorderMode", myTextData.tld_BackBorderMode
+                .writeTag "TextBackBorderColor", myTextData.tld_BackBorderColor
+                .writeTag "TextBackBorderWidth", myTextData.tld_BackBorderWidth
             End With
         
     End Select
@@ -1674,6 +1714,9 @@ Public Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
                     .tld_MarginTop = xmlEngine.getUniqueTag_Double("TextMarginTop", 0)
                     .tld_MarginRight = xmlEngine.getUniqueTag_Double("TextMarginRight", 0)
                     .tld_MarginBottom = xmlEngine.getUniqueTag_Double("TextMarginBottom", 0)
+                    .tld_BackBorderMode = xmlEngine.getUniqueTag_Long("TextBackBorderMode", 0)
+                    .tld_BackBorderColor = xmlEngine.getUniqueTag_Long("TextBackBorderColor", 0)
+                    .tld_BackBorderWidth = xmlEngine.getUniqueTag_Double("TextBackBorderWidth", 1)
                 End With
                 
         End Select
@@ -2264,6 +2307,9 @@ Public Sub resetLayerParameters()
         .tld_MarginTop = 0
         .tld_MarginRight = 0
         .tld_MarginBottom = 0
+        .tld_BackBorderMode = 0
+        .tld_BackBorderColor = 0
+        .tld_BackBorderWidth = 1
     End With
 
 End Sub
@@ -2334,6 +2380,9 @@ Public Function syncInternalDIB() As Boolean
                 .setMarginTop myTextData.tld_MarginTop
                 .setMarginRight myTextData.tld_MarginRight
                 .setMarginBottom myTextData.tld_MarginBottom
+                .setBackBorderMode myTextData.tld_BackBorderMode
+                .setBackBorderColor myTextData.tld_BackBorderColor
+                .setBackBorderWidth myTextData.tld_BackBorderWidth
             End With
             
             'Initialize the backer DIB as necessary
