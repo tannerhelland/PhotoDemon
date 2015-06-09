@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.43</langversion>
+<langversion>6.7.45</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -13816,17 +13816,12 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <!-- BEGIN text for VBP_ToolPanel_FancyText.frm (toolpanel_FancyText) -->
 
 <phrase>
-<original>hinting</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>OpenType</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>fill background</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>border</original>
 <translation></translation>
 </phrase>
 
@@ -13877,6 +13872,16 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 
 <phrase>
 <original>line spacing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>hinting</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>OpenType</original>
 <translation></translation>
 </phrase>
 
@@ -13966,11 +13971,6 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 </phrase>
 
 <phrase>
-<original>invisible</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>solid</original>
 <translation></translation>
 </phrase>
@@ -14025,7 +14025,7 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_FancyText.frm contains 68 phrases. 26 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
+<!-- VBP_ToolPanel_FancyText.frm contains 77 phrases. 35 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_FancyText.frm-->
 
@@ -14047,12 +14047,18 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 
 <!-- END text for pdUniscribeItem.cls-->
 
+<!-- BEGIN text for pdComboBox_Helper.cls -->
+
+<!-- pdComboBox_Helper.cls contains 0 phrases. -->
+
+<!-- END text for pdComboBox_Helper.cls-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2442</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4210 phrases. -->
-<!-- 1768 are duplicates, so only 2442 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4219 phrases. -->
+<!-- 1777 are duplicates, so only 2442 unique phrases have been written to file. -->
 <!-- These 2442 phrases contain approximately 13663 total words. -->
 
 </pdData>
