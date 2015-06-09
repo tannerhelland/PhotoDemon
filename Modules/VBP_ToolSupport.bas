@@ -413,6 +413,9 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                 
                 'The layer resize quality combo box also needs to be synched
                 toolpanel_MoveSize.cboLayerResizeQuality.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getLayerResizeQuality
+                
+                'Layer angle is newly available as of 6.6
+                toolpanel_MoveSize.sltLayerAngle.Value = pdImages(g_CurrentImage).getActiveLayer.getLayerAngle
             
             Case VECTOR_TEXT
                 
@@ -535,6 +538,9 @@ Public Sub syncCurrentLayerToToolOptionsUI()
                 
                 'The layer resize quality combo box also needs to be synched
                 pdImages(g_CurrentImage).getActiveLayer.setLayerResizeQuality toolpanel_MoveSize.cboLayerResizeQuality.ListIndex
+                
+                'Layer angle is newly available as of 6.6
+                pdImages(g_CurrentImage).getActiveLayer.setLayerAngle toolpanel_MoveSize.sltLayerAngle.Value
             
             Case VECTOR_TEXT
                 
