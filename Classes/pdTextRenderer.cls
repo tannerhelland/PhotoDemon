@@ -33,7 +33,7 @@ Attribute VB_Exposed = False
 ' - With TrueType fonts, GDI+ is used.  This saves us a lot of grief, and lets us make use of some nice, typographic-specific
 ' features (like variable antialiasing contrast).
 '
-' - WithOpenType fonts, GDI is used out of necessity.  Individual glyphs are retrieved, parsed, and converted into a usable
+' - With OpenType fonts, GDI is used out of necessity.  Individual glyphs are retrieved, parsed, and converted into a usable
 ' format (e.g. OpenType's quadratic B-splines are converted into GDI+'s native cubic Bézier curve format).  The final,
 ' resultant shape(s) are then passed to GDI+ as a generic path object, which we can render with any of GDI+'s native
 ' features (antialiasing, fancy gradients, etc).

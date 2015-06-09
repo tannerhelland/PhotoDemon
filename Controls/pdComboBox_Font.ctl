@@ -166,6 +166,9 @@ Private Declare Function SetFocus Lib "user32" (ByVal hndWindow As Long) As Long
 Private Declare Function SetForegroundWindow Lib "user32" (ByVal hndWindow As Long) As Long
 Private Declare Function ShowWindow Lib "user32" (ByVal hndWindow As Long, ByVal nCmdShow As showWindowOptions) As Long
 Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Declare Function AnimateWindow Lib "user32" (ByVal targetHwnd As Long, ByVal dwTime As Long, ByVal dwFlags As AnimateWindowFlags) As Long
+
+'SetWindowPos flags
 Private Const SWP_ASYNCWINDOWPOS As Long = &H4000
 Private Const SWP_FRAMECHANGED As Long = &H20
 Private Const SWP_NOACTIVATE As Long = &H10
@@ -179,7 +182,37 @@ Private Const SWP_SHOWWINDOW As Long = &H40
 Private Const SWP_NOZORDER As Long = &H4
 Private Const SWP_DRAWFRAME As Long = &H20
 Private Const SWP_NOCOPYBITS As Long = &H100
-Private Const WM_WINDOWPOSCHANGED As Long = &H47
+
+'AnimateWindow flags
+Private Enum AnimateWindowFlags
+    AW_ACTIVATE = &H20000
+    AW_BLEND = &H80000
+    AW_CENTER = &H10
+    AW_HIDE = &H10000
+    AW_HOR_POSITIVE = &H1
+    AW_HOR_NEGATIVE = &H2
+    AW_SLIDE = &H40000
+    AW_VER_POSITIVE = &H4
+    AW_VER_NEGATIVE = &H8
+End Enum
+
+#If False Then
+    Private Const AW_ACTIVATE = &H20000, AW_BLEND = &H80000, AW_CENTER = &H10, AW_HIDE = &H10000, AW_HOR_POSITIVE = &H1, AW_HOR_NEGATIVE = &H2
+    Private Const AW_SLIDE = &H40000, AW_VER_POSITIVE = &H4, AW_VER_NEGATIVE = &H8
+#End If
+
+Private Type POINTAPI_L
+    x As Long
+    y As Long
+End Type
+
+Private Type tagMINMAXINFO
+    ptReserved As POINTAPI_L
+    ptMaxSize As POINTAPI_L
+    ptMaxPosition As POINTAPI_L
+    ptMinTrackSize As POINTAPI_L
+    ptMaxTrackSize As POINTAPI_L
+End Type
 
 'Getting/setting window data
 Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextW" (ByVal hWnd As Long, ByVal lpStringPointer As Long, ByVal nMaxCount As Long) As Long
@@ -263,6 +296,9 @@ Private Const WM_PAINT As Long = &HF
 Private Const WM_PRINTCLIENT As Long = &H318
 Private Const WM_LBUTTONDOWN As Long = &H201
 Private Const WM_LBUTTONUP As Long = &H202
+Private Const WM_WINDOWPOSCHANGED As Long = &H47
+Private Const WM_WINDOWPOSCHANGING As Long = &H46
+Private Const WM_GETMINMAXINFO As Long = &H24
 
 Private Const VK_SHIFT As Long = &H10
 Private Const VK_CONTROL As Long = &H11
@@ -341,6 +377,7 @@ Private Const CB_GETLBTEXT As Long = &H148
 Private Const CB_GETLBTEXTLEN As Long = &H149
 Private Const CB_GETITEMDATA As Long = &H150
 Private Const CB_SETITEMDATA As Long = &H151
+Private Const CB_SHOWDROPDOWN As Long = &H14F&
 
 Private Const CBN_SELCHANGE As Long = 1
 Private Const CBN_DROPDOWN As Long = 7
@@ -541,7 +578,7 @@ Private Sub dynamicallyFitDropDown(ByVal listHwnd As Long)
         ' is larger than the edit box itself.  If it isn't, the dropdown isn't raised at all.  As such, we specify a size 1px larger than
         ' the edit box itself.  This seems to convince the combo box handler to raise the dropdown.  The actual position is set when the
         ' dropdown actually appears, inside the wndProc.
-        SetWindowPos listHwnd, 0, comboRect.Left, comboRect.Top, dropWidth, m_ItemHeight + 9, SWP_FRAMECHANGED Or SWP_NOZORDER Or SWP_NOOWNERZORDER Or SWP_NOACTIVATE
+        SetWindowPos listHwnd, 0, comboRect.Left, comboRect.Top, dropWidth, m_ItemHeight + 9, SWP_NOZORDER Or SWP_NOOWNERZORDER Or SWP_NOACTIVATE Or SWP_NOSENDCHANGING Or SWP_NOREDRAW Or SWP_FRAMECHANGED
          
     End If
     
@@ -1902,6 +1939,32 @@ Private Sub moveDropDownIntoPosition(ByRef editRect As RECTL, ByRef listRect As 
     
 End Sub
 
+'All events subclassed by *THE DROPDOWN LISTBOX* window are processed here.
+' (This routine MUST BE KEPT as the third-from-last routine for this form.)
+' The goal with this subroutine was to solve the issue of the list box dropdown always sliding out from top-to-bottom, but this has proven to be a
+' ridiculously convoluted task.  Windows applies its own positioning code prior to calling ShowWindow or AnimateWindow, and I am currently in the
+' process of trying to intercept their internal size requests.
+Private Sub myWndProc_ListBox(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByVal lng_hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByRef lParamUser As Long)
+    
+    Select Case uMsg
+    
+        Case WM_WINDOWPOSCHANGING
+            Debug.Print "window pos changing"
+            bHandled = True
+            lReturn = 0
+        
+        Case WM_WINDOWPOSCHANGED
+            Debug.Print "window pos changed"
+            bHandled = True
+            lReturn = 0
+            
+        Case WM_GETMINMAXINFO
+            Debug.Print "max/min info requested"
+    
+    End Select
+    
+End Sub
+
 'This routine MUST BE KEPT as the next-to-last routine for this form. Its ordinal position determines its ability to hook properly.
 Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Long, ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal lHookType As eHookType, ByRef lParamUser As Long)
 '*************************************************************************************************
@@ -2054,14 +2117,29 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         
                     End If
                     
+                    'TEMPORARY TESTING: subclass the listbox
+                    ' Note: I don't know why, but subclassing WM_WINDOWPOSCHANGED causes the listbox to calculate its contents incorrectly.
+                    ' (The last item in the drop-down will be allowed to appear all the way at the top of the list, with dead space beneath.)
+                    cSubclass.ssc_Subclass cbiCombo.hWndList, 0, 3, Me, True, True, True
+                    cSubclass.ssc_AddMsg cbiCombo.hWndList, MSG_BEFORE, WM_WINDOWPOSCHANGING ', WM_WINDOWPOSCHANGED
+                    
                     'Set the combo box to always display the full list amount in the drop-down.  (This may need to be revisited if PD ever contains
                     ' a combo box with an enormous list of entries, e.g. a size large enough to extend past the edges of the screen.)
                     dynamicallyFitDropDown cbiCombo.hWndList
+                                        
+                    'Forcibly show the window
+                    'ShowWindow cbiCombo.hWndList, SW_HIDE
+                    
+                    'Animate the window now
+                    'AnimateWindow cbiCombo.hWndList, 200&, AW_ACTIVATE Or AW_HOR_NEGATIVE
                                         
                 End If
                 
                 'Check for the CLOSEUP flag; this signifies that the dropdown box is closing
                 If ((wParam \ &H10000) = CBN_CLOSEUP) Then
+                    
+                    'TEMPORARY TESTING: un-subclass the listbox
+                    cSubclass.ssc_UnSubclass cbiCombo.hWndList
                     
                     'No actions necessary at present
                     m_HwndListBox = 0
@@ -2071,7 +2149,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 End If
                 
             End If
-        
+                            
         Case WM_CTLCOLORLISTBOX
             
             If (Not m_ListPositionSet) And g_IsProgramRunning Then
@@ -2100,7 +2178,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 With listRect
                     SetWindowPos m_HwndListBox, 0, .Left, .Top, .Right - .Left, .Bottom - .Top, SWP_FRAMECHANGED Or SWP_NOACTIVATE Or SWP_NOZORDER Or SWP_NOOWNERZORDER
                 End With
-                
+                                
                 m_ListPositionSet = True
                 
                 'Apply a hand cursor
@@ -2180,7 +2258,9 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             'Check the control ID (specified by wParam) before proceeding
             If wParam = m_ComboBoxWindowID Then
                 
-                m_CurrentListIndex = SendMessage(m_ComboBoxHwnd, CB_GETCURSEL, 0, ByVal 0&)
+                'Previously, we would double-check the active item here, but there's no need to do it (and we can save a bit of rendering
+                ' time by avoiding unnecessary message traffic)
+                'm_CurrentListIndex = SendMessage(m_ComboBoxHwnd, CB_GETCURSEL, 0, ByVal 0&)
                 
                 'Retrieve the DrawItemStruct pointed to by lParam
                 Dim DIS As DRAWITEMSTRUCT
@@ -2246,6 +2326,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             
         'Other messages??
         Case Else
+            Debug.Print "Unknown message received: " & uMsg
     
     End Select
 
