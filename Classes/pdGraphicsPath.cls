@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Graphics Path Wrapper
 'Copyright 2014-2015 by Tanner Helland
 'Created: 17/October/14 (though assembled from various parts written much earlier)
-'Last updated: 17/October/14
-'Last update: initial build
+'Last updated: 09/May/15
+'Last update: integrate with new pdGraphixMatrix class, for easier affine transformations
+'Dependencies: pdGraphicsMatrix, for applying affine transformations to a path.
 '
 'This class is a VB6-friendly wrapper for the GDI+ GraphicsPath object.  It is not intended as a comprehensive interface;
 ' instead, I add functions to it as I need them for various PD elements.
@@ -61,19 +62,7 @@ Private Declare Function GdipAddPathPath Lib "gdiplus" (ByVal hPath As Long, ByV
 Private Declare Function GdipClosePathFigure Lib "gdiplus" (ByVal hPath As Long) As Long
 
 'General matrix transformations
-Private Enum MatrixOrder
-    MatrixOrderPrepend = 0
-    MatrixOrderAppend = 1
-End Enum
-
-#If False Then
-    Private Const MatrixOrderPrepend = 0, MatrixOrderAppend = 1
-#End If
-
 Private Declare Function GdipTransformPath Lib "gdiplus" (ByVal hPath As Long, ByVal srcMatrix As Long) As Long
-Private Declare Function GdipCreateMatrix Lib "gdiplus" (ByRef dstMatrix As Long) As Long
-Private Declare Function GdipDeleteMatrix Lib "gdiplus" (ByVal hMatrix As Long) As Long
-Private Declare Function GdipTranslateMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal offsetX As Single, ByVal offsetY As Single, ByVal order As MatrixOrder) As Long
 
 'Pen functions (for stroking a path)
 Private Declare Function GdipCreatePen1 Lib "gdiplus" (ByVal penColor As Long, ByVal penWidth As Single, ByVal penUnit As GpUnit, ByRef hPen As Long) As Long
@@ -237,18 +226,16 @@ End Sub
 'Translate the entire path by some amount in the x and/or y positions
 Public Sub translatePath(ByVal xAmount As Single, ByVal yAmount As Single)
 
-    'Retrieve an identity matrix
-    Dim tmpMatrix As Long
-    GdipCreateMatrix tmpMatrix
-    
-    'Convert to a translation matrix
-    GdipTranslateMatrix tmpMatrix, xAmount, yAmount, MatrixOrderAppend
+    'Retrieve a translation matrix
+    Dim tmpMatrix As pdGraphicsMatrix
+    Set tmpMatrix = New pdGraphicsMatrix
+    tmpMatrix.TranslateMatrix xAmount, yAmount
     
     'Apply the transformation
-    GdipTransformPath m_PathHandle, tmpMatrix
+    GdipTransformPath m_PathHandle, tmpMatrix.getMatrixHandle
     
     'Free the matrix
-    GdipDeleteMatrix tmpMatrix
+    Set tmpMatrix = Nothing
     
 End Sub
 

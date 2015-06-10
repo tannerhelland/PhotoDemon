@@ -1258,6 +1258,172 @@ Public Sub setLayerAngle(ByVal newAngle As Double)
     myLayerData.l_Angle = newAngle
 End Sub
 
+'If one or more affine transformations are active (rotation, skew, etc), this function will return TRUE.
+' This is used, for example, by pdCompositor to branch across several rendering paths.
+Public Function affineTransformsActive(Optional ByVal includeScaling As Boolean = False) As Boolean
+    
+    'Most PD operations handle scaling separate from other affine operations, so we can typically skip this check
+    If includeScaling Then
+    
+        If (myLayerData.l_CanvasXModifier <> 1) Or (myLayerData.l_CanvasYModifier <> 1) Then
+            affineTransformsActive = True
+            Exit Function
+        End If
+    
+    End If
+    
+    'Currently, only rotation is explicitly defined, but skew could be added in the future without too much trouble.
+    If (myLayerData.l_Angle <> 0) Then
+        affineTransformsActive = True
+    Else
+        affineTransformsActive = False
+    End If
+    
+End Function
+
+'If one or more affine transformations are active (rotation, skew, etc), you can call this function to retrieve three corner points
+' of the layer *IN IMAGE COORDINATES*.
+'
+'dstPoints needs to have the bounds (0, 2) or (0, 3).  It will be filled with the following points in this order:
+' 0) Top-Left
+' 1) Top-Right
+' 2) Bottom-Left
+' 3 (optionally) Bottom-Right.
+Friend Sub getLayerCornerCoordinates(ByRef dstPoints() As POINTFLOAT, Optional ByVal includeOffsets As Boolean = True, Optional ByVal normalizeToNewOrigin As Boolean = False, Optional ByVal normalizeX As Single = 0#, Optional ByVal normalizeY As Single = 0#)
+    
+    'To simplify the work of translating layer boundaries by one or more affine transformations, we use a GraphicsMatrix object.
+    Dim tmpMatrix As pdGraphicsMatrix
+    
+    'Retrieve a copy of the current layer transform matrix
+    Me.getCopyOfLayerTransformationMatrix tmpMatrix, includeOffsets
+    
+    'Fill the dstPoints array with the current image corners *without* translation applied (but *with* scaling)
+    dstPoints(0).x = 0
+    dstPoints(0).y = 0
+    
+    dstPoints(1).x = Me.getLayerWidth(True)
+    dstPoints(1).y = 0
+    
+    dstPoints(2).x = 0
+    dstPoints(2).y = Me.getLayerHeight(True)
+    
+    'If the third point exists, fill it too
+    If UBound(dstPoints) = 3 Then
+        dstPoints(3).x = Me.getLayerWidth(True)
+        dstPoints(3).y = Me.getLayerHeight(True)
+    End If
+    
+    'Translate each point in turn
+    tmpMatrix.applyMatrixToPointF dstPoints(0)
+    tmpMatrix.applyMatrixToPointF dstPoints(1)
+    tmpMatrix.applyMatrixToPointF dstPoints(2)
+    If UBound(dstPoints) = 3 Then tmpMatrix.applyMatrixToPointF dstPoints(3)
+    
+    'Some compositing operations are easier if the layer is normalized to a standard origin of (0, 0).
+    ' If the caller requested that, apply normalizing now.
+    If normalizeToNewOrigin Then
+        
+        'Find the largest and smallest (x, y) coordinates
+        Dim minX As Single, maxX As Single, minY As Single, maxY As Single
+        findMaxMinOfPointFs dstPoints, UBound(dstPoints) + 1, minX, minY, maxX, maxY
+        
+        'Normalize all points against the minimum values
+        Dim i As Long
+        For i = 0 To UBound(dstPoints)
+            dstPoints(i).x = dstPoints(i).x + (normalizeX - minX)
+            dstPoints(i).y = dstPoints(i).y + (normalizeY - minY)
+        Next i
+        
+    End If
+    
+    'The temporary translation matrix will automatically be cleaned up when the function exits
+    
+    'Debug information can be displayed here:
+    'Debug.Print "Layer corners: 0 - (" & dstPoints(0).x & ", " & dstPoints(0).y & ") 1 - (" & dstPoints(1).x & ", " & dstPoints(1).y & ") 1 - (" & dstPoints(2).x & ", " & dstPoints(2).y & ")"
+    
+End Sub
+
+'As of PhotoDemon 6.6, layers support one or more affine transformations (rotation, skew, etc).  If a caller needs a copy of the
+' layer's current transformation matrix, it can use this function to retrieve it.
+'
+'Note that scaling is not applied, by design.  The caller should handle scaling manually.
+Friend Sub getCopyOfLayerTransformationMatrix(ByRef dstMatrix As pdGraphicsMatrix, Optional ByVal applyTranslation As Boolean = True)
+
+    'Create and/or reset the destination matrix, as necessary
+    If dstMatrix Is Nothing Then
+        Set dstMatrix = New pdGraphicsMatrix
+    Else
+        dstMatrix.ResetToIdentityMatrix
+    End If
+    
+    'If an angle is active, rotate the matrix accordingly
+    If myLayerData.l_Angle <> 0 Then dstMatrix.RotateMatrix myLayerData.l_Angle, Me.getLayerWidth(True) / 2, Me.getLayerHeight(True) / 2
+    
+    'In the future, skew can be handled here
+    
+    'Finally, if translation is desired, scale all points by the current layer offset
+    If applyTranslation Then dstMatrix.TranslateMatrix myLayerData.l_OffsetX, myLayerData.l_OffsetY
+    
+End Sub
+
+'As of PhotoDemon 6.6, layers support one or more affine transformations (rotation, skew, etc).  If the caller needs to determine
+' layer boundaries with all affine transform operations considered, use this function.
+Friend Sub getLayerBoundaryRect(ByRef dstRect As RECTF, Optional ByVal applyTranslation As Boolean = True, Optional ByVal normalizeToNewOrigin As Boolean = False, Optional ByVal normalizeX As Single = 0#, Optional ByVal normalizeY As Single = 0#)
+    
+    'Get a copy of the current layer coordinates
+    Dim layerCorners() As POINTFLOAT
+    ReDim layerCorners(0 To 3) As POINTFLOAT
+    
+    Me.getLayerCornerCoordinates layerCorners, applyTranslation, normalizeToNewOrigin, normalizeX, normalizeY
+    
+    'Find the largest and smallest (x, y) coordinates
+    Dim minX As Single, maxX As Single, minY As Single, maxY As Single
+    findMaxMinOfPointFs layerCorners, 4, minX, minY, maxX, maxY
+    
+    'The difference between max and min values define the boundary rect for this layer
+    With dstRect
+        .Left = minX
+        .Top = minY
+        .Width = maxX - minX
+        .Height = maxY - minY
+    End With
+    
+    Debug.Print dstRect.Left, dstRect.Top, dstRect.Width, dstRect.Height
+    
+End Sub
+
+'Given an array with at least upper bound 2, find the max and min x/y values.
+Private Sub findMaxMinOfPointFs(ByRef srcPoints() As POINTFLOAT, ByVal numOfPoints As Long, ByRef minX As Single, ByRef minY As Single, ByRef maxX As Single, ByRef maxY As Single)
+    
+    If srcPoints(0).x < srcPoints(1).x Then
+        minX = srcPoints(0).x
+        maxX = srcPoints(1).x
+    Else
+        minX = srcPoints(1).x
+        maxX = srcPoints(0).x
+    End If
+    
+    If srcPoints(0).y < srcPoints(1).y Then
+        minY = srcPoints(0).y
+        maxY = srcPoints(1).y
+    Else
+        minY = srcPoints(1).y
+        maxY = srcPoints(0).y
+    End If
+    
+    Dim i As Long
+    For i = 2 To numOfPoints - 1
+        
+        If srcPoints(i).x < minX Then minX = srcPoints(i).x
+        If srcPoints(i).y < minY Then minY = srcPoints(i).y
+        
+        If srcPoints(i).x > maxX Then maxX = srcPoints(i).x
+        If srcPoints(i).y > maxY Then maxY = srcPoints(i).y
+        
+    Next i
+    
+End Sub
+
 Private Sub Class_Initialize()
 
     'Assign default values to this instance
