@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.45</langversion>
+<langversion>6.7.46</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -13705,6 +13705,11 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- BEGIN text for VBP_ToolPanel_MoveSize.frm (toolpanel_MoveSize) -->
 
 <phrase>
+<original>angle test</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>interaction options</original>
 <translation>opzioni di interazione</translation>
 </phrase>
@@ -13760,6 +13765,11 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
+<original>transformations</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Reset layer to original size</original>
 <translation></translation>
 </phrase>
@@ -13774,7 +13784,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_MoveSize.frm contains 20 phrases. 6 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- VBP_ToolPanel_MoveSize.frm contains 21 phrases. 5 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_MoveSize.frm-->
 
@@ -14045,18 +14055,12 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- END text for pdUniscribeItem.cls-->
 
-<!-- BEGIN text for pdComboBox_Helper.cls -->
-
-<!-- pdComboBox_Helper.cls contains 0 phrases. -->
-
-<!-- END text for pdComboBox_Helper.cls-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2442</phrasecount>
+<phrasecount>2444</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4219 phrases. -->
-<!-- 1777 are duplicates, so only 2442 unique phrases have been written to file. -->
-<!-- These 2442 phrases contain approximately 13663 total words. -->
+<!-- As of this build, PhotoDemon contains 4220 phrases. -->
+<!-- 1776 are duplicates, so only 2444 unique phrases have been written to file. -->
+<!-- These 2444 phrases contain approximately 13666 total words. -->
 
 </pdData>

@@ -145,7 +145,7 @@ Private Type EncoderParameter
 End Type
 
 Private Type EncoderParameters
-    Count     As Long
+    count     As Long
     Parameter As EncoderParameter
 End Type
 
@@ -440,6 +440,8 @@ Private Declare Function GdipDrawImage Lib "gdiplus" (ByVal mGraphics As Long, B
 Private Declare Function GdipDrawImageRect Lib "gdiplus" (ByVal mGraphics As Long, ByVal mImage As Long, ByVal x As Single, ByVal y As Single, ByVal iWidth As Single, ByVal iHeight As Single) As Long
 Private Declare Function GdipDrawImageRectRect Lib "gdiplus" (ByVal mGraphics As Long, ByVal mImage As Long, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal srcUnit As GpUnit, Optional ByVal imageAttributes As Long = 0, Optional ByVal callback As Long = 0, Optional ByVal callbackData As Long = 0) As Long
 Public Declare Function GdipDrawImageRectRectI Lib "gdiplus" (ByVal mGraphics As Long, ByVal mImage As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As GpUnit, Optional ByVal imageAttributes As Long = 0, Optional ByVal callback As Long = 0, Optional ByVal callbackData As Long = 0) As Long
+Private Declare Function GdipDrawImagePointsRect Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal ptrToPointFloats As Long, ByVal dstPtCount As Long, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal srcUnit As GpUnit, Optional ByVal imageAttributes As Long = 0, Optional ByVal progCallbackFunction As Long = 0, Optional ByVal progCallbackData As Long = 0) As Long
+Private Declare Function GdipDrawImagePointsRectI Lib "gdiplus" (ByVal dstGraphics As Long, ByVal srcImage As Long, ByVal ptrToPointInts As Long, ByVal dstPtCount As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As GpUnit, Optional ByVal imageAttributes As Long = 0, Optional ByVal progCallbackFunction As Long = 0, Optional ByVal progCallbackData As Long = 0) As Long
 Private Declare Function GdipDrawImageFX Lib "gdiplus" (ByVal mGraphics As Long, ByVal mImage As Long, ByRef iSource As RECTF, ByVal xForm As Long, ByVal mEffect As Long, ByVal mImageAttributes As Long, ByVal srcUnit As Long) As Long
 Private Declare Function GdipCreateMatrix2 Lib "gdiplus" (ByVal mM11 As Single, ByVal mM12 As Single, ByVal mM21 As Single, ByVal mM22 As Single, ByVal mDx As Single, ByVal mDy As Single, ByRef mMatrix As Long) As Long
 Private Declare Function GdipDeleteMatrix Lib "gdiplus" (ByVal mMatrix As Long) As Long
@@ -1867,7 +1869,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'BMP export
         Case [ImageBMP]
             pvGetEncoderClsID "image/bmp", uEncCLSID
-            uEncParams.Count = 1
+            uEncParams.count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
             With uEncParams.Parameter
@@ -1882,7 +1884,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'GIF export
         Case [ImageGIF]
             pvGetEncoderClsID "image/gif", uEncCLSID
-            uEncParams.Count = 1
+            uEncParams.count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
             With uEncParams.Parameter
@@ -1897,7 +1899,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'JPEG export (requires extra work to specify a quality for the encode)
         Case [ImageJPEG]
             pvGetEncoderClsID "image/jpeg", uEncCLSID
-            uEncParams.Count = 1
+            uEncParams.count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
             With uEncParams.Parameter
@@ -1912,7 +1914,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'PNG export
         Case [ImagePNG]
             pvGetEncoderClsID "image/png", uEncCLSID
-            uEncParams.Count = 1
+            uEncParams.count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
             With uEncParams.Parameter
@@ -1927,7 +1929,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'TIFF export (requires extra work to specify compression and color depth for the encode)
         Case [ImageTIFF]
             pvGetEncoderClsID "image/tiff", uEncCLSID
-            uEncParams.Count = 2
+            uEncParams.count = 2
             ReDim aEncParams(1 To Len(uEncParams) + Len(uEncParams.Parameter) * 2)
             
             With uEncParams.Parameter
@@ -2025,7 +2027,7 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
     Dim aEncParams() As Byte
         
     pvGetEncoderClsID "image/png", uEncCLSID
-    uEncParams.Count = 1
+    uEncParams.count = 1
     ReDim aEncParams(1 To Len(uEncParams))
     
     Dim gdipColorDepth As Long
@@ -2323,6 +2325,73 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
     
 End Sub
 
+'Similar function to GDIPlus_StretchBlt, above, but using a destination parallelogram instead of a rect.
+'
+'Note that the supplied plgPoints array *MUST HAVE THREE POINTS* in it, in the specific order: top-left, top-right, bottom-left.
+' The fourth point is inferred from the other three.
+Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT, ByRef srcDIB As pdDIB, ByVal x2 As Single, ByVal y2 As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal newAlpha As Single = 1#, Optional ByVal interpolationType As InterpolationMode = InterpolationModeHighQualityBicubic)
+
+    'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
+    ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
+    ' have timing reports sent to the debug window.
+    'Dim profileTime As Double
+    'profileTime = Timer
+    
+    'Create a GDI+ graphics object that points to the destination DIB's DC
+    Dim iGraphics As Long, tBitmap As Long
+    GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+    
+    'Next, we need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
+    ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
+    getGdipBitmapHandleFromDIB tBitmap, srcDIB
+    
+    'iGraphics now contains a pointer to the destination image, while tBitmap contains a pointer to the source image.
+    
+    'Request the smoothing mode we were passed
+    If GdipSetInterpolationMode(iGraphics, interpolationType) = 0 Then
+        
+        'To fix antialiased fringing around image edges, specify a wrap mode.  This will prevent the faulty GDI+ resize
+        ' algorithm from drawing semi-transparent lines randomly around image borders.
+        ' Thank you to http://stackoverflow.com/questions/1890605/ghost-borders-ringing-when-resizing-in-gdi for the fix.
+        Dim imgAttributesHandle As Long
+        GdipCreateImageAttributes imgAttributesHandle
+        
+        'To improve performance, explicitly request high-speed (aka linear) alpha compositing operation, and standard
+        ' pixel offsets (on pixel borders, instead of center points)
+        GdipSetImageAttributesWrapMode imgAttributesHandle, WrapModeTileFlipXY, 0, 0
+        GdipSetCompositingQuality iGraphics, CompositingQualityHighSpeed
+        GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighSpeed
+        
+        'If modified alpha is requested, pass the new value to this image container
+        If newAlpha <> 1 Then
+            m_AttributesMatrix(3, 3) = newAlpha
+            GdipSetImageAttributesColorMatrix imgAttributesHandle, ColorAdjustTypeBitmap, 1, VarPtr(m_AttributesMatrix(0, 0)), 0, ColorMatrixFlagsDefault
+        End If
+    
+        'Perform the draw
+        'GdipDrawImageRectRect iGraphics, tBitmap, x1, y1, dstWidth, dstHeight, x2, y2, srcWidth, srcHeight, UnitPixel, imgAttributesHandle
+        GdipDrawImagePointsRect iGraphics, tBitmap, VarPtr(plgPoints(0)), 3, x2, y2, srcWidth, srcHeight, UnitPixel, imgAttributesHandle, 0, 0
+        
+        'Release our image attributes object
+        GdipDisposeImageAttributes imgAttributesHandle
+        
+        'Reset alpha in the master identity matrix
+        If newAlpha <> 1 Then m_AttributesMatrix(3, 3) = 1
+        
+        'Update premultiplication status in the target
+        dstDIB.setInitialAlphaPremultiplicationState srcDIB.getAlphaPremultiplication
+        
+    End If
+    
+    'Release both the destination graphics object and the source bitmap object
+    GdipDeleteGraphics iGraphics
+    GdipDisposeImage tBitmap
+    
+    'Uncomment the line below to receive timing reports
+    'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
+    
+    
+End Sub
 
 'At start-up, this function is called to determine whether or not we have GDI+ available on this machine.
 Public Function isGDIPlusAvailable() As Boolean
