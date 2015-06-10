@@ -124,8 +124,6 @@ Public Sub syncInterfaceToCurrentImage()
         FormMain.MnuLayerSize(0).Enabled = False
         toolpanel_MoveSize.cmdLayerMove(0).Enabled = False
         toolpanel_MoveSize.cmdLayerMove(1).Enabled = False
-        toolpanel_MoveSize.cboLayerResizeQuality.Enabled = False
-        toolpanel_MoveSize.cboLayerResizeQuality.Enabled = False
         
         'Reset all Undo/Redo and related menus as well
         syncUndoRedoInterfaceElements True
@@ -273,7 +271,6 @@ Public Sub syncInterfaceToCurrentImage()
                     FormMain.MnuLayerSize(0).Enabled = nonDestructiveResizeActive
                     toolpanel_MoveSize.cmdLayerMove(0).Enabled = nonDestructiveResizeActive
                     toolpanel_MoveSize.cmdLayerMove(1).Enabled = nonDestructiveResizeActive
-                    toolpanel_MoveSize.cboLayerResizeQuality.Enabled = nonDestructiveResizeActive
                                         
                     'If non-destructive FX are active on the current layer, update the non-destructive tool enablement to match
                     metaToggle tNonDestructiveFX, True

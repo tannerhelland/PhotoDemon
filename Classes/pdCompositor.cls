@@ -949,9 +949,8 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
     
     'Some variables are potentially used in multiple branches of this function
     Dim layerRect As RECTF
-    Dim intLayerWidth As Long, intLayerHeight As Long
     Dim intLayerOffsetX As Long, intLayerOffsetY As Long
-    Dim normalizeX As Single, normalizeY As Single
+    Dim layerBoundariesOkay As Boolean
     
     'If this layer is a vector layer, make sure its DIB is properly synchronized.  (If it's *not* a vector layer, this action does nothing.)
     srcLayer.syncInternalDIB
@@ -1027,10 +1026,10 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
                 Else
                 
                     'The layer itself provides a highly optimized method for extracting the affine-transformed portion of its DIB
-                    .getAffineTransformedDIB m_tmpDIB, intLayerOffsetX, intLayerOffsetY
+                    layerBoundariesOkay = .getAffineTransformedDIB(m_tmpDIB, intLayerOffsetX, intLayerOffsetY, dstDIB.getDIBWidth, dstDIB.getDIBHeight)
                 
                     'Next, perform an all-in-one composite + blend using our awesome new compositeAndBlendDIBs function
-                    compositeAndBlendDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, intLayerOffsetX, intLayerOffsetY, .getLayerOpacity / 100
+                    If layerBoundariesOkay Then compositeAndBlendDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, intLayerOffsetX, intLayerOffsetY, .getLayerOpacity / 100
                     
                 End If
                 
@@ -1046,37 +1045,41 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
         
         '(Potential future TODO: if non-destructive resizing makes the image larger, apply the NDFX first, then the resize)
         If (Not srcLayer.affineTransformsActive(True)) Then
-            m_tmpDIB.createFromExistingDIB srcLayer.layerDIB
+            layerBoundariesOkay = m_tmpDIB.createFromExistingDIB(srcLayer.layerDIB)
         Else
             
             'The layer itself provides a highly optimized method for extracting the affine-transformed portion of its DIB
-            srcLayer.getAffineTransformedDIB m_tmpDIB, intLayerOffsetX, intLayerOffsetY
+            layerBoundariesOkay = srcLayer.getAffineTransformedDIB(m_tmpDIB, intLayerOffsetX, intLayerOffsetY, dstDIB.getDIBWidth, dstDIB.getDIBHeight)
                 
         End If
         
-        'Apply any/all non-destructive effects to the temporary DIB
-        applyNDFXToDIB srcLayer, m_tmpDIB
+        If layerBoundariesOkay Then
         
-        'Next, check the active blend mode.  Normal blend modes ; NORMAL blend mode can be handled by GDI's AlphaBlend
-        If srcLayer.getLayerBlendMode = BL_NORMAL Then
-        
-            With srcLayer
-                If srcLayer.affineTransformsActive(False) Then
-                    m_tmpDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, intLayerOffsetX, intLayerOffsetY
-                Else
-                    m_tmpDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
-                End If
-            End With
-        
-        Else
+            'Apply any/all non-destructive effects to the temporary DIB
+            applyNDFXToDIB srcLayer, m_tmpDIB
             
-            'Custom blend modes are active.  Perform a single pass composite + blend operation using our awesome new all-in-one function.
             With srcLayer
-                If srcLayer.affineTransformsActive(False) Then
-                    compositeAndBlendDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, intLayerOffsetX, intLayerOffsetY, .getLayerOpacity / 100
+                
+                'Next, check the active blend mode.  NORMAL blend mode can be handled by GDI's AlphaBlend for a performance boost
+                If .getLayerBlendMode = BL_NORMAL Then
+                
+                    If .affineTransformsActive(False) Then
+                        m_tmpDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, intLayerOffsetX, intLayerOffsetY
+                    Else
+                        m_tmpDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
+                    End If
+                
+                'Custom blend modes are active.  Perform a single pass composite + blend operation using our awesome new all-in-one function.
                 Else
-                    compositeAndBlendDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY, .getLayerOpacity / 100
+                
+                    If .affineTransformsActive(False) Then
+                        compositeAndBlendDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, intLayerOffsetX, intLayerOffsetY, .getLayerOpacity / 100
+                    Else
+                        compositeAndBlendDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY, .getLayerOpacity / 100
+                    End If
+            
                 End If
+                
             End With
             
         End If
