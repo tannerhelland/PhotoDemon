@@ -1347,7 +1347,7 @@ Friend Sub getLayerCornerCoordinates(ByRef dstPoints() As POINTFLOAT, Optional B
     
 End Sub
 
-'As of PhotoDemon 6.6, layers support one or more affine transformations (rotation, skew, etc).  If a caller needs a copy of the
+'As of PhotoDemon 7.0, layers support one or more affine transformations (rotation, skew, etc).  If a caller needs a copy of the
 ' layer's current transformation matrix, it can use this function to retrieve it.
 '
 'Note that scaling is not applied, by design.  The caller should handle scaling manually.
@@ -1370,7 +1370,7 @@ Friend Sub getCopyOfLayerTransformationMatrix(ByRef dstMatrix As pdGraphicsMatri
     
 End Sub
 
-'As of PhotoDemon 6.6, layers support one or more affine transformations (rotation, skew, etc).  If the caller needs to determine
+'As of PhotoDemon 7.0, layers support one or more affine transformations (rotation, skew, etc).  If the caller needs to determine
 ' layer boundaries with all affine transform operations considered, use this function.
 Friend Sub getLayerBoundaryRect(ByRef dstRect As RECTF, Optional ByVal applyTranslation As Boolean = True, Optional ByVal normalizeToNewOrigin As Boolean = False, Optional ByVal normalizeX As Single = 0#, Optional ByVal normalizeY As Single = 0#)
     
@@ -1392,7 +1392,7 @@ Friend Sub getLayerBoundaryRect(ByRef dstRect As RECTF, Optional ByVal applyTran
         .Height = MaxY - MinY
     End With
     
-    Debug.Print dstRect.Left, dstRect.Top, dstRect.Width, dstRect.Height
+    'Debug.Print dstRect.Left, dstRect.Top, dstRect.Width, dstRect.Height
     
 End Sub
 
@@ -1407,63 +1407,115 @@ End Sub
 '
 'I have optimized this function as much as I physically can.  Separate paths are used depending on the complexity of the transform
 ' (if the only active non-destructive transform is scaling, we can bypass certain steps, for example).
-Friend Sub getAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Long, ByRef dstY As Long)
+'
+'RETURNS: TRUE if the destination DIB was filled, FALSE if the DIB lies outside the crop area (e.g. entirely off the image)
+Friend Function getAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Long, ByRef dstY As Long, Optional ByVal cropWidth As Long = 0, Optional ByVal cropHeight As Long = 0) As Boolean
     
-    'Retrieve a copy of our own boundary rect
+    'Retrieve a copy of the layer corner points, in image coordinates (of course!)
+    'Get a copy of the current layer coordinates
+    Me.getLayerCornerCoordinates m_PlgPoints, True, False
+    
+    'From our boundary points, find the largest and smallest (x, y) values.  These give us a bounding box for the layer as a whole.
+    Dim minX As Single, maxX As Single, MinY As Single, MaxY As Single
+    findMaxMinOfPointFs m_PlgPoints, 4, minX, MinY, maxX, MaxY
+    
+    'Copy those values into a RECTF struct, for convenience
     Dim layerRect As RECTF
-    Me.getLayerBoundaryRect layerRect, True, False
-                    
-    'Next, calculate integer variants of our transformed width and height.  This is important for making sure
-    ' we don't cut off any floating-point portions of the image boundaries.
+    With layerRect
+        .Left = minX
+        .Top = MinY
+        .Width = maxX - minX
+        .Height = MaxY - MinY
+    End With
+    
+    'We now know two crucial pieces of data:
+    ' 1) the final locations of the affine-transformed layer corner points, in image space
+    ' 2) a bounding box for the affine-transformed layer, in image space
+    
+    'Next, we need to calculate the minimum boundary size required by the destination DIB.  This is the lesser of two things:
+    ' 1) The crop width/height supplied by the caller (typically the size of the compositing surface itself; pixels outside
+    '     this are irrelevant, so we can completely ignore them for a speed boost).
+    ' 2) If the layer left/top values are negative, the max x/y values calculated above
+    ' 3) If the layer left/top values are positive, the width of the layer boundary rect
+    
+    'During this step, we will also calculate fractional values I call "normalizeX/Y".  PD's internal compositor can only
+    ' render to integer offsets, for performance reasons.  Affine transformations almost always result in an image with
+    ' fractional offsets; to make sure these offsets are preserved, we "normalize" the coordinates by offseting them by
+    ' their fractional amount.  This ensures that the final composite looks identical between GDI+ and PD's internal
+    ' compositing code.
+    
+    'Start by calculating (2) or (3), and padding it to account for fractional offsets
     Dim intLayerWidth As Long, intLayerHeight As Long
-    intLayerWidth = Int(layerRect.Width + 0.999)
-    intLayerHeight = Int(layerRect.Height + 0.999)
-                    
-    'Because PD's manual compositor operates on integer coordinates, we must forcibly offset layer pixels by any
-    ' fractional amounts now, so rendering is identical between manual compositioning and GDI+ compositing
     Dim normalizeX As Single, normalizeY As Single
-    normalizeX = layerRect.Left - Int(layerRect.Left)
-    normalizeY = layerRect.Top - Int(layerRect.Top)
+    
+    If minX < 0 Then
+        dstX = 0
+        normalizeX = 0
+        intLayerWidth = Int(maxX + 0.999)
+    Else
+        dstX = Int(minX)
+        normalizeX = minX - dstX
+        intLayerWidth = Int(layerRect.Width + 0.999 + normalizeX)
+    End If
+    
+    If MinY < 0 Then
+        dstY = 0
+        normalizeY = 0
+        intLayerHeight = Int(MaxY + 0.999)
+    Else
+        dstY = Int(MinY)
+        normalizeY = MinY - dstY
+        intLayerHeight = Int(layerRect.Height + 0.999 + normalizeY)
+    End If
+    
+    'Next, replace the results of (2) or (3) with (1), as relevant
+    If cropWidth > 0 Then
+        If dstX + intLayerWidth > cropWidth Then intLayerWidth = cropWidth - dstX
+    End If
                     
-    'If the temporary image is larger than the base layer, we can limit it to the base layer's size to save a bit of
-    ' memory and processing time.
-    '
-    '(TODO: figure out how to implement this.  It's tricky, because we need to consider the many potential situations in
-    '       which the affine-transformed image extends beyond the base image, particularly when applying non-destructive
-    '       effects in the second branch of this function!))
-    'If intLayerWidth > dstDIB.getDIBWidth Then
-    '    normalizeX = dstDIB.getDIBWidth - intLayerWidth
-    '    intLayerWidth = dstDIB.getDIBWidth
-    'End If
-    '
-    'If intLayerHeight > dstDIB.getDIBHeight Then
-    '    normalizeY = dstDIB.getDIBHeight - intLayerHeight
-    '    intLayerHeight = dstDIB.getDIBHeight
-    'End If
-    
-    'Next, prepare the destination DIB.  If at all possible, we try to optimize this handling by reusing DIBs that are already
-    ' an acceptable size.
-    If (dstDIB.getDIBWidth <> intLayerWidth) Or (dstDIB.getDIBHeight <> intLayerHeight) Then
-        dstDIB.createBlank intLayerWidth, intLayerHeight, 32, 0, 0
-        dstDIB.setInitialAlphaPremultiplicationState True
-    Else
-        dstDIB.resetDIB
+    If cropHeight > 0 Then
+        If dstY + intLayerHeight > cropHeight Then intLayerHeight = cropHeight - dstY
     End If
     
-    'Copy a resized chunk of the source image onto the temporary DIB.  (Note that this branches according to the
-    ' presence of more complicated affine functions, which require a parallelogram-style blit process).
-    If Me.affineTransformsActive(False) Then
-        Me.getLayerCornerCoordinates m_PlgPoints, True, True, normalizeX, normalizeY
-        GDI_Plus.GDIPlus_PlgBlt dstDIB, m_PlgPoints, Me.layerDIB, 0, 0, Me.getLayerWidth(False), Me.getLayerHeight(False), Me.getLayerOpacity / 100, Me.getLayerResizeQuality_GDIPlus
+    'If the final calculated width and height are positive and non-zero, we can continue; otherwise, exit now.
+    If (intLayerWidth > 0) And (intLayerHeight > 0) Then
+    
+        'Next, prepare the destination DIB.  If at all possible, we try to optimize this by reusing DIBs that are already
+        ' an acceptable size.
+        If (dstDIB.getDIBWidth <> intLayerWidth) Or (dstDIB.getDIBHeight <> intLayerHeight) Then
+            dstDIB.createBlank intLayerWidth, intLayerHeight, 32, 0, 0
+            dstDIB.setInitialAlphaPremultiplicationState True
+        Else
+            dstDIB.resetDIB
+        End If
+        
+        'It is now time to render the affine-transformed DIB.  If normalization factors or custom destination offsets are active,
+        ' we must modify our corner points accordingly, so that they are 0-based.
+        Dim i As Long
+        For i = 0 To 3
+            m_PlgPoints(i).x = m_PlgPoints(i).x + (normalizeX - dstX)
+            m_PlgPoints(i).y = m_PlgPoints(i).y + (normalizeY - dstY)
+        Next i
+        
+        'Copy a resized chunk of the source image onto the temporary DIB.  (Note that this branches according to the
+        ' presence of more complicated affine functions, which require a parallelogram-style blit process).
+        If Me.affineTransformsActive(False) Then
+            GDI_Plus.GDIPlus_PlgBlt dstDIB, m_PlgPoints, Me.layerDIB, 0, 0, Me.getLayerWidth(False), Me.getLayerHeight(False), Me.getLayerOpacity / 100, Me.getLayerResizeQuality_GDIPlus
+        Else
+            GDI_Plus.GDIPlus_StretchBlt dstDIB, normalizeX, normalizeY, Me.getLayerWidth(True), Me.getLayerHeight(True), Me.layerDIB, 0, 0, Me.getLayerWidth(False), Me.getLayerHeight(False), Me.getLayerOpacity / 100, Me.getLayerResizeQuality_GDIPlus
+        End If
+        
+        'Return success
+        getAffineTransformedDIB = True
+        
     Else
-        GDI_Plus.GDIPlus_StretchBlt dstDIB, normalizeX, normalizeY, Me.getLayerWidth(True), Me.getLayerHeight(True), Me.layerDIB, 0, 0, Me.getLayerWidth(False), Me.getLayerHeight(False), Me.getLayerOpacity / 100, Me.getLayerResizeQuality_GDIPlus
+    
+        'Return failure (e.g. the transformed DIB lies completely off the image, so there is no need for a temporary DIB)
+        getAffineTransformedDIB = False
+        
     End If
     
-    'Supply x and y offsets as well
-    dstX = Int(layerRect.Left)
-    dstY = Int(layerRect.Top)
-    
-End Sub
+End Function
 
 'If one or more affine transformations are active (rotation, skew, etc), you can call this function to retrieve three corner points
 ' of the layer *IN IMAGE COORDINATES*.
@@ -1765,7 +1817,7 @@ Public Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
             .l_Angle = xmlEngine.getUniqueTag_Double("Angle")
             .l_Visibility = xmlEngine.getUniqueTag_Boolean("Visibility")
             .l_NonDestructiveFXActive = xmlEngine.getUniqueTag_Boolean("NonDestructiveFXActive", False)
-            .l_ResizeQuality = xmlEngine.getUniqueTag_Long("ResizeQuality", LRQ_BICUBIC_NORMAL)
+            .l_ResizeQuality = xmlEngine.getUniqueTag_Long("ResizeQuality", LRQ_BILINEAR_NORMAL)
         End With
         
         'Read in the contents of the non-destructive FX chunk
@@ -2000,7 +2052,7 @@ Public Sub InitializeNewLayer(ByVal newLayerType As LAYER_TYPE, Optional ByVal n
         .l_BlendMode = BL_NORMAL
         .l_Visibility = True
         .l_NonDestructiveFXActive = False
-        .l_ResizeQuality = LRQ_BICUBIC_NORMAL
+        .l_ResizeQuality = LRQ_BILINEAR_NORMAL
     End With
     
     'Reset any non-destructive fx parameters
@@ -2497,7 +2549,7 @@ Public Sub resetLayerParameters()
         .l_Angle = 0
         .l_Visibility = True
         .l_NonDestructiveFXActive = False
-        .l_ResizeQuality = LRQ_BICUBIC_NORMAL
+        .l_ResizeQuality = LRQ_BILINEAR_NORMAL
     End With
     
     'Assign default values to the non-destructive FX params
