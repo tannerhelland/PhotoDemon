@@ -336,6 +336,10 @@ Private m_ViewportStateHash As Long
 'If a layer has changed since the last hash cache, we must still recomposite the DIB, even though its on-screen position hasn't changed
 Private m_DIBChangedSinceLastHashRequest As Boolean
 
+'If a layer has non-destructive, non-standard transformations active (e.g. rotation, skew), we use a special, parallelogram-based rendering function.
+' To cut down on variable declarations, we declare this array once, and initialize it when a compositor instance is initialized.
+Private m_PlgPoints() As POINTFLOAT
+
 'If an external function modifies this layer's DIB contents (or the vector data from which the DIB is generated),
 ' it must call this function afterward.
 '
@@ -1324,14 +1328,14 @@ Friend Sub getLayerCornerCoordinates(ByRef dstPoints() As POINTFLOAT, Optional B
     If normalizeToNewOrigin Then
         
         'Find the largest and smallest (x, y) coordinates
-        Dim minX As Single, maxX As Single, minY As Single, maxY As Single
-        findMaxMinOfPointFs dstPoints, UBound(dstPoints) + 1, minX, minY, maxX, maxY
+        Dim minX As Single, maxX As Single, MinY As Single, MaxY As Single
+        findMaxMinOfPointFs dstPoints, UBound(dstPoints) + 1, minX, MinY, maxX, MaxY
         
         'Normalize all points against the minimum values
         Dim i As Long
         For i = 0 To UBound(dstPoints)
             dstPoints(i).x = dstPoints(i).x + (normalizeX - minX)
-            dstPoints(i).y = dstPoints(i).y + (normalizeY - minY)
+            dstPoints(i).y = dstPoints(i).y + (normalizeY - MinY)
         Next i
         
     End If
@@ -1377,23 +1381,95 @@ Friend Sub getLayerBoundaryRect(ByRef dstRect As RECTF, Optional ByVal applyTran
     Me.getLayerCornerCoordinates layerCorners, applyTranslation, normalizeToNewOrigin, normalizeX, normalizeY
     
     'Find the largest and smallest (x, y) coordinates
-    Dim minX As Single, maxX As Single, minY As Single, maxY As Single
-    findMaxMinOfPointFs layerCorners, 4, minX, minY, maxX, maxY
+    Dim minX As Single, maxX As Single, MinY As Single, MaxY As Single
+    findMaxMinOfPointFs layerCorners, 4, minX, MinY, maxX, MaxY
     
     'The difference between max and min values define the boundary rect for this layer
     With dstRect
         .Left = minX
-        .Top = minY
+        .Top = MinY
         .Width = maxX - minX
-        .Height = maxY - minY
+        .Height = MaxY - MinY
     End With
     
     Debug.Print dstRect.Left, dstRect.Top, dstRect.Width, dstRect.Height
     
 End Sub
 
+'Generally speaking, extracting the portion of this layer's DIB relevant to the image is really easy - just BitBlt it directly from
+' the layer DIB itself!  Unfortunately, PD 7.0 greatly complicates this by introducing non-destructive affine transformations, which
+' can make the layer occupy a non-rectangular portion of the image.
+'
+'This helper function can be used to retrieve a DIB - at 100% zoom - that contains an affine-transformed copy of the layer DIB and
+' new (x, y) offsets (which are relevant for things like rotation, as the affine-transformed image will have negative offsets
+' relative to the "pure" layer offsets).  Note that the destination (x, y) values will already have been transformed to integers
+' for you; this function will automatically apply offsets so that sub-pixel positioning is respected.
+'
+'I have optimized this function as much as I physically can.  Separate paths are used depending on the complexity of the transform
+' (if the only active non-destructive transform is scaling, we can bypass certain steps, for example).
+Friend Sub getAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Long, ByRef dstY As Long)
+    
+    'Retrieve a copy of our own boundary rect
+    Dim layerRect As RECTF
+    Me.getLayerBoundaryRect layerRect, True, False
+                    
+    'Next, calculate integer variants of our transformed width and height.  This is important for making sure
+    ' we don't cut off any floating-point portions of the image boundaries.
+    Dim intLayerWidth As Long, intLayerHeight As Long
+    intLayerWidth = Int(layerRect.Width + 0.999)
+    intLayerHeight = Int(layerRect.Height + 0.999)
+                    
+    'Because PD's manual compositor operates on integer coordinates, we must forcibly offset layer pixels by any
+    ' fractional amounts now, so rendering is identical between manual compositioning and GDI+ compositing
+    Dim normalizeX As Single, normalizeY As Single
+    normalizeX = layerRect.Left - Int(layerRect.Left)
+    normalizeY = layerRect.Top - Int(layerRect.Top)
+                    
+    'If the temporary image is larger than the base layer, we can limit it to the base layer's size to save a bit of
+    ' memory and processing time.
+    '
+    '(TODO: figure out how to implement this.  It's tricky, because we need to consider the many potential situations in
+    '       which the affine-transformed image extends beyond the base image, particularly when applying non-destructive
+    '       effects in the second branch of this function!))
+    'If intLayerWidth > dstDIB.getDIBWidth Then
+    '    normalizeX = dstDIB.getDIBWidth - intLayerWidth
+    '    intLayerWidth = dstDIB.getDIBWidth
+    'End If
+    '
+    'If intLayerHeight > dstDIB.getDIBHeight Then
+    '    normalizeY = dstDIB.getDIBHeight - intLayerHeight
+    '    intLayerHeight = dstDIB.getDIBHeight
+    'End If
+    
+    'Next, prepare the destination DIB.  If at all possible, we try to optimize this handling by reusing DIBs that are already
+    ' an acceptable size.
+    If (dstDIB.getDIBWidth <> intLayerWidth) Or (dstDIB.getDIBHeight <> intLayerHeight) Then
+        dstDIB.createBlank intLayerWidth, intLayerHeight, 32, 0, 0
+        dstDIB.setInitialAlphaPremultiplicationState True
+    Else
+        dstDIB.resetDIB
+    End If
+    
+    'Copy a resized chunk of the source image onto the temporary DIB.  (Note that this branches according to the
+    ' presence of more complicated affine functions, which require a parallelogram-style blit process).
+    If Me.affineTransformsActive(False) Then
+        Me.getLayerCornerCoordinates m_PlgPoints, True, True, normalizeX, normalizeY
+        GDI_Plus.GDIPlus_PlgBlt dstDIB, m_PlgPoints, Me.layerDIB, 0, 0, Me.getLayerWidth(False), Me.getLayerHeight(False), Me.getLayerOpacity / 100, Me.getLayerResizeQuality_GDIPlus
+    Else
+        GDI_Plus.GDIPlus_StretchBlt dstDIB, normalizeX, normalizeY, Me.getLayerWidth(True), Me.getLayerHeight(True), Me.layerDIB, 0, 0, Me.getLayerWidth(False), Me.getLayerHeight(False), Me.getLayerOpacity / 100, Me.getLayerResizeQuality_GDIPlus
+    End If
+    
+    'Supply x and y offsets as well
+    dstX = Int(layerRect.Left)
+    dstY = Int(layerRect.Top)
+    
+End Sub
+
+'If one or more affine transformations are active (rotation, skew, etc), you can call this function to retrieve three corner points
+' of the layer *IN IMAGE COORDINATES*.
+
 'Given an array with at least upper bound 2, find the max and min x/y values.
-Private Sub findMaxMinOfPointFs(ByRef srcPoints() As POINTFLOAT, ByVal numOfPoints As Long, ByRef minX As Single, ByRef minY As Single, ByRef maxX As Single, ByRef maxY As Single)
+Private Sub findMaxMinOfPointFs(ByRef srcPoints() As POINTFLOAT, ByVal numOfPoints As Long, ByRef minX As Single, ByRef MinY As Single, ByRef maxX As Single, ByRef MaxY As Single)
     
     If srcPoints(0).x < srcPoints(1).x Then
         minX = srcPoints(0).x
@@ -1404,21 +1480,21 @@ Private Sub findMaxMinOfPointFs(ByRef srcPoints() As POINTFLOAT, ByVal numOfPoin
     End If
     
     If srcPoints(0).y < srcPoints(1).y Then
-        minY = srcPoints(0).y
-        maxY = srcPoints(1).y
+        MinY = srcPoints(0).y
+        MaxY = srcPoints(1).y
     Else
-        minY = srcPoints(1).y
-        maxY = srcPoints(0).y
+        MinY = srcPoints(1).y
+        MaxY = srcPoints(0).y
     End If
     
     Dim i As Long
     For i = 2 To numOfPoints - 1
         
         If srcPoints(i).x < minX Then minX = srcPoints(i).x
-        If srcPoints(i).y < minY Then minY = srcPoints(i).y
+        If srcPoints(i).y < MinY Then MinY = srcPoints(i).y
         
         If srcPoints(i).x > maxX Then maxX = srcPoints(i).x
-        If srcPoints(i).y > maxY Then maxY = srcPoints(i).y
+        If srcPoints(i).y > MaxY Then MaxY = srcPoints(i).y
         
     Next i
     
@@ -1510,6 +1586,9 @@ Private Sub Class_Initialize()
     
     'By default, vector layers do not have a backer DIB generated
     m_VectorDIBSynched = False
+    
+    'Prep a default set of parallelogram corner points, in case the user decides to activate non-destructive transforms
+    ReDim m_PlgPoints(0 To 3) As POINTFLOAT
     
 End Sub
 
