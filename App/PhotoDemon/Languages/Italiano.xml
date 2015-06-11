@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.46</langversion>
+<langversion>6.7.47</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -13705,6 +13705,26 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- BEGIN text for VBP_ToolPanel_MoveSize.frm (toolpanel_MoveSize) -->
 
 <phrase>
+<original>layer position (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>angle test</original>
 <translation></translation>
 </phrase>
@@ -13737,26 +13757,6 @@ o il menù File > Apri e File > Importa.</translation>
 <phrase>
 <original>display options</original>
 <translation>opzioni di visualizzazione</translation>
-</phrase>
-
-<phrase>
-<original>layer position (x, y)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize quality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize options</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -14054,6 +14054,12 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- pdUniscribeItem.cls contains 0 phrases. -->
 
 <!-- END text for pdUniscribeItem.cls-->
+
+<!-- BEGIN text for pdGraphicsMatrix.cls -->
+
+<!-- pdGraphicsMatrix.cls contains 0 phrases. -->
+
+<!-- END text for pdGraphicsMatrix.cls-->
 
 <!-- Automatic text extraction complete. -->
 

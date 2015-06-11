@@ -91,7 +91,7 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             If CBool(toolpanel_MoveSize.chkLayerBorder) Then
                 
                 'Draw layer borders
-                Drawing.drawLayerBoundaries srcImage.getActiveLayerIndex
+                Drawing.drawLayerBoundaries srcImage.getActiveLayer
                 
             End If
             
@@ -99,7 +99,7 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             If CBool(toolpanel_MoveSize.chkLayerNodes) Then
                 
                 'Draw layer nodes
-                Drawing.drawLayerNodes srcImage.getActiveLayerIndex
+                Drawing.drawLayerNodes srcImage.getActiveLayer
                 
             End If
         
@@ -113,12 +113,11 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             End If
             
         'Text tools currently draw layer boundaries at all times; I'm working on this (TODO!)
-                'The nav tool provides two render options at present: draw layer borders, and draw layer transform nodes
         Case VECTOR_TEXT, VECTOR_FANCYTEXT
             
             If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
-                Drawing.drawLayerBoundaries srcImage.getActiveLayerIndex
-                Drawing.drawLayerNodes srcImage.getActiveLayerIndex
+                Drawing.drawLayerBoundaries srcImage.getActiveLayer
+                Drawing.drawLayerNodes srcImage.getActiveLayer
             End If
             
     End Select

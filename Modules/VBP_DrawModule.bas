@@ -516,12 +516,52 @@ Public Sub convertImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef s
     
     'If the caller wants the coordinates bound-checked, apply it now
     If forceInBounds Then
-        If canvasX < srcImage.imgViewport.targetLeft Then imgX = srcImage.imgViewport.targetLeft
-        If canvasY < srcImage.imgViewport.targetTop Then imgY = srcImage.imgViewport.targetTop
-        If canvasX >= srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth Then imgX = srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth - 1
-        If canvasY >= srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight Then imgY = srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight - 1
+        If canvasX < srcImage.imgViewport.targetLeft Then canvasX = srcImage.imgViewport.targetLeft
+        If canvasY < srcImage.imgViewport.targetTop Then canvasY = srcImage.imgViewport.targetTop
+        If canvasX >= srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth Then canvasX = srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth - 1
+        If canvasY >= srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight Then canvasY = srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight - 1
     End If
     
+End Sub
+
+'Given an array of (x,y) pairs set in the current image's coordinate space, convert each pair to the supplied viewport canvas space.
+Public Sub convertListOfImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef listOfPoints() As POINTFLOAT, Optional ByVal forceInBounds As Boolean = False)
+
+    If srcImage.imgViewport Is Nothing Then Exit Sub
+    
+    'Get the current zoom value from the source image
+    Dim zoomVal As Double
+    zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
+    
+    Dim canvasX As Double, canvasY As Double
+    
+    'Iterate through each point in turn; note that bounds are automatically detected, and there is not currently a way to override
+    ' this behavior.
+    Dim i As Long
+    For i = LBound(listOfPoints) To UBound(listOfPoints)
+    
+        'Calculate canvas x and y positions, while taking into account zoom and scroll values
+        canvasX = (listOfPoints(i).x - srcCanvas.getScrollValue(PD_HORIZONTAL)) * zoomVal + srcImage.imgViewport.targetLeft
+        canvasY = (listOfPoints(i).y - srcCanvas.getScrollValue(PD_VERTICAL)) * zoomVal + srcImage.imgViewport.targetTop
+        
+        'Because the viewport is no longer assumed at position (0, 0) (due to the status bar and possibly
+        ' rulers), add any necessary offsets to the mouse coordinates before further calculations happen.
+        canvasY = canvasY + srcImage.imgViewport.getTopOffset
+        
+        'If the caller wants the coordinates bound-checked, apply it now
+        If forceInBounds Then
+            If canvasX < srcImage.imgViewport.targetLeft Then canvasX = srcImage.imgViewport.targetLeft
+            If canvasY < srcImage.imgViewport.targetTop Then canvasY = srcImage.imgViewport.targetTop
+            If canvasX >= srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth Then canvasX = srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth - 1
+            If canvasY >= srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight Then canvasY = srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight - 1
+        End If
+        
+        'Store the updated coordinate pair
+        listOfPoints(i).x = canvasX
+        listOfPoints(i).y = canvasY
+    
+    Next i
+        
 End Sub
 
 'Given a source hWnd and a destination hWnd, translate a coordinate pair between their unique coordinate spaces.  Note that
@@ -591,77 +631,65 @@ Public Sub getCanvasRectForLayerF(ByVal layerIndex As Long, ByRef dstRect As REC
 End Sub
 
 'On the current viewport, render lines around the active layer
-Public Sub drawLayerBoundaries(ByVal layerIndex As Long)
+Public Sub drawLayerBoundaries(ByRef srcLayer As pdLayer)
 
-    'Start by filling a rect with the current layer boundaries, but translated to the canvas coordinate system
-    Dim layerCanvasRect As RECT
-    getCanvasRectForLayer layerIndex, layerCanvasRect, True
+    'In the old days, we could get away with assuming layer boundaries form a rectangle, but as of PD 7.0, affine transforms
+    ' mean this is no longer guaranteed.
+    '
+    'So instead of filling a rect, we must retrieve the four layer corner coordinates as floating-point pairs.
+    Dim layerCorners() As POINTFLOAT
+    ReDim layerCorners(0 To 3) As POINTFLOAT
     
-    'Next, draw a rectangle to the coordinates we provided
+    srcLayer.getLayerCornerCoordinates layerCorners, True, False
     
-    'Store the destination DC to a local variable
-    Dim dstDC As Long
-    dstDC = FormMain.mainCanvas(0).hDC
+    'Next, convert each corner from image coordinate space to the active viewport coordinate space
+    Drawing.convertListOfImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), layerCorners, False
     
-    'Since we'll be using the API to draw our selection area, we need to initialize several brushes
-    Dim hPen As Long, hOldPen As Long
+    'Pass the list of coordinates to a pdGraphicsPath object; it will handle the actual UI rendering
+    Dim tmpPath As pdGraphicsPath
+    Set tmpPath = New pdGraphicsPath
     
-    hPen = CreatePen(PS_DOT, 0, RGB(0, 0, 0))
-    hOldPen = SelectObject(dstDC, hPen)
+    'Note that we must add the layer boundary lines manually - otherwise, the top-right and bottom-left corners will connect
+    ' due to the way srcLayer.getLayerCornerCoordinates returns the points!
+    tmpPath.addLine layerCorners(0).x, layerCorners(0).y, layerCorners(1).x, layerCorners(1).y
+    tmpPath.addLine layerCorners(1).x, layerCorners(1).y, layerCorners(3).x, layerCorners(3).y
+    tmpPath.addLine layerCorners(3).x, layerCorners(3).y, layerCorners(2).x, layerCorners(2).y
+    tmpPath.addLine layerCorners(2).x, layerCorners(2).y, layerCorners(0).x, layerCorners(0).y
     
-    'Get a transparent brush
-    Dim hBrush As Long, hOldBrush As Long
-    hBrush = GetStockObject(NULL_BRUSH)
-    hOldBrush = SelectObject(dstDC, hBrush)
+    'Render the final UI
+    tmpPath.strokePathToDIB_UIStyle Nothing, FormMain.mainCanvas(0).hDC
     
-    'Change the rasterOp to XOR (this will invert the line)
-    SetROP2 dstDC, vbSrcInvert
-                
-    'Draw the rectangle
-    With layerCanvasRect
-        Rectangle dstDC, .Left, .Top, .Right, .Bottom
-    End With
-    
-    'Restore the normal COPY rOp
-    SetROP2 dstDC, vbSrcCopy
-    
-    'Remove the brush from the DC
-    SelectObject dstDC, hOldBrush
-    DeleteObject hBrush
-    
-    'Remove the pen from the DC
-    SelectObject dstDC, hOldPen
-    DeleteObject hPen
-
 End Sub
 
 'On the current viewport, render standard PD transformation nodes atop the active layer.
 ' (At present, only the corners are marked.  In the future, rotation may also be added.)
-Public Sub drawLayerNodes(ByVal layerIndex As Long)
+Public Sub drawLayerNodes(ByRef srcLayer As pdLayer)
 
-    'Start by filling a rect with the current layer boundaries, but translated to the canvas coordinate system
-    Dim layerCanvasRect As RECTF
-    getCanvasRectForLayerF layerIndex, layerCanvasRect, True
+    'In the old days, we could get away with assuming layer boundaries form a rectangle, but as of PD 7.0, affine transforms
+    ' mean this is no longer guaranteed.
+    '
+    'So instead of filling a rect, we must retrieve the four layer corner coordinates as floating-point pairs.
+    Dim layerCorners() As POINTFLOAT
+    ReDim layerCorners(0 To 3) As POINTFLOAT
     
-    'Draw transform nodes around the layer
-    Dim circRadius As Long
+    srcLayer.getLayerCornerCoordinates layerCorners, True, False
+    
+    'Next, convert each corner from image coordinate space to the active viewport coordinate space
+    Drawing.convertListOfImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), layerCorners, False
+    
+    Dim circRadius As Long, circAlpha As Long
     circRadius = 7
-    
-    Dim circAlpha As Long
     circAlpha = 190
     
-    'Store the destination DC to a local variable
     Dim dstDC As Long
     dstDC = FormMain.mainCanvas(0).hDC
     
     'Use GDI+ to render four corner circles
-    With layerCanvasRect
-        GDIPlusDrawCanvasCircle dstDC, .Left, .Top, circRadius, circAlpha
-        GDIPlusDrawCanvasCircle dstDC, .Left + .Width, .Top, circRadius, circAlpha
-        GDIPlusDrawCanvasCircle dstDC, .Left + .Width, .Top + .Height, circRadius, circAlpha
-        GDIPlusDrawCanvasCircle dstDC, .Left, .Top + .Height, circRadius, circAlpha
-    End With
-
+    GDIPlusDrawCanvasCircle dstDC, layerCorners(0).x, layerCorners(0).y, circRadius, circAlpha
+    GDIPlusDrawCanvasCircle dstDC, layerCorners(1).x, layerCorners(1).y, circRadius, circAlpha
+    GDIPlusDrawCanvasCircle dstDC, layerCorners(2).x, layerCorners(2).y, circRadius, circAlpha
+    GDIPlusDrawCanvasCircle dstDC, layerCorners(3).x, layerCorners(3).y, circRadius, circAlpha
+    
 End Sub
 
 'Need a quick and dirty DC for something?  Call this.  (Just remember to free the DC when you're done!)

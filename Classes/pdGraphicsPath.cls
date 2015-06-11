@@ -346,7 +346,7 @@ End Sub
 ' BEGIN: DRAWING FUNCTIONS
 
 'Stroke the current path, using the default arrangement for PD's current theme
-Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB)
+Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB, Optional ByVal useThisDCInstead As Long = 0)
 
     'PD's default behavior for UI-related paths is to stroke a path twice; once with a thickness of 2px
     ' (which actually ends up being more like 1px along the path, and 0.5 px along either side)
@@ -358,7 +358,12 @@ Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB)
     
     'Obtain a GDI+ handle to the image
     Dim hGraphics As Long
-    GdipCreateFromHDC dstDIB.getDIBDC, hGraphics
+    
+    If useThisDCInstead <> 0 Then
+        GdipCreateFromHDC useThisDCInstead, hGraphics
+    Else
+        GdipCreateFromHDC dstDIB.getDIBDC, hGraphics
+    End If
     
     'Activate AA
     GdipSetSmoothingMode hGraphics, SmoothingModeAntiAlias

@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.46</langversion>
+<langversion>6.7.47</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -13709,6 +13709,26 @@ or os menus File> Open e File> Import.</translation>
 <!-- BEGIN text for VBP_ToolPanel_MoveSize.frm (toolpanel_MoveSize) -->
 
 <phrase>
+<original>layer position (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>angle test</original>
 <translation></translation>
 </phrase>
@@ -13741,26 +13761,6 @@ or os menus File> Open e File> Import.</translation>
 <phrase>
 <original>display options</original>
 <translation>opções de exibição</translation>
-</phrase>
-
-<phrase>
-<original>layer position (x, y)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize quality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize options</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -14058,6 +14058,12 @@ or os menus File> Open e File> Import.</translation>
 <!-- pdUniscribeItem.cls contains 0 phrases. -->
 
 <!-- END text for pdUniscribeItem.cls-->
+
+<!-- BEGIN text for pdGraphicsMatrix.cls -->
+
+<!-- pdGraphicsMatrix.cls contains 0 phrases. -->
+
+<!-- END text for pdGraphicsMatrix.cls-->
 
 <!-- Automatic text extraction complete. -->
 

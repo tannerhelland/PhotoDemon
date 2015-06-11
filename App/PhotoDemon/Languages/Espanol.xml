@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.49</langversion>
+<langversion>6.7.50</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -13709,6 +13709,26 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <!-- BEGIN text for VBP_ToolPanel_MoveSize.frm (toolpanel_MoveSize) -->
 
 <phrase>
+<original>layer position (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>angle test</original>
 <translation></translation>
 </phrase>
@@ -13741,26 +13761,6 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <phrase>
 <original>display options</original>
 <translation>opciones de visualización</translation>
-</phrase>
-
-<phrase>
-<original>layer position (x, y)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize quality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize options</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -14058,6 +14058,12 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <!-- pdUniscribeItem.cls contains 0 phrases. -->
 
 <!-- END text for pdUniscribeItem.cls-->
+
+<!-- BEGIN text for pdGraphicsMatrix.cls -->
+
+<!-- pdGraphicsMatrix.cls contains 0 phrases. -->
+
+<!-- END text for pdGraphicsMatrix.cls-->
 
 <!-- Automatic text extraction complete. -->
 
