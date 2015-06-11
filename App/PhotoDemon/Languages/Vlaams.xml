@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.46</langversion>
+<langversion>6.7.47</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -13708,6 +13708,26 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <!-- BEGIN text for VBP_ToolPanel_MoveSize.frm (toolpanel_MoveSize) -->
 
 <phrase>
+<original>layer position (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>angle test</original>
 <translation></translation>
 </phrase>
@@ -13740,26 +13760,6 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <phrase>
 <original>display options</original>
 <translation>weergaveopties</translation>
-</phrase>
-
-<phrase>
-<original>layer position (x, y)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize quality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize options</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -14057,6 +14057,12 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <!-- pdUniscribeItem.cls contains 0 phrases. -->
 
 <!-- END text for pdUniscribeItem.cls-->
+
+<!-- BEGIN text for pdGraphicsMatrix.cls -->
+
+<!-- pdGraphicsMatrix.cls contains 0 phrases. -->
+
+<!-- END text for pdGraphicsMatrix.cls-->
 
 <!-- Automatic text extraction complete. -->
 

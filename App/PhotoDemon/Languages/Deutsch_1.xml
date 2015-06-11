@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.46</langversion>
+<langversion>6.7.47</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -13707,6 +13707,26 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <!-- BEGIN text for VBP_ToolPanel_MoveSize.frm (toolpanel_MoveSize) -->
 
 <phrase>
+<original>layer position (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>angle test</original>
 <translation></translation>
 </phrase>
@@ -13739,26 +13759,6 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <phrase>
 <original>display options</original>
 <translation>Anzeige</translation>
-</phrase>
-
-<phrase>
-<original>layer position (x, y)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize quality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize options</original>
-<translation></translation>
 </phrase>
 
 <phrase>
@@ -14056,6 +14056,12 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <!-- pdUniscribeItem.cls contains 0 phrases. -->
 
 <!-- END text for pdUniscribeItem.cls-->
+
+<!-- BEGIN text for pdGraphicsMatrix.cls -->
+
+<!-- pdGraphicsMatrix.cls contains 0 phrases. -->
+
+<!-- END text for pdGraphicsMatrix.cls-->
 
 <!-- Automatic text extraction complete. -->
 
