@@ -524,6 +524,56 @@ Public Sub convertImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef s
     
 End Sub
 
+'Given an (x,y) pair on the current image, convert the value to coordinates relative to the current layer.  This is especially relevant
+' if the layer has one or more non-destructive affine transforms active.
+Public Function convertImageCoordsToLayerCoords(ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByVal imgX As Single, ByVal imgY As Single, ByRef layerX As Single, ByRef layerY As Single) As Boolean
+
+    If srcImage Is Nothing Then Exit Function
+    If srcLayer Is Nothing Then Exit Function
+    
+    'If the layer has one or more active affine transforms, this step becomes complicated.
+    If srcLayer.affineTransformsActive(False) Then
+    
+        'Create a copy of the layer's transformation matrix
+        Dim tmpMatrix As pdGraphicsMatrix
+        srcLayer.getCopyOfLayerTransformationMatrix tmpMatrix
+        
+        'Invert the matrix
+        If tmpMatrix.InvertMatrix() Then
+            
+            'We now need to convert the image coordinates against the layer transformation matrix
+            tmpMatrix.applyMatrixToXYPair imgX, imgY
+            
+            'In order for the matrix conversion to work, it has to offset coordinates by the current layer offset.  (Rotation is
+            ' particularly important in that regard, as the center-point is crucial.)  As such, we now need to undo that translation.
+            layerX = imgX + srcLayer.getLayerOffsetX
+            layerY = imgY + srcLayer.getLayerOffsetY
+            
+            convertImageCoordsToLayerCoords = True
+        
+        'If we can't invert the matrix, we're in trouble.  Copy out the layer coordinates as a failsafe.
+        Else
+            
+            layerX = imgX
+            layerY = imgY
+            
+            convertImageCoordsToLayerCoords = False
+            
+        End If
+    
+    'If the layer doesn't have affine transforms active, this step is easy.
+    Else
+    
+        'Layer coordinates are identical to image coordinates
+        layerX = imgX
+        layerY = imgY
+        
+        convertImageCoordsToLayerCoords = True
+    
+    End If
+    
+End Function
+
 'Given an array of (x,y) pairs set in the current image's coordinate space, convert each pair to the supplied viewport canvas space.
 Public Sub convertListOfImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef listOfPoints() As POINTFLOAT, Optional ByVal forceInBounds As Boolean = False)
 

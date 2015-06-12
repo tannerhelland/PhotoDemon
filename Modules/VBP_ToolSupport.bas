@@ -23,7 +23,8 @@ Public Const PD_TEXT_TOOL_CREATED_NEW_LAYER As Long = &H1
 Private m_InitHScroll As Long, m_InitVScroll As Long
 
 'The move tool uses these values to store the original layer offset
-Private m_InitX As Double, m_InitY As Double
+Private m_InitXOffset As Double, m_InitYOffset As Double
+Private m_InitLayerCoords(0 To 3) As POINTFLOAT
 
 'The move tool uses these values to store the original layer canvas x/y modifiers
 Private m_InitCanvasXMod As Double, m_InitCanvasYMod As Double
@@ -73,8 +74,8 @@ End Sub
 Public Sub setInitialLayerOffsets(ByRef srcLayer As pdLayer, Optional ByVal relevantPOI As Long = -1)
     
     'Store the layer's initial offset values (before any MouseMove events have occurred)
-    m_InitX = srcLayer.getLayerOffsetX
-    m_InitY = srcLayer.getLayerOffsetY
+    m_InitXOffset = srcLayer.getLayerOffsetX
+    m_InitYOffset = srcLayer.getLayerOffsetY
     
     'Store the layer's initial canvas x/y offset values
     m_InitCanvasXMod = srcLayer.getLayerCanvasXModifier
@@ -82,6 +83,9 @@ Public Sub setInitialLayerOffsets(ByRef srcLayer As pdLayer, Optional ByVal rele
     
     'If a relevant POI was supplied, store it as well
     curPOI = relevantPOI
+    
+    'Make a copy of the current layer coordinates in layer space, as well
+    srcLayer.getLayerCornerCoordinates m_InitLayerCoords
     
 End Sub
 
@@ -177,10 +181,18 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
     convertCanvasCoordsToImageCoords srcCanvas, srcImage, initX, initY, initImgX, initImgY
     convertCanvasCoordsToImageCoords srcCanvas, srcImage, curX, curY, curImgX, curImgY
     
+    'Next, convert the image x/y pairs to the layer coordinate space.
+    Dim initLayerX As Single, initLayerY As Single, curLayerX As Single, curLayerY As Single
+    convertImageCoordsToLayerCoords srcImage, srcImage.getActiveLayer, initImgX, initImgY, initLayerX, initLayerY
+    convertImageCoordsToLayerCoords srcImage, srcImage.getActiveLayer, curImgX, curImgY, curLayerX, curLayerY
+    
     'Calculate offsets between the initial mouse coordinates and the current ones
-    Dim hOffset As Long, vOffset As Long
-    hOffset = curImgX - initImgX
-    vOffset = curImgY - initImgY
+    Dim hOffsetLayer As Long, vOffsetLayer As Long, hOffsetImage As Long, vOffsetImage As Long
+    hOffsetLayer = curLayerX - initLayerX
+    vOffsetLayer = curLayerY - initLayerY
+    
+    hOffsetImage = curImgX - initImgX
+    vOffsetImage = curImgY - initImgY
     
     'To help us more easily process the transformation's effect on the layer, store the layer's original position
     ' and size inside a RECT.  Note that we make two copies: one with canvas modifications (such as dynamic x/y
@@ -216,8 +228,13 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
                 
             '0: the mouse is dragging the top-left corner of the layer
             Case 0
-                newX = m_InitX + hOffset
-                newY = m_InitY + vOffset
+            
+                newX = m_InitXOffset + hOffsetImage
+                newY = m_InitYOffset + vOffsetImage
+                
+                'newX = m_InitLayerCoords(0).x + hOffsetLayer
+                'newY = m_InitLayerCoords(0).y + vOffsetLayer
+                
                 If newX > origLayerRectModified.Right - 1 Then newX = origLayerRectModified.Right - 1
                 If newY > origLayerRectModified.Bottom - 1 Then newY = origLayerRectModified.Bottom - 1
                 .setLayerOffsetX newX
@@ -233,10 +250,10 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
             
             '1: top-right corner
             Case 1
-                newY = m_InitY + vOffset
+                newY = m_InitYOffset + vOffsetLayer
                 If newY > origLayerRectModified.Bottom - 1 Then newY = origLayerRectModified.Bottom - 1
                 .setLayerOffsetY newY
-                .setLayerCanvasXModifier (curImgX - origLayerRect.Left) / origWidth
+                .setLayerCanvasXModifier (curLayerX - origLayerRect.Left) / origWidth
                 .setLayerCanvasYModifier (origLayerRectModified.Bottom - .getLayerOffsetY) / origHeight
                 
                 'If the user is pressing the SHIFT key, lock the image's aspect ratio
@@ -244,27 +261,27 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
             
             '2: bottom-right
             Case 2
-                .setLayerCanvasXModifier (curImgX - origLayerRect.Left) / origWidth
-                .setLayerCanvasYModifier (curImgY - origLayerRect.Top) / origHeight
+                .setLayerCanvasXModifier (curLayerX - origLayerRect.Left) / origWidth
+                .setLayerCanvasYModifier (curLayerY - origLayerRect.Top) / origHeight
                 
                 'If the user is pressing the SHIFT key, lock the image's aspect ratio
                 If isShiftDown Then .setLayerCanvasYModifier .getLayerCanvasXModifier
             
             '3: bottom-left
             Case 3
-                newX = m_InitX + hOffset
+                newX = m_InitXOffset + hOffsetLayer
                 If newX > origLayerRectModified.Right - 1 Then newX = origLayerRectModified.Right - 1
                 .setLayerOffsetX newX
                 .setLayerCanvasXModifier (origLayerRectModified.Right - .getLayerOffsetX) / origWidth
-                .setLayerCanvasYModifier (curImgY - origLayerRect.Top) / origHeight
+                .setLayerCanvasYModifier (curLayerY - origLayerRect.Top) / origHeight
                 
                 'If the user is pressing the SHIFT key, lock the image's aspect ratio
                 If isShiftDown Then .setLayerCanvasYModifier .getLayerCanvasXModifier
             
             '4: interior of the layer (e.g. move the layer instead of resize it)
             Case 4
-                .setLayerOffsetX m_InitX + hOffset
-                .setLayerOffsetY m_InitY + vOffset
+                .setLayerOffsetX m_InitXOffset + hOffsetImage
+                .setLayerOffsetY m_InitYOffset + vOffsetImage
             
         End Select
         
