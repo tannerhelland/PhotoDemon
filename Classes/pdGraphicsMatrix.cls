@@ -42,11 +42,14 @@ End Enum
 #End If
 
 Private Declare Function GdipCreateMatrix Lib "gdiplus" (ByRef dstMatrix As Long) As Long
+Private Declare Function GdipCloneMatrix Lib "gdiplus" (ByVal srcMatrix As Long, ByRef dstMatrix As Long) As Long
 Private Declare Function GdipDeleteMatrix Lib "gdiplus" (ByVal hMatrix As Long) As Long
 Private Declare Function GdipRotateMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal rotateAngle As Single, ByVal order As MatrixOrder) As Long
 Private Declare Function GdipScaleMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal scaleX As Single, ByVal scaleY As Single, ByVal order As MatrixOrder) As Long
 Private Declare Function GdipTranslateMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal offsetX As Single, ByVal offsetY As Single, ByVal order As MatrixOrder) As Long
 Private Declare Function GdipTransformMatrixPoints Lib "gdiplus" (ByVal hMatrix As Long, ByVal ptrToFirstPointF As Long, ByVal numOfPoints As Long) As Long
+Private Declare Function GdipIsMatrixInvertible Lib "gdiplus" (ByVal hMatrix As Long, ByRef dstResult As Long) As Long
+Private Declare Function GdipInvertMatrix Lib "gdiplus" (ByVal hMatrix As Long) As Long
 
 'Persistent handle to the matrix associated with this instance
 Private m_MatrixHandle As Long
@@ -56,6 +59,19 @@ Private m_MatrixHandle As Long
 Public Function getMatrixHandle() As Long
     getMatrixHandle = m_MatrixHandle
 End Function
+
+Public Sub createFromExistingHandle(ByVal srcHandle As Long)
+    deleteMatrix
+    GdipCloneMatrix srcHandle, m_MatrixHandle
+End Sub
+
+'Return a full copy of this object
+Public Sub getCopyOfMatrix(ByRef dstMatrix As pdGraphicsMatrix)
+    
+    If dstMatrix Is Nothing Then Set dstMatrix = New pdGraphicsMatrix
+    dstMatrix.createFromExistingHandle m_MatrixHandle
+    
+End Sub
 
 'Apply a translation amount to the matrix; any x/y amounts are valid
 Friend Sub TranslateMatrix(ByVal xDistance As Single, ByVal yDistance As Single, Optional ByVal transformOrder As MatrixOrder = MatrixOrderAppend)
@@ -116,6 +132,21 @@ Friend Sub applyMatrixToXYPair(ByRef srcX As Single, ByRef srcY As Single)
     
 End Sub
 
+'Invert the matrix.  Note that this is a function, and it returns FALSE if the matrix is not invertible.  (This can happen if
+' the matrix has been set to all zeroes, for example, by bogus scaling code.)
+Public Function InvertMatrix() As Boolean
+
+    'Make sure the matrix is invertible
+    Dim retMatrixInvertible As Long
+    If GdipIsMatrixInvertible(m_MatrixHandle, retMatrixInvertible) = 0 Then
+        InvertMatrix = CBool(retMatrixInvertible = 1)
+    Else
+        InvertMatrix = False
+    End If
+    
+    If InvertMatrix Then GdipInvertMatrix m_MatrixHandle
+    
+End Function
 
 'Reset the matrix.  Note that this will create a new matrix as necessary.
 Public Sub ResetToIdentityMatrix()

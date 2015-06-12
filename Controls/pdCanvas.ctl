@@ -106,9 +106,9 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   10
          Top             =   15
          Width           =   660
-         _extentx        =   1164
-         _extenty        =   556
-         fontsize        =   9
+         _ExtentX        =   1164
+         _ExtentY        =   556
+         FontSize        =   9
       End
       Begin PhotoDemon.pdComboBox cmbZoom 
          Height          =   360
@@ -116,22 +116,22 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   9
          Top             =   15
          Width           =   1290
-         _extentx        =   2275
-         _extenty        =   635
-         fontsize        =   9
+         _ExtentX        =   2275
+         _ExtentY        =   635
+         FontSize        =   9
       End
       Begin PhotoDemon.pdLabel lblImgSize 
          Height          =   210
          Left            =   3240
          Top             =   60
          Width           =   345
-         _extentx        =   609
-         _extenty        =   370
-         backcolor       =   -2147483626
-         caption         =   "size:"
-         fontsize        =   9
-         layout          =   2
-         usecustombackcolor=   -1
+         _ExtentX        =   609
+         _ExtentY        =   370
+         BackColor       =   -2147483626
+         Caption         =   "size:"
+         FontSize        =   9
+         Layout          =   2
+         UseCustomBackColor=   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdZoomFit 
          Height          =   345
@@ -139,9 +139,9 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   5
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         backcolor       =   -2147483626
+         _ExtentX        =   688
+         _ExtentY        =   609
+         BackColor       =   -2147483626
       End
       Begin PhotoDemon.pdButtonToolbox cmdZoomOut 
          Height          =   345
@@ -149,10 +149,10 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   6
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         backcolor       =   -2147483626
-         autotoggle      =   -1
+         _ExtentX        =   688
+         _ExtentY        =   609
+         BackColor       =   -2147483626
+         AutoToggle      =   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdZoomIn 
          Height          =   345
@@ -160,10 +160,10 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   7
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         backcolor       =   -2147483626
-         autotoggle      =   -1
+         _ExtentX        =   688
+         _ExtentY        =   609
+         BackColor       =   -2147483626
+         AutoToggle      =   -1  'True
       End
       Begin PhotoDemon.pdButtonToolbox cmdImgSize 
          Height          =   345
@@ -171,36 +171,36 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   8
          Top             =   0
          Width           =   390
-         _extentx        =   688
-         _extenty        =   609
-         backcolor       =   -2147483626
-         autotoggle      =   -1
+         _ExtentX        =   688
+         _ExtentY        =   609
+         BackColor       =   -2147483626
+         AutoToggle      =   -1  'True
       End
       Begin PhotoDemon.pdLabel lblCoordinates 
          Height          =   210
          Left            =   5160
          Top             =   60
          Width           =   345
-         _extentx        =   609
-         _extenty        =   370
-         backcolor       =   -2147483626
-         caption         =   "size:"
-         fontsize        =   9
-         layout          =   2
-         usecustombackcolor=   -1
+         _ExtentX        =   609
+         _ExtentY        =   370
+         BackColor       =   -2147483626
+         Caption         =   "size:"
+         FontSize        =   9
+         Layout          =   2
+         UseCustomBackColor=   -1  'True
       End
       Begin PhotoDemon.pdLabel lblMessages 
          Height          =   210
          Left            =   6360
          Top             =   60
          Width           =   6825
-         _extentx        =   12039
-         _extenty        =   635
-         alignment       =   1
-         backcolor       =   -2147483626
-         caption         =   "(messages will appear here at run-time)"
-         fontsize        =   9
-         usecustombackcolor=   -1
+         _ExtentX        =   12039
+         _ExtentY        =   635
+         Alignment       =   1
+         BackColor       =   -2147483626
+         Caption         =   "(messages will appear here at run-time)"
+         FontSize        =   9
+         UseCustomBackColor=   -1  'True
       End
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
@@ -1125,11 +1125,16 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     ' (This is important if the user has zoomed into an image, and used scrollbars to look at a different part of it.)
     Dim imgX As Double, imgY As Double
     
-    'Display the image coordinates under the mouse pointer
+    'Note that displayImageCoordinates returns a copy of the displayed coordinates via imgX/Y
     displayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
     
+    'We also need a copy of the current mouse position relative to the active layer.  (This became necessary in PD 7.0, as layers
+    ' may have non-destructive affine transforms active, which means we can't blindly switch between image and layer coordinate spaces!)
+    Dim layerX As Single, layerY As Single
+    Drawing.convertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, imgX, imgY, layerX, layerY
+    
     'Display a relevant cursor for the current action
-    setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
+    setCanvasCursor pMouseUp, Button, x, y, imgX, imgY, layerX, layerY
     
     'Selection tools all use the same variable for tracking POIs
     Dim sCheck As Long
@@ -1150,7 +1155,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
         'Ask the current layer if these coordinates correspond to a point of interest.  We don't always use this return value,
         ' but a number of functions could potentially ask for it, so we cache it at MouseDown time and hang onto it until
         ' the mouse is released.
-        curPointOfInterest = pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
+        curPointOfInterest = pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(layerX, layerY)
         
         'Any further processing depends on which tool is currently active
         Select Case g_CurrentTool
@@ -1183,7 +1188,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 End If
                 
                 'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
-                setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
+                setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(layerX, layerY)
         
             'Standard selections
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO
@@ -1308,7 +1313,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 If userIsEditingCurrentTextLayer Then
                     
                     'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
-                    Tool_Support.setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
+                    Tool_Support.setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(layerX, layerY)
                     
                 'The user is not editing a text layer.  Create a new text layer now.
                 Else
@@ -1386,6 +1391,15 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     'Display the image coordinates under the mouse pointer
     displayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
     
+    'We also need a copy of the current mouse position relative to the active layer.  (This became necessary in PD 7.0, as layers
+    ' may have non-destructive affine transforms active, which means we can't blindly switch between image and layer coordinate spaces!)
+    '
+    'Note also that we refresh the layer transformation matrix if the mouse is not down
+    Dim layerX As Single, layerY As Single
+    Drawing.convertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, imgX, imgY, layerX, layerY
+    
+    Debug.Print imgX, imgY, layerX, layerY
+    
     'Check the left mouse button
     If lMouseDown Then
     
@@ -1456,9 +1470,9 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     
     'This else means the LEFT mouse button is NOT down
     Else
-    
+        
         'Display a relevant cursor for the current action
-        setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
+        setCanvasCursor pMouseUp, Button, x, y, imgX, imgY, layerX, layerY
     
         Select Case g_CurrentTool
         
@@ -1524,8 +1538,13 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
     Dim imgX As Double, imgY As Double
     displayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
     
+    'We also need a copy of the current mouse position relative to the active layer.  (This became necessary in PD 7.0, as layers
+    ' may have non-destructive affine transforms active, which means we can't blindly switch between image and layer coordinate spaces!)
+    Dim layerX As Single, layerY As Single
+    Drawing.convertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, imgX, imgY, layerX, layerY
+    
     'Display a relevant cursor for the current action
-    setCanvasCursor pMouseUp, Button, x, y, imgX, imgY
+    setCanvasCursor pMouseUp, Button, x, y, imgX, imgY, layerX, layerY
     
     'Check mouse buttons
     If Button = vbLeftButton Then
@@ -2004,11 +2023,6 @@ Private Sub UserControl_Initialize()
         Set cMouseEvents = New pdInputMouse
         cMouseEvents.addInputTracker picCanvas.hWnd, True, True, True, True
         
-        'This user control contains a lot of child controls whose key events we want to intercept (as they aren't designed to have
-        ' focus on their own).  Submit these controls to the tracker, so it knows to mass any key events into the UC's master
-        ' key handler function.
-        'cMouseEvents.addOverrideHwnds picStatusBar.hWnd, picScrollH.hWnd, picScrollV.hWnd, picProgressBar.hWnd, cmdZoomIn.hWnd, cmdZoomOut.hWnd, cmdZoomFit.hWnd, cmdImgSize.hWnd
-        
         'Enable key tracking as well
         Set cKeyEvents = New pdInputKeyboard
         cKeyEvents.createKeyboardTracker "pdCanvas", picCanvas.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_DELETE, VK_INSERT, VK_TAB, VK_SPACE, VK_ESCAPE, VK_BACK
@@ -2342,7 +2356,7 @@ End Function
 ' is added, make sure to visit this sub and make any necessary cursor changes!
 '
 'A lot of extra values are passed to this function.  Individual tools can use those at their leisure to customize their cursor requests.
-Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button As Integer, ByVal x As Single, ByVal y As Single, ByVal imgX As Double, ByVal imgY As Double)
+Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button As Integer, ByVal x As Single, ByVal y As Single, ByVal imgX As Double, ByVal imgY As Double, ByVal layerX As Double, ByVal layerY As Double)
 
     'Obviously, cursor setting is handled separately for each tool.
     Select Case g_CurrentTool
@@ -2366,7 +2380,7 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
         Case NAV_MOVE
             
             'When transforming layers, the cursor depends on several factors
-            Select Case pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
+            Select Case pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(layerX, layerY)
             
                 'Mouse is not over the current layer
                 Case -1
@@ -2528,7 +2542,7 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             'First, see if the active layer is a text layer.  If it is, we need to check for POIs.
             If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
             
-                Select Case pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(imgX, imgY)
+                Select Case pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(layerX, layerY)
     
                     'Mouse is not over the current layer
                     Case -1
