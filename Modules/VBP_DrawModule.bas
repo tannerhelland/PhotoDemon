@@ -534,7 +534,7 @@ Public Function convertImageCoordsToLayerCoords(ByRef srcImage As pdImage, ByRef
     'If the layer has one or more active affine transforms, this step becomes complicated.
     If srcLayer.affineTransformsActive(False) Then
     
-        'Create a copy of the layer's transformation matrix
+        'Create a copy of either the layer's transformation matrix, or a custom matrix if passed in
         Dim tmpMatrix As pdGraphicsMatrix
         srcLayer.getCopyOfLayerTransformationMatrix tmpMatrix
         
@@ -546,6 +546,8 @@ Public Function convertImageCoordsToLayerCoords(ByRef srcImage As pdImage, ByRef
             
             'In order for the matrix conversion to work, it has to offset coordinates by the current layer offset.  (Rotation is
             ' particularly important in that regard, as the center-point is crucial.)  As such, we now need to undo that translation.
+            ' In rare circumstances the caller can disable this behavior, for example while transforming a layer, because the original
+            ' rotation matrix must be used.
             layerX = imgX + srcLayer.getLayerOffsetX
             layerY = imgY + srcLayer.getLayerOffsetY
             
@@ -556,6 +558,8 @@ Public Function convertImageCoordsToLayerCoords(ByRef srcImage As pdImage, ByRef
             
             layerX = imgX
             layerY = imgY
+            
+            Debug.Print "WARNING! Transformation matrix could not be generated."
             
             convertImageCoordsToLayerCoords = False
             

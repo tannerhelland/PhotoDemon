@@ -502,6 +502,18 @@ Public Sub setLayerOffsetY(ByVal newOffsetY As Double)
     myLayerData.l_OffsetY = newOffsetY
 End Sub
 
+'Helper set function for setting layer offset and non-destructive width/height all at once.
+Friend Sub setOffsetsAndModifiersTogether(ByVal topLeftX As Single, ByVal topLeftY As Single, ByVal bottomRightX As Single, ByVal bottomRightY As Single)
+    
+    With myLayerData
+        .l_OffsetX = topLeftX
+        .l_OffsetY = topLeftY
+        .l_CanvasXModifier = (bottomRightX - topLeftX) / getLayerWidth(False)
+        .l_CanvasYModifier = (bottomRightY - topLeftY) / getLayerHeight(False)
+    End With
+    
+End Sub
+
 'Get/set layer size.  Note that the corresponding "set size" functions are ONLY VALID FOR VECTOR LAYERS; because size changes are destructive
 ' for raster layers, they must be handled manually.  (The exception, of course, being the non-destructive X/Y canvas modifier values, which exist
 ' for this explicit purpose!)
@@ -1293,7 +1305,7 @@ End Function
 ' 1) Top-Right
 ' 2) Bottom-Left
 ' 3 (optionally) Bottom-Right.
-Friend Sub getLayerCornerCoordinates(ByRef dstPoints() As POINTFLOAT, Optional ByVal includeOffsets As Boolean = True, Optional ByVal normalizeToNewOrigin As Boolean = False, Optional ByVal normalizeX As Single = 0#, Optional ByVal normalizeY As Single = 0#)
+Friend Sub getLayerCornerCoordinates(ByRef dstPoints() As POINTFLOAT, Optional ByVal includeOffsets As Boolean = True, Optional ByVal normalizeToNewOrigin As Boolean = False, Optional ByVal normalizeX As Single = 0#, Optional ByVal normalizeY As Single = 0#, Optional ByVal includeNonDestructiveScaling As Boolean = True)
     
     'To simplify the work of translating layer boundaries by one or more affine transformations, we use a GraphicsMatrix object.
     Dim tmpMatrix As pdGraphicsMatrix
@@ -1305,16 +1317,16 @@ Friend Sub getLayerCornerCoordinates(ByRef dstPoints() As POINTFLOAT, Optional B
     dstPoints(0).x = 0
     dstPoints(0).y = 0
     
-    dstPoints(1).x = Me.getLayerWidth(True)
+    dstPoints(1).x = Me.getLayerWidth(includeNonDestructiveScaling)
     dstPoints(1).y = 0
     
     dstPoints(2).x = 0
-    dstPoints(2).y = Me.getLayerHeight(True)
+    dstPoints(2).y = Me.getLayerHeight(includeNonDestructiveScaling)
     
     'If the third point exists, fill it too
     If UBound(dstPoints) = 3 Then
-        dstPoints(3).x = Me.getLayerWidth(True)
-        dstPoints(3).y = Me.getLayerHeight(True)
+        dstPoints(3).x = Me.getLayerWidth(includeNonDestructiveScaling)
+        dstPoints(3).y = Me.getLayerHeight(includeNonDestructiveScaling)
     End If
     
     'Translate each point in turn

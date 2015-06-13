@@ -240,10 +240,9 @@ Attribute VB_Exposed = False
 'Last updated: 12/December/14
 'Last update: performance optimizations
 '
-'In years past, PhotoDemon would use a separate canvas (a full VB Form) for each loaded image.  In 2013, as part of the massive
-' window manager rewrite, I rewrote the program to only have a single canvas active at any time.  The canvas was rebuilt as a user
-' control, and instead of living on a separate form (which required a *ton* of code to keep in sync with the main PD window), it
-' was integrated directly into the main window.
+'In 2013, PD's canvas was rebuilt as a dedicated user control, and instead of each image maintaining its own canvas inside
+' separate, dedicated windows (which required a *ton* of code to keep in sync with the main PD window), a single canvas was
+' integrated directly into the main window, and shared by all windows.
 '
 'Technically, the primary canvas is only the first entry in an array.  This was done deliberately in case I ever added support for
 ' multiple canvases being usable at once.  This has some neat possibilities - for example, having side-by-side canvases at
@@ -293,7 +292,7 @@ Private hasMouseMoved As Long
 Private m_IsMouseOverCanvas As Boolean
 
 'Track initial mouse button locations
-Private m_initMouseX As Double, m_initMouseY As Double
+Private m_InitMouseX As Double, m_InitMouseY As Double
 
 'In the future, it may be helpful to know if the user interacted with the canvas, or if the mouse simply passed over it
 ' en route to something else.
@@ -1146,8 +1145,8 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
         hasMouseMoved = 0
             
         'Remember this location
-        m_initMouseX = x
-        m_initMouseY = y
+        m_InitMouseX = x
+        m_InitMouseY = y
         
         'Some functions may not operate on the current layer, but on the layer under the mouse
         Dim layerUnderMouse As Long
@@ -1188,7 +1187,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 End If
                 
                 'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
-                setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(layerX, layerY)
+                Tool_Support.setInitialLayerToolValues pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, imgX, imgY, pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(layerX, layerY)
         
             'Standard selections
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_LASSO
@@ -1313,7 +1312,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 If userIsEditingCurrentTextLayer Then
                     
                     'Initiate the layer transformation engine.  Note that nothing will happen until the user actually moves the mouse.
-                    Tool_Support.setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(layerX, layerY)
+                    Tool_Support.setInitialLayerToolValues pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, imgX, imgY, pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(layerX, layerY)
                     
                 'The user is not editing a text layer.  Create a new text layer now.
                 Else
@@ -1326,7 +1325,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                     Tool_Support.syncCurrentLayerToToolOptionsUI
                     
                     'Put the newly created layer into transform mode, with the bottom-right corner selected
-                    Tool_Support.setInitialLayerOffsets pdImages(g_CurrentImage).getActiveLayer, 2
+                    Tool_Support.setInitialLayerToolValues pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, imgX, imgY, 2
                                         
                     'Also, note that we have just created a new text layer.  The MouseUp event needs to know this, so it can initiate a full-image Undo/Redo event.
                     Tool_Support.setCustomToolState PD_TEXT_TOOL_CREATED_NEW_LAYER
@@ -1398,7 +1397,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     Dim layerX As Single, layerY As Single
     Drawing.convertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, imgX, imgY, layerX, layerY
     
-    Debug.Print imgX, imgY, layerX, layerY
+    'Debug.Print imgX, imgY, layerX, layerY
     
     'Check the left mouse button
     If lMouseDown Then
@@ -1407,12 +1406,12 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         
             'Drag-to-pan canvas
             Case NAV_DRAG
-                panImageCanvas m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                panImageCanvas m_InitMouseX, m_InitMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             
             'Move stuff around
             Case NAV_MOVE
                 Message "Shift key: preserve layer aspect ratio"
-                transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask)
+                transformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask)
         
             'Basic selection tools
             Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON
@@ -1464,7 +1463,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
             'Text layers are identical to the move tool
             Case NAV_MOVE, VECTOR_TEXT, VECTOR_FANCYTEXT
                 Message "Shift key: preserve layer aspect ratio"
-                transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask)
+                transformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask)
             
         End Select
     
@@ -1559,9 +1558,8 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
             'Move stuff around
             Case NAV_MOVE
             
-                'Pass a final transform request to the layer handler.  This will initiate Undo/Redo creation,
-                ' among other things.
-                If (hasMouseMoved > 0) Then transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask), True
+                'Pass a final transform request to the layer handler.  This will initiate Undo/Redo creation, among other things.
+                If (hasMouseMoved > 0) Then transformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask), True
                 
                 'Reset the generic tool mouse tracking function
                 Tool_Support.terminateGenericToolTracking
@@ -1801,7 +1799,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                         
                     'If the user already specified a size, use their values to finalize the layer size
                     Else
-                        transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask)
+                        transformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask)
                     End If
                     
                     'Release the tool engine
@@ -1829,7 +1827,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                 Else
                     
                     'As a convenience to the user, ignore clicks that don't actually change layer settings
-                    If (hasMouseMoved > 0) Then transformCurrentLayer m_initMouseX, m_initMouseY, x, y, pdImages(g_CurrentImage), FormMain.mainCanvas(0), (Shift And vbShiftMask), True
+                    If (hasMouseMoved > 0) Then transformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask), True
                     
                 End If
                 
