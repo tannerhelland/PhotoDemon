@@ -22,12 +22,20 @@ Public Const PD_TEXT_TOOL_CREATED_NEW_LAYER As Long = &H1
 'The drag-to-pan tool uses these values to store the original image offset
 Private m_InitHScroll As Long, m_InitVScroll As Long
 
-'The move tool uses these values to store the original layer offset
-Private m_InitXOffset As Double, m_InitYOffset As Double
-Private m_InitLayerCoords(0 To 3) As POINTFLOAT
-
-'The move tool uses these values to store the original layer canvas x/y modifiers
-Private m_InitCanvasXMod As Double, m_InitCanvasYMod As Double
+'Upon initiating a layer interaction, the move/size tool caches two sets of original layer values: the layer's transformed coordinates,
+' which include the results of any affine transforms (e.g. rotation), and the layer's "pure" coordinates, e.g. without affine transforms.
+' These coordinates are crucial for establishing the difference between the original layer offsets/dimensions, and any new ones created
+' by canvas interactions.
+'
+'As a convenience, we also cache the layer's aspect ratio.  This is important for operations that support use of the SHIFT key.
+'
+'Finally, the initial mouse x/y values are also supplied, in case they are needed later on.  (We call these m_InitImageX/Y as a
+' reminder that they exist in the *image* coordinate space, not the *canvas* coordinate space.)  We also make a copy of these values
+' in the current layer's coordinate space (e.g. with affine transforms considered)
+Private m_InitLayerCoords_Transformed(0 To 3) As POINTFLOAT
+Private m_InitLayerCoords_Pure(0 To 3) As POINTFLOAT
+Private m_LayerAspectRatio As Double
+Private m_InitImageX As Double, m_InitImageY As Double, m_InitLayerX As Single, m_InitLayerY As Single
 
 'If a point of interest is being modified by a tool action, its ID will be stored here.  Make sure to clear this value
 ' (to -1, which means "no point of interest") when you are finished with it (typically after MouseUp).
@@ -70,23 +78,33 @@ Public Sub terminateGenericToolTracking()
     
 End Sub
 
-'The move tool uses this function to set the initial layer offsets for a move operation
-Public Sub setInitialLayerOffsets(ByRef srcLayer As pdLayer, Optional ByVal relevantPOI As Long = -1)
+'The move tool uses this function to set various initial parameters for layer interactions.
+Public Sub setInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByVal mouseX_ImageSpace As Double, ByVal mouseY_ImageSpace As Double, Optional ByVal relevantPOI As Long = -1)
     
-    'Store the layer's initial offset values (before any MouseMove events have occurred)
-    m_InitXOffset = srcLayer.getLayerOffsetX
-    m_InitYOffset = srcLayer.getLayerOffsetY
+    'Cache the initial mouse values.  Note that, per the parameter names, these must have already been converted to the image's
+    ' coordinate space (NOT the canvas's!)
+    m_InitImageX = mouseX_ImageSpace
+    m_InitImageY = mouseY_ImageSpace
     
-    'Store the layer's initial canvas x/y offset values
-    m_InitCanvasXMod = srcLayer.getLayerCanvasXModifier
-    m_InitCanvasYMod = srcLayer.getLayerCanvasYModifier
+    'Also, make a copy of those coordinates in the current layer space
+    Drawing.convertImageCoordsToLayerCoords srcImage, srcLayer, m_InitImageX, m_InitImageY, m_InitLayerX, m_InitLayerY
     
-    'If a relevant POI was supplied, store it as well
+    'Make a copy of the current layer coordinates, with any affine transforms applied (rotation, etc)
+    srcLayer.getLayerCornerCoordinates m_InitLayerCoords_Transformed
+    
+    'Finally, make a copy of the current layer coordinates, *without* affine transforms applied.  This is basically the rect of
+    ' the layer as it would appear if no affine modifiers were active (e.g. without rotation, etc)
+    Dim i As Long
+    For i = 0 To 3
+        Drawing.convertImageCoordsToLayerCoords srcImage, srcLayer, m_InitLayerCoords_Transformed(i).x, m_InitLayerCoords_Transformed(i).y, m_InitLayerCoords_Pure(i).x, m_InitLayerCoords_Pure(i).y
+    Next i
+    
+    'Cache the layer's aspect ratio.  Note that this *does include any current non-destructive transforms*!
+    m_LayerAspectRatio = srcLayer.getLayerWidth(False) / srcLayer.getLayerHeight(False)
+    
+    'If a relevant POI was supplied, store it as well.  Note that not all tools make use of this.
     curPOI = relevantPOI
-    
-    'Make a copy of the current layer coordinates in layer space, as well
-    srcLayer.getLayerCornerCoordinates m_InitLayerCoords
-    
+        
 End Sub
 
 'The drag-to-pan tool uses this function to set the initial scroll bar values for a pan operation
@@ -163,36 +181,33 @@ Public Sub panImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
     
 End Sub
 
-'The nav tool uses this function to move and/or resize the current layer.
-' If this action occurs during a Mouse_Up event, the finalizeTransform parameter should be set to TRUE.
-' This will instruct the function to forward the request to PD's central processor, so it can generate
-' Undo/Redo data, be recorded as part of macros, etc.
-Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal curX As Long, ByVal curY As Long, ByRef srcImage As pdImage, ByRef srcCanvas As pdCanvas, Optional ByVal isShiftDown As Boolean = False, Optional ByVal finalizeTransform As Boolean = False)
+'This function can be used to move and/or non-destructively resize an image layer.
+'
+'If this action occurs during a Mouse_Up event, the finalizeTransform parameter should be set to TRUE. This instructs the function
+' to forward the transformation request to PD's central processor, so it can generate Undo/Redo data, be recorded as part of macros, etc.
+Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As Double, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, ByRef srcCanvas As pdCanvas, Optional ByVal isShiftDown As Boolean = False, Optional ByVal finalizeTransform As Boolean = False)
     
     'Prevent the canvas from redrawing itself until our movement calculations are complete.
     ' (This prevents juddery movement.)
     srcCanvas.setRedrawSuspension True
     
-    'Also, mark the tool engine as busy
+    'Also, mark the tool engine as busy to prevent re-entrance issues
     Tool_Support.setToolBusyState True
     
-    'Start by converting the mouse coordinates we were passed from screen units to image units
-    Dim initImgX As Double, initImgY As Double, curImgX As Double, curImgY As Double
-    convertCanvasCoordsToImageCoords srcCanvas, srcImage, initX, initY, initImgX, initImgY
-    convertCanvasCoordsToImageCoords srcCanvas, srcImage, curX, curY, curImgX, curImgY
+    'Convert the current x/y pair to the layer coordinate space.  This takes into account any active affine transforms
+    ' on the image (e.g. rotation), which may place the point in a totally different position relative to the underlying layer.
+    Dim curLayerX As Single, curLayerY As Single
+    Drawing.convertImageCoordsToLayerCoords srcImage, srcLayer, curImageX, curImageY, curLayerX, curLayerY
+            
+    'As a convenience for later calculations, calculate offsets between the initial transform coordinates (set at MouseDown)
+    ' and the current ones.  Repeat this for both the image and layer coordinate spaces, as we need different ones for different
+    ' transform types.
+    Dim hOffsetLayer As Double, vOffsetLayer As Double, hOffsetImage As Double, vOffsetImage As Double
+    hOffsetLayer = curLayerX - m_InitLayerX
+    vOffsetLayer = curLayerY - m_InitLayerY
     
-    'Next, convert the image x/y pairs to the layer coordinate space.
-    Dim initLayerX As Single, initLayerY As Single, curLayerX As Single, curLayerY As Single
-    convertImageCoordsToLayerCoords srcImage, srcImage.getActiveLayer, initImgX, initImgY, initLayerX, initLayerY
-    convertImageCoordsToLayerCoords srcImage, srcImage.getActiveLayer, curImgX, curImgY, curLayerX, curLayerY
-    
-    'Calculate offsets between the initial mouse coordinates and the current ones
-    Dim hOffsetLayer As Long, vOffsetLayer As Long, hOffsetImage As Long, vOffsetImage As Long
-    hOffsetLayer = curLayerX - initLayerX
-    vOffsetLayer = curLayerY - initLayerY
-    
-    hOffsetImage = curImgX - initImgX
-    vOffsetImage = curImgY - initImgY
+    hOffsetImage = curImageX - m_InitImageX
+    vOffsetImage = curImageY - m_InitImageY
     
     'To help us more easily process the transformation's effect on the layer, store the layer's original position
     ' and size inside a RECT.  Note that we make two copies: one with canvas modifications (such as dynamic x/y
@@ -201,56 +216,69 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
     Layer_Handler.fillRectForLayer srcImage.getActiveLayer, origLayerRect
     Layer_Handler.fillRectForLayer srcImage.getActiveLayer, origLayerRectModified, True
     
-    'Calculate original width/height values, which will simplify our x/y modifier calculations later on
-    Dim origWidth As Double, origHeight As Double
+    'Calculate matching width/height values, which will simplify our x/y modifier calculations later on
+    Dim origWidth As Double, origHeight As Double, modifiedWidth As Double, modifiedHeight As Double
     origWidth = origLayerRect.Right - origLayerRect.Left
     origHeight = origLayerRect.Bottom - origLayerRect.Top
     If origWidth < 1 Then origWidth = 1
     If origHeight < 1 Then origHeight = 1
     
-    'To prevent the user from flipping or mirroring the image, we must do some bound checking on their changes,
-    ' and disallow anything that results in an invalid image coordinate.
-    Dim newX As Double, newY As Double
+    modifiedWidth = origLayerRectModified.Right - origLayerRectModified.Left
+    modifiedHeight = origLayerRectModified.Bottom - origLayerRectModified.Top
+    If modifiedWidth < 1 Then modifiedWidth = 1
+    If modifiedHeight < 1 Then modifiedHeight = 1
     
-    'The way we assign new offsets to the layer depends on the POI (point of interest) the user has used to move the image.
+    'To prevent the user from flipping or mirroring the image, we must do some bound checking on their changes,
+    ' and disallow anything that results in invalid coordinates or sizes.
+    Dim newLeft As Double, newTop As Double, newRight As Double, newBottom As Double
+    Dim newX As Double, newY As Double, newWidth As Double, newHeight As Double
+    
+    'The way we assign new offsets and/or sizes to the layer depends on the POI (point of interest) the user is interacting with.
     ' Layers currently support five points of interest: each of their 4 corners, and anywhere in the layer interior
     ' (for moving the layer).
     
     'Check the POI we were given, and update the layer accordingly.
-    With srcImage.getActiveLayer
+    With srcLayer
     
         Select Case curPOI
             
             '-1: the mouse is not over the layer.  Do nothing.
             Case -1
+                Tool_Support.setToolBusyState False
                 srcCanvas.setRedrawSuspension False
                 Exit Sub
                 
             '0: the mouse is dragging the top-left corner of the layer
             Case 0
-            
-                newX = m_InitXOffset + hOffsetImage
-                newY = m_InitYOffset + vOffsetImage
                 
-                'newX = m_InitLayerCoords(0).x + hOffsetLayer
-                'newY = m_InitLayerCoords(0).y + vOffsetLayer
+                'The new (x, y) offset for this layer is simply the current mouse coordinates, transformed to the layer's coordinate space
+                newLeft = curLayerX
+                newTop = curLayerY
                 
-                If newX > origLayerRectModified.Right - 1 Then newX = origLayerRectModified.Right - 1
-                If newY > origLayerRectModified.Bottom - 1 Then newY = origLayerRectModified.Bottom - 1
-                .setLayerOffsetX newX
-                .setLayerOffsetY newY
-                .setLayerCanvasXModifier (origLayerRectModified.Right - .getLayerOffsetX) / origWidth
-                .setLayerCanvasYModifier (origLayerRectModified.Bottom - .getLayerOffsetY) / origHeight
+                'As of PD 7.0, corner interactions cause the layer to naturally resize around its current center point.  Calculate new
+                ' width/height values now.
+                newRight = m_InitLayerCoords_Pure(3).x - hOffsetLayer
                 
                 'If the user is pressing the SHIFT key, lock the image's aspect ratio
                 If isShiftDown Then
-                    .setLayerCanvasXModifier .getLayerCanvasYModifier
-                    .setLayerOffsetX origLayerRectModified.Right - (.getLayerCanvasXModifier * origWidth)
+                
+                    newHeight = (newRight - newLeft) / m_LayerAspectRatio
+                    
+                    'Shift the top coordinate offset to compensate for this newly calculated height
+                    newY = m_InitLayerCoords_Pure(0).y + (srcLayer.getLayerHeight(False) / 2)
+                    newBottom = newY + (newHeight / 2)
+                    newTop = newBottom - newHeight
+                    
+                Else
+                    newBottom = m_InitLayerCoords_Pure(3).y - vOffsetLayer
                 End If
-            
+                
+                'Make sure the new (x, y) values don't result in negative width/height modifiers
+                If (newRight > newLeft) And (newBottom > newTop) Then .setOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
+                            
             '1: top-right corner
             Case 1
-                newY = m_InitYOffset + vOffsetLayer
+                newY = m_InitImageY + vOffsetLayer
                 If newY > origLayerRectModified.Bottom - 1 Then newY = origLayerRectModified.Bottom - 1
                 .setLayerOffsetY newY
                 .setLayerCanvasXModifier (curLayerX - origLayerRect.Left) / origWidth
@@ -269,7 +297,7 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
             
             '3: bottom-left
             Case 3
-                newX = m_InitXOffset + hOffsetLayer
+                newX = m_InitImageX + hOffsetLayer
                 If newX > origLayerRectModified.Right - 1 Then newX = origLayerRectModified.Right - 1
                 .setLayerOffsetX newX
                 .setLayerCanvasXModifier (origLayerRectModified.Right - .getLayerOffsetX) / origWidth
@@ -280,8 +308,8 @@ Public Sub transformCurrentLayer(ByVal initX As Long, ByVal initY As Long, ByVal
             
             '4: interior of the layer (e.g. move the layer instead of resize it)
             Case 4
-                .setLayerOffsetX m_InitXOffset + hOffsetImage
-                .setLayerOffsetY m_InitYOffset + vOffsetImage
+                .setLayerOffsetX m_InitLayerCoords_Pure(0).x + hOffsetImage
+                .setLayerOffsetY m_InitLayerCoords_Pure(0).y + vOffsetImage
             
         End Select
         
