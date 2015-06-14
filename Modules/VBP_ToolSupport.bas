@@ -100,7 +100,11 @@ Public Sub setInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer A
     Next i
     
     'Cache the layer's aspect ratio.  Note that this *does include any current non-destructive transforms*!
-    m_LayerAspectRatio = srcLayer.getLayerWidth(False) / srcLayer.getLayerHeight(False)
+    If srcLayer.getLayerHeight(False) <> 0 Then
+        m_LayerAspectRatio = srcLayer.getLayerWidth(False) / srcLayer.getLayerHeight(False)
+    Else
+        m_LayerAspectRatio = 1
+    End If
     
     'If a relevant POI was supplied, store it as well.  Note that not all tools make use of this.
     curPOI = relevantPOI
@@ -237,6 +241,11 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     ' Layers currently support five points of interest: each of their 4 corners, and anywhere in the layer interior
     ' (for moving the layer).
     
+    'Because the various POI evaluators share similar code (they all just set a new boundary rect), this value will be set to TRUE
+    ' if a POI was successfully evaluated.  This triggers a set of uniform code checks, including safe boundaries and SHIFT key handling.
+    Dim poiCleanupRequired As Boolean
+    poiCleanupRequired = False
+    
     'Check the POI we were given, and update the layer accordingly.
     With srcLayer
     
@@ -248,70 +257,84 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 srcCanvas.setRedrawSuspension False
                 Exit Sub
                 
-            '0: the mouse is dragging the top-left corner of the layer
+            '0: the mouse is dragging the top-left corner of the layer.  The comments here are uniform for all POIs, so for brevity's sake,
+            ' I'll keep the others short.
             Case 0
                 
                 'The new (x, y) offset for this layer is simply the current mouse coordinates, transformed to the layer's coordinate space
                 newLeft = curLayerX
                 newTop = curLayerY
                 
-                'As of PD 7.0, corner interactions cause the layer to naturally resize around its current center point.  Calculate new
-                ' width/height values now.
+                'As of PD 7.0, corner interactions cause the layer to naturally resize around its current center point.  As such, we need
+                ' to calculate new width/height values now.
                 newRight = m_InitLayerCoords_Pure(3).x - hOffsetLayer
+                newBottom = m_InitLayerCoords_Pure(3).y - vOffsetLayer
                 
-                'If the user is pressing the SHIFT key, lock the image's aspect ratio
-                If isShiftDown Then
+                poiCleanupRequired = True
                 
-                    newHeight = (newRight - newLeft) / m_LayerAspectRatio
-                    
-                    'Shift the top coordinate offset to compensate for this newly calculated height
-                    newY = m_InitLayerCoords_Pure(0).y + (srcLayer.getLayerHeight(False) / 2)
-                    newBottom = newY + (newHeight / 2)
-                    newTop = newBottom - newHeight
-                    
-                Else
-                    newBottom = m_InitLayerCoords_Pure(3).y - vOffsetLayer
-                End If
-                
-                'Make sure the new (x, y) values don't result in negative width/height modifiers
-                If (newRight > newLeft) And (newBottom > newTop) Then .setOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
-                            
             '1: top-right corner
             Case 1
-                newY = m_InitImageY + vOffsetLayer
-                If newY > origLayerRectModified.Bottom - 1 Then newY = origLayerRectModified.Bottom - 1
-                .setLayerOffsetY newY
-                .setLayerCanvasXModifier (curLayerX - origLayerRect.Left) / origWidth
-                .setLayerCanvasYModifier (origLayerRectModified.Bottom - .getLayerOffsetY) / origHeight
-                
-                'If the user is pressing the SHIFT key, lock the image's aspect ratio
-                If isShiftDown Then .setLayerCanvasXModifier .getLayerCanvasYModifier
             
+                'Calculate a new boundary rect
+                newRight = curLayerX
+                newTop = curLayerY
+                newLeft = m_InitLayerCoords_Pure(0).x - hOffsetLayer
+                newBottom = m_InitLayerCoords_Pure(3).y - vOffsetLayer
+                
+                poiCleanupRequired = True
+                
             '2: bottom-right
             Case 2
-                .setLayerCanvasXModifier (curLayerX - origLayerRect.Left) / origWidth
-                .setLayerCanvasYModifier (curLayerY - origLayerRect.Top) / origHeight
                 
-                'If the user is pressing the SHIFT key, lock the image's aspect ratio
-                If isShiftDown Then .setLayerCanvasYModifier .getLayerCanvasXModifier
-            
+                'Calculate a new boundary rect
+                newRight = curLayerX
+                newBottom = curLayerY
+                newLeft = m_InitLayerCoords_Pure(0).x - hOffsetLayer
+                newTop = m_InitLayerCoords_Pure(0).y - vOffsetLayer
+                
+                poiCleanupRequired = True
+                
             '3: bottom-left
             Case 3
-                newX = m_InitImageX + hOffsetLayer
-                If newX > origLayerRectModified.Right - 1 Then newX = origLayerRectModified.Right - 1
-                .setLayerOffsetX newX
-                .setLayerCanvasXModifier (origLayerRectModified.Right - .getLayerOffsetX) / origWidth
-                .setLayerCanvasYModifier (curLayerY - origLayerRect.Top) / origHeight
                 
-                'If the user is pressing the SHIFT key, lock the image's aspect ratio
-                If isShiftDown Then .setLayerCanvasYModifier .getLayerCanvasXModifier
+                'Calculate a new boundary rect
+                newLeft = curLayerX
+                newBottom = curLayerY
+                newRight = m_InitLayerCoords_Pure(3).x - hOffsetLayer
+                newTop = m_InitLayerCoords_Pure(0).y - vOffsetLayer
+                
+                poiCleanupRequired = True
             
-            '4: interior of the layer (e.g. move the layer instead of resize it)
+            '4: rotation node (WIP)
             Case 4
+            
+            '5: interior of the layer (e.g. move the layer instead of resize it)
+            Case 5
                 .setLayerOffsetX m_InitLayerCoords_Pure(0).x + hOffsetImage
                 .setLayerOffsetY m_InitLayerCoords_Pure(0).y + vOffsetImage
             
         End Select
+        
+        'If a POI was successfully evaluated, we need to perform some generic clean-up on the calculated boundary rect.
+        ' (Note that moving the layer doesn't trigger these checks, as movement alone can't result in invalid bounds.)
+        If poiCleanupRequired Then
+        
+            'If the SHIFT key is down, lock the image's aspect ratio
+            If isShiftDown Then
+            
+                newHeight = (newRight - newLeft) / m_LayerAspectRatio
+                
+                'Shift the top coordinate offset to compensate for the newly calculated height
+                newY = newTop + (newBottom - newTop) / 2
+                newBottom = newY + (newHeight / 2)
+                newTop = newBottom - newHeight
+                
+            End If
+            
+            'Make sure the new (x, y) values don't result in negative width/height modifiers
+            If (newRight > newLeft) And (newBottom > newTop) Then .setOffsetsAndModifiersTogether newLeft, newTop, newRight, newBottom
+        
+        End If
         
     End With
     
@@ -331,15 +354,18 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
         'As a convenience to the user, layer resize and move operations are listed separately.
         Select Case curPOI
         
-            'Resize transformations.  (Note that resize transformations include some layer movement as well.)
+            'Move/resize transformations.
             Case 0 To 3
             
                 With srcImage.getActiveLayer
                     Process "Resize layer (on-canvas)", False, buildParams(.getLayerOffsetX, .getLayerOffsetY, .getLayerCanvasXModifier, .getLayerCanvasYModifier), UNDO_LAYERHEADER
                 End With
+                
+            'Rotation
+            Case 4
             
             'Move-only transformations
-            Case 4
+            Case 5
                 
                 With srcImage.getActiveLayer
                     Process "Move layer", False, buildParams(.getLayerOffsetX, .getLayerOffsetY), UNDO_LAYERHEADER
@@ -459,7 +485,7 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                 'The layer resize quality combo box also needs to be synched
                 toolpanel_MoveSize.cboLayerResizeQuality.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getLayerResizeQuality
                 
-                'Layer angle is newly available as of 6.6
+                'Layer angle is newly available as of 7.0
                 toolpanel_MoveSize.sltLayerAngle.Value = pdImages(g_CurrentImage).getActiveLayer.getLayerAngle
             
             Case VECTOR_TEXT
@@ -584,7 +610,7 @@ Public Sub syncCurrentLayerToToolOptionsUI()
                 'The layer resize quality combo box also needs to be synched
                 pdImages(g_CurrentImage).getActiveLayer.setLayerResizeQuality toolpanel_MoveSize.cboLayerResizeQuality.ListIndex
                 
-                'Layer angle is newly available as of 6.6
+                'Layer angle is newly available as of 7.0
                 pdImages(g_CurrentImage).getActiveLayer.setLayerAngle toolpanel_MoveSize.sltLayerAngle.Value
             
             Case VECTOR_TEXT
