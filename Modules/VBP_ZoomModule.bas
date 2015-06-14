@@ -50,6 +50,15 @@ Private frontBuffer As pdDIB
 'cornerFix holds a small gray box that is copied over the corner between the horizontal and vertical scrollbars, if they exist
 Private cornerFix As pdDIB
 
+'The current chunk of the image visible in the viewport.  Note that these values are in *IMAGE COORDINATES*, and they are not
+' worthwhile until the pipeline has been executed at least once (and made it to at least stage 3, if you're curious).
+Private m_SrcImageRect As RECTF
+
+'If an outside function wants a copy of the viewport's current image coverage, they can call this function.
+Public Sub getCopyOfSourceImageRect(ByRef dstRect As RECTF)
+    dstRect = m_SrcImageRect
+End Sub
+
 'Stage5_FlipBufferAndDrawUI is the final stage of the viewport pipeline.  It will flip the composited canvas image to the
 ' destination pdCanvas object, and apply any final UI elements as well - control nodes, custom cursors, etc.  This step is
 ' very fast, and should be used whenever full compositing is unnecessary.
@@ -88,21 +97,16 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
         Case NAV_MOVE
         
             'If the user has requested visible layer borders, draw them now
-            If CBool(toolpanel_MoveSize.chkLayerBorder) Then
-                
-                'Draw layer borders
-                Drawing.drawLayerBoundaries srcImage.getActiveLayer
-                
-            End If
+            If CBool(toolpanel_MoveSize.chkLayerBorder) Then Drawing.drawLayerBoundaries dstCanvas, srcImage, srcImage.getActiveLayer
             
-            'If the user has requested visible transformation nodes, draw them now
-            If CBool(toolpanel_MoveSize.chkLayerNodes) Then
-                
-                'Draw layer nodes
-                Drawing.drawLayerNodes srcImage.getActiveLayer
-                
-            End If
-        
+            'If the user has requested visible transformation nodes, draw them now.
+            ' (TODO: cache these values in either public variables, or inside this module via some kind of setViewportProperties
+            '        function - either way, that will let us access drawing settings much more quickly!)
+            If CBool(toolpanel_MoveSize.chkLayerNodes) Then Drawing.drawLayerCornerNodes dstCanvas, srcImage, srcImage.getActiveLayer
+            
+            'Same as above, but for the current rotation node
+            If CBool(toolpanel_MoveSize.chkRotateNode) Then Drawing.drawLayerRotateNode dstCanvas, srcImage, srcImage.getActiveLayer
+            
         'Selections are always rendered onto the canvas.  If a selection is active AND a selection tool is active, we can also
         ' draw transform nodes around the selection area.
         Case SELECT_RECT, SELECT_CIRC, SELECT_LINE, SELECT_POLYGON, SELECT_WAND
@@ -116,8 +120,9 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
         Case VECTOR_TEXT, VECTOR_FANCYTEXT
             
             If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
-                Drawing.drawLayerBoundaries srcImage.getActiveLayer
-                Drawing.drawLayerNodes srcImage.getActiveLayer
+                Drawing.drawLayerBoundaries dstCanvas, srcImage, srcImage.getActiveLayer
+                Drawing.drawLayerCornerNodes dstCanvas, srcImage, srcImage.getActiveLayer
+                Drawing.drawLayerRotateNode dstCanvas, srcImage, srcImage.getActiveLayer
             End If
             
     End Select
@@ -360,6 +365,14 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
         End If
         
     End If
+    
+    'Cache the relevant section of the image, in case outside functions require it
+    With m_SrcImageRect
+        .Left = srcX
+        .Top = srcY
+        .Width = srcWidth
+        .Height = srcHeight
+    End With
     
     'Pass control to the next stage of the pipeline.
     Stage4_CompositeCanvas srcImage, dstCanvas

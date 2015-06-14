@@ -1772,9 +1772,16 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     'See if this was just a click (as it might be at creation time).
                     If ClickEventAlsoFiring Or (hasMouseMoved <= 2) Or (pdImages(g_CurrentImage).getActiveLayer.getLayerWidth < 4) Or (pdImages(g_CurrentImage).getActiveLayer.getLayerHeight < 4) Then
                         
-                        'Update the layer's size
-                        pdImages(g_CurrentImage).getActiveLayer.setLayerWidth Abs(pdImages(g_CurrentImage).Width - pdImages(g_CurrentImage).getActiveLayer.getLayerOffsetX)
-                        pdImages(g_CurrentImage).getActiveLayer.setLayerHeight Abs(pdImages(g_CurrentImage).Height - pdImages(g_CurrentImage).getActiveLayer.getLayerOffsetY)
+                        'Update the layer's size.  At present, we simply make it fill the current viewport.
+                        Dim curImageRectF As RECTF
+                        Viewport_Engine.getCopyOfSourceImageRect curImageRectF
+                        
+                        With pdImages(g_CurrentImage)
+                            .getActiveLayer.setLayerOffsetX curImageRectF.Left
+                            .getActiveLayer.setLayerOffsetY curImageRectF.Top
+                            .getActiveLayer.setLayerWidth curImageRectF.Width
+                            .getActiveLayer.setLayerHeight curImageRectF.Height
+                        End With
                         
                         'If the current text box is empty, set some new text to orient the user
                         If g_CurrentTool = VECTOR_TEXT Then
@@ -2399,9 +2406,13 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 'Mouse is over the bottom-left corner
                 Case 3
                     cMouseEvents.setSystemCursor IDC_SIZENESW
+                
+                'Mouse is over the rotation handle
+                Case 4
+                    cMouseEvents.setSystemCursor IDC_SIZEALL
                     
                 'Mouse is within the layer, but not over a specific node
-                Case 4
+                Case 5
                 
                     'This case is unique because if the user has elected to ignore transparent pixels, they cannot move a layer
                     ' by dragging the mouse within a transparent region of the layer.  Thus, before changing the cursor,
@@ -2561,9 +2572,13 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                     'Mouse is over the bottom-left corner
                     Case 3
                         cMouseEvents.setSystemCursor IDC_SIZENESW
+                        
+                    'Mouse is over the rotation handle
+                    Case 4
+                        cMouseEvents.setSystemCursor IDC_SIZEALL
                     
                     'Mouse is within the layer, but not over a specific node
-                    Case 4
+                    Case 5
                         cMouseEvents.setSystemCursor IDC_SIZEALL
                     
                 End Select

@@ -373,6 +373,13 @@ Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB, Optional ByVal useThis
     GdipCreatePen1 fillQuadWithVBRGB(RGB(0, 0, 0), 192), 2, gdipUnitPixel, hBlackPen
     GdipCreatePen1 fillQuadWithVBRGB(RGB(255, 255, 255), 192), 1, gdipUnitPixel, hWhitePen
     
+    'Populate line end and join parameters
+    GdipSetPenLineCap hBlackPen, LineCapRound, LineCapRound, DashCapRound
+    GdipSetPenLineCap hWhitePen, LineCapRound, LineCapRound, DashCapRound
+    
+    GdipSetPenLineJoin hBlackPen, LineJoinRound
+    GdipSetPenLineJoin hWhitePen, LineJoinRound
+    
     'Stroke the paths in turn
     GdipDrawPath hGraphics, hBlackPen, m_PathHandle
     GdipDrawPath hGraphics, hWhitePen, m_PathHandle

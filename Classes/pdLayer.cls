@@ -506,10 +506,22 @@ End Sub
 Friend Sub setOffsetsAndModifiersTogether(ByVal topLeftX As Single, ByVal topLeftY As Single, ByVal bottomRightX As Single, ByVal bottomRightY As Single)
     
     With myLayerData
+        
         .l_OffsetX = topLeftX
         .l_OffsetY = topLeftY
-        .l_CanvasXModifier = (bottomRightX - topLeftX) / getLayerWidth(False)
-        .l_CanvasYModifier = (bottomRightY - topLeftY) / getLayerHeight(False)
+        
+        If getLayerWidth(False) <> 0 Then
+            setLayerCanvasXModifier (bottomRightX - topLeftX) / getLayerWidth(False)
+        Else
+            setLayerCanvasXModifier 1#
+        End If
+        
+        If getLayerHeight(False) <> 0 Then
+            setLayerCanvasYModifier (bottomRightY - topLeftY) / getLayerHeight(False)
+        Else
+            setLayerCanvasYModifier 1#
+        End If
+        
     End With
     
 End Sub
@@ -1304,7 +1316,7 @@ End Function
 ' 0) Top-Left
 ' 1) Top-Right
 ' 2) Bottom-Left
-' 3 (optionally) Bottom-Right.
+' 3) (optionally) Bottom-Right.  This point is optional because it can be inferred from the previous three
 Friend Sub getLayerCornerCoordinates(ByRef dstPoints() As POINTFLOAT, Optional ByVal includeOffsets As Boolean = True, Optional ByVal normalizeToNewOrigin As Boolean = False, Optional ByVal normalizeX As Single = 0#, Optional ByVal normalizeY As Single = 0#, Optional ByVal includeNonDestructiveScaling As Boolean = True)
     
     'To simplify the work of translating layer boundaries by one or more affine transformations, we use a GraphicsMatrix object.
@@ -1356,6 +1368,32 @@ Friend Sub getLayerCornerCoordinates(ByRef dstPoints() As POINTFLOAT, Optional B
     
     'Debug information can be displayed here:
     'Debug.Print "Layer corners: 0 - (" & dstPoints(0).x & ", " & dstPoints(0).y & ") 1 - (" & dstPoints(1).x & ", " & dstPoints(1).y & ") 1 - (" & dstPoints(2).x & ", " & dstPoints(2).y & ")"
+    
+End Sub
+
+'As of PhotoDemon 7.0, non-destructive layer rotation is supported.  Call this function to retrieve the position of the layer's on-canvas
+' rotation node *IN IMAGE COORDINATES*.  Note that an array is required, and it must be at least (0, 1) in size.  The first point contains
+' the center point of the rotation node (e.g. the center of the current image), while the second point contains the actual rotation node,
+' which sits outside the image by 25%.
+Friend Sub getLayerRotationNodeCoordinates(ByRef dstPoints() As POINTFLOAT, Optional ByVal includeOffsets As Boolean = True, Optional ByVal includeNonDestructiveScaling As Boolean = True)
+    
+    'Retrieve a copy of the current layer transform matrix
+    Dim tmpMatrix As pdGraphicsMatrix
+    Me.getCopyOfLayerTransformationMatrix tmpMatrix, includeOffsets
+    
+    'Fill the destination with two coordinates: the center if the image, and the position of the current rotation node.
+    '  Note that both if these points are generated *without* translation applied (but *with* scaling).
+    dstPoints(0).x = Me.getLayerWidth(includeNonDestructiveScaling) / 2
+    dstPoints(0).y = Me.getLayerHeight(includeNonDestructiveScaling) / 2
+    
+    dstPoints(1).x = Me.getLayerWidth(includeNonDestructiveScaling) * 1.25
+    dstPoints(1).y = Me.getLayerHeight(includeNonDestructiveScaling) / 2
+    
+    'Apply the transformation matrix to each point
+    tmpMatrix.applyMatrixToPointF dstPoints(0)
+    tmpMatrix.applyMatrixToPointF dstPoints(1)
+    
+    'The temporary translation matrix will automatically be cleaned up when the function exits
     
 End Sub
 
@@ -2479,17 +2517,19 @@ Private Sub prepInternalSafeArray(ByRef srcSA As SAFEARRAY2D)
 End Sub
 
 'Whenever the user does something with the mouse - click, move, etc - the primary canvas will poll this function.  This function
-' will check the passed mouse values (which have already been translated into the IMAGE coordinate space), and return a Long-type
+' will check the passed mouse values (which have already been translated into the LAYER coordinate space), and return a Long-type
 ' value specifying whether or not that coordinate is of interest to this layer.  This basically provides a flexible framework for
 ' supporting mouse events for any layer, because it's up to the layer to determine which points are interesting and which are not.
 '
-'INPUTS: current mouse coords, already translated into the IMAGE coordinate space (not the canvas coordinate space!)
+'INPUTS: current mouse coords, already translated into the LAYER coordinate space (not the canvas coordinate space!)
 '
-'OUTPUT: index of the point of interest, if any.  If the mouse is not over a point of interest, -1 is returned.
-Public Function checkForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) As Long
+'OUTPUT: index of the POI, if any.  If the mouse is not over a POI, -1 is returned.
+Public Function checkForPointOfInterest(ByVal layerX As Long, ByVal layerY As Long) As Long
     
     'MouseAccuracy in PD is a global value, but because we are working in image coordinates, we must compensate for the
     ' current zoom value.  (Otherwise, when zoomed out the user would be forced to work with tighter accuracy!)
+    ' (TODO: come up with a better solution for this.  Accuracy should *really* be handled in the canvas coordinate space,
+    '        so perhaps the caller should specify an image x/y and a radius...?)
     Dim mouseAccuracy As Double
     mouseAccuracy = g_MouseAccuracy * (1 / g_Zoom.getZoomValue(pdImages(g_CurrentImage).currentZoomValue))
     
@@ -2514,7 +2554,7 @@ Public Function checkForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) 
         Case PDL_IMAGE, PDL_TEXT
             
             'Manually populate the point of interest array with the layer's corner coordinates.
-            ReDim poiList(0 To 3) As POINTAPI
+            ReDim poiList(0 To 4) As POINTAPI
             poiList(0).x = getLayerOffsetX
             poiList(0).y = getLayerOffsetY
             poiList(1).x = getLayerOffsetX + getLayerWidth(True)
@@ -2524,8 +2564,12 @@ Public Function checkForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) 
             poiList(3).x = getLayerOffsetX
             poiList(3).y = getLayerOffsetY + getLayerHeight(True)
             
+            'As of PD 7.7, a rotation handle is also provided
+            poiList(4).x = getLayerOffsetX + getLayerWidth(True) * 1.25
+            poiList(4).y = getLayerOffsetY + getLayerHeight(True) / 2
+            
             'Check to see if one of the corners has been clicked
-            closestPoint = findClosestPointInArray(imgX, imgY, minDistance, poiList)
+            closestPoint = findClosestPointInArray(layerX, layerY, minDistance, poiList)
             
             'If a corner was clicked, return its value and exit
             If closestPoint <> -1 Then
@@ -2533,10 +2577,10 @@ Public Function checkForPointOfInterest(ByVal imgX As Long, ByVal imgY As Long) 
                 Exit Function
             End If
             
-            'If we're at this line of code, a corner was not clicked. Perform one final check to see if the mouse is within
+            'If we're at this line of code, a POI was not clicked. Perform one final check to see if the mouse is within
             ' the layer's boundaries, and if it is, return the "move" ID, then exit.
-            If (imgX > poiList(0).x) And (imgX < poiList(1).x) And (imgY > poiList(0).y) And (imgY < poiList(2).y) Then
-                checkForPointOfInterest = 4
+            If (layerX > poiList(0).x) And (layerX < poiList(1).x) And (layerY > poiList(0).y) And (layerY < poiList(2).y) Then
+                checkForPointOfInterest = 5
             Else
                 checkForPointOfInterest = -1
             End If

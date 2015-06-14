@@ -685,7 +685,7 @@ Public Sub getCanvasRectForLayerF(ByVal layerIndex As Long, ByRef dstRect As REC
 End Sub
 
 'On the current viewport, render lines around the active layer
-Public Sub drawLayerBoundaries(ByRef srcLayer As pdLayer)
+Public Sub drawLayerBoundaries(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer)
 
     'In the old days, we could get away with assuming layer boundaries form a rectangle, but as of PD 7.0, affine transforms
     ' mean this is no longer guaranteed.
@@ -697,7 +697,7 @@ Public Sub drawLayerBoundaries(ByRef srcLayer As pdLayer)
     srcLayer.getLayerCornerCoordinates layerCorners, True, False
     
     'Next, convert each corner from image coordinate space to the active viewport coordinate space
-    Drawing.convertListOfImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), layerCorners, False
+    Drawing.convertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerCorners, False
     
     'Pass the list of coordinates to a pdGraphicsPath object; it will handle the actual UI rendering
     Dim tmpPath As pdGraphicsPath
@@ -711,13 +711,12 @@ Public Sub drawLayerBoundaries(ByRef srcLayer As pdLayer)
     tmpPath.addLine layerCorners(2).x, layerCorners(2).y, layerCorners(0).x, layerCorners(0).y
     
     'Render the final UI
-    tmpPath.strokePathToDIB_UIStyle Nothing, FormMain.mainCanvas(0).hDC
+    tmpPath.strokePathToDIB_UIStyle Nothing, dstCanvas.hDC
     
 End Sub
 
-'On the current viewport, render standard PD transformation nodes atop the active layer.
-' (At present, only the corners are marked.  In the future, rotation may also be added.)
-Public Sub drawLayerNodes(ByRef srcLayer As pdLayer)
+'On the current viewport, render standard PD transformation nodes (layer corners, currently) atop the active layer.
+Public Sub drawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer)
 
     'In the old days, we could get away with assuming layer boundaries form a rectangle, but as of PD 7.0, affine transforms
     ' mean this is no longer guaranteed.
@@ -729,20 +728,46 @@ Public Sub drawLayerNodes(ByRef srcLayer As pdLayer)
     srcLayer.getLayerCornerCoordinates layerCorners, True, False
     
     'Next, convert each corner from image coordinate space to the active viewport coordinate space
-    Drawing.convertListOfImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), layerCorners, False
+    Drawing.convertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerCorners, False
     
     Dim circRadius As Long, circAlpha As Long
     circRadius = 7
     circAlpha = 190
     
     Dim dstDC As Long
-    dstDC = FormMain.mainCanvas(0).hDC
+    dstDC = dstCanvas.hDC
     
     'Use GDI+ to render four corner circles
     GDIPlusDrawCanvasCircle dstDC, layerCorners(0).x, layerCorners(0).y, circRadius, circAlpha
     GDIPlusDrawCanvasCircle dstDC, layerCorners(1).x, layerCorners(1).y, circRadius, circAlpha
     GDIPlusDrawCanvasCircle dstDC, layerCorners(2).x, layerCorners(2).y, circRadius, circAlpha
     GDIPlusDrawCanvasCircle dstDC, layerCorners(3).x, layerCorners(3).y, circRadius, circAlpha
+    
+End Sub
+
+'As of PD 7.0, on-canvas rotation is now supported.  Use this function to render the current rotation node.
+Public Sub drawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer)
+    
+    'Retrieve the layer rotate node position from the specified layer, and convert it into the canvas coordinate space
+    Dim layerRotateNodes() As POINTFLOAT
+    ReDim layerRotateNodes(0 To 1) As POINTFLOAT
+    srcLayer.getLayerRotationNodeCoordinates layerRotateNodes, True
+    Drawing.convertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerRotateNodes, False
+    
+    'Render the circle
+    Dim circRadius As Long, circAlpha As Long
+    circRadius = 7
+    circAlpha = 190
+    
+    Dim dstDC As Long
+    dstDC = dstCanvas.hDC
+    GDIPlusDrawCanvasCircle dstDC, layerRotateNodes(1).x, layerRotateNodes(1).y, circRadius, circAlpha
+    
+    'As a convenience to the user, we also draw a line from the center of the layer to the rotation node, to help orient them
+    Dim tmpPath As pdGraphicsPath
+    Set tmpPath = New pdGraphicsPath
+    tmpPath.addLine layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(1).x, layerRotateNodes(1).y
+    tmpPath.strokePathToDIB_UIStyle Nothing, dstDC
     
 End Sub
 
