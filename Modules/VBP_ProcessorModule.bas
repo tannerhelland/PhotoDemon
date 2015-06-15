@@ -816,6 +816,9 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Resize layer (on-canvas)"
             Layer_Handler.resizeLayerNonDestructive pdImages(g_CurrentImage).getActiveLayerIndex, cParams.getParamString
         
+        Case "Rotate layer (on-canvas)"
+            Layer_Handler.rotateLayerNonDestructive pdImages(g_CurrentImage).getActiveLayerIndex, cParams.getParamString
+        
         Case "Move layer"
             Layer_Handler.moveLayerOnCanvas pdImages(g_CurrentImage).getActiveLayerIndex, cParams.getParamString
             
