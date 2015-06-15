@@ -212,26 +212,7 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     
     hOffsetImage = curImageX - m_InitImageX
     vOffsetImage = curImageY - m_InitImageY
-    
-    'To help us more easily process the transformation's effect on the layer, store the layer's original position
-    ' and size inside a RECT.  Note that we make two copies: one with canvas modifications (such as dynamic x/y
-    ' changes caused by on-canvas resizing), and one without.
-    Dim origLayerRect As RECT, origLayerRectModified As RECT
-    Layer_Handler.fillRectForLayer srcImage.getActiveLayer, origLayerRect
-    Layer_Handler.fillRectForLayer srcImage.getActiveLayer, origLayerRectModified, True
-    
-    'Calculate matching width/height values, which will simplify our x/y modifier calculations later on
-    Dim origWidth As Double, origHeight As Double, modifiedWidth As Double, modifiedHeight As Double
-    origWidth = origLayerRect.Right - origLayerRect.Left
-    origHeight = origLayerRect.Bottom - origLayerRect.Top
-    If origWidth < 1 Then origWidth = 1
-    If origHeight < 1 Then origHeight = 1
-    
-    modifiedWidth = origLayerRectModified.Right - origLayerRectModified.Left
-    modifiedHeight = origLayerRectModified.Bottom - origLayerRectModified.Top
-    If modifiedWidth < 1 Then modifiedWidth = 1
-    If modifiedHeight < 1 Then modifiedHeight = 1
-    
+        
     'To prevent the user from flipping or mirroring the image, we must do some bound checking on their changes,
     ' and disallow anything that results in invalid coordinates or sizes.
     Dim newLeft As Double, newTop As Double, newRight As Double, newBottom As Double
@@ -305,9 +286,36 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 
                 poiCleanupRequired = True
             
-            '4: rotation node (WIP)
+            '4: rotation node
             Case 4
             
+                'Layer rotation is different because it involves finding the angle between two lines; specifically, the angle between
+                ' a flat origin line and the current node-to-origin line of the rotation node.
+                Dim ptIntersect As POINTFLOAT, pt1 As POINTFLOAT, pt2 As POINTFLOAT
+                
+                'The intersect point is the center of the image
+                ptIntersect.x = m_InitLayerCoords_Pure(0).x + (m_InitLayerCoords_Pure(3).x - m_InitLayerCoords_Pure(0).x) / 2
+                ptIntersect.y = m_InitLayerCoords_Pure(0).y + (m_InitLayerCoords_Pure(3).y - m_InitLayerCoords_Pure(0).y) / 2
+                
+                'The first non-intersecting point is simply the angle = 0 line
+                pt1.x = ptIntersect.x + 100
+                pt1.y = ptIntersect.y
+                
+                'The second non-intersecting point is the current mouse position
+                pt2.x = curImageX
+                pt2.y = curImageY
+                
+                'Find the angle between these
+                Dim newAngle As Double
+                newAngle = Math_Functions.angleBetweenTwoIntersectingLines(ptIntersect, pt1, pt2, True)
+                
+                'Because the angle function finds the absolute inner angle, it will never be greater than 180 degrees.  This also means
+                ' that +90 and -90 (from a UI standpoint) return the same 90 result.  A simple workaround is to force the sign to
+                ' match the difference between the y-coordinates of the two points.
+                If curImageY < pt1.y Then newAngle = -newAngle
+                
+                .setLayerAngle newAngle
+                            
             '5: interior of the layer (e.g. move the layer instead of resize it)
             Case 5
                 .setLayerOffsetX m_InitLayerCoords_Pure(0).x + hOffsetImage
@@ -363,6 +371,9 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 
             'Rotation
             Case 4
+                With srcImage.getActiveLayer
+                    Process "Rotate layer (on-canvas)", False, buildParams(.getLayerAngle), UNDO_LAYERHEADER
+                End With
             
             'Move-only transformations
             Case 5

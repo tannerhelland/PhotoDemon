@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.47</langversion>
+<langversion>6.7.48</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -13709,6 +13709,41 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 <!-- BEGIN text for VBP_ToolPanel_MoveSize.frm (toolpanel_MoveSize) -->
 
 <phrase>
+<original>interaction options</original>
+<translation>interaktions alternativ</translation>
+</phrase>
+
+<phrase>
+<original>automatically activate layer beneath mouse</original>
+<translation>aktiveras automatiskt lager under musen</translation>
+</phrase>
+
+<phrase>
+<original>ignore transparent pixels when auto-activating layers</original>
+<translation>ignorerar genomskinliga pixlar När Auto-aktiverande skikt</translation>
+</phrase>
+
+<phrase>
+<original>show layer borders</original>
+<translation>show skiktgränser</translation>
+</phrase>
+
+<phrase>
+<original>show move/size (corner) nodes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>display options</original>
+<translation>visningsalternativ</translation>
+</phrase>
+
+<phrase>
+<original>show rotation node</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>layer position (x, y)</original>
 <translation></translation>
 </phrase>
@@ -13731,36 +13766,6 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 <phrase>
 <original>angle test</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>interaction options</original>
-<translation>interaktions alternativ</translation>
-</phrase>
-
-<phrase>
-<original>automatically activate layer beneath mouse</original>
-<translation>aktiveras automatiskt lager under musen</translation>
-</phrase>
-
-<phrase>
-<original>ignore transparent pixels when auto-activating layers</original>
-<translation>ignorerar genomskinliga pixlar När Auto-aktiverande skikt</translation>
-</phrase>
-
-<phrase>
-<original>show layer borders</original>
-<translation>show skiktgränser</translation>
-</phrase>
-
-<phrase>
-<original>show layer transform nodes</original>
-<translation>show skiktet omvandla noder</translation>
-</phrase>
-
-<phrase>
-<original>display options</original>
-<translation>visningsalternativ</translation>
 </phrase>
 
 <phrase>
@@ -13788,7 +13793,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_MoveSize.frm contains 21 phrases. 5 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+<!-- VBP_ToolPanel_MoveSize.frm contains 22 phrases. 5 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_MoveSize.frm-->
 
@@ -14067,10 +14072,10 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2444</phrasecount>
+<phrasecount>2445</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4220 phrases. -->
-<!-- 1776 are duplicates, so only 2444 unique phrases have been written to file. -->
-<!-- These 2444 phrases contain approximately 13666 total words. -->
+<!-- As of this build, PhotoDemon contains 4221 phrases. -->
+<!-- 1776 are duplicates, so only 2445 unique phrases have been written to file. -->
+<!-- These 2445 phrases contain approximately 13668 total words. -->
 
 </pdData>

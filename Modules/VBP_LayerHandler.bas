@@ -814,6 +814,27 @@ Public Sub resizeLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizePa
 
 End Sub
 
+'Rotate a layer non-destructively, e.g. by only changing its header angle value
+Public Sub rotateLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizeParams As String)
+
+    'Create a parameter parser to help us interpret the passed param string
+    Dim cParams As pdParamString
+    Set cParams = New pdParamString
+    cParams.setParamString resizeParams
+    
+    'Apply the passed parameter to the specified layer
+    With pdImages(g_CurrentImage).getLayerByIndex(srcLayerIndex)
+        .setLayerAngle cParams.GetDouble(1, 0)
+    End With
+    
+    'Notify the parent image of the change
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYERHEADER, srcLayerIndex
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
+
 'Move a layer to a new x/y position on the canvas
 Public Sub moveLayerOnCanvas(ByVal srcLayerIndex As Long, ByVal resizeParams As String)
 

@@ -264,6 +264,28 @@ Public Function distanceThreeDimensions(ByVal x1 As Double, ByVal y1 As Double, 
     distanceThreeDimensions = Sqr((x1 - x2) ^ 2 + (y1 - y2) ^ 2 + (z1 - z2) ^ 2)
 End Function
 
+'Given two intersecting lines, return the angle between them (e.g. the inner product: https://en.wikipedia.org/wiki/Inner_product_space)
+Public Function angleBetweenTwoIntersectingLines(ByRef ptIntersect As POINTFLOAT, ByRef pt1 As POINTFLOAT, ByRef pt2 As POINTFLOAT, Optional ByVal returnResultInAngles As Boolean = True) As Double
+    
+    Dim dx1i As Double, dy1i As Double, dx2i As Double, dy2i As Double
+    dx1i = pt1.x - ptIntersect.x
+    dy1i = pt1.y - ptIntersect.y
+    
+    dx2i = pt2.x - ptIntersect.x
+    dy2i = pt2.y - ptIntersect.y
+    
+    Dim m12 As Double, m13 As Double
+    m12 = Sqr(dx1i * dx1i + dy1i * dy1i)
+    m13 = Sqr(dx2i * dx2i + dy2i * dy2i)
+    
+    angleBetweenTwoIntersectingLines = Acos((dx1i * dx2i + dy1i * dy2i) / (m12 * m13))
+    
+    If returnResultInAngles Then
+        angleBetweenTwoIntersectingLines = angleBetweenTwoIntersectingLines / PI_DIV_180
+    End If
+    
+End Function
+
 'Return the arctangent of two values (rise / run)
 Public Function Atan2(ByVal y As Double, ByVal x As Double) As Double
  
