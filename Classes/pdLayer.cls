@@ -2817,7 +2817,7 @@ Public Function getViewportHash_Theoretical(ParamArray allParams() As Variant) A
     Dim tmpHash As Long
     
     With myLayerData
-        tmpHash = (.l_Angle * 3600) Xor (.l_CanvasXModifier * 8091) Xor (.l_CanvasYModifier * 4095)
+        tmpHash = (.l_Angle * 360000) Xor (.l_CanvasXModifier * 8091) Xor (.l_CanvasYModifier * 4095)
         tmpHash = tmpHash Xor (.l_OffsetX * 10) Xor (.l_OffsetY * 25)
         tmpHash = tmpHash Xor (.l_ResizeQuality * 620)
         tmpHash = tmpHash Xor (.l_Opacity * 65535)
