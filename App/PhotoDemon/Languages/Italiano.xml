@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.48</langversion>
+<langversion>6.7.49</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -12016,11 +12016,16 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
+<original>Rotate layer (on-canvas)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Move layer</original>
 <translation>Muovi il livello</translation>
 </phrase>
 
-<!-- VBP_ToolSupport.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
+<!-- VBP_ToolSupport.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolSupport.bas-->
 
@@ -13705,6 +13710,11 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- BEGIN text for VBP_ToolPanel_MoveSize.frm (toolpanel_MoveSize) -->
 
 <phrase>
+<original>angle test</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>interaction options</original>
 <translation>opzioni di interazione</translation>
 </phrase>
@@ -13756,11 +13766,6 @@ o il menù File > Apri e File > Importa.</translation>
 
 <phrase>
 <original>non-destructive resize options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>angle test</original>
 <translation></translation>
 </phrase>
 
@@ -14068,10 +14073,10 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2445</phrasecount>
+<phrasecount>2446</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4221 phrases. -->
-<!-- 1776 are duplicates, so only 2445 unique phrases have been written to file. -->
-<!-- These 2445 phrases contain approximately 13668 total words. -->
+<!-- As of this build, PhotoDemon contains 4222 phrases. -->
+<!-- 1776 are duplicates, so only 2446 unique phrases have been written to file. -->
+<!-- These 2446 phrases contain approximately 13671 total words. -->
 
 </pdData>

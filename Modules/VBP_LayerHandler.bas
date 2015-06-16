@@ -869,14 +869,24 @@ Public Sub fillRectForLayer(ByRef srcLayer As pdLayer, ByRef dstRect As RECT, Op
     
 End Sub
 
-'Given a layer, populate a rect with its coordinates (relative to the main image coordinates, always)
-Public Sub fillRectForLayerF(ByRef srcLayer As pdLayer, ByRef dstRect As RECTF, Optional ByVal useCanvasModifiers As Boolean = False)
+'Given a layer, populate a rect with its coordinates (relative to the main image coordinates, always).
+' As of PD 7.0, an additional "includeAffineTransforms" parameter is available.  This will return the bounds of the layer, after any/all
+' affine transforms (rotate, etc) have been processed.
+Public Sub fillRectForLayerF(ByRef srcLayer As pdLayer, ByRef dstRect As RECTF, Optional ByVal useCanvasModifiers As Boolean = False, Optional ByVal includeAffineTransforms As Boolean = True)
 
     With srcLayer
-        dstRect.Left = .getLayerOffsetX
-        dstRect.Width = .getLayerWidth(useCanvasModifiers)
-        dstRect.Top = .getLayerOffsetY
-        dstRect.Height = .getLayerHeight(useCanvasModifiers)
+        
+        If includeAffineTransforms Then
+            
+            .getLayerBoundaryRect dstRect
+            
+        Else
+            dstRect.Left = .getLayerOffsetX
+            dstRect.Width = .getLayerWidth(useCanvasModifiers)
+            dstRect.Top = .getLayerOffsetY
+            dstRect.Height = .getLayerHeight(useCanvasModifiers)
+        End If
+        
     End With
 
 End Sub
