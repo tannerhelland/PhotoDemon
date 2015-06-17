@@ -1559,7 +1559,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
             ' bits to the hash.  This way, if the layer OR the viewport changes, we regenerate the viewport-specific cache for this layer.  However,
             ' if both stay the same, we can simply re-use our previous rendering, which saves tons of time if layers other than the current one
             ' have active affine transforms (as we don't need to re-process them!).
-            testHash = srcLayer.getViewportHash_Theoretical(m_PlgPointsDst(0).x, m_PlgPointsDst(0).y, m_PlgPointsDst(1).x, m_PlgPointsDst(1).y, m_PlgPointsDst(2).x, m_PlgPointsDst(2).y, InterpolationMode)
+            testHash = srcLayer.getViewportHash_Theoretical(m_PlgPointsDst(0).x, m_PlgPointsDst(0).y, m_PlgPointsDst(1).x, m_PlgPointsDst(1).y, m_PlgPointsDst(2).x, m_PlgPointsDst(2).y, interpolationType)
             
             'This function differs from the standard pipeline because we *always* create a temporary compositing DIB.  The speed hit from
             ' a complex affine transform is significant, especially on large images, so caching the transform (even for normal blendmode and
