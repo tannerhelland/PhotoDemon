@@ -1226,57 +1226,40 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
     'Note that raster layers may also trigger this setting, if their raster contents have changed since a previous cache request.
     Dim cachedDIBValid As Boolean
     
-    'Start by retrieving two rects for this layer, in pdImage coordinates - one with affine transforms, and one without.
-    Layer_Handler.fillRectForLayerF srcLayer, layerRectAffine, True, True
-    Layer_Handler.fillRectForLayerF srcLayer, layerRect, True, False
+    'Before doing anything else, we want to see if we can completely skip processing this layer.  A layer is skippable if it does not
+    ' intersect the current viewport, but note that we must explicitly account for non-destructive transforms (including complex affine
+    ' transforms, like rotate/skew) when calculating the intersection!
+    Dim layerAndViewportIntersect As Boolean
     
     'TODO: some kind of fancy function that finds the intersection between a rotated/skewed image's boundary polygon instead of its full rect.
     '      The full rect may indicate overlap, but if the overlap is only a transparent corner region, we can still skip this layer.
+    If srcLayer.affineTransformsActive(False) Then
+        Layer_Handler.fillRectForLayerF srcLayer, layerRectAffine, True, True
+        layerAndViewportIntersect = GDI_Plus.IntersectRectF(intRectSrc, srcImageRect, layerRectAffine)
     
-    'Check for an intersection between the full image source rect (passed to this function) and this layer's boundaries.
-    If GDI_Plus.IntersectRectF(intRectSrc, srcImageRect, layerRectAffine) Then
+    'Layers without affine transforms use a shortcut intersection approach.
+    Else
+        Layer_Handler.fillRectForLayerF srcLayer, layerRect, True, False
+        layerAndViewportIntersect = GDI_Plus.IntersectRectF(intRectSrc, srcImageRect, layerRect)
+    End If
+    
+    'The rest of this function is skippable if the layer does not overlap the current viewport.
+    If layerAndViewportIntersect Then
         
         'The passed layer intersects the viewport, so we must deal with it.
         
         'If this layer is a vector layer, make sure its DIB is properly synchronized.  (If it's *not* a vector layer, this action does nothing.)
+        ' This check is important because changes to vector data, e.g. modifying text, will not change any rendering-specific settings, which means
+        ' the layer hash won't change.  However, the layer *still needs to be redrawn*, obviously.
         cachedDIBValid = Not srcLayer.syncInternalDIB()
-                
-        'The composite operation works similar to StretchBlt, by calculating a destination rectangle and a source rectangle.
-        ' We know that these two rectangles define the same rectangle of the image, which allows us to infer zoom as well.
-        
-        'Now that we know the region of this layer that corresponds to the requested destination rect, we will use the
-        ' getDstRectFromSrcRectF() function to translate our already calculated eight bare destination and source values
-        ' (x/y/width/height) and retrieve a usable destination rect for this layer, defining the destination region of
-        ' the target covered by this layer.
-        getDstRectFromSrcRectF dstRect, intRectSrc, dstViewportRect.Left, dstViewportRect.Top, dstViewportRect.Width, dstViewportRect.Height, srcImageRect.Left, srcImageRect.Top, srcImageRect.Width, srcImageRect.Height
-        
-        'dstRect and intRectSrc now contain StretchBlt-compatible destination and source rectangles RELATIVE TO THE FULL IMAGE.
-        
-        'Because the current layer may not be the same size as the full image, we must perform one final translation: a source
-        ' rect that represents the source area, relative to the current layer's DIB.  This step is important if the layer has
-        ' non-destructive resizing active, because this is when we apply that calculation.
-        With srcRect
-            .Left = (intRectSrc.Left - CSng(srcLayer.getLayerOffsetX)) * (1 / srcLayer.getLayerCanvasXModifier)
-            .Width = intRectSrc.Width * (1 / srcLayer.getLayerCanvasXModifier)
-            .Top = (intRectSrc.Top - CSng(srcLayer.getLayerOffsetY)) * (1 / srcLayer.getLayerCanvasYModifier)
-            .Height = intRectSrc.Height * (1 / srcLayer.getLayerCanvasYModifier)
-        End With
-        
-        'Precalculate dimensions of any temporary DIBs we need to create.  These can have fractional offsets on either side, so we need
-        ' to make sure the DIB is at least large enough to contain 0.99 offsets on either side.
-        Dim dibWidthCalc As Long, dibHeightCalc As Long
-        dibWidthCalc = dstRect.Width + 0.999 + (dstRect.Left - Int(dstRect.Left))
-        dibHeightCalc = dstRect.Height + 0.999 + (dstRect.Top - Int(dstRect.Top))
-        
-        'With all coordinate math complete, we now proceed with the actual compositing!
         
         'Several conditions require us to create a temporary DIB prior to actually compositing this layer:
         ' 1) Non-destructive effects
         ' 2) Non-standard blend modes (on layers other than the background layer; the background layer blend mode is ignored)
-        ' 3) Affine transformations (rotate, skew, etc; these may cover complicated sub-sections of the base image, so they require
-        '     a lot of extra work)
+        ' 3) Affine transformations (rotate, skew, etc).  These may cover complicated sub-sections of the base image, so they require
+        '     a lot of extra work; in fact, their calculations form a completely separate rendering pipeline.
                 
-        'Check for non-standard blend-modes now.
+        'Check for non-standard blend-modes now, because the resulting calculation affects all subsequent branches.
         Dim nonStandardBlendModeActive As Boolean
         
         If isBaseLayer Then
@@ -1285,16 +1268,58 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
             nonStandardBlendModeActive = CBool(srcLayer.getLayerBlendMode <> BL_NORMAL)
         End If
         
-        'To improve performance, we are now going to check the viewport hash of this layer.  If the layer AND viewport have not changed
-        ' since our last render, we can just grab the last temporary viewport object we generated.  Note that this hash value is valid for
-        ' any combination of non-destructive FX, non-destructive resizing, and weird blend modes.
+        'To improve performance, this function also calculates and checks a dedicated "viewport hash" of the layer.  If the layer AND viewport
+        ' have not changed since our last render, we can just grab the last temporary viewport object we generated, which makes things like
+        ' non-destructive effects and transforms incredibly fast once they've been calculated at least once.
+        '
+        '(Note that the hash value is valid for any combination of non-destructive FX, non-destructive resizing, and weird blend modes,
+        ' by design.)
+        '
+        'We declare the hash here, but note that we don't calculate it until later in the processing chain.  (The hash includes some
+        ' viewport-specific values, which vary depending on subsequent compositing branches.)
         Dim testHash As Long
+        
+        'We will also be creating a temporary compositing DIB for this layer.  Because coordinates may be floating-point, we need integer
+        ' versions that we explicitly size outside the floating-point boundaries, to ensure no cropping takes place.
+        Dim dibWidthCalc As Long, dibHeightCalc As Long
         
         'We are now going to branch down two processing paths.  Layers with no complicated affine transforms active are much easier to handle,
         ' as we can mathematically determine a rectangular region of the layer to process.  Layers *with* active affine transforms require
         ' much uglier handling, and a fairly significant hit to processing speed.
         If Not srcLayer.affineTransformsActive(False) Then
-        
+            
+            'For normal, rectangular layers, the composite operation works similar to StretchBlt, where we calculate a destination rectangle
+            ' and a source rectangle.  We know that these two rectangles define the same rectangle of the image, which allows us to infer
+            ' zoom (without requiring access to the target canvas object).
+            
+            'The earlier layerAndViewportIntersect test created a new intersection rect, which tells us where this layer overlaps the
+            ' destination viewport rect.  However, the intersect rect was calculated in the layer coordinate space, and we also need
+            ' to know where it lies in the viewport coordinate space.  (In many cases, the intersect rect will only cover some subsection
+            ' of the viewport, meaning our temporary compositing DIB can also be smaller than the viewport, saving time and memory).
+            
+            'The getDstRectFromSrcRectF() function uses our already calculated eight bare destination and source values (x/y/width/height)
+            ' to calculate a canvas-space destination rect for this layer, e.g. defining the destination region of the viewport covered by this layer.
+            getDstRectFromSrcRectF dstRect, intRectSrc, dstViewportRect.Left, dstViewportRect.Top, dstViewportRect.Width, dstViewportRect.Height, srcImageRect.Left, srcImageRect.Top, srcImageRect.Width, srcImageRect.Height
+            
+            'dstRect and intRectSrc now contain StretchBlt-compatible destination and source rectangles RELATIVE TO THE FULL IMAGE.
+            
+            'Because the current layer may not be the same size as the full image, we must perform one final translation: a source
+            ' rect that represents the source area, relative to the current layer's DIB.  This step is important if the layer has
+            ' non-destructive resizing active, because this is when we apply that calculation.
+            With srcRect
+                .Left = (intRectSrc.Left - CSng(srcLayer.getLayerOffsetX)) * (1 / srcLayer.getLayerCanvasXModifier)
+                .Width = intRectSrc.Width * (1 / srcLayer.getLayerCanvasXModifier)
+                .Top = (intRectSrc.Top - CSng(srcLayer.getLayerOffsetY)) * (1 / srcLayer.getLayerCanvasYModifier)
+                .Height = intRectSrc.Height * (1 / srcLayer.getLayerCanvasYModifier)
+            End With
+            
+            'Precalculate dimensions of any temporary DIBs we need to create.  These can have fractional offsets on either side, so we need
+            ' to make sure the DIB is at least large enough to contain 0.99 offsets on either side.
+            dibWidthCalc = dstRect.Width + 0.999 + (dstRect.Left - Int(dstRect.Left))
+            dibHeightCalc = dstRect.Height + 0.999 + (dstRect.Top - Int(dstRect.Top))
+            
+            'With all coordinate math complete, we now proceed with the actual compositing!
+            
             'While the layer provides its own hash (representing whether internal layer settings have changed), we also append some viewport-specific
             ' bits to the hash.  This way, if the layer OR the viewport changes, we regenerate the viewport-specific cache for this layer.
             testHash = srcLayer.getViewportHash_Theoretical(srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height, dibWidthCalc, dibHeightCalc)
@@ -1482,7 +1507,7 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
             
             'End handling of layers with no non-scaling affine transforms
         
-        'One or more non-scaling affine transforms are active (e.g. rotation).  Special work is required.
+        'One or more non-scaling affine transforms are active (e.g. rotation).  Special coordinate calculations are required.
         Else
         
             'For this first test, all affine-transformed layers are going to be forcibly composited to a DIB the size of the current viewport.
@@ -1502,25 +1527,16 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
             viewportScaleX = srcCalcWidth * (dstViewportRect.Width / srcImageRect.Width)
             viewportScaleY = srcCalcHeight * (dstViewportRect.Height / srcImageRect.Height)
             
-            'This is a quick and dirty way to calculate correct destination offsets; I'll optimize it further in the coming days.
-            ' The basic idea is that this viewport pipeline operates almost exclusively in the *image* coordinate space, not the
-            ' *layer* coordinate space, because the layer area is always the same (the full layer).  What we're doing here is figuring
-            ' out where the image boundaries lie in the canvas coordinate space; this lets us know how much to offset our parallelogram
-            ' corner coordinates prior to drawing.
+            'This viewport pipeline operates almost exclusively in the *image* coordinate space - *not* the *layer* coordinate space -
+            ' because the layer area is always the same (the full layer).  To that end, we can use a shortcut calculation to solve the
+            ' where the image boundaries lie in the canvas coordinate space, because we don't need to account for the usual combination
+            ' of source x/y (instead, we can assume 0, 0).  These shift offsets let us know how much to offset the layer parallelogram
+            ' corner coordinates prior to rendering.
             Dim viewportShiftX As Double, viewportShiftY As Double
-            Dim tmpRect As RECTF
-            With tmpRect
-                .Left = 0
-                .Top = 0
-                .Width = srcImage.Width
-                .Height = srcImage.Height
-            End With
-                
-            getDstRectFromSrcRectF dstRect, tmpRect, dstViewportRect.Left, dstViewportRect.Top, dstViewportRect.Width, dstViewportRect.Height, srcImageRect.Left, srcImageRect.Top, srcImageRect.Width, srcImageRect.Height
-            viewportShiftX = dstRect.Left - dstViewportRect.Left
-            viewportShiftY = dstRect.Top - dstViewportRect.Top
+            viewportShiftX = (-srcImageRect.Left / srcImageRect.Width) * dstViewportRect.Width
+            viewportShiftY = (-srcImageRect.Top / srcImageRect.Height) * dstViewportRect.Height
             
-            'Use all the calculations we just made to convert the parallelogram coordinates into the destination coordinate space
+            'Use all the calculations we just made to create a new copy of the parallelogram coordinates, in the destination coordinate space
             Dim i As Long
             For i = 0 To 3
                 With m_PlgPointsDst(i)
@@ -1529,16 +1545,71 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                 End With
             Next i
             
+            'TODO: more complicated calculation of temporary compositing DIB size/position.
+            ' For now, make it the size of the viewport.
+            '
+            'Precalculate dimensions of any temporary DIBs we need to create.  These can have fractional offsets on either side, so we need
+            ' to make sure the DIB is at least large enough to contain 0.99 offsets on either side.
+            'dibWidthCalc = dstRect.Width + 0.999 + (dstRect.Left - Int(dstRect.Left))
+            'dibHeightCalc = dstRect.Height + 0.999 + (dstRect.Top - Int(dstRect.Top))
+            dibWidthCalc = dstViewportRect.Width
+            dibHeightCalc = dstViewportRect.Height
+            
             'While the layer provides its own hash (representing whether internal layer settings have changed), we also append some viewport-specific
-            ' bits to the hash.  This way, if the layer OR the viewport changes, we regenerate the viewport-specific cache for this layer.
-            testHash = srcLayer.getViewportHash_Theoretical(m_PlgPoints(0).x, m_PlgPoints(0).y, m_PlgPoints(1).x, m_PlgPoints(1).y, m_PlgPoints(2).x, m_PlgPoints(2).y)
+            ' bits to the hash.  This way, if the layer OR the viewport changes, we regenerate the viewport-specific cache for this layer.  However,
+            ' if both stay the same, we can simply re-use our previous rendering, which saves tons of time if layers other than the current one
+            ' have active affine transforms (as we don't need to re-process them!).
+            testHash = srcLayer.getViewportHash_Theoretical(m_PlgPointsDst(0).x, m_PlgPointsDst(0).y, m_PlgPointsDst(1).x, m_PlgPointsDst(1).y, m_PlgPointsDst(2).x, m_PlgPointsDst(2).y, InterpolationMode)
             
-            'TODO: make use of the hash
+            'This function differs from the standard pipeline because we *always* create a temporary compositing DIB.  The speed hit from
+            ' a complex affine transform is significant, especially on large images, so caching the transform (even for normal blendmode and
+            ' no NDFX) is always preferable.
             
-            'We now know where the parallelogram sits in the destination DIB's coordinate space.  Draw it now.
-            ' (Still to-do are blend modes and NDFX, FYI)
-            GDIPlus_PlgBlt m_dstDIB, m_PlgPointsDst, srcLayer.layerDIB, 0, 0, srcLayer.getLayerWidth(False), srcLayer.getLayerHeight(False), 1, srcLayer.getLayerResizeQuality_GDIPlus
-        
+            'Check the viewport hash now.  Certain conditions can force us to ignore internal caches (e.g. generating thumbnails).
+            If (srcLayer.getViewportHash = 0) Or (srcLayer.getViewportHash <> testHash) Or (Not cachedDIBValid) Or ignoreInternalCaches Then
+                
+                'The layer and/or viewport has changed since our last composite.  Create a new DIB in the cheapest way possible
+                ' (e.g., if the current temporary DIB size is acceptable, just reset it instead of fully redrawing it)
+                If (srcLayer.tmpDIB.getDIBWidth <> dibWidthCalc) Or (srcLayer.tmpDIB.getDIBHeight < dibHeightCalc) Then
+                    srcLayer.tmpDIB.createBlank dibWidthCalc, dibHeightCalc, 32, 0, 0
+                    srcLayer.tmpDIB.setInitialAlphaPremultiplicationState True
+                Else
+                    srcLayer.tmpDIB.resetDIB
+                End If
+                
+                'Render the affine-transformed DIB to the temporary compositing DIB, at 100% opacity and normal blend mode.
+                ' (Variable opacity and blend mode will be handled later.)
+                '
+                'Also, note that we branch according to the performance preference passed to this function.  By design, this is a different
+                ' approach than we use in the normal, rectangular rendering branch.  Because affine transforms can be extremely performance-intensive,
+                ' the user needs a way to override the layer's default stretching behavior.  (Note that, as usual, saving to file, copying to
+                ' clipboard, etc, *always* use the layer's settings, not the viewport ones.)
+                If interpolationType = InterpolationModeNearestNeighbor Then
+                    GDIPlus_PlgBlt srcLayer.tmpDIB, m_PlgPointsDst, srcLayer.layerDIB, 0, 0, srcLayer.getLayerWidth(False), srcLayer.getLayerHeight(False), 1, InterpolationModeNearestNeighbor
+                Else
+                    GDIPlus_PlgBlt srcLayer.tmpDIB, m_PlgPointsDst, srcLayer.layerDIB, 0, 0, srcLayer.getLayerWidth(False), srcLayer.getLayerHeight(False), 1, srcLayer.getLayerResizeQuality_GDIPlus
+                End If
+                    
+                'If non-destructive FX are active, apply them now
+                If srcLayer.getLayerNonDestructiveFXState Then applyNDFXToDIB srcLayer, srcLayer.tmpDIB
+                
+                'Update the layer hash, so we can possibly skip this work in the future
+                srcLayer.setViewportHash_FromLong testHash
+                
+            End If
+            
+            'srcLayer.tmpDIB now contains the chunk of this layer that appears on the viewport, with the affine transform and any/all
+            ' non-destructive edits applied to it.  The only thing left to do is composite it!
+                
+            'Non-standard blend modes must be handled by our internal compositor
+            If nonStandardBlendModeActive Then
+                compositeAndBlendDIBs srcLayer.tmpDIB, m_dstDIB, srcLayer.getLayerBlendMode, 0, 0, srcLayer.getLayerOpacity / 100
+                
+            'If no wacky blend modes are in use, we can use GDI's AlphaBlend for a performance boost
+            Else
+                srcLayer.tmpDIB.alphaBlendToDC m_dstDIB.getDIBDC, srcLayer.getLayerOpacity * 2.55, 0, 0
+            End If
+                
         End If
         
     'END block for layer intersecting the current viewport.  (Note that we simply ignore layers that don't intersect the viewport.)
