@@ -145,7 +145,7 @@ Private Type EncoderParameter
 End Type
 
 Private Type EncoderParameters
-    count     As Long
+    Count     As Long
     Parameter As EncoderParameter
 End Type
 
@@ -821,7 +821,6 @@ Public Function GDIPlusRotateDIB(ByRef dstDIB As pdDIB, ByVal dstX As Long, ByVa
         
         'PixelOffsetMode doesn't seem to affect rendering speed more than < 5%, but I did notice a slight
         ' improvement from explicitly requesting HighQuality mode - so why not leave it?
-        'GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighSpeed
         GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighQuality
     
         'Lock the incoming angle to something in the range [-360, 360]
@@ -1869,7 +1868,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'BMP export
         Case [ImageBMP]
             pvGetEncoderClsID "image/bmp", uEncCLSID
-            uEncParams.count = 1
+            uEncParams.Count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
             With uEncParams.Parameter
@@ -1884,7 +1883,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'GIF export
         Case [ImageGIF]
             pvGetEncoderClsID "image/gif", uEncCLSID
-            uEncParams.count = 1
+            uEncParams.Count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
             With uEncParams.Parameter
@@ -1899,7 +1898,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'JPEG export (requires extra work to specify a quality for the encode)
         Case [ImageJPEG]
             pvGetEncoderClsID "image/jpeg", uEncCLSID
-            uEncParams.count = 1
+            uEncParams.Count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
             With uEncParams.Parameter
@@ -1914,7 +1913,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'PNG export
         Case [ImagePNG]
             pvGetEncoderClsID "image/png", uEncCLSID
-            uEncParams.count = 1
+            uEncParams.Count = 1
             ReDim aEncParams(1 To Len(uEncParams))
             
             With uEncParams.Parameter
@@ -1929,7 +1928,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
         'TIFF export (requires extra work to specify compression and color depth for the encode)
         Case [ImageTIFF]
             pvGetEncoderClsID "image/tiff", uEncCLSID
-            uEncParams.count = 2
+            uEncParams.Count = 2
             ReDim aEncParams(1 To Len(uEncParams) + Len(uEncParams.Parameter) * 2)
             
             With uEncParams.Parameter
@@ -2027,7 +2026,7 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
     Dim aEncParams() As Byte
         
     pvGetEncoderClsID "image/png", uEncCLSID
-    uEncParams.count = 1
+    uEncParams.Count = 1
     ReDim aEncParams(1 To Len(uEncParams))
     
     Dim gdipColorDepth As Long
@@ -2356,11 +2355,11 @@ Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT
         Dim imgAttributesHandle As Long
         GdipCreateImageAttributes imgAttributesHandle
         
-        'To improve performance, explicitly request high-speed (aka linear) alpha compositing operation, and standard
-        ' pixel offsets (on pixel borders, instead of center points)
-        GdipSetImageAttributesWrapMode imgAttributesHandle, WrapModeTileFlipXY, 0, 0
+        'To improve performance and quality, explicitly request high-speed (aka linear) alpha compositing operation, and high-quality
+        ' pixel offsets (treat pixels as if they fall on pixel borders, instead of center points - this provides rudimentary edge
+        ' antialiasing, which is the best we can do without murdering performance)
         GdipSetCompositingQuality iGraphics, CompositingQualityHighSpeed
-        GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighSpeed
+        GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighQuality
         
         'If modified alpha is requested, pass the new value to this image container
         If newAlpha <> 1 Then
@@ -2369,7 +2368,6 @@ Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT
         End If
     
         'Perform the draw
-        'GdipDrawImageRectRect iGraphics, tBitmap, x1, y1, dstWidth, dstHeight, x2, y2, srcWidth, srcHeight, UnitPixel, imgAttributesHandle
         GdipDrawImagePointsRect iGraphics, tBitmap, VarPtr(plgPoints(0)), 3, x2, y2, srcWidth, srcHeight, UnitPixel, imgAttributesHandle, 0, 0
         
         'Release our image attributes object
