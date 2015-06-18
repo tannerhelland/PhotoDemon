@@ -300,7 +300,11 @@ Private m_UserInteractedWithCanvas As Boolean
 
 'On the canvas's MouseDown event, mark the relevant point of interest index for this layer (if any).
 ' If a point of interest has not been selected, this value will be reset to -1.
-Private curPointOfInterest As Long
+Private m_curPointOfInterest As Long
+
+'As some POI interactions may cause the canvas to redraw, we also cache the *last* point of interest.  When this mismatches the
+' current one, a UI-only viewport redraw is requested, and the last/current point values are synched.
+Private m_LastPointOfInterest
 
 'PD's custom input class completely replaces all mouse interfacing for this control
 Private WithEvents cMouseEvents As pdInputMouse
@@ -1154,7 +1158,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
         'Ask the current layer if these coordinates correspond to a point of interest.  We don't always use this return value,
         ' but a number of functions could potentially ask for it, so we cache it at MouseDown time and hang onto it until
         ' the mouse is released.
-        curPointOfInterest = pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(layerX, layerY)
+        m_curPointOfInterest = pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(layerX, layerY)
         
         'Any further processing depends on which tool is currently active
         Select Case g_CurrentTool
@@ -1297,7 +1301,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
                 
                     'Did the user click on a POI for this layer?  If they did, the user is editing the current text layer.
-                    If curPointOfInterest >= 0 Then
+                    If m_curPointOfInterest >= 0 Then
                         userIsEditingCurrentTextLayer = True
                     Else
                         userIsEditingCurrentTextLayer = False
@@ -1325,13 +1329,13 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                     Tool_Support.syncCurrentLayerToToolOptionsUI
                     
                     'Put the newly created layer into transform mode, with the bottom-right corner selected
-                    Tool_Support.setInitialLayerToolValues pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, imgX, imgY, 2
+                    Tool_Support.setInitialLayerToolValues pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, imgX, imgY, 3
                                         
                     'Also, note that we have just created a new text layer.  The MouseUp event needs to know this, so it can initiate a full-image Undo/Redo event.
                     Tool_Support.setCustomToolState PD_TEXT_TOOL_CREATED_NEW_LAYER
                     
                     'Redraw the viewport immediately
-                    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+                    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0), False, 3
                 
                 End If
                 
@@ -1391,14 +1395,12 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     displayImageCoordinates x, y, pdImages(g_CurrentImage), Me, imgX, imgY
     
     'We also need a copy of the current mouse position relative to the active layer.  (This became necessary in PD 7.0, as layers
-    ' may have non-destructive affine transforms active, which means we can't blindly switch between image and layer coordinate spaces!)
+    ' may have non-destructive affine transforms active, which means we can't reuse image coordinates as layer coordinates!)
     '
     'Note also that we refresh the layer transformation matrix if the mouse is not down
     Dim layerX As Single, layerY As Single
     Drawing.convertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, imgX, imgY, layerX, layerY
-    
-    'Debug.Print imgX, imgY, layerX, layerY
-    
+        
     'Check the left mouse button
     If lMouseDown Then
     
@@ -1461,7 +1463,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                 End If
                 
             'Text layers are identical to the move tool
-            Case NAV_MOVE, VECTOR_TEXT, VECTOR_FANCYTEXT
+            Case VECTOR_TEXT, VECTOR_FANCYTEXT
                 Message "Shift key: preserve layer aspect ratio"
                 transformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask)
             
@@ -1477,7 +1479,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         
             'Drag-to-navigate
             Case NAV_DRAG
-                
+            
             'Move stuff around
             Case NAV_MOVE
             
@@ -1850,7 +1852,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
     If Button = vbRightButton Then rMouseDown = False
     
     'Reset any tracked point of interest value for this layer
-    curPointOfInterest = -1
+    m_curPointOfInterest = -1
         
     'Reset the mouse movement tracker
     hasMouseMoved = 0
@@ -2048,6 +2050,10 @@ Private Sub UserControl_Initialize()
         
         'Align the main picture box
         alignCanvasPictureBox
+        
+        'Reset any POI trackers
+        m_curPointOfInterest = -1
+        m_LastPointOfInterest = -1
         
     End If
     
@@ -2363,6 +2369,9 @@ End Function
 'A lot of extra values are passed to this function.  Individual tools can use those at their leisure to customize their cursor requests.
 Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button As Integer, ByVal x As Single, ByVal y As Single, ByVal imgX As Double, ByVal imgY As Double, ByVal layerX As Double, ByVal layerY As Double)
 
+    'Some cursor functions operate on a POI basis
+    Dim curPOI As Long
+
     'Obviously, cursor setting is handled separately for each tool.
     Select Case g_CurrentTool
         
@@ -2384,8 +2393,10 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
         
         Case NAV_MOVE
             
-            'When transforming layers, the cursor depends on several factors
-            Select Case pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(layerX, layerY)
+            'When transforming layers, the cursor depends on the active POI
+            curPOI = pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(layerX, layerY)
+            
+            Select Case curPOI
             
                 'Mouse is not over the current layer
                 Case -1
@@ -2399,20 +2410,20 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                 Case 1
                     cMouseEvents.setSystemCursor IDC_SIZENESW
                     
-                'Mouse is over the bottom-right corner
+                'Mouse is over the bottom-left corner
                 Case 2
+                    cMouseEvents.setSystemCursor IDC_SIZENESW
+                    
+                'Mouse is over the bottom-right corner
+                Case 3
                     cMouseEvents.setSystemCursor IDC_SIZENWSE
                     
-                'Mouse is over the bottom-left corner
-                Case 3
-                    cMouseEvents.setSystemCursor IDC_SIZENESW
-                
-                'Mouse is over the rotation handle
-                Case 4
+                'Mouse is over a rotation handle
+                Case 4 To 7
                     cMouseEvents.setSystemCursor IDC_SIZEALL
                     
                 'Mouse is within the layer, but not over a specific node
-                Case 5
+                Case 8
                 
                     'This case is unique because if the user has elected to ignore transparent pixels, they cannot move a layer
                     ' by dragging the mouse within a transparent region of the layer.  Thus, before changing the cursor,
@@ -2427,6 +2438,13 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                     End If
                     
             End Select
+            
+            'The move tool is unique because it will request a redraw of the viewport when the POI changes, so that the current
+            ' POI can be highlighted.
+            If m_LastPointOfInterest <> curPOI Then
+                m_LastPointOfInterest = curPOI
+                Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me, curPOI
+            End If
             
         Case SELECT_RECT, SELECT_CIRC
         
@@ -2550,8 +2568,11 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             
             'First, see if the active layer is a text layer.  If it is, we need to check for POIs.
             If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
-            
-                Select Case pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(layerX, layerY)
+                
+                'When transforming layers, the cursor depends on the active POI
+                curPOI = pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(layerX, layerY)
+                
+                Select Case curPOI
     
                     'Mouse is not over the current layer
                     Case -1
@@ -2573,15 +2594,22 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                     Case 3
                         cMouseEvents.setSystemCursor IDC_SIZENESW
                         
-                    'Mouse is over the rotation handle
-                    Case 4
+                    'Mouse is over a rotation handle
+                    Case 4 To 7
                         cMouseEvents.setSystemCursor IDC_SIZEALL
                     
                     'Mouse is within the layer, but not over a specific node
-                    Case 5
+                    Case 8
                         cMouseEvents.setSystemCursor IDC_SIZEALL
                     
                 End Select
+                
+                'Similar to the move tool, texts tools will request a redraw of the viewport when the POI changes, so that the current
+                ' POI can be highlighted.
+                If m_LastPointOfInterest <> curPOI Then
+                    m_LastPointOfInterest = curPOI
+                    Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), Me, curPOI
+                End If
                 
             'If the current layer is *not* a text layer, clicking anywhere will create a new text layer
             Else

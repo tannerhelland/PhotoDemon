@@ -1372,9 +1372,9 @@ Friend Sub getLayerCornerCoordinates(ByRef dstPoints() As POINTFLOAT, Optional B
 End Sub
 
 'As of PhotoDemon 7.0, non-destructive layer rotation is supported.  Call this function to retrieve the position of the layer's on-canvas
-' rotation node *IN IMAGE COORDINATES*.  Note that an array is required, and it must be at least (0, 1) in size.  The first point contains
-' the center point of the rotation node (e.g. the center of the current image), while the second point contains the actual rotation node,
-' which sits outside the image by 25%.
+' rotation node *IN IMAGE COORDINATES*.  Note that an array is required, and it must be at least (0, 4) in size.  The first point contains
+' the center point of the rotation node (e.g. the center of the current image), while subsequent points contain valid rotation nodes, which
+' sit on the halfway point at each image boundary.
 Friend Sub getLayerRotationNodeCoordinates(ByRef dstPoints() As POINTFLOAT, Optional ByVal includeOffsets As Boolean = True, Optional ByVal includeNonDestructiveScaling As Boolean = True)
     
     'Retrieve a copy of the current layer transform matrix
@@ -1386,15 +1386,27 @@ Friend Sub getLayerRotationNodeCoordinates(ByRef dstPoints() As POINTFLOAT, Opti
     dstPoints(0).x = Me.getLayerWidth(includeNonDestructiveScaling) / 2
     dstPoints(0).y = Me.getLayerHeight(includeNonDestructiveScaling) / 2
     
-    dstPoints(1).x = Me.getLayerWidth(includeNonDestructiveScaling) * 1.25
+    'Also, note that changes to the outer node position *must be mirrored* to the checkPointOfInterest() function below!
+    dstPoints(1).x = Me.getLayerWidth(includeNonDestructiveScaling)
     dstPoints(1).y = Me.getLayerHeight(includeNonDestructiveScaling) / 2
     
+    dstPoints(2).x = Me.getLayerWidth(includeNonDestructiveScaling) / 2
+    dstPoints(2).y = Me.getLayerHeight(includeNonDestructiveScaling)
+    
+    dstPoints(3).x = 0
+    dstPoints(3).y = Me.getLayerHeight(includeNonDestructiveScaling) / 2
+    
+    dstPoints(4).x = Me.getLayerWidth(includeNonDestructiveScaling) / 2
+    dstPoints(4).y = 0
+    
     'Apply the transformation matrix to each point
-    tmpMatrix.applyMatrixToPointF dstPoints(0)
-    tmpMatrix.applyMatrixToPointF dstPoints(1)
+    Dim i As Long
+    For i = 0 To 4
+        tmpMatrix.applyMatrixToPointF dstPoints(i)
+    Next i
     
     'The temporary translation matrix will automatically be cleaned up when the function exits
-    
+        
 End Sub
 
 'As of PhotoDemon 7.0, layers support one or more affine transformations (rotation, skew, etc).  If a caller needs a copy of the
@@ -2554,19 +2566,29 @@ Public Function checkForPointOfInterest(ByVal layerX As Long, ByVal layerY As Lo
         Case PDL_IMAGE, PDL_TEXT
             
             'Manually populate the point of interest array with the layer's corner coordinates.
-            ReDim poiList(0 To 4) As POINTAPI
+            ReDim poiList(0 To 7) As POINTAPI
             poiList(0).x = getLayerOffsetX
             poiList(0).y = getLayerOffsetY
             poiList(1).x = getLayerOffsetX + getLayerWidth(True)
             poiList(1).y = getLayerOffsetY
-            poiList(2).x = getLayerOffsetX + getLayerWidth(True)
+            poiList(2).x = getLayerOffsetX
             poiList(2).y = getLayerOffsetY + getLayerHeight(True)
-            poiList(3).x = getLayerOffsetX
+            poiList(3).x = getLayerOffsetX + getLayerWidth(True)
             poiList(3).y = getLayerOffsetY + getLayerHeight(True)
             
-            'As of PD 7.7, a rotation handle is also provided
-            poiList(4).x = getLayerOffsetX + getLayerWidth(True) * 1.25
-            poiList(4).y = getLayerOffsetY + getLayerHeight(True) / 2
+            'As of PD 7.7, rotation handles are also provided.  Note that changes to these positions *must be mirrored* in the
+            ' getLayerRotationNodeCoordinates() function above!
+            poiList(4).x = getLayerOffsetX + getLayerWidth(True)
+            poiList(4).y = getLayerOffsetY + getLayerHeight(True) \ 2
+            
+            poiList(5).x = getLayerOffsetX + getLayerWidth(True) \ 2
+            poiList(5).y = getLayerOffsetY + getLayerHeight(True)
+            
+            poiList(6).x = getLayerOffsetX
+            poiList(6).y = getLayerOffsetY + getLayerHeight(True) \ 2
+            
+            poiList(7).x = getLayerOffsetX + getLayerWidth(True) \ 2
+            poiList(7).y = getLayerOffsetY
             
             'Check to see if one of the corners has been clicked
             closestPoint = findClosestPointInArray(layerX, layerY, minDistance, poiList)
@@ -2580,7 +2602,7 @@ Public Function checkForPointOfInterest(ByVal layerX As Long, ByVal layerY As Lo
             'If we're at this line of code, a POI was not clicked. Perform one final check to see if the mouse is within
             ' the layer's boundaries, and if it is, return the "move" ID, then exit.
             If (layerX > poiList(0).x) And (layerX < poiList(1).x) And (layerY > poiList(0).y) And (layerY < poiList(2).y) Then
-                checkForPointOfInterest = 5
+                checkForPointOfInterest = 8
             Else
                 checkForPointOfInterest = -1
             End If

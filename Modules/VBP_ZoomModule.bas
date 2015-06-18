@@ -54,6 +54,9 @@ Private cornerFix As pdDIB
 ' worthwhile until the pipeline has been executed at least once (and made it to at least stage 3, if you're curious).
 Private m_SrcImageRect As RECTF
 
+'To avoid re-applying certain settings, we cache the target viewport's DC between calls.
+Private m_TargetDC As Long
+
 'If an outside function wants a copy of the viewport's current image coverage, they can call this function.
 Public Sub getCopyOfSourceImageRect(ByRef dstRect As RECTF)
     dstRect = m_SrcImageRect
@@ -65,7 +68,11 @@ End Sub
 '
 'As part of the buffer flip, this stage will also activate and apply color management to the completed front buffer.
 ' (Still TODO is fixing the canvas to not rely on AutoRedraw, which will spare us having to re-activate color management on every draw.)
-Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
+'
+'Note also that this stage is the only one to make use of the optional POI ID parameter.  If supplied, it will forward this to any
+' UI functions that accept POI identifiers.  (Because the viewport is agnostic to underlying UI complexities, by design, it is up to
+' the caller to optimize POI-based requests, e.g. not forwarding them unless the POI has changed, etc)
+Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional curPOI As Long = -1)
 
     'If no images have been loaded, clear the canvas and exit
     If g_OpenImageCount = 0 Then
@@ -81,13 +88,14 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
     
     'Because AutoRedraw can cause the form's DC to change without warning, we must re-apply color management settings any time
     ' we redraw the screen.  I do not like this any more than you do, but we risk losing our DC's settings otherwise.
-    If Not (g_UseSystemColorProfile And g_IsSystemColorProfileSRGB) Then
-        assignDefaultColorProfileToObject dstCanvas.hWnd, dstCanvas.hDC
-        turnOnColorManagementForDC dstCanvas.hDC
+    If (Not (g_UseSystemColorProfile And g_IsSystemColorProfileSRGB)) Or (m_TargetDC <> dstCanvas.hDC) Then
+        m_TargetDC = dstCanvas.hDC
+        assignDefaultColorProfileToObject dstCanvas.hWnd, m_TargetDC
+        turnOnColorManagementForDC m_TargetDC
     End If
     
     'Finally, flip the front buffer to the screen
-    BitBlt dstCanvas.hDC, 0, srcImage.imgViewport.getTopOffset, frontBuffer.getDIBWidth, frontBuffer.getDIBHeight, frontBuffer.getDIBDC, 0, 0, vbSrcCopy
+    BitBlt m_TargetDC, 0, srcImage.imgViewport.getTopOffset, frontBuffer.getDIBWidth, frontBuffer.getDIBHeight, frontBuffer.getDIBDC, 0, 0, vbSrcCopy
     
     
     'Finally, we can do some tool-specific rendering directly onto the form.
@@ -102,10 +110,10 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             'If the user has requested visible transformation nodes, draw them now.
             ' (TODO: cache these values in either public variables, or inside this module via some kind of setViewportProperties
             '        function - either way, that will let us access drawing settings much more quickly!)
-            If CBool(toolpanel_MoveSize.chkLayerNodes) Then Drawing.drawLayerCornerNodes dstCanvas, srcImage, srcImage.getActiveLayer
+            If CBool(toolpanel_MoveSize.chkLayerNodes) Then Drawing.drawLayerCornerNodes dstCanvas, srcImage, srcImage.getActiveLayer, curPOI
             
             'Same as above, but for the current rotation node
-            If CBool(toolpanel_MoveSize.chkRotateNode) Then Drawing.drawLayerRotateNode dstCanvas, srcImage, srcImage.getActiveLayer
+            If CBool(toolpanel_MoveSize.chkRotateNode) Then Drawing.drawLayerRotateNode dstCanvas, srcImage, srcImage.getActiveLayer, curPOI
             
         'Selections are always rendered onto the canvas.  If a selection is active AND a selection tool is active, we can also
         ' draw transform nodes around the selection area.
@@ -121,8 +129,8 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             
             If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
                 Drawing.drawLayerBoundaries dstCanvas, srcImage, srcImage.getActiveLayer
-                Drawing.drawLayerCornerNodes dstCanvas, srcImage, srcImage.getActiveLayer
-                Drawing.drawLayerRotateNode dstCanvas, srcImage, srcImage.getActiveLayer
+                Drawing.drawLayerCornerNodes dstCanvas, srcImage, srcImage.getActiveLayer, curPOI
+                Drawing.drawLayerRotateNode dstCanvas, srcImage, srcImage.getActiveLayer, curPOI
             End If
             
     End Select
@@ -145,7 +153,7 @@ End Sub
 '
 'After this stage, the only things that should be rendered onto the canvas are uncolored UI elements, like custom-drawn cursors or
 ' control nodes.
-Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas)
+Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional curPOI As Long = -1)
 
     'If no images have been loaded, clear the canvas and exit
     If g_OpenImageCount = 0 Then
@@ -238,7 +246,7 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
         
     'Pass the completed front buffer to the final stage of the pipeline, which will flip everything to the screen and render any
     ' remaining UI elements!
-    Stage5_FlipBufferAndDrawUI srcImage, dstCanvas
+    Stage5_FlipBufferAndDrawUI srcImage, dstCanvas, curPOI
     
     
 End Sub
@@ -252,7 +260,7 @@ End Sub
 '
 'The optional pipelineOriginatedAtStageOne parameter lets this function know if a full pipeline purge is required.  Some caches
 ' may need to be regenerated from scratch after zoom changes.
-Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal pipelineOriginatedAtStageOne As Boolean = False)
+Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal pipelineOriginatedAtStageOne As Boolean = False, Optional curPOI As Long = -1)
 
     '(Temporary switch while working on new viewport engine)
     If g_ViewportPerformance = PD_PERF_BESTQUALITY Then
@@ -375,7 +383,7 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
     End With
     
     'Pass control to the next stage of the pipeline.
-    Stage4_CompositeCanvas srcImage, dstCanvas
+    Stage4_CompositeCanvas srcImage, dstCanvas, curPOI
 
 End Sub
 
@@ -392,7 +400,7 @@ End Sub
 '
 'The optional pipelineOriginatedAtStageOne parameter lets this function know if a full pipeline purge is required.  Some caches
 ' may need to be regenerated from scratch after zoom changes.
-Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal pipelineOriginatedAtStageOne As Boolean = False)
+Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal pipelineOriginatedAtStageOne As Boolean = False, Optional curPOI As Long = -1)
         
     'Like the previous stage of the pipeline, we start by performing a number of "do not render the viewport at all" checks.
     
@@ -429,7 +437,7 @@ Public Sub Stage2_CompositeAllLayers(ByRef srcImage As pdImage, ByRef dstCanvas 
     End If
     
     'Pass control to the next stage of the pipeline.
-    Stage3_ExtractRelevantRegion srcImage, dstCanvas, pipelineOriginatedAtStageOne
+    Stage3_ExtractRelevantRegion srcImage, dstCanvas, pipelineOriginatedAtStageOne, curPOI
     
     'If timing reports are enabled, we report them after the rest of the pipeline has finished.
     If g_DisplayTimingReports Then Debug.Print "Viewport render timing: " & Format(CStr((Timer - startTime) * 1000), "0000.00") & " ms"

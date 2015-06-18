@@ -39,7 +39,7 @@ Private m_InitImageX As Double, m_InitImageY As Double, m_InitLayerX As Single, 
 
 'If a point of interest is being modified by a tool action, its ID will be stored here.  Make sure to clear this value
 ' (to -1, which means "no point of interest") when you are finished with it (typically after MouseUp).
-Private curPOI As Long
+Private m_curPOI As Long
 
 'Some tools require complicated synchronization between UI elements (e.g. text up/downs that display coordinates), and PD internals
 ' (e.g. layer positions).  To prevent infinite update loops (UI change > internal change > UI change > ...), tools can mark their
@@ -74,7 +74,7 @@ End Sub
 Public Sub terminateGenericToolTracking()
     
     'Reset the current POI, if any
-    curPOI = -1
+    m_curPOI = -1
     
 End Sub
 
@@ -107,7 +107,7 @@ Public Sub setInitialLayerToolValues(ByRef srcImage As pdImage, ByRef srcLayer A
     End If
     
     'If a relevant POI was supplied, store it as well.  Note that not all tools make use of this.
-    curPOI = relevantPOI
+    m_curPOI = relevantPOI
         
 End Sub
 
@@ -230,7 +230,7 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     'Check the POI we were given, and update the layer accordingly.
     With srcLayer
     
-        Select Case curPOI
+        Select Case m_curPOI
             
             '-1: the mouse is not over the layer.  Do nothing.
             Case -1
@@ -264,19 +264,8 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 
                 poiCleanupRequired = True
                 
-            '2: bottom-right
-            Case 2
-                
-                'Calculate a new boundary rect
-                newRight = curLayerX
-                newBottom = curLayerY
-                newLeft = m_InitLayerCoords_Pure(0).x - hOffsetLayer
-                newTop = m_InitLayerCoords_Pure(0).y - vOffsetLayer
-                
-                poiCleanupRequired = True
-                
             '3: bottom-left
-            Case 3
+            Case 2
                 
                 'Calculate a new boundary rect
                 newLeft = curLayerX
@@ -285,23 +274,46 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 newTop = m_InitLayerCoords_Pure(0).y - vOffsetLayer
                 
                 poiCleanupRequired = True
+                
+            '2: bottom-right
+            Case 3
+                
+                'Calculate a new boundary rect
+                newRight = curLayerX
+                newBottom = curLayerY
+                newLeft = m_InitLayerCoords_Pure(0).x - hOffsetLayer
+                newTop = m_InitLayerCoords_Pure(0).y - vOffsetLayer
+                
+                poiCleanupRequired = True
             
-            '4: rotation node
-            Case 4
+            '4-7: rotation nodes
+            Case 4 To 7
             
                 'Layer rotation is different because it involves finding the angle between two lines; specifically, the angle between
                 ' a flat origin line and the current node-to-origin line of the rotation node.
                 Dim ptIntersect As POINTFLOAT, pt1 As POINTFLOAT, pt2 As POINTFLOAT
                 
-                'The intersect point is the center of the image
+                'The intersect point is the center of the image.  This point is the same for all rotation nodes.
                 ptIntersect.x = m_InitLayerCoords_Pure(0).x + (m_InitLayerCoords_Pure(3).x - m_InitLayerCoords_Pure(0).x) / 2
                 ptIntersect.y = m_InitLayerCoords_Pure(0).y + (m_InitLayerCoords_Pure(3).y - m_InitLayerCoords_Pure(0).y) / 2
                 
-                'The first non-intersecting point is simply the angle = 0 line
-                pt1.x = ptIntersect.x + 100
-                pt1.y = ptIntersect.y
+                'The first non-intersecting point varies by rotation node (as they lie in 90-degree increments).  Note that the
+                ' 100 offset is totally arbitrary; we just need a line of some non-zero length for the angle calculation to work.
+                If m_curPOI = 4 Then
+                    pt1.x = ptIntersect.x + 100
+                    pt1.y = ptIntersect.y
+                ElseIf m_curPOI = 5 Then
+                    pt1.x = ptIntersect.x
+                    pt1.y = ptIntersect.y + 100
+                ElseIf m_curPOI = 6 Then
+                    pt1.x = ptIntersect.x - 100
+                    pt1.y = ptIntersect.y
+                Else
+                    pt1.x = ptIntersect.x
+                    pt1.y = ptIntersect.y - 100
+                End If
                 
-                'The second non-intersecting point is the current mouse position
+                'The second non-intersecting point is the current mouse position.
                 pt2.x = curImageX
                 pt2.y = curImageY
                 
@@ -312,12 +324,20 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 'Because the angle function finds the absolute inner angle, it will never be greater than 180 degrees.  This also means
                 ' that +90 and -90 (from a UI standpoint) return the same 90 result.  A simple workaround is to force the sign to
                 ' match the difference between the y-coordinates of the two points.
-                If curImageY < pt1.y Then newAngle = -newAngle
+                If m_curPOI = 4 Then
+                    If curImageY < pt1.y Then newAngle = -newAngle
+                ElseIf m_curPOI = 5 Then
+                    If curImageX > pt1.x Then newAngle = -newAngle
+                ElseIf m_curPOI = 6 Then
+                    If curImageY > pt1.y Then newAngle = -newAngle
+                Else
+                    If curImageX < pt1.x Then newAngle = -newAngle
+                End If
                 
                 .setLayerAngle newAngle
                             
             '5: interior of the layer (e.g. move the layer instead of resize it)
-            Case 5
+            Case 8
                 .setLayerOffsetX m_InitLayerCoords_Pure(0).x + hOffsetImage
                 .setLayerOffsetY m_InitLayerCoords_Pure(0).y + vOffsetImage
             
@@ -360,7 +380,7 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     If finalizeTransform Then
         
         'As a convenience to the user, layer resize and move operations are listed separately.
-        Select Case curPOI
+        Select Case m_curPOI
         
             'Move/resize transformations.
             Case 0 To 3
@@ -370,13 +390,13 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 End With
                 
             'Rotation
-            Case 4
+            Case 4 To 7
                 With srcImage.getActiveLayer
                     Process "Rotate layer (on-canvas)", False, buildParams(.getLayerAngle), UNDO_LAYERHEADER
                 End With
             
             'Move-only transformations
-            Case 5
+            Case 8
                 
                 With srcImage.getActiveLayer
                     Process "Move layer", False, buildParams(.getLayerOffsetX, .getLayerOffsetY), UNDO_LAYERHEADER
@@ -391,7 +411,7 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
     Else
     
         'Manually request a canvas redraw
-        Viewport_Engine.Stage2_CompositeAllLayers srcImage, srcCanvas
+        Viewport_Engine.Stage2_CompositeAllLayers srcImage, srcCanvas, False, m_curPOI
     
     End If
     
