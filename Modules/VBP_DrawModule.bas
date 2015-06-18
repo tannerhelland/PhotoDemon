@@ -716,7 +716,7 @@ Public Sub drawLayerBoundaries(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
 End Sub
 
 'On the current viewport, render standard PD transformation nodes (layer corners, currently) atop the active layer.
-Public Sub drawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer)
+Public Sub drawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, Optional ByVal curPOI As Long = -1)
 
     'In the old days, we could get away with assuming layer boundaries form a rectangle, but as of PD 7.0, affine transforms
     ' mean this is no longer guaranteed.
@@ -738,36 +738,90 @@ Public Sub drawLayerCornerNodes(ByRef dstCanvas As pdCanvas, ByRef srcImage As p
     dstDC = dstCanvas.hDC
     
     'Use GDI+ to render four corner circles
-    GDIPlusDrawCanvasCircle dstDC, layerCorners(0).x, layerCorners(0).y, circRadius, circAlpha
-    GDIPlusDrawCanvasCircle dstDC, layerCorners(1).x, layerCorners(1).y, circRadius, circAlpha
-    GDIPlusDrawCanvasCircle dstDC, layerCorners(2).x, layerCorners(2).y, circRadius, circAlpha
-    GDIPlusDrawCanvasCircle dstDC, layerCorners(3).x, layerCorners(3).y, circRadius, circAlpha
+    Dim i As Long
+    For i = 0 To 3
+        GDI_Plus.GDIPlusDrawCanvasSquare dstDC, layerCorners(i).x, layerCorners(i).y, circRadius, circAlpha, CBool(i = curPOI)
+    Next i
     
 End Sub
 
 'As of PD 7.0, on-canvas rotation is now supported.  Use this function to render the current rotation node.
-Public Sub drawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer)
+Public Sub drawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pdImage, ByRef srcLayer As pdLayer, Optional ByVal curPOI As Long = -1)
     
     'Retrieve the layer rotate node position from the specified layer, and convert it into the canvas coordinate space
     Dim layerRotateNodes() As POINTFLOAT
-    ReDim layerRotateNodes(0 To 1) As POINTFLOAT
+    ReDim layerRotateNodes(0 To 4) As POINTFLOAT
+    
+    Dim rotateUIRect As RECTF
     srcLayer.getLayerRotationNodeCoordinates layerRotateNodes, True
     Drawing.convertListOfImageCoordsToCanvasCoords dstCanvas, srcImage, layerRotateNodes, False
     
-    'Render the circle
+    'Render the circles
     Dim circRadius As Long, circAlpha As Long
     circRadius = 7
     circAlpha = 190
     
     Dim dstDC As Long
     dstDC = dstCanvas.hDC
-    GDIPlusDrawCanvasCircle dstDC, layerRotateNodes(1).x, layerRotateNodes(1).y, circRadius, circAlpha
     
-    'As a convenience to the user, we also draw a line from the center of the layer to the rotation node, to help orient them
-    Dim tmpPath As pdGraphicsPath
-    Set tmpPath = New pdGraphicsPath
-    tmpPath.addLine layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(1).x, layerRotateNodes(1).y
-    tmpPath.strokePathToDIB_UIStyle Nothing, dstDC
+    Dim i As Long
+    For i = 1 To 4
+        GDIPlusDrawCanvasCircle dstDC, layerRotateNodes(i).x, layerRotateNodes(i).y, circRadius, circAlpha, CBool(curPOI = i + 3)
+    Next i
+    
+    'As a convenience to the user, we also draw some additional UI features if a rotation node is actively hovered by the mouse.
+    If (curPOI >= 4) And (curPOI <= 7) Then
+        
+        Dim relevantPoint As Long
+        relevantPoint = curPOI - 3
+        
+        'First, draw a line from the center of the layer to the rotation node, to provide visual feedback on where the rotation
+        ' will actually occur.
+        Dim tmpPath As pdGraphicsPath
+        Set tmpPath = New pdGraphicsPath
+        tmpPath.addLine layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(relevantPoint).x, layerRotateNodes(relevantPoint).y
+        tmpPath.strokePathToDIB_UIStyle Nothing, dstDC
+        
+        'Next, we are going to draw an arc with arrows on the end, to display where the actual rotation will occur.
+        tmpPath.resetPath
+        
+        'Start by finding the distance of the rotation line.
+        Dim rRadius As Double
+        rRadius = Math_Functions.distanceTwoPoints(layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(relevantPoint).x, layerRotateNodes(relevantPoint).y)
+        
+        'From there, bounds are easy-peasy
+        Dim rotateBoundRect As RECTF
+        With rotateBoundRect
+            .Left = layerRotateNodes(0).x - rRadius
+            .Top = layerRotateNodes(0).y - rRadius
+            .Width = rRadius * 2
+            .Height = rRadius * 2
+        End With
+        
+        'Arc sweep and arc length are inter-related.  What we ultimately want is a (roughly) equal arc size regardless of zoom or
+        ' the underlying image size.  This is difficult to predict as larger images and/or higher zoom will result in larger arc widths
+        ' for an identical radius.  As such, we hard-code an approximate arc length, then generate an arc sweep from it.
+        '
+        'In my testing, 80-ish pixels is a reasonably good size across many image dimensions.  Note that we *do* correct for DPI here.
+        Dim arcLength As Double
+        arcLength = fixDPIFloat(70)
+        
+        'Switching between arc length and sweep is easy; see https://en.wikipedia.org/wiki/Arc_%28geometry%29#Length_of_an_arc_of_a_circle
+        Dim arcSweep As Double
+        arcSweep = (arcLength * 180) / (PI * rRadius)
+        
+        'Make sure the arc fits within a valid range (e.g. no complete circles or nearly-straight lines)
+        If arcSweep > 90 Then arcSweep = 90
+        If arcSweep < 30 Then arcSweep = 30
+        
+        'We need to modify the default layer angle depending on the current POI
+        Dim relevantAngle As Double
+        relevantAngle = srcLayer.getLayerAngle + ((relevantPoint - 1) * 90)
+        
+        tmpPath.addArc rotateBoundRect, relevantAngle - arcSweep / 2, arcSweep
+        tmpPath.strokePathToDIB_UIStyle Nothing, dstDC, LineCapArrowAnchor, LineCapArrowAnchor
+        
+    End If
     
 End Sub
 
