@@ -877,9 +877,7 @@ Public Sub fillRectForLayerF(ByRef srcLayer As pdLayer, ByRef dstRect As RECTF, 
     With srcLayer
         
         If includeAffineTransforms Then
-            
             .getLayerBoundaryRect dstRect
-            
         Else
             dstRect.Left = .getLayerOffsetX
             dstRect.Width = .getLayerWidth(useCanvasModifiers)

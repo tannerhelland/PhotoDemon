@@ -799,6 +799,22 @@ Public Sub setLayerNonDestructiveFXState(ByVal ndEffect As LAYER_NONDESTRUCTIVE_
     
 End Sub
 
+'This shortcut function can be used to deactivate all NDFX settings at once
+Public Sub deactivateAllNDFX()
+    
+    myLayerData.l_NonDestructiveFXActive = False
+    
+    With myNonDestructiveFX
+        .fx_Clarity = 0
+        .fx_Contrast = 0
+        .fx_Exposure = 0
+        .fx_Temperature = 0
+        .fx_Tint = 0
+        .fx_Vibrance = 0
+    End With
+    
+End Sub
+
 'Generic layer properties can be get/set via these singular functions.  Note that these functions get and return Variants,
 ' as layer properties include a lot of different types.  As such, these aren't suitable for use inside a performance-sensitive
 ' loop (like pdCompositor, for example).  Instead, these are primarily used by UI elements and the Undo/Redo processor, where
