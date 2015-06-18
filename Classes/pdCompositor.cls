@@ -756,7 +756,6 @@ Friend Sub compositeAndBlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB
     
 End Sub
 
-
 'Merge two layers together.  Note this can be used to merge any two arbitrary layers, with the bottom layer holding the result
 ' of the merge.  It is up to the caller to deal with any subsequent layer deletions, etc - this sub just performs the merge.
 '
@@ -765,6 +764,7 @@ End Sub
 Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, Optional ByVal bottomLayerIsFullSize As Boolean = True)
 
     Dim xOffset As Double, yOffset As Double
+    Dim i As Long
     
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
@@ -774,7 +774,20 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     topLayer.syncInternalDIB
     bottomLayer.syncInternalDIB
     
-    'If the bottom layer is the size of the image itself, we can use the existing layer offsets in our calculation.  (Nice!)
+    'We also need to commit any non-destructive effects; otherwise, the merged layer may look different from its on-screen representation,
+    ' as the settings of the bottom layer will be "assumed" for the merged layer as well.
+    If bottomLayer.getLayerNonDestructiveFXState Then
+        Me.applyNDFXToDIB bottomLayer, bottomLayer.layerDIB
+        bottomLayer.deactivateAllNDFX
+    End If
+    
+    If topLayer.getLayerNonDestructiveFXState Then
+        Me.applyNDFXToDIB topLayer, topLayer.layerDIB
+        topLayer.deactivateAllNDFX
+    End If
+    
+    'If the bottom layer is the size of the image itself (e.g. when flattening the image), we can use its DIB as the target DIB instead of
+    ' creating a temporary one.  This can be a huge shortcut depending on the complexity of subsequent layers.
     If bottomLayerIsFullSize Then
     
         xOffset = topLayer.getLayerOffsetX
@@ -785,8 +798,8 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     
         'First, we need to find the union rect of the two layers.  This is the smallest rectangle that holds both layers.
         Dim topRect As RECTF, bottomRect As RECTF, finalRect As RECTF
-        Layer_Handler.fillRectForLayerF bottomLayer, bottomRect, True
-        Layer_Handler.fillRectForLayerF topLayer, topRect, True
+        Layer_Handler.fillRectForLayerF bottomLayer, bottomRect, True, True
+        Layer_Handler.fillRectForLayerF topLayer, topRect, True, True
         UnionRectF finalRect, topRect, bottomRect
         
         'finalRect now contains the coordinates of the union rect.  Create a blank DIB at those dimensions.
@@ -796,17 +809,55 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         xOffset = bottomRect.Left - finalRect.Left
         yOffset = bottomRect.Top - finalRect.Top
         
-        If (bottomLayer.getLayerCanvasXModifier = 1) And (bottomLayer.getLayerCanvasYModifier = 1) Then
-            BitBlt tmpDIB.getDIBDC, xOffset, yOffset, bottomLayer.getLayerWidth(False), bottomLayer.getLayerHeight(False), bottomLayer.layerDIB.getDIBDC, 0, 0, vbSrcCopy
+        'If no non-destructive resizes are active, we can simply copy the layer over as-is
+        If Not bottomLayer.affineTransformsActive(True) Then
+        
+            If bottomLayer.getLayerOpacity = 100 Then
+                
+                With bottomLayer
+                    BitBlt tmpDIB.getDIBDC, xOffset, yOffset, .getLayerWidth(False), .getLayerHeight(False), .layerDIB.getDIBDC, 0, 0, vbSrcCopy
+                End With
+                
+            Else
+                With bottomLayer
+                    .layerDIB.alphaBlendToDC tmpDIB.getDIBDC, .getLayerOpacity * 2.55, xOffset, yOffset
+                End With
+            End If
+        
+        'Active transforms make this step harder.
         Else
             
-            With bottomLayer
-                GDI_Plus.GDIPlus_StretchBlt tmpDIB, xOffset, yOffset, .getLayerWidth(True), .getLayerHeight(True), .layerDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), 1, .getLayerResizeQuality_GDIPlus
-            End With
+            'If the only active transform is rescaling, we can use a shortcut StretchBlt function for a performance boost.
+            If Not bottomLayer.affineTransformsActive(False) Then
             
-            'Also, reset the canvas modifiers for the bottom layer now, as we have effectively nullified them by this resize
+                With bottomLayer
+                    GDI_Plus.GDIPlus_StretchBlt tmpDIB, xOffset, yOffset, .getLayerWidth(True), .getLayerHeight(True), .layerDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), .getLayerOpacity / 100, .getLayerResizeQuality_GDIPlus
+                End With
+            
+            'If rotation or other affine transforms are active, a more complicated solution is required.
+            Else
+            
+                'First, retrieve the layer's coordinates in the default image coordinate space
+                bottomLayer.getLayerCornerCoordinates m_PlgPoints
+                
+                'Next, we need to convert those to the union rect coordinate space
+                For i = 0 To 3
+                    m_PlgPoints(i).x = (m_PlgPoints(i).x - finalRect.Left)
+                    m_PlgPoints(i).y = (m_PlgPoints(i).y - finalRect.Top)
+                Next i
+                
+                'Render the transformed DIB now.
+                With bottomLayer
+                    GDI_Plus.GDIPlus_PlgBlt tmpDIB, m_PlgPoints, .layerDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), .getLayerOpacity / 100, .getLayerResizeQuality_GDIPlus
+                End With
+            
+            End If
+            
+            'With the bottom layer successfully rendered onto the destination DIB, we can reset all non-destructive size modifiers now.
             bottomLayer.setLayerCanvasXModifier 1
             bottomLayer.setLayerCanvasYModifier 1
+            bottomLayer.setLayerAngle 0
+            
         End If
         
         'We now need to calculate a new layer offset for this temporary DIB, which will eventually be copied into the bottom layer.
@@ -817,13 +868,19 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         'Copy the temporary DIB into the bottom layer
         bottomLayer.layerDIB.createFromExistingDIB tmpDIB
         
+        'Reset the layer's opacity, as we have already applied it in the previous steps.
+        bottomLayer.setLayerOpacity 100
+        
         'Calculate new offsets for the top layer, then carry on with business as usual!
         xOffset = topRect.Left - finalRect.Left
         yOffset = topRect.Top - finalRect.Top
         
     End If
     
-    'Now that the two layers are ready to be condensed into one, the merge process is actually very simple.
+    'The bottom layer DIB now represents the target for the final layer merge.  The bottom layer has had any non-destructive effects processed,
+    ' its opacity has been accounted for (and reset to 100), and any non-destructive transformations (resize, scaling, etc) have been made permanent.
+    
+    'Now all we need to do is merge the top layer onto it.
     
     'For convenience reasons, separate layers into 24bpp and 32bpp categories, and handle each specially
             
@@ -855,8 +912,8 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         ' we need to check for any non-destructive FX that may be active.
         ' (TODO: check layer size vs non-destructive size, and apply the non-destructive effect to whichever version is smaller!
         '        That could give us a minor speed boost.)
-        If topLayer.getLayerNonDestructiveFXState Then applyNDFXToDIB topLayer, tmpDIB
-                
+        'If topLayer.getLayerNonDestructiveFXState Then applyNDFXToDIB topLayer, tmpDIB
+        
         'With all non-destructive options accounted for, we can finally calculate composited layer data!
         If topLayer.getLayerBlendMode <> BL_NORMAL Then
             compositeDIBs tmpDIB, bottomLayer.layerDIB, topLayer.getLayerBlendMode, xOffset, yOffset
