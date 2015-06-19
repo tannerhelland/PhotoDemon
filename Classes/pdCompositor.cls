@@ -786,8 +786,17 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         topLayer.deactivateAllNDFX
     End If
     
+    'Next, we need to find the union rect of the two layers.  This is the smallest rectangle that holds both layers.
+    Dim bottomRect As RECTF, topRect As RECTF, finalRect As RECTF
+    Layer_Handler.fillRectForLayerF bottomLayer, bottomRect, True, True
+    Layer_Handler.fillRectForLayerF topLayer, topRect, True, True
+    UnionRectF finalRect, topRect, bottomRect
+    
+    'finalRect now contains the coordinates of the union rect.  (Note that some settings allow us to bypass this rect entirely, e.g. if the
+    ' bottom layer is image-sized and the top layer has no active affine transforms.)
+    
     'If the bottom layer is the size of the image itself (e.g. when flattening the image), we can use its DIB as the target DIB instead of
-    ' creating a temporary one.  This can be a huge shortcut depending on the complexity of subsequent layers.
+    ' creating a temporary one.  This can be a large shortcut depending on the complexity of subsequent layers.
     If bottomLayerIsFullSize Then
     
         xOffset = topLayer.getLayerOffsetX
@@ -795,14 +804,8 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     
     'The top and bottom layer sizes are totally independent.  This makes our life somewhat unpleasant.
     Else
-    
-        'First, we need to find the union rect of the two layers.  This is the smallest rectangle that holds both layers.
-        Dim topRect As RECTF, bottomRect As RECTF, finalRect As RECTF
-        Layer_Handler.fillRectForLayerF bottomLayer, bottomRect, True, True
-        Layer_Handler.fillRectForLayerF topLayer, topRect, True, True
-        UnionRectF finalRect, topRect, bottomRect
         
-        'finalRect now contains the coordinates of the union rect.  Create a blank DIB at those dimensions.
+        'Create a blank DIB at the dimensions of the union rect.
         tmpDIB.createBlank finalRect.Width, finalRect.Height, 32, 0
         
         'We now need to do a couple of things.  Let's start by copying the bottom DIB into this new temporary DIB.
@@ -865,8 +868,10 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         bottomLayer.setLayerOffsetX finalRect.Left
         bottomLayer.setLayerOffsetY finalRect.Top
         
-        'Copy the temporary DIB into the bottom layer
+        'Copy the temporary DIB into the bottom layer.  (We can't simply reference it as we're likely to need a temporary DIB for
+        ' processing the top layer as well.)
         bottomLayer.layerDIB.createFromExistingDIB tmpDIB
+        tmpDIB.eraseDIB
         
         'Reset the layer's opacity, as we have already applied it in the previous steps.
         bottomLayer.setLayerOpacity 100
@@ -877,55 +882,56 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         
     End If
     
-    'The bottom layer DIB now represents the target for the final layer merge.  The bottom layer has had any non-destructive effects processed,
-    ' its opacity has been accounted for (and reset to 100), and any non-destructive transformations (resize, scaling, etc) have been made permanent.
+    'The bottom layer DIB now represents the target for the final layer merge.  It has had any non-destructive effects processed, its opacity
+    ' has been accounted for (and it's tracking value reset to 100), and any non-destructive transformations (resize, scaling, etc) have been
+    ' made permanent.
     
     'Now all we need to do is merge the top layer onto it.
     
-    'For convenience reasons, separate layers into 24bpp and 32bpp categories, and handle each specially
-            
-    '24bpp case
-    If topLayer.layerDIB.getDIBColorDepth = 24 Then
-    
-        'Possible future project - provide specialized, performance-friendly handling for 24bpp layers??
-        With topLayer
-            .layerDIB.alphaBlendToDC bottomLayer.layerDIB.getDIBDC, 255, xOffset, yOffset
-        End With
+    'If the top layer has no non-destructive resizing active, this step becomes much easier.
+    If Not topLayer.affineTransformsActive(True) Then
         
-    '32bpp case
+        'We don't even need a temporary DIB - just composite the current layer as-is
+        If topLayer.getLayerBlendMode = BL_NORMAL Then
+            topLayer.layerDIB.alphaBlendToDC bottomLayer.layerDIB.getDIBDC, topLayer.getLayerOpacity * 2.55, xOffset, yOffset
+        Else
+            compositeAndBlendDIBs topLayer.layerDIB, bottomLayer.layerDIB, topLayer.getLayerBlendMode, xOffset, yOffset, topLayer.getLayerOpacity / 100
+        End If
+    
+    'Non-destructive transforms are active, so we must prep a temporary DIB for the top layer (containing a transformed copy of its DIB)
     Else
     
-        'Make a copy of the current layer, with any width/height modifications applied
-        'Before proceeding further, we must check the top layer for any size modifications; if found, apply them now.
-        If (topLayer.getLayerCanvasXModifier = 1) And (topLayer.getLayerCanvasYModifier = 1) Then
-            tmpDIB.createFromExistingDIB topLayer.layerDIB
-        Else
+        'Rescale-only transforms can use a shortcut copy method
+        If Not topLayer.affineTransformsActive(False) Then
             
             With topLayer
                 tmpDIB.createBlank .getLayerWidth(True), .getLayerHeight(True), 32, 0
-                GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, .layerDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), .getLayerResizeQuality_GDIPlus
+                GDIPlusResizeDIB tmpDIB, 0, 0, .getLayerWidth(True), .getLayerHeight(True), .layerDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), .getLayerResizeQuality_GDIPlus
             End With
+        
+        'Full affine transforms are hairier
+        Else
+            
+            'Ask the layer to give us a copy of its transformed DIB
+            Dim xOffsetLong As Long, yOffsetLong As Long
+            topLayer.getAffineTransformedDIB tmpDIB, xOffsetLong, yOffsetLong, 0, 0
+            
+            'Calculate new offsets, using the x/y returned by that function (which may be slightly modified in order to preserve subpixel positioning)
+            xOffset = xOffsetLong - finalRect.Left
+            yOffset = yOffsetLong - finalRect.Top
             
         End If
         
-        'tmpDIB now contains the chunk of this layer that appears on the viewport.  Before we can composite it against the base layer,
-        ' we need to check for any non-destructive FX that may be active.
-        ' (TODO: check layer size vs non-destructive size, and apply the non-destructive effect to whichever version is smaller!
-        '        That could give us a minor speed boost.)
-        'If topLayer.getLayerNonDestructiveFXState Then applyNDFXToDIB topLayer, tmpDIB
-        
         'With all non-destructive options accounted for, we can finally calculate composited layer data!
-        If topLayer.getLayerBlendMode <> BL_NORMAL Then
-            compositeDIBs tmpDIB, bottomLayer.layerDIB, topLayer.getLayerBlendMode, xOffset, yOffset
+        If topLayer.getLayerBlendMode = BL_NORMAL Then
+            tmpDIB.alphaBlendToDC bottomLayer.layerDIB.getDIBDC, topLayer.getLayerOpacity * 2.55, xOffset, yOffset
+        Else
+            compositeAndBlendDIBs tmpDIB, bottomLayer.layerDIB, topLayer.getLayerBlendMode, xOffset, yOffset, topLayer.getLayerOpacity / 100
         End If
-    
-        'With compositing complete, apply the final step, which is alpha-blending the layer downward while accounting for layer opacity.
-        tmpDIB.alphaBlendToDC bottomLayer.layerDIB.getDIBDC, topLayer.getLayerOpacity * 2.55, xOffset, yOffset
-        
+                
     End If
     
-    'The two layers have been merged successfully!  Any further actions (like deleting the top layer) must be handled
-    ' by the caller.
+    'The two layers have been merged successfully!  Any further actions (like deleting the top layer) must be handled by the caller.
     
 End Sub
 

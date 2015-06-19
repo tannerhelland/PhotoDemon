@@ -1578,9 +1578,9 @@ Friend Function getAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Lon
         'Copy a resized chunk of the source image onto the temporary DIB.  (Note that this branches according to the
         ' presence of more complicated affine functions, which require a parallelogram-style blit process).
         If Me.affineTransformsActive(False) Then
-            GDI_Plus.GDIPlus_PlgBlt dstDIB, m_PlgPoints, Me.layerDIB, 0, 0, Me.getLayerWidth(False), Me.getLayerHeight(False), Me.getLayerOpacity / 100, Me.getLayerResizeQuality_GDIPlus
+            GDI_Plus.GDIPlus_PlgBlt dstDIB, m_PlgPoints, Me.layerDIB, 0, 0, Me.getLayerWidth(False), Me.getLayerHeight(False), 1, Me.getLayerResizeQuality_GDIPlus
         Else
-            GDI_Plus.GDIPlus_StretchBlt dstDIB, normalizeX, normalizeY, Me.getLayerWidth(True), Me.getLayerHeight(True), Me.layerDIB, 0, 0, Me.getLayerWidth(False), Me.getLayerHeight(False), Me.getLayerOpacity / 100, Me.getLayerResizeQuality_GDIPlus
+            GDI_Plus.GDIPlus_StretchBlt dstDIB, normalizeX, normalizeY, Me.getLayerWidth(True), Me.getLayerHeight(True), Me.layerDIB, 0, 0, Me.getLayerWidth(False), Me.getLayerHeight(False), 1, Me.getLayerResizeQuality_GDIPlus
         End If
         
         'Return success

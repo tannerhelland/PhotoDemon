@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.49</langversion>
+<langversion>6.7.50</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -13710,11 +13710,6 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- BEGIN text for VBP_ToolPanel_MoveSize.frm (toolpanel_MoveSize) -->
 
 <phrase>
-<original>angle test</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>interaction options</original>
 <translation>opzioni di interazione</translation>
 </phrase>
@@ -13735,7 +13730,7 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>show move/size (corner) nodes</original>
+<original>show resize nodes</original>
 <translation></translation>
 </phrase>
 
@@ -13745,7 +13740,7 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>show rotation node</original>
+<original>show rotate nodes</original>
 <translation></translation>
 </phrase>
 
@@ -13770,12 +13765,22 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
+<original>angle test</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Make layer size permanent</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>transformations</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>user interface</original>
 <translation></translation>
 </phrase>
 
@@ -13794,7 +13799,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_MoveSize.frm contains 22 phrases. 5 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- VBP_ToolPanel_MoveSize.frm contains 22 phrases. 4 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_MoveSize.frm-->
 
@@ -14073,10 +14078,10 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2446</phrasecount>
+<phrasecount>2447</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4222 phrases. -->
-<!-- 1776 are duplicates, so only 2446 unique phrases have been written to file. -->
-<!-- These 2446 phrases contain approximately 13671 total words. -->
+<!-- 1775 are duplicates, so only 2447 unique phrases have been written to file. -->
+<!-- These 2447 phrases contain approximately 13673 total words. -->
 
 </pdData>
