@@ -1269,27 +1269,54 @@ End Sub
 
 'If this layer needs to have its on-canvas transformations made permanent (for example, when applying an action
 ' that involves a selection), this function can be used.
-Public Sub makeCanvasTransformsPermanent()
+Public Sub makeCanvasTransformsPermanent(Optional ByVal maxWidth As Long = 0, Optional ByVal maxHeight As Long = 0)
 
     'If this layer does not have any active transforms, ignore this request
-    If (myLayerData.l_CanvasXModifier = 1) And (myLayerData.l_CanvasYModifier = 1) Then Exit Sub
-
-    'Resize the current layer DIB to match its on-canvas transform values
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    
-    tmpDIB.createBlank getLayerWidth(True), getLayerHeight(True), 32, 0
-    GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, layerDIB, 0, 0, getLayerWidth(False), getLayerHeight(False), Me.getLayerResizeQuality_GDIPlus
-    
-    layerDIB.createFromExistingDIB tmpDIB
-    Set tmpDIB = Nothing
-    
-    'Reset the width/height modifiers for this layer
-    myLayerData.l_CanvasXModifier = 1
-    myLayerData.l_CanvasYModifier = 1
-    
-    'Mark this layer as dirty
-    Me.notifyOfDestructiveChanges
+    If Me.affineTransformsActive(True) Then
+        
+        'Unfortunately, a temporary DIB will be required for the rescale operation
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        
+        'If complex affine transforms are active (e.g. rotation), this step becomes more complicated.
+        If Me.affineTransformsActive(False) Then
+        
+            'Affine transforms can cause the layer's x/y offset to change
+            Dim newOffsetX As Long, newOffsetY As Long
+            
+            'Retrieve a copy of the current DIB using the layer's automated affine-transformation function
+            Me.getAffineTransformedDIB tmpDIB, newOffsetX, newOffsetY, maxWidth, maxHeight
+            
+            'Update our internal DIB and offsets to match
+            Set Me.layerDIB = tmpDIB
+            With myLayerData
+                .l_OffsetX = newOffsetX
+                .l_OffsetY = newOffsetY
+                .l_CanvasXModifier = 1
+                .l_CanvasYModifier = 1
+                .l_Angle = 0
+            End With
+        
+        'If rescaling is the only active transform, we can shortcut this function
+        Else
+            
+            tmpDIB.createBlank getLayerWidth(True), getLayerHeight(True), 32, 0
+            GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, layerDIB, 0, 0, getLayerWidth(False), getLayerHeight(False), Me.getLayerResizeQuality_GDIPlus
+            
+            Set Me.layerDIB = tmpDIB
+            
+            'Reset the width/height modifiers for this layer
+            With myLayerData
+                .l_CanvasXModifier = 1
+                .l_CanvasYModifier = 1
+            End With
+        
+        End If
+                
+        'Mark this layer as dirty
+        Me.notifyOfDestructiveChanges
+        
+    End If
 
 End Sub
 
@@ -1481,7 +1508,7 @@ End Sub
 'This helper function can be used to retrieve a DIB - at 100% zoom - that contains an affine-transformed copy of the layer DIB and
 ' new (x, y) offsets (which are relevant for things like rotation, as the affine-transformed image will have negative offsets
 ' relative to the "pure" layer offsets).  Note that the destination (x, y) values will already have been transformed to integers
-' for you; this function will automatically apply offsets so that sub-pixel positioning is respected.
+' for you; this function will automatically calculate offsets in a way that preserves sub-pixel positioning.
 '
 'I have optimized this function as much as I physically can.  Separate paths are used depending on the complexity of the transform
 ' (if the only active non-destructive transform is scaling, we can bypass certain steps, for example).
@@ -1507,8 +1534,8 @@ Friend Function getAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Lon
     End With
     
     'We now know two crucial pieces of data:
-    ' 1) the final locations of the affine-transformed layer corner points, in image space
-    ' 2) a bounding box for the affine-transformed layer, in image space
+    ' 1) the final locations of the affine-transformed layer corner points, in image coordinate space
+    ' 2) a bounding box for the affine-transformed layer, in image coordinate space
     
     'Next, we need to calculate the minimum boundary size required by the destination DIB.  This is the lesser of two things:
     ' 1) The crop width/height supplied by the caller (typically the size of the compositing surface itself; pixels outside
@@ -2415,35 +2442,53 @@ End Function
 
 'Null-pad this layer (with transparent pixels) against the size of our parent pdImage.  Note that the parent pdImage's dimensions
 ' must be explicitly passed, because layers do not maintain a link to their parent.
-' TODO: determine if off-image layer cropping is an acceptable solution in all scenarios.
+' TODO: determine if off-image layer cropping is an acceptable solution in all scenarios.  (It really isn't, but there are some egregious performance
+'       considerations with layers that lie off-canvas, so a solution needs to be carefully planned.)
 Public Sub convertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parentImageHeight As Long, Optional ByVal applyCanvasTransformsFirst As Boolean = True)
 
-    'If this layer has transforms applied to it, we have to make them permanent before proceeding.
-    ' Otherwise, the resulting image may not look right.  (Note that this behavior can be overridden if a function
-    ' is ABSOLUTELY CERTAIN that the end result won't botch the transform - this is only true for pixel transforms
-    ' that operate strictly in separate x/y domains, such as resizing).
-    If applyCanvasTransformsFirst Then makeCanvasTransformsPermanent
+    'If this layer has transforms applied to it, we have to make them permanent before proceeding.  Otherwise, the resulting image may
+    ' not look right.
+    '
+    'Note that this behavior can be overridden if a function is ABSOLUTELY CERTAIN that the end result won't botch the transform, but this
+    ' is only true for pixel transforms that operate strictly in separate x/y domains, such as resizing.  Note that this setting may be
+    ' forcibly ignored if the layer has complex affine transforms active (like rotation), because those transforms change the (x, y) domain
+    ' of the layer relative to the (x, y) domain of the image.
+    Dim mustMakeCanvasTransformsPermanent As Boolean
+    mustMakeCanvasTransformsPermanent = applyCanvasTransformsFirst
+    mustMakeCanvasTransformsPermanent = mustMakeCanvasTransformsPermanent Or Me.affineTransformsActive(False)
     
-    'Create a blank destination DIB at the size of the image
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    tmpDIB.createBlank parentImageWidth, parentImageHeight, 32, 0
+    If mustMakeCanvasTransformsPermanent Then makeCanvasTransformsPermanent parentImageWidth, parentImageHeight
     
-    'Copy our current layer into the temporary DIB, with proper offsets applied
-    BitBlt tmpDIB.getDIBDC, myLayerData.l_OffsetX, myLayerData.l_OffsetY, layerDIB.getDIBWidth, layerDIB.getDIBHeight, layerDIB.getDIBDC, 0, 0, vbSrcCopy
+    'We can skip this step for layers that are already the size of the image.  This is common for background layers.
+    Dim nullPaddingUnnecessary As Boolean
+    nullPaddingUnnecessary = False
     
-    'Replace our current layer DIB with the temporary DIB
-    layerDIB.createFromExistingDIB tmpDIB
+    With myLayerData
+        nullPaddingUnnecessary = (.l_OffsetX = 0) And (.l_OffsetY = 0) And (Me.getLayerWidth(True) = parentImageWidth) And (Me.getLayerHeight(True) = parentImageHeight)
+    End With
     
-    'Reset our offset values
-    myLayerData.l_OffsetX = 0
-    myLayerData.l_OffsetY = 0
+    'If the layer still requires specialized padding, carry on
+    If Not nullPaddingUnnecessary Then
+        
+        'Create a blank destination DIB at the size of the parent image
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.createBlank parentImageWidth, parentImageHeight, 32, 0
     
-    'Mark the layer as dirty
-    Me.notifyOfDestructiveChanges
+        'Copy the current layer into the temporary DIB, with proper offsets applied
+        BitBlt tmpDIB.getDIBDC, myLayerData.l_OffsetX, myLayerData.l_OffsetY, layerDIB.getDIBWidth, layerDIB.getDIBHeight, layerDIB.getDIBDC, 0, 0, vbSrcCopy
     
-    'Release the temporary DIB
-    Set tmpDIB = Nothing
+        'Replace our current layer DIB with the temporary DIB
+        Set Me.layerDIB = tmpDIB
+    
+        'Reset layer offset values
+        myLayerData.l_OffsetX = 0
+        myLayerData.l_OffsetY = 0
+    
+        'Mark the layer as dirty
+        Me.notifyOfDestructiveChanges
+    
+    End If
     
 End Sub
 
