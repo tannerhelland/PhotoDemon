@@ -996,21 +996,29 @@ End Function
 ' If the mouse is over one of the current layer's points-of-interest (e.g. a resize node), the function will return that layer instead
 ' of others that lay atop it.  This allows the user to move and resize the current layer preferentially, and only if the current layer
 ' is completely out of the picture will other layers become activated.
-Public Function getLayerUnderMouse(ByVal curX As Long, ByVal curY As Long, Optional ByVal givePreferenceToCurrentLayer As Boolean = True) As Long
+Public Function getLayerUnderMouse(ByVal imgX As Single, ByVal imgY As Single, Optional ByVal givePreferenceToCurrentLayer As Boolean = True) As Long
 
     Dim tmpRGBA As RGBQUAD
     Dim curPOI As Long
+    
+    'Note that the caller passes us an (x, y) coordinate pair in the IMAGE coordinate space.  We will be using these coordinates to
+    ' generate various new coordinate pairs in individual LAYER coordinate spaces  (This became necessary in PD 7.0, as layers
+    ' may have non-destructive affine transforms active, which means we can't blindly switch between image and layer coordinate spaces!)
+    Dim layerX As Single, layerY As Single
     
     'If givePreferenceToCurrentLayer is selected, check the current layer first.  If the mouse is over one of the layer's POIs, return
     ' the active layer without even checking other layers.
     If givePreferenceToCurrentLayer Then
     
+        'Convert the passed image (x, y) coordinates into the active layer's coordinate space
+        Drawing.convertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, imgX, imgY, layerX, layerY
+    
         'See if the mouse is over a POI for the current layer (which may extend outside a layer's boundaries, because the clickable
         ' nodes have a radius greater than 0).  If the mouse is over a POI, return the active layer index immediately.
-        curPOI = pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(curX, curY)
+        curPOI = pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(layerX, layerY)
         
         'If the mouse is over a point of interest, return this layer and immediately exit
-        If curPOI >= 0 And curPOI <= 3 Then
+        If curPOI >= 0 And curPOI <= 7 Then
             getLayerUnderMouse = pdImages(g_CurrentImage).getActiveLayerIndex
             Exit Function
         End If
@@ -1025,8 +1033,11 @@ Public Function getLayerUnderMouse(ByVal curX As Long, ByVal curY As Long, Optio
         'Only evaluate the current layer if it is visible
         If pdImages(g_CurrentImage).getLayerByIndex(i).getLayerVisibility Then
         
+            'Convert the image (x, y) coordinate into the layer's coordinate space
+            Drawing.convertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).getLayerByIndex(i), imgX, imgY, layerX, layerY
+        
             'Only evaluate the current layer if the mouse is over it
-            If getRGBAPixelFromLayer(i, curX, curY, tmpRGBA) Then
+            If getRGBAPixelFromLayer(i, layerX, layerY, tmpRGBA) Then
             
                 'A layer was identified beneath the mouse!  If the pixel is non-transparent, return this layer as the selected one.
                 If Not CBool(toolpanel_MoveSize.chkIgnoreTransparent) Then

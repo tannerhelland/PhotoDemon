@@ -39,6 +39,43 @@ Begin VB.Form toolpanel_MoveSize
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   1455
+      Index           =   1
+      Left            =   2520
+      ScaleHeight     =   97
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   833
+      TabIndex        =   13
+      Top             =   0
+      Width           =   12495
+      Begin PhotoDemon.sliderTextCombo sltLayerAngle 
+         Height          =   480
+         Left            =   120
+         TabIndex        =   15
+         Top             =   420
+         Width           =   4095
+         _ExtentX        =   7223
+         _ExtentY        =   847
+         Min             =   -360
+         Max             =   360
+         SigDigits       =   2
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   2
+         Left            =   120
+         Top             =   60
+         Width           =   5370
+         _ExtentX        =   9472
+         _ExtentY        =   503
+         Caption         =   "layer angle:"
+      End
+   End
+   Begin VB.PictureBox picMoveContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H00FFFFFF&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   1455
       Index           =   2
       Left            =   2520
       ScaleHeight     =   97
@@ -244,43 +281,6 @@ Begin VB.Form toolpanel_MoveSize
          Caption         =   "non-destructive resize options:"
       End
    End
-   Begin VB.PictureBox picMoveContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   1455
-      Index           =   1
-      Left            =   2520
-      ScaleHeight     =   97
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   833
-      TabIndex        =   13
-      Top             =   0
-      Width           =   12495
-      Begin PhotoDemon.sliderTextCombo sltLayerAngle 
-         Height          =   480
-         Left            =   120
-         TabIndex        =   15
-         Top             =   420
-         Width           =   4095
-         _ExtentX        =   7223
-         _ExtentY        =   847
-         Min             =   -360
-         Max             =   360
-         SigDigits       =   2
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   2
-         Left            =   120
-         Top             =   60
-         Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   503
-         Caption         =   "angle test:"
-      End
-   End
 End
 Attribute VB_Name = "toolpanel_MoveSize"
 Attribute VB_GlobalNameSpace = False
@@ -380,9 +380,9 @@ End Sub
 Private Sub Form_Load()
         
     'Initialize move tool panels
-    btsMoveOptions.AddItem "position", 0
-    btsMoveOptions.AddItem "transformations", 1
-    btsMoveOptions.AddItem "user interface", 2
+    btsMoveOptions.AddItem "size and position", 0
+    btsMoveOptions.AddItem "angle and skew", 1
+    btsMoveOptions.AddItem "tool settings", 2
     btsMoveOptions.ListIndex = 0
     btsMoveOptions_Click 0
     
