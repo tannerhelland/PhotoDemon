@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Layers class
 'Copyright 2012-2015 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 22/April/15
-'Last update: continued work on vector layers
+'Last updated: 19/June/15
+'Last update: add support for affine-transformed layers
 '
 'Once upon a time, the pdLayer class was simply a DIB wrapper.  Once PhotoDemon moved to a fully layer-compatible
 ' image editor, however, it became necessary to separate Layer-specific functions from generic DIB functions.

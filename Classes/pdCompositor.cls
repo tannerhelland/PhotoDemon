@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Compositor class
 'Copyright 2014-2015 by Tanner Helland
 'Created: 01/May/14
-'Last updated: 17/April/15
-'Last update: unify compositing results of all blend modes between the two new viewport pipelines
+'Last updated: 19/June/15
+'Last update: add support for affine-transformed layers
 '
 'Image compositing is a fairly arduous process, especially when dealing with stuff like custom blend modes.
 ' Previously, the pdImage class handled all compositing on its own, but as PD's compositing needs have
@@ -796,7 +796,7 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     ' bottom layer is image-sized and the top layer has no active affine transforms.)
     
     'If the bottom layer is the size of the image itself (e.g. when flattening the image), we can use its DIB as the target DIB instead of
-    ' creating a temporary one.  This can be a large shortcut depending on the complexity of subsequent layers.
+    ' creating a temporary one.  This can provide a nice performance boost depending on the complexity of subsequent layers.
     If bottomLayerIsFullSize Then
     
         xOffset = topLayer.getLayerOffsetX
