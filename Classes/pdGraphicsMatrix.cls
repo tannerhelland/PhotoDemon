@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Graphics Matrix Wrapper
 'Copyright 2014-2015 by Tanner Helland
 'Created: 09/May/15 (though assembled from various parts written much earlier)
-'Last updated: 09/May/15
-'Last update: separate into its own class, for easier maintenance
+'Last updated: 22/June/15
+'Last update: add x/y shear support
 '
 'This class is a VB6-friendly wrapper for the GDI+ Matrix object.  It is not intended as a comprehensive interface;
 ' instead, I add functions to it as I need them for various PD elements.
@@ -44,9 +44,10 @@ End Enum
 Private Declare Function GdipCreateMatrix Lib "gdiplus" (ByRef dstMatrix As Long) As Long
 Private Declare Function GdipCloneMatrix Lib "gdiplus" (ByVal srcMatrix As Long, ByRef dstMatrix As Long) As Long
 Private Declare Function GdipDeleteMatrix Lib "gdiplus" (ByVal hMatrix As Long) As Long
-Private Declare Function GdipRotateMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal rotateAngle As Single, ByVal order As MatrixOrder) As Long
-Private Declare Function GdipScaleMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal scaleX As Single, ByVal scaleY As Single, ByVal order As MatrixOrder) As Long
-Private Declare Function GdipTranslateMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal offsetX As Single, ByVal offsetY As Single, ByVal order As MatrixOrder) As Long
+Private Declare Function GdipRotateMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal rotateAngle As Single, ByVal mOrder As MatrixOrder) As Long
+Private Declare Function GdipScaleMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal scaleX As Single, ByVal scaleY As Single, ByVal mOrder As MatrixOrder) As Long
+Private Declare Function GdipShearMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal shearX As Single, ByVal shearY As Single, ByVal mOrder As MatrixOrder) As Long
+Private Declare Function GdipTranslateMatrix Lib "gdiplus" (ByVal hMatrix As Long, ByVal offsetX As Single, ByVal offsetY As Single, ByVal mOrder As MatrixOrder) As Long
 Private Declare Function GdipTransformMatrixPoints Lib "gdiplus" (ByVal hMatrix As Long, ByVal ptrToFirstPointF As Long, ByVal numOfPoints As Long) As Long
 Private Declare Function GdipIsMatrixInvertible Lib "gdiplus" (ByVal hMatrix As Long, ByRef dstResult As Long) As Long
 Private Declare Function GdipInvertMatrix Lib "gdiplus" (ByVal hMatrix As Long) As Long
@@ -104,6 +105,30 @@ Friend Sub RotateMatrix(ByVal rotateAmount As Single, Optional ByVal centerX As 
     
     Else
         GdipRotateMatrix m_MatrixHandle, rotateAmount, transformOrder
+    End If
+    
+End Sub
+
+'Apply x/y shear factors to the matrix.  An optional center x/y can also be specified.
+' IMPORTANT NOTE: if a custom center point is specified, the optional transformOrder parameter is ignored.  (This is necessary
+'                 because we must prepend and append custom translation operations.)
+Friend Sub ShearMatrix(ByVal shearX As Single, ByVal shearY As Single, Optional ByVal centerX As Single = 0, Optional ByVal centerY As Single = 0, Optional ByVal transformOrder As MatrixOrder = MatrixOrderAppend)
+    
+    'If a different center point is desired, we must translate the matrix before and after rotation.
+    ' (The optional transformOrder parameter is ignored out of necessity.)
+    If (centerX <> 0) Or (centerY <> 0) Then
+        
+        'Center the matrix over the shear center point
+        TranslateMatrix -1 * centerX, -1 * centerY, MatrixOrderAppend
+        
+        'Apply the shear
+        GdipShearMatrix m_MatrixHandle, shearX, shearY, MatrixOrderAppend
+        
+        'Translate back into its original position
+        TranslateMatrix centerX, centerY, MatrixOrderAppend
+    
+    Else
+        GdipShearMatrix m_MatrixHandle, shearX, shearY, transformOrder
     End If
     
 End Sub
