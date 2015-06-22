@@ -100,6 +100,12 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         If (createUndo = UNDO_EVERYTHING) Or (createUndo = UNDO_IMAGE) Or (createUndo = UNDO_IMAGE_VECTORSAFE) Or (createUndo = UNDO_LAYER) Then Screen.MousePointer = vbHourglass
     End If
     
+    'Up front, create a parameter parser to handle the parameter string.  This can parse out individual function parameters as specific
+    ' data types as necessary.  (Some pre-processing steps require parameter knowledge.)
+    Dim cParams As pdParamString
+    Set cParams = New pdParamString
+    If Len(processParameters) <> 0 Then cParams.setParamString processParameters
+    
     'This central processor is a convenient place to check for any hot-patches that may have occurred in the background.
     
     'Notify the live language updater that it is free to apply an immediate refresh.  (It will have already determined if any internals need to be
@@ -159,9 +165,53 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Dim okayToRasterize As VbMsgBoxResult
         okayToRasterize = vbCancel
         
-        'First, check for the case of operations that modify an entire image (e.g. "Flatten").  If vector layers are present in the image,
-        ' raise a warning about rasterizing all vector layers.
-        If (Not showDialog) And (pdImages(g_CurrentImage).getNumOfVectorLayers > 0) And ((createUndo = UNDO_IMAGE) Or (createUndo = UNDO_EVERYTHING)) Then
+        'First, check for the case of operations that modify an entire image (e.g. "Flatten").  Three criteria must be met:
+        ' 1) No dialog is being shown
+        ' 2) The current layer must contain one or more vector layers
+        ' 3) The Undo type must be UNDO_IMAGE or UNDO_EVERYTHING.  Header-only Undo operations do not require rasterization.
+        Dim rasterizeImagePromptNeeded As Boolean
+        rasterizeImagePromptNeeded = (Not showDialog)
+        rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And (pdImages(g_CurrentImage).getNumOfVectorLayers > 0)
+        rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And ((createUndo = UNDO_IMAGE) Or (createUndo = UNDO_EVERYTHING))
+        
+        'A few exceptions exist to the above code.  Layer merge operations typically require us to make a full Undo/Redo copy of the
+        ' entire image stack, meeting the above criteria, but note that we only need to display a rasterize prompt if one or more of
+        ' the *merged layers* are vector layers.  (Merging two image layers in an image with other vector layers shouldn't display a prompt.)
+        If rasterizeImagePromptNeeded And ((processID = "Merge layer down") Or (processID = "Merge layer up") Or (processID = "Merge visible layers")) Then
+            
+            'For each case, determine if a vector layer is being merged, and if not, reset rasterizeImagePromptNeeded
+            Select Case processID
+            
+                Case "Merge layer down"
+                    If pdImages(g_CurrentImage).getLayerByIndex(cParams.GetLong(1)).isLayerRaster And pdImages(g_CurrentImage).getLayerByIndex(cParams.GetLong(1) - 1).isLayerRaster Then
+                        rasterizeImagePromptNeeded = False
+                    End If
+                
+                Case "Merge layer up"
+                    If pdImages(g_CurrentImage).getLayerByIndex(cParams.GetLong(1)).isLayerRaster And pdImages(g_CurrentImage).getLayerByIndex(cParams.GetLong(1) + 1).isLayerRaster Then
+                        rasterizeImagePromptNeeded = False
+                    End If
+                
+                Case "Merge visible layers"
+                    
+                    rasterizeImagePromptNeeded = False
+                    
+                    Dim i As Long
+                    For i = 1 To pdImages(g_CurrentImage).getNumOfLayers - 1
+                        
+                        'If a vector layer is found, restore rasterizeImagePromptNeeded and exit the loop
+                        If pdImages(g_CurrentImage).getLayerByIndex(i).getLayerVisibility And pdImages(g_CurrentImage).getLayerByIndex(i).isLayerVector Then
+                            rasterizeImagePromptNeeded = True
+                            Exit For
+                        End If
+                    
+                    Next i
+            
+            End Select
+            
+        End If
+        
+        If rasterizeImagePromptNeeded Then
             
             okayToRasterize = Layer_Handler.askIfOkayToRasterizeLayer(pdImages(g_CurrentImage).getActiveLayer.getLayerType, , True)
             
@@ -185,24 +235,37 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         End If
         
         'Next, if this operation modifies just one layer, raise a "rasterize single layer" dialog.
-        If (Not showDialog) And (pdImages(g_CurrentImage).getActiveLayer.isLayerVector) And ((createUndo = UNDO_LAYER) Or (createUndo = UNDO_IMAGE) Or (createUndo = UNDO_EVERYTHING)) Then
+        ' (Note that we skip this step if we already rasterized all layers, above.)
+        If Not rasterizeImagePromptNeeded Then
             
-            okayToRasterize = Layer_Handler.askIfOkayToRasterizeLayer(pdImages(g_CurrentImage).getActiveLayer.getLayerType)
+            rasterizeImagePromptNeeded = (Not showDialog)
+            rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And pdImages(g_CurrentImage).getActiveLayer.isLayerVector
+            rasterizeImagePromptNeeded = rasterizeImagePromptNeeded And CBool(createUndo = UNDO_LAYER)
             
-            'If rasterization is okay, apply it immediately
-            If okayToRasterize = vbYes Then
+            'Previously, I also checked for "(createUndo = UNDO_IMAGE) Or (createUndo = UNDO_EVERYTHING)" but I no longer think this
+            ' is necessary, as those cases should have been covered by the previous check (which rasterizes *all* vector layers as necessary).
             
-                Layer_Handler.RasterizeLayer pdImages(g_CurrentImage).getActiveLayerIndex
-            
-            'If the user doesn't want rasterization, bail immediately.
-            Else
+            'Display a prompt as necessary
+            If rasterizeImagePromptNeeded Then
                 
-                'Reset default tracking values and/or UI states prior to exiting
-                Processing = False
-                Screen.MousePointer = vbDefault
-                FormMain.Enabled = True
+                okayToRasterize = Layer_Handler.askIfOkayToRasterizeLayer(pdImages(g_CurrentImage).getActiveLayer.getLayerType)
                 
-                Exit Sub
+                'If rasterization is okay, apply it immediately
+                If okayToRasterize = vbYes Then
+                
+                    Layer_Handler.RasterizeLayer pdImages(g_CurrentImage).getActiveLayerIndex
+                
+                'If the user doesn't want rasterization, bail immediately.
+                Else
+                    
+                    'Reset default tracking values and/or UI states prior to exiting
+                    Processing = False
+                    Screen.MousePointer = vbDefault
+                    FormMain.Enabled = True
+                    
+                    Exit Sub
+                    
+                End If
                 
             End If
             
@@ -349,12 +412,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
     End If
         
-        
-    'Finally, create a parameter parser to handle the parameter string.  This class will parse out individual parameters
-    ' as specific data types when it comes time to use them.
-    Dim cParams As pdParamString
-    Set cParams = New pdParamString
-    If Len(processParameters) <> 0 Then cParams.setParamString processParameters
+    
     
     '******************************************************************************************************************
     '

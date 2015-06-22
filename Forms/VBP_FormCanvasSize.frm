@@ -241,9 +241,6 @@ Option Explicit
 ' NOTE: TOOLBOX IMAGES WILL NOT APPEAR IN THE IDE.  YOU MUST COMPILE FIRST.
 Private cImgCtl As clsControlImage
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 'Current anchor position; used to render the anchor selection command buttons, among other things
 Dim m_CurrentAnchor As Long
 
@@ -384,8 +381,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    makeFormPretty Me
         
 End Sub
 
