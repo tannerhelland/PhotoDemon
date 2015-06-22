@@ -125,10 +125,12 @@ Private Type LayerData
     l_OffsetY As Double
     l_CanvasXModifier As Double         'Width/height modifier for the image; by default, these are set to 1.0.
     l_CanvasYModifier As Double
-    l_Angle As Double                   'Layer angle.  (A long-term goal is to support non-destructive rotation of layers.)
+    l_Angle As Double                   'Layer angle (implemented in PD 7.0)
     l_Visibility As Boolean             'Layer visibility
     l_NonDestructiveFXActive As Boolean 'Are any non-destructive edits or other FX active?
     l_ResizeQuality As LAYER_RESIZE_QUALITY   'Resampling algorithm used when non-destructive resizes are active
+    l_ShearX As Double                   'Layer shear (added in PD 7.0)
+    l_ShearY As Double
 End Type
 
 'Local instance of layer data for this layer
@@ -149,11 +151,14 @@ Public Enum PDLAYER_GENERIC_PROPERTY
     pgp_Visibility = 9
     pgp_NonDestructiveFXActive = 10
     pgp_ResizeQuality = 11
+    pgp_ShearX = 12
+    pgp_ShearY = 13
 End Enum
 
 #If False Then
     Const pgp_Name = 0, pgp_GroupID = 1, pgp_Opacity = 2, pgp_BlendMode = 3, pgp_OffsetX = 4, pgp_OffsetY = 5, pgp_CanvasXModifier = 6
     Const pgp_CanvasYModifier = 7, pgp_Angle = 8, pgp_Visibility = 9, pgp_NonDestructiveFXActive = 10, pgp_ResizeQuality = 11
+    Const pgp_ShearX = 12, pgp_ShearY = 13
 #End If
 
 'Non-destructive edits currently supported by the program.
@@ -858,6 +863,12 @@ Friend Function getGenericLayerProperty(ByVal desiredProperty As PDLAYER_GENERIC
             
         Case pgp_ResizeQuality
             getGenericLayerProperty = myLayerData.l_ResizeQuality
+            
+        Case pgp_ShearX
+            getGenericLayerProperty = myLayerData.l_ShearX
+            
+        Case pgp_ShearY
+            getGenericLayerProperty = myLayerData.l_ShearY
     
     End Select
 
@@ -902,6 +913,12 @@ Friend Sub setGenericLayerProperty(ByVal desiredProperty As PDLAYER_GENERIC_PROP
             
         Case pgp_ResizeQuality
             If myLayerData.l_ResizeQuality <> CLng(newValue) Then myLayerData.l_ResizeQuality = CLng(newValue)
+            
+        Case pgp_ShearX
+            If myLayerData.l_ShearX <> CDbl(newValue) Then myLayerData.l_ShearX = CDbl(newValue)
+            
+        Case pgp_ShearY
+            If myLayerData.l_ShearY <> CDbl(newValue) Then myLayerData.l_ShearY = CDbl(newValue)
         
     End Select
     
@@ -1295,6 +1312,8 @@ Public Sub makeCanvasTransformsPermanent(Optional ByVal maxWidth As Long = 0, Op
                 .l_CanvasXModifier = 1
                 .l_CanvasYModifier = 1
                 .l_Angle = 0
+                .l_ShearX = 0
+                .l_ShearY = 0
             End With
         
         'If rescaling is the only active transform, we can shortcut this function
@@ -1329,7 +1348,24 @@ Public Sub setLayerAngle(ByVal newAngle As Double)
     myLayerData.l_Angle = newAngle
 End Sub
 
-'If one or more affine transformations are active (rotation, skew, etc), this function will return TRUE.
+'Get/set layer shear
+Public Function getLayerShearX() As Double
+    getLayerShearX = myLayerData.l_ShearX
+End Function
+
+Public Sub setLayerShearX(ByVal newShear As Double)
+    myLayerData.l_ShearX = newShear
+End Sub
+
+Public Function getLayerShearY() As Double
+    getLayerShearY = myLayerData.l_ShearY
+End Function
+
+Public Sub setLayerShearY(ByVal newShear As Double)
+    myLayerData.l_ShearY = newShear
+End Sub
+
+'If one or more affine transformations are active (rotation, shear, etc), this function will return TRUE.
 ' This is used, for example, by pdCompositor to branch across several rendering paths.
 Public Function affineTransformsActive(Optional ByVal includeScaling As Boolean = False) As Boolean
     
@@ -1343,8 +1379,8 @@ Public Function affineTransformsActive(Optional ByVal includeScaling As Boolean 
     
     End If
     
-    'Currently, only rotation is explicitly defined, but skew could be added in the future without too much trouble.
-    If (myLayerData.l_Angle <> 0) Then
+    'Rotate and shear are the only other relevant affine transforms
+    If (myLayerData.l_Angle <> 0) Or (myLayerData.l_ShearX <> 0) Or (myLayerData.l_ShearY <> 0) Then
         affineTransformsActive = True
     Else
         affineTransformsActive = False
@@ -1465,13 +1501,18 @@ Friend Sub getCopyOfLayerTransformationMatrix(ByRef dstMatrix As pdGraphicsMatri
         dstMatrix.ResetToIdentityMatrix
     End If
     
-    'If an angle is active, rotate the matrix accordingly
-    If myLayerData.l_Angle <> 0 Then dstMatrix.RotateMatrix myLayerData.l_Angle, Me.getLayerWidth(True) / 2, Me.getLayerHeight(True) / 2
+    With myLayerData
     
-    'In the future, skew can be handled here
-    
-    'Finally, if translation is desired, scale all points by the current layer offset
-    If applyTranslation Then dstMatrix.TranslateMatrix myLayerData.l_OffsetX, myLayerData.l_OffsetY
+        'If an angle is active, rotate the matrix accordingly
+        If .l_Angle <> 0 Then dstMatrix.RotateMatrix .l_Angle, Me.getLayerWidth(True) / 2, Me.getLayerHeight(True) / 2
+        
+        'If shearing is active, shear the matrix accordingly
+        If (.l_ShearX <> 0) Or (.l_ShearY <> 0) Then dstMatrix.ShearMatrix .l_ShearX, .l_ShearY, Me.getLayerWidth(True) / 2, Me.getLayerHeight(True) / 2
+        
+        'Finally, if translation is desired, scale all points by the current layer offset
+        If applyTranslation Then dstMatrix.TranslateMatrix .l_OffsetX, .l_OffsetY
+        
+    End With
     
 End Sub
 
@@ -1496,8 +1537,6 @@ Friend Sub getLayerBoundaryRect(ByRef dstRect As RECTF, Optional ByVal applyTran
         .Width = maxX - minX
         .Height = MaxY - MinY
     End With
-    
-    'Debug.Print dstRect.Left, dstRect.Top, dstRect.Width, dstRect.Height
     
 End Sub
 
@@ -1675,6 +1714,8 @@ Private Sub Class_Initialize()
         .l_Visibility = True
         .l_NonDestructiveFXActive = False
         .l_ResizeQuality = LRQ_BICUBIC_NORMAL
+        .l_ShearX = 0
+        .l_ShearY = 0
     End With
     
     With myNonDestructiveFX
@@ -1796,6 +1837,8 @@ Public Function getLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean 
         xmlEngine.writeTag "Visibility", .l_Visibility
         xmlEngine.writeTag "NonDestructiveFXActive", .l_NonDestructiveFXActive
         xmlEngine.writeTag "ResizeQuality", .l_ResizeQuality
+        xmlEngine.writeTag "ShearX", .l_ShearX
+        xmlEngine.writeTag "ShearY", .l_ShearY
     End With
     
     'Next, write out any non-destructive FX parameters
@@ -1833,7 +1876,7 @@ Public Function getLayerHeaderAsParamString() As String
 
     'Start by compiling a layer header
     With myLayerData
-        getLayerHeaderAsParamString = buildParams(.l_Name, .l_GroupID, .l_Opacity, .l_BlendMode, .l_OffsetX, .l_OffsetY, .l_CanvasXModifier, .l_CanvasYModifier, .l_Angle, .l_Visibility, .l_NonDestructiveFXActive, .l_ResizeQuality)
+        getLayerHeaderAsParamString = buildParams(.l_Name, .l_GroupID, .l_Opacity, .l_BlendMode, .l_OffsetX, .l_OffsetY, .l_CanvasXModifier, .l_CanvasYModifier, .l_Angle, .l_Visibility, .l_NonDestructiveFXActive, .l_ResizeQuality, .l_ShearX, .l_ShearY)
     End With
     
     'Next, add any non-destructive FX parameters
@@ -1866,6 +1909,8 @@ Public Sub setLayerHeaderFromParamString(ByVal srcParamString As String)
         .l_Visibility = cParams.GetBool(10)
         .l_NonDestructiveFXActive = cParams.GetBool(11)
         .l_ResizeQuality = cParams.GetLong(12)
+        .l_ShearX = cParams.GetDouble(13, 0)
+        .l_ShearY = cParams.GetDouble(14, 0)
     End With
     
     'After the layer header comes non-destructive FX settings.  Make sure to adjust these indices if new values get added to
@@ -1925,6 +1970,8 @@ Public Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
             .l_Visibility = xmlEngine.getUniqueTag_Boolean("Visibility")
             .l_NonDestructiveFXActive = xmlEngine.getUniqueTag_Boolean("NonDestructiveFXActive", False)
             .l_ResizeQuality = xmlEngine.getUniqueTag_Long("ResizeQuality", LRQ_BILINEAR_NORMAL)
+            .l_ShearX = xmlEngine.getUniqueTag_Double("ShearX", 0)
+            .l_ShearY = xmlEngine.getUniqueTag_Double("ShearY", 0)
         End With
         
         'Read in the contents of the non-destructive FX chunk
@@ -2160,6 +2207,8 @@ Public Sub InitializeNewLayer(ByVal newLayerType As LAYER_TYPE, Optional ByVal n
         .l_Visibility = True
         .l_NonDestructiveFXActive = False
         .l_ResizeQuality = LRQ_BILINEAR_NORMAL
+        .l_ShearX = 0
+        .l_ShearY = 0
     End With
     
     'Reset any non-destructive fx parameters
@@ -2217,6 +2266,8 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
         .l_Visibility = srcLayer.getLayerVisibility
         .l_NonDestructiveFXActive = srcLayer.getLayerNonDestructiveFXState
         .l_ResizeQuality = srcLayer.getLayerResizeQuality
+        .l_ShearX = srcLayer.getLayerShearX
+        .l_ShearY = srcLayer.getLayerShearY
     End With
     
     'Next, copy any non-destructive FX parameters
@@ -2692,6 +2743,8 @@ Public Sub resetLayerParameters()
         .l_Visibility = True
         .l_NonDestructiveFXActive = False
         .l_ResizeQuality = LRQ_BILINEAR_NORMAL
+        .l_ShearX = 0
+        .l_ShearY = 0
     End With
     
     'Assign default values to the non-destructive FX params
@@ -2907,6 +2960,7 @@ Public Function getViewportHash_Theoretical(ParamArray allParams() As Variant) A
         tmpHash = tmpHash Xor (.l_OffsetX * 10) Xor (.l_OffsetY * 25)
         tmpHash = tmpHash Xor (.l_ResizeQuality * 620)
         tmpHash = tmpHash Xor (.l_Opacity * 65535)
+        tmpHash = tmpHash Xor (.l_ShearX * 524287) Xor (.l_ShearY * 1048575)
     End With
     
     'Next, add any non-destructive FX parameters to the hash
