@@ -30,134 +30,8 @@ Begin VB.Form toolpanel_MoveSize
       TabIndex        =   14
       Top             =   60
       Width           =   2295
-      _ExtentX        =   4048
-      _ExtentY        =   2328
-   End
-   Begin VB.PictureBox picMoveContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   1455
-      Index           =   0
-      Left            =   2520
-      ScaleHeight     =   97
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   833
-      TabIndex        =   1
-      Top             =   0
-      Width           =   12495
-      Begin PhotoDemon.pdComboBox cboLayerResizeQuality 
-         Height          =   300
-         Left            =   5190
-         TabIndex        =   2
-         Top             =   420
-         Width           =   2775
-         _ExtentX        =   4895
-         _ExtentY        =   529
-      End
-      Begin PhotoDemon.textUpDown tudLayerMove 
-         Height          =   345
-         Index           =   0
-         Left            =   120
-         TabIndex        =   3
-         Top             =   420
-         Width           =   2055
-         _ExtentX        =   3625
-         _ExtentY        =   609
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   9
-         Left            =   120
-         Top             =   60
-         Width           =   2370
-         _ExtentX        =   4180
-         _ExtentY        =   503
-         Caption         =   "layer position (x, y):"
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   10
-         Left            =   2640
-         Top             =   60
-         Width           =   2370
-         _ExtentX        =   4180
-         _ExtentY        =   503
-         Caption         =   "layer size (w, h):"
-      End
-      Begin PhotoDemon.textUpDown tudLayerMove 
-         Height          =   345
-         Index           =   1
-         Left            =   120
-         TabIndex        =   4
-         Top             =   840
-         Width           =   2055
-         _ExtentX        =   3625
-         _ExtentY        =   609
-      End
-      Begin PhotoDemon.textUpDown tudLayerMove 
-         Height          =   345
-         Index           =   2
-         Left            =   2640
-         TabIndex        =   5
-         Top             =   420
-         Width           =   2055
-         _ExtentX        =   3625
-         _ExtentY        =   609
-      End
-      Begin PhotoDemon.textUpDown tudLayerMove 
-         Height          =   345
-         Index           =   3
-         Left            =   2640
-         TabIndex        =   6
-         Top             =   840
-         Width           =   2055
-         _ExtentX        =   3625
-         _ExtentY        =   609
-      End
-      Begin PhotoDemon.pdButtonToolbox cmdLayerMove 
-         Height          =   570
-         Index           =   0
-         Left            =   8400
-         TabIndex        =   7
-         Top             =   420
-         Width           =   660
-         _ExtentX        =   1164
-         _ExtentY        =   1005
-         AutoToggle      =   -1  'True
-      End
-      Begin PhotoDemon.pdButtonToolbox cmdLayerMove 
-         Height          =   570
-         Index           =   1
-         Left            =   9240
-         TabIndex        =   8
-         Top             =   420
-         Width           =   660
-         _ExtentX        =   1164
-         _ExtentY        =   1005
-         AutoToggle      =   -1  'True
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   11
-         Left            =   5190
-         Top             =   60
-         Width           =   3090
-         _ExtentX        =   5450
-         _ExtentY        =   503
-         Caption         =   "non-destructive resize quality:"
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   12
-         Left            =   8400
-         Top             =   60
-         Width           =   3360
-         _ExtentX        =   5927
-         _ExtentY        =   503
-         Caption         =   "non-destructive resize options:"
-      End
+      _extentx        =   4048
+      _extenty        =   2328
    End
    Begin VB.PictureBox picMoveContainer 
       Appearance      =   0  'Flat
@@ -179,21 +53,43 @@ Begin VB.Form toolpanel_MoveSize
          TabIndex        =   15
          Top             =   420
          Width           =   4095
-         _ExtentX        =   7223
-         _ExtentY        =   847
-         Min             =   -360
-         Max             =   360
-         SigDigits       =   2
+         _extentx        =   7223
+         _extenty        =   847
+         min             =   -360
+         max             =   360
+         sigdigits       =   2
       End
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
          Index           =   2
          Left            =   120
          Top             =   60
-         Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   503
-         Caption         =   "layer angle:"
+         Width           =   5850
+         _extentx        =   9472
+         _extenty        =   503
+         caption         =   "layer angle:"
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdLayerAngle 
+         Height          =   570
+         Index           =   0
+         Left            =   4440
+         TabIndex        =   17
+         Top             =   360
+         Width           =   660
+         _extentx        =   1164
+         _extenty        =   1005
+         autotoggle      =   -1  'True
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdLayerAngle 
+         Height          =   570
+         Index           =   1
+         Left            =   5280
+         TabIndex        =   18
+         Top             =   360
+         Width           =   660
+         _extentx        =   1164
+         _extenty        =   1005
+         autotoggle      =   -1  'True
       End
    End
    Begin VB.PictureBox picMoveContainer 
@@ -216,9 +112,9 @@ Begin VB.Form toolpanel_MoveSize
          Left            =   120
          Top             =   60
          Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   503
-         Caption         =   "interaction options:"
+         _extentx        =   9472
+         _extenty        =   503
+         caption         =   "interaction options:"
       End
       Begin PhotoDemon.smartCheckBox chkAutoActivateLayer 
          Height          =   330
@@ -226,9 +122,9 @@ Begin VB.Form toolpanel_MoveSize
          TabIndex        =   10
          Top             =   360
          Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   582
-         Caption         =   "automatically activate layer beneath mouse"
+         _extentx        =   9472
+         _extenty        =   582
+         caption         =   "automatically activate layer beneath mouse"
       End
       Begin PhotoDemon.smartCheckBox chkIgnoreTransparent 
          Height          =   330
@@ -236,9 +132,9 @@ Begin VB.Form toolpanel_MoveSize
          TabIndex        =   11
          Top             =   720
          Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   582
-         Caption         =   "ignore transparent pixels when auto-activating layers"
+         _extentx        =   9472
+         _extenty        =   582
+         caption         =   "ignore transparent pixels when auto-activating layers"
       End
       Begin PhotoDemon.smartCheckBox chkLayerBorder 
          Height          =   330
@@ -246,9 +142,9 @@ Begin VB.Form toolpanel_MoveSize
          TabIndex        =   12
          Top             =   360
          Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   582
-         Caption         =   "show layer borders"
+         _extentx        =   9472
+         _extenty        =   582
+         caption         =   "show layer borders"
       End
       Begin PhotoDemon.smartCheckBox chkLayerNodes 
          Height          =   330
@@ -256,9 +152,9 @@ Begin VB.Form toolpanel_MoveSize
          TabIndex        =   0
          Top             =   720
          Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   582
-         Caption         =   "show resize nodes"
+         _extentx        =   9472
+         _extenty        =   582
+         caption         =   "show resize nodes"
       End
       Begin PhotoDemon.pdLabel lblOptions 
          Height          =   240
@@ -266,9 +162,9 @@ Begin VB.Form toolpanel_MoveSize
          Left            =   5640
          Top             =   60
          Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   503
-         Caption         =   "display options:"
+         _extentx        =   9472
+         _extenty        =   503
+         caption         =   "display options:"
       End
       Begin PhotoDemon.smartCheckBox chkRotateNode 
          Height          =   330
@@ -276,9 +172,135 @@ Begin VB.Form toolpanel_MoveSize
          TabIndex        =   16
          Top             =   1080
          Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   582
-         Caption         =   "show rotate nodes"
+         _extentx        =   9472
+         _extenty        =   582
+         caption         =   "show rotate nodes"
+      End
+   End
+   Begin VB.PictureBox picMoveContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H00FFFFFF&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   1455
+      Index           =   0
+      Left            =   2520
+      ScaleHeight     =   97
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   833
+      TabIndex        =   1
+      Top             =   0
+      Width           =   12495
+      Begin PhotoDemon.pdComboBox cboLayerResizeQuality 
+         Height          =   300
+         Left            =   5190
+         TabIndex        =   2
+         Top             =   420
+         Width           =   2775
+         _extentx        =   4895
+         _extenty        =   529
+      End
+      Begin PhotoDemon.textUpDown tudLayerMove 
+         Height          =   345
+         Index           =   0
+         Left            =   120
+         TabIndex        =   3
+         Top             =   420
+         Width           =   2055
+         _extentx        =   3625
+         _extenty        =   609
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   9
+         Left            =   120
+         Top             =   60
+         Width           =   2370
+         _extentx        =   4180
+         _extenty        =   503
+         caption         =   "layer position (x, y):"
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   10
+         Left            =   2640
+         Top             =   60
+         Width           =   2370
+         _extentx        =   4180
+         _extenty        =   503
+         caption         =   "layer size (w, h):"
+      End
+      Begin PhotoDemon.textUpDown tudLayerMove 
+         Height          =   345
+         Index           =   1
+         Left            =   120
+         TabIndex        =   4
+         Top             =   840
+         Width           =   2055
+         _extentx        =   3625
+         _extenty        =   609
+      End
+      Begin PhotoDemon.textUpDown tudLayerMove 
+         Height          =   345
+         Index           =   2
+         Left            =   2640
+         TabIndex        =   5
+         Top             =   420
+         Width           =   2055
+         _extentx        =   3625
+         _extenty        =   609
+      End
+      Begin PhotoDemon.textUpDown tudLayerMove 
+         Height          =   345
+         Index           =   3
+         Left            =   2640
+         TabIndex        =   6
+         Top             =   840
+         Width           =   2055
+         _extentx        =   3625
+         _extenty        =   609
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdLayerMove 
+         Height          =   570
+         Index           =   0
+         Left            =   8400
+         TabIndex        =   7
+         Top             =   420
+         Width           =   660
+         _extentx        =   1164
+         _extenty        =   1005
+         autotoggle      =   -1  'True
+      End
+      Begin PhotoDemon.pdButtonToolbox cmdLayerMove 
+         Height          =   570
+         Index           =   1
+         Left            =   9240
+         TabIndex        =   8
+         Top             =   420
+         Width           =   660
+         _extentx        =   1164
+         _extenty        =   1005
+         autotoggle      =   -1  'True
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   11
+         Left            =   5190
+         Top             =   60
+         Width           =   3090
+         _extentx        =   5450
+         _extenty        =   503
+         caption         =   "non-destructive resize quality:"
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   12
+         Left            =   8400
+         Top             =   60
+         Width           =   3360
+         _extentx        =   5927
+         _extenty        =   503
+         caption         =   "non-destructive resize options:"
       End
    End
 End
@@ -361,6 +383,22 @@ Private Sub chkRotateNode_Click()
     Viewport_Engine.Stage5_FlipBufferAndDrawUI pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 End Sub
 
+Private Sub cmdLayerAngle_Click(Index As Integer)
+    
+    Select Case Index
+    
+        'Reset layer to angle = 0
+        Case 0
+            Process "Reset layer angle", , buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_LAYERHEADER
+        
+        'Make non-destructive rotation permanent
+        Case 1
+            Process "Make layer angle permanent", , buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_LAYER
+    
+    End Select
+    
+End Sub
+
 Private Sub cmdLayerMove_Click(Index As Integer)
     
     Select Case Index
@@ -386,11 +424,16 @@ Private Sub Form_Load()
     btsMoveOptions.ListIndex = 0
     btsMoveOptions_Click 0
     
+    'Several reset/apply buttons on this form use nearly identical tooltips and images
     cmdLayerMove(0).AssignImage "CMDBAR_RESET", , 50
     cmdLayerMove(1).AssignImage "TO_APPLY", , 50
-    
     cmdLayerMove(0).assignTooltip "Reset layer to original size"
     cmdLayerMove(1).assignTooltip "Make current layer size permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
+    
+    cmdLayerAngle(0).AssignImage "CMDBAR_RESET", , 50
+    cmdLayerAngle(1).AssignImage "TO_APPLY", , 50
+    cmdLayerAngle(0).assignTooltip "Reset layer angle to zero"
+    cmdLayerAngle(1).assignTooltip "Make current layer angle permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
     
     cboLayerResizeQuality.Clear
     cboLayerResizeQuality.AddItem "Nearest neighbor", 0
