@@ -807,7 +807,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         ' (Just kidding, this action is destructive, but it sits on the non-destructive panel so I've included it here)
         Case "Make layer changes permanent"
             Layer_Handler.MakeLayerAffineTransformsPermanent cParams.GetLong(1)
-        
+            
         'Destructive layer orientation changes
         Case "Straighten layer"
             If showDialog Then

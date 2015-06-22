@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.51</langversion>
+<langversion>6.7.52</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -5768,7 +5768,7 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <translation>Perapian gambar untuk dimensi baru</translation>
 </phrase>
 
-<!-- VBP_Filters_Rotate.bas contains 32 phrases. 14 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- VBP_Filters_Rotate.bas contains 35 phrases. 17 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_Filters_Rotate.bas-->
 
@@ -13714,27 +13714,12 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <!-- BEGIN text for VBP_ToolPanel_MoveSize.frm (toolpanel_MoveSize) -->
 
 <phrase>
-<original>layer position (x, y)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize quality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>layer angle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer shear (x, y)</original>
 <translation></translation>
 </phrase>
 
@@ -13774,7 +13759,37 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
-<original>Make layer size permanent</original>
+<original>layer position (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>transform quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Make layer changes permanent</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reset layer angle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reset horizontal layer shear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reset vertical layer shear</original>
 <translation></translation>
 </phrase>
 
@@ -13784,7 +13799,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
-<original>angle and skew</original>
+<original>angle and shear</original>
 <translation></translation>
 </phrase>
 
@@ -13799,7 +13814,22 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
-<original>Make current layer size permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance.</original>
+<original>Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reset layer angle to zero</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reset horizontal layer shear to zero</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Reset vertical layer shear to zero</original>
 <translation></translation>
 </phrase>
 
@@ -13808,7 +13838,7 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_MoveSize.frm contains 22 phrases. 3 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- VBP_ToolPanel_MoveSize.frm contains 32 phrases. 7 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_MoveSize.frm-->
 
@@ -14087,10 +14117,10 @@ or menu Fail > Import dan Fail > Buka.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2448</phrasecount>
+<phrasecount>2454</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4222 phrases. -->
-<!-- 1774 are duplicates, so only 2448 unique phrases have been written to file. -->
-<!-- These 2448 phrases contain approximately 13678 total words. -->
+<!-- As of this build, PhotoDemon contains 4235 phrases. -->
+<!-- 1781 are duplicates, so only 2454 unique phrases have been written to file. -->
+<!-- These 2454 phrases contain approximately 13710 total words. -->
 
 </pdData>
