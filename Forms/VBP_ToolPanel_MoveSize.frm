@@ -448,7 +448,7 @@ Private Sub chkRotateNode_Click()
 End Sub
 
 Private Sub cmdLayerAffinePermanent_Click()
-    Process "Make layer changes permanent", , buildParams(pdImages(g_CurrentImage).getActiveLayerIndex)
+    Process "Make layer changes permanent", , buildParams(pdImages(g_CurrentImage).getActiveLayerIndex), UNDO_LAYER
 End Sub
 
 'Reset layer angle to 0.0 degrees.  (This action is non-destructive.)
