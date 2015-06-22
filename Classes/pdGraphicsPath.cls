@@ -250,6 +250,14 @@ Public Sub translatePath(ByVal xAmount As Single, ByVal yAmount As Single)
     
 End Sub
 
+'Transform the path by some arbitrary pdGraphicsMatrix object
+Public Sub transformPathByMatrix(ByRef srcMatrix As pdGraphicsMatrix)
+    
+    'Apply the transformation immediately
+    GdipTransformPath m_PathHandle, srcMatrix.getMatrixHandle
+    
+End Sub
+
 ' END: NON-DESTRUCTIVE PATH EDITS
 '
 '***************************************************************************

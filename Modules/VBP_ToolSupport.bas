@@ -292,6 +292,7 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                 'Layer rotation is different because it involves finding the angle between two lines; specifically, the angle between
                 ' a flat origin line and the current node-to-origin line of the rotation node.
                 Dim ptIntersect As POINTFLOAT, pt1 As POINTFLOAT, pt2 As POINTFLOAT
+                Dim ptIntersect_T As POINTFLOAT, pt1_T As POINTFLOAT, pt2_T As POINTFLOAT
                 
                 'The intersect point is the center of the image.  This point is the same for all rotation nodes.
                 ptIntersect.x = m_InitLayerCoords_Pure(0).x + (m_InitLayerCoords_Pure(3).x - m_InitLayerCoords_Pure(0).x) / 2
@@ -312,28 +313,47 @@ Public Sub transformCurrentLayer(ByVal curImageX As Double, ByVal curImageY As D
                     pt1.x = ptIntersect.x
                     pt1.y = ptIntersect.y - 100
                 End If
-                
+                                                
                 'The second non-intersecting point is the current mouse position.
                 pt2.x = curImageX
                 pt2.y = curImageY
                 
-                'Find the angle between these
+                'If shearing is active on the current layer, we need to account for its effect on the current mouse location.
+                ' (Note that we could apply this matrix transformation regardless of current shear values, as values of zero
+                ' will simply return an identity matrix, but why do extra math if it's not required?)
+                If (srcLayer.getLayerShearX <> 0) Or (srcLayer.getLayerShearY <> 0) Then
+                
+                    'Apply the current layer's shear effect to the mouse position.  This gives us its unadulterated equivalent,
+                    ' e.g. its location in the same coordinate space as the two points we've already calculated.
+                    Dim tmpMatrix As pdGraphicsMatrix
+                    Set tmpMatrix = New pdGraphicsMatrix
+                    
+                    tmpMatrix.ShearMatrix srcLayer.getLayerShearX, srcLayer.getLayerShearY, ptIntersect.x, ptIntersect.y
+                    tmpMatrix.InvertMatrix
+                    
+                    tmpMatrix.applyMatrixToPointF pt2
+                
+                End If
+                
+                'Find the angle between the two lines we've calculated
                 Dim newAngle As Double
                 newAngle = Math_Functions.angleBetweenTwoIntersectingLines(ptIntersect, pt1, pt2, True)
                 
                 'Because the angle function finds the absolute inner angle, it will never be greater than 180 degrees.  This also means
                 ' that +90 and -90 (from a UI standpoint) return the same 90 result.  A simple workaround is to force the sign to
-                ' match the difference between the y-coordinates of the two points.
+                ' match the difference between the relevant coordinate of the intersecting lines.  (The relevant coordinate varies
+                ' based on the orientation of the default, non-rotated line defined by ptIntersect and pt1.)
                 If m_curPOI = 4 Then
-                    If curImageY < pt1.y Then newAngle = -newAngle
+                    If pt2.y < pt1.y Then newAngle = -newAngle
                 ElseIf m_curPOI = 5 Then
-                    If curImageX > pt1.x Then newAngle = -newAngle
+                    If pt2.x > pt1.x Then newAngle = -newAngle
                 ElseIf m_curPOI = 6 Then
-                    If curImageY > pt1.y Then newAngle = -newAngle
+                    If pt2.y > pt1.y Then newAngle = -newAngle
                 Else
-                    If curImageX < pt1.x Then newAngle = -newAngle
+                    If pt2.x < pt1.x Then newAngle = -newAngle
                 End If
                 
+                'Apply the angle to the layer, and our work here is done!
                 .setLayerAngle newAngle
                             
             '5: interior of the layer (e.g. move the layer instead of resize it)
@@ -516,8 +536,10 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                 'The layer resize quality combo box also needs to be synched
                 toolpanel_MoveSize.cboLayerResizeQuality.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getLayerResizeQuality
                 
-                'Layer angle is newly available as of 7.0
+                'Layer angle and shear are newly available as of 7.0
                 toolpanel_MoveSize.sltLayerAngle.Value = pdImages(g_CurrentImage).getActiveLayer.getLayerAngle
+                toolpanel_MoveSize.sltLayerShearX.Value = pdImages(g_CurrentImage).getActiveLayer.getLayerShearX
+                toolpanel_MoveSize.sltLayerShearY.Value = pdImages(g_CurrentImage).getActiveLayer.getLayerShearY
             
             Case VECTOR_TEXT
                 
@@ -641,8 +663,10 @@ Public Sub syncCurrentLayerToToolOptionsUI()
                 'The layer resize quality combo box also needs to be synched
                 pdImages(g_CurrentImage).getActiveLayer.setLayerResizeQuality toolpanel_MoveSize.cboLayerResizeQuality.ListIndex
                 
-                'Layer angle is newly available as of 7.0
+                'Layer angle and shear are newly available as of 7.0
                 pdImages(g_CurrentImage).getActiveLayer.setLayerAngle toolpanel_MoveSize.sltLayerAngle.Value
+                pdImages(g_CurrentImage).getActiveLayer.setLayerShearX toolpanel_MoveSize.sltLayerShearX.Value
+                pdImages(g_CurrentImage).getActiveLayer.setLayerShearY toolpanel_MoveSize.sltLayerShearY.Value
             
             Case VECTOR_TEXT
                 

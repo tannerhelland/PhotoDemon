@@ -58,7 +58,7 @@ Private m_ProcessingTime As Double
 '
 'Also: note that the seemingly arbitrary array sizes match the number of unique entries in the various PDLAYER_XYZ_PROPERTY enums.
 ' Any changes to those enums *must be mirrored here*.
-Private Const NUM_OF_GENERIC_PROPERTY_ENUMS As Long = 12
+Private Const NUM_OF_GENERIC_PROPERTY_ENUMS As Long = 14
 Private prevGenericLayerID As Long, prevGenericSetting() As Variant
 
 Private Const NUM_OF_TEXT_PROPERTY_ENUMS As Long = 37
@@ -798,7 +798,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Reset layer size"
             Layer_Handler.resetLayerSize cParams.GetLong(1)
             
-        Case "Make layer size permanent", "Make layer angle permanent"
+        Case "Reset horizontal layer shear"
+            Layer_Handler.resetLayerShear cParams.GetLong(1), True
+        
+        Case "Reset vertical layer shear"
+            Layer_Handler.resetLayerShear cParams.GetLong(1), False
+        
+        ' (Just kidding, this action is destructive, but it sits on the non-destructive panel so I've included it here)
+        Case "Make layer changes permanent"
             Layer_Handler.MakeLayerAffineTransformsPermanent cParams.GetLong(1)
         
         'Destructive layer orientation changes

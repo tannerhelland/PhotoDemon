@@ -806,6 +806,27 @@ Public Sub resetLayerAngle(ByVal srcLayerIndex As Long)
 
 End Sub
 
+'If a layer has been sheared using the on-canvas tools, this will reset it to shear = 0 for the specified direction.
+Public Sub resetLayerShear(ByVal srcLayerIndex As Long, Optional ByVal shearDirectionHorizontal As Boolean = True)
+
+    'Reset the shear value we were passed
+    If shearDirectionHorizontal Then
+        pdImages(g_CurrentImage).getLayerByIndex(srcLayerIndex).setLayerShearX 0
+    Else
+        pdImages(g_CurrentImage).getLayerByIndex(srcLayerIndex).setLayerShearY 0
+    End If
+    
+    'Notify the parent image of the change
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYERHEADER, srcLayerIndex
+    
+    'Re-sync the interface
+    syncInterfaceToCurrentImage
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
+
 'Resize a layer non-destructively, e.g. by only changing its position and on-canvas x/y modifiers
 Public Sub resizeLayerNonDestructive(ByVal srcLayerIndex As Long, ByVal resizeParams As String)
 
