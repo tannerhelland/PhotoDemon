@@ -783,43 +783,49 @@ Public Sub drawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
         tmpPath.strokePathToDIB_UIStyle Nothing, dstDC
         
         'Next, we are going to draw an arc with arrows on the end, to display where the actual rotation will occur.
-        tmpPath.resetPath
+        ' (At present, we skip this step if shearing is active, as I haven't figured out how to correctly skew the arc into the
+        '  proper on-screen coordinate space.)
+        If (srcLayer.getLayerShearX = 0) And (srcLayer.getLayerShearY = 0) Then
+            
+            tmpPath.resetPath
         
-        'Start by finding the distance of the rotation line.
-        Dim rRadius As Double
-        rRadius = Math_Functions.distanceTwoPoints(layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(relevantPoint).x, layerRotateNodes(relevantPoint).y)
-        
-        'From there, bounds are easy-peasy
-        Dim rotateBoundRect As RECTF
-        With rotateBoundRect
-            .Left = layerRotateNodes(0).x - rRadius
-            .Top = layerRotateNodes(0).y - rRadius
-            .Width = rRadius * 2
-            .Height = rRadius * 2
-        End With
-        
-        'Arc sweep and arc length are inter-related.  What we ultimately want is a (roughly) equal arc size regardless of zoom or
-        ' the underlying image size.  This is difficult to predict as larger images and/or higher zoom will result in larger arc widths
-        ' for an identical radius.  As such, we hard-code an approximate arc length, then generate an arc sweep from it.
-        '
-        'In my testing, 80-ish pixels is a reasonably good size across many image dimensions.  Note that we *do* correct for DPI here.
-        Dim arcLength As Double
-        arcLength = fixDPIFloat(70)
-        
-        'Switching between arc length and sweep is easy; see https://en.wikipedia.org/wiki/Arc_%28geometry%29#Length_of_an_arc_of_a_circle
-        Dim arcSweep As Double
-        arcSweep = (arcLength * 180) / (PI * rRadius)
-        
-        'Make sure the arc fits within a valid range (e.g. no complete circles or nearly-straight lines)
-        If arcSweep > 90 Then arcSweep = 90
-        If arcSweep < 30 Then arcSweep = 30
-        
-        'We need to modify the default layer angle depending on the current POI
-        Dim relevantAngle As Double
-        relevantAngle = srcLayer.getLayerAngle + ((relevantPoint - 1) * 90)
-        
-        tmpPath.addArc rotateBoundRect, relevantAngle - arcSweep / 2, arcSweep
-        tmpPath.strokePathToDIB_UIStyle Nothing, dstDC, LineCapArrowAnchor, LineCapArrowAnchor
+            'Start by finding the distance of the rotation line.
+            Dim rRadius As Double
+            rRadius = Math_Functions.distanceTwoPoints(layerRotateNodes(0).x, layerRotateNodes(0).y, layerRotateNodes(relevantPoint).x, layerRotateNodes(relevantPoint).y)
+            
+            'From there, bounds are easy-peasy
+            Dim rotateBoundRect As RECTF
+            With rotateBoundRect
+                .Left = layerRotateNodes(0).x - rRadius
+                .Top = layerRotateNodes(0).y - rRadius
+                .Width = rRadius * 2
+                .Height = rRadius * 2
+            End With
+            
+            'Arc sweep and arc length are inter-related.  What we ultimately want is a (roughly) equal arc size regardless of zoom or
+            ' the underlying image size.  This is difficult to predict as larger images and/or higher zoom will result in larger arc widths
+            ' for an identical radius.  As such, we hard-code an approximate arc length, then generate an arc sweep from it.
+            '
+            'In my testing, 80-ish pixels is a reasonably good size across many image dimensions.  Note that we *do* correct for DPI here.
+            Dim arcLength As Double
+            arcLength = fixDPIFloat(70)
+            
+            'Switching between arc length and sweep is easy; see https://en.wikipedia.org/wiki/Arc_%28geometry%29#Length_of_an_arc_of_a_circle
+            Dim arcSweep As Double
+            arcSweep = (arcLength * 180) / (PI * rRadius)
+            
+            'Make sure the arc fits within a valid range (e.g. no complete circles or nearly-straight lines)
+            If arcSweep > 90 Then arcSweep = 90
+            If arcSweep < 30 Then arcSweep = 30
+            
+            'We need to modify the default layer angle depending on the current POI
+            Dim relevantAngle As Double
+            relevantAngle = srcLayer.getLayerAngle + ((relevantPoint - 1) * 90)
+            
+            tmpPath.addArc rotateBoundRect, relevantAngle - arcSweep / 2, arcSweep
+            tmpPath.strokePathToDIB_UIStyle Nothing, dstDC, LineCapArrowAnchor, LineCapArrowAnchor
+            
+        End If
         
     End If
     
