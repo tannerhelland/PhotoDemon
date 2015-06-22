@@ -697,10 +697,10 @@ End Sub
 ' remove alpha!  It simply merges all visible layers.
 Public Sub mergeVisibleLayers()
     
-    'If there's only one visible layer, this function should not be called - but just in case, exit in advance.
+    'If there's only one layer, this function should not be called - but just in case, exit in advance.
     If pdImages(g_CurrentImage).getNumOfLayers = 1 Then Exit Sub
     
-    'SIf there's only one visible layer, this function should not be called - but just in case, exit in advance.
+    'Similarly, if there's only one *visible* layer, this function should not be called - but just in case, exit in advance.
     If pdImages(g_CurrentImage).getNumOfVisibleLayers = 1 Then Exit Sub
     
     'By this point, we can assume there are at least two visible layers in the image.  Rather than deal with the messiness
