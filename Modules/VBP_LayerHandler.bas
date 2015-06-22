@@ -774,13 +774,29 @@ Public Sub resetLayerSize(ByVal srcLayerIndex As Long)
 End Sub
 
 'If a layer has been transformed using the on-canvas tools, this will make those transforms permanent.
-Public Sub MakeLayerSizePermanent(ByVal srcLayerIndex As Long)
+Public Sub MakeLayerAffineTransformsPermanent(ByVal srcLayerIndex As Long)
     
     'Layers are capable of making this change internally
     pdImages(g_CurrentImage).getLayerByIndex(srcLayerIndex).makeCanvasTransformsPermanent
     
     'Notify the parent object of this change
     pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, srcLayerIndex
+    
+    'Re-sync the interface
+    syncInterfaceToCurrentImage
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
+
+'If a layer has been rotated using the on-canvas tools, this will reset it to its default orientation.
+Public Sub resetLayerAngle(ByVal srcLayerIndex As Long)
+
+    pdImages(g_CurrentImage).getLayerByIndex(srcLayerIndex).setLayerAngle 0
+    
+    'Notify the parent image of the change
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYERHEADER, srcLayerIndex
     
     'Re-sync the interface
     syncInterfaceToCurrentImage

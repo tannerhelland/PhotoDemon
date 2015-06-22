@@ -124,6 +124,8 @@ Public Sub syncInterfaceToCurrentImage()
         FormMain.MnuLayerSize(0).Enabled = False
         toolpanel_MoveSize.cmdLayerMove(0).Enabled = False
         toolpanel_MoveSize.cmdLayerMove(1).Enabled = False
+        toolpanel_MoveSize.cmdLayerAngle(0).Enabled = False
+        toolpanel_MoveSize.cmdLayerAngle(1).Enabled = False
         
         'Reset all Undo/Redo and related menus as well
         syncUndoRedoInterfaceElements True
@@ -271,6 +273,10 @@ Public Sub syncInterfaceToCurrentImage()
                     FormMain.MnuLayerSize(0).Enabled = nonDestructiveResizeActive
                     toolpanel_MoveSize.cmdLayerMove(0).Enabled = nonDestructiveResizeActive
                     toolpanel_MoveSize.cmdLayerMove(1).Enabled = nonDestructiveResizeActive
+                    
+                    'Similar logic is used for other non-destructive affine transforms
+                    toolpanel_MoveSize.cmdLayerAngle(0).Enabled = CBool(pdImages(g_CurrentImage).getActiveLayer.getLayerAngle <> 0)
+                    toolpanel_MoveSize.cmdLayerAngle(1).Enabled = toolpanel_MoveSize.cmdLayerAngle(0).Enabled
                                         
                     'If non-destructive FX are active on the current layer, update the non-destructive tool enablement to match
                     metaToggle tNonDestructiveFX, True

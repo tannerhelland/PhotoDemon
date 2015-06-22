@@ -791,7 +791,17 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         Case "Lower layer to bottom"
             Layer_Handler.moveLayerToEndOfStack cParams.GetLong(1), False
         
-        'Layer orientation changes
+        'Non-destructive layer size and orientation changes
+        Case "Reset layer angle"
+            Layer_Handler.resetLayerAngle cParams.GetLong(1)
+        
+        Case "Reset layer size"
+            Layer_Handler.resetLayerSize cParams.GetLong(1)
+            
+        Case "Make layer size permanent", "Make layer angle permanent"
+            Layer_Handler.MakeLayerAffineTransformsPermanent cParams.GetLong(1)
+        
+        'Destructive layer orientation changes
         Case "Straighten layer"
             If showDialog Then
                 showStraightenDialog PD_AT_SINGLELAYER
@@ -820,14 +830,8 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
         
         Case "Flip layer vertically"
             MenuFlip pdImages(g_CurrentImage).getActiveLayerIndex
-        
-        'Layer size changes
-        Case "Reset layer size"
-            Layer_Handler.resetLayerSize cParams.GetLong(1)
-            
-        Case "Make layer size permanent"
-            Layer_Handler.MakeLayerSizePermanent cParams.GetLong(1)
-            
+                
+        'Destructive layer size changes
         Case "Resize layer"
             If showDialog Then
                 showResizeDialog PD_AT_SINGLELAYER
