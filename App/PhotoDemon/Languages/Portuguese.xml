@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.50</langversion>
+<langversion>6.7.51</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -13714,6 +13714,31 @@ or os menus File> Open e File> Import.</translation>
 <!-- BEGIN text for VBP_ToolPanel_MoveSize.frm (toolpanel_MoveSize) -->
 
 <phrase>
+<original>layer position (x, y)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer size (w, h)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize quality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>non-destructive resize options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>layer angle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>interaction options</original>
 <translation>opções de interação</translation>
 </phrase>
@@ -13749,42 +13774,22 @@ or os menus File> Open e File> Import.</translation>
 </phrase>
 
 <phrase>
-<original>layer position (x, y)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>layer size (w, h)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize quality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>non-destructive resize options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>angle test</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Make layer size permanent</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>transformations</original>
+<original>size and position</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>user interface</original>
+<original>angle and skew</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>tool settings</original>
 <translation></translation>
 </phrase>
 
@@ -13803,7 +13808,7 @@ or os menus File> Open e File> Import.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_MoveSize.frm contains 22 phrases. 4 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- VBP_ToolPanel_MoveSize.frm contains 22 phrases. 3 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_MoveSize.frm-->
 
@@ -14082,10 +14087,10 @@ or os menus File> Open e File> Import.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2447</phrasecount>
+<phrasecount>2448</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4222 phrases. -->
-<!-- 1775 are duplicates, so only 2447 unique phrases have been written to file. -->
-<!-- These 2447 phrases contain approximately 13673 total words. -->
+<!-- 1774 are duplicates, so only 2448 unique phrases have been written to file. -->
+<!-- These 2448 phrases contain approximately 13678 total words. -->
 
 </pdData>

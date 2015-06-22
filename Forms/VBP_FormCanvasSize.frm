@@ -41,6 +41,7 @@ Begin VB.Form FormCanvasSize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
       AutoloadLastPreset=   -1  'True
    End
    Begin VB.CommandButton cmdAnchor 
@@ -241,7 +242,7 @@ Option Explicit
 Private cImgCtl As clsControlImage
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Current anchor position; used to render the anchor selection command buttons, among other things
 Dim m_CurrentAnchor As Long
@@ -383,45 +384,16 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
         
 End Sub
 
 'Certain actions are done at LOAD time instead of ACTIVATE time to minimize visible flickering
 Private Sub Form_Load()
-
-    'If the current image is 32bpp, we have no need to display the "background color" selection box, as any blank space
-    ' will be filled with transparency.
-    ' NOTE: as of 6.4's release, the code below still works just fine - but because PD now uses a "32bpp by default"
-    '       strategy, there is no reason to check color depth in advance.  Instead, we always assume 32bpp data.
-    
-'    If pdImages(g_CurrentImage).getCompositeImageColorDepth = 32 Then
-'
-'        'Hide the background color selectors
-'        colorPicker.Visible = False
-'
-'        Dim formHeightDifference As Long
-'        Me.ScaleMode = vbTwips
-'        formHeightDifference = Me.Height - Me.ScaleHeight
-'        Me.ScaleMode = vbPixels
-'
-'        'Resize the form to match
-'        Me.Height = formHeightDifference + (lblFill.Top + lblFill.Height + cmdBar.Height + fixDPI(24)) * TwipsPerPixelYFix
-'
-'    End If
     
     'Automatically set the width and height text boxes to match the image's current dimensions
     ucResize.setInitialDimensions pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, pdImages(g_CurrentImage).getDPI
-    
-    'NOTE: see above comment to PD now assuming 32bpp data by default
-    
-    'If the source image is 32bpp, hide the color selection box and change the text to match
-'    If pdImages(g_CurrentImage).getCompositeImageColorDepth = 32 Then
-'        lblFill.Caption = g_Language.TranslateMessage("note: empty areas will be made transparent")
-'    Else
-'        lblFill.Caption = g_Language.TranslateMessage("fill empty areas with:")
-'    End If
     
     'Start with a default top-left position for the anchor
     updateAnchorButtons

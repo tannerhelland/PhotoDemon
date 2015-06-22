@@ -39,128 +39,6 @@ Begin VB.Form toolpanel_MoveSize
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   1455
-      Index           =   1
-      Left            =   2520
-      ScaleHeight     =   97
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   833
-      TabIndex        =   13
-      Top             =   0
-      Width           =   12495
-      Begin PhotoDemon.sliderTextCombo sltLayerAngle 
-         Height          =   480
-         Left            =   120
-         TabIndex        =   15
-         Top             =   420
-         Width           =   4095
-         _ExtentX        =   7223
-         _ExtentY        =   847
-         Min             =   -360
-         Max             =   360
-         SigDigits       =   2
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   2
-         Left            =   120
-         Top             =   60
-         Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   503
-         Caption         =   "layer angle:"
-      End
-   End
-   Begin VB.PictureBox picMoveContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   1455
-      Index           =   2
-      Left            =   2520
-      ScaleHeight     =   97
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   833
-      TabIndex        =   9
-      Top             =   0
-      Width           =   12495
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   0
-         Left            =   120
-         Top             =   60
-         Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   503
-         Caption         =   "interaction options:"
-      End
-      Begin PhotoDemon.smartCheckBox chkAutoActivateLayer 
-         Height          =   330
-         Left            =   120
-         TabIndex        =   10
-         Top             =   360
-         Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   582
-         Caption         =   "automatically activate layer beneath mouse"
-      End
-      Begin PhotoDemon.smartCheckBox chkIgnoreTransparent 
-         Height          =   330
-         Left            =   120
-         TabIndex        =   11
-         Top             =   720
-         Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   582
-         Caption         =   "ignore transparent pixels when auto-activating layers"
-      End
-      Begin PhotoDemon.smartCheckBox chkLayerBorder 
-         Height          =   330
-         Left            =   5640
-         TabIndex        =   12
-         Top             =   360
-         Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   582
-         Caption         =   "show layer borders"
-      End
-      Begin PhotoDemon.smartCheckBox chkLayerNodes 
-         Height          =   330
-         Left            =   5640
-         TabIndex        =   0
-         Top             =   720
-         Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   582
-         Caption         =   "show resize nodes"
-      End
-      Begin PhotoDemon.pdLabel lblOptions 
-         Height          =   240
-         Index           =   1
-         Left            =   5640
-         Top             =   60
-         Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   503
-         Caption         =   "display options:"
-      End
-      Begin PhotoDemon.smartCheckBox chkRotateNode 
-         Height          =   330
-         Left            =   5640
-         TabIndex        =   16
-         Top             =   1080
-         Width           =   5370
-         _ExtentX        =   9472
-         _ExtentY        =   582
-         Caption         =   "show rotate nodes"
-      End
-   End
-   Begin VB.PictureBox picMoveContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H00FFFFFF&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   1455
       Index           =   0
       Left            =   2520
       ScaleHeight     =   97
@@ -279,6 +157,128 @@ Begin VB.Form toolpanel_MoveSize
          _ExtentX        =   5927
          _ExtentY        =   503
          Caption         =   "non-destructive resize options:"
+      End
+   End
+   Begin VB.PictureBox picMoveContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H00FFFFFF&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   1455
+      Index           =   1
+      Left            =   2520
+      ScaleHeight     =   97
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   833
+      TabIndex        =   13
+      Top             =   0
+      Width           =   12495
+      Begin PhotoDemon.sliderTextCombo sltLayerAngle 
+         Height          =   480
+         Left            =   120
+         TabIndex        =   15
+         Top             =   420
+         Width           =   4095
+         _ExtentX        =   7223
+         _ExtentY        =   847
+         Min             =   -360
+         Max             =   360
+         SigDigits       =   2
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   2
+         Left            =   120
+         Top             =   60
+         Width           =   5370
+         _ExtentX        =   9472
+         _ExtentY        =   503
+         Caption         =   "layer angle:"
+      End
+   End
+   Begin VB.PictureBox picMoveContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H00FFFFFF&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   1455
+      Index           =   2
+      Left            =   2520
+      ScaleHeight     =   97
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   833
+      TabIndex        =   9
+      Top             =   0
+      Width           =   12495
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   0
+         Left            =   120
+         Top             =   60
+         Width           =   5370
+         _ExtentX        =   9472
+         _ExtentY        =   503
+         Caption         =   "interaction options:"
+      End
+      Begin PhotoDemon.smartCheckBox chkAutoActivateLayer 
+         Height          =   330
+         Left            =   120
+         TabIndex        =   10
+         Top             =   360
+         Width           =   5370
+         _ExtentX        =   9472
+         _ExtentY        =   582
+         Caption         =   "automatically activate layer beneath mouse"
+      End
+      Begin PhotoDemon.smartCheckBox chkIgnoreTransparent 
+         Height          =   330
+         Left            =   120
+         TabIndex        =   11
+         Top             =   720
+         Width           =   5370
+         _ExtentX        =   9472
+         _ExtentY        =   582
+         Caption         =   "ignore transparent pixels when auto-activating layers"
+      End
+      Begin PhotoDemon.smartCheckBox chkLayerBorder 
+         Height          =   330
+         Left            =   5640
+         TabIndex        =   12
+         Top             =   360
+         Width           =   5370
+         _ExtentX        =   9472
+         _ExtentY        =   582
+         Caption         =   "show layer borders"
+      End
+      Begin PhotoDemon.smartCheckBox chkLayerNodes 
+         Height          =   330
+         Left            =   5640
+         TabIndex        =   0
+         Top             =   720
+         Width           =   5370
+         _ExtentX        =   9472
+         _ExtentY        =   582
+         Caption         =   "show resize nodes"
+      End
+      Begin PhotoDemon.pdLabel lblOptions 
+         Height          =   240
+         Index           =   1
+         Left            =   5640
+         Top             =   60
+         Width           =   5370
+         _ExtentX        =   9472
+         _ExtentY        =   503
+         Caption         =   "display options:"
+      End
+      Begin PhotoDemon.smartCheckBox chkRotateNode 
+         Height          =   330
+         Left            =   5640
+         TabIndex        =   16
+         Top             =   1080
+         Width           =   5370
+         _ExtentX        =   9472
+         _ExtentY        =   582
+         Caption         =   "show rotate nodes"
       End
    End
 End
