@@ -1610,6 +1610,8 @@ Friend Function getAffineTransformedDIB(ByRef dstDIB As pdDIB, ByRef dstX As Lon
             GDI_Plus.GDIPlus_StretchBlt dstDIB, normalizeX, normalizeY, Me.getLayerWidth(True), Me.getLayerHeight(True), Me.layerDIB, 0, 0, Me.getLayerWidth(False), Me.getLayerHeight(False), 1, Me.getLayerResizeQuality_GDIPlus
         End If
         
+        dstDIB.setInitialAlphaPremultiplicationState True
+        
         'Return success
         getAffineTransformedDIB = True
         
@@ -2480,6 +2482,7 @@ Public Sub convertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parent
     
         'Replace our current layer DIB with the temporary DIB
         Set Me.layerDIB = tmpDIB
+        Me.layerDIB.setInitialAlphaPremultiplicationState True
     
         'Reset layer offset values
         myLayerData.l_OffsetX = 0
