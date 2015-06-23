@@ -99,6 +99,7 @@ Begin VB.Form toolpanel_FancyText
             Width           =   1215
             _ExtentX        =   1720
             _ExtentY        =   609
+            Max             =   100
          End
          Begin PhotoDemon.pdLabel lblText 
             Height          =   240
@@ -109,7 +110,7 @@ Begin VB.Form toolpanel_FancyText
             _ExtentX        =   1984
             _ExtentY        =   503
             Alignment       =   1
-            Caption         =   "case:"
+            Caption         =   "remap:"
             ForeColor       =   0
          End
          Begin PhotoDemon.pdComboBox cboCharCase 
@@ -179,7 +180,7 @@ Begin VB.Form toolpanel_FancyText
             _ExtentX        =   1984
             _ExtentY        =   503
             Alignment       =   1
-            Caption         =   "jitter (x, y):"
+            Caption         =   "jitter:"
             ForeColor       =   0
          End
          Begin PhotoDemon.pdLabel lblText 
@@ -223,10 +224,10 @@ Begin VB.Form toolpanel_FancyText
             _ExtentX        =   1984
             _ExtentY        =   503
             Alignment       =   1
-            Caption         =   "inflate:"
+            Caption         =   "inflation:"
             ForeColor       =   0
          End
-         Begin PhotoDemon.sliderTextCombo sliderTextCombo1 
+         Begin PhotoDemon.sliderTextCombo sltCharInflation 
             CausesValidation=   0   'False
             Height          =   495
             Left            =   5160
@@ -1381,6 +1382,64 @@ Private Sub cboBackBorderMode_LostFocusAPI()
     If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_BackBorderMode, cboBackBorderMode.ListIndex
 End Sub
 
+Private Sub cboCharCase_Click()
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+        
+    'Update the current layer text alignment
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_CharRemap, cboCharCase.ListIndex
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+Private Sub cboCharCase_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_CharRemap, cboCharCase.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub cboCharCase_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_CharRemap, cboCharCase.ListIndex
+End Sub
+
+Private Sub cboCharMirror_Click()
+
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+        
+    'Update the current layer text alignment
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_CharMirror, cboCharMirror.ListIndex
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+
+End Sub
+
+Private Sub cboCharMirror_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_CharMirror, cboCharMirror.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub cboCharMirror_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_CharMirror, cboCharMirror.ListIndex
+End Sub
+
 Private Sub cboFillMode_Click()
     
     'When the current fill mode is changed, show the relevant panel and hide all others
@@ -1865,145 +1924,145 @@ Private Sub Form_Load()
         
         'Set the system font as the default
         cboTextFontFace.setListIndexByString g_InterfaceFont, vbBinaryCompare
+    
+        'Draw the primary category selector
+        btsCategory.AddItem "character", 0
+        btsCategory.AddItem "paragraph", 1
+        btsCategory.AddItem "visual", 2
+        
+        'I've already stubbed out a 4th options panel, but the vertical button list is *really* cramped, so another solution might be necessary
+        
+        'Draw the character sub-category selector
+        btsCharCategory.AddItem "font", 0
+        btsCharCategory.AddItem "special", 1
+        btsCharCategory.ListIndex = 0
+        
+        'OpenType-specific features are a big investment, so I've postponed them to a later date
+        'If g_IsVistaOrLater Then btsCharCategory.AddItem "OpenType", 2
+        
+        'Fill AA options
+        cboTextRenderingHint.Clear
+        cboTextRenderingHint.AddItem "none", 0
+        cboTextRenderingHint.AddItem "normal", 1
+        cboTextRenderingHint.AddItem "crisp", 2
+        cboTextRenderingHint.ListIndex = 1
+        
+        'Draw font style buttons
+        btnFontStyles(0).AssignImage "TEXT_BOLD"
+        btnFontStyles(1).AssignImage "TEXT_ITALIC"
+        btnFontStyles(2).AssignImage "TEXT_UNDERLINE"
+        btnFontStyles(3).AssignImage "TEXT_STRIKE"
+        
+        'Draw alignment buttons
+        btsHAlignment.AddItem "", 0
+        btsHAlignment.AddItem "", 1
+        btsHAlignment.AddItem "", 2
+        
+        btsHAlignment.AssignImageToItem 0, "TEXT_ALIGN_LEFT"
+        btsHAlignment.AssignImageToItem 1, "TEXT_ALIGN_HCENTER"
+        btsHAlignment.AssignImageToItem 2, "TEXT_ALIGN_RIGHT"
+        
+        btsVAlignment.AddItem "", 0
+        btsVAlignment.AddItem "", 1
+        btsVAlignment.AddItem "", 2
+        
+        btsVAlignment.AssignImageToItem 0, "TEXT_ALIGN_TOP"
+        btsVAlignment.AssignImageToItem 1, "TEXT_ALIGN_VCENTER"
+        btsVAlignment.AssignImageToItem 2, "TEXT_ALIGN_BOTTOM"
+        
+        'Fill various character positioning settings
+        cboCharMirror.Clear
+        cboCharMirror.AddItem "none", 0
+        cboCharMirror.AddItem "horizontal", 1
+        cboCharMirror.AddItem "vertical", 2
+        cboCharMirror.AddItem "both", 3
+        cboCharMirror.ListIndex = 0
+        
+        cboCharCase.Clear
+        cboCharCase.AddItem "default", 0
+        cboCharCase.AddItem "lowercase", 1
+        cboCharCase.AddItem "uppercase", 2
+        cboCharCase.AddItem "hiragana", 3
+        cboCharCase.AddItem "katakana", 4
+        cboCharCase.AddItem "simplified Chinese", 5
+        cboCharCase.AddItem "traditional Chinese", 6
+        If g_IsWin7OrLater Then cboCharCase.AddItem "titlecase", 7
+        cboCharCase.ListIndex = 0
+        
+        
+        'Fill wordwrap options
+        cboWordWrap.Clear
+        cboWordWrap.AddItem "none", 0
+        cboWordWrap.AddItem "manual only", 1
+        cboWordWrap.AddItem "characters", 2
+        cboWordWrap.AddItem "words", 3
+        cboWordWrap.ListIndex = 3
+        
+        'Draw the appearance sub-category selector
+        btsAppearanceCategory.AddItem "fill", 0
+        btsAppearanceCategory.AddItem "outline", 1
+        btsAppearanceCategory.AddItem "background", 2
+        btsAppearanceCategory.ListIndex = 0
+        
+        'Fill various appearance options
+        cboFillMode.Clear
+        cboFillMode.AddItem "none", 0
+        cboFillMode.AddItem "color", 1
+        cboFillMode.AddItem "gradient", 2
+        cboFillMode.AddItem "pattern", 3
+        cboFillMode.AddItem "texture", 4
+        cboFillMode.ListIndex = 1
+        
+        'TODO: custom pattern dropdown, since we'll be using it elsewhere!
+        cboFillPattern.Clear
+        cboFillPattern.AddItem "horizontal"
+        cboFillPattern.AddItem "vertical"
+        cboFillPattern.AddItem "forward diagonal"
+        cboFillPattern.AddItem "backward diagonal"
+        cboFillPattern.AddItem "cross"
+        cboFillPattern.AddItem "diagonal cross"
+        cboFillPattern.ListIndex = 0
+        
+        cboOutlineMode.Clear
+        cboOutlineMode.AddItem "none"
+        cboOutlineMode.AddItem "solid"
+        cboOutlineMode.AddItem "dashes"
+        cboOutlineMode.AddItem "dots"
+        cboOutlineMode.AddItem "dash + dot"
+        cboOutlineMode.AddItem "dash + dot + dot"
+        cboOutlineMode.ListIndex = 0
+        
+        cboOutlineCorner.Clear
+        cboOutlineCorner.AddItem "miter"
+        cboOutlineCorner.AddItem "bevel"
+        cboOutlineCorner.AddItem "round"
+        cboOutlineCorner.ListIndex = 0
+        
+        cboOutlineCaps.Clear
+        cboOutlineCaps.AddItem "flat"
+        cboOutlineCaps.AddItem "square"
+        cboOutlineCaps.AddItem "round"
+        cboOutlineCaps.AddItem "triangle"
+        cboOutlineCaps.ListIndex = 0
+        
+        cboBackBorderMode.Clear
+        cboBackBorderMode.AddItem "none"
+        cboBackBorderMode.AddItem "solid"
+        cboBackBorderMode.AddItem "dashes"
+        cboBackBorderMode.AddItem "dots"
+        cboBackBorderMode.AddItem "dash + dot"
+        cboBackBorderMode.AddItem "dash + dot + dot"
+        cboBackBorderMode.ListIndex = 0
+        
+        'Load any last-used settings for this form
+        Set lastUsedSettings = New pdLastUsedSettings
+        lastUsedSettings.setParentForm Me
+        lastUsedSettings.loadAllControlValues
+        
+        'Update everything against the current theme.  This will also set tooltips for various controls.
+        updateAgainstCurrentTheme
         
     End If
-    
-    'Draw the primary category selector
-    btsCategory.AddItem "character", 0
-    btsCategory.AddItem "paragraph", 1
-    btsCategory.AddItem "visual", 2
-    
-    'I've already stubbed out a 4th options panel, but the vertical button list is *really* cramped, so another solution might be necessary
-    
-    'Draw the character sub-category selector
-    btsCharCategory.AddItem "font", 0
-    btsCharCategory.AddItem "positioning", 1
-    btsCharCategory.ListIndex = 0
-    
-    'OpenType-specific features are a big investment, so I've postponed them to a later date
-    'If g_IsVistaOrLater Then btsCharCategory.AddItem "OpenType", 2
-    
-    'Fill AA options
-    cboTextRenderingHint.Clear
-    cboTextRenderingHint.AddItem "none", 0
-    cboTextRenderingHint.AddItem "normal", 1
-    cboTextRenderingHint.AddItem "crisp", 2
-    cboTextRenderingHint.ListIndex = 1
-    
-    'Draw font style buttons
-    btnFontStyles(0).AssignImage "TEXT_BOLD"
-    btnFontStyles(1).AssignImage "TEXT_ITALIC"
-    btnFontStyles(2).AssignImage "TEXT_UNDERLINE"
-    btnFontStyles(3).AssignImage "TEXT_STRIKE"
-    
-    'Draw alignment buttons
-    btsHAlignment.AddItem "", 0
-    btsHAlignment.AddItem "", 1
-    btsHAlignment.AddItem "", 2
-    
-    btsHAlignment.AssignImageToItem 0, "TEXT_ALIGN_LEFT"
-    btsHAlignment.AssignImageToItem 1, "TEXT_ALIGN_HCENTER"
-    btsHAlignment.AssignImageToItem 2, "TEXT_ALIGN_RIGHT"
-    
-    btsVAlignment.AddItem "", 0
-    btsVAlignment.AddItem "", 1
-    btsVAlignment.AddItem "", 2
-    
-    btsVAlignment.AssignImageToItem 0, "TEXT_ALIGN_TOP"
-    btsVAlignment.AssignImageToItem 1, "TEXT_ALIGN_VCENTER"
-    btsVAlignment.AssignImageToItem 2, "TEXT_ALIGN_BOTTOM"
-    
-    'Fill various character positioning settings
-    cboCharMirror.Clear
-    cboCharMirror.AddItem "none", 0
-    cboCharMirror.AddItem "horizontal", 1
-    cboCharMirror.AddItem "vertical", 2
-    cboCharMirror.AddItem "both", 3
-    cboCharMirror.ListIndex = 0
-    
-    cboCharCase.Clear
-    cboCharCase.AddItem "default", 0
-    cboCharCase.AddItem "lowercase", 1
-    cboCharCase.AddItem "uppercase", 2
-    cboCharCase.AddItem "hiragana", 3
-    cboCharCase.AddItem "katakana", 4
-    cboCharCase.AddItem "simplified Chinese", 5
-    cboCharCase.AddItem "traditional Chinese", 6
-    If g_IsWin7OrLater Then cboCharCase.AddItem "titlecase", 7
-    cboCharCase.ListIndex = 0
-    
-    
-    'Fill wordwrap options
-    cboWordWrap.Clear
-    cboWordWrap.AddItem "none", 0
-    cboWordWrap.AddItem "manual only", 1
-    cboWordWrap.AddItem "characters", 2
-    cboWordWrap.AddItem "words", 3
-    cboWordWrap.ListIndex = 3
-    
-    'Draw the appearance sub-category selector
-    btsAppearanceCategory.AddItem "fill", 0
-    btsAppearanceCategory.AddItem "outline", 1
-    btsAppearanceCategory.AddItem "background", 2
-    btsAppearanceCategory.ListIndex = 0
-    
-    'Fill various appearance options
-    cboFillMode.Clear
-    cboFillMode.AddItem "none", 0
-    cboFillMode.AddItem "color", 1
-    cboFillMode.AddItem "gradient", 2
-    cboFillMode.AddItem "pattern", 3
-    cboFillMode.AddItem "texture", 4
-    cboFillMode.ListIndex = 1
-    
-    'TODO: custom pattern dropdown, since we'll be using it elsewhere!
-    cboFillPattern.Clear
-    cboFillPattern.AddItem "horizontal"
-    cboFillPattern.AddItem "vertical"
-    cboFillPattern.AddItem "forward diagonal"
-    cboFillPattern.AddItem "backward diagonal"
-    cboFillPattern.AddItem "cross"
-    cboFillPattern.AddItem "diagonal cross"
-    cboFillPattern.ListIndex = 0
-    
-    cboOutlineMode.Clear
-    cboOutlineMode.AddItem "none"
-    cboOutlineMode.AddItem "solid"
-    cboOutlineMode.AddItem "dashes"
-    cboOutlineMode.AddItem "dots"
-    cboOutlineMode.AddItem "dash + dot"
-    cboOutlineMode.AddItem "dash + dot + dot"
-    cboOutlineMode.ListIndex = 0
-    
-    cboOutlineCorner.Clear
-    cboOutlineCorner.AddItem "miter"
-    cboOutlineCorner.AddItem "bevel"
-    cboOutlineCorner.AddItem "round"
-    cboOutlineCorner.ListIndex = 0
-    
-    cboOutlineCaps.Clear
-    cboOutlineCaps.AddItem "flat"
-    cboOutlineCaps.AddItem "square"
-    cboOutlineCaps.AddItem "round"
-    cboOutlineCaps.AddItem "triangle"
-    cboOutlineCaps.ListIndex = 0
-    
-    cboBackBorderMode.Clear
-    cboBackBorderMode.AddItem "none"
-    cboBackBorderMode.AddItem "solid"
-    cboBackBorderMode.AddItem "dashes"
-    cboBackBorderMode.AddItem "dots"
-    cboBackBorderMode.AddItem "dash + dot"
-    cboBackBorderMode.AddItem "dash + dot + dot"
-    cboBackBorderMode.ListIndex = 0
-    
-    'Load any last-used settings for this form
-    Set lastUsedSettings = New pdLastUsedSettings
-    lastUsedSettings.setParentForm Me
-    lastUsedSettings.loadAllControlValues
-    
-    'Update everything against the current theme.  This will also set tooltips for various controls.
-    updateAgainstCurrentTheme
 
 End Sub
 
@@ -2022,6 +2081,10 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
     btsAppearanceCategory_Click btsAppearanceCategory.ListIndex
     btsCharCategory_Click btsCharCategory.ListIndex
 
+End Sub
+
+Private Sub sliderTextCombo1_Change()
+    
 End Sub
 
 Private Sub sltBackBorderWidth_Change()
@@ -2080,6 +2143,93 @@ End Sub
 
 Private Sub sltBackgroundOpacity_LostFocusAPI()
     If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_BackgroundOpacity, sltBackgroundOpacity.Value
+End Sub
+
+Private Sub sltCharInflation_Change()
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+        
+    'Update the current layer text alignment
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_CharInflation, sltCharInflation.Value
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+Private Sub sltCharInflation_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_CharInflation, sltCharInflation.Value, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub sltCharInflation_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_CharInflation, sltCharInflation.Value
+End Sub
+
+Private Sub sltCharOrientation_Change()
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+        
+    'Update the current layer text alignment
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_CharOrientation, sltCharOrientation.Value
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+Private Sub sltCharOrientation_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_CharOrientation, sltCharOrientation.Value, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub sltCharOrientation_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_CharOrientation, sltCharOrientation.Value
+End Sub
+
+Private Sub sltCharSpacing_Change()
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+        
+    'Update the current layer text alignment
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_CharSpacing, sltCharSpacing.Value
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+Private Sub sltCharSpacing_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_CharSpacing, sltCharSpacing.Value, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub sltCharSpacing_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_CharSpacing, sltCharSpacing.Value
 End Sub
 
 Private Sub sltFillOpacity_Change()
@@ -2167,6 +2317,35 @@ End Sub
 
 Private Sub sltOutlineWidth_LostFocusAPI()
     If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_OutlineWidth, sltOutlineWidth.Value
+End Sub
+
+Private Sub tudJitter_Change(Index As Integer)
+    
+    'If tool changes are not allowed, exit.
+    ' NOTE: this will also check tool busy status, via Tool_Support.getToolBusyState
+    If Not Tool_Support.canvasToolsAllowed Then Exit Sub
+    
+    'Mark the tool engine as busy
+    Tool_Support.setToolBusyState True
+        
+    'Update the current layer text alignment
+    pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_CharJitterX + Index, tudJitter(Index).Value
+    
+    'Free the tool engine
+    Tool_Support.setToolBusyState False
+    
+    'Redraw the viewport
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
+Private Sub tudJitter_GotFocusAPI(Index As Integer)
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Text ptp_CharJitterX + Index, tudJitter(Index).Value, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub tudJitter_LostFocusAPI(Index As Integer)
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_CharJitterX + Index, tudJitter(Index).Value
 End Sub
 
 Private Sub tudLineSpacing_Change()

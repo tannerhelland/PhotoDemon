@@ -61,7 +61,7 @@ Private m_ProcessingTime As Double
 Private Const NUM_OF_GENERIC_PROPERTY_ENUMS As Long = 14
 Private prevGenericLayerID As Long, prevGenericSetting() As Variant
 
-Private Const NUM_OF_TEXT_PROPERTY_ENUMS As Long = 37
+Private Const NUM_OF_TEXT_PROPERTY_ENUMS As Long = 44
 Private prevTextLayerID As Long, prevTextSetting() As Variant
 
 Private Const NUM_OF_NDFX_PROPERTY_ENUMS As Long = 6

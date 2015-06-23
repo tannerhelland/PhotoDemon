@@ -246,6 +246,13 @@ Private Type textLayerData
     tld_BackBorderMode As Long
     tld_BackBorderColor As Long
     tld_BackBorderWidth As Single
+    tld_CharRemap As Long
+    tld_CharSpacing As Double
+    tld_CharOrientation As Double
+    tld_CharJitterX As Double
+    tld_CharJitterY As Double
+    tld_CharInflation As Double
+    tld_CharMirror As Long
 End Type
 
 Private myTextData As textLayerData
@@ -290,6 +297,13 @@ Public Enum PDLAYER_TEXT_PROPERTY
     ptp_BackBorderMode = 35
     ptp_BackBorderColor = 36
     ptp_BackBorderWidth = 37
+    ptp_CharRemap = 38
+    ptp_CharSpacing = 39
+    ptp_CharOrientation = 40
+    ptp_CharJitterX = 41
+    ptp_CharJitterY = 42
+    ptp_CharInflation = 43
+    ptp_CharMirror = 44
 End Enum
 
 #If False Then
@@ -300,6 +314,8 @@ End Enum
     Const ptp_OutlineCorner = 23, ptp_OutlineCaps = 24, ptp_OutlineOpacity = 25, ptp_OutlineWidth = 26, ptp_BackgroundMode = 27
     Const ptp_BackgroundOpacity = 28, ptp_BackgroundColor = 29, ptp_LineSpacing = 30, ptp_MarginLeft = 31, ptp_MarginTop = 32
     Const ptp_MarginRight = 33, ptp_MarginBottom = 34, ptp_BackBorderMode = 35, ptp_BackBorderColor = 36, ptp_BackBorderWidth = 37
+    Const ptp_CharRemap = 38, ptp_CharSpacing = 39, ptp_CharOrientation = 40, ptp_CharJitterX = 41, ptp_CharJitterY = 42, ptp_CharInflation = 43
+    Const ptp_CharMirror = 44
 #End If
 
 'A dedicated text renderer is used to render the backer layer for text layers
@@ -1042,6 +1058,27 @@ Friend Function getTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPE
             
         Case ptp_BackBorderWidth
             getTextLayerProperty = myTextData.tld_BackBorderWidth
+            
+        Case ptp_CharRemap
+            getTextLayerProperty = myTextData.tld_CharRemap
+            
+        Case ptp_CharSpacing
+            getTextLayerProperty = myTextData.tld_CharSpacing
+            
+        Case ptp_CharOrientation
+            getTextLayerProperty = myTextData.tld_CharOrientation
+            
+        Case ptp_CharJitterX
+            getTextLayerProperty = myTextData.tld_CharJitterX
+            
+        Case ptp_CharJitterY
+            getTextLayerProperty = myTextData.tld_CharJitterY
+            
+        Case ptp_CharInflation
+            getTextLayerProperty = myTextData.tld_CharInflation
+            
+        Case ptp_CharMirror
+            getTextLayerProperty = myTextData.tld_CharMirror
     
     End Select
 
@@ -1278,7 +1315,48 @@ Friend Sub setTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPERTY, 
                 myTextData.tld_BackBorderWidth = CSng(newValue)
                 m_VectorDIBSynched = False
             End If
-        
+            
+        Case ptp_CharRemap
+            If myTextData.tld_CharRemap <> CLng(newValue) Then
+                myTextData.tld_CharRemap = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
+            
+        Case ptp_CharSpacing
+            If myTextData.tld_CharSpacing <> CDbl(newValue) Then
+                myTextData.tld_CharSpacing = CDbl(newValue)
+                m_VectorDIBSynched = False
+            End If
+            
+        Case ptp_CharOrientation
+            If myTextData.tld_CharOrientation <> CDbl(newValue) Then
+                myTextData.tld_CharOrientation = CDbl(newValue)
+                m_VectorDIBSynched = False
+            End If
+            
+        Case ptp_CharJitterX
+            If myTextData.tld_CharJitterX <> CDbl(newValue) Then
+                myTextData.tld_CharJitterX = CDbl(newValue)
+                m_VectorDIBSynched = False
+            End If
+            
+        Case ptp_CharJitterY
+            If myTextData.tld_CharJitterY <> CDbl(newValue) Then
+                myTextData.tld_CharJitterY = CDbl(newValue)
+                m_VectorDIBSynched = False
+            End If
+            
+        Case ptp_CharInflation
+            If myTextData.tld_CharInflation <> CDbl(newValue) Then
+                myTextData.tld_CharInflation = CDbl(newValue)
+                m_VectorDIBSynched = False
+            End If
+            
+        Case ptp_CharMirror
+            If myTextData.tld_CharMirror <> CLng(newValue) Then
+                myTextData.tld_CharMirror = CLng(newValue)
+                m_VectorDIBSynched = False
+            End If
         
     End Select
     
@@ -1769,6 +1847,13 @@ Private Sub Class_Initialize()
         .tld_BackBorderMode = 0
         .tld_BackBorderColor = 0
         .tld_BackBorderWidth = 1
+        .tld_CharRemap = 0
+        .tld_CharSpacing = 0
+        .tld_CharOrientation = 0
+        .tld_CharJitterX = 0
+        .tld_CharJitterY = 0
+        .tld_CharInflation = 0
+        .tld_CharMirror = 0
     End With
     
     'Initialize the layer's DIB
@@ -2097,6 +2182,13 @@ Public Function getVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
                 .writeTag "TextBackBorderMode", myTextData.tld_BackBorderMode
                 .writeTag "TextBackBorderColor", myTextData.tld_BackBorderColor
                 .writeTag "TextBackBorderWidth", myTextData.tld_BackBorderWidth
+                .writeTag "TextCharRemap", myTextData.tld_CharRemap
+                .writeTag "TextCharSpacing", myTextData.tld_CharSpacing
+                .writeTag "TextCharOrientation", myTextData.tld_CharOrientation
+                .writeTag "TextCharJitterX", myTextData.tld_CharJitterX
+                .writeTag "TextCharJitterY", myTextData.tld_CharJitterY
+                .writeTag "TextCharInflation", myTextData.tld_CharInflation
+                .writeTag "TextCharMirror", myTextData.tld_CharMirror
             End With
         
     End Select
@@ -2168,6 +2260,13 @@ Public Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
                     .tld_BackBorderMode = xmlEngine.getUniqueTag_Long("TextBackBorderMode", 0)
                     .tld_BackBorderColor = xmlEngine.getUniqueTag_Long("TextBackBorderColor", 0)
                     .tld_BackBorderWidth = xmlEngine.getUniqueTag_Double("TextBackBorderWidth", 1)
+                    .tld_CharRemap = xmlEngine.getUniqueTag_Long("TextCharRemap", 0)
+                    .tld_CharSpacing = xmlEngine.getUniqueTag_Double("TextCharSpacing", 0)
+                    .tld_CharOrientation = xmlEngine.getUniqueTag_Double("TextCharOrientation", 0)
+                    .tld_CharJitterX = xmlEngine.getUniqueTag_Double("TextCharJitterX", 0)
+                    .tld_CharJitterY = xmlEngine.getUniqueTag_Double("TextCharJitterY", 0)
+                    .tld_CharInflation = xmlEngine.getUniqueTag_Double("TextCharInflation", 0)
+                    .tld_CharMirror = xmlEngine.getUniqueTag_Long("TextCharMirror", 0)
                 End With
                 
         End Select
@@ -2802,6 +2901,13 @@ Public Sub resetLayerParameters()
         .tld_BackBorderMode = 0
         .tld_BackBorderColor = 0
         .tld_BackBorderWidth = 1
+        .tld_CharRemap = 0
+        .tld_CharSpacing = 0
+        .tld_CharOrientation = 0
+        .tld_CharJitterX = 0
+        .tld_CharJitterY = 0
+        .tld_CharInflation = 0
+        .tld_CharMirror = 0
     End With
 
 End Sub
@@ -2881,21 +2987,9 @@ Public Function syncInternalDIB() As Boolean
             If (layerDIB Is Nothing) Then Set layerDIB = New pdDIB
             
             If (layerDIB.getDIBWidth <> myVectorData.vd_Width) Or (layerDIB.getDIBHeight <> myVectorData.vd_Height) Then
-                
                 layerDIB.createBlank myVectorData.vd_Width, myVectorData.vd_Height, 32, 0, 0
-                
-                'Use to test a white background:
-                'layerDIB.createBlank myVectorData.vd_Width, myVectorData.vd_Height, 32, , 255
-                
             Else
-                
-                'TODO: test performance, and see if it's beneficial to clear only the relevant portion of the rect
-                '       if the text is much smaller than its container
                 layerDIB.resetDIB
-                
-                'Use to test a white background:
-                'GDI_Plus.GDIPlusFillDIBRect layerDIB, 0, 0, myVectorData.vd_Width, myVectorData.vd_Height, vbWhite
-                
             End If
             
             layerDIB.setInitialAlphaPremultiplicationState True
@@ -2903,12 +2997,6 @@ Public Function syncInternalDIB() As Boolean
             'Use the text renderer to paint the string onto the backer DIB
             myTextRenderer.renderTextToDIB layerDIB, myTextData.tld_Text, 0, 0, myVectorData.vd_Width, myVectorData.vd_Height
             
-            'If Len(myTextData.tld_Text) <> 0 Then
-            '
-            'Else
-            '    Debug.Print "no text to print!"
-            'End If
-    
     End Select
     
     'Note that the DIB is ready to go!

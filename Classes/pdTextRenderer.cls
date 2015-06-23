@@ -412,6 +412,15 @@ Private m_MarginTop As Single
 Private m_MarginRight As Single
 Private m_MarginBottom As Single
 
+'...and a bunch of character-level modifications
+Private m_CharRemap As Long
+Private m_CharSpacing As Double
+Private m_CharOrientation As Double
+Private m_CharJitterX As Double
+Private m_CharJitterY As Double
+Private m_CharInflation As Double
+Private m_CharMirror As Long
+
 'For performance reasons, this class caches various font objects and handles from both GDI and GDI+.  This spares us from
 ' having to recreate expensive font data during rendering steps.
 Private m_GDIPlusFont As Long
@@ -787,6 +796,63 @@ End Function
 
 Public Sub setMarginBottom(ByVal newSetting As Single)
     m_MarginBottom = newSetting
+End Sub
+
+'Get/set various character-level modifications.  Note that these functions are only supported by the PHOTODEMON rendering engine.
+Public Function getCharRemap() As Long
+    getCharRemap = m_CharRemap
+End Function
+
+Public Sub setCharRemap(ByVal newValue As Long)
+    m_CharRemap = newValue
+End Sub
+
+Public Function getCharSpacing() As Double
+    getCharSpacing = m_CharSpacing
+End Function
+
+Public Sub setCharSpacing(ByVal newValue As Double)
+    m_CharSpacing = newValue
+End Sub
+
+Public Function getCharOrientation() As Double
+    getCharOrientation = m_CharOrientation
+End Function
+
+Public Sub setCharOrientation(ByVal newValue As Double)
+    m_CharOrientation = newValue
+End Sub
+
+Public Function getCharJitterX() As Double
+    getCharJitterX = m_CharJitterX
+End Function
+
+Public Sub setCharJitterX(ByVal newValue As Double)
+    m_CharJitterX = newValue
+End Sub
+
+Public Function getCharJitterY() As Double
+    getCharJitterY = m_CharJitterY
+End Function
+
+Public Sub setCharJitterY(ByVal newValue As Double)
+    m_CharJitterY = newValue
+End Sub
+
+Public Function getCharInflation() As Double
+    getCharInflation = m_CharInflation
+End Function
+
+Public Sub setCharInflation(ByVal newValue As Double)
+    m_CharInflation = newValue
+End Sub
+
+Public Function getCharMirror() As Long
+    getCharMirror = m_CharMirror
+End Function
+
+Public Sub setCharMirror(ByVal newValue As Long)
+    m_CharMirror = newValue
 End Sub
 
 'Get/set the text rendering engine.  This class currently supports two engines: WAPI (which will use GDI or GDI+, as appropriate), and PHOTODEMON,
