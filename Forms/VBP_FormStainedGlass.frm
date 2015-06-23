@@ -80,6 +80,7 @@ Begin VB.Form FormStainedGlass
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -279,8 +280,9 @@ Attribute VB_Exposed = False
 'Stained Glass Effect Interface
 'Copyright 2014-2015 by Tanner Helland
 'Created: 14/July/14
-'Last updated: 15/July/14
-'Last update: added features, refined code, many optimizations and small improvements
+'Last updated: 23/June/15
+'Last update: move randomize responsibilities over to pdRandomize
+'Dependencies: pdRandomize
 '
 'PhotoDemon's stained glass effect is implemented using Worley Noise (http://en.wikipedia.org/wiki/Worley_noise),
 ' which is basically a special algorithmic approach to Voronoi diagrams (http://en.wikipedia.org/wiki/Voronoi_diagram).
@@ -309,10 +311,10 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'To make sure the function looks similar in the preview and final image, we cache the random seed used
-Private m_RndSeed As Long
+Private cRandom As pdRandomize
 
 'Apply a Stained Glass effect to an image
 ' Inputs:
@@ -364,7 +366,7 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
     
     'Pass all meaningful input parameters on to the Voronoi class
     cVoronoi.initPoints cellSize, workingDIB.getDIBWidth, workingDIB.getDIBHeight
-    cVoronoi.randomizePoints fxTurbulence, m_RndSeed
+    cVoronoi.randomizePoints fxTurbulence, cRandom.getSeed
     cVoronoi.setDistanceMode distanceMethod
     cVoronoi.setShadingMode shadeQuality
     
@@ -652,8 +654,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Request a preview
     cmdBar.markPreviewStatus True
@@ -679,11 +681,10 @@ Private Sub Form_Load()
     cboDistance.AddItem "Chebyshev (chessboard)"
     cboDistance.ListIndex = 0
     
-    'Calculate a random noise seed
-    Rnd -1
-    Randomize (-Timer * Now)
-    m_RndSeed = Rnd * &HEFFFFFFF
-    
+    'Calculate a random turbulence seed
+    Set cRandom = New pdRandomize
+    cRandom.setSeed_AutomaticAndRandom
+        
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
