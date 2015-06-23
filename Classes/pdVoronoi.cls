@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Voronoi class
 'Copyright 2014-2015 by Tanner Helland
 'Created: 14/July/14
-'Last updated: 15/July/14
-'Last update: new shading features, general clean-up
+'Last updated: 23/June/15
+'Last update: move randomizing to pdRandomize
+'Dependencies: pdRandomize (for randomizing point distribution)
 '
 'While this class is called pdVoronoi, it's primarily a Worley Noise implementation (http://en.wikipedia.org/wiki/Worley_noise),
 ' that uses only the Voronoi aspects most relevant to image processing (http://en.wikipedia.org/wiki/Voronoi_diagram).
@@ -113,6 +114,9 @@ Private m_Turbulence As Single
 ' unfortunately, certain combinations of patterns require a larger search area.
 Private m_VoronoiSearchRadius As Long
 
+'PRNG
+Private cRandom As pdRandomize
+
 'Given a DIB and the user's requested number of rows and columns, populate an initial vPoints() array.
 ' In the future, I may allow the user to supply a specific point pattern, e.g. "Triangle" or "Square" or "Hexagon".
 ' Right now, squares are assumed, and the passed pointPattern value affects nothinh.
@@ -155,7 +159,7 @@ End Sub
 'Randomize the stored point array by some set amount.
 ' Turbulence is a value on the scale [0, 1]; 1 will result in maximum randomization
 ' Seed is optional; the same seed will result in the same diagram
-Public Function randomizePoints(ByVal fxTurbulence As Single, Optional ByVal rndSeed As Single = 0) As Boolean
+Public Function randomizePoints(ByVal fxTurbulence As Single, Optional ByVal rndSeed As Double = 0) As Boolean
 
     'Make sure the point array was successfully initialized
     If Not m_PointsInitialized Then
@@ -164,8 +168,12 @@ Public Function randomizePoints(ByVal fxTurbulence As Single, Optional ByVal rnd
     End If
     
     'Seed the randomizer
-    Rnd -1
-    Randomize rndSeed
+    Set cRandom = New pdRandomize
+    If rndSeed = 0 Then
+        cRandom.setSeed_AutomaticAndRandom
+    Else
+        cRandom.setSeed_Float rndSeed
+    End If
     
     'Cache the turbulence value
     m_Turbulence = fxTurbulence
@@ -178,8 +186,8 @@ Public Function randomizePoints(ByVal fxTurbulence As Single, Optional ByVal rnd
     Dim x As Long, y As Long
     For x = 0 To m_numColumns - 1
     For y = 0 To m_numRows - 1
-        vPoints(x, y).x = vPoints(x, y).x + (1 - (Rnd * 2)) * tmpCellSize
-        vPoints(x, y).y = vPoints(x, y).y + (1 - (Rnd * 2)) * tmpCellSize
+        vPoints(x, y).x = vPoints(x, y).x + (1 - (cRandom.getRandomFloat_WH * 2)) * tmpCellSize
+        vPoints(x, y).y = vPoints(x, y).y + (1 - (cRandom.getRandomFloat_WH * 2)) * tmpCellSize
     Next y
     Next x
     
