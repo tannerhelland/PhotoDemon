@@ -1949,17 +1949,17 @@ Private Sub myWndProc_ListBox(ByVal bBefore As Boolean, ByRef bHandled As Boolea
     Select Case uMsg
     
         Case WM_WINDOWPOSCHANGING
-            Debug.Print "window pos changing"
+            'Debug.Print "window pos changing"
             bHandled = True
             lReturn = 0
         
         Case WM_WINDOWPOSCHANGED
-            Debug.Print "window pos changed"
+            'Debug.Print "window pos changed"
             bHandled = True
             lReturn = 0
             
         Case WM_GETMINMAXINFO
-            Debug.Print "max/min info requested"
+            'Debug.Print "max/min info requested"
     
     End Select
     
