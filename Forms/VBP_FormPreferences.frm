@@ -1577,6 +1577,9 @@ Dim originalg_CanvasBackground As Long
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
 Dim m_Tooltip As clsToolTip
 
+'This dialog interacts heavily with various system-level bits.  pdSystemInfo retrieves this data for us.
+Private cSysInfo As pdSystemInfo
+
 Private Sub btsvCategory_Click(ByVal buttonIndex As Long)
 
     'When the preferences category is changed, only display the controls in that category
@@ -2549,14 +2552,14 @@ Private Sub LoadAllPreferences()
             txtTempPath.Text = g_UserPreferences.GetTempPath
     
         'Display what we know about this PC's hardware acceleration capabilities
-            txtHardware = getDeviceCapsString()
+            txtHardware = cSysInfo.getDeviceCapsString()
             
         '...and give the "copy to clipboard" button a tooltip
             cmdCopyReportClipboard.assignTooltip "Copy the report to the system clipboard"
         
         'Display what we know about PD's memory usage
-            lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format(Str(GetPhotoDemonMemoryUsage()), "###,###,###,###") & " K"
-            lblMemoryUsageMax.Caption = g_Language.TranslateMessage("max PhotoDemon memory usage this session:") & " " & Format(Str(GetPhotoDemonMemoryUsage(True)), "###,###,###,###") & " K"
+            lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format(Str(cSysInfo.GetPhotoDemonMemoryUsage()), "###,###,###,###") & " K"
+            lblMemoryUsageMax.Caption = g_Language.TranslateMessage("max PhotoDemon memory usage this session:") & " " & Format(Str(cSysInfo.GetPhotoDemonMemoryUsage(True)), "###,###,###,###") & " K"
             If Not g_IsProgramCompiled Then
                 lblMemoryUsageCurrent.Caption = lblMemoryUsageCurrent.Caption & " (" & g_Language.TranslateMessage("reading not accurate inside IDE") & ")"
                 lblMemoryUsageMax.Caption = lblMemoryUsageMax.Caption & " (" & g_Language.TranslateMessage("reading not accurate inside IDE") & ")"
@@ -2637,7 +2640,9 @@ End Sub
 
 'When the form is loaded, populate the various checkboxes and textboxes with the values from the preferences file
 Private Sub Form_Load()
-    
+        
+    Set cSysInfo = New pdSystemInfo
+        
     Dim i As Long
     
     'Populate all controls with the corresponding values from the preferences file

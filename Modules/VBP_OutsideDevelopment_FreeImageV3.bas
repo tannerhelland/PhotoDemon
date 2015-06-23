@@ -189,6 +189,13 @@ Private Declare Function lstrlen Lib "kernel32.dll" Alias "lstrlenA" ( _
     
 
 'OLEAUT32
+Public Type Guid
+  Data1 As Long
+  Data2 As Integer
+  Data3 As Integer
+  Data4(0 To 7) As Byte
+End Type
+
 Private Declare Function OleCreatePictureIndirect Lib "oleaut32.dll" ( _
     ByRef lpPictDesc As PictDesc, _
     ByRef riid As Guid, _
@@ -300,8 +307,8 @@ Private Declare Function SetDIBitsToDevice Lib "gdi32.dll" ( _
     ByVal hDC As Long, _
     ByVal x As Long, _
     ByVal y As Long, _
-    ByVal dx As Long, _
-    ByVal dy As Long, _
+    ByVal dX As Long, _
+    ByVal dY As Long, _
     ByVal srcX As Long, _
     ByVal srcY As Long, _
     ByVal Scan As Long, _
@@ -314,8 +321,8 @@ Private Declare Function StretchDIBits Lib "gdi32.dll" ( _
     ByVal hDC As Long, _
     ByVal x As Long, _
     ByVal y As Long, _
-    ByVal dx As Long, _
-    ByVal dy As Long, _
+    ByVal dX As Long, _
+    ByVal dY As Long, _
     ByVal srcX As Long, _
     ByVal srcY As Long, _
     ByVal wSrcWidth As Long, _
@@ -1428,12 +1435,12 @@ Public Declare Function FreeImage_HasPixelsInt Lib "FreeImage.dll" Alias "_FreeI
 
 Public Declare Function FreeImage_Load Lib "FreeImage.dll" Alias "_FreeImage_Load@12" ( _
            ByVal Format As FREE_IMAGE_FORMAT, _
-           ByVal Filename As String, _
+           ByVal FileName As String, _
   Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS) As Long
 
 Public Declare Function FreeImage_LoadUInt Lib "FreeImage.dll" Alias "_FreeImage_LoadU@12" ( _
            ByVal Format As FREE_IMAGE_FORMAT, _
-           ByVal Filename As Long, _
+           ByVal FileName As Long, _
   Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS) As Long
 
 Public Declare Function FreeImage_LoadFromHandle Lib "FreeImage.dll" Alias "_FreeImage_LoadFromHandle@16" ( _
@@ -1445,13 +1452,13 @@ Public Declare Function FreeImage_LoadFromHandle Lib "FreeImage.dll" Alias "_Fre
 Private Declare Function FreeImage_SaveInt Lib "FreeImage.dll" Alias "_FreeImage_Save@16" ( _
            ByVal Format As FREE_IMAGE_FORMAT, _
            ByVal BITMAP As Long, _
-           ByVal Filename As String, _
+           ByVal FileName As String, _
   Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Long
 
 Private Declare Function FreeImage_SaveUInt Lib "FreeImage.dll" Alias "_FreeImage_SaveU@16" ( _
            ByVal Format As FREE_IMAGE_FORMAT, _
            ByVal BITMAP As Long, _
-           ByVal Filename As Long, _
+           ByVal FileName As Long, _
   Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Long
 
 Private Declare Function FreeImage_SaveToHandleInt Lib "FreeImage.dll" Alias "_FreeImage_SaveToHandle@20" ( _
@@ -1577,11 +1584,11 @@ Private Declare Function FreeImage_SetThumbnailInt Lib "FreeImage.dll" Alias "_F
 
 ' Filetype functions
 Public Declare Function FreeImage_GetFileType Lib "FreeImage.dll" Alias "_FreeImage_GetFileType@8" ( _
-           ByVal Filename As String, _
+           ByVal FileName As String, _
   Optional ByVal Size As Long) As FREE_IMAGE_FORMAT
   
 Public Declare Function FreeImage_GetFileTypeU Lib "FreeImage.dll" Alias "_FreeImage_GetFileTypeU@8" ( _
-           ByVal Filename As Long, _
+           ByVal FileName As Long, _
   Optional ByVal Size As Long) As FREE_IMAGE_FORMAT
 
 Public Declare Function FreeImage_GetFileTypeFromHandle Lib "FreeImage.dll" Alias "_FreeImage_GetFileTypeFromHandle@12" ( _
@@ -1747,10 +1754,10 @@ Private Declare Function FreeImage_GetFIFDescriptionInt Lib "FreeImage.dll" Alia
            ByVal Format As FREE_IMAGE_FORMAT) As Long
 
 Public Declare Function FreeImage_GetFIFFromFilename Lib "FreeImage.dll" Alias "_FreeImage_GetFIFFromFilename@4" ( _
-           ByVal Filename As String) As FREE_IMAGE_FORMAT
+           ByVal FileName As String) As FREE_IMAGE_FORMAT
 
 Public Declare Function FreeImage_GetFIFFromFilenameU Lib "FreeImage.dll" Alias "_FreeImage_GetFIFFromFilenameU@4" ( _
-           ByVal Filename As Long) As FREE_IMAGE_FORMAT
+           ByVal FileName As Long) As FREE_IMAGE_FORMAT
 
 Private Declare Function FreeImage_FIFSupportsReadingInt Lib "FreeImage.dll" Alias "_FreeImage_FIFSupportsReading@4" ( _
            ByVal Format As FREE_IMAGE_FORMAT) As Long
@@ -1790,7 +1797,7 @@ Public Declare Function FreeImage_RegisterExternalPlugin Lib "FreeImage.dll" Ali
 ' Multipage functions
 Private Declare Function FreeImage_OpenMultiBitmapInt Lib "FreeImage.dll" Alias "_FreeImage_OpenMultiBitmap@24" ( _
            ByVal Format As FREE_IMAGE_FORMAT, _
-           ByVal Filename As String, _
+           ByVal FileName As String, _
            ByVal CreateNew As Long, _
            ByVal ReadOnly As Long, _
            ByVal KeepCacheInMemory As Long, _
@@ -2493,12 +2500,12 @@ End Function
 
 Public Function FreeImage_Save(ByVal Format As FREE_IMAGE_FORMAT, _
                                ByVal BITMAP As Long, _
-                               ByVal Filename As String, _
+                               ByVal FileName As String, _
                       Optional ByVal Flags As FREE_IMAGE_SAVE_OPTIONS) As Boolean
 
    ' Thin wrapper function returning a real VB Boolean value
 
-   FreeImage_Save = (FreeImage_SaveUInt(Format, BITMAP, StrPtr(Filename), Flags) = 1)
+   FreeImage_Save = (FreeImage_SaveUInt(Format, BITMAP, StrPtr(FileName), Flags) = 1)
 
 End Function
 
@@ -2749,13 +2756,13 @@ End Function
 
 
 Public Function FreeImage_OpenMultiBitmap(ByVal Format As FREE_IMAGE_FORMAT, _
-                                          ByVal Filename As String, _
+                                          ByVal FileName As String, _
                                  Optional ByVal CreateNew As Boolean, _
                                  Optional ByVal ReadOnly As Boolean, _
                                  Optional ByVal KeepCacheInMemory As Boolean, _
                                  Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS) As Long
 
-   FreeImage_OpenMultiBitmap = FreeImage_OpenMultiBitmapInt(Format, Filename, IIf(CreateNew, 1, 0), _
+   FreeImage_OpenMultiBitmap = FreeImage_OpenMultiBitmapInt(Format, FileName, IIf(CreateNew, 1, 0), _
          IIf(ReadOnly And Not CreateNew, 1, 0), IIf(KeepCacheInMemory, 1, 0), Flags)
 
 End Function
@@ -3478,7 +3485,7 @@ Public Function FreeImage_IsExtensionValidForFIF(ByVal Format As FREE_IMAGE_FORM
 End Function
 
 Public Function FreeImage_IsFilenameValidForFIF(ByVal Format As FREE_IMAGE_FORMAT, _
-                                                ByVal Filename As String, _
+                                                ByVal FileName As String, _
                                        Optional ByVal Compare As VbCompareMethod = vbBinaryCompare) As Boolean
                                                 
 Dim strExtension As String
@@ -3487,9 +3494,9 @@ Dim i As Long
    ' This function tests, whether a given complete filename is valid
    ' for a certain image format (fif).
 
-   i = InStrRev(Filename, ".")
+   i = InStrRev(FileName, ".")
    If (i > 0) Then
-      strExtension = Mid$(Filename, i + 1)
+      strExtension = Mid$(FileName, i + 1)
       FreeImage_IsFilenameValidForFIF = (InStr(1, _
                                                FreeImage_GetFIFExtensionList(Format) & ",", _
                                                strExtension & ",", _
@@ -4851,7 +4858,7 @@ End Function
 
 
 
-Public Function FreeImage_LoadEx(ByVal Filename As String, _
+Public Function FreeImage_LoadEx(ByVal FileName As String, _
                         Optional ByVal Options As FREE_IMAGE_LOAD_OPTIONS, _
                         Optional ByVal Width As Variant, _
                         Optional ByVal Height As Variant, _
@@ -4877,10 +4884,10 @@ Const vbInvalidPictureError As Long = 481
    ' usage of these parameters.
    
 
-   Format = FreeImage_GetFileTypeU(StrPtr(Filename))
+   Format = FreeImage_GetFileTypeU(StrPtr(FileName))
    If (Format <> FIF_UNKNOWN) Then
       If (FreeImage_FIFSupportsReading(Format)) Then
-         FreeImage_LoadEx = FreeImage_LoadUInt(Format, StrPtr(Filename), Options)
+         FreeImage_LoadEx = FreeImage_LoadUInt(Format, StrPtr(FileName), Options)
          If (FreeImage_LoadEx) Then
             
             If ((Not IsMissing(Width)) Or _
@@ -4903,7 +4910,7 @@ Const vbInvalidPictureError As Long = 481
 
 End Function
 
-Public Function LoadPictureEx(Optional ByRef Filename As Variant, _
+Public Function LoadPictureEx(Optional ByRef FileName As Variant, _
                               Optional ByRef Options As FREE_IMAGE_LOAD_OPTIONS, _
                               Optional ByRef Width As Variant, _
                               Optional ByRef Height As Variant, _
@@ -4926,8 +4933,8 @@ Dim hDIB As Long
    ' FreeImage's header-only loading option.
 
 
-   If (Not IsMissing(Filename)) Then
-      hDIB = FreeImage_LoadEx(Filename, (Options And (Not FILO_LOAD_NOPIXELS)), _
+   If (Not IsMissing(FileName)) Then
+      hDIB = FreeImage_LoadEx(FileName, (Options And (Not FILO_LOAD_NOPIXELS)), _
             Width, Height, InPercent, Filter, Format)
       Set LoadPictureEx = FreeImage_GetOlePicture(hDIB, , True)
    End If
@@ -4935,7 +4942,7 @@ Dim hDIB As Long
 End Function
 
 Public Function FreeImage_SaveEx(ByVal BITMAP As Long, _
-                                 ByVal Filename As String, _
+                                 ByVal FileName As String, _
                         Optional ByVal Format As FREE_IMAGE_FORMAT = FIF_UNKNOWN, _
                         Optional ByVal Options As FREE_IMAGE_SAVE_OPTIONS, _
                         Optional ByVal colorDepth As FREE_IMAGE_COLOR_DEPTH, _
@@ -5017,13 +5024,13 @@ Dim strExtension As String
       End If
       
       If (Format = FIF_UNKNOWN) Then
-         Format = FreeImage_GetFIFFromFilenameU(StrPtr(Filename))
+         Format = FreeImage_GetFIFFromFilenameU(StrPtr(FileName))
       End If
       If (Format <> FIF_UNKNOWN) Then
          If ((FreeImage_FIFSupportsWriting(Format)) And _
              (FreeImage_FIFSupportsExportType(Format, FIT_BITMAP))) Then
             
-            If (Not FreeImage_IsFilenameValidForFIF(Format, Filename)) Then
+            If (Not FreeImage_IsFilenameValidForFIF(Format, FileName)) Then
                'Edit by Tanner: don't prevent me from writing whatever file extensions I damn well please!  ;)
                'strExtension = "." & FreeImage_GetPrimaryExtensionFromFIF(Format)
             End If
@@ -5080,7 +5087,7 @@ Dim strExtension As String
                End If
             End If
             
-            FreeImage_SaveEx = FreeImage_Save(Format, BITMAP, Filename & strExtension, Options)
+            FreeImage_SaveEx = FreeImage_Save(Format, BITMAP, FileName & strExtension, Options)
             If ((bIsNewDIB) Or (UnloadSource)) Then
                Call FreeImage_Unload(BITMAP)
             End If
@@ -5101,7 +5108,7 @@ Dim strExtension As String
 End Function
 
 Public Function SavePictureEx(ByRef Picture As IPicture, _
-                              ByRef Filename As String, _
+                              ByRef FileName As String, _
                      Optional ByRef Format As FREE_IMAGE_FORMAT, _
                      Optional ByRef Options As FREE_IMAGE_SAVE_OPTIONS, _
                      Optional ByRef colorDepth As FREE_IMAGE_COLOR_DEPTH, _
@@ -5127,7 +5134,7 @@ Const vbInvalidPictureError As Long = 481
    If (Not Picture Is Nothing) Then
       hDIB = FreeImage_CreateFromOlePicture(Picture)
       If (hDIB) Then
-         SavePictureEx = FreeImage_SaveEx(hDIB, Filename, Format, Options, _
+         SavePictureEx = FreeImage_SaveEx(hDIB, FileName, Format, Options, _
                                           colorDepth, Width, Height, InPercent, _
                                           FILTER_BICUBIC, True)
       Else
@@ -5140,7 +5147,7 @@ Const vbInvalidPictureError As Long = 481
 End Function
 
 Public Function SaveImageContainerEx(ByRef Container As Object, _
-                                     ByRef Filename As String, _
+                                     ByRef FileName As String, _
                             Optional ByVal IncludeDrawings As Boolean, _
                             Optional ByRef Format As FREE_IMAGE_FORMAT, _
                             Optional ByRef Options As FREE_IMAGE_SAVE_OPTIONS, _
@@ -5163,22 +5170,22 @@ Public Function SaveImageContainerEx(ByRef Container As Object, _
    ' more detailed description.
                             
    Call SavePictureEx(pGetIOlePictureFromContainer(Container, IncludeDrawings), _
-            Filename, Format, Options, colorDepth, Width, Height, InPercent, Filter)
+            FileName, Format, Options, colorDepth, Width, Height, InPercent, Filter)
 
 End Function
 
-Public Function FreeImage_OpenMultiBitmapEx(ByVal Filename As String, _
+Public Function FreeImage_OpenMultiBitmapEx(ByVal FileName As String, _
                                    Optional ByVal ReadOnly As Boolean, _
                                    Optional ByVal KeepCacheInMemory As Boolean, _
                                    Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS, _
                                    Optional ByRef Format As FREE_IMAGE_FORMAT) As Long
 
-   Format = FreeImage_GetFileTypeU(StrPtr(Filename))
+   Format = FreeImage_GetFileTypeU(StrPtr(FileName))
    If (Format <> FIF_UNKNOWN) Then
       Select Case Format
       
       Case FIF_TIFF, FIF_GIF, FIF_ICO
-         FreeImage_OpenMultiBitmapEx = FreeImage_OpenMultiBitmap(Format, Filename, False, _
+         FreeImage_OpenMultiBitmapEx = FreeImage_OpenMultiBitmap(Format, FileName, False, _
                ReadOnly, KeepCacheInMemory, Flags)
       
       Case Else
@@ -5193,20 +5200,20 @@ Public Function FreeImage_OpenMultiBitmapEx(ByVal Filename As String, _
    
 End Function
 
-Public Function FreeImage_CreateMultiBitmapEx(ByVal Filename As String, _
+Public Function FreeImage_CreateMultiBitmapEx(ByVal FileName As String, _
                                      Optional ByVal KeepCacheInMemory As Boolean, _
                                      Optional ByVal Flags As FREE_IMAGE_LOAD_OPTIONS, _
                                      Optional ByRef Format As FREE_IMAGE_FORMAT) As Long
 
    If (Format = FIF_UNKNOWN) Then
-      Format = FreeImage_GetFIFFromFilenameU(StrPtr(Filename))
+      Format = FreeImage_GetFIFFromFilenameU(StrPtr(FileName))
    End If
    
    If (Format <> FIF_UNKNOWN) Then
       Select Case Format
       
       Case FIF_TIFF, FIF_GIF, FIF_ICO
-         FreeImage_CreateMultiBitmapEx = FreeImage_OpenMultiBitmap(Format, Filename, True, _
+         FreeImage_CreateMultiBitmapEx = FreeImage_OpenMultiBitmap(Format, FileName, True, _
                False, KeepCacheInMemory, Flags)
       
       Case Else
@@ -5269,7 +5276,7 @@ End Function
 ' Compression functions wrappers
 '--------------------------------------------------------------------------------
 
-Public Function FreeImage_ZLibCompressEx(ByRef Target As Variant, _
+Public Function FreeImage_ZLibCompressEx(ByRef target As Variant, _
                                 Optional ByRef TargetSize As Long, _
                                 Optional ByRef Source As Variant, _
                                 Optional ByVal SourceSize As Long, _
@@ -5317,14 +5324,14 @@ Dim bTargetCreated As Boolean
    If (lSourceDataPtr) Then
       ' when we got a valid pointer, get the pointer and the size in bytes
       ' of the target memory block
-      lTargetDataPtr = pGetMemoryBlockPtrFromVariant(Target, TargetSize)
+      lTargetDataPtr = pGetMemoryBlockPtrFromVariant(target, TargetSize)
       If (lTargetDataPtr = 0) Then
          ' if 'Target' is a null pointer, we will initialized it as an array
          ' of bytes; here we will take 'Offset' into account
-         ReDim Target(SourceSize + Int(SourceSize * 0.1) + _
+         ReDim target(SourceSize + Int(SourceSize * 0.1) + _
                       12 + Offset) As Byte
          ' get pointer and size in bytes (will never be a null pointer)
-         lTargetDataPtr = pGetMemoryBlockPtrFromVariant(Target, TargetSize)
+         lTargetDataPtr = pGetMemoryBlockPtrFromVariant(target, TargetSize)
          ' adjust according to 'Offset'
          lTargetDataPtr = lTargetDataPtr + Offset
          TargetSize = TargetSize - Offset
@@ -5343,14 +5350,14 @@ Dim bTargetCreated As Boolean
          If (bTargetCreated) Then
             ' when we created the array, we need to adjust it's size
             ' according to the length of the compressed data
-            ReDim Preserve Target(FreeImage_ZLibCompressEx - 1 + Offset)
+            ReDim Preserve target(FreeImage_ZLibCompressEx - 1 + Offset)
          End If
       End If
    End If
                                 
 End Function
 
-Public Function FreeImage_ZLibUncompressEx(ByRef Target As Variant, _
+Public Function FreeImage_ZLibUncompressEx(ByRef target As Variant, _
                                   Optional ByRef TargetSize As Long, _
                                   Optional ByRef Source As Variant, _
                                   Optional ByVal SourceSize As Long) As Long
@@ -5386,7 +5393,7 @@ Dim lTargetDataPtr As Long
    If (lSourceDataPtr) Then
       ' when we got a valid pointer, get the pointer and the size in bytes
       ' of the target memory block
-      lTargetDataPtr = pGetMemoryBlockPtrFromVariant(Target, TargetSize)
+      lTargetDataPtr = pGetMemoryBlockPtrFromVariant(target, TargetSize)
       If (lTargetDataPtr) Then
          ' if we do not have a null pointer, uncompress the data
          FreeImage_ZLibUncompressEx = FreeImage_ZLibUncompress(lTargetDataPtr, _
@@ -5398,7 +5405,7 @@ Dim lTargetDataPtr As Long
                                 
 End Function
 
-Public Function FreeImage_ZLibGZipEx(ByRef Target As Variant, _
+Public Function FreeImage_ZLibGZipEx(ByRef target As Variant, _
                             Optional ByRef TargetSize As Long, _
                             Optional ByRef Source As Variant, _
                             Optional ByVal SourceSize As Long, _
@@ -5446,14 +5453,14 @@ Dim bTargetCreated As Boolean
    If (lSourceDataPtr) Then
       ' when we got a valid pointer, get the pointer and the size in bytes
       ' of the target memory block
-      lTargetDataPtr = pGetMemoryBlockPtrFromVariant(Target, TargetSize)
+      lTargetDataPtr = pGetMemoryBlockPtrFromVariant(target, TargetSize)
       If (lTargetDataPtr = 0) Then
          ' if 'Target' is a null pointer, we will initialized it as an array
          ' of bytes; here we will take 'Offset' into account
-         ReDim Target(SourceSize + Int(SourceSize * 0.1) + _
+         ReDim target(SourceSize + Int(SourceSize * 0.1) + _
                       24 + Offset) As Byte
          ' get pointer and size in bytes (will never be a null pointer)
-         lTargetDataPtr = pGetMemoryBlockPtrFromVariant(Target, TargetSize)
+         lTargetDataPtr = pGetMemoryBlockPtrFromVariant(target, TargetSize)
          ' adjust according to 'Offset'
          lTargetDataPtr = lTargetDataPtr + Offset
          TargetSize = TargetSize - Offset
@@ -5472,7 +5479,7 @@ Dim bTargetCreated As Boolean
          If (bTargetCreated) Then
             ' when we created the array, we need to adjust it's size
             ' according to the length of the compressed data
-            ReDim Preserve Target(FreeImage_ZLibGZipEx - 1 + Offset)
+            ReDim Preserve target(FreeImage_ZLibGZipEx - 1 + Offset)
          End If
       End If
    End If
@@ -5509,7 +5516,7 @@ Dim lSourceDataPtr As Long
                                 
 End Function
 
-Public Function FreeImage_ZLibGUnzipEx(ByRef Target As Variant, _
+Public Function FreeImage_ZLibGUnzipEx(ByRef target As Variant, _
                               Optional ByRef TargetSize As Long, _
                               Optional ByRef Source As Variant, _
                               Optional ByVal SourceSize As Long) As Long
@@ -5545,7 +5552,7 @@ Dim lTargetDataPtr As Long
    If (lSourceDataPtr) Then
       ' when we got a valid pointer, get the pointer and the size in bytes
       ' of the target memory block
-      lTargetDataPtr = pGetMemoryBlockPtrFromVariant(Target, TargetSize)
+      lTargetDataPtr = pGetMemoryBlockPtrFromVariant(target, TargetSize)
       If (lTargetDataPtr) Then
          ' if we do not have a null pointer, uncompress the data
          FreeImage_ZLibGUnzipEx = FreeImage_ZLibGUnzip(lTargetDataPtr, _
