@@ -113,11 +113,14 @@ Public Sub LoadTheProgram()
     
     'Certain features are OS-version dependent.  We must determine the OS version early in the load process to ensure that all features
     ' are loaded correctly.
-    g_IsVistaOrLater = getVistaOrLaterStatus
-    g_IsWin7OrLater = getWin7OrLaterStatus
-    g_IsWin8OrLater = getWin8OrLaterStatus
-    g_IsWin81OrLater = getWin81OrLaterStatus
-    g_IsWin10OrLater = getWin10OrLaterStatus
+    Dim cSysInfo As pdSystemInfo
+    Set cSysInfo = New pdSystemInfo
+    
+    g_IsVistaOrLater = cSysInfo.isOSVistaOrLater
+    g_IsWin7OrLater = cSysInfo.isOSWin7OrLater
+    g_IsWin8OrLater = cSysInfo.isOSWin8OrLater
+    g_IsWin81OrLater = cSysInfo.isOSWin81OrLater
+    g_IsWin10OrLater = cSysInfo.isOSWin10OrLater
     
     'If we are on Windows 7, prepare some Win7-specific features (like taskbar progress bars)
     If g_IsWin7OrLater Then prepWin7Features
@@ -146,7 +149,7 @@ Public Sub LoadTheProgram()
     
     'Before initializing the preference engine, generate a unique session ID for this PhotoDemo instance.  This ID will be used to
     ' separate the temp files for this program instance from any other simultaneous instances.
-    g_SessionID = OS_Interactions.getUniqueSessionID()
+    g_SessionID = cSysInfo.getUniqueSessionID()
     
     Set g_UserPreferences = New pdPreferences
     

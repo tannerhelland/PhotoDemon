@@ -15,8 +15,9 @@ Attribute VB_Exposed = False
 'PhotoDemon Custom Debug helper class
 'Copyright 2014-2015 by Tanner Helland
 'Created: 17/July/14
-'Last updated: 20/July/14
-'Last update: continuing work on initial build
+'Last updated: 23/June/15
+'Last update: integrated pdSystemInfo for various OS interaction bits
+'Dependencies: pdSystemInfo (for retrieving system-level debug data)
 '
 'As PhotoDemon has grown more complex, debugging has become correspondingly difficult.  Debugging on my local PC is fine
 ' thanks to the IDE, but a lot of behaviors are different in the compiled .exe, and user PCs are another problem entirely.
@@ -89,6 +90,9 @@ Private numBackupMessages As Long
 ' This is very helpful for catching memory leaks.
 Private m_lastMemCheck As Long, m_lastMemCheckEventNum As Long
 
+'Various OS interactions are handled by pdSystemInfo
+Private cSysInfo As pdSystemInfo
+
 'This specialty Initialize function must be called before attempting to use this class.  It will figure out where to log
 ' this session's data, among other things, so don't attempt to use the class until this has been called!
 ' Returns: TRUE if successful, FALSE otherwise.
@@ -142,11 +146,11 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
             
             Print #m_FileHandle, "-- SYSTEM INFORMATION --"
             Print #m_FileHandle, ""
-            Print #m_FileHandle, "OS: " & OS_Interactions.getOSVersionAsString
-            Print #m_FileHandle, "Processor cores (logical): " & OS_Interactions.getNumLogicalCores
-            Print #m_FileHandle, "Processor features: " & OS_Interactions.getProcessorFeatures
-            Print #m_FileHandle, "System RAM: " & OS_Interactions.getTotalSystemRAM
-            Print #m_FileHandle, "Max memory available to PhotoDemon: " & OS_Interactions.getRAMAvailableToPD
+            Print #m_FileHandle, "OS: " & cSysInfo.getOSVersionAsString
+            Print #m_FileHandle, "Processor cores (logical): " & cSysInfo.getNumLogicalCores
+            Print #m_FileHandle, "Processor features: " & cSysInfo.getProcessorFeatures
+            Print #m_FileHandle, "System RAM: " & cSysInfo.getTotalSystemRAM
+            Print #m_FileHandle, "Max memory available to PhotoDemon: " & cSysInfo.getRAMAvailableToPD
             Print #m_FileHandle, ""
             Print #m_FileHandle, "-- PROGRAM INFORMATION -- "
             Print #m_FileHandle, ""
@@ -307,8 +311,8 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
     
         'The caller wants a RAM update.  Generate one now.
         Dim curMemUsage As Long, maxMemUsage As Long, deltaMem As Long
-        curMemUsage = OS_Interactions.GetPhotoDemonMemoryUsage(False)
-        maxMemUsage = OS_Interactions.GetPhotoDemonMemoryUsage(True)
+        curMemUsage = cSysInfo.GetPhotoDemonMemoryUsage(False)
+        maxMemUsage = cSysInfo.GetPhotoDemonMemoryUsage(True)
         deltaMem = curMemUsage - m_lastMemCheck
         
         'Format the strings into something more readable
@@ -377,6 +381,8 @@ Private Sub Class_Initialize()
     
     m_NumLoggedEvents = 0
     m_lastMemCheck = 0
+    
+    Set cSysInfo = New pdSystemInfo
 
 End Sub
 

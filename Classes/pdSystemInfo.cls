@@ -1,17 +1,31 @@
-Attribute VB_Name = "OS_Interactions"
+VERSION 1.0 CLASS
+BEGIN
+  MultiUse = -1  'True
+  Persistable = 0  'NotPersistable
+  DataBindingBehavior = 0  'vbNone
+  DataSourceBehavior  = 0  'vbNone
+  MTSTransactionMode  = 0  'NotAnMTSObject
+END
+Attribute VB_Name = "pdSystemInfo"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = True
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = False
 '***************************************************************************
-'Miscellaneous OS Interaction Handler
-'Copyright 2011-2015 by Tanner Helland
+'Generic "System Information" interface
+'Copyright 2012-2015 by Tanner Helland
 'Created: 27/November/12
-'Last updated: 02/April/14
-'Last update: added getArbitraryGUID function, for generating unique strings at run-time.  (PD will use this to
-'              create unique session IDs for each running instance.)
+'Last updated: 23/June/15
+'Last update: started migrating functions from the unwieldy "OS Interactions" module into this reusable class
 '
-'Sometimes, PhotoDemon needs to query Windows for OS-specific data - such as the current version of Windows, or the
-' available RAM on the system.  This module handles such calls.
+'Sometimes, PhotoDemon needs to grab OS-specific data (e.g. the current OS version of Windows, available RAM , etc.)
+' This module is designed to make such requests easier.
 '
 'Special thanks goes to Mike Raynder, who wrote the original version of the process-specific memory function.  You can
 ' download a copy of Mike's original code from this link (good as of 27 Nov '12): http://www.xtremevbtalk.com/showthread.php?t=229758
+'
+'I am currently working on migrating random bits of code from other places in PD to this class, so please be patient and ignore
+' duplicate code entries in the meantime.  :)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -214,7 +228,7 @@ Private Const TC_VA_ABLE As Long = 4000
 Private Const TC_SCROLLBLT As Long = 10000
 
 'GUID creation
-Public Type Guid
+Private Type Guid
   Data1 As Long
   Data2 As Integer
   Data3 As Integer
@@ -485,59 +499,59 @@ Private Sub appendCapToString(ByRef oldPart As String, ByRef newPart As String)
 End Sub
 
 'Check for a version >= Vista.
-Public Function getVistaOrLaterStatus() As Boolean
+Public Function isOSVistaOrLater() As Boolean
 
     Dim tOSVI As OSVERSIONINFOEX
     tOSVI.dwOSVersionInfoSize = Len(tOSVI)
     GetVersionEx tOSVI
     
-    getVistaOrLaterStatus = (tOSVI.dwMajorVersion >= 6)
+    isOSVistaOrLater = (tOSVI.dwMajorVersion >= 6)
 
 End Function
 
 'Check for a version >= Win 7
-Public Function getWin7OrLaterStatus() As Boolean
+Public Function isOSWin7OrLater() As Boolean
 
     Dim tOSVI As OSVERSIONINFOEX
     tOSVI.dwOSVersionInfoSize = Len(tOSVI)
     GetVersionEx tOSVI
     
-    getWin7OrLaterStatus = ((tOSVI.dwMajorVersion >= 6) And (tOSVI.dwMinorVersion >= 1))
+    isOSWin7OrLater = ((tOSVI.dwMajorVersion >= 6) And (tOSVI.dwMinorVersion >= 1))
 
 End Function
 
 'Check for a version >= Win 8.0
-Public Function getWin8OrLaterStatus() As Boolean
+Public Function isOSWin8OrLater() As Boolean
 
     Dim tOSVI As OSVERSIONINFOEX
     tOSVI.dwOSVersionInfoSize = Len(tOSVI)
     GetVersionEx tOSVI
     
-    getWin8OrLaterStatus = ((tOSVI.dwMajorVersion >= 6) And (tOSVI.dwMinorVersion >= 2))
+    isOSWin8OrLater = ((tOSVI.dwMajorVersion >= 6) And (tOSVI.dwMinorVersion >= 2))
 
 End Function
 
 'Check for a version >= Win 8.1
-Public Function getWin81OrLaterStatus() As Boolean
+Public Function isOSWin81OrLater() As Boolean
 
     Dim tOSVI As OSVERSIONINFOEX
     tOSVI.dwOSVersionInfoSize = Len(tOSVI)
     GetVersionEx tOSVI
     
-    getWin81OrLaterStatus = ((tOSVI.dwMajorVersion >= 6) And (tOSVI.dwMinorVersion >= 3))
+    isOSWin81OrLater = ((tOSVI.dwMajorVersion >= 6) And (tOSVI.dwMinorVersion >= 3))
 
 End Function
 
 'Check for a version >= Win 10.
 ' (NOTE: this requires a manifest, so don't rely on it in the IDE.  Also, MS doesn't guarantee that this check will
 '  remain valid forever, though it does appear to work in Windows 10 TP builds.)
-Public Function getWin10OrLaterStatus() As Boolean
+Public Function isOSWin10OrLater() As Boolean
 
     Dim tOSVI As OSVERSIONINFOEX
     tOSVI.dwOSVersionInfoSize = Len(tOSVI)
     GetVersionEx tOSVI
     
-    getWin10OrLaterStatus = ((tOSVI.dwMajorVersion >= 6) And (tOSVI.dwMinorVersion >= 4))
+    isOSWin10OrLater = ((tOSVI.dwMajorVersion >= 6) And (tOSVI.dwMinorVersion >= 4))
 
 End Function
 
@@ -831,3 +845,4 @@ Private Function GetExeName(ByVal sPath As String) As String
     End If
   
 End Function
+
