@@ -299,9 +299,9 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                     
                 Case "ListBox", "ComboBox", "pdComboBox", "pdComboBox_Font"
                     If CLng(controlValue) < eControl.ListCount Then
-                        eControl.ListIndex = CLng(controlValue)
+                        If CLng(controlValue) > 0 Then eControl.ListIndex = CLng(controlValue) Else eControl.ListIndex = 0
                     Else
-                        If eControl.ListCount > 0 Then eControl.ListIndex = eControl.ListCount - 1
+                        If eControl.ListCount > 0 Then eControl.ListIndex = eControl.ListCount - 1 Else eControl.ListIndex = 0
                     End If
                     
                 Case "TextBox"

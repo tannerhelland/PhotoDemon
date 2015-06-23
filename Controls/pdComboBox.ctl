@@ -769,11 +769,11 @@ Public Property Let Enabled(ByVal newValue As Boolean)
 End Property
 
 'Font properties; only a subset are used, as PD handles most font settings automatically
-Public Property Get FontSize() As Single
-    FontSize = m_FontSize
+Public Property Get fontSize() As Single
+    fontSize = m_FontSize
 End Property
 
-Public Property Let FontSize(ByVal newSize As Single)
+Public Property Let fontSize(ByVal newSize As Single)
     
     If newSize <> m_FontSize Then
         
@@ -887,7 +887,7 @@ End Sub
 
 Private Sub UserControl_InitProperties()
     Enabled = True
-    FontSize = 10
+    fontSize = 10
 End Sub
 
 Private Sub UserControl_LostFocus()
@@ -904,7 +904,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
         Enabled = .ReadProperty("Enabled", True)
-        FontSize = .ReadProperty("FontSize", 10)
+        fontSize = .ReadProperty("FontSize", 10)
     End With
 
 End Sub
@@ -1137,6 +1137,7 @@ Private Function createComboBox() As Boolean
         'Assign a second subclasser for the window painter
         If Not (cPainterBox Is Nothing) Then
             cPainterBox.startPainter m_ComboBoxHwnd
+            cPainterBox.requestRepaint
         End If
         
         '...and a third subclasser for mouse events
