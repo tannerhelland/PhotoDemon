@@ -40,11 +40,14 @@ Private Declare Function GdipCreatePath Lib "gdiplus" (ByVal mBrushMode As GDIFi
 Private Declare Function GdipDeletePath Lib "gdiplus" (ByVal hPath As Long) As Long
 Private Declare Function GdipResetPath Lib "gdiplus" (ByVal hPath As Long) As Long
 Private Declare Function GdipClonePath Lib "gdiplus" (ByVal srcPath As Long, ByRef dstPath As Long) As Long
+Private Declare Function GdipGetPathWorldBounds Lib "gdiplus" (ByVal hPath As Long, ByRef dstBounds As RECTF, ByVal tmpTransformMatrix As Long, ByVal tmpPen As Long) As Long
 
 'Path property changes (both destructive and non-destructive)
 Private Declare Function GdipSetPathFillMode Lib "gdiplus" (ByVal hPath As Long, ByVal newBrushMode As GDIFillMode) As Long
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newSmoothingMode As SmoothingMode) As Long
 Private Declare Function GdipWidenPath Lib "gdiplus" (ByVal hPath As Long, ByVal hPen As Long, ByVal hTransformMatrix As Long, ByVal widenFlatness As Single) As Long
+Private Declare Function GdipWindingModeOutline Lib "gdiplus" (ByVal hPath As Long, ByVal hTransformationMatrix As Long, ByVal outlineFlatness As Single) As Long
+
 Private Declare Function GdipSetPenLineCap Lib "gdiplus" Alias "GdipSetPenLineCap197819" (ByVal hPen As Long, ByVal penStartCap As LineCap, ByVal penEndCap As LineCap, ByVal penDashCap As DashCap) As Long
 Private Declare Function GdipSetPenLineJoin Lib "gdiplus" (ByVal hPen As Long, ByVal penLineJoin As LineJoin) As Long
 
@@ -258,6 +261,48 @@ Public Sub transformPathByMatrix(ByRef srcMatrix As pdGraphicsMatrix)
     
 End Sub
 
+'Rotate the path around its center point.  The center point is calculated automatically.
+Public Sub rotatePathAroundItsCenter(ByRef rotateAngle As Single)
+    
+    'Create a transformation matrix
+    Dim tmpMatrix As pdGraphicsMatrix
+    Set tmpMatrix = New pdGraphicsMatrix
+    
+    'Figure out the path's center
+    Dim pathRect As RECTF
+    GdipGetPathWorldBounds m_PathHandle, pathRect, 0, 0
+    
+    'Update the transformation matrix with a matching rotation
+    tmpMatrix.RotateMatrix rotateAngle, pathRect.Left + pathRect.Width / 2, pathRect.Top + pathRect.Height / 2, MatrixOrderAppend
+    
+    'Apply the transformation
+    GdipTransformPath m_PathHandle, tmpMatrix.getMatrixHandle
+    
+End Sub
+
+'Mirror the path around its center point.  The center point is calculated automatically.
+Public Sub mirrorPathAroundItsCenter(ByVal mirrorHorizontal As Boolean, ByVal mirrorVertical As Boolean)
+    
+    'Create a transformation matrix
+    Dim tmpMatrix As pdGraphicsMatrix
+    Set tmpMatrix = New pdGraphicsMatrix
+    
+    'Figure out the path's center
+    Dim pathRect As RECTF
+    GdipGetPathWorldBounds m_PathHandle, pathRect, 0, 0
+    
+    'Update the transformation matrix with a matching mirror operation
+    tmpMatrix.MirrorMatrix mirrorHorizontal, mirrorVertical
+    
+    'Mirroring will reflect a path around the 0-axis, so we need to translate the path back into its original position now.
+    If mirrorHorizontal Then tmpMatrix.TranslateMatrix (pathRect.Left + pathRect.Width / 2) * 2, 0, MatrixOrderAppend
+    If mirrorVertical Then tmpMatrix.TranslateMatrix 0, (pathRect.Top + pathRect.Height / 2) * 2, MatrixOrderAppend
+    
+    'Apply the transformation
+    GdipTransformPath m_PathHandle, tmpMatrix.getMatrixHandle
+    
+End Sub
+
 ' END: NON-DESTRUCTIVE PATH EDITS
 '
 '***************************************************************************
@@ -281,6 +326,30 @@ Public Sub convertPathToBorderType_Simple(ByVal borderWidth As Single, Optional 
     'Apply the requested line cap and miter
     GdipSetPenLineCap hPen, useLineCap, useLineCap, DashCapFlat
     GdipSetPenLineJoin hPen, useLineJoin
+    
+    'Apply the widen command
+    GdipWidenPath m_PathHandle, hPen, 0, allowableError
+    
+    'Release the temporary pen
+    GdipDeletePen hPen
+
+End Sub
+
+'Inflate the current path by some arbitrary amount.  Note that additional parameters are available to control the way junctions and endpoints
+' are affected by the widening.
+Public Sub inflatePath(ByVal inflateWidth As Single, Optional ByVal useLineCap As LineCap = LineCapFlat, Optional ByVal useLineJoin As LineJoin = LineJoinMiter, Optional ByVal allowableError As Single = FlatnessDefault)
+
+    'Widening a path requires a GDI+ pen.  All of the pen's properties (width, dashing, transforms, miters, etc)
+    ' are considered when applying the widening transform.
+    Dim hPen As Long
+    GdipCreatePen1 0, inflateWidth, gdipUnitPixel, hPen
+    
+    'Apply the requested line cap and miter
+    GdipSetPenLineCap hPen, useLineCap, useLineCap, DashCapFlat
+    GdipSetPenLineJoin hPen, useLineJoin
+    
+    'Convert the path to an outline-only representation
+    GdipWindingModeOutline m_PathHandle, 0, allowableError
     
     'Apply the widen command
     GdipWidenPath m_PathHandle, hPen, 0, allowableError

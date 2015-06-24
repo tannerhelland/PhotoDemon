@@ -100,6 +100,7 @@ Begin VB.Form toolpanel_FancyText
             _ExtentX        =   1720
             _ExtentY        =   609
             Max             =   100
+            SigDigits       =   1
          End
          Begin PhotoDemon.pdLabel lblText 
             Height          =   240
@@ -168,6 +169,7 @@ Begin VB.Form toolpanel_FancyText
             Width           =   2760
             _ExtentX        =   4868
             _ExtentY        =   873
+            Min             =   -360
             Max             =   360
             SigDigits       =   1
          End
@@ -214,6 +216,7 @@ Begin VB.Form toolpanel_FancyText
             _ExtentX        =   2143
             _ExtentY        =   609
             Max             =   100
+            SigDigits       =   1
          End
          Begin PhotoDemon.pdLabel lblText 
             Height          =   240
@@ -236,7 +239,7 @@ Begin VB.Form toolpanel_FancyText
             Width           =   2760
             _ExtentX        =   4868
             _ExtentY        =   873
-            Max             =   360
+            Max             =   50
             SigDigits       =   1
          End
       End

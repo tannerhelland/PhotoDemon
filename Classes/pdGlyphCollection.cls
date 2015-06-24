@@ -208,7 +208,7 @@ End Sub
 
 'Given a source string, add all glyphs from that string to our current collection
 Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal useHinting As Boolean = False) As Boolean
-    
+        
     Dim curGlyphIndex As Long
     Dim charAlreadyExists As Boolean
     Dim rawGlyphBytes() As Long
@@ -609,6 +609,7 @@ End Function
 
 'Prior to calling assembleCompositePath, below, the caller can notify us of custom layout settings via this function
 Friend Function notifyCustomLayoutSettings(Optional ByVal customLineSpacing As Single = 0#, Optional ByVal customCharSpacing As Single = 0#, Optional ByVal customCharOrientation As Single = 0#, Optional ByVal customCharJitterX As Single = 0, Optional ByVal customCharJitterY As Single = 0, Optional ByVal customCharInflation As Single = 0, Optional ByVal customCharMirror As Long = 0)
+    
     m_LineSpacing = customLineSpacing
     m_CharSpacing = customCharSpacing
     m_CharOrientation = customCharOrientation
@@ -639,16 +640,32 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
         ' 2) Once individual positions are calculated on a per-glyph basis, we combine all glyphs into a single master pdGraphicsPath object.
         '    Any glyph-specific features (e.g. mirroring, per-char rotation, etc) can be applied here.
         
-        
         '(FYI: the glyph positioning algorithm fills the .finalX and .finalY entries for each glyph.)
         calculateGlyphPositions boundingRect, horizontalAlignment, verticalAlignment, lineWrapMode
         
         Dim i As Long, curGlyph As Long, curGlyphOutline As Long, srcPathHandle As Long
-        Dim tmpGlyphOutlineCopy As pdGraphicsPath, tmpMatrix As pdGraphicsMatrix
+        Dim tmpGlyphOutlineCopy As pdGraphicsPath, tmpMatrix As pdGraphicsMatrix, cRandom As pdRandomize
+        Dim maxJitterX As Single, maxJitterY As Single, halfJitterX As Single, halfJitterY As Single
         Dim glyphIsRenderable As Boolean
         
-        'If char-level orientation changes are active, prep a universal pdGraphicsMatrix object
-        If m_CharEffectsEnabled Then Set tmpMatrix = New pdGraphicsMatrix
+        'If char-level orientation changes are active, prep some transformation objects
+        If m_CharEffectsEnabled Then
+        
+            Set tmpGlyphOutlineCopy = New pdGraphicsPath
+            Set tmpMatrix = New pdGraphicsMatrix
+            
+            'Seeding the random number generator is a little tricky.  We need it to be deterministic, so the layer's appearance
+            ' doesn't change between save/load, but we also need it to vary by changes to jitter.
+            Set cRandom = New pdRandomize
+            cRandom.setSeed_Int m_CharJitterX * 100 + m_CharJitterY * 10000
+            
+            maxJitterX = m_TextMetrics.tmAveCharWidth * (m_CharJitterX / 100)
+            halfJitterX = maxJitterX / 2
+            
+            maxJitterY = m_TextMetrics.tmHeight * (m_CharJitterY / 100)
+            halfJitterY = maxJitterY / 2
+            
+        End If
         
         'Start iterating through the source string, one character at a time.
         For i = 0 To m_NumOfGlyphs - 1
@@ -675,13 +692,47 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
                 'If weird character effects are active, we need to do a bit more processing work
                 If m_CharEffectsEnabled Then
                 
-                    'Let's break down the possible character changes one at a time.
-                    'm_CharOrientation, m_CharJitterX, m_CharJitterY, m_CharInflation, m_CharMirror
+                    'Start by making a copy of the original glyph outline
+                    tmpGlyphOutlineCopy.cloneExistingPath m_GlyphOutlines(curGlyphOutline).glyphPath
                     
+                    'Let's break down the possible character changes one at a time.
+                    
+                    'm_CharOrientation controls character orientation, which is used to rotate characters around their own center point.
+                    If m_CharOrientation <> 0 Then tmpGlyphOutlineCopy.rotatePathAroundItsCenter m_CharOrientation
+                    
+                    'm_CharMirror reflects characters across their own central axis
+                    If m_CharMirror <> 0 Then
+                        
+                        Select Case m_CharMirror
+                        
+                            Case 1
+                                tmpGlyphOutlineCopy.mirrorPathAroundItsCenter True, False
+                            
+                            Case 2
+                                tmpGlyphOutlineCopy.mirrorPathAroundItsCenter False, True
+                            
+                            Case 3
+                                tmpGlyphOutlineCopy.mirrorPathAroundItsCenter True, True
+                        
+                        End Select
+                        
+                    End If
+                    
+                    'm_CharInflation widens the character paths using the generic GDI+ path widening algorithm
+                    If m_CharInflation <> 0 Then tmpGlyphOutlineCopy.inflatePath m_CharInflation, LineCapRound, LineJoinRound, 0.5
+                    
+                    'Finally, jitter applies some randomness to the character's position in the x and/or y directions.
                     With m_Glyphs(curGlyph)
-                        dstPath.addPath m_GlyphOutlines(curGlyphOutline).glyphPath, .finalX + .GlyphOffset.du, .finalY - .GlyphOffset.dv
+                                            
+                        If m_CharJitterX <> 0 Or m_CharJitterY <> 0 Then
+                            'dstPath.addPath tmpGlyphOutlineCopy, .finalX + .GlyphOffset.du + ((cRandom.getRandomFloat_WH * maxJitterX) - halfJitterX), .finalY - .GlyphOffset.dv + ((cRandom.getRandomFloat_WH * maxJitterY) - halfJitterY)
+                            dstPath.addPath tmpGlyphOutlineCopy, .finalX + .GlyphOffset.du + ((cRandom.getRandomFloat_VB * maxJitterX) - halfJitterX), .finalY - .GlyphOffset.dv + ((cRandom.getRandomFloat_VB * maxJitterY) - halfJitterY)
+                        Else
+                            dstPath.addPath tmpGlyphOutlineCopy, .finalX + .GlyphOffset.du, .finalY - .GlyphOffset.dv
+                        End If
+                        
                     End With
-                
+                    
                 'If no weird character effects are active, we can just render the glyph as-is
                 Else
                 
