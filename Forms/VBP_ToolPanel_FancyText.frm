@@ -143,9 +143,9 @@ Begin VB.Form toolpanel_FancyText
             Width           =   2760
             _ExtentX        =   4868
             _ExtentY        =   873
-            Min             =   -5
-            Max             =   5
-            SigDigits       =   2
+            Min             =   -1
+            Max             =   1
+            SigDigits       =   3
          End
          Begin PhotoDemon.pdLabel lblText 
             Height          =   240

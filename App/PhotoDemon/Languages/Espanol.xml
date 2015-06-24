@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.55</langversion>
+<langversion>6.7.56</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -7223,72 +7223,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 
 <!-- END text for cSHA256.cls-->
 
-<!-- BEGIN text for VBP_MiscOSInteractions.bas -->
-
-<phrase>
-<original>General image actions</original>
-<translation>Acciones imagen Generales</translation>
-</phrase>
-
-<phrase>
-<original>Alpha-blending</original>
-<translation>Alfa-mezcla</translation>
-</phrase>
-
-<phrase>
-<original>Color management</original>
-<translation>gestión del color</translation>
-</phrase>
-
-<phrase>
-<original>Lines</original>
-<translation>Líneas</translation>
-</phrase>
-
-<phrase>
-<original>Polygons</original>
-<translation>Polígonos</translation>
-</phrase>
-
-<phrase>
-<original>Text</original>
-<translation>texto</translation>
-</phrase>
-
-<phrase>
-<original>Final results</original>
-<translation>resultados finales</translation>
-</phrase>
-
-<phrase>
-<original>Disclaimer: all hardware acceleration data is provided by the operating system.  It specifically represents GDI acceleration, which is independent from DirectX and OpenGL.  OS version and desktop mode also affect support capabilities.  For best results, please run PhotoDemon on Windows 7 or 8, on an Aero-enabled desktop.</original>
-<translation>Descargo de responsabilidad: todos los datos de la aceleración de hardware es proporcionada por el sistema operativo. Se representa específicamente la aceleración GDI, que es independiente de DirectX y OpenGL. Versión del sistema operativo y el modo de escritorio también afectan la capacidad de apoyo. Para obtener los mejores resultados, por favor, ejecute PhotoDemon en Windows 7 u 8, en un escritorio habilitado para Aero.</translation>
-</phrase>
-
-<phrase>
-<original>For more information on GDI hardware acceleration, visit http://msdn.microsoft.com/en-us/library/windows/desktop/ff729480</original>
-<translation>Para obtener más información sobre la aceleración de hardware de GDI, visite http://msdn.microsoft.com/en-us/library/windows/desktop/ff729480</translation>
-</phrase>
-
-<phrase>
-<original>none</original>
-<translation>ninguno</translation>
-</phrase>
-
-<phrase>
-<original>accelerated</original>
-<translation>acelerado</translation>
-</phrase>
-
-<phrase>
-<original>not accelerated</original>
-<translation>no acelerado</translation>
-</phrase>
-
-<!-- VBP_MiscOSInteractions.bas contains 28 phrases. 16 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
-
-<!-- END text for VBP_MiscOSInteractions.bas-->
-
 <!-- BEGIN text for VBP_FormMultiImage.frm (dialog_MultiImage) -->
 
 <phrase>
@@ -10440,6 +10374,11 @@ By defecto, la transparencia se divide por la mitad, o se puede especificar un v
 </phrase>
 
 <phrase>
+<original>none</original>
+<translation>ninguno</translation>
+</phrase>
+
+<phrase>
 <original>standard</original>
 <translation>estándar</translation>
 </phrase>
@@ -10474,7 +10413,7 @@ By defecto, la transparencia se divide por la mitad, o se puede especificar un v
 <translation>de salida</translation>
 </phrase>
 
-<!-- VBP_FormCurves.frm contains 31 phrases. 16 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
+<!-- VBP_FormCurves.frm contains 31 phrases. 15 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for VBP_FormCurves.frm-->
 
@@ -13878,12 +13817,32 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <!-- BEGIN text for VBP_ToolPanel_FancyText.frm (toolpanel_FancyText) -->
 
 <phrase>
-<original>fill background</original>
+<original>remap</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>border</original>
+<original>spacing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>jitter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>mirror</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>inflation</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>hinting</original>
 <translation></translation>
 </phrase>
 
@@ -13918,6 +13877,16 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
+<original>fill background</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>border</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>line wrap</original>
 <translation></translation>
 </phrase>
@@ -13934,16 +13903,6 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <phrase>
 <original>line spacing</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>hinting</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>OpenType</original>
 <translation></translation>
 </phrase>
 
@@ -13968,12 +13927,57 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
+<original>special</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>normal</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>crisp</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>both</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>default</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>uppercase</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>hiragana</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>katakana</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>simplified Chinese</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>traditional Chinese</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>titlecase</original>
 <translation></translation>
 </phrase>
 
@@ -14087,7 +14091,7 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_FancyText.frm contains 77 phrases. 35 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
+<!-- VBP_ToolPanel_FancyText.frm contains 94 phrases. 39 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_FancyText.frm-->
 
@@ -14115,12 +14119,79 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <!-- END text for pdGraphicsMatrix.cls-->
 
+<!-- BEGIN text for pdRandomize.cls -->
+
+<!-- pdRandomize.cls contains 0 phrases. -->
+
+<!-- END text for pdRandomize.cls-->
+
+<!-- BEGIN text for pdSystemInfo.cls -->
+
+<phrase>
+<original>General image actions</original>
+<translation>Acciones imagen Generales</translation>
+</phrase>
+
+<phrase>
+<original>Alpha-blending</original>
+<translation>Alfa-mezcla</translation>
+</phrase>
+
+<phrase>
+<original>Color management</original>
+<translation>gestión del color</translation>
+</phrase>
+
+<phrase>
+<original>Lines</original>
+<translation>Líneas</translation>
+</phrase>
+
+<phrase>
+<original>Polygons</original>
+<translation>Polígonos</translation>
+</phrase>
+
+<phrase>
+<original>Text</original>
+<translation>texto</translation>
+</phrase>
+
+<phrase>
+<original>Final results</original>
+<translation>resultados finales</translation>
+</phrase>
+
+<phrase>
+<original>Disclaimer: all hardware acceleration data is provided by the operating system.  It specifically represents GDI acceleration, which is independent from DirectX and OpenGL.  OS version and desktop mode also affect support capabilities.  For best results, please run PhotoDemon on Windows 7 or 8, on an Aero-enabled desktop.</original>
+<translation>Descargo de responsabilidad: todos los datos de la aceleración de hardware es proporcionada por el sistema operativo. Se representa específicamente la aceleración GDI, que es independiente de DirectX y OpenGL. Versión del sistema operativo y el modo de escritorio también afectan la capacidad de apoyo. Para obtener los mejores resultados, por favor, ejecute PhotoDemon en Windows 7 u 8, en un escritorio habilitado para Aero.</translation>
+</phrase>
+
+<phrase>
+<original>For more information on GDI hardware acceleration, visit http://msdn.microsoft.com/en-us/library/windows/desktop/ff729480</original>
+<translation>Para obtener más información sobre la aceleración de hardware de GDI, visite http://msdn.microsoft.com/en-us/library/windows/desktop/ff729480</translation>
+</phrase>
+
+<phrase>
+<original>accelerated</original>
+<translation>acelerado</translation>
+</phrase>
+
+<phrase>
+<original>not accelerated</original>
+<translation>no acelerado</translation>
+</phrase>
+
+<!-- pdSystemInfo.cls contains 28 phrases. 17 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+
+<!-- END text for pdSystemInfo.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2454</phrasecount>
+<phrasecount>2467</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4235 phrases. -->
-<!-- 1781 are duplicates, so only 2454 unique phrases have been written to file. -->
-<!-- These 2454 phrases contain approximately 13710 total words. -->
+<!-- As of this build, PhotoDemon contains 4252 phrases. -->
+<!-- 1785 are duplicates, so only 2467 unique phrases have been written to file. -->
+<!-- These 2467 phrases contain approximately 13725 total words. -->
 
 </pdData>

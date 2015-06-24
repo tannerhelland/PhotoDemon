@@ -600,6 +600,13 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                     .cboBackBorderMode.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackBorderMode)
                     .csBackBorder.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackBorderColor)
                     .sltBackBorderWidth.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackBorderWidth)
+                    .sltCharInflation.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_CharInflation)
+                    .tudJitter(0).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_CharJitterX)
+                    .tudJitter(1).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_CharJitterY)
+                    .cboCharMirror.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_CharMirror)
+                    .sltCharOrientation.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_CharOrientation)
+                    .cboCharCase.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_CharRemap)
+                    .sltCharSpacing.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_CharSpacing)
                 End With
                 
                 'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.
@@ -727,6 +734,13 @@ Public Sub syncCurrentLayerToToolOptionsUI()
                     .setTextLayerProperty ptp_BackBorderMode, toolpanel_FancyText.cboBackBorderMode.ListIndex
                     .setTextLayerProperty ptp_BackBorderColor, toolpanel_FancyText.csBackBorder.Color
                     .setTextLayerProperty ptp_BackBorderWidth, toolpanel_FancyText.sltBackBorderWidth.Value
+                    .setTextLayerProperty ptp_CharInflation, toolpanel_FancyText.sltCharInflation.Value
+                    .setTextLayerProperty ptp_CharJitterX, toolpanel_FancyText.tudJitter(0).Value
+                    .setTextLayerProperty ptp_CharJitterY, toolpanel_FancyText.tudJitter(1).Value
+                    .setTextLayerProperty ptp_CharMirror, toolpanel_FancyText.cboCharMirror.ListIndex
+                    .setTextLayerProperty ptp_CharOrientation, toolpanel_FancyText.sltCharOrientation.Value
+                    .setTextLayerProperty ptp_CharRemap, toolpanel_FancyText.cboCharCase.ListIndex
+                    .setTextLayerProperty ptp_CharSpacing, toolpanel_FancyText.sltCharSpacing.Value
                 End With
                 
                 'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.

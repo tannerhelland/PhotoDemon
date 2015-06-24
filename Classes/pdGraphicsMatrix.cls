@@ -84,6 +84,12 @@ Friend Sub ScaleMatrix(ByVal xScaleFactor As Single, ByVal yScaleFactor As Singl
     GdipScaleMatrix m_MatrixHandle, xScaleFactor, yScaleFactor, transformOrder
 End Sub
 
+'Mirror the matrix in the x and/or y direction
+Friend Sub MirrorMatrix(ByVal mirrorHorizontal As Boolean, ByVal mirrorVertical As Boolean, Optional ByVal transformOrder As MatrixOrder = MatrixOrderAppend)
+    If mirrorHorizontal Then ScaleMatrix -1, 1, transformOrder
+    If mirrorVertical Then ScaleMatrix 1, -1, transformOrder
+End Sub
+
 'Apply a rotation to the matrix; units are degrees, and positive degrees indicate clockwise transformations.
 ' An optional center x/y can be provided as well.
 ' IMPORTANT NOTE: if a custom center point is specified, the optional transformOrder parameter is ignored.  (This is necessary
