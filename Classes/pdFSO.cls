@@ -1162,7 +1162,7 @@ Public Function TrimNull(ByRef origString As String) As String
     
 End Function
 
-'VB's default string comparison function is overly cumbersome.  This wrapper makes string equality checks much tidier.
+'VB's default string comparison function is overly cumbersome.  This wrapper makes string equality checks tidier.
 Private Function StringsEqual(ByRef srcString1 As String, ByRef srcString2 As String) As Boolean
     StringsEqual = (StrComp(srcString1, srcString2, vbBinaryCompare) = 0)
 End Function

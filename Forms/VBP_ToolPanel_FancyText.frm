@@ -1982,14 +1982,14 @@ Private Sub Form_Load()
         cboCharMirror.ListIndex = 0
         
         cboCharCase.Clear
-        cboCharCase.AddItem "default", 0
+        cboCharCase.AddItem "none", 0
         cboCharCase.AddItem "lowercase", 1
-        cboCharCase.AddItem "uppercase", 2
+        cboCharCase.AddItem "UPPERCASE", 2
         cboCharCase.AddItem "hiragana", 3
         cboCharCase.AddItem "katakana", 4
         cboCharCase.AddItem "simplified Chinese", 5
         cboCharCase.AddItem "traditional Chinese", 6
-        If g_IsWin7OrLater Then cboCharCase.AddItem "titlecase", 7
+        If g_IsWin7OrLater Then cboCharCase.AddItem "Titlecase", 7
         cboCharCase.ListIndex = 0
         
         
