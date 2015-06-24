@@ -17,7 +17,8 @@ Attribute VB_Exposed = False
 'Created: 04/February/15
 'Last updated: 23/February/15
 'Last update: split out this class from pdFSO
-'Dependencies: none
+'Dependencies: pdSystemInfo (for determining OS version, among other things)
+'              Uniscribe_Interface module (Uniscribe is unavoidable for some advanced text processing)
 '
 'This class provides a variety of helper functions for dealing with Unicode text.  A number of other PD classes (e.g. pdFSO) rely on it.
 '
@@ -48,6 +49,35 @@ Private Declare Function CryptStringToBinary Lib "Crypt32" Alias "CryptStringToB
 Private Declare Function GetCommandLineW Lib "kernel32" () As Long
 Private Declare Function lstrcpynW Lib "kernel32" (ByVal lpString1 As Long, ByVal lpString2 As Long, ByVal iMaxLength As Long) As Long
 Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
+
+'LCMapString functions provide support for changing Unicode string case (including CJK support like simplified <-> traditional Chinese characters).
+' Note that two variants are provided - one for XP, and another for Vista+.  MSDN explicitly states that Vista+ applications should use the newer function.
+' (PD will switch between the two automatically.)
+Private Declare Function LCMapStringW Lib "kernel32" (ByVal localeID As Long, ByVal dwMapFlags As REMAP_STRING_API, ByVal lpSrcStringPtr As Long, ByVal lenSrcString As Long, ByVal lpDstStringPtr As Long, ByVal lenDstString As Long) As Long
+
+'Vista+ only!  (Note the lack of a trailing W in the function name.)
+Private Declare Function LCMapStringEx Lib "kernel32" (ByVal lpLocaleNameStringPt As Long, ByVal dwMapFlags As REMAP_STRING_API, ByVal lpSrcStringPtr As Long, ByVal lenSrcString As Long, ByVal lpDstStringPtr As Long, ByVal lenDstString As Long, ByVal lpVersionInformationPtr As Long, ByVal lpReserved As Long, ByVal sortHandle As Long) As Long
+
+'Both LCMapString variants use the same constants
+Private Enum REMAP_STRING_API
+    LCMAP_LOWERCASE = &H100&
+    LCMAP_UPPERCASE = &H200&
+    LCMAP_TITLECASE = &H300&      'Windows 7 only!
+
+    LCMAP_HIRAGANA = &H100000
+    LCMAP_KATAKANA = &H200000
+
+    LCMAP_LINGUISTIC_CASING = &H1000000     'Per MSDN, "Use linguistic rules for casing, instead of file system rules (default)."
+                                            '           This flag is valid with LCMAP_LOWERCASE or LCMAP_UPPERCASE only."
+
+    LCMAP_SIMPLIFIED_CHINESE = &H2000000
+    LCMAP_TRADITIONAL_CHINESE = &H4000000
+End Enum
+
+Private Const LOCALE_SYSTEM_DEFAULT As Long = &H800&
+
+'Sometimes we need to retrieve system info, as a lot of Unicode APIs vary by OS version
+Private cSysInfo As pdSystemInfo
 
 'Given a VB string, fill a byte array with matching UTF-8 data.  Returns TRUE if successful; FALSE otherwise
 Public Function StringToUTF8Bytes(ByRef srcString As String, ByRef dstUtf8() As Byte) As Boolean
@@ -391,7 +421,109 @@ Public Function CommandW$()
     
 End Function
 
+'Apply some kind of remap conversion ("change case" in Latin languages) using WAPI.
+' IMPORTANT: some LCMAP constants *are only available under Windows 7*, so be aware of which requests fail on earlier OSes.
+Public Function RemapString(ByRef srcString As String, ByVal remapType As PD_STRING_REMAP) As String
+    
+    'If the remap type is 0, do nothing
+    If remapType = PDRS_NONE Then
+        RemapString = srcString
+        Exit Function
+    End If
+    
+    'If the remap type is "titlecase" and we're on Vista or earlier, do nothing
+    If (remapType = PDRS_TITLECASE_WIN7) And (Not cSysInfo.isOSWin7OrLater) Then
+        RemapString = srcString
+        Exit Function
+    End If
+    
+    'Convert the incoming remap type to an API equivalent
+    Dim apiFlags As REMAP_STRING_API
+    
+    Select Case remapType
+    
+        Case PDRS_LOWERCASE
+            apiFlags = LCMAP_LINGUISTIC_CASING Or LCMAP_LOWERCASE
+        
+        Case PDRS_UPPERCASE
+            apiFlags = LCMAP_LINGUISTIC_CASING Or LCMAP_UPPERCASE
+            
+        Case PDRS_HIRAGANA
+            apiFlags = LCMAP_HIRAGANA
+            
+        Case PDRS_KATAKANA
+            apiFlags = LCMAP_KATAKANA
+            
+        Case PDRS_SIMPLE_CHINESE
+            apiFlags = LCMAP_SIMPLIFIED_CHINESE
+            
+        Case PDRS_TRADITIONAL_CHINESE
+            apiFlags = LCMAP_TRADITIONAL_CHINESE
+            
+        Case PDRS_TITLECASE_WIN7
+            apiFlags = LCMAP_TITLECASE
+    
+    End Select
+        
+    'For Latin languages, the length of the new string shouldn't change, but with CJK languages, there are no guarantees.  As a failsafe,
+    ' double the length of the temporary destination buffer.
+    Dim dstString As String
+    dstString = String$(Len(srcString) * 2, 0)
+    
+    'Use the Vista+ variant preferentially, as it has received additional updates versus the backward-compatible function.
+    Dim apiSuccess As Boolean
+    
+    If cSysInfo.isOSVistaOrLater Then
+        
+        If LCMapStringEx(0&, apiFlags, StrPtr(srcString), Len(srcString), StrPtr(dstString), Len(dstString), 0&, 0&, 0&) = 0 Then
+            Debug.Print "WARNING!  LCMapStringEx() failed on /" & srcString & "/ and PD remap type " & remapType & "."
+            apiSuccess = False
+        Else
+            apiSuccess = True
+        End If
+        
+    Else
+    
+        If LCMapStringW(LOCALE_SYSTEM_DEFAULT, apiFlags, StrPtr(srcString), Len(srcString), StrPtr(dstString), Len(dstString)) = 0 Then
+            Debug.Print "WARNING!  LCMapStringW() failed on /" & srcString & "/ and PD remap type " & remapType & "."
+            apiSuccess = False
+        Else
+            apiSuccess = True
+        End If
+    
+    End If
+    
+    'Because we use a huge destination buffer (as a failsafe), trailing null chars are inevitable.  Trim them before returning.
+    If apiSuccess Then
+        RemapString = TrimNull(dstString)
+    Else
+        RemapString = srcString
+    End If
+    
+End Function
+
+'When passing file and path strings to WAPI functions, we often have to pre-initialize them to some arbitrary buffer length
+' (typically MAX_PATH).  When finished, the string needs to be trimmed to remove unused null chars.
+Public Function TrimNull(ByRef origString As String) As String
+    
+    'Start by double-checking that null chars actually exist in the string
+    Dim nullPosition As Long
+    nullPosition = InStr(origString, Chr$(0))
+    
+    'Remove null chars if present; otherwise, return a copy of the input string
+    If nullPosition <> 0 Then
+       TrimNull = Left$(origString, nullPosition - 1)
+    Else
+       TrimNull = origString
+    End If
+    
+End Function
+
 'Some Unicode behavior varies inside the IDE, so this class must occasionally check for IDE vs compiled behavior
 Private Function inIDE() As Boolean
     inIDE = Not CBool(App.logMode = 1)
 End Function
+
+Private Sub Class_Initialize()
+    Set cSysInfo = New pdSystemInfo
+End Sub

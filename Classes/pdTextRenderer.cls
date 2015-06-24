@@ -1222,7 +1222,7 @@ End Function
 ' not currently offer a function for that, FYI.)
 '
 'Note also that the crColor parameter should not include alpha; alpha in PD is handled by layers, not the text renderer.
-Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
+Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByVal srcString As String, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
     
     'As a convenience to the user, create the font as necessary
     If (Not m_FontCacheClean) Then
@@ -1289,7 +1289,7 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByRef srcString As String
         'Next, pass the glyph collection our target string.  The glyph collection will generate a list of required glyphs and
         ' automatically retrieve any glyph geometry it hasn't already calculated.  (For example, if the last request it received
         ' was "cat", but this request is "cats", only the 's' needs to be newly retrieved.)
-        m_GlyphCollection.buildGlyphCollection srcString, m_TextHinting
+        m_GlyphCollection.buildGlyphCollection srcString, m_TextHinting, m_CharRemap
         
         'After all glyphs have been created, it's *very important* that we regain control over our GDI font, as we need it for
         ' the actual rendering step!
