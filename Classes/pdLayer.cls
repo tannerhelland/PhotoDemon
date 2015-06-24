@@ -2981,6 +2981,13 @@ Public Function syncInternalDIB() As Boolean
                 .setBackBorderMode myTextData.tld_BackBorderMode
                 .setBackBorderColor myTextData.tld_BackBorderColor
                 .setBackBorderWidth myTextData.tld_BackBorderWidth
+                .setCharRemap myTextData.tld_CharRemap
+                .setCharSpacing myTextData.tld_CharSpacing
+                .setCharOrientation myTextData.tld_CharOrientation
+                .setCharJitterX myTextData.tld_CharJitterX
+                .setCharJitterY myTextData.tld_CharJitterY
+                .setCharInflation myTextData.tld_CharInflation
+                .setCharMirror myTextData.tld_CharMirror
             End With
             
             'Initialize the backer DIB as necessary

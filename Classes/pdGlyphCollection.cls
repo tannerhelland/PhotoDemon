@@ -158,8 +158,17 @@ Private m_LastFont As Long, m_LastDC As Long, m_LastString As String
 Private m_LineWidths() As Single
 Private Const DEFAULT_INITIAL_LINE_COUNT As Long = 16
 
-'This class now supports some custom layout settings, which the caller can supply prior to final path assembly.
+'This class now supports some custom layout and character settings, which the caller can supply prior to final path assembly.
 Private m_LineSpacing As Single
+Private m_CharSpacing As Single
+Private m_CharOrientation As Single
+Private m_CharJitterX As Single
+Private m_CharJitterY As Single
+Private m_CharInflation As Single
+Private m_CharMirror As Long
+
+'If no custom character modifications are active, we can skip ceratin steps during path assembly.
+Private m_CharEffectsEnabled As Boolean
 
 'Prior to glyph generation, this class needs a copy of GDI font handle.  I have deliberately made this function separate
 ' AS A REMINDER TO REMOVE THE FONT FROM ANY ACTIVE DCs PRIOR TO GIVING THIS CLASS ACCESS.
@@ -599,8 +608,19 @@ Private Function parseRawGlyphBuffer(ByRef srcBuffer() As Long, ByRef dstGlyphPa
 End Function
 
 'Prior to calling assembleCompositePath, below, the caller can notify us of custom layout settings via this function
-Friend Function notifyCustomLayoutSettings(Optional ByVal customLineSpacing As Single = 0#)
+Friend Function notifyCustomLayoutSettings(Optional ByVal customLineSpacing As Single = 0#, Optional ByVal customCharSpacing As Single = 0#, Optional ByVal customCharOrientation As Single = 0#, Optional ByVal customCharJitterX As Single = 0, Optional ByVal customCharJitterY As Single = 0, Optional ByVal customCharInflation As Single = 0, Optional ByVal customCharMirror As Long = 0)
     m_LineSpacing = customLineSpacing
+    m_CharSpacing = customCharSpacing
+    m_CharOrientation = customCharOrientation
+    m_CharJitterX = customCharJitterX
+    m_CharJitterY = customCharJitterY
+    m_CharInflation = customCharInflation
+    m_CharMirror = customCharMirror
+    
+    'If one or more custom character attributes are non-zero, mark a class-level flag.  This allows us to skip some processor-intensive
+    ' steps if the text is generic.
+    m_CharEffectsEnabled = CBool(m_CharSpacing <> 0) Or CBool(m_CharOrientation <> 0) Or CBool(m_CharJitterX <> 0) Or CBool(m_CharJitterY <> 0) Or CBool(m_CharInflation <> 0) Or CBool(m_CharMirror <> 0)
+    
 End Function
 
 'After assembling a full glyph collection, this function can be called to generate a totally complete graphics path, with all
@@ -616,20 +636,22 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
         'Path assembly happens in two steps.
         ' 1) First, we precalculate all glyph (x, y) positions, including line-breaking.  Calculating positions in advance
         '    *greatly* simplifies the main rendering loop.
-        ' 2) Once individual positions are calculated on a per-glyph basis, we perform the actual rendering.  Any glyph-specific features
-        '    that don't affect positioning (e.g. mirroring, per-char rotation, etc) can be applied here.
+        ' 2) Once individual positions are calculated on a per-glyph basis, we combine all glyphs into a single master pdGraphicsPath object.
+        '    Any glyph-specific features (e.g. mirroring, per-char rotation, etc) can be applied here.
+        
         
         '(FYI: the glyph positioning algorithm fills the .finalX and .finalY entries for each glyph.)
         calculateGlyphPositions boundingRect, horizontalAlignment, verticalAlignment, lineWrapMode
         
         Dim i As Long, curGlyph As Long, curGlyphOutline As Long, srcPathHandle As Long
-        
+        Dim tmpGlyphOutlineCopy As pdGraphicsPath, tmpMatrix As pdGraphicsMatrix
         Dim glyphIsRenderable As Boolean
+        
+        'If char-level orientation changes are active, prep a universal pdGraphicsMatrix object
+        If m_CharEffectsEnabled Then Set tmpMatrix = New pdGraphicsMatrix
         
         'Start iterating through the source string, one character at a time.
         For i = 0 To m_NumOfGlyphs - 1
-            
-            'If m_Glyphs(i).isHardLineBreak Then Debug.Print "Hard break detected at character " & i
             
             'Start by retrieving this glyph index
             curGlyph = i
@@ -649,11 +671,26 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
             
             'If these characteristics are met, add this path to the master path, at the offsets pre-calculated by calculateGlyphPositions().
             If glyphIsRenderable Then
-                        
-                With m_Glyphs(curGlyph)
-                    dstPath.addPath m_GlyphOutlines(curGlyphOutline).glyphPath, .finalX + .GlyphOffset.du, .finalY - .GlyphOffset.dv
-                End With
+                
+                'If weird character effects are active, we need to do a bit more processing work
+                If m_CharEffectsEnabled Then
+                
+                    'Let's break down the possible character changes one at a time.
+                    'm_CharOrientation, m_CharJitterX, m_CharJitterY, m_CharInflation, m_CharMirror
                     
+                    With m_Glyphs(curGlyph)
+                        dstPath.addPath m_GlyphOutlines(curGlyphOutline).glyphPath, .finalX + .GlyphOffset.du, .finalY - .GlyphOffset.dv
+                    End With
+                
+                'If no weird character effects are active, we can just render the glyph as-is
+                Else
+                
+                    With m_Glyphs(curGlyph)
+                        dstPath.addPath m_GlyphOutlines(curGlyphOutline).glyphPath, .finalX + .GlyphOffset.du, .finalY - .GlyphOffset.dv
+                    End With
+                    
+                End If
+                
             End If
             
         'Render the next glyph!
@@ -690,9 +727,9 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
     linebreakImpossible = False
     
     'Prior to processing each glyph, we cache some unchanging values (like line increments)
-    Dim lineHeight As Single
     
     'Default lineHeight is just the text metric height (not counting external leading; this method is identical to GDI, but differs from GDI+)
+    Dim lineHeight As Single
     lineHeight = m_TextMetrics.tmHeight
     
     'We further adjust line height by the user's specified line spacing modifier (where 0.0 means use default line height)
@@ -701,6 +738,10 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
     'Previously, the lineHeight calculation included the m_TextMetrics.tmExternalLeading value.  I no longer use this, as it causes some
     ' fonts to greatly over-extend each line.
     
+    'Average char width is used to increase/decrease char spacing (if the user has variable character spacing applied)
+    Dim customCharOffset As Single
+    customCharOffset = CSng(m_TextMetrics.tmAveCharWidth) * m_CharSpacing
+        
     'Mark the first glyph as first on its line; we use this indicator to prevent infinite loops if wordwrap is activated, but we can't
     ' fit an entire word on a line.  When this happens, we have no choice but to clip the word
     m_Glyphs(0).isFirstGlyphOnLine = True
@@ -807,7 +848,11 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
                                             'If we're still here, it means this character is a viable candidate for a valid break.
                                             
                                             'Remove its width from the running line width counter
-                                            m_LineWidths(currentLine) = m_LineWidths(currentLine) - m_Glyphs(j).AdvanceWidth
+                                            If (m_Glyphs(j).AdvanceWidth + customCharOffset) > 0 Then
+                                                m_LineWidths(currentLine) = m_LineWidths(currentLine) - (m_Glyphs(j).AdvanceWidth + customCharOffset)
+                                            Else
+                                                m_LineWidths(currentLine) = m_LineWidths(currentLine) - m_Glyphs(j).AdvanceWidth
+                                            End If
                                             
                                             'If this is a valid softbreak position, mark it and exit immediately
                                             If m_Glyphs(j).isSoftBreak Or m_Glyphs(j).isWhiteSpace Then
@@ -851,6 +896,7 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
         
             'Increment the current line counter
             currentLine = currentLine + 1
+            If currentLine > UBound(m_LineWidths) Then ReDim Preserve m_LineWidths(0 To currentLine * 2 - 1) As Single
             
             'Increment the running y-offset by the preset lineheight, and reset the x-offset
             yOffset = yOffset + lineHeight
@@ -885,7 +931,11 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
                         Else
                         
                             'Remove this character's width from our running total
-                            m_LineWidths(currentLine - 1) = m_LineWidths(currentLine - 1) - m_Glyphs(glyphCheck).AdvanceWidth
+                            If (m_Glyphs(glyphCheck).AdvanceWidth + customCharOffset) > 0 Then
+                                m_LineWidths(currentLine - 1) = m_LineWidths(currentLine - 1) - (m_Glyphs(glyphCheck).AdvanceWidth + customCharOffset)
+                            Else
+                                m_LineWidths(currentLine - 1) = m_LineWidths(currentLine - 1) - m_Glyphs(glyphCheck).AdvanceWidth
+                            End If
                         
                         End If
                         
@@ -953,14 +1003,16 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
                     
             End If
             
+            'curGlyph now points at one of two things:
+            ' 1) The first glyph on a new line
+            ' 2) Somewhere past the end of the array
+            '
+            'Only the first case needs to be dealt with, via the "If curGlyph < m_NumOfGlyphs" statement below
+            
         'End of "If timeToBreakLine"...
         End If
         
-        'curGlyph now points at one of two things:
-        ' 1) The first glyph on this new line
-        ' 2) Somewhere past the end of the array
-        
-        'Only the first case needs to be dealt with
+        'After all that work, we can finally place this damn glyph
         If curGlyph < m_NumOfGlyphs Then
         
             'With line breaks now accounted for, glyph positioning is pretty darn simple.
@@ -983,7 +1035,12 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
             
             'Increment the running x-offset with this character's width
             curGlyphWidth = m_Glyphs(curGlyph).AdvanceWidth
-            xOffset = xOffset + curGlyphWidth
+            
+            'We also apply the user's custom character spacing parameter, if applicable.  (If applying it would result in a negative
+            ' offset relative to the previous character, we ignore it.)
+            If curGlyphWidth + customCharOffset > 0 Then
+                xOffset = xOffset + curGlyphWidth + customCharOffset
+            End If
             
             'Keep a running tally of the current line widths; this makes our second alignment pass much faster.
             If currentLine > UBound(m_LineWidths) Then ReDim Preserve m_LineWidths(0 To currentLine * 2 - 1) As Single
@@ -1019,9 +1076,9 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
     ' information assembled by our previous runs is crucial here.
     Dim curLine As Long, numOfLines As Long
     numOfLines = currentLine + 1
-        
+    
     Dim lineDiff As Single
-        
+    
     'Start with horizontal alignment
     If horizontalAlignment <> StringAlignmentNear Then
         
@@ -1185,6 +1242,13 @@ Private Sub Class_Initialize()
     
     'Reset any custom layout modifiers
     m_LineSpacing = 0
+    m_CharSpacing = 0
+    m_CharOrientation = 0
+    m_CharJitterX = 0
+    m_CharJitterY = 0
+    m_CharInflation = 0
+    m_CharMirror = 0
+    m_CharEffectsEnabled = False
     
 End Sub
 

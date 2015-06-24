@@ -1587,7 +1587,8 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     'Retrieve a full, composite path from the glyph collector.  It handles messy business like character positioning,
     ' and simply hands us a fully composited path, ready for rendering.
     Dim finalTextPath As pdGraphicsPath
-    m_GlyphCollection.notifyCustomLayoutSettings m_LineSpacing
+    m_GlyphCollection.notifyCustomLayoutSettings m_LineSpacing, m_CharSpacing, m_CharOrientation, m_CharJitterX, m_CharJitterY, m_CharInflation, m_CharMirror
+    
     If m_GlyphCollection.assembleCompositePath(finalTextPath, boundingRect, m_HorizontalAlignment, m_VerticalAlignment, m_WordWrap) Then
         
         Dim gdipReturn As Long
