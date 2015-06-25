@@ -869,6 +869,7 @@ Private Sub UserControl_Initialize()
     'Initialize our font collection.  This is used to store a copy of each font face, as it's encountered, which we use to render preview
     ' text on the right side of the font dropdown.
     Set m_FontCollection = New pdFontCollection
+    m_FontCollection.setExtendedPropertyCaching True
     
     'Create demo strings, to be rendered in the drop-down using the current font face
     m_Text_Default = "AaBbCc 123"
@@ -1737,14 +1738,21 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
                 
                 'Create sample text based on the scripts supported by this font.  If no special scripts are supported,
                 ' default English text is used.
-                If g_PDFontProperties(stringIndex).Supports_CJK Then
-                    sampleText = m_Text_Default & " " & m_Text_CJK
-                ElseIf g_PDFontProperties(stringIndex).Supports_Arabic Then
-                    sampleText = m_Text_Default & " " & m_Text_Arabic
-                ElseIf g_PDFontProperties(stringIndex).Supports_Hebrew Then
-                    sampleText = m_Text_Default & " " & m_Text_Hebrew
-                ElseIf g_PDFontProperties(stringIndex).Supports_Latin Then
-                    sampleText = m_Text_Default & " " & m_Text_EN
+                Dim tmpProperties As PD_FONT_PROPERTY
+                If m_FontCollection.getFontPropertiesByPosition(fontIndex, tmpProperties) Then
+                
+                    If tmpProperties.Supports_CJK Then
+                        sampleText = m_Text_Default & " " & m_Text_CJK
+                    ElseIf tmpProperties.Supports_Arabic Then
+                        sampleText = m_Text_Default & " " & m_Text_Arabic
+                    ElseIf tmpProperties.Supports_Hebrew Then
+                        sampleText = m_Text_Default & " " & m_Text_Hebrew
+                    ElseIf tmpProperties.Supports_Latin Then
+                        sampleText = m_Text_Default & " " & m_Text_EN
+                    Else
+                        sampleText = m_Text_Default
+                    End If
+                    
                 Else
                     sampleText = m_Text_Default
                 End If
