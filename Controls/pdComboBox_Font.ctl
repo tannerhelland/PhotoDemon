@@ -752,11 +752,11 @@ Public Property Let Enabled(ByVal newValue As Boolean)
 End Property
 
 'Font properties; only a subset are used, as PD handles most font settings automatically
-Public Property Get fontSize() As Single
-    fontSize = m_FontSize
+Public Property Get FontSize() As Single
+    FontSize = m_FontSize
 End Property
 
-Public Property Let fontSize(ByVal newSize As Single)
+Public Property Let FontSize(ByVal newSize As Single)
     
     If newSize <> m_FontSize Then
         
@@ -882,7 +882,7 @@ End Sub
 
 Private Sub UserControl_InitProperties()
     Enabled = True
-    fontSize = 10
+    FontSize = 10
 End Sub
 
 Private Sub UserControl_LostFocus()
@@ -899,7 +899,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
         Enabled = .ReadProperty("Enabled", True)
-        fontSize = .ReadProperty("FontSize", 10)
+        FontSize = .ReadProperty("FontSize", 10)
     End With
 
 End Sub
@@ -1738,17 +1738,25 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
                 
                 'Create sample text based on the scripts supported by this font.  If no special scripts are supported,
                 ' default English text is used.
-                Dim tmpProperties As PD_FONT_PROPERTY
-                If m_FontCollection.getFontPropertiesByPosition(fontIndex, tmpProperties) Then
+                '
+                'Note that this behavior can be overridden by the "Interface" performance property
+                If g_InterfacePerformance <> PD_PERF_FASTEST Then
                 
-                    If tmpProperties.Supports_CJK Then
-                        sampleText = m_Text_Default & " " & m_Text_CJK
-                    ElseIf tmpProperties.Supports_Arabic Then
-                        sampleText = m_Text_Default & " " & m_Text_Arabic
-                    ElseIf tmpProperties.Supports_Hebrew Then
-                        sampleText = m_Text_Default & " " & m_Text_Hebrew
-                    ElseIf tmpProperties.Supports_Latin Then
-                        sampleText = m_Text_Default & " " & m_Text_EN
+                    Dim tmpProperties As PD_FONT_PROPERTY
+                    If m_FontCollection.getFontPropertiesByPosition(fontIndex, tmpProperties) Then
+                    
+                        If tmpProperties.Supports_CJK Then
+                            sampleText = m_Text_Default & " " & m_Text_CJK
+                        ElseIf tmpProperties.Supports_Arabic Then
+                            sampleText = m_Text_Default & " " & m_Text_Arabic
+                        ElseIf tmpProperties.Supports_Hebrew Then
+                            sampleText = m_Text_Default & " " & m_Text_Hebrew
+                        ElseIf tmpProperties.Supports_Latin Then
+                            sampleText = m_Text_Default & " " & m_Text_EN
+                        Else
+                            sampleText = m_Text_Default
+                        End If
+                        
                     Else
                         sampleText = m_Text_Default
                     End If
