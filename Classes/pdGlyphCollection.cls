@@ -144,6 +144,7 @@ Private m_Uniscribe As pdUniscribe
 ' the path to the screen, we need to orient the points against the top-left corner of the image.  It's faster to apply this coordinate
 ' conversion when we first build the glyphs.
 Private m_TextMetrics As TEXTMETRIC
+Private m_OutlineTextMetrics As OUTLINETEXTMETRIC
 
 'During glyph parsing, we have to apply a number of fixed conversions due to differences between TrueType coordinates and traditional
 ' screen coordinates.  We cache these values so we don't have to constantly retrieve them from the larger TEXTMETRIC struct.
@@ -193,11 +194,15 @@ Public Sub notifyOfGDIFontChoice(ByVal srcGDIFontHandle As Long)
     'Select the font into our temporary DC.  (Many GDI functions operate on DCs instead of hFonts, so this is important.)
     m_oldFontHandle = SelectObject(m_tmpDIB.getDIBDC, m_GDIFont)
     
-    'Retrieve text metrics for this font, and cache any metrics required on the inner glyph parsing loop
+    'Retrieve basic text metrics for this font, and cache any metrics required on the inner glyph parsing loop
     Font_Management.fillTextMetrics m_tmpDIB.getDIBDC, m_TextMetrics
     m_FontAscent = m_TextMetrics.tmAscent
     m_FontDescent = m_TextMetrics.tmDescent
     m_FontHeight = m_TextMetrics.tmHeight
+    
+    'Also retrieve outline text metrics, which include basic text metrics plus a whole bunch more.
+    Font_Management.fillOutlineTextMetrics m_tmpDIB.getDIBDC, m_OutlineTextMetrics
+    Debug.Print "Outline text metrics: " & m_OutlineTextMetrics.otmsUnderscoreSize
     
 End Sub
 
