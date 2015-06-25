@@ -43,6 +43,11 @@ Private m_FontPointer As Long
 'Actual collection
 Private fontCollection() As pdFont
 
+'This class can (optionally) manage extended font properties as well, like which scripts are supported by a given font.
+' To activate this behavior, pass TRUE to the setExtendedPropertyCaching sub.
+Private m_ExtendedPropertiesActive As Boolean
+Private m_ExtendedProperties() As PD_FONT_PROPERTY
+
 'Add a font to the cache.
 ' Returns: value >= 0, indicating the index of said font in the cache.  This can be used to retrieve the font handle, which is faster
 ' than accessing fonts by name.
@@ -83,6 +88,9 @@ Public Function addFontToCache(ByRef fontName As String, ByVal fontSize As Singl
             .createFontObject
         End With
         
+        'If extended font caching is active, retrieve those values now
+        If m_ExtendedPropertiesActive Then Uniscribe_Interface.getScriptsSupportedByFont fontName, m_ExtendedProperties(m_FontPointer)
+        
         'Return this index
         addFontToCache = m_FontPointer
         
@@ -94,7 +102,7 @@ Public Function addFontToCache(ByRef fontName As String, ByVal fontSize As Singl
 
 End Function
 
-'See if a given set of font properties exists in the current cache.  By default, only font face is matched.
+'See if a given set of font properties exists in the current cache.  By default, only font face is currently matched.
 ' (In the future, it might be nice to expose an option for "comprehensive searching", which attempts to match all of a font's
 ' attributes - size, bold/italic/underline, etc...?)
 '
@@ -128,10 +136,31 @@ Public Function getFontHandleByPosition(ByVal fontIndex As Long) As Long
     getFontHandleByPosition = fontCollection(fontIndex).getFontHandle
 End Function
 
+'Given an index into the collection (returned by addFontToCache, presumably), return the corresponding extended font properties
+' of that font object.
+'
+'IMPORTANT NOTE!  This function does *not* bound check the passed fontIndex, for performance reasons.  It is impossible to pass
+' an invalid value if you use the results of addFontToCache, above, so please do not modify that value after it's been returned.
+Friend Function getFontPropertiesByPosition(ByVal fontIndex As Long, ByRef dstProperties As PD_FONT_PROPERTY) As Boolean
+    
+    If m_ExtendedPropertiesActive Then
+        
+        dstProperties = m_ExtendedProperties(fontIndex)
+        getFontPropertiesByPosition = True
+        
+    Else
+        getFontPropertiesByPosition = False
+    End If
+    
+End Function
+
 'Manually reset the cache
 Public Sub resetCache()
+
     m_FontPointer = 0
     ReDim fontCollection(0 To m_CacheSize - 1) As pdFont
+    ReDim m_ExtendedProperties(0 To m_CacheSize - 1) As PD_FONT_PROPERTY
+    
 End Sub
 
 'This function is completely optional, but if you have a known cache requirement, feel free to make use of it
@@ -139,14 +168,46 @@ Public Sub setCacheSize(Optional ByVal newSize As Long = DEFAULT_CACHE_SIZE)
     
     m_CacheSize = newSize
     ReDim Preserve fontCollection(0 To newSize - 1) As pdFont
-        
+    ReDim Preserve m_ExtendedProperties(0 To newSize - 1) As PD_FONT_PROPERTY
+    
 End Sub
+
+'Activate (or deactivate) extended font property caching.  Returns TRUE if successful; note that the function will fail on XP.
+Public Function setExtendedPropertyCaching(ByVal newSetting As Boolean) As Boolean
+    
+    'Extended properties are only available on Vista+
+    Dim cSysInfo As pdSystemInfo
+    Set cSysInfo = New pdSystemInfo
+    
+    m_ExtendedPropertiesActive = newSetting
+    
+    If cSysInfo.isOSVistaOrLater And m_ExtendedPropertiesActive Then
+        
+        'If any fonts are already loaded, cache them now
+        Dim i As Long
+        For i = 0 To UBound(fontCollection)
+            If Not fontCollection(i) Is Nothing Then
+                Uniscribe_Interface.getScriptsSupportedByFont fontCollection(i).getFontFace, m_ExtendedProperties(i)
+            End If
+        Next i
+        
+    Else
+        
+        If m_ExtendedPropertiesActive Then
+            Debug.Print "WARNING!  Extended font properties are only available on Vista or later."
+            m_ExtendedPropertiesActive = False
+        End If
+        
+    End If
+    
+End Function
 
 Private Sub Class_Initialize()
     
     'Initialize a default cache
     setCacheSize
     
-    'Reset the pointer to 0
+    'By default, extended properties are not available
+    m_ExtendedPropertiesActive = False
     
 End Sub

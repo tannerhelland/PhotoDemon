@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.53</langversion>
+<langversion>6.7.54</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -13946,16 +13946,6 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>default</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>uppercase</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>hiragana</original>
 <translation></translation>
 </phrase>
@@ -13976,7 +13966,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>titlecase</original>
+<original>Titlecase</original>
 <translation></translation>
 </phrase>
 
@@ -14090,7 +14080,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_FancyText.frm contains 94 phrases. 39 were duplicates of existing phrases, so only 55 new phrases were written to file. -->
+<!-- VBP_ToolPanel_FancyText.frm contains 94 phrases. 41 were duplicates of existing phrases, so only 53 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_FancyText.frm-->
 
@@ -14187,10 +14177,10 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2467</phrasecount>
+<phrasecount>2465</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4252 phrases. -->
-<!-- 1785 are duplicates, so only 2467 unique phrases have been written to file. -->
-<!-- These 2467 phrases contain approximately 13725 total words. -->
+<!-- 1787 are duplicates, so only 2465 unique phrases have been written to file. -->
+<!-- These 2465 phrases contain approximately 13723 total words. -->
 
 </pdData>
