@@ -171,9 +171,12 @@ Private m_CharMirror As Long
 'If no custom character modifications are active, we can skip ceratin steps during path assembly.
 Private m_CharEffectsEnabled As Boolean
 
+'Underline and strikeout must be manually rendered
+Private m_StyleUnderline As Boolean, m_StyleStrikeout As Boolean
+
 'Prior to glyph generation, this class needs a copy of GDI font handle.  I have deliberately made this function separate
 ' AS A REMINDER TO REMOVE THE FONT FROM ANY ACTIVE DCs PRIOR TO GIVING THIS CLASS ACCESS.
-Public Sub notifyOfGDIFontChoice(ByVal srcGDIFontHandle As Long)
+Public Sub notifyOfGDIFontChoice(ByVal srcGDIFontHandle As Long, Optional ByVal underlineActive As Boolean = False, Optional ByVal strikeoutActive As Boolean = False)
 
     'If this font matches previous font requests, we can retain existing glyph information.
     
@@ -202,8 +205,11 @@ Public Sub notifyOfGDIFontChoice(ByVal srcGDIFontHandle As Long)
     
     'Also retrieve outline text metrics, which include basic text metrics plus a whole bunch more.
     Font_Management.fillOutlineTextMetrics m_tmpDIB.getDIBDC, m_OutlineTextMetrics
-    Debug.Print "Outline text metrics: " & m_OutlineTextMetrics.otmsUnderscoreSize
     
+    'Cache the underline and strikeout values as well
+    m_StyleUnderline = underlineActive
+    m_StyleStrikeout = strikeoutActive
+        
 End Sub
 
 'After this class has done its work, the caller MUST CALL THIS FUNCTION to release their font from our internal DC
@@ -663,6 +669,8 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
         Dim maxJitterX As Single, maxJitterY As Single, halfJitterX As Single, halfJitterY As Single
         Dim glyphIsRenderable As Boolean
         
+        Dim underlineRect As RECTF, strikeoutRect As RECTF
+        
         'If char-level orientation changes are active, prep some transformation objects
         If m_CharEffectsEnabled Then
         
@@ -757,6 +765,31 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
                     
                 End If
                 
+            End If
+            
+            'Regardless of glyph renderability, we always apply underline and strikeout (if active, obviously).
+            If m_StyleUnderline And m_Glyphs(curGlyph).AdvanceWidth <> 0 Then
+            
+                underlineRect.Left = m_Glyphs(curGlyph).finalX
+                underlineRect.Width = m_Glyphs(curGlyph).AdvanceWidth
+                
+                underlineRect.Top = m_Glyphs(curGlyph).finalY + m_TextMetrics.tmAscent - m_OutlineTextMetrics.otmsUnderscorePosition
+                underlineRect.Height = m_OutlineTextMetrics.otmsUnderscoreSize
+                
+                dstPath.addRectangle_RectF underlineRect
+            
+            End If
+            
+            If m_StyleStrikeout And m_Glyphs(curGlyph).AdvanceWidth <> 0 Then
+            
+                underlineRect.Left = m_Glyphs(curGlyph).finalX
+                underlineRect.Width = m_Glyphs(curGlyph).AdvanceWidth
+                
+                underlineRect.Top = m_Glyphs(curGlyph).finalY + m_TextMetrics.tmAscent - m_OutlineTextMetrics.otmsStrikeoutPosition
+                underlineRect.Height = m_OutlineTextMetrics.otmsStrikeoutSize
+                
+                dstPath.addRectangle_RectF underlineRect
+            
             End If
             
         'Render the next glyph!

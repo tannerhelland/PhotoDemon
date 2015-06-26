@@ -65,7 +65,7 @@ Private Const OPEN_EXISTING As Long = 3&
 'Windows only provides two standard color profiles: sRGB, and the current system default.  These are declared as
 ' public so that external functions can request either of them.
 Public Const LCS_sRGB As Long = &H73524742
-Public Const LCS_WINDOWS_COLOR_SPACE As Long = &H2
+Public Const LCS_WINDOWS_COLOR_SPACE As Long = &H57696E20
 
 'Profile transformation is not lossless; for example, it is rarely possible to perfectly preserve hue, saturation,
 ' and luminance - some components must be sacrificed in order to ideally render others.  By default, PhotoDemon uses

@@ -1282,7 +1282,7 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByVal srcString As String
         If (m_GlyphCollection Is Nothing) Then Set m_GlyphCollection = New pdGlyphCollection
         
         'Notify the glyph collection of our GDI font handle.  It obviously needs this in order to generate glyphs.
-        m_GlyphCollection.notifyOfGDIFontChoice m_GDIFont
+        m_GlyphCollection.notifyOfGDIFontChoice m_GDIFont, m_FontUnderline, m_FontStrikeout
         
         'TODO: retrieve kerning pairs here...?
         
