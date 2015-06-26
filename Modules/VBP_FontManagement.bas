@@ -85,7 +85,7 @@ Public Type ABCFLOAT
 End Type
 
 Private Declare Function GetTextMetrics Lib "gdi32" Alias "GetTextMetricsW" (ByVal hDC As Long, ByRef lpMetrics As TEXTMETRIC) As Long
-Public Declare Function GetOutlineTextMetrics Lib "gdi32" Alias "GetOutlineTextMetricsW" (ByVal hDC As Long, ByVal cbData As Long, ByRef lpOTM As Any) As Long
+Public Declare Function GetOutlineTextMetrics Lib "gdi32" Alias "GetOutlineTextMetricsW" (ByVal hDC As Long, ByVal cbData As Long, ByVal ptrToOTMStruct As Long) As Long
 
 Public Type TEXTMETRIC
     tmHeight As Long
@@ -99,10 +99,10 @@ Public Type TEXTMETRIC
     tmOverhang As Long
     tmDigitizedAspectX As Long
     tmDigitizedAspectY As Long
-    tmFirstChar As Byte
-    tmLastChar As Byte
-    tmDefaultChar As Byte
-    tmBreakChar As Byte
+    tmFirstChar As Integer
+    tmLastChar As Integer
+    tmDefaultChar As Integer
+    tmBreakChar As Integer
     tmItalic As Byte
     tmUnderlined As Byte
     tmStruckOut As Byte
@@ -110,7 +110,34 @@ Public Type TEXTMETRIC
     tmCharSet As Byte
 End Type
 
-Public Type PANOSE
+Public Type TEXTMETRIC_PADDED_W
+    tmHeight As Long
+    tmAscent As Long
+    tmDescent As Long
+    tmInternalLeading As Long
+    tmExternalLeading As Long
+    tmAveCharWidth As Long
+    tmMaxCharWidth As Long
+    tmWeight As Long
+    tmOverhang As Long
+    tmDigitizedAspectX As Long
+    tmDigitizedAspectY As Long
+    tmFirstChar As Integer
+    tmLastChar As Integer
+    tmDefaultChar As Integer
+    tmBreakChar As Integer
+    tmItalic As Byte
+    tmUnderlined As Byte
+    tmStruckOut As Byte
+    tmPitchAndFamily As Byte
+    tmCharSet As Byte
+    tmPaddingByte1 As Byte
+    tmPaddingByte2 As Byte
+    tmPaddingByte3 As Byte
+End Type
+
+Public Type PANOSE_PADDED
+    bPaddingByte0 As Byte
     bFamilyType As Byte
     bSerifStyle As Byte
     bWeight As Byte
@@ -121,15 +148,13 @@ Public Type PANOSE
     bLetterform As Byte
     bMidline As Byte
     bXHeight As Byte
+    bPaddingByte1 As Byte
 End Type
 
 Public Type OUTLINETEXTMETRIC
     otmSize As Long
-    otmTextMetrics As TEXTMETRIC
-    'The original dec has a filler byte here to make sure the TEXTMETRIC struct is aligned, but VB will automatically align structs
-    ' so I believe the filler is unnecessary.  (Tested on multiple OSes without trouble, so I hope this right.)
-    'otmFiller As Byte
-    otmPanoseNumber As PANOSE
+    otmTextMetrics As TEXTMETRIC_PADDED_W
+    otmPanoseNumber As PANOSE_PADDED
     otmfsSelection As Long
     otmfsType As Long
     otmsCharSlopeRise As Long
@@ -152,8 +177,8 @@ Public Type OUTLINETEXTMETRIC
     otmptSuperscriptOffset As POINTAPI
     otmsStrikeoutSize As Long
     otmsStrikeoutPosition As Long
-    otmsUnderscorePosition As Long
     otmsUnderscoreSize As Long
+    otmsUnderscorePosition As Long
     otmpFamilyName As Long
     otmpFaceName As Long
     otmpStyleName As Long
@@ -571,7 +596,7 @@ Public Sub fillLogFontW_Basic(ByRef dstLogFontW As LOGFONTW, ByRef srcFontFace A
 End Sub
 
 'Fill a LOGFONTW struct with a matching PD font size (typically in pixels, but points are also supported)
-Public Sub fillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal FontSize As Single, ByVal fontMeasurementUnit As pdFontUnit)
+Public Sub fillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal fontSize As Single, ByVal fontMeasurementUnit As pdFontUnit)
 
     With dstLogFontW
         
@@ -582,14 +607,14 @@ Public Sub fillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal FontSize As Si
             Case pdfu_Pixel
                 
                 'Convert font size to points
-                FontSize = FontSize * 0.75      '(72 / 96, technically, where 96 is the current screen DPI)
+                fontSize = fontSize * 0.75      '(72 / 96, technically, where 96 is the current screen DPI)
                 
                 'Use the standard point-based formula
-                .lfHeight = -1 * internal_MulDiv(FontSize, curLogPixelsY, 72)
+                .lfHeight = -1 * internal_MulDiv(fontSize, curLogPixelsY, 72)
                 
             'Points are converted using a standard Windows formula; see https://msdn.microsoft.com/en-us/library/dd145037%28v=vs.85%29.aspx
             Case pdfu_Point
-                .lfHeight = -1 * internal_MulDiv(FontSize, curLogPixelsY, 72)
+                .lfHeight = -1 * internal_MulDiv(fontSize, curLogPixelsY, 72)
         
         End Select
         
@@ -656,18 +681,30 @@ Public Function fillTextMetrics(ByRef srcDC As Long, ByRef dstTextMetrics As TEX
 End Function
 
 Public Function fillOutlineTextMetrics(ByRef srcDC As Long, ByRef dstOutlineMetrics As OUTLINETEXTMETRIC) As Boolean
-
-    'Note that we use a hard-coded magic number struct size for this function.  GetOutlineTextMetrics is weird because the struct
-    ' itself ends with four offsets to four strings, offsets that lie past the end of the struct.  So technically, we should be
-    ' passing something like a byte array, then CopyMemory-ing a chunk of bytes from the return array into an actually struct,
-    ' followed by manually parsing out the trailing strings using the supplied offsets.  This is a PITA in VB, especially where I
-    ' don't care about the font names, so as a workaround, I just supply a hard-coded size that ignores extra padding for the
-    ' trailing strings.  This results in a successful call, and it's easily revisited if those trailing strings ever become useful.
-    Dim gtmReturn As Long
-    gtmReturn = GetOutlineTextMetrics(srcDC, 204&, dstOutlineMetrics)
     
-    fillOutlineTextMetrics = CBool(gtmReturn <> 0)
-
+    'Retrieve the size required by the struct
+    Dim structSize As Long
+    structSize = GetOutlineTextMetrics(srcDC, 0, ByVal 0&)
+    
+    'Because GOTM adds four trailing strings to the struct, we need to prep an array large enough to receive the entire structure
+    ' PLUS those strings.  After retrieving the full struct + strings, we'll manually extract just the struct portion.
+    Dim tmpBytes() As Byte
+    ReDim tmpBytes(0 To structSize) As Byte
+    
+    Dim gtmReturn As Long
+    gtmReturn = GetOutlineTextMetrics(srcDC, structSize, VarPtr(tmpBytes(0)))
+    
+    'If the byte array was filled successfully, parse out the struct now.  (I don't have need for the additional name values
+    ' right now, so they're just ignored.)
+    If (gtmReturn <> 0) Then
+        
+        fillOutlineTextMetrics = True
+        CopyMemory ByVal VarPtr(dstOutlineMetrics), ByVal VarPtr(tmpBytes(0)), LenB(dstOutlineMetrics)
+        
+    Else
+        fillOutlineTextMetrics = False
+    End If
+    
 End Function
 
 'Given a filled LOGFONTW struct (hopefully filled by the fillLogFontW_* functions above!), attempt to create an actual font object.
