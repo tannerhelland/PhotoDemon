@@ -239,7 +239,7 @@ Begin VB.Form toolpanel_FancyText
             Width           =   2760
             _ExtentX        =   4868
             _ExtentY        =   873
-            Max             =   50
+            Max             =   20
             SigDigits       =   1
          End
       End

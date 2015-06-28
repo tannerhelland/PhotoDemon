@@ -271,6 +271,15 @@ End Enum
     Const DashCapFlat = 0, DashCapSquare = 0, DashCapRound = 2, DashCapTriangle = 3
 #End If
 
+Public Enum PenAlignment
+    PenAlignmentCenter = 0
+    PenAlignmentInset = 1
+End Enum
+
+#If False Then
+    Const PenAlignmentCenter = 0, PenAlignmentInset = 1
+#End If
+
 Private Enum ColorAdjustType
     ColorAdjustTypeDefault = 0
     ColorAdjustTypeBitmap = 1
@@ -491,7 +500,7 @@ Private Declare Function GdipCreateHatchBrush Lib "gdiplus" (ByVal bHatchStyle A
 Private Declare Function GdipSetPenDashStyle Lib "gdiplus" (ByVal dstPen As Long, ByVal newDashStyle As DashStyle) As Long
 Private Declare Function GdipSetPenDashCap197819 Lib "gdiplus" (ByVal dstPen As Long, ByVal newDashCap As DashCap) As Long
 Private Declare Function GdipSetPenMiterLimit Lib "gdiplus" (ByVal dstPen As Long, ByVal newMiterLimit As Single) As Long
-
+Private Declare Function GdipSetPenMode Lib "gdiplus" (ByVal pen As Long, ByVal penMode As PenAlignment) As Long
 
 'Transforms
 Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal order As Long) As Long
@@ -961,7 +970,7 @@ Public Sub releaseGDIPlusGraphics(ByVal srcHandle As Long)
 End Sub
 
 'Return a persistent handle to a GDI+ pen.  This can be useful if many drawing operations are going to be applied with the same pen.
-Public Function getGDIPlusPenHandle(ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal customLineCap As LineCap = LineCapFlat, Optional ByVal customLineJoin As LineJoin = LineJoinMiter, Optional ByVal customDashMode As DashStyle = DashStyleSolid, Optional ByVal penMiterLimit As Single = 3#) As Long
+Public Function getGDIPlusPenHandle(ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal customLineCap As LineCap = LineCapFlat, Optional ByVal customLineJoin As LineJoin = LineJoinMiter, Optional ByVal customDashMode As DashStyle = DashStyleSolid, Optional ByVal penMiterLimit As Single = 3#, Optional ByVal penPositioning As PenAlignment = PenAlignmentCenter) As Long
 
     'Create the requested pen
     Dim iPen As Long
@@ -987,6 +996,9 @@ Public Function getGDIPlusPenHandle(ByVal eColor As Long, Optional ByVal cTransp
     
     'To avoid major miter errors, we default to 3.0 for a miter limit.  (GDI+ defaults to 10, which can cause a lot of artifacts.)
     GdipSetPenMiterLimit iPen, penMiterLimit
+    
+    'Finally, if a non-standard alignment was specified, apply it last
+    If penPositioning <> 0 Then GdipSetPenMode iPen, penPositioning
     
     'Return the handle
     getGDIPlusPenHandle = iPen
