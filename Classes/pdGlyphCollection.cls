@@ -742,13 +742,12 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
                     End If
                     
                     'm_CharInflation widens the character paths using the generic GDI+ path widening algorithm
-                    If m_CharInflation <> 0 Then tmpGlyphOutlineCopy.inflatePath m_CharInflation, LineCapRound, LineJoinRound, 0.5
+                    If m_CharInflation <> 0 Then tmpGlyphOutlineCopy.inflatePath m_CharInflation, LineCapRound, LineJoinRound
                     
                     'Finally, jitter applies some randomness to the character's position in the x and/or y directions.
                     With m_Glyphs(curGlyph)
                                             
                         If m_CharJitterX <> 0 Or m_CharJitterY <> 0 Then
-                            'dstPath.addPath tmpGlyphOutlineCopy, .finalX + .GlyphOffset.du + ((cRandom.getRandomFloat_WH * maxJitterX) - halfJitterX), .finalY - .GlyphOffset.dv + ((cRandom.getRandomFloat_WH * maxJitterY) - halfJitterY)
                             dstPath.addPath tmpGlyphOutlineCopy, .finalX + .GlyphOffset.du + ((cRandom.getRandomFloat_VB * maxJitterX) - halfJitterX), .finalY - .GlyphOffset.dv + ((cRandom.getRandomFloat_VB * maxJitterY) - halfJitterY)
                         Else
                             dstPath.addPath tmpGlyphOutlineCopy, .finalX + .GlyphOffset.du, .finalY - .GlyphOffset.dv

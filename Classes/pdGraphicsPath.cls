@@ -337,27 +337,51 @@ End Sub
 
 'Inflate the current path by some arbitrary amount.  Note that additional parameters are available to control the way junctions and endpoints
 ' are affected by the widening.
-Public Sub inflatePath(ByVal inflateWidth As Single, Optional ByVal useLineCap As LineCap = LineCapFlat, Optional ByVal useLineJoin As LineJoin = LineJoinMiter, Optional ByVal allowableError As Single = FlatnessDefault)
+'
+'Unlike other subs, this actually returns a success/failure result.  GDI+ is prone to unpredictable failures, so the caller may need to take
+' precautions if the request fails.  (On failure, this sub will automatically try to restore the original path if it can.)
+Public Function inflatePath(ByVal inflateWidth As Single, Optional ByVal useLineCap As LineCap = LineCapFlat, Optional ByVal useLineJoin As LineJoin = LineJoinMiter, Optional ByVal allowableError As Single = FlatnessDefault) As Boolean
 
     'Widening a path requires a GDI+ pen.  All of the pen's properties (width, dashing, transforms, miters, etc)
     ' are considered when applying the widening transform.
     Dim hPen As Long
     GdipCreatePen1 0, inflateWidth, gdipUnitPixel, hPen
     
+    'Because GDI+ widening transforms are prone to failure, make a backup of the current path (as we may need to restore it).
+    Dim pathBackup As Long
+    GdipClonePath m_PathHandle, pathBackup
+    
     'Apply the requested line cap and miter
     GdipSetPenLineCap hPen, useLineCap, useLineCap, DashCapFlat
     GdipSetPenLineJoin hPen, useLineJoin
-    
-    'Convert the path to an outline-only representation
-    GdipWindingModeOutline m_PathHandle, 0, allowableError
-    
+        
     'Apply the widen command
-    GdipWidenPath m_PathHandle, hPen, 0, allowableError
+    If GdipWidenPath(m_PathHandle, hPen, 0, allowableError) = 0 Then
+        
+        'Re-clone the path in its current state
+        GdipDeletePath pathBackup
+        GdipClonePath m_PathHandle, pathBackup
+        
+        'Convert the path to an outline-only representation
+        If GdipWindingModeOutline(m_PathHandle, 0, allowableError) = 0 Then
+            GdipDeletePath pathBackup
+            inflatePath = True
+        Else
+            GdipClonePath pathBackup, m_PathHandle
+            GdipDeletePath pathBackup
+            inflatePath = False
+        End If
+        
+    Else
+        GdipClonePath pathBackup, m_PathHandle
+        GdipDeletePath pathBackup
+        inflatePath = False
+    End If
     
-    'Release the temporary pen
+    'Regardless of outcome, we can now safely release our temporary pen
     GdipDeletePen hPen
 
-End Sub
+End Function
 
 ' END: DESTRUCTIVE PATH EDITS
 '
