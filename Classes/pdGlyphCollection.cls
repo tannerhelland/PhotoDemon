@@ -662,15 +662,20 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
         '    Any glyph-specific features (e.g. mirroring, per-char rotation, etc) can be applied here.
         
         '(FYI: the glyph positioning algorithm fills the .finalX and .finalY entries for each glyph.)
-        calculateGlyphPositions boundingRect, horizontalAlignment, verticalAlignment, lineWrapMode
+        
+        'It's a bit counterintuitive, but the precalculation step also fills underline and strikeout paths for us.  Historically, we computed
+        ' these right here in this function, but that's far more complicated as it requires line-level data that calculateGlyphPositions()
+        ' does not return (e.g. identifying whitespace characters that lie on the end of a line, which should be ignored when displaying
+        ' underline/strikeout).  As such, we simply pass blank path objects to calculateGlyphPositions(), and merge the results with our
+        ' final path if underline or strikeout are active.
+        Dim additionalStylesRect As pdGraphicsPath
+        calculateGlyphPositions boundingRect, horizontalAlignment, verticalAlignment, lineWrapMode, additionalStylesRect
         
         Dim i As Long, curGlyph As Long, curGlyphOutline As Long, srcPathHandle As Long
         Dim tmpGlyphOutlineCopy As pdGraphicsPath, tmpMatrix As pdGraphicsMatrix, cRandom As pdRandomize
         Dim maxJitterX As Single, maxJitterY As Single, halfJitterX As Single, halfJitterY As Single
         Dim glyphIsRenderable As Boolean
-        
-        Dim underlineRect As RECTF, strikeoutRect As RECTF
-        
+                
         'If char-level orientation changes are active, prep some transformation objects
         If m_CharEffectsEnabled Then
         
@@ -766,33 +771,44 @@ Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef bou
                 
             End If
             
-            'Regardless of glyph renderability, we always apply underline and strikeout (if active, obviously).
-            If m_StyleUnderline And m_Glyphs(curGlyph).AdvanceWidth <> 0 Then
+            'IMPORTANT NOTE:
+            ' The following chunk of commented-out lines can be used to apply underline/strikeout behavior on a per-glyph basis.
+            ' At present, PD treats an underline/strikeout rect as a line-level continuous shape.  This is done to avoid separator
+            ' lines appearing if the user renders text with some kind of outline feature.
+            '
+            ' To enable the old behavior, uncomment the lines below.  (I'm leaving them as it may be nice to create this as a
+            ' toggle-able feature in the future.
             
-                underlineRect.Left = m_Glyphs(curGlyph).finalX
-                underlineRect.Width = m_Glyphs(curGlyph).AdvanceWidth
-                
-                underlineRect.Top = m_Glyphs(curGlyph).finalY + m_TextMetrics.tmAscent - m_OutlineTextMetrics.otmsUnderscorePosition
-                underlineRect.Height = m_OutlineTextMetrics.otmsUnderscoreSize
-                
-                dstPath.addRectangle_RectF underlineRect
-            
-            End If
-            
-            If m_StyleStrikeout And m_Glyphs(curGlyph).AdvanceWidth <> 0 Then
-            
-                underlineRect.Left = m_Glyphs(curGlyph).finalX
-                underlineRect.Width = m_Glyphs(curGlyph).AdvanceWidth
-                
-                underlineRect.Top = m_Glyphs(curGlyph).finalY + m_TextMetrics.tmAscent - m_OutlineTextMetrics.otmsStrikeoutPosition
-                underlineRect.Height = m_OutlineTextMetrics.otmsStrikeoutSize
-                
-                dstPath.addRectangle_RectF underlineRect
-            
-            End If
+'            'Regardless of glyph renderability, we always apply underline and strikeout (if active, obviously).
+'            If m_StyleUnderline And m_Glyphs(curGlyph).AdvanceWidth <> 0 Then
+'
+'                underlineRect.Left = m_Glyphs(curGlyph).finalX
+'                underlineRect.Width = m_Glyphs(curGlyph).AdvanceWidth
+'
+'                underlineRect.Top = m_Glyphs(curGlyph).finalY + m_TextMetrics.tmAscent - m_OutlineTextMetrics.otmsUnderscorePosition
+'                underlineRect.Height = m_OutlineTextMetrics.otmsUnderscoreSize
+'
+'                dstPath.addRectangle_RectF underlineRect
+'
+'            End If
+'
+'            If m_StyleStrikeout And m_Glyphs(curGlyph).AdvanceWidth <> 0 Then
+'
+'                underlineRect.Left = m_Glyphs(curGlyph).finalX
+'                underlineRect.Width = m_Glyphs(curGlyph).AdvanceWidth
+'
+'                underlineRect.Top = m_Glyphs(curGlyph).finalY + m_TextMetrics.tmAscent - m_OutlineTextMetrics.otmsStrikeoutPosition
+'                underlineRect.Height = m_OutlineTextMetrics.otmsStrikeoutSize
+'
+'                dstPath.addRectangle_RectF underlineRect
+'
+'            End If
             
         'Render the next glyph!
         Next i
+        
+        'With all glyphs assembled, apply underline/strikeout if any
+        If m_StyleUnderline Or m_StyleStrikeout Then dstPath.addPath additionalStylesRect
         
     End If
         
@@ -802,7 +818,7 @@ End Function
 
 'Fill the official xOffset and yOffset parameters of every glyph.  Note that all the initial positioning data comes from Uniscribe;
 ' this function is primarily responsible for line breaks, and any PD-specific positioning changes (e.g. modified character spacing).
-Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords) As Boolean
+Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords, Optional ByRef dstStylePath As pdGraphicsPath) As Boolean
     
     Dim i As Long, j As Long
     Dim curGlyph As Long, curGlyphOutline As Long
@@ -1169,13 +1185,41 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
     
     'At this point, each glyph is now correctly positioned according to a default left/top alignment.  We have also marked the first and
     ' last glyph on every line, and assigned each glyph a line ID.
-    '
-    'If the text alignment is anything other than left/top, we now need to apply additional passes to the glyph collection.  The line
-    ' information assembled by our previous runs is crucial here.
+    
+    'As a convenience to subsequent functions, we are now going to mark all-whitespace lines as being zero-width.  This solves some complex
+    ' problems when attempting to place underline and strikeout styles, as whitespace-only lines should not have underline/strikeout applied.
     Dim curLine As Long, numOfLines As Long
     numOfLines = currentLine + 1
     
+    Dim lineHasNonWhitespace As Boolean, lastGlyphChecked As Long
+    lastGlyphChecked = 0
+    
+    For curLine = 0 To numOfLines - 1
+        
+        lineHasNonWhitespace = False
+        
+        'Search for glyphs that 1) sit on this line, and 2) are not whitespace
+        For i = lastGlyphChecked To m_NumOfGlyphs - 1
+        
+            'If a non-whitespace char is found on this line, note it and exit immediately
+            If (m_Glyphs(i).LineID = curLine) And (Not m_Glyphs(i).isWhiteSpace) Then
+                lineHasNonWhitespace = True
+                lastGlyphChecked = i
+                Exit For
+            End If
+                        
+        Next i
+        
+        'If no whitespace chars were found on this line, mark it as zero-width
+        If Not lineHasNonWhitespace Then m_LineWidths(curLine) = 0
+    
+    Next curLine
+    
+    'If the text alignment is anything other than left/top, we now need to apply additional passes to the glyph collection.  The line
+    ' information assembled by our previous runs is crucial here.
     Dim lineDiff As Single
+    Dim hLineOffsets() As Single
+    ReDim hLineOffsets(0 To UBound(m_LineWidths)) As Single
     
     'Start with horizontal alignment
     If horizontalAlignment <> StringAlignmentNear Then
@@ -1184,13 +1228,12 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
         For curLine = 0 To numOfLines - 1
         
             'For each line, replace its calculated line width with the difference between the bounding rect and the actual size.
-            'lineDiff = boundingRect.Width - m_LineWidths(curLine)
             lineDiff = boundingRectRight - m_LineWidths(curLine)
             
             If horizontalAlignment = StringAlignmentCenter Then
-                m_LineWidths(curLine) = lineDiff / 2
+                hLineOffsets(curLine) = lineDiff / 2
             Else
-                m_LineWidths(curLine) = lineDiff
+                hLineOffsets(curLine) = lineDiff
             End If
         
         Next curLine
@@ -1199,7 +1242,7 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
         For curGlyph = 0 To m_NumOfGlyphs - 1
             
             With m_Glyphs(curGlyph)
-                .finalX = .finalX + m_LineWidths(.LineID)
+                .finalX = .finalX + hLineOffsets(.LineID)
             End With
             
         Next curGlyph
@@ -1232,6 +1275,86 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
         
     End If
     
+    'If underline or strikeout text is set, we now need to assemble underline/strikeout-specific paths.
+    '
+    'Why do this here?  The final path assembly loop operates on a per-glyph basis.  This function operates on a per-line basis,
+    ' which is more appropriate for underline and strikeout behavior.  (Assembling them on a per-glyph basis works just fine, but using a
+    ' visual causes lines to appear between the underline of neighboring glyphs, for example.)
+    '
+    'Also, this function has manually marked the last usable (e.g. non-whitespace) glyph on each line, so we can ignore trailing whitespace
+    ' when applying underline/strikeout.
+    Dim underlineRect As RECTF, strikeoutRect As RECTF
+    
+    If m_StyleUnderline Then
+        
+        If dstStylePath Is Nothing Then Set dstStylePath = New pdGraphicsPath
+        
+        'We now need to iterate through each line in the destination path.  For each line, we'll add an underline rectangle to the
+        ' destination underline path, positioned as sized correctly according to all relevant size metrics (some of which are font-specific,
+        ' e.g. underline height, while some are line-specific, e.g. the length of each line not counting trailing whitespace chars).
+        curGlyph = 0
+        
+        Do
+            
+            'We only want to deal with the first character on each line, as it contains sufficient positioning data for us to infer
+            ' the rest of the line's contents.
+            If m_Glyphs(curGlyph).isFirstGlyphOnLine And (m_LineWidths(m_Glyphs(curGlyph).LineID) > 0) Then
+                
+                'Use this glyph's position as the starting point for this underline
+                underlineRect.Left = m_Glyphs(curGlyph).finalX
+                
+                'Width of the underline is the *full line width* (not counting trailing whitespace chars)
+                underlineRect.Width = m_LineWidths(m_Glyphs(curGlyph).LineID)
+        
+                'Top position and height are easy, as they're primarily based on font-level metrics, not glyph-level metrics
+                underlineRect.Top = m_Glyphs(curGlyph).finalY + m_TextMetrics.tmAscent - m_OutlineTextMetrics.otmsUnderscorePosition
+                underlineRect.Height = m_OutlineTextMetrics.otmsUnderscoreSize
+                
+                'Add the completed rect to the composite "style" path
+                dstStylePath.addRectangle_RectF underlineRect
+                
+            End If
+            
+            curGlyph = curGlyph + 1
+            
+        Loop While curGlyph < m_NumOfGlyphs
+        
+    End If
+    
+    'Strikeout is pretty much identical to underlining, except for positioning and sizing of the line
+    If m_StyleStrikeout Then
+        
+        If dstStylePath Is Nothing Then Set dstStylePath = New pdGraphicsPath
+        
+        curGlyph = 0
+        
+        Do
+            
+            'We only want to deal with the first character on each line, as it contains sufficient positioning data for us to infer
+            ' the rest of the line's contents.
+            If m_Glyphs(curGlyph).isFirstGlyphOnLine And (m_LineWidths(m_Glyphs(curGlyph).LineID) > 0) Then
+                
+                'Use this glyph's position as the starting point for this strikeout
+                strikeoutRect.Left = m_Glyphs(curGlyph).finalX
+                
+                'Width of the strikeout is the *full line width* (not counting trailing whitespace chars)
+                strikeoutRect.Width = m_LineWidths(m_Glyphs(curGlyph).LineID)
+        
+                'Top position and height are easy, as they're primarily based on font-level metrics, not glyph-level metrics
+                strikeoutRect.Top = m_Glyphs(curGlyph).finalY + m_TextMetrics.tmAscent - m_OutlineTextMetrics.otmsStrikeoutPosition
+                strikeoutRect.Height = m_OutlineTextMetrics.otmsStrikeoutSize
+                
+                'Add the completed rect to the composite "style" path
+                dstStylePath.addRectangle_RectF strikeoutRect
+                
+            End If
+            
+            curGlyph = curGlyph + 1
+            
+        Loop While curGlyph < m_NumOfGlyphs
+        
+    End If
+    
     'This function doesn't currently have a fail state
     calculateGlyphPositions = True
 
@@ -1239,10 +1362,6 @@ End Function
 
 'Given a Long-type value - which is really a FIXED struct in disguise - parse out the two chunks, and return them as a normal floating-point value
 Private Function getSingleFromFIXED(ByRef srcFixed As Long) As Single
-    
-    'TODO: investigate LSet for performance
-    'Dim tmpFixed As TT_FIXED
-    'LSet tmpFixed = srcFixed
     
     'First, retrieve the fraction portion of the Long (which is UNSIGNED)
     Dim fracPortion As Long, integerPortion As Integer
