@@ -156,6 +156,10 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
             'Color pickers have a .Color property
             Case "colorSelector"
                 controlValue = Str(eControl.Color)
+                
+            'Brush pickers have a .Brush property
+            Case "brushSelector"
+                controlValue = eControl.Brush
             
             'Intrinsic VB controls may have different names for their value properties
             Case "HScrollBar", "VScrollBar"
@@ -292,6 +296,10 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                 'Color pickers have a .Color property
                 Case "colorSelector"
                     eControl.Color = CLng(controlValue)
+                    
+                'Brush pickers have a .Brush property
+                Case "brushSelector"
+                    eControl.Brush = controlValue
                 
                 'Intrinsic VB controls may have different names for their value properties
                 Case "HScrollBar", "VScrollBar"

@@ -387,20 +387,16 @@ Private m_TextContrast As Long
 'The per-glyph PHOTODEMON renderer supports a bunch of unique options, including tons of appearance-related ones
 Private m_TextHinting As Boolean
 Private m_WordWrap As TEXT_WORDWRAP_MODE
-Private m_FillMode As Long
-Private m_FillOpacity As Single
-Private m_FillPattern As Long
-Private m_PatternColor1 As Long
-Private m_PatternColor2 As Long
+Private m_FillActive As Boolean
+Private m_FillBrush As String
 Private m_OutlineMode As Long
 Private m_OutlineColor As Long
 Private m_OutlineCorner As Long
 Private m_OutlineCaps As Long
 Private m_OutlineOpacity As Single
 Private m_OutlineWidth As Single
-Private m_BackgroundMode As Long
-Private m_BackgroundOpacity As Single
-Private m_BackgroundColor As Long
+Private m_BackgroundActive As Boolean
+Private m_BackgroundBrush As String
 Private m_BackBorderMode As Long
 Private m_BackBorderColor As Long
 Private m_BackBorderWidth As Long
@@ -621,44 +617,20 @@ Public Sub setWordWrap(ByVal newWordWrap As TEXT_WORDWRAP_MODE)
 End Sub
 
 'Get/set various appearance options.  Note that these features are only supported by the PHOTODEMON text rendering engine.
-Public Function getFillMode() As Long
-    getFillMode = m_FillMode
+Public Function getFillActive() As Boolean
+    getFillActive = m_FillActive
 End Function
 
-Public Sub setFillMode(ByVal newSetting As Long)
-    m_FillMode = newSetting
+Public Sub setFillActive(ByVal newSetting As Boolean)
+    m_FillActive = newSetting
 End Sub
 
-Public Function getFillOpacity() As Single
-    getFillOpacity = m_FillOpacity
+Public Function getFillBrush() As String
+    getFillBrush = m_FillBrush
 End Function
 
-Public Sub setFillOpacity(ByVal newSetting As Single)
-    m_FillOpacity = newSetting
-End Sub
-
-Public Function getFillPattern() As Long
-    getFillPattern = m_FillPattern
-End Function
-
-Public Sub setFillPattern(ByVal newSetting As Long)
-    m_FillPattern = newSetting
-End Sub
-
-Public Function getFillPatternColor1() As Long
-    getFillPatternColor1 = m_PatternColor1
-End Function
-
-Public Sub setFillPatternColor1(ByVal newSetting As Long)
-    m_PatternColor1 = newSetting
-End Sub
-
-Public Function getFillPatternColor2() As Long
-    getFillPatternColor2 = m_PatternColor2
-End Function
-
-Public Sub setFillPatternColor2(ByVal newSetting As Long)
-    m_PatternColor2 = newSetting
+Public Sub setFillBrush(ByVal newSetting As String)
+    m_FillBrush = newSetting
 End Sub
 
 Public Function getOutlineMode() As Long
@@ -709,28 +681,20 @@ Public Sub setOutlineWidth(ByVal newSetting As Single)
     m_OutlineWidth = newSetting
 End Sub
 
-Public Function getBackgroundMode() As Long
-    getBackgroundMode = m_BackgroundMode
+Public Function getBackgroundActive() As Boolean
+    getBackgroundActive = m_BackgroundActive
 End Function
 
-Public Sub setBackgroundMode(ByVal newSetting As Long)
-    m_BackgroundMode = newSetting
+Public Sub setBackgroundActive(ByVal newSetting As Boolean)
+    m_BackgroundActive = newSetting
 End Sub
 
-Public Function getBackgroundOpacity() As Single
-    getBackgroundOpacity = m_BackgroundOpacity
+Public Function getBackgroundBrush() As String
+    getBackgroundBrush = m_BackgroundBrush
 End Function
 
-Public Sub setBackgroundOpacity(ByVal newSetting As Single)
-    m_BackgroundOpacity = newSetting
-End Sub
-
-Public Function getBackgroundColor() As Long
-    getBackgroundColor = m_BackgroundColor
-End Function
-
-Public Sub setBackgroundColor(ByVal newSetting As Long)
-    m_BackgroundColor = newSetting
+Public Sub setBackgroundBrush(ByVal newSetting As String)
+    m_BackgroundBrush = newSetting
 End Sub
 
 Public Function getBackBorderMode() As Long
@@ -1447,32 +1411,16 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     ' at maximum speed.  Once those are finished, we'll set target smoothing and offset modes.
         
     'If fill mode is active, create a relevant brush.  Note that not all brushes are currently implemented!
-    Dim gdipFillBrush As Long
+    Dim gdipFillBrush As Long, tmpFiller As pdGraphicsBrush
+    Set tmpFiller = New pdGraphicsBrush
     
-    Select Case m_FillMode
-    
-        'No fill
-        Case 0
-            gdipFillBrush = 0
+    If m_FillActive Then
+        tmpFiller.createBrushFromString m_FillBrush
+        gdipFillBrush = tmpFiller.getBrushHandle
+    Else
+        gdipFillBrush = 0
+    End If
         
-        'Solid fill
-        Case 1
-            gdipFillBrush = GDI_Plus.getGDIPlusSolidBrushHandle(m_FontColor, m_FillOpacity * 2.55)
-        
-        'Gradient fill
-        Case 2
-            gdipFillBrush = GDI_Plus.getGDIPlusSolidBrushHandle(m_FontColor, m_FillOpacity * 2.55)
-        
-        'Pattern fill
-        Case 3
-            gdipFillBrush = GDI_Plus.getGDIPlusPatternBrushHandle(m_FillPattern, m_PatternColor1, m_FillOpacity * 2.55, m_PatternColor2, m_FillOpacity * 2.55)
-        
-        'Texture fill
-        Case 4
-            gdipFillBrush = GDI_Plus.getGDIPlusSolidBrushHandle(m_FontColor, m_FillOpacity * 2.55)
-    
-    End Select
-    
     'If outline mode is active, create a relevant pen.
     Dim gdipOutlinePen As Long
     
@@ -1491,18 +1439,13 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     'If background mode is active, create a background-specific brush
     Dim gdipBackgroundBrush As Long
     
-    Select Case m_BackgroundMode
-    
-        'No fill
-        Case 0
-            gdipBackgroundBrush = 0
+    If m_BackgroundActive Then
+        tmpFiller.createBrushFromString m_BackgroundBrush
+        gdipBackgroundBrush = tmpFiller.getBrushHandle
+    Else
+        gdipBackgroundBrush = 0
+    End If
         
-        'Solid fill
-        Case 1
-            gdipBackgroundBrush = GDI_Plus.getGDIPlusSolidBrushHandle(m_BackgroundColor, m_BackgroundOpacity * 2.55)
-            
-    End Select
-    
     'If a background outline is active, create a pen for that, too
     Dim gdipBackBorderPen As Long
     
