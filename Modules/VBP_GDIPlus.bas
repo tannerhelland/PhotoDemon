@@ -315,7 +315,7 @@ End Type
 
 'GDI+ image properties
 Private Type PropertyItem
-   propId As Long              ' ID of this property
+   propID As Long              ' ID of this property
    propLength As Long              ' Length of the property value, in bytes
    propType As Integer             ' Type of the value, as one of TAG_TYPE_XXX
    propValue As Long               ' property value
@@ -398,8 +398,8 @@ Private Declare Function GdipConvertToEmfPlusToFile Lib "gdiplus" (ByVal refGrap
 
 'Retrieve properties from an image
 'Private Declare Function GdipGetPropertyItem Lib "gdiplus" (ByVal hImage As Long, ByVal propId As Long, ByVal propSize As Long, ByRef mBuffer As PropertyItem) As Long
-Private Declare Function GdipGetPropertyItem Lib "gdiplus" (ByVal hImage As Long, ByVal propId As Long, ByVal propSize As Long, ByRef mBuffer As Long) As Long
-Private Declare Function GdipGetPropertyItemSize Lib "gdiplus" (ByVal hImage As Long, ByVal propId As Long, propSize As Long) As Long
+Private Declare Function GdipGetPropertyItem Lib "gdiplus" (ByVal hImage As Long, ByVal propID As Long, ByVal propSize As Long, ByRef mBuffer As Long) As Long
+Private Declare Function GdipGetPropertyItemSize Lib "gdiplus" (ByVal hImage As Long, ByVal propID As Long, propSize As Long) As Long
 Private Declare Function GdipGetImageHorizontalResolution Lib "gdiplus" (ByVal hImage As Long, ByRef hResolution As Single) As Long
 Private Declare Function GdipGetImageVerticalResolution Lib "gdiplus" (ByVal hImage As Long, ByRef vResolution As Single) As Long
 
@@ -733,7 +733,9 @@ End Function
 'Simpler shorthand function for obtaining a GDI+ bitmap handle from a pdDIB object.  Note that 24/32bpp cases have to be handled separately
 ' because GDI+ is stupid.
 Private Sub getGdipBitmapHandleFromDIB(ByRef tBitmap As Long, ByRef srcDIB As pdDIB)
-
+    
+    If srcDIB Is Nothing Then Exit Sub
+    
     If srcDIB.getDIBColorDepth = 32 Then
         
         'Use GdipCreateBitmapFromScan0 to create a 32bpp DIB with alpha preserved
@@ -1336,6 +1338,31 @@ Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Si
     
     GDIPlusFillDIBRect_Pattern = True
     
+End Function
+
+'Use GDI+ to fill an arbitrary DC with an arbitrary GDI+ brush
+Public Function GDIPlusFillDC_Brush(ByRef dstDC As Long, ByVal srcBrushHandle As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, Optional ByVal dstFillMode As CompositingMode = CompositingModeSourceOver, Optional ByVal useAA As Boolean = False) As Boolean
+
+    'Create a GDI+ copy of the image and request AA
+    Dim iGraphics As Long
+    GdipCreateFromHDC dstDC, iGraphics
+    
+    If useAA Then
+        GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias
+    Else
+        GdipSetSmoothingMode iGraphics, SmoothingModeNone
+    End If
+    
+    GdipSetCompositingMode iGraphics, dstFillMode
+    
+    'Apply the brush
+    GdipFillRectangle iGraphics, srcBrushHandle, x1, y1, xWidth, yHeight
+    
+    'Release all created objects
+    GdipDeleteGraphics iGraphics
+    
+    GDIPlusFillDC_Brush = True
+
 End Function
 
 'GDI+ requires RGBQUAD colors with alpha in the 4th byte.  This function returns an RGBQUAD (long-type) from a standard RGB()

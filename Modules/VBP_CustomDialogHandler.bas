@@ -386,3 +386,34 @@ Public Function promptGenericYesNoDialog_SingleOutcome(ByVal questionID As Strin
     End If
 
 End Function
+
+'Present the user with PD's custom brush selection dialog.
+' INPUTS:  1) a String-type variable (ByRef, of course) which will receive the new brush parameters
+'          2) an optional initial brush parameter string
+'          3) an optional brushSelector control reference, if this dialog is being raised by a brushSelector control.
+'             (This reference will be used to provide live updates as the user plays with the brush dialog.)
+'
+' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
+Public Function showBrushDialog(ByRef newBrush As String, Optional ByVal initialBrush As String = "", Optional ByRef callingControl As brushSelector) As Boolean
+    
+    If choosePDBrush(initialBrush, newBrush, callingControl) = vbOK Then
+        showBrushDialog = True
+    Else
+        showBrushDialog = False
+    End If
+    
+End Function
+
+'Display a custom brush selection dialog
+Public Function choosePDBrush(ByRef oldBrush As String, ByRef newBrush As String, Optional ByRef callingControl As brushSelector) As VbMsgBoxResult
+
+    Load dialog_FillSettings
+    dialog_FillSettings.showDialog oldBrush, callingControl
+    
+    choosePDBrush = dialog_FillSettings.DialogResult
+    If choosePDBrush = vbOK Then newBrush = dialog_FillSettings.newBrush
+    
+    Unload dialog_FillSettings
+    Set dialog_FillSettings = Nothing
+
+End Function

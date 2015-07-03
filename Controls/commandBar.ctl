@@ -30,7 +30,7 @@ Begin VB.UserControl commandBar
       Width           =   630
       _extentx        =   1111
       _extenty        =   1005
-      autotoggle      =   -1
+      autotoggle      =   -1  'True
    End
    Begin PhotoDemon.pdComboBox cboPreset 
       Height          =   345
@@ -38,8 +38,8 @@ Begin VB.UserControl commandBar
       TabIndex        =   2
       Top             =   195
       Width           =   3135
-      _ExtentX        =   5530
-      _ExtentY        =   609
+      _extentx        =   5530
+      _extenty        =   609
    End
    Begin VB.CommandButton cmdCancel 
       Caption         =   "&Cancel"
@@ -64,9 +64,9 @@ Begin VB.UserControl commandBar
       TabIndex        =   4
       Top             =   90
       Width           =   630
-      _ExtentX        =   1111
-      _ExtentY        =   1005
-      AutoToggle      =   -1  'True
+      _extentx        =   1111
+      _extenty        =   1005
+      autotoggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdAction 
       Height          =   570
@@ -75,9 +75,9 @@ Begin VB.UserControl commandBar
       TabIndex        =   5
       Top             =   90
       Width           =   630
-      _ExtentX        =   1111
-      _ExtentY        =   1005
-      AutoToggle      =   -1  'True
+      _extentx        =   1111
+      _extenty        =   1005
+      autotoggle      =   -1  'True
    End
 End
 Attribute VB_Name = "commandBar"
@@ -212,6 +212,10 @@ Private suspendLastUsedAutoLoad As Boolean
 'If the parent does not want the command bar to auto-unload it when OK or CANCEL is pressed, this will be set to TRUE
 Private m_dontAutoUnloadParent As Boolean
 
+'If the caller doesn't want us to manually reset control values (e.g. when the preset file is damaged or missing), they can set
+' this to TRUE.  If set, they will bear full responsibility for restoring control state at first-run.
+Private m_dontResetAutomatically As Boolean
+
 'As of March 2015, presets are now handled by a separate class.  This greatly simplifies the complexity of this user control.
 Private m_Presets As pdToolPreset
 
@@ -236,6 +240,18 @@ End Property
 Public Property Let dontAutoLoadLastPreset(ByVal newValue As Boolean)
     suspendLastUsedAutoLoad = newValue
     PropertyChanged "dontAutoLoadLastPreset"
+End Property
+
+'Some dialogs (e.g. brush selection) may not want us to automatically reset the dialog when the form is first loaded.
+' If this property is set, the caller is 100% responsible for initializing controls.  (Note that, by design, this setting
+' does *not* prevent the command bar from firing Reset events in response to UI events.)
+Public Property Get dontResetAutomatically() As Boolean
+    dontResetAutomatically = m_dontResetAutomatically
+End Property
+
+Public Property Let dontResetAutomatically(ByVal newValue As Boolean)
+    m_dontResetAutomatically = newValue
+    PropertyChanged "dontResetAutomatically"
 End Property
 
 'If multiple tools exist on the same form, the parent can use this in its _Load statement to identify which tool
@@ -480,8 +496,8 @@ End Sub
 'When the font is changed, all controls must manually have their fonts set to match
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
-    Set CmdOK.Font = mFont
-    Set CmdCancel.Font = mFont
+    Set cmdOK.Font = mFont
+    Set cmdCancel.Font = mFont
     cboPreset.fontSize = mFont.Size
 End Sub
 
@@ -499,7 +515,7 @@ Public Property Let BackColor(ByVal newColor As OLE_COLOR)
     
     'Update all button backgrounds to match
     Dim i As Long
-    For i = cmdAction.lBound To cmdAction.ubound
+    For i = cmdAction.lBound To cmdAction.UBound
         cmdAction(i).BackColor = UserControl.BackColor
     Next i
     
@@ -682,8 +698,8 @@ Private Sub UserControl_Initialize()
     
     'Apply the hand cursor to all command buttons
     If g_IsProgramRunning Then
-        setHandCursorToHwnd CmdOK.hWnd
-        setHandCursorToHwnd CmdCancel.hWnd
+        setHandCursorToHwnd cmdOK.hWnd
+        setHandCursorToHwnd cmdCancel.hWnd
     End If
 
     'When running, we can assign images and tooltips to the image-only command buttons
@@ -721,6 +737,7 @@ Private Sub UserControl_InitProperties()
     BackColor = &HEEEEEE
     dontAutoLoadLastPreset = False
     dontAutoUnloadParent = False
+    dontResetAutomatically = False
     
 End Sub
 
@@ -731,6 +748,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         BackColor = .ReadProperty("BackColor", &HEEEEEE)
         dontAutoLoadLastPreset = .ReadProperty("AutoloadLastPreset", False)
         dontAutoUnloadParent = .ReadProperty("dontAutoUnloadParent", False)
+        dontResetAutomatically = .ReadProperty("dontResetAutomatically", False)
     End With
     
 End Sub
@@ -754,8 +772,8 @@ Private Sub updateControlLayout()
         UserControl.Width = UserControl.Parent.ScaleWidth * TwipsPerPixelXFix
         
         'Right-align the Cancel and OK buttons
-        CmdCancel.Left = UserControl.Parent.ScaleWidth - CmdCancel.Width - fixDPI(8)
-        CmdOK.Left = CmdCancel.Left - CmdOK.Width - fixDPI(8)
+        cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - fixDPI(8)
+        cmdOK.Left = cmdCancel.Left - cmdOK.Width - fixDPI(8)
         
     End If
     
@@ -778,8 +796,8 @@ Private Sub UserControl_Show()
         Set m_Tooltip = New pdToolTip
         With m_Tooltip
             
-            .setTooltip CmdOK.hWnd, UserControl.hWnd, "Apply this action to the current image."
-            .setTooltip CmdCancel.hWnd, UserControl.hWnd, "Exit this tool.  No changes will be made to the image."
+            .setTooltip cmdOK.hWnd, UserControl.hWnd, "Apply this action to the current image."
+            .setTooltip cmdCancel.hWnd, UserControl.hWnd, "Exit this tool.  No changes will be made to the image."
             
             .updateAgainstCurrentTheme
             
@@ -791,8 +809,8 @@ Private Sub UserControl_Show()
         cboPreset.assignTooltip "Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right."
         
         'Translate all control captions
-        CmdOK.Caption = g_Language.TranslateMessage(CmdOK.Caption)
-        CmdCancel.Caption = g_Language.TranslateMessage(CmdCancel.Caption)
+        cmdOK.Caption = g_Language.TranslateMessage(cmdOK.Caption)
+        cmdCancel.Caption = g_Language.TranslateMessage(cmdCancel.Caption)
         
         'Prep a preset file location.  In most cases, this is just the name of the parent form...
         parentToolName = Replace$(UserControl.Parent.Name, "Form", "", , , vbTextCompare)
@@ -830,7 +848,7 @@ Private Sub UserControl_Show()
         'If the parent dialog doesn't want us to auto-load last-used settings, we still want to request a RESET event to
         ' populate all dialog controls with default values.
         Else
-            ResetSettings
+            If Not m_dontResetAutomatically Then ResetSettings
             allowPreviews = False
         End If
         
@@ -847,7 +865,7 @@ Private Sub UserControl_Show()
     'Additional note: some forms may chose to explicitly set focus away from the OK button.  If that happens, the line below
     ' will throw a critical error.  To avoid that, simply ignore any errors that arise from resetting focus.
     On Error GoTo somethingStoleFocus
-    If g_IsProgramRunning Then CmdOK.SetFocus
+    If g_IsProgramRunning Then cmdOK.SetFocus
 
 somethingStoleFocus:
     
@@ -866,6 +884,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "BackColor", BackColor, &HEEEEEE
         .WriteProperty "AutoloadLastPreset", suspendLastUsedAutoLoad, False
         .WriteProperty "dontAutoUnloadParent", m_dontAutoUnloadParent, False
+        .WriteProperty "dontResetAutomatically", m_dontResetAutomatically, False
     End With
     
 End Sub

@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.54</langversion>
+<langversion>6.7.58</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -13816,6 +13816,61 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <!-- BEGIN text for VBP_ToolPanel_FancyText.frm (toolpanel_FancyText) -->
 
 <phrase>
+<original>fill background</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill style</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>border</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>corners</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>caps</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>line wrap</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>h. padding</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>v. padding</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>line spacing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>remap</original>
 <translation></translation>
 </phrase>
@@ -13842,66 +13897,6 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <phrase>
 <original>hinting</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>mode</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>corners</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>caps</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color 1</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color 2</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>texture</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>fill background</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>border</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>line wrap</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>h. padding</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>v. padding</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>line spacing</original>
 <translation></translation>
 </phrase>
 
@@ -13996,36 +13991,6 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>gradient</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>pattern</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>forward diagonal</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>backward diagonal</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>cross</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>diagonal cross</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>solid</original>
 <translation></translation>
 </phrase>
@@ -14080,7 +14045,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_FancyText.frm contains 94 phrases. 41 were duplicates of existing phrases, so only 53 new phrases were written to file. -->
+<!-- VBP_ToolPanel_FancyText.frm contains 76 phrases. 30 were duplicates of existing phrases, so only 46 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_FancyText.frm-->
 
@@ -14175,12 +14140,115 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- END text for pdSystemInfo.cls-->
 
+<!-- BEGIN text for VBP_DialogBrushSettings.frm (dialog_FillSettings) -->
+
+<phrase>
+<original>Fill settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>preview</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>common settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>fill opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pattern fill settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pattern</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>pattern color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>background color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>solid fill settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>texture fill settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>gradient fill settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>texture</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>forward diagonal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>backward diagonal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>cross</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>diagonal cross</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_DialogBrushSettings.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+
+<!-- END text for VBP_DialogBrushSettings.frm-->
+
+<!-- BEGIN text for pdBrush.cls -->
+
+<!-- pdBrush.cls contains 0 phrases. -->
+
+<!-- END text for pdBrush.cls-->
+
+<!-- BEGIN text for brushSelector.ctl -->
+
+<!-- brushSelector.ctl contains 0 phrases. -->
+
+<!-- END text for brushSelector.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2465</phrasecount>
+<phrasecount>2475</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4252 phrases. -->
-<!-- 1787 are duplicates, so only 2465 unique phrases have been written to file. -->
-<!-- These 2465 phrases contain approximately 13723 total words. -->
+<!-- As of this build, PhotoDemon contains 4257 phrases. -->
+<!-- 1782 are duplicates, so only 2475 unique phrases have been written to file. -->
+<!-- These 2475 phrases contain approximately 13752 total words. -->
 
 </pdData>

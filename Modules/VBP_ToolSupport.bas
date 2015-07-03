@@ -568,7 +568,6 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                     .txtTextTool.Text = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_Text)
                     .cboTextFontFace.setListIndexByString pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontFace)
                     .tudTextFontSize.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontSize)
-                    .csFillColor.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontColor)
                     .cboTextRenderingHint.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextAntialiasing)
                     .chkHinting.Value = IIf(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_TextHinting), vbChecked, vbUnchecked)
                     .btnFontStyles(0).Value = CBool(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FontBold))
@@ -578,20 +577,16 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                     .btsHAlignment.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_HorizontalAlignment)
                     .btsVAlignment.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_VerticalAlignment)
                     .cboWordWrap.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_WordWrap)
-                    .cboFillMode.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FillMode)
-                    .sltFillOpacity.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FillOpacity)
-                    .cboFillPattern.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FillPattern)
-                    .csPattern(0).Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_PatternColor1)
-                    .csPattern(1).Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_PatternColor2)
+                    .chkFillText.Value = IIf(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FillActive), vbChecked, vbUnchecked)
+                    .bsText.Brush = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FillBrush)
                     .cboOutlineMode.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_OutlineMode)
                     .csOutline.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_OutlineColor)
                     .cboOutlineCorner.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_OutlineCorner)
                     .cboOutlineCaps.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_OutlineCaps)
                     .sltOutlineOpacity.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_OutlineOpacity)
                     .sltOutlineWidth.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_OutlineWidth)
-                    .chkBackground.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackgroundMode)
-                    .sltBackgroundOpacity.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackgroundOpacity)
-                    .csBackground.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackgroundColor)
+                    .chkBackground.Value = IIf(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackgroundActive), vbChecked, vbUnchecked)
+                    .bsTextBackground.Brush = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackgroundBrush)
                     .tudLineSpacing.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_LineSpacing)
                     .tudMargin(0).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_MarginLeft)
                     .tudMargin(1).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_MarginRight)
@@ -702,7 +697,6 @@ Public Sub syncCurrentLayerToToolOptionsUI()
                     .setTextLayerProperty ptp_Text, toolpanel_FancyText.txtTextTool.Text
                     .setTextLayerProperty ptp_FontFace, toolpanel_FancyText.cboTextFontFace.List(toolpanel_FancyText.cboTextFontFace.ListIndex)
                     .setTextLayerProperty ptp_FontSize, toolpanel_FancyText.tudTextFontSize.Value
-                    .setTextLayerProperty ptp_FontColor, toolpanel_FancyText.csFillColor.Color
                     .setTextLayerProperty ptp_TextAntialiasing, toolpanel_FancyText.cboTextRenderingHint.ListIndex
                     .setTextLayerProperty ptp_TextHinting, CBool(toolpanel_FancyText.chkHinting.Value)
                     .setTextLayerProperty ptp_FontBold, toolpanel_FancyText.btnFontStyles(0).Value
@@ -712,20 +706,16 @@ Public Sub syncCurrentLayerToToolOptionsUI()
                     .setTextLayerProperty ptp_HorizontalAlignment, toolpanel_FancyText.btsHAlignment.ListIndex
                     .setTextLayerProperty ptp_VerticalAlignment, toolpanel_FancyText.btsVAlignment.ListIndex
                     .setTextLayerProperty ptp_WordWrap, toolpanel_FancyText.cboWordWrap.ListIndex
-                    .setTextLayerProperty ptp_FillMode, toolpanel_FancyText.cboFillMode.ListIndex
-                    .setTextLayerProperty ptp_FillOpacity, toolpanel_FancyText.sltFillOpacity.Value
-                    .setTextLayerProperty ptp_FillPattern, toolpanel_FancyText.cboFillPattern.ListIndex
-                    .setTextLayerProperty ptp_PatternColor1, toolpanel_FancyText.csPattern(0).Color
-                    .setTextLayerProperty ptp_PatternColor2, toolpanel_FancyText.csPattern(1).Color
+                    .setTextLayerProperty ptp_FillActive, CBool(toolpanel_FancyText.chkFillText.Value)
+                    .setTextLayerProperty ptp_FillBrush, toolpanel_FancyText.bsText.Brush
                     .setTextLayerProperty ptp_OutlineMode, toolpanel_FancyText.cboOutlineMode.ListIndex
                     .setTextLayerProperty ptp_OutlineColor, toolpanel_FancyText.csOutline.Color
                     .setTextLayerProperty ptp_OutlineCorner, toolpanel_FancyText.cboOutlineCorner.ListIndex
                     .setTextLayerProperty ptp_OutlineCaps, toolpanel_FancyText.cboOutlineCaps.ListIndex
                     .setTextLayerProperty ptp_OutlineOpacity, toolpanel_FancyText.sltOutlineOpacity.Value
                     .setTextLayerProperty ptp_OutlineWidth, toolpanel_FancyText.sltOutlineWidth.Value
-                    .setTextLayerProperty ptp_BackgroundMode, toolpanel_FancyText.chkBackground.Value
-                    .setTextLayerProperty ptp_BackgroundOpacity, toolpanel_FancyText.sltBackgroundOpacity.Value
-                    .setTextLayerProperty ptp_BackgroundColor, toolpanel_FancyText.csBackground.Color
+                    .setTextLayerProperty ptp_BackgroundActive, CBool(toolpanel_FancyText.chkBackground.Value)
+                    .setTextLayerProperty ptp_BackgroundBrush, toolpanel_FancyText.bsTextBackground.Brush
                     .setTextLayerProperty ptp_LineSpacing, toolpanel_FancyText.tudLineSpacing.Value
                     .setTextLayerProperty ptp_MarginLeft, toolpanel_FancyText.tudMargin(0).Value
                     .setTextLayerProperty ptp_MarginRight, toolpanel_FancyText.tudMargin(1).Value
