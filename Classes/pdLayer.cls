@@ -226,22 +226,17 @@ Private Type textLayerData
     tld_WordWrap As TEXT_WORDWRAP_MODE
     tld_FillActive As Boolean
     tld_FillBrush As String
-    tld_OutlineMode As Long
-    tld_OutlineColor As Long
-    tld_OutlineCorner As Long
-    tld_OutlineCaps As Long
-    tld_OutlineOpacity As Single
-    tld_OutlineWidth As Single
+    tld_OutlineActive As Boolean
+    tld_OutlinePen As String
     tld_BackgroundActive As Boolean
     tld_BackgroundBrush As String
+    tld_BackBorderActive As Boolean
+    tld_BackBorderPen As String
     tld_LineSpacing As Single
     tld_MarginLeft As Single
     tld_MarginTop As Single
     tld_MarginRight As Single
     tld_MarginBottom As Single
-    tld_BackBorderMode As Long
-    tld_BackBorderColor As Long
-    tld_BackBorderWidth As Single
     tld_CharRemap As Long
     tld_CharSpacing As Double
     tld_CharOrientation As Double
@@ -273,39 +268,34 @@ Public Enum PDLAYER_TEXT_PROPERTY
     ptp_WordWrap = 15
     ptp_FillActive = 16
     ptp_FillBrush = 17
-    ptp_OutlineMode = 18
-    ptp_OutlineColor = 19
-    ptp_OutlineCorner = 20
-    ptp_OutlineCaps = 21
-    ptp_OutlineOpacity = 22
-    ptp_OutlineWidth = 23
-    ptp_BackgroundActive = 24
-    ptp_BackgroundBrush = 25
-    ptp_LineSpacing = 26
-    ptp_MarginLeft = 27
-    ptp_MarginTop = 28
-    ptp_MarginRight = 29
-    ptp_MarginBottom = 30
-    ptp_BackBorderMode = 31
-    ptp_BackBorderColor = 32
-    ptp_BackBorderWidth = 33
-    ptp_CharRemap = 34
-    ptp_CharSpacing = 35
-    ptp_CharOrientation = 36
-    ptp_CharJitterX = 37
-    ptp_CharJitterY = 38
-    ptp_CharInflation = 39
-    ptp_CharMirror = 40
+    ptp_OutlineActive = 18
+    ptp_OutlinePen = 19
+    ptp_BackgroundActive = 20
+    ptp_BackgroundBrush = 21
+    ptp_BackBorderActive = 22
+    ptp_BackBorderPen = 23
+    ptp_LineSpacing = 24
+    ptp_MarginLeft = 25
+    ptp_MarginTop = 26
+    ptp_MarginRight = 27
+    ptp_MarginBottom = 28
+    ptp_CharRemap = 29
+    ptp_CharSpacing = 30
+    ptp_CharOrientation = 31
+    ptp_CharJitterX = 32
+    ptp_CharJitterY = 33
+    ptp_CharInflation = 34
+    ptp_CharMirror = 35
 End Enum
 
 #If False Then
     Const ptp_Text = 0, ptp_FontColor = 1, ptp_FontFace = 2, ptp_FontSize = 3, ptp_FontSizeUnit = 4, ptp_FontBold = 5, ptp_FontItalic = 6
     Const ptp_FontUnderline = 7, ptp_FontStrikeout = 8, ptp_HorizontalAlignment = 9, ptp_VerticalAlignment = 10, ptp_TextAntialiasing = 11
     Const ptp_TextContrast = 12, ptp_RenderingEngine = 13, ptp_TextHinting = 14, ptp_WordWrap = 15, ptp_FillActive = 16, ptp_FillBrush = 17
-    Const ptp_OutlineMode = 18, ptp_OutlineColor = 19, ptp_OutlineCorner = 20, ptp_OutlineCaps = 21, ptp_OutlineOpacity = 22, ptp_OutlineWidth = 23
-    Const ptp_BackgroundActive = 24, ptp_BackgroundBrush = 25, ptp_LineSpacing = 26, ptp_MarginLeft = 27, ptp_MarginTop = 28, ptp_MarginRight = 29
-    Const ptp_MarginBottom = 30, ptp_BackBorderMode = 31, ptp_BackBorderColor = 32, ptp_BackBorderWidth = 33, ptp_CharRemap = 34, ptp_CharSpacing = 35
-    Const ptp_CharOrientation = 36, ptp_CharJitterX = 37, ptp_CharJitterY = 38, ptp_CharInflation = 39, ptp_CharMirror = 40
+    Const ptp_OutlineActive = 18, ptp_OutlinePen = 19, ptp_BackgroundActive = 20, ptp_BackgroundBrush = 21, ptp_BackBorderActive = 22
+    Const ptp_BackBorderPen = 23, ptp_LineSpacing = 24, ptp_MarginLeft = 25, ptp_MarginTop = 26, ptp_MarginRight = 27, ptp_MarginBottom = 28
+    Const ptp_CharRemap = 29, ptp_CharSpacing = 30, ptp_CharOrientation = 31, ptp_CharJitterX = 32, ptp_CharJitterY = 33, ptp_CharInflation = 34
+    Const ptp_CharMirror = 35
 #End If
 
 'A dedicated text renderer is used to render the backer layer for text layers
@@ -989,30 +979,24 @@ Friend Function getTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPE
         Case ptp_FillBrush
             getTextLayerProperty = myTextData.tld_FillBrush
         
-        Case ptp_OutlineMode
-            getTextLayerProperty = myTextData.tld_OutlineMode
+        Case ptp_OutlineActive
+            getTextLayerProperty = myTextData.tld_OutlineActive
         
-        Case ptp_OutlineColor
-            getTextLayerProperty = myTextData.tld_OutlineColor
-        
-        Case ptp_OutlineCorner
-            getTextLayerProperty = myTextData.tld_OutlineColor
-        
-        Case ptp_OutlineCaps
-            getTextLayerProperty = myTextData.tld_OutlineCaps
-        
-        Case ptp_OutlineOpacity
-            getTextLayerProperty = myTextData.tld_OutlineOpacity
-        
-        Case ptp_OutlineWidth
-            getTextLayerProperty = myTextData.tld_OutlineWidth
+        Case ptp_OutlinePen
+            getTextLayerProperty = myTextData.tld_OutlinePen
         
         Case ptp_BackgroundActive
             getTextLayerProperty = myTextData.tld_BackgroundActive
         
         Case ptp_BackgroundBrush
             getTextLayerProperty = myTextData.tld_BackgroundBrush
+        
+        Case ptp_BackBorderActive
+            getTextLayerProperty = myTextData.tld_BackBorderActive
             
+        Case ptp_BackBorderPen
+            getTextLayerProperty = myTextData.tld_BackBorderPen
+        
         Case ptp_LineSpacing
             getTextLayerProperty = myTextData.tld_LineSpacing
             
@@ -1027,15 +1011,6 @@ Friend Function getTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPE
             
         Case ptp_MarginBottom
             getTextLayerProperty = myTextData.tld_MarginBottom
-            
-        Case ptp_BackBorderMode
-            getTextLayerProperty = myTextData.tld_BackBorderMode
-            
-        Case ptp_BackBorderColor
-            getTextLayerProperty = myTextData.tld_BackBorderColor
-            
-        Case ptp_BackBorderWidth
-            getTextLayerProperty = myTextData.tld_BackBorderWidth
             
         Case ptp_CharRemap
             getTextLayerProperty = myTextData.tld_CharRemap
@@ -1174,39 +1149,15 @@ Friend Sub setTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPERTY, 
                 m_VectorDIBSynched = False
             End If
         
-        Case ptp_OutlineMode
-            If myTextData.tld_OutlineMode <> CLng(newValue) Then
-                myTextData.tld_OutlineMode = CLng(newValue)
+        Case ptp_OutlineActive
+            If myTextData.tld_OutlineActive <> CBool(newValue) Then
+                myTextData.tld_OutlineActive = CBool(newValue)
                 m_VectorDIBSynched = False
             End If
         
-        Case ptp_OutlineColor
-            If myTextData.tld_OutlineColor <> CLng(newValue) Then
-                myTextData.tld_OutlineColor = CLng(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_OutlineCorner
-            If myTextData.tld_OutlineCorner <> CLng(newValue) Then
-                myTextData.tld_OutlineCorner = CLng(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_OutlineCaps
-            If myTextData.tld_OutlineCaps <> CLng(newValue) Then
-                myTextData.tld_OutlineCaps = CLng(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_OutlineOpacity
-            If myTextData.tld_OutlineOpacity <> CSng(newValue) Then
-                myTextData.tld_OutlineOpacity = CSng(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_OutlineWidth
-            If myTextData.tld_OutlineWidth <> CSng(newValue) Then
-                myTextData.tld_OutlineWidth = CSng(newValue)
+        Case ptp_OutlinePen
+            If myTextData.tld_OutlinePen <> newValue Then
+                myTextData.tld_OutlinePen = newValue
                 m_VectorDIBSynched = False
             End If
         
@@ -1221,7 +1172,19 @@ Friend Sub setTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPERTY, 
                 myTextData.tld_BackgroundBrush = newValue
                 m_VectorDIBSynched = False
             End If
-            
+        
+        Case ptp_BackBorderActive
+            If myTextData.tld_BackBorderActive <> CBool(newValue) Then
+                myTextData.tld_BackBorderActive = CBool(newValue)
+                m_VectorDIBSynched = False
+            End If
+        
+        Case ptp_BackBorderPen
+            If myTextData.tld_BackBorderPen <> newValue Then
+                myTextData.tld_BackBorderPen = newValue
+                m_VectorDIBSynched = False
+            End If
+        
         Case ptp_LineSpacing
             If myTextData.tld_LineSpacing <> CSng(newValue) Then
                 myTextData.tld_LineSpacing = CSng(newValue)
@@ -1249,24 +1212,6 @@ Friend Sub setTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPERTY, 
         Case ptp_MarginBottom
             If myTextData.tld_MarginBottom <> CSng(newValue) Then
                 myTextData.tld_MarginBottom = CSng(newValue)
-                m_VectorDIBSynched = False
-            End If
-            
-        Case ptp_BackBorderMode
-            If myTextData.tld_BackBorderMode <> CLng(newValue) Then
-                myTextData.tld_BackBorderMode = CLng(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_BackBorderColor
-            If myTextData.tld_BackBorderColor <> CLng(newValue) Then
-                myTextData.tld_BackBorderColor = CLng(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_BackBorderWidth
-            If myTextData.tld_BackBorderWidth <> CSng(newValue) Then
-                myTextData.tld_BackBorderWidth = CSng(newValue)
                 m_VectorDIBSynched = False
             End If
             
@@ -1781,22 +1726,17 @@ Private Sub Class_Initialize()
         .tld_WordWrap = tre_AutoBreakWords
         .tld_FillActive = True
         .tld_FillBrush = ""
-        .tld_OutlineMode = 0
-        .tld_OutlineColor = vbBlack
-        .tld_OutlineCorner = 0
-        .tld_OutlineOpacity = 100
-        .tld_OutlineWidth = 1
-        .tld_OutlineCaps = 0
+        .tld_OutlineActive = False
+        .tld_OutlinePen = ""
         .tld_BackgroundActive = False
         .tld_BackgroundBrush = ""
+        .tld_BackBorderActive = False
+        .tld_BackBorderPen = ""
         .tld_LineSpacing = 0
         .tld_MarginLeft = 0
         .tld_MarginTop = 0
         .tld_MarginRight = 0
         .tld_MarginBottom = 0
-        .tld_BackBorderMode = 0
-        .tld_BackBorderColor = 0
-        .tld_BackBorderWidth = 1
         .tld_CharRemap = 0
         .tld_CharSpacing = 0
         .tld_CharOrientation = 0
@@ -2112,22 +2052,17 @@ Public Function getVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
                 .writeTag "TextWordWrap", myTextData.tld_WordWrap
                 .writeTag "TextFillActive", myTextData.tld_FillActive
                 .writeTag "TextFillBrush", myTextData.tld_FillBrush
-                .writeTag "TextOutlineMode", myTextData.tld_OutlineMode
-                .writeTag "TextOutlineColor", myTextData.tld_OutlineColor
-                .writeTag "TextOutlineOpacity", myTextData.tld_OutlineOpacity
-                .writeTag "TextOutlineWidth", myTextData.tld_OutlineWidth
-                .writeTag "TextOutlineCorner", myTextData.tld_OutlineCorner
-                .writeTag "TextOutlineCaps", myTextData.tld_OutlineCaps
+                .writeTag "TextOutlineActive", myTextData.tld_OutlineActive
+                .writeTag "TextOutlinePen", myTextData.tld_OutlinePen
                 .writeTag "TextBackgroundActive", myTextData.tld_BackgroundActive
                 .writeTag "TextBackgroundBrush", myTextData.tld_BackgroundBrush
+                .writeTag "TextBackBorderActive", myTextData.tld_BackBorderActive
+                .writeTag "TextBackBorderPen", myTextData.tld_BackBorderPen
                 .writeTag "TextLineSpacing", myTextData.tld_LineSpacing
                 .writeTag "TextMarginLeft", myTextData.tld_MarginLeft
                 .writeTag "TextMarginTop", myTextData.tld_MarginTop
                 .writeTag "TextMarginRight", myTextData.tld_MarginRight
                 .writeTag "TextMarginBottom", myTextData.tld_MarginBottom
-                .writeTag "TextBackBorderMode", myTextData.tld_BackBorderMode
-                .writeTag "TextBackBorderColor", myTextData.tld_BackBorderColor
-                .writeTag "TextBackBorderWidth", myTextData.tld_BackBorderWidth
                 .writeTag "TextCharRemap", myTextData.tld_CharRemap
                 .writeTag "TextCharSpacing", myTextData.tld_CharSpacing
                 .writeTag "TextCharOrientation", myTextData.tld_CharOrientation
@@ -2186,22 +2121,17 @@ Public Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
                     .tld_WordWrap = xmlEngine.getUniqueTag_Long("TextWordWrap", tre_AutoBreakWords)
                     .tld_FillActive = xmlEngine.getUniqueTag_Boolean("TextFillActive", True)
                     .tld_FillBrush = xmlEngine.getUniqueTag_String("TextFillBrush", "")
-                    .tld_OutlineMode = xmlEngine.getUniqueTag_Long("TextOutlineMode", 0)
-                    .tld_OutlineColor = xmlEngine.getUniqueTag_Long("TextOutlineColor", vbWhite)
-                    .tld_OutlineOpacity = xmlEngine.getUniqueTag_Long("TextOutlineOpacity", 100)
-                    .tld_OutlineWidth = xmlEngine.getUniqueTag_Long("TextOutlineWidth", 1)
-                    .tld_OutlineCorner = xmlEngine.getUniqueTag_Long("TextOutlineCorner", 0)
-                    .tld_OutlineCaps = xmlEngine.getUniqueTag_Long("TextOutlineCaps", 0)
+                    .tld_OutlineActive = xmlEngine.getUniqueTag_Boolean("TextOutlineActive", False)
+                    .tld_OutlinePen = xmlEngine.getUniqueTag_String("TextOutlinePen", "")
                     .tld_BackgroundActive = xmlEngine.getUniqueTag_Boolean("TextBackgroundActive", False)
                     .tld_BackgroundBrush = xmlEngine.getUniqueTag_String("TextBackgroundBrush", "")
+                    .tld_BackBorderActive = xmlEngine.getUniqueTag_Boolean("TextBackBorderActive", False)
+                    .tld_BackBorderPen = xmlEngine.getUniqueTag_String("TextBackBorderPen", "")
                     .tld_LineSpacing = xmlEngine.getUniqueTag_Double("TextLineSpacing", 0)
                     .tld_MarginLeft = xmlEngine.getUniqueTag_Double("TextMarginLeft", 0)
                     .tld_MarginTop = xmlEngine.getUniqueTag_Double("TextMarginTop", 0)
                     .tld_MarginRight = xmlEngine.getUniqueTag_Double("TextMarginRight", 0)
                     .tld_MarginBottom = xmlEngine.getUniqueTag_Double("TextMarginBottom", 0)
-                    .tld_BackBorderMode = xmlEngine.getUniqueTag_Long("TextBackBorderMode", 0)
-                    .tld_BackBorderColor = xmlEngine.getUniqueTag_Long("TextBackBorderColor", 0)
-                    .tld_BackBorderWidth = xmlEngine.getUniqueTag_Double("TextBackBorderWidth", 1)
                     .tld_CharRemap = xmlEngine.getUniqueTag_Long("TextCharRemap", 0)
                     .tld_CharSpacing = xmlEngine.getUniqueTag_Double("TextCharSpacing", 0)
                     .tld_CharOrientation = xmlEngine.getUniqueTag_Double("TextCharOrientation", 0)
@@ -2823,22 +2753,17 @@ Public Sub resetLayerParameters()
         .tld_WordWrap = tre_AutoBreakWords
         .tld_FillActive = True
         .tld_FillBrush = ""
-        .tld_OutlineMode = 0
-        .tld_OutlineColor = vbBlack
-        .tld_OutlineCorner = 0
-        .tld_OutlineOpacity = 100
-        .tld_OutlineWidth = 1
-        .tld_OutlineCaps = 0
+        .tld_OutlineActive = False
+        .tld_OutlinePen = ""
         .tld_BackgroundActive = False
         .tld_BackgroundBrush = ""
+        .tld_BackBorderActive = False
+        .tld_BackBorderPen = ""
         .tld_LineSpacing = 0
         .tld_MarginLeft = 0
         .tld_MarginTop = 0
         .tld_MarginRight = 0
         .tld_MarginBottom = 0
-        .tld_BackBorderMode = 0
-        .tld_BackBorderColor = 0
-        .tld_BackBorderWidth = 1
         .tld_CharRemap = 0
         .tld_CharSpacing = 0
         .tld_CharOrientation = 0
@@ -2899,22 +2824,17 @@ Public Function syncInternalDIB() As Boolean
                 .setWordWrap myTextData.tld_WordWrap
                 .setFillActive myTextData.tld_FillActive
                 .setFillBrush myTextData.tld_FillBrush
-                .setOutlineMode myTextData.tld_OutlineMode
-                .setOutlineColor myTextData.tld_OutlineColor
-                .setOutlineCorner myTextData.tld_OutlineCorner
-                .setOutlineCaps myTextData.tld_OutlineCaps
-                .setOutlineOpacity myTextData.tld_OutlineOpacity
-                .setOutlineWidth myTextData.tld_OutlineWidth
+                .setOutlineActive myTextData.tld_OutlineActive
+                .setOutlinePen myTextData.tld_OutlinePen
                 .setBackgroundActive myTextData.tld_BackgroundActive
                 .setBackgroundBrush myTextData.tld_BackgroundBrush
+                .setBackBorderActive myTextData.tld_BackBorderActive
+                .setBackBorderPen myTextData.tld_BackBorderPen
                 .setLineSpacing myTextData.tld_LineSpacing
                 .setMarginLeft myTextData.tld_MarginLeft
                 .setMarginTop myTextData.tld_MarginTop
                 .setMarginRight myTextData.tld_MarginRight
                 .setMarginBottom myTextData.tld_MarginBottom
-                .setBackBorderMode myTextData.tld_BackBorderMode
-                .setBackBorderColor myTextData.tld_BackBorderColor
-                .setBackBorderWidth myTextData.tld_BackBorderWidth
                 .setCharRemap myTextData.tld_CharRemap
                 .setCharSpacing myTextData.tld_CharSpacing
                 .setCharOrientation myTextData.tld_CharOrientation

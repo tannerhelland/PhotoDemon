@@ -417,3 +417,34 @@ Public Function choosePDBrush(ByRef oldBrush As String, ByRef newBrush As String
     Set dialog_FillSettings = Nothing
 
 End Function
+
+'Present the user with PD's custom pen selection dialog.
+' INPUTS:  1) a String-type variable (ByRef, of course) which will receive the new pen parameters
+'          2) an optional initial pen parameter string
+'          3) an optional penSelector control reference, if this dialog is being raised by a penSelector control.
+'             (This reference will be used to provide live updates as the user plays with the pen dialog.)
+'
+' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
+Public Function showPenDialog(ByRef newPen As String, Optional ByVal initialPen As String = "", Optional ByRef callingControl As penSelector) As Boolean
+    
+    If choosePDPen(initialPen, newPen, callingControl) = vbOK Then
+        showPenDialog = True
+    Else
+        showPenDialog = False
+    End If
+    
+End Function
+
+'Display a custom pen selection dialog
+Public Function choosePDPen(ByRef oldPen As String, ByRef newPen As String, Optional ByRef callingControl As penSelector) As VbMsgBoxResult
+
+    Load dialog_OutlineSettings
+    dialog_OutlineSettings.showDialog oldPen, callingControl
+    
+    choosePDPen = dialog_OutlineSettings.DialogResult
+    If choosePDPen = vbOK Then newPen = dialog_OutlineSettings.newPen
+    
+    Unload dialog_OutlineSettings
+    Set dialog_OutlineSettings = Nothing
+
+End Function

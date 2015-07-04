@@ -179,7 +179,8 @@ Public Sub createBrushFromString(ByRef srcString As String)
     
 End Sub
 
-'Return an actual GDI+ brush handle matching the current settings.  Note that the caller is responsible for freeing that handle once done.
+'Return an actual GDI+ brush handle matching the current settings.
+' Note that the caller is responsible for freeing that handle once done.
 Public Function getBrushHandle() As Long
     
     Select Case m_BrushMode

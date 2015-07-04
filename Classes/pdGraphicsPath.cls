@@ -221,6 +221,53 @@ Public Sub closeCurrentFigure()
     GdipClosePathFigure m_PathHandle
 End Sub
 
+'For pen previews, it's helpful to have the path class create its own little preview shape.  In the future, we could give the user a selection of
+' sample paths, which would simply be constants passed to this function.
+Friend Sub createSamplePathForRect(ByRef srcRect As RECTF, Optional ByVal hPadding As Single = 0, Optional ByVal vPadding As Single = 0)
+
+    'A sample path is just a nice little curve that demonstrates a few obvious path elements for the user
+    Dim samplePoints() As POINTFLOAT
+    ReDim samplePoints(0 To 8) As POINTFLOAT
+    
+    Dim sampleRect As RECTF
+    With sampleRect
+        .Left = srcRect.Left + hPadding
+        .Top = srcRect.Top + vPadding
+        .Width = srcRect.Width - hPadding * 2
+        .Height = srcRect.Height - vPadding * 2
+    End With
+    
+    'First, we calculate x positions.  Note that these are *not* equally distributed, by design.
+    With sampleRect
+        samplePoints(0).x = .Left
+        samplePoints(1).x = .Left + .Width * 0.04
+        samplePoints(2).x = .Left + .Width * 0.1
+        samplePoints(3).x = .Left + .Width * 0.18
+        samplePoints(4).x = .Left + .Width * 0.3
+        samplePoints(5).x = .Left + .Width * 0.46
+        samplePoints(6).x = .Left + .Width * 0.64
+        samplePoints(7).x = .Left + .Width * 0.9
+        samplePoints(8).x = .Left + .Width
+    End With
+    
+    'Next, we calculate y positions
+    With sampleRect
+        samplePoints(0).y = .Top + .Height * 0.5
+        samplePoints(1).y = .Top
+        samplePoints(2).y = .Top + .Height
+        samplePoints(3).y = .Top + .Height * 0.1
+        samplePoints(4).y = .Top + .Height * 0.8
+        samplePoints(5).y = .Top + .Height * 0.3
+        samplePoints(6).y = .Top + .Height * 0.7
+        samplePoints(7).y = .Top + .Height * 0.5
+        samplePoints(8).y = .Top + .Height * 0.5
+    End With
+    
+    'Add the final positions to the path!
+    Me.addPolygon 9, VarPtr(samplePoints(0)), False, True, 0.5
+
+End Sub
+
 ' END: ADDING SHAPES AND FIGURES TO THE PATH
 '
 '***************************************************************************
@@ -499,6 +546,33 @@ Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB, Optional ByVal useThis
     'Release the two pens and DIB handle
     GdipDeletePen hBlackPen
     GdipDeletePen hWhitePen
+    GdipDeleteGraphics hGraphics
+    
+End Sub
+
+'Stroke the current path, using a pdGraphicsPen for the rendering.
+Public Sub strokePathToDIB_BarePen(ByRef srcPen As Long, ByRef dstDIB As pdDIB, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal useAA As Boolean = True)
+    
+    'Obtain a GDI+ handle to the image
+    Dim hGraphics As Long
+    
+    If useThisDCInstead <> 0 Then
+        GdipCreateFromHDC useThisDCInstead, hGraphics
+    Else
+        GdipCreateFromHDC dstDIB.getDIBDC, hGraphics
+    End If
+    
+    'Activate AA
+    If useAA Then
+        GdipSetSmoothingMode hGraphics, SmoothingModeAntiAlias
+    Else
+        GdipSetSmoothingMode hGraphics, SmoothingModeNone
+    End If
+        
+    'Stroke the path
+    GdipDrawPath hGraphics, srcPen, m_PathHandle
+        
+    'Release the DIB handle.  The caller is responsible for freeing the pen.
     GdipDeleteGraphics hGraphics
     
 End Sub
