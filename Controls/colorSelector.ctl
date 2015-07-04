@@ -72,6 +72,9 @@ Private curColor As OLE_COLOR
 'When the select color dialog is live, this will be set to TRUE
 Private isDialogLive As Boolean
 
+'This value will be TRUE while the mouse is inside the UC
+Private m_MouseInsideUC As Boolean
+
 Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
@@ -82,11 +85,15 @@ Public Property Get Color() As OLE_COLOR
 End Property
 
 Public Property Let Color(ByVal newColor As OLE_COLOR)
+    
     curColor = newColor
     UserControl.BackColor = curColor
-    drawControlBorders
+    
+    drawControl
+    
     PropertyChanged "Color"
     RaiseEvent ColorChanged
+    
 End Property
 
 'Outside functions can call this to force a display of the color window
@@ -95,10 +102,14 @@ Public Sub displayColorSelection()
 End Sub
 
 Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    m_MouseInsideUC = True
+    drawControl
     cMouseEvents.setSystemCursor IDC_HAND
 End Sub
 
 Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    m_MouseInsideUC = False
+    drawControl
     cMouseEvents.setSystemCursor IDC_DEFAULT
 End Sub
 
@@ -133,7 +144,7 @@ End Sub
 
 Private Sub UserControl_Initialize()
 
-    drawControlBorders
+    drawControl
     
     If g_IsProgramRunning Then
         
@@ -161,7 +172,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    drawControlBorders
+    drawControl
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -169,7 +180,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 End Sub
 
 'For flexibility, we draw our own borders.  I may decide to change this behavior in the future...
-Private Sub drawControlBorders()
+Private Sub drawControl()
         
     'For color management to work, we must pre-render the control onto a DIB, then copy the DIB to the screen.
     ' Using VB's internal draw commands leads to unpredictable results.
@@ -179,10 +190,23 @@ Private Sub drawControlBorders()
     tmpDIB.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, UserControl.BackColor
     
     'Use the API to draw borders around the control
-    GDIPlusDrawLineToDC tmpDIB.getDIBDC, 0, 0, UserControl.ScaleWidth - 1, 0, vbBlack
-    GDIPlusDrawLineToDC tmpDIB.getDIBDC, UserControl.ScaleWidth - 1, 0, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, vbBlack
-    GDIPlusDrawLineToDC tmpDIB.getDIBDC, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, 0, UserControl.ScaleHeight - 1, vbBlack
-    GDIPlusDrawLineToDC tmpDIB.getDIBDC, 0, UserControl.ScaleHeight - 1, 0, 0, vbBlack
+    If g_IsProgramRunning Then
+    
+        'Draw borders around the brush results.
+        Dim outlineColor As Long
+        
+        If m_MouseInsideUC Then
+            outlineColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
+        Else
+            outlineColor = vbBlack
+        End If
+        
+        GDIPlusDrawLineToDC tmpDIB.getDIBDC, 0, 0, UserControl.ScaleWidth - 1, 0, outlineColor
+        GDIPlusDrawLineToDC tmpDIB.getDIBDC, UserControl.ScaleWidth - 1, 0, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, outlineColor
+        GDIPlusDrawLineToDC tmpDIB.getDIBDC, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, 0, UserControl.ScaleHeight - 1, outlineColor
+        GDIPlusDrawLineToDC tmpDIB.getDIBDC, 0, UserControl.ScaleHeight - 1, 0, 0, outlineColor
+        
+    End If
     
     'Render the backcolor to the control; doing it this way ensures color management works.  (Note that we use a
     ' g_IsProgramRunning check to prevent color management from firing at compile-time.)
