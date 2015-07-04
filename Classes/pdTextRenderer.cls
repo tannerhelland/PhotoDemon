@@ -389,17 +389,12 @@ Private m_TextHinting As Boolean
 Private m_WordWrap As TEXT_WORDWRAP_MODE
 Private m_FillActive As Boolean
 Private m_FillBrush As String
-Private m_OutlineMode As Long
-Private m_OutlineColor As Long
-Private m_OutlineCorner As Long
-Private m_OutlineCaps As Long
-Private m_OutlineOpacity As Single
-Private m_OutlineWidth As Single
+Private m_OutlineActive As Boolean
+Private m_OutlinePen As String
 Private m_BackgroundActive As Boolean
 Private m_BackgroundBrush As String
-Private m_BackBorderMode As Long
-Private m_BackBorderColor As Long
-Private m_BackBorderWidth As Long
+Private m_BackBorderActive As Boolean
+Private m_BackBorderPen As String
 
 '...as well as customized spacing and layout options
 Private m_LineSpacing As Single
@@ -633,52 +628,20 @@ Public Sub setFillBrush(ByVal newSetting As String)
     m_FillBrush = newSetting
 End Sub
 
-Public Function getOutlineMode() As Long
-    getOutlineMode = m_OutlineMode
+Public Function getOutlineActive() As Boolean
+    getOutlineActive = m_OutlineActive
 End Function
 
-Public Sub setOutlineMode(ByVal newSetting As Long)
-    m_OutlineMode = newSetting
+Public Sub setOutlineActive(ByVal newSetting As Boolean)
+    m_OutlineActive = newSetting
 End Sub
 
-Public Function getOutlineColor() As Long
-    getOutlineColor = m_OutlineColor
+Public Function getOutlinePen() As String
+    getOutlinePen = m_OutlinePen
 End Function
 
-Public Sub setOutlineColor(ByVal newSetting As Long)
-    m_OutlineColor = newSetting
-End Sub
-
-Public Function getOutlineCorner() As Long
-    getOutlineCorner = m_OutlineCorner
-End Function
-
-Public Sub setOutlineCorner(ByVal newSetting As Long)
-    m_OutlineCorner = newSetting
-End Sub
-
-Public Function getOutlineCaps() As Long
-    getOutlineCaps = m_OutlineCaps
-End Function
-
-Public Sub setOutlineCaps(ByVal newSetting As Long)
-    m_OutlineCaps = newSetting
-End Sub
-
-Public Function getOutlineOpacity() As Single
-    getOutlineOpacity = m_OutlineOpacity
-End Function
-
-Public Sub setOutlineOpacity(ByVal newSetting As Single)
-    m_OutlineOpacity = newSetting
-End Sub
-
-Public Function getOutlineWidth() As Single
-    getOutlineWidth = m_OutlineWidth
-End Function
-
-Public Sub setOutlineWidth(ByVal newSetting As Single)
-    m_OutlineWidth = newSetting
+Public Sub setOutlinePen(ByVal newSetting As String)
+    m_OutlinePen = newSetting
 End Sub
 
 Public Function getBackgroundActive() As Boolean
@@ -697,28 +660,20 @@ Public Sub setBackgroundBrush(ByVal newSetting As String)
     m_BackgroundBrush = newSetting
 End Sub
 
-Public Function getBackBorderMode() As Long
-    getBackBorderMode = m_BackBorderMode
+Public Function getBackBorderActive() As Boolean
+    getBackBorderActive = m_BackBorderActive
 End Function
 
-Public Sub setBackBorderMode(ByVal newSetting As Long)
-    m_BackBorderMode = newSetting
+Public Sub setBackBorderActive(ByVal newSetting As Boolean)
+    m_BackBorderActive = newSetting
 End Sub
 
-Public Function getBackBorderColor() As Long
-    getBackBorderColor = m_BackBorderColor
+Public Function getBackBorderPen() As String
+    getBackBorderPen = m_BackBorderPen
 End Function
 
-Public Sub setBackBorderColor(ByVal newSetting As Long)
-    m_BackBorderColor = newSetting
-End Sub
-
-Public Function getBackBorderWidth() As Single
-    getBackBorderWidth = m_BackBorderWidth
-End Function
-
-Public Sub setBackBorderWidth(ByVal newSetting As Single)
-    m_BackBorderWidth = newSetting
+Public Sub setBackBorderPen(ByVal newSetting As String)
+    m_BackBorderPen = newSetting
 End Sub
 
 'Get/set various layout options.  Note that these features are only supported by the PHOTODEMON text rendering engine.
@@ -1422,19 +1377,15 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     End If
         
     'If outline mode is active, create a relevant pen.
-    Dim gdipOutlinePen As Long
+    Dim gdipOutlinePen As Long, tmpOutliner As pdGraphicsPen
+    Set tmpOutliner = New pdGraphicsPen
     
-    Select Case m_OutlineMode
-    
-        'No outline
-        Case 0
-            gdipOutlinePen = 0
-        
-        'All other outlines
-        Case Else
-            gdipOutlinePen = GDI_Plus.getGDIPlusPenHandle(m_OutlineColor, m_OutlineOpacity * 2.55, m_OutlineWidth, m_OutlineCaps, m_OutlineCorner, m_OutlineMode - 1)
-    
-    End Select
+    If m_OutlineActive Then
+        tmpOutliner.createPenFromString m_OutlinePen
+        gdipOutlinePen = tmpOutliner.getPenHandle
+    Else
+        gdipOutlinePen = 0
+    End If
     
     'If background mode is active, create a background-specific brush
     Dim gdipBackgroundBrush As Long
@@ -1449,21 +1400,12 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     'If a background outline is active, create a pen for that, too
     Dim gdipBackBorderPen As Long
     
-    Select Case m_BackBorderMode
-    
-        'No outline
-        Case 0
-            gdipBackBorderPen = 0
-        
-        'Solid outline.  We set these properties specially, as we don't want rounded corners if the user has set that property for the font outline.
-        Case 1
-            gdipBackBorderPen = GDI_Plus.getGDIPlusPenHandle(m_BackBorderColor, 255, m_BackBorderWidth, LineCapSquare, LineJoinMiter, m_BackBorderMode - 1)
-        
-        'All other outlines
-        Case Else
-            gdipBackBorderPen = GDI_Plus.getGDIPlusPenHandle(m_BackBorderColor, 255, m_BackBorderWidth, m_OutlineCaps, m_OutlineCorner, m_BackBorderMode - 1)
-    
-    End Select
+    If m_BackBorderActive Then
+        tmpOutliner.createPenFromString m_BackBorderPen
+        gdipBackBorderPen = tmpOutliner.getPenHandle
+    Else
+        gdipBackBorderPen = 0
+    End If
     
     'Convert the input rect to a RECTF
     Dim boundingRect As RECTF
@@ -1477,13 +1419,15 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     'Modify the rect according to a few different factors:
     
     '1) If outline mode is active, increase padding by 1/2 the outline size.  This ensures that the outline is not cropped.
-    If m_OutlineMode <> 0 Then
-    
+    If m_OutlineActive Then
+        
+        tmpOutliner.createPenFromString m_OutlinePen
+        
         With boundingRect
-            .Left = .Left + m_OutlineWidth
-            .Top = .Top + m_OutlineWidth
-            .Width = .Width - m_OutlineWidth * 2
-            .Height = .Height - m_OutlineWidth * 2
+            .Left = .Left + tmpOutliner.getPenProperty(pgps_PenWidth)
+            .Top = .Top + tmpOutliner.getPenProperty(pgps_PenWidth)
+            .Width = .Width - tmpOutliner.getPenProperty(pgps_PenWidth) * 2
+            .Height = .Height - tmpOutliner.getPenProperty(pgps_PenWidth) * 2
         End With
     
     End If
@@ -1497,17 +1441,19 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     End With
     
     '3) If a background border is active, we further modify the bounding rect by the size of the border
-    Dim halfPenWidth As Single
+    Dim borderWidth As Single, halfBorderWidth As Single
     
-    If m_BackBorderMode <> 0 Then
-    
-        halfPenWidth = m_BackBorderWidth / 2
+    If m_BackBorderActive Then
+        
+        tmpOutliner.createPenFromString m_BackBorderPen
+        borderWidth = tmpOutliner.getPenProperty(pgps_PenWidth)
+        halfBorderWidth = borderWidth / 2
         
         With boundingRect
-            .Left = .Left + halfPenWidth
-            .Top = .Top + halfPenWidth
-            .Width = .Width - m_BackBorderWidth
-            .Height = .Height - m_BackBorderWidth
+            .Left = .Left + halfBorderWidth
+            .Top = .Top + halfBorderWidth
+            .Width = .Width - borderWidth
+            .Height = .Height - borderWidth
         End With
         
     End If
@@ -1560,7 +1506,7 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
                 
         'If background border is active, stroke it now
         If gdipBackBorderPen <> 0 Then
-            gdipReturn = GdipDrawRectangle(dstGraphics, gdipBackBorderPen, x1 + halfPenWidth, y1 + halfPenWidth, textWidth - m_BackBorderWidth, textHeight - m_BackBorderWidth)
+            gdipReturn = GdipDrawRectangle(dstGraphics, gdipBackBorderPen, x1 + halfBorderWidth, y1 + halfBorderWidth, textWidth - borderWidth, textHeight - borderWidth)
             If gdipReturn <> 0 Then Debug.Print "WARNING!  GdipDrawRectangle failed; return code was " & gdipReturn
         End If
                 

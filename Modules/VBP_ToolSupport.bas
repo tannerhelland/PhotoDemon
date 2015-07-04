@@ -579,22 +579,16 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                     .cboWordWrap.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_WordWrap)
                     .chkFillText.Value = IIf(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FillActive), vbChecked, vbUnchecked)
                     .bsText.Brush = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_FillBrush)
-                    .cboOutlineMode.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_OutlineMode)
-                    .csOutline.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_OutlineColor)
-                    .cboOutlineCorner.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_OutlineCorner)
-                    .cboOutlineCaps.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_OutlineCaps)
-                    .sltOutlineOpacity.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_OutlineOpacity)
-                    .sltOutlineWidth.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_OutlineWidth)
+                    .chkOutlineText.Value = IIf(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_OutlineActive), vbChecked, vbUnchecked)
+                    .psText.Pen = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_OutlinePen)
                     .chkBackground.Value = IIf(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackgroundActive), vbChecked, vbUnchecked)
                     .bsTextBackground.Brush = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackgroundBrush)
-                    .tudLineSpacing.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_LineSpacing)
+                    .chkBackgroundBorder.Value = IIf(pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackBorderActive), vbChecked, vbUnchecked)
+                    .psTextBackground.Pen = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackBorderPen)
                     .tudMargin(0).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_MarginLeft)
                     .tudMargin(1).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_MarginRight)
                     .tudMargin(2).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_MarginTop)
                     .tudMargin(3).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_MarginBottom)
-                    .cboBackBorderMode.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackBorderMode)
-                    .csBackBorder.Color = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackBorderColor)
-                    .sltBackBorderWidth.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_BackBorderWidth)
                     .sltCharInflation.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_CharInflation)
                     .tudJitter(0).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_CharJitterX)
                     .tudJitter(1).Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_CharJitterY)
@@ -708,22 +702,17 @@ Public Sub syncCurrentLayerToToolOptionsUI()
                     .setTextLayerProperty ptp_WordWrap, toolpanel_FancyText.cboWordWrap.ListIndex
                     .setTextLayerProperty ptp_FillActive, CBool(toolpanel_FancyText.chkFillText.Value)
                     .setTextLayerProperty ptp_FillBrush, toolpanel_FancyText.bsText.Brush
-                    .setTextLayerProperty ptp_OutlineMode, toolpanel_FancyText.cboOutlineMode.ListIndex
-                    .setTextLayerProperty ptp_OutlineColor, toolpanel_FancyText.csOutline.Color
-                    .setTextLayerProperty ptp_OutlineCorner, toolpanel_FancyText.cboOutlineCorner.ListIndex
-                    .setTextLayerProperty ptp_OutlineCaps, toolpanel_FancyText.cboOutlineCaps.ListIndex
-                    .setTextLayerProperty ptp_OutlineOpacity, toolpanel_FancyText.sltOutlineOpacity.Value
-                    .setTextLayerProperty ptp_OutlineWidth, toolpanel_FancyText.sltOutlineWidth.Value
+                    .setTextLayerProperty ptp_OutlineActive, CBool(toolpanel_FancyText.chkOutlineText.Value)
+                    .setTextLayerProperty ptp_OutlinePen, toolpanel_FancyText.psText.Pen
                     .setTextLayerProperty ptp_BackgroundActive, CBool(toolpanel_FancyText.chkBackground.Value)
                     .setTextLayerProperty ptp_BackgroundBrush, toolpanel_FancyText.bsTextBackground.Brush
+                    .setTextLayerProperty ptp_BackBorderActive, CBool(toolpanel_FancyText.chkBackgroundBorder.Value)
+                    .setTextLayerProperty ptp_BackBorderPen, toolpanel_FancyText.psTextBackground.Pen
                     .setTextLayerProperty ptp_LineSpacing, toolpanel_FancyText.tudLineSpacing.Value
                     .setTextLayerProperty ptp_MarginLeft, toolpanel_FancyText.tudMargin(0).Value
                     .setTextLayerProperty ptp_MarginRight, toolpanel_FancyText.tudMargin(1).Value
                     .setTextLayerProperty ptp_MarginTop, toolpanel_FancyText.tudMargin(2).Value
                     .setTextLayerProperty ptp_MarginBottom, toolpanel_FancyText.tudMargin(3).Value
-                    .setTextLayerProperty ptp_BackBorderMode, toolpanel_FancyText.cboBackBorderMode.ListIndex
-                    .setTextLayerProperty ptp_BackBorderColor, toolpanel_FancyText.csBackBorder.Color
-                    .setTextLayerProperty ptp_BackBorderWidth, toolpanel_FancyText.sltBackBorderWidth.Value
                     .setTextLayerProperty ptp_CharInflation, toolpanel_FancyText.sltCharInflation.Value
                     .setTextLayerProperty ptp_CharJitterX, toolpanel_FancyText.tudJitter(0).Value
                     .setTextLayerProperty ptp_CharJitterY, toolpanel_FancyText.tudJitter(1).Value
