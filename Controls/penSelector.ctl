@@ -238,10 +238,10 @@ Private Sub drawControl()
         outlineColor = vbBlack
     End If
     
-    GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, 0, 0, UserControl.ScaleWidth - 1, 0, vbBlack
-    GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, UserControl.ScaleWidth - 1, 0, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, vbBlack
-    GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, 0, UserControl.ScaleHeight - 1, vbBlack
-    GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, 0, UserControl.ScaleHeight - 1, 0, 0, vbBlack
+    GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, 0, 0, UserControl.ScaleWidth - 1, 0, outlineColor
+    GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, UserControl.ScaleWidth - 1, 0, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, outlineColor
+    GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, 0, UserControl.ScaleHeight - 1, outlineColor
+    GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, 0, UserControl.ScaleHeight - 1, 0, 0, outlineColor
     
     'Render the completed DIB to the control.  (This is when color management takes place.)
     ' (Note also that we use a g_IsProgramRunning check to prevent color management from firing at compile-time.)
