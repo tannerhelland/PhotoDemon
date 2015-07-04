@@ -76,6 +76,9 @@ Private isDialogLive As Boolean
 'A backing DIB is required for proper color management
 Private m_BackBuffer As pdDIB
 
+'This value will be TRUE while the mouse is inside the UC
+Private m_MouseInsideUC As Boolean
+
 Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
@@ -103,10 +106,14 @@ Public Sub displayBrushSelection()
 End Sub
 
 Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    m_MouseInsideUC = True
+    drawControl
     cMouseEvents.setSystemCursor IDC_HAND
 End Sub
 
 Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    m_MouseInsideUC = False
+    drawControl
     cMouseEvents.setSystemCursor IDC_DEFAULT
 End Sub
 
@@ -198,11 +205,19 @@ Private Sub drawControl()
     GDI_Plus.GDIPlusFillDC_Brush m_BackBuffer.getDIBDC, tmpBrush, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight
     m_Filler.releaseBrushHandle tmpBrush
     
-    'Draw borders around the brush results.  (TODO: theme these colors if the control is hovered??)
-    GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, 0, 0, UserControl.ScaleWidth - 1, 0, vbBlack
-    GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, UserControl.ScaleWidth - 1, 0, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, vbBlack
-    GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, 0, UserControl.ScaleHeight - 1, vbBlack
-    GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, 0, UserControl.ScaleHeight - 1, 0, 0, vbBlack
+    'Draw borders around the brush results.
+    Dim outlineColor As Long
+    
+    If g_IsProgramRunning And m_MouseInsideUC Then
+        outlineColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
+    Else
+        outlineColor = vbBlack
+    End If
+    
+    GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, 0, 0, UserControl.ScaleWidth - 1, 0, outlineColor
+    GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, UserControl.ScaleWidth - 1, 0, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, outlineColor
+    GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, 0, UserControl.ScaleHeight - 1, outlineColor
+    GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, 0, UserControl.ScaleHeight - 1, 0, 0, outlineColor
     
     'Render the completed DIB to the control.  (This is when color management takes place.)
     ' (Note also that we use a g_IsProgramRunning check to prevent color management from firing at compile-time.)
