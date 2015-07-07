@@ -326,6 +326,7 @@ Private Sub Form_Load()
     GenerateThankyou "A.G. Violette", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=55938&lngWId=1", True
     GenerateThankyou "Allan Lima"
     GenerateThankyou "Andrew Yeoman"
+    GenerateThankyou "Ari Sohandri Putra", "http://arisohandrip.indonesiaz.com/", True
     GenerateThankyou "Avery", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=37541&lngWId=1", True
     GenerateThankyou "Audioglider", "https://github.com/audioglider", True
     GenerateThankyou "Bernhard Stockmann", "http://www.gimpusers.com/tutorials/colorful-light-particle-stream-splash-screen-gimp.html", True
