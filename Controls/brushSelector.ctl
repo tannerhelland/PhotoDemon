@@ -209,7 +209,7 @@ Private Sub drawControl()
     Dim outlineColor As Long
     
     If g_IsProgramRunning And m_MouseInsideUC Then
-        outlineColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
+        outlineColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
     Else
         outlineColor = vbBlack
     End If
