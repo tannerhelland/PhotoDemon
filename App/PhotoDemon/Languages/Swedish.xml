@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.58</langversion>
+<langversion>6.7.59</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -13827,27 +13827,27 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
-<original>border</original>
+<original>border style</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>mode</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>corners</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>caps</original>
+<original>background border</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>fill text</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outline style</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outline text</original>
 <translation></translation>
 </phrase>
 
@@ -13981,72 +13981,7 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>fill</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>outline</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>solid</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>dashes</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>dots</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>dash + dot</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>dash + dot + dot</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>miter</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>bevel</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>round</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>flat</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>square</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>triangle</original>
-<translation></translation>
-</phrase>
-
-<!-- VBP_ToolPanel_FancyText.frm contains 76 phrases. 30 were duplicates of existing phrases, so only 46 new phrases were written to file. -->
+<!-- VBP_ToolPanel_FancyText.frm contains 51 phrases. 18 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_FancyText.frm-->
 
@@ -14199,6 +14134,11 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
+<original>solid</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>gradient</original>
 <translation></translation>
 </phrase>
@@ -14228,15 +14168,15 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_DialogBrushSettings.frm contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- VBP_DialogBrushSettings.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for VBP_DialogBrushSettings.frm-->
 
-<!-- BEGIN text for pdBrush.cls -->
+<!-- BEGIN text for pdGraphicsBrush.cls -->
 
-<!-- pdBrush.cls contains 0 phrases. -->
+<!-- pdGraphicsBrush.cls contains 0 phrases. -->
 
-<!-- END text for pdBrush.cls-->
+<!-- END text for pdGraphicsBrush.cls-->
 
 <!-- BEGIN text for brushSelector.ctl -->
 
@@ -14244,12 +14184,110 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <!-- END text for brushSelector.ctl-->
 
+<!-- BEGIN text for pdGraphicsPen.cls -->
+
+<!-- pdGraphicsPen.cls contains 0 phrases. -->
+
+<!-- END text for pdGraphicsPen.cls-->
+
+<!-- BEGIN text for penSelector.ctl -->
+
+<!-- penSelector.ctl contains 0 phrases. -->
+
+<!-- END text for penSelector.ctl-->
+
+<!-- BEGIN text for VBP_DialogPenSettings.frm (dialog_OutlineSettings) -->
+
+<phrase>
+<original>Outline settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outline color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>outline width</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>corner shape</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>line cap shape</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>miter limit</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dashes</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dots</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dash + dot</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>dash + dot + dot</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>flat</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>square</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>round</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>triangle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>miter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>bevel</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_DialogPenSettings.frm contains 20 phrases. 4 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
+
+<!-- END text for VBP_DialogPenSettings.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2475</phrasecount>
+<phrasecount>2479</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4257 phrases. -->
-<!-- 1782 are duplicates, so only 2475 unique phrases have been written to file. -->
-<!-- These 2475 phrases contain approximately 13752 total words. -->
+<!-- As of this build, PhotoDemon contains 4252 phrases. -->
+<!-- 1773 are duplicates, so only 2479 unique phrases have been written to file. -->
+<!-- These 2479 phrases contain approximately 13769 total words. -->
 
 </pdData>
