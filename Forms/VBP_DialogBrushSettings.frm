@@ -132,6 +132,15 @@ Begin VB.Form dialog_FillSettings
       TabIndex        =   4
       Top             =   2400
       Width           =   5775
+      Begin PhotoDemon.pdComboBox_Hatch cboFillPattern 
+         Height          =   450
+         Left            =   120
+         TabIndex        =   13
+         Top             =   960
+         Width           =   5415
+         _extentx        =   9551
+         _extenty        =   794
+      End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
          Index           =   3
@@ -155,21 +164,11 @@ Begin VB.Form dialog_FillSettings
          fontsize        =   12
          forecolor       =   0
       End
-      Begin PhotoDemon.pdComboBox cboFillPattern 
-         Height          =   450
-         Left            =   120
-         TabIndex        =   9
-         Top             =   960
-         Width           =   5430
-         _extentx        =   9578
-         _extenty        =   794
-         fontsize        =   12
-      End
       Begin PhotoDemon.colorSelector csPattern 
          Height          =   495
          Index           =   0
          Left            =   120
-         TabIndex        =   10
+         TabIndex        =   9
          Top             =   1920
          Width           =   5535
          _extentx        =   9763
@@ -191,7 +190,7 @@ Begin VB.Form dialog_FillSettings
          Height          =   495
          Index           =   1
          Left            =   120
-         TabIndex        =   11
+         TabIndex        =   10
          Top             =   3480
          Width           =   5535
          _extentx        =   9763
@@ -215,7 +214,7 @@ Begin VB.Form dialog_FillSettings
          Height          =   495
          Index           =   0
          Left            =   0
-         TabIndex        =   12
+         TabIndex        =   11
          Top             =   2520
          Width           =   5700
          _extentx        =   10054
@@ -230,7 +229,7 @@ Begin VB.Form dialog_FillSettings
          Height          =   495
          Index           =   1
          Left            =   0
-         TabIndex        =   13
+         TabIndex        =   12
          Top             =   4080
          Width           =   5700
          _extentx        =   10054
@@ -517,16 +516,8 @@ Private Sub Form_Load()
     btsStyle.ListIndex = 0
     btsStyle_Click 0
     
-    'Hatch patterns
-    
-    'TODO: custom pattern dropdown, since we'll be using it elsewhere!
-    cboFillPattern.Clear
-    cboFillPattern.AddItem "horizontal"
-    cboFillPattern.AddItem "vertical"
-    cboFillPattern.AddItem "forward diagonal"
-    cboFillPattern.AddItem "backward diagonal"
-    cboFillPattern.AddItem "cross"
-    cboFillPattern.AddItem "diagonal cross"
+    'Hatch patterns take care of themselves
+    cboFillPattern.initializeHatchList
     cboFillPattern.ListIndex = 0
     
     If g_IsProgramRunning Then

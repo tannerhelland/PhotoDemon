@@ -165,7 +165,7 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
             Case "HScrollBar", "VScrollBar"
                 controlValue = Str(eControl.Value)
                 
-            Case "ListBox", "ComboBox", "pdComboBox", "pdComboBox_Font"
+            Case "ListBox", "ComboBox", "pdComboBox", "pdComboBox_Font", "pdComboBox_Hatch"
             
                 'Make sure the combo box is not the preset box on this control!
                 controlValue = Str(eControl.ListIndex)
@@ -305,7 +305,7 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                 Case "HScrollBar", "VScrollBar"
                     eControl.Value = CLng(controlValue)
                     
-                Case "ListBox", "ComboBox", "pdComboBox", "pdComboBox_Font"
+                Case "ListBox", "ComboBox", "pdComboBox", "pdComboBox_Font", "pdComboBox_Hatch"
                     If CLng(controlValue) < eControl.ListCount Then
                         If CLng(controlValue) > 0 Then eControl.ListIndex = CLng(controlValue) Else eControl.ListIndex = 0
                     Else
