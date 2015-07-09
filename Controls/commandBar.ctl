@@ -28,9 +28,9 @@ Begin VB.UserControl commandBar
       TabIndex        =   3
       Top             =   90
       Width           =   630
-      _extentx        =   1111
-      _extenty        =   1005
-      autotoggle      =   -1  'True
+      _ExtentX        =   1111
+      _ExtentY        =   1005
+      AutoToggle      =   -1  'True
    End
    Begin PhotoDemon.pdComboBox cboPreset 
       Height          =   345
@@ -38,8 +38,8 @@ Begin VB.UserControl commandBar
       TabIndex        =   2
       Top             =   195
       Width           =   3135
-      _extentx        =   5530
-      _extenty        =   609
+      _ExtentX        =   5530
+      _ExtentY        =   609
    End
    Begin VB.CommandButton cmdCancel 
       Caption         =   "&Cancel"
@@ -64,9 +64,9 @@ Begin VB.UserControl commandBar
       TabIndex        =   4
       Top             =   90
       Width           =   630
-      _extentx        =   1111
-      _extenty        =   1005
-      autotoggle      =   -1  'True
+      _ExtentX        =   1111
+      _ExtentY        =   1005
+      AutoToggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdAction 
       Height          =   570
@@ -75,9 +75,9 @@ Begin VB.UserControl commandBar
       TabIndex        =   5
       Top             =   90
       Width           =   630
-      _extentx        =   1111
-      _extenty        =   1005
-      autotoggle      =   -1  'True
+      _ExtentX        =   1111
+      _ExtentY        =   1005
+      AutoToggle      =   -1  'True
    End
 End
 Attribute VB_Name = "commandBar"
@@ -398,7 +398,7 @@ Private Sub RandomizeSettings()
                 eControl.ListIndex = Int(Rnd * eControl.ListCount)
                 
             'List boxes and combo boxes are assigned a random ListIndex
-            Case "ListBox", "ComboBox", "pdComboBox", "pdComboBox_Font"
+            Case "ListBox", "ComboBox", "pdComboBox", "pdComboBox_Font", "pdComboBox_Hatch"
             
                 'Make sure the combo box is not the preset box on this control!
                 If (eControl.hWnd <> cboPreset.hWnd) Then
@@ -496,9 +496,9 @@ End Sub
 'When the font is changed, all controls must manually have their fonts set to match
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
-    Set cmdOK.Font = mFont
-    Set cmdCancel.Font = mFont
-    cboPreset.fontSize = mFont.Size
+    Set CmdOK.Font = mFont
+    Set CmdCancel.Font = mFont
+    cboPreset.FontSize = mFont.Size
 End Sub
 
 'Backcolor is used to control the color of the base user control; nothing else is affected by it
@@ -654,7 +654,7 @@ Private Sub ResetSettings()
                 If eControl.Min <= 0 Then eControl.Value = 0 Else eControl.Value = eControl.Min
                 
             'List boxes and combo boxes are set to their first entry
-            Case "ListBox", "ComboBox", "pdComboBox"
+            Case "ListBox", "ComboBox", "pdComboBox", "pdComboBox_Hatch"
             
                 'Make sure the combo box is not the preset box on this control!
                 If (eControl.hWnd <> cboPreset.hWnd) Then
@@ -698,8 +698,8 @@ Private Sub UserControl_Initialize()
     
     'Apply the hand cursor to all command buttons
     If g_IsProgramRunning Then
-        setHandCursorToHwnd cmdOK.hWnd
-        setHandCursorToHwnd cmdCancel.hWnd
+        setHandCursorToHwnd CmdOK.hWnd
+        setHandCursorToHwnd CmdCancel.hWnd
     End If
 
     'When running, we can assign images and tooltips to the image-only command buttons
@@ -772,8 +772,8 @@ Private Sub updateControlLayout()
         UserControl.Width = UserControl.Parent.ScaleWidth * TwipsPerPixelXFix
         
         'Right-align the Cancel and OK buttons
-        cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - fixDPI(8)
-        cmdOK.Left = cmdCancel.Left - cmdOK.Width - fixDPI(8)
+        CmdCancel.Left = UserControl.Parent.ScaleWidth - CmdCancel.Width - fixDPI(8)
+        CmdOK.Left = CmdCancel.Left - CmdOK.Width - fixDPI(8)
         
     End If
     
@@ -796,8 +796,8 @@ Private Sub UserControl_Show()
         Set m_Tooltip = New pdToolTip
         With m_Tooltip
             
-            .setTooltip cmdOK.hWnd, UserControl.hWnd, "Apply this action to the current image."
-            .setTooltip cmdCancel.hWnd, UserControl.hWnd, "Exit this tool.  No changes will be made to the image."
+            .setTooltip CmdOK.hWnd, UserControl.hWnd, "Apply this action to the current image."
+            .setTooltip CmdCancel.hWnd, UserControl.hWnd, "Exit this tool.  No changes will be made to the image."
             
             .updateAgainstCurrentTheme
             
@@ -809,8 +809,8 @@ Private Sub UserControl_Show()
         cboPreset.assignTooltip "Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right."
         
         'Translate all control captions
-        cmdOK.Caption = g_Language.TranslateMessage(cmdOK.Caption)
-        cmdCancel.Caption = g_Language.TranslateMessage(cmdCancel.Caption)
+        CmdOK.Caption = g_Language.TranslateMessage(CmdOK.Caption)
+        CmdCancel.Caption = g_Language.TranslateMessage(CmdCancel.Caption)
         
         'Prep a preset file location.  In most cases, this is just the name of the parent form...
         parentToolName = Replace$(UserControl.Parent.Name, "Form", "", , , vbTextCompare)
@@ -865,7 +865,7 @@ Private Sub UserControl_Show()
     'Additional note: some forms may chose to explicitly set focus away from the OK button.  If that happens, the line below
     ' will throw a critical error.  To avoid that, simply ignore any errors that arise from resetting focus.
     On Error GoTo somethingStoleFocus
-    If g_IsProgramRunning Then cmdOK.SetFocus
+    If g_IsProgramRunning Then CmdOK.SetFocus
 
 somethingStoleFocus:
     
@@ -936,7 +936,7 @@ Private Sub storePreset(Optional ByVal presetName As String = "last-used setting
                 controlValue = Str(eControl.Value)
             
             'Listboxes and Combo Boxes return a .ListIndex property
-            Case "ListBox", "ComboBox", "pdComboBox", "pdComboBox_Font"
+            Case "ListBox", "ComboBox", "pdComboBox", "pdComboBox_Font", "pdComboBox_Hatch"
             
                 'Note that we don't store presets for the preset combo box itself!
                 If (eControl.hWnd <> cboPreset.hWnd) Then controlValue = Str(eControl.ListIndex)
@@ -1111,7 +1111,7 @@ Private Function loadPreset(Optional ByVal presetName As String = "last-used set
                         eControl.Value = CLng(controlValue)
                     
                     'List boxes, combo boxes, and pdComboBox all use a Long-type .ListIndex property
-                    Case "ListBox", "ComboBox", "pdComboBox", "pdComboBox_Font"
+                    Case "ListBox", "ComboBox", "pdComboBox", "pdComboBox_Font", "pdComboBox_Hatch"
                     
                         'Validate range before setting
                         If CLng(controlValue) < eControl.ListCount Then

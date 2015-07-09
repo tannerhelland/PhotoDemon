@@ -1256,7 +1256,7 @@ Public Sub fitWordwrapLabel(ByRef srcLabel As Label, ByRef srcForm As Form)
     tmpFont.setFontBold srcLabel.fontBold
     tmpFont.setFontItalic srcLabel.fontItalic
     tmpFont.setFontFace srcLabel.fontName
-    tmpFont.setFontSize srcLabel.fontSize
+    tmpFont.setFontSize srcLabel.FontSize
     tmpFont.createFontObject
     tmpFont.setTextAlignment srcLabel.Alignment
     tmpFont.attachToDC srcForm.hDC
@@ -1266,7 +1266,7 @@ Public Sub fitWordwrapLabel(ByRef srcLabel As Label, ByRef srcForm As Form)
     lblHeight = tmpFont.getHeightOfWordwrapString(srcLabel.Caption, srcLabel.Width - 1)
     
     Dim curFontSize As Long
-    curFontSize = srcLabel.fontSize
+    curFontSize = srcLabel.FontSize
     
     'If the text is too tall, shrink the font until an acceptable size is found.  Note that the reported text value tends to be
     ' smaller than the space actually required.  I do not know why this happens.  To account for it, I cut a further 10% from
@@ -1288,7 +1288,7 @@ Public Sub fitWordwrapLabel(ByRef srcLabel As Label, ByRef srcForm As Form)
     End If
     
     'When an acceptable size is found, set it and exit.
-    srcLabel.fontSize = curFontSize
+    srcLabel.FontSize = curFontSize
     srcLabel.Refresh
 
 End Sub
@@ -1327,7 +1327,7 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
         'PhotoDemon's custom controls now provide universal support for an updateAgainstCurrentTheme function.  This updates two things:
         ' 1) The control's visual appearance (to reflect any changes to visual themes)
         ' 2) The translated caption, or other text (to reflect any changes to the active language)
-        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is buttonStripVertical) Or (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is pdHyperlink) Or (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Or (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdCanvas) Then
+        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is buttonStripVertical) Or (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is pdHyperlink) Or (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Or (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Or (TypeOf eControl Is pdCanvas) Then
             eControl.updateAgainstCurrentTheme
         End If
         

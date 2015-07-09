@@ -74,6 +74,8 @@ Private Declare Function GdipDeletePen Lib "gdiplus" (ByVal hPen As Long) As Lon
 
 'Drawing functions
 Private Declare Function GdipDrawPath Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal hPath As Long) As Long
+Private Declare Function GdipFillPath Lib "gdiplus" (ByVal hGraphics As Long, ByVal hBrush As Long, ByVal hPath As Long) As Long
+Private Declare Function GdipSetRenderingOrigin Lib "gdiplus" (ByVal hGraphics As Long, ByVal x As Long, ByVal y As Long) As Long
 
 'Misc GDI+ support types and functions
 Private Const FlatnessDefault As Single = 0.25      'Allowable error when flattening a path.  This value is poorly explained on MSDN, but lower values equal a more precise approximation.  See http://msdn.microsoft.com/en-us/library/ms535572%28v=vs.85%29.aspx
@@ -550,8 +552,8 @@ Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB, Optional ByVal useThis
     
 End Sub
 
-'Stroke the current path, using a pdGraphicsPen for the rendering.
-Public Sub strokePathToDIB_BarePen(ByRef srcPen As Long, ByRef dstDIB As pdDIB, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal useAA As Boolean = True)
+'Stroke the current path, using a bare pen handle for the rendering.
+Public Sub strokePathToDIB_BarePen(ByRef srcPen As Long, Optional ByRef dstDIB As pdDIB = Nothing, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal useAA As Boolean = True)
     
     'Obtain a GDI+ handle to the image
     Dim hGraphics As Long
@@ -573,6 +575,36 @@ Public Sub strokePathToDIB_BarePen(ByRef srcPen As Long, ByRef dstDIB As pdDIB, 
     GdipDrawPath hGraphics, srcPen, m_PathHandle
         
     'Release the DIB handle.  The caller is responsible for freeing the pen.
+    GdipDeleteGraphics hGraphics
+    
+End Sub
+
+'Fill the current path, using a bare brush handle for the rendering.
+Public Sub fillPathToDIB_BareBrush(ByVal srcBrush As Long, Optional ByRef dstDIB As pdDIB = Nothing, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal useAA As Boolean = True, Optional ByVal customRenderingOriginX As Long = 0, Optional ByVal customRenderingOriginY As Long = 0)
+    
+    'Obtain a GDI+ handle to the image
+    Dim hGraphics As Long
+    
+    If useThisDCInstead <> 0 Then
+        GdipCreateFromHDC useThisDCInstead, hGraphics
+    Else
+        GdipCreateFromHDC dstDIB.getDIBDC, hGraphics
+    End If
+    
+    'Activate AA
+    If useAA Then
+        GdipSetSmoothingMode hGraphics, SmoothingModeAntiAlias
+    Else
+        GdipSetSmoothingMode hGraphics, SmoothingModeNone
+    End If
+    
+    'Set rendering origin
+    GdipSetRenderingOrigin hGraphics, customRenderingOriginX, customRenderingOriginY
+    
+    'Fill the path
+    GdipFillPath hGraphics, srcBrush, m_PathHandle
+        
+    'Release the DIB handle.  The caller is responsible for freeing the brush.
     GdipDeleteGraphics hGraphics
     
 End Sub
