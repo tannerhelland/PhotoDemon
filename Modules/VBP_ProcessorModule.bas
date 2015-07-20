@@ -730,6 +730,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 Layer_Handler.addNewLayer cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3), cParams.GetLong(4), cParams.GetLong(5), cParams.GetBool(6), cParams.GetString(7)
             End If
         
+        'TODO: sort out new text layer vs new typography layer behavior
         Case "New text layer"
             'During normal usage, "New text layer" is a dummy entry used by the on-canvas text tool.  It is called *after* a new layer
             ' has already been created, and the sole purpose of the function is to add the newly created text layer to the Undo/Redo chain.
@@ -1804,7 +1805,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                     
                     If (MacroStatus = MacroPLAYBACK) Or (MacroStatus = MacroBATCH) Then
                     
-                        If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
+                        If pdImages(g_CurrentImage).getActiveLayer.isLayerText Then
                             pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty cParams.GetLong(1), cParams.GetVariant(2)
                         End If
                     
