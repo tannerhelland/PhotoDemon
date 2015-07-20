@@ -313,7 +313,7 @@ Private WithEvents cKeyEvents As pdInputKeyboard
 Attribute cKeyEvents.VB_VarHelpID = -1
 
 'To improve performance, we can ask the canvas to not refresh itself until we say so.
-Private m_suspendRedraws As Boolean
+Private m_SuspendRedraws As Boolean
 
 'API scroll bars are used in place of crappy VB ones
 Private WithEvents HScroll As pdScrollAPI
@@ -364,7 +364,7 @@ End Sub
 Public Sub updateAgainstCurrentTheme()
     
     'Suspend redraws until all theme updates are complete
-    m_suspendRedraws = True
+    m_SuspendRedraws = True
     
     'Rebuild all drop-down boxes (so that translations can be applied)
     Dim backupZoomIndex As Long, backupSizeIndex As Long
@@ -422,13 +422,13 @@ Public Sub updateAgainstCurrentTheme()
     displayCanvasCoordinates 0, 0, True
     
     'Restore redraw capabilities
-    m_suspendRedraws = False
+    m_SuspendRedraws = False
         
 End Sub
 
 'Use this function to forcibly prevent the canvas from redrawing itself.  REDRAWS WILL NOT HAPPEN AGAIN UNTIL YOU RESTORE ACCESS!
 Public Sub setRedrawSuspension(ByVal newRedrawValue As Boolean)
-    m_suspendRedraws = newRedrawValue
+    m_SuspendRedraws = newRedrawValue
 End Sub
 
 Public Property Get BackColor() As Long
@@ -780,7 +780,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                 canvasUpdateRequired = False
                 
                 'Suspend automatic redraws until all arrow keys have been processed
-                m_suspendRedraws = True
+                m_SuspendRedraws = True
                 
                 'If scrollbars are visible, nudge the canvas in the direction of the arrows.
                 If VScroll.Enabled Then
@@ -796,7 +796,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                 End If
                 
                 'Re-enable automatic redraws
-                m_suspendRedraws = False
+                m_SuspendRedraws = False
                 
                 'Redraw the viewport if necessary
                 If canvasUpdateRequired Then
@@ -1298,7 +1298,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 Dim userIsEditingCurrentTextLayer As Boolean
                 
                 'Check to see if the current layer is a text layer
-                If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
+                If pdImages(g_CurrentImage).getActiveLayer.isLayerText Then
                 
                     'Did the user click on a POI for this layer?  If they did, the user is editing the current text layer.
                     If m_curPointOfInterest >= 0 Then
@@ -1323,6 +1323,8 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                     
                     'Create a new text layer directly; note that we *do not* pass this command through the central processor, as we do not
                     ' want the delay associated with full Undo/Redo creation.
+                    '
+                    'TODO: distinguish between text and typography layers
                     Layer_Handler.addNewLayer pdImages(g_CurrentImage).getActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, "", imgX, imgY, True
                     
                     'Mirror existing opacity and blend mode values onto the new layer, but only if the values are reasonable.
@@ -1876,7 +1878,7 @@ Public Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConsta
         
         If scrollAmount > 0 Then
         
-            m_suspendRedraws = True
+            m_SuspendRedraws = True
             
             If HScroll.Value + HScroll.LargeChange > HScroll.Max Then
                 HScroll.Value = HScroll.Max
@@ -1884,13 +1886,13 @@ Public Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConsta
                 HScroll.Value = HScroll.Value + HScroll.LargeChange
             End If
             
-            m_suspendRedraws = False
+            m_SuspendRedraws = False
             
             Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
         
         ElseIf scrollAmount < 0 Then
         
-            m_suspendRedraws = True
+            m_SuspendRedraws = True
             
             If HScroll.Value - HScroll.LargeChange < HScroll.Min Then
                 HScroll.Value = HScroll.Min
@@ -1898,7 +1900,7 @@ Public Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConsta
                 HScroll.Value = HScroll.Value - HScroll.LargeChange
             End If
             
-            m_suspendRedraws = False
+            m_SuspendRedraws = False
             
             Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
             
@@ -1922,7 +1924,7 @@ Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstant
   
         If scrollAmount < 0 Then
             
-            m_suspendRedraws = True
+            m_SuspendRedraws = True
             
             If VScroll.Value + VScroll.LargeChange > VScroll.Max Then
                 VScroll.Value = VScroll.Max
@@ -1930,13 +1932,13 @@ Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstant
                 VScroll.Value = VScroll.Value + VScroll.LargeChange
             End If
             
-            m_suspendRedraws = False
+            m_SuspendRedraws = False
             
             Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
         
         ElseIf scrollAmount > 0 Then
             
-            m_suspendRedraws = True
+            m_SuspendRedraws = True
             
             If VScroll.Value - VScroll.LargeChange < VScroll.Min Then
                 VScroll.Value = VScroll.Min
@@ -1944,7 +1946,7 @@ Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstant
                 VScroll.Value = VScroll.Value - VScroll.LargeChange
             End If
             
-            m_suspendRedraws = False
+            m_SuspendRedraws = False
             
             Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
             
@@ -2040,7 +2042,7 @@ Private Sub UserControl_Initialize()
         cKeyEvents.createKeyboardTracker "pdCanvas", picCanvas.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_DELETE, VK_INSERT, VK_TAB, VK_SPACE, VK_ESCAPE, VK_BACK
                 
         'Allow the control to generate its own redraw requests
-        m_suspendRedraws = False
+        m_SuspendRedraws = False
         
         'Set scroll bar size to match the current system default (which changes based on DPI, theming, and other factors)
         picScrollH.Height = GetSystemMetrics(SM_CYHSCROLL)
@@ -2094,7 +2096,7 @@ End Sub
 
 Private Sub HScroll_Scroll()
     
-    If (Not m_suspendRedraws) Then
+    If (Not m_SuspendRedraws) Then
         
         'Request the scroll-specific viewport pipeline stage
         Viewport_Engine.Stage3_ExtractRelevantRegion pdImages(g_CurrentImage), Me
@@ -2188,7 +2190,7 @@ End Sub
 
 Private Sub VScroll_Scroll()
     
-    If (Not m_suspendRedraws) Then
+    If (Not m_SuspendRedraws) Then
     
         'Request the scroll-specific viewport pipeline stage
         Viewport_Engine.Stage3_ExtractRelevantRegion pdImages(g_CurrentImage), Me
@@ -2572,7 +2574,7 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
             ' obviously quite different.
             
             'First, see if the active layer is a text layer.  If it is, we need to check for POIs.
-            If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
+            If pdImages(g_CurrentImage).getActiveLayer.isLayerText Then
                 
                 'When transforming layers, the cursor depends on the active POI
                 curPOI = pdImages(g_CurrentImage).getActiveLayer.checkForPointOfInterest(layerX, layerY)
@@ -2646,7 +2648,7 @@ Private Function isCanvasInteractionAllowed() As Boolean
     If g_OpenImageCount = 0 Then isCanvasInteractionAllowed = False
     
     'If our own internal redraw suspension flag is set, exit
-    If m_suspendRedraws Then isCanvasInteractionAllowed = False
+    If m_SuspendRedraws Then isCanvasInteractionAllowed = False
     
     'If canvas interactions are disallowed, exit immediately
     If Not isCanvasInteractionAllowed Then Exit Function

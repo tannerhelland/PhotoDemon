@@ -112,7 +112,7 @@ Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
             Case PDL_IMAGE
                 dLayerName = g_Language.TranslateMessage("Blank layer")
                 
-            Case PDL_TEXT
+            Case PDL_TEXT, PDL_TYPOGRAPHY
                 dLayerName = g_Language.TranslateMessage("Text layer")
         
         End Select
@@ -132,7 +132,7 @@ Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
         Case PDL_IMAGE
         
         'Set an initial width/height of 1x1
-        Case PDL_TEXT
+        Case PDL_TEXT, PDL_TYPOGRAPHY
             pdImages(g_CurrentImage).getLayerByID(newLayerID).setLayerWidth 1
             pdImages(g_CurrentImage).getLayerByID(newLayerID).setLayerHeight 1
         
@@ -268,7 +268,7 @@ Public Sub eraseLayerByIndex(ByVal layerIndex As Long)
             
             'For text layers, simply erase the current text.  (This has the effect of making the layer fully transparent,
             ' while retaining all text settings... I'm not sure of a better solution at present.)
-            Case PDL_TEXT
+            Case PDL_TEXT, PDL_TYPOGRAPHY
                 With pdImages(g_CurrentImage).getLayerByIndex(layerIndex)
                     .setTextLayerProperty ptp_Text, ""
                 End With
@@ -1144,7 +1144,7 @@ Public Function askIfOkayToRasterizeLayer(Optional ByVal srcLayerType As LAYER_T
         'Generate customized question text based on layer type
         Select Case srcLayerType
     
-            Case PDL_TEXT
+            Case PDL_TEXT, PDL_TYPOGRAPHY
                 questionText = g_Language.TranslateMessage("This text layer will be changed to an image (raster) layer, meaning you can no longer modify its text or font settings.")
                 questionText = questionText & vbCrLf & vbCrLf & g_Language.TranslateMessage("Are you sure you want to continue?")
                 yesText = g_Language.TranslateMessage("Yes.  Please convert this text layer.")

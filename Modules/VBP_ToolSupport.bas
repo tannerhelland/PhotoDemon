@@ -509,7 +509,7 @@ Public Sub syncToolOptionsUIToCurrentLayer()
             layerToolActive = True
         
         Case VECTOR_TEXT, VECTOR_FANCYTEXT
-            If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then layerToolActive = True
+            If pdImages(g_CurrentImage).getActiveLayer.isLayerText Then layerToolActive = True
         
         Case Else
             layerToolActive = False
@@ -630,7 +630,7 @@ Public Sub syncCurrentLayerToToolOptionsUI()
             layerToolActive = True
         
         Case VECTOR_TEXT, VECTOR_FANCYTEXT
-            If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then layerToolActive = True
+            If pdImages(g_CurrentImage).getActiveLayer.isLayerText Then layerToolActive = True
         
         Case Else
             layerToolActive = False

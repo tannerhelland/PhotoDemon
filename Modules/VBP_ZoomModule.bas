@@ -127,7 +127,7 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
         'Text tools currently draw layer boundaries at all times; I'm working on this (TODO!)
         Case VECTOR_TEXT, VECTOR_FANCYTEXT
             
-            If pdImages(g_CurrentImage).getActiveLayer.getLayerType = PDL_TEXT Then
+            If pdImages(g_CurrentImage).getActiveLayer.isLayerText Then
                 Drawing.drawLayerBoundaries dstCanvas, srcImage, srcImage.getActiveLayer
                 Drawing.drawLayerCornerNodes dstCanvas, srcImage, srcImage.getActiveLayer, curPOI
                 Drawing.drawLayerRotateNode dstCanvas, srcImage, srcImage.getActiveLayer, curPOI
