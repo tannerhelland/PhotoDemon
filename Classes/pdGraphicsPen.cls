@@ -66,6 +66,9 @@ Private m_PenAlignment As Long
 'Some GDI+-specific functions are declared here, as they're of limited use elsewhere
 Private Declare Function GdipSetPenDashCap197819 Lib "gdiplus" (ByVal srcPen As Long, ByVal newDashCap As Long) As Long
 
+'This class is capable of serializing itself to/from XML strings
+Private cSerialize As pdParamXML
+
 
 'Pen transforms (TBD)
 
@@ -140,11 +143,23 @@ Public Sub setPenProperty(ByVal propID As PD_GRAPHICS_PEN_SETTINGS, ByVal newSet
     
 End Sub
 
-'For interop purposes, pens are passed around PD as parameter strings.
+'For interop purposes, pens are passed around PD as XML strings.
 Public Function getPenAsString() As String
     
-    'For now, we use a pdParamString class to make this possible.  Eventually, we will be moving to a new format.
-    getPenAsString = buildParams(m_PenMode, m_PenColor, m_PenOpacity, m_PenWidth, m_PenLineJoin, m_PenLineCap, m_PenDashCap, m_PenMiterLimit, m_PenAlignment)
+    With cSerialize
+        .Reset 1#
+        .addParam "PenMode", m_PenMode
+        .addParam "PenColor", m_PenColor
+        .addParam "PenOpacity", m_PenOpacity
+        .addParam "PenWidth", m_PenWidth
+        .addParam "PenLineJoin", m_PenLineJoin
+        .addParam "PenLineCap", m_PenLineCap
+        .addParam "PenDashCap", m_PenDashCap
+        .addParam "PenMiterLimit", m_PenMiterLimit
+        .addParam "PenAlignment", m_PenAlignment
+    End With
+    
+    getPenAsString = cSerialize.getParamString
     
 End Function
 
@@ -156,7 +171,7 @@ Public Sub createPenFromString(ByRef srcString As String)
         m_PenMode = 0
         m_PenColor = vbBlack
         m_PenOpacity = 100
-        m_PenWidth = 10
+        m_PenWidth = 1
         m_PenLineJoin = 0
         m_PenLineCap = 0
         m_PenDashCap = 0
@@ -166,21 +181,17 @@ Public Sub createPenFromString(ByRef srcString As String)
     Else
     
         'For now, we use a pdParamString class to make this possible.  Eventually, we will be moving to a new format.
-        Dim cParams As pdParamString
-        Set cParams = New pdParamString
-        
-        cParams.setParamString srcString
-        
-        With cParams
-            m_PenMode = .GetLong(1, 0)
-            m_PenColor = .GetLong(2, vbBlack)
-            m_PenOpacity = .GetDouble(3, 100)
-            m_PenWidth = .GetDouble(4, 10)
-            m_PenLineJoin = .GetLong(5, 0)
-            m_PenLineCap = .GetLong(6, 0)
-            m_PenDashCap = .GetLong(7, 0)
-            m_PenMiterLimit = .GetDouble(8, 10#)
-            m_PenAlignment = .GetLong(9, PenAlignmentCenter)
+        With cSerialize
+            .setParamString srcString
+            m_PenMode = .GetLong("PenMode", 0)
+            m_PenColor = .GetLong("PenColor", vbBlack)
+            m_PenOpacity = .GetDouble("PenOpacity", 100)
+            m_PenWidth = .GetDouble("PenWidth", 1)
+            m_PenLineJoin = .GetLong("PenLineJoin", 0)
+            m_PenLineCap = .GetLong("PenLineCap", 0)
+            m_PenDashCap = .GetLong("PenDashCap", 0)
+            m_PenMiterLimit = .GetDouble("PenMiterLimit", 10#)
+            m_PenAlignment = .GetLong("PenAlignment", PenAlignmentCenter)
         End With
         
     End If
@@ -203,3 +214,9 @@ Public Sub releasePenHandle(ByVal srcPen As Long)
     GDI_Plus.releaseGDIPlusPen srcPen
 End Sub
 
+Private Sub Class_Initialize()
+    
+    'Prep a string serializer
+    Set cSerialize = New pdParamXML
+    
+End Sub

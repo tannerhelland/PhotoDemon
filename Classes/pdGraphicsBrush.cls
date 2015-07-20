@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Graphics Fill ("Brush" in GDI/GDI+ parlance) Class
 'Copyright 2014-2015 by Tanner Helland
 'Created: 30/June/15 (but assembled from many bits written earlier)
-'Last updated: 30/June/15
-'Last update: start migrating code from other places in PD to this singular class
+'Last updated: 16/July/15
+'Last update: convert the class's string output to use XML instead of the old pipe-delimited technique
 '
 'This class manages a single GDI+ WAPI brush instance.  (Brushes are used to fill shapes/paths.)
 '
@@ -60,6 +60,9 @@ Private m_PatternColor1 As Long
 Private m_PatternColor1Opacity As Single
 Private m_PatternColor2 As Long
 Private m_PatternColor2Opacity As Single
+
+'This class is capable of serializing itself to/from XML strings
+Private cSerialize As pdParamXML
 
 'Gradient brush settings (TBD)
 
@@ -133,16 +136,23 @@ End Sub
 'For interop purposes, brushes are often passed around PD as strings.  Any brush can be perfectly re-created from just this string.
 Public Function getBrushAsString() As String
     
-    'For now, we use a pdParamString class to make this possible.  Eventually, we will be moving to a new format.
-    getBrushAsString = buildParams(m_BrushMode, m_PrimaryColor, m_PrimaryOpacity, m_PatternID, m_PatternColor1, m_PatternColor1Opacity, m_PatternColor2, m_PatternColor2Opacity)
+    With cSerialize
+        .Reset 1#
+        .addParam "BrushMode", m_BrushMode
+        .addParam "PrimaryColor", m_PrimaryColor
+        .addParam "PrimaryOpacity", m_PrimaryOpacity
+        .addParam "PatternID", m_PatternID
+        .addParam "PatternColor1", m_PatternColor1
+        .addParam "PatternColor1Opacity", m_PatternColor1Opacity
+        .addParam "PatternColor2", m_PatternColor2
+        .addParam "PatternColor2Opacity", m_PatternColor2Opacity
+    End With
     
-    'Debug.Print "GetBrushAsString=" & buildParams(m_BrushMode, m_PrimaryColor, m_PrimaryOpacity, m_PatternID, m_PatternColor1, m_PatternColor1Opacity, m_PatternColor2, m_PatternColor2Opacity)
+    getBrushAsString = cSerialize.getParamString
     
 End Function
 
 Public Sub createBrushFromString(ByRef srcString As String)
-    
-    'Debug.Print "createBrushFromString=" & srcString
     
     'If the string is empty, prep a default object
     If Len(srcString) = 0 Then
@@ -157,22 +167,17 @@ Public Sub createBrushFromString(ByRef srcString As String)
         m_PatternColor2Opacity = 100
         
     Else
-    
-        'For now, we use a pdParamString class to make this possible.  Eventually, we will be moving to a new format.
-        Dim cParams As pdParamString
-        Set cParams = New pdParamString
-        
-        cParams.setParamString srcString
-        
-        With cParams
-            m_BrushMode = .GetLong(1, 0)
-            m_PrimaryColor = .GetLong(2, vbBlack)
-            m_PrimaryOpacity = .GetDouble(3, 100)
-            m_PatternID = .GetLong(4, 0)
-            m_PatternColor1 = .GetLong(5, vbBlack)
-            m_PatternColor1Opacity = .GetDouble(6, 100)
-            m_PatternColor2 = .GetLong(7, vbWhite)
-            m_PatternColor2Opacity = .GetDouble(8, 100)
+
+        With cSerialize
+            .setParamString srcString
+            m_BrushMode = .GetLong("BrushMode", 0)
+            m_PrimaryColor = .GetLong("PrimaryColor", vbBlack)
+            m_PrimaryOpacity = .GetDouble("PrimaryOpacity", 100)
+            m_PatternID = .GetLong("PatternID", 0)
+            m_PatternColor1 = .GetLong("PatternColor1", vbBlack)
+            m_PatternColor1Opacity = .GetDouble("PatternColor1Opacity", 100)
+            m_PatternColor2 = .GetLong("PatternColor2", vbWhite)
+            m_PatternColor2Opacity = .GetDouble("PatternColor2Opacity", 100)
         End With
         
     End If
@@ -210,4 +215,11 @@ End Function
 'Helper function to simplify brush destruction
 Public Sub releaseBrushHandle(ByVal srcBrush As Long)
     GDI_Plus.releaseGDIPlusBrush srcBrush
+End Sub
+
+Private Sub Class_Initialize()
+    
+    'Prep a string serializer
+    Set cSerialize = New pdParamXML
+    
 End Sub
