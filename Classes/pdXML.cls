@@ -447,8 +447,8 @@ End Function
 
 'Given a string and a position, split it into two strings at that position
 Private Function splitStringIn2(ByRef srcString As String, ByVal splitPosition As Long, ByRef dstFirstHalf As String, ByRef dstSecondHalf As String)
-    dstFirstHalf = Left(srcString, splitPosition)
-    dstSecondHalf = Right(srcString, Len(srcString) - splitPosition)
+    dstFirstHalf = Left$(srcString, splitPosition)
+    dstSecondHalf = Right$(srcString, Len(srcString) - splitPosition)
 End Function
 
 'Once a valid XML file has been loaded, we need to see if it contains valid XML data for the current operation.  The client can

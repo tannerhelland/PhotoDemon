@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.59</langversion>
+<langversion>6.7.61</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -14148,27 +14148,7 @@ or os menus File> Open e File> Import.</translation>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>forward diagonal</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>backward diagonal</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>cross</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>diagonal cross</original>
-<translation></translation>
-</phrase>
-
-<!-- VBP_DialogBrushSettings.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- VBP_DialogBrushSettings.frm contains 17 phrases. 3 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for VBP_DialogBrushSettings.frm-->
 
@@ -14282,12 +14262,24 @@ or os menus File> Open e File> Import.</translation>
 
 <!-- END text for VBP_DialogPenSettings.frm-->
 
+<!-- BEGIN text for pdComboBox_Hatch.ctl -->
+
+<!-- pdComboBox_Hatch.ctl contains 0 phrases. -->
+
+<!-- END text for pdComboBox_Hatch.ctl-->
+
+<!-- BEGIN text for pdParamXML.cls -->
+
+<!-- pdParamXML.cls contains 0 phrases. -->
+
+<!-- END text for pdParamXML.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2479</phrasecount>
+<phrasecount>2475</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4252 phrases. -->
-<!-- 1773 are duplicates, so only 2479 unique phrases have been written to file. -->
-<!-- These 2479 phrases contain approximately 13769 total words. -->
+<!-- As of this build, PhotoDemon contains 4246 phrases. -->
+<!-- 1771 are duplicates, so only 2475 unique phrases have been written to file. -->
+<!-- These 2475 phrases contain approximately 13762 total words. -->
 
 </pdData>
