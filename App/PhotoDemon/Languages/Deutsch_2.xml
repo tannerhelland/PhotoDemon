@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (rk)</langname>
-<langversion>6.7.62</langversion>
+<langversion>6.7.64</langversion>
 <langstatus>Nicht abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -12065,6 +12065,11 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 </phrase>
 
 <phrase>
+<original>Typography layer</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>New layer added successfully.</original>
 <translation>Neue Ebene erfolgreich hinzugefügt.</translation>
 </phrase>
@@ -12124,7 +12129,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_LayerHandler.bas contains 32 phrases. 19 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- VBP_LayerHandler.bas contains 34 phrases. 20 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for VBP_LayerHandler.bas-->
 
@@ -13414,7 +13419,22 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_Text.frm contains 11 phrases. 6 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<phrase>
+<original>This layer is a typography layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(This action is non-destructive.)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Click here to convert this layer to a basic text layer.</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_ToolPanel_Text.frm contains 19 phrases. 11 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_Text.frm-->
 
@@ -13981,7 +14001,17 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_ToolPanel_FancyText.frm contains 51 phrases. 18 were duplicates of existing phrases, so only 33 new phrases were written to file. -->
+<phrase>
+<original>This layer is a basic text layer.  To edit it with the typography tool, you must first convert it to a typography layer.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Click here to convert this layer to a typography layer.</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_ToolPanel_FancyText.frm contains 59 phrases. 24 were duplicates of existing phrases, so only 35 new phrases were written to file. -->
 
 <!-- END text for VBP_ToolPanel_FancyText.frm-->
 
@@ -14276,10 +14306,10 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2475</phrasecount>
+<phrasecount>2481</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4246 phrases. -->
-<!-- 1771 are duplicates, so only 2475 unique phrases have been written to file. -->
-<!-- These 2475 phrases contain approximately 13762 total words. -->
+<!-- As of this build, PhotoDemon contains 4264 phrases. -->
+<!-- 1783 are duplicates, so only 2481 unique phrases have been written to file. -->
+<!-- These 2481 phrases contain approximately 13838 total words. -->
 
 </pdData>

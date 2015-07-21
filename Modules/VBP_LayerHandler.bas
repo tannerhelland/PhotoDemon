@@ -112,8 +112,11 @@ Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
             Case PDL_IMAGE
                 dLayerName = g_Language.TranslateMessage("Blank layer")
                 
-            Case PDL_TEXT, PDL_TYPOGRAPHY
+            Case PDL_TEXT
                 dLayerName = g_Language.TranslateMessage("Text layer")
+                
+            Case PDL_TYPOGRAPHY
+                dLayerName = g_Language.TranslateMessage("Typography layer")
         
         End Select
         

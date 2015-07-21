@@ -24,14 +24,52 @@ Begin VB.Form toolpanel_FancyText
    ScaleWidth      =   1229
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin VB.PictureBox picConvertLayer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   1335
+      Left            =   0
+      ScaleHeight     =   89
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   97
+      TabIndex        =   43
+      Top             =   840
+      Visible         =   0   'False
+      Width           =   1455
+      Begin PhotoDemon.pdHyperlink lblConvertLayerConfirm 
+         Height          =   240
+         Left            =   120
+         Top             =   900
+         Width           =   285
+         _ExtentX        =   503
+         _ExtentY        =   423
+         Alignment       =   2
+         Caption         =   "yes"
+         Layout          =   2
+         RaiseClickEvent =   -1  'True
+      End
+      Begin PhotoDemon.pdLabel lblConvertLayer 
+         Height          =   735
+         Left            =   0
+         Top             =   120
+         Width           =   10800
+         _ExtentX        =   19050
+         _ExtentY        =   1296
+         Alignment       =   2
+         Caption         =   "yes"
+         Layout          =   1
+      End
+   End
    Begin PhotoDemon.buttonStripVertical btsCategory 
       Height          =   1380
       Left            =   6240
       TabIndex        =   1
       Top             =   30
       Width           =   2175
-      _extentx        =   4048
-      _extenty        =   2434
+      _ExtentX        =   4048
+      _ExtentY        =   2434
    End
    Begin PhotoDemon.pdTextBox txtTextTool 
       Height          =   1380
@@ -39,10 +77,10 @@ Begin VB.Form toolpanel_FancyText
       TabIndex        =   0
       Top             =   30
       Width           =   5295
-      _extentx        =   9340
-      _extenty        =   2434
-      fontsize        =   9
-      multiline       =   -1  'True
+      _ExtentX        =   9340
+      _ExtentY        =   2434
+      FontSize        =   9
+      Multiline       =   -1  'True
    End
    Begin PhotoDemon.pdLabel lblText 
       Height          =   240
@@ -50,11 +88,11 @@ Begin VB.Form toolpanel_FancyText
       Left            =   120
       Top             =   60
       Width           =   645
-      _extentx        =   1138
-      _extenty        =   503
-      alignment       =   1
-      caption         =   "text:"
-      forecolor       =   0
+      _ExtentX        =   1138
+      _ExtentY        =   503
+      Alignment       =   1
+      Caption         =   "text:"
+      ForeColor       =   0
    End
    Begin VB.PictureBox picCategory 
       BackColor       =   &H80000005&
@@ -75,8 +113,8 @@ Begin VB.Form toolpanel_FancyText
          TabIndex        =   9
          Top             =   30
          Width           =   1815
-         _extentx        =   3201
-         _extenty        =   2434
+         _ExtentX        =   3201
+         _ExtentY        =   2434
       End
       Begin VB.PictureBox picAppearanceCategory 
          BackColor       =   &H80000005&
@@ -97,8 +135,8 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   40
             Top             =   540
             Width           =   2055
-            _extentx        =   3625
-            _extenty        =   1508
+            _ExtentX        =   3625
+            _ExtentY        =   1508
          End
          Begin PhotoDemon.brushSelector bsTextBackground 
             Height          =   855
@@ -106,8 +144,8 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   38
             Top             =   540
             Width           =   2055
-            _extentx        =   3625
-            _extenty        =   1508
+            _ExtentX        =   3625
+            _ExtentY        =   1508
          End
          Begin PhotoDemon.smartCheckBox chkBackground 
             Height          =   330
@@ -115,10 +153,10 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   12
             Top             =   105
             Width           =   3240
-            _extentx        =   4445
-            _extenty        =   582
-            caption         =   "fill background"
-            value           =   0
+            _ExtentX        =   4445
+            _ExtentY        =   582
+            Caption         =   "fill background"
+            Value           =   0
          End
          Begin PhotoDemon.pdLabel lblText 
             Height          =   720
@@ -126,12 +164,12 @@ Begin VB.Form toolpanel_FancyText
             Left            =   0
             Top             =   600
             Width           =   1245
-            _extentx        =   1561
-            _extenty        =   1270
-            alignment       =   1
-            caption         =   "fill style:"
-            forecolor       =   0
-            layout          =   1
+            _ExtentX        =   1561
+            _ExtentY        =   1270
+            Alignment       =   1
+            Caption         =   "fill style:"
+            ForeColor       =   0
+            Layout          =   1
          End
          Begin PhotoDemon.pdLabel lblText 
             Height          =   720
@@ -139,12 +177,12 @@ Begin VB.Form toolpanel_FancyText
             Left            =   3600
             Top             =   600
             Width           =   1125
-            _extentx        =   1561
-            _extenty        =   1270
-            alignment       =   1
-            caption         =   "border style:"
-            forecolor       =   0
-            layout          =   1
+            _ExtentX        =   1561
+            _ExtentY        =   1270
+            Alignment       =   1
+            Caption         =   "border style:"
+            ForeColor       =   0
+            Layout          =   1
          End
          Begin PhotoDemon.smartCheckBox chkBackgroundBorder 
             Height          =   330
@@ -152,10 +190,10 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   39
             Top             =   120
             Width           =   3240
-            _extentx        =   4445
-            _extenty        =   582
-            caption         =   "background border"
-            value           =   0
+            _ExtentX        =   4445
+            _ExtentY        =   582
+            Caption         =   "background border"
+            Value           =   0
          End
       End
       Begin VB.PictureBox picAppearanceCategory 
@@ -177,8 +215,8 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   42
             Top             =   480
             Width           =   2055
-            _extentx        =   3625
-            _extenty        =   1508
+            _ExtentX        =   3625
+            _ExtentY        =   1508
          End
          Begin PhotoDemon.brushSelector bsText 
             Height          =   855
@@ -186,8 +224,8 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   37
             Top             =   480
             Width           =   2055
-            _extentx        =   3625
-            _extenty        =   1508
+            _ExtentX        =   3625
+            _ExtentY        =   1508
          End
          Begin PhotoDemon.pdLabel lblText 
             Height          =   855
@@ -195,11 +233,11 @@ Begin VB.Form toolpanel_FancyText
             Left            =   0
             Top             =   480
             Width           =   1095
-            _extentx        =   1931
-            _extenty        =   1508
-            alignment       =   1
-            caption         =   "fill style:"
-            layout          =   1
+            _ExtentX        =   1931
+            _ExtentY        =   1508
+            Alignment       =   1
+            Caption         =   "fill style:"
+            Layout          =   1
          End
          Begin PhotoDemon.smartCheckBox chkFillText 
             Height          =   330
@@ -207,9 +245,9 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   36
             Top             =   30
             Width           =   3135
-            _extentx        =   5530
-            _extenty        =   582
-            caption         =   "fill text"
+            _ExtentX        =   5530
+            _ExtentY        =   582
+            Caption         =   "fill text"
          End
          Begin PhotoDemon.pdLabel lblText 
             Height          =   855
@@ -217,11 +255,11 @@ Begin VB.Form toolpanel_FancyText
             Left            =   3360
             Top             =   480
             Width           =   1215
-            _extentx        =   2143
-            _extenty        =   1508
-            alignment       =   1
-            caption         =   "outline style:"
-            layout          =   1
+            _ExtentX        =   2143
+            _ExtentY        =   1508
+            Alignment       =   1
+            Caption         =   "outline style:"
+            Layout          =   1
          End
          Begin PhotoDemon.smartCheckBox chkOutlineText 
             Height          =   330
@@ -229,9 +267,9 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   41
             Top             =   30
             Width           =   3135
-            _extentx        =   5530
-            _extenty        =   582
-            caption         =   "outline text"
+            _ExtentX        =   5530
+            _ExtentY        =   582
+            Caption         =   "outline text"
          End
       End
    End
@@ -254,10 +292,10 @@ Begin VB.Form toolpanel_FancyText
          TabIndex        =   17
          Top             =   1020
          Width           =   1935
-         _extentx        =   3413
-         _extenty        =   609
-         sigdigits       =   2
-         min             =   -10
+         _ExtentX        =   3413
+         _ExtentY        =   609
+         Min             =   -10
+         SigDigits       =   2
       End
       Begin PhotoDemon.textUpDown tudMargin 
          Height          =   345
@@ -266,10 +304,10 @@ Begin VB.Form toolpanel_FancyText
          TabIndex        =   13
          Top             =   90
          Width           =   960
-         _extentx        =   1693
-         _extenty        =   609
-         max             =   1000
-         min             =   -1000
+         _ExtentX        =   1693
+         _ExtentY        =   609
+         Min             =   -1000
+         Max             =   1000
       End
       Begin PhotoDemon.buttonStrip btsHAlignment 
          Height          =   435
@@ -277,9 +315,9 @@ Begin VB.Form toolpanel_FancyText
          TabIndex        =   4
          Top             =   60
          Width           =   1455
-         _extentx        =   2566
-         _extenty        =   767
-         colorscheme     =   1
+         _ExtentX        =   2566
+         _ExtentY        =   767
+         ColorScheme     =   1
       End
       Begin PhotoDemon.pdLabel lblText 
          Height          =   240
@@ -287,11 +325,11 @@ Begin VB.Form toolpanel_FancyText
          Left            =   0
          Top             =   150
          Width           =   1125
-         _extentx        =   1984
-         _extenty        =   503
-         alignment       =   1
-         caption         =   "alignment:"
-         forecolor       =   0
+         _ExtentX        =   1984
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "alignment:"
+         ForeColor       =   0
       End
       Begin PhotoDemon.buttonStrip btsVAlignment 
          Height          =   435
@@ -299,9 +337,9 @@ Begin VB.Form toolpanel_FancyText
          TabIndex        =   5
          Top             =   510
          Width           =   1455
-         _extentx        =   2566
-         _extenty        =   767
-         colorscheme     =   1
+         _ExtentX        =   2566
+         _ExtentY        =   767
+         ColorScheme     =   1
       End
       Begin PhotoDemon.pdLabel lblText 
          Height          =   240
@@ -309,11 +347,11 @@ Begin VB.Form toolpanel_FancyText
          Left            =   0
          Top             =   1080
          Width           =   1125
-         _extentx        =   1984
-         _extenty        =   503
-         alignment       =   1
-         caption         =   "line wrap:"
-         forecolor       =   0
+         _ExtentX        =   1984
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "line wrap:"
+         ForeColor       =   0
       End
       Begin PhotoDemon.pdComboBox cboWordWrap 
          Height          =   375
@@ -321,8 +359,8 @@ Begin VB.Form toolpanel_FancyText
          TabIndex        =   8
          Top             =   1020
          Width           =   2070
-         _extentx        =   3651
-         _extenty        =   661
+         _ExtentX        =   3651
+         _ExtentY        =   661
       End
       Begin PhotoDemon.pdLabel lblText 
          Height          =   240
@@ -330,11 +368,11 @@ Begin VB.Form toolpanel_FancyText
          Left            =   3360
          Top             =   150
          Width           =   1605
-         _extentx        =   2831
-         _extenty        =   503
-         alignment       =   1
-         caption         =   "h. padding:"
-         forecolor       =   0
+         _ExtentX        =   2831
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "h. padding:"
+         ForeColor       =   0
       End
       Begin PhotoDemon.textUpDown tudMargin 
          Height          =   345
@@ -343,10 +381,10 @@ Begin VB.Form toolpanel_FancyText
          TabIndex        =   14
          Top             =   90
          Width           =   960
-         _extentx        =   1693
-         _extenty        =   609
-         max             =   1000
-         min             =   -1000
+         _ExtentX        =   1693
+         _ExtentY        =   609
+         Min             =   -1000
+         Max             =   1000
       End
       Begin PhotoDemon.textUpDown tudMargin 
          Height          =   345
@@ -355,10 +393,10 @@ Begin VB.Form toolpanel_FancyText
          TabIndex        =   15
          Top             =   570
          Width           =   960
-         _extentx        =   1693
-         _extenty        =   609
-         max             =   1000
-         min             =   -1000
+         _ExtentX        =   1693
+         _ExtentY        =   609
+         Min             =   -1000
+         Max             =   1000
       End
       Begin PhotoDemon.textUpDown tudMargin 
          Height          =   345
@@ -367,10 +405,10 @@ Begin VB.Form toolpanel_FancyText
          TabIndex        =   16
          Top             =   570
          Width           =   960
-         _extentx        =   1693
-         _extenty        =   609
-         max             =   1000
-         min             =   -1000
+         _ExtentX        =   1693
+         _ExtentY        =   609
+         Min             =   -1000
+         Max             =   1000
       End
       Begin PhotoDemon.pdLabel lblText 
          Height          =   240
@@ -378,11 +416,11 @@ Begin VB.Form toolpanel_FancyText
          Left            =   3360
          Top             =   630
          Width           =   1605
-         _extentx        =   2831
-         _extenty        =   503
-         alignment       =   1
-         caption         =   "v. padding:"
-         forecolor       =   0
+         _ExtentX        =   2831
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "v. padding:"
+         ForeColor       =   0
       End
       Begin PhotoDemon.pdLabel lblText 
          Height          =   240
@@ -390,11 +428,11 @@ Begin VB.Form toolpanel_FancyText
          Left            =   3480
          Top             =   1080
          Width           =   1530
-         _extentx        =   2699
-         _extenty        =   503
-         alignment       =   1
-         caption         =   "line spacing:"
-         forecolor       =   0
+         _ExtentX        =   2699
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "line spacing:"
+         ForeColor       =   0
       End
    End
    Begin VB.PictureBox picCategory 
@@ -415,8 +453,8 @@ Begin VB.Form toolpanel_FancyText
          TabIndex        =   18
          Top             =   30
          Width           =   1815
-         _extentx        =   3201
-         _extenty        =   2434
+         _ExtentX        =   3201
+         _ExtentY        =   2434
       End
       Begin VB.PictureBox picCharCategory 
          BackColor       =   &H80000005&
@@ -438,10 +476,10 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   33
             Top             =   0
             Width           =   1215
-            _extentx        =   1720
-            _extenty        =   609
-            sigdigits       =   1
-            max             =   100
+            _ExtentX        =   1720
+            _ExtentY        =   609
+            Max             =   100
+            SigDigits       =   1
          End
          Begin PhotoDemon.pdLabel lblText 
             Height          =   240
@@ -449,11 +487,11 @@ Begin VB.Form toolpanel_FancyText
             Left            =   0
             Top             =   60
             Width           =   1125
-            _extentx        =   1984
-            _extenty        =   503
-            alignment       =   1
-            caption         =   "remap:"
-            forecolor       =   0
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "remap:"
+            ForeColor       =   0
          End
          Begin PhotoDemon.pdComboBox cboCharCase 
             Height          =   375
@@ -461,8 +499,8 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   29
             Top             =   0
             Width           =   2595
-            _extentx        =   4577
-            _extenty        =   661
+            _ExtentX        =   4577
+            _ExtentY        =   661
          End
          Begin PhotoDemon.pdLabel lblText 
             Height          =   240
@@ -470,11 +508,11 @@ Begin VB.Form toolpanel_FancyText
             Left            =   0
             Top             =   540
             Width           =   1125
-            _extentx        =   1984
-            _extenty        =   503
-            alignment       =   1
-            caption         =   "spacing:"
-            forecolor       =   0
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "spacing:"
+            ForeColor       =   0
          End
          Begin PhotoDemon.sliderTextCombo sltCharSpacing 
             CausesValidation=   0   'False
@@ -483,11 +521,11 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   30
             Top             =   420
             Width           =   2760
-            _extentx        =   4868
-            _extenty        =   873
-            sigdigits       =   3
-            max             =   1
-            min             =   -1
+            _ExtentX        =   4868
+            _ExtentY        =   873
+            Min             =   -1
+            Max             =   1
+            SigDigits       =   3
          End
          Begin PhotoDemon.pdLabel lblText 
             Height          =   240
@@ -495,11 +533,11 @@ Begin VB.Form toolpanel_FancyText
             Left            =   0
             Top             =   1020
             Width           =   1125
-            _extentx        =   1984
-            _extenty        =   503
-            alignment       =   1
-            caption         =   "orientation:"
-            forecolor       =   0
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "orientation:"
+            ForeColor       =   0
          End
          Begin PhotoDemon.sliderTextCombo sltCharOrientation 
             CausesValidation=   0   'False
@@ -508,11 +546,11 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   31
             Top             =   900
             Width           =   2760
-            _extentx        =   4868
-            _extenty        =   873
-            sigdigits       =   1
-            max             =   360
-            min             =   -360
+            _ExtentX        =   4868
+            _ExtentY        =   873
+            Min             =   -360
+            Max             =   360
+            SigDigits       =   1
          End
          Begin PhotoDemon.pdLabel lblText 
             Height          =   240
@@ -520,11 +558,11 @@ Begin VB.Form toolpanel_FancyText
             Left            =   3960
             Top             =   60
             Width           =   1125
-            _extentx        =   1984
-            _extenty        =   503
-            alignment       =   1
-            caption         =   "jitter:"
-            forecolor       =   0
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "jitter:"
+            ForeColor       =   0
          End
          Begin PhotoDemon.pdLabel lblText 
             Height          =   240
@@ -532,11 +570,11 @@ Begin VB.Form toolpanel_FancyText
             Left            =   4125
             Top             =   1020
             Width           =   960
-            _extentx        =   1693
-            _extenty        =   503
-            alignment       =   1
-            caption         =   "mirror:"
-            forecolor       =   0
+            _ExtentX        =   1693
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "mirror:"
+            ForeColor       =   0
          End
          Begin PhotoDemon.pdComboBox cboCharMirror 
             Height          =   375
@@ -544,8 +582,8 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   32
             Top             =   945
             Width           =   2595
-            _extentx        =   4577
-            _extenty        =   661
+            _ExtentX        =   4577
+            _ExtentY        =   661
          End
          Begin PhotoDemon.textUpDown tudJitter 
             Height          =   345
@@ -554,10 +592,10 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   34
             Top             =   0
             Width           =   1215
-            _extentx        =   2143
-            _extenty        =   609
-            sigdigits       =   1
-            max             =   100
+            _ExtentX        =   2143
+            _ExtentY        =   609
+            Max             =   100
+            SigDigits       =   1
          End
          Begin PhotoDemon.pdLabel lblText 
             Height          =   240
@@ -565,11 +603,11 @@ Begin VB.Form toolpanel_FancyText
             Left            =   3960
             Top             =   540
             Width           =   1125
-            _extentx        =   1984
-            _extenty        =   503
-            alignment       =   1
-            caption         =   "inflation:"
-            forecolor       =   0
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "inflation:"
+            ForeColor       =   0
          End
          Begin PhotoDemon.sliderTextCombo sltCharInflation 
             CausesValidation=   0   'False
@@ -578,10 +616,10 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   35
             Top             =   420
             Width           =   2760
-            _extentx        =   4868
-            _extenty        =   873
-            sigdigits       =   1
-            max             =   20
+            _ExtentX        =   4868
+            _ExtentY        =   873
+            Max             =   20
+            SigDigits       =   1
          End
       End
       Begin VB.PictureBox picCharCategory 
@@ -603,11 +641,11 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   20
             Top             =   450
             Width           =   2415
-            _extentx        =   4260
-            _extenty        =   609
-            max             =   1000
-            min             =   1
-            value           =   16
+            _ExtentX        =   4260
+            _ExtentY        =   609
+            Min             =   1
+            Max             =   1000
+            Value           =   16
          End
          Begin PhotoDemon.pdLabel lblText 
             Height          =   240
@@ -615,11 +653,11 @@ Begin VB.Form toolpanel_FancyText
             Left            =   0
             Top             =   60
             Width           =   1125
-            _extentx        =   1984
-            _extenty        =   503
-            alignment       =   1
-            caption         =   "font face:"
-            forecolor       =   0
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "font face:"
+            ForeColor       =   0
          End
          Begin PhotoDemon.pdLabel lblText 
             Height          =   240
@@ -627,11 +665,11 @@ Begin VB.Form toolpanel_FancyText
             Left            =   0
             Top             =   510
             Width           =   1125
-            _extentx        =   1984
-            _extenty        =   503
-            alignment       =   1
-            caption         =   "font size:"
-            forecolor       =   0
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "font size:"
+            ForeColor       =   0
          End
          Begin PhotoDemon.pdLabel lblText 
             Height          =   240
@@ -639,11 +677,11 @@ Begin VB.Form toolpanel_FancyText
             Left            =   0
             Top             =   960
             Width           =   1125
-            _extentx        =   1984
-            _extenty        =   503
-            alignment       =   1
-            caption         =   "font style:"
-            forecolor       =   0
+            _ExtentX        =   1984
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "font style:"
+            ForeColor       =   0
          End
          Begin PhotoDemon.pdButtonToolbox btnFontStyles 
             Height          =   435
@@ -652,9 +690,9 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   21
             Top             =   870
             Width           =   450
-            _extentx        =   794
-            _extenty        =   767
-            stickytoggle    =   -1  'True
+            _ExtentX        =   794
+            _ExtentY        =   767
+            StickyToggle    =   -1  'True
          End
          Begin PhotoDemon.pdButtonToolbox btnFontStyles 
             Height          =   435
@@ -663,9 +701,9 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   22
             Top             =   870
             Width           =   450
-            _extentx        =   794
-            _extenty        =   767
-            stickytoggle    =   -1  'True
+            _ExtentX        =   794
+            _ExtentY        =   767
+            StickyToggle    =   -1  'True
          End
          Begin PhotoDemon.pdButtonToolbox btnFontStyles 
             Height          =   435
@@ -674,9 +712,9 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   23
             Top             =   870
             Width           =   450
-            _extentx        =   794
-            _extenty        =   767
-            stickytoggle    =   -1  'True
+            _ExtentX        =   794
+            _ExtentY        =   767
+            StickyToggle    =   -1  'True
          End
          Begin PhotoDemon.smartCheckBox chkHinting 
             Height          =   330
@@ -684,10 +722,10 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   24
             Top             =   450
             Width           =   1815
-            _extentx        =   2990
-            _extenty        =   582
-            caption         =   "hinting"
-            value           =   0
+            _ExtentX        =   2990
+            _ExtentY        =   582
+            Caption         =   "hinting"
+            Value           =   0
          End
          Begin PhotoDemon.pdComboBox cboTextRenderingHint 
             Height          =   375
@@ -695,8 +733,8 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   25
             Top             =   0
             Width           =   2415
-            _extentx        =   4260
-            _extenty        =   635
+            _ExtentX        =   4260
+            _ExtentY        =   635
          End
          Begin PhotoDemon.pdLabel lblText 
             Height          =   240
@@ -704,11 +742,11 @@ Begin VB.Form toolpanel_FancyText
             Left            =   3840
             Top             =   60
             Width           =   1365
-            _extentx        =   2408
-            _extenty        =   503
-            alignment       =   1
-            caption         =   "antialiasing:"
-            forecolor       =   0
+            _ExtentX        =   2408
+            _ExtentY        =   503
+            Alignment       =   1
+            Caption         =   "antialiasing:"
+            ForeColor       =   0
          End
          Begin PhotoDemon.pdComboBox_Font cboTextFontFace 
             Height          =   375
@@ -716,8 +754,8 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   26
             Top             =   0
             Width           =   2415
-            _extentx        =   4260
-            _extenty        =   661
+            _ExtentX        =   4260
+            _ExtentY        =   661
          End
          Begin PhotoDemon.pdButtonToolbox btnFontStyles 
             Height          =   435
@@ -726,9 +764,9 @@ Begin VB.Form toolpanel_FancyText
             TabIndex        =   27
             Top             =   870
             Width           =   450
-            _extentx        =   794
-            _extenty        =   767
-            stickytoggle    =   -1  'True
+            _ExtentX        =   794
+            _ExtentY        =   767
+            StickyToggle    =   -1  'True
          End
       End
    End
@@ -1411,6 +1449,10 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
 End Sub
 
+Private Sub Form_Resize()
+    updateAgainstCurrentLayer
+End Sub
+
 Private Sub lastUsedSettings_ReadCustomPresetData()
 
     'Make sure the correct panels are shown
@@ -1418,6 +1460,17 @@ Private Sub lastUsedSettings_ReadCustomPresetData()
     btsAppearanceCategory_Click btsAppearanceCategory.ListIndex
     btsCharCategory_Click btsCharCategory.ListIndex
 
+End Sub
+
+Private Sub lblConvertLayerConfirm_Click()
+    
+    'Because of the way this warning panel is constructed, this label will not be visible unless a click is valid.
+    pdImages(g_CurrentImage).getActiveLayer.setLayerType PDL_TYPOGRAPHY
+    
+    'Hide the warning panel and redraw the viewport
+    Me.updateAgainstCurrentLayer
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
 End Sub
 
 Private Sub psText_PenChanged()
@@ -1761,6 +1814,54 @@ Private Sub txtTextTool_LostFocusAPI()
     If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_Text, txtTextTool.Text
 End Sub
 
+'Outside functions can forcibly request an update against the current layer.  If the current layer is a non-typography text layer of
+' some type (e.g. basic text), an option will be displayed to convert the layer.
+Public Sub updateAgainstCurrentLayer()
+    
+    If g_OpenImageCount > 0 Then
+    
+        If pdImages(g_CurrentImage).getActiveLayer.isLayerText Then
+        
+            'Check for non-typography layers.
+            If pdImages(g_CurrentImage).getActiveLayer.getLayerType <> PDL_TYPOGRAPHY Then
+            
+                Select Case pdImages(g_CurrentImage).getActiveLayer.getLayerType
+                
+                    Case PDL_TEXT
+                        Dim newMessage As String
+                        newMessage = g_Language.TranslateMessage("This layer is a basic text layer.  To edit it with the typography tool, you must first convert it to a typography layer.")
+                        newMessage = newMessage & vbCrLf & g_Language.TranslateMessage("(This action is non-destructive.)")
+                        Me.lblConvertLayer.Caption = newMessage
+                        
+                    'In the future, other text layer types can be added here.
+                
+                End Select
+            
+                Me.lblConvertLayerConfirm.Caption = g_Language.TranslateMessage("Click here to convert this layer to a typography layer.")
+                
+                'Make the prompt panel the size of the tool window
+                Me.picConvertLayer.Move 0, 0, Me.ScaleWidth, Me.ScaleHeight
+                
+                'Center all labels on the panel
+                Me.lblConvertLayer.Left = (Me.ScaleWidth - Me.lblConvertLayer.Width) / 2
+                Me.lblConvertLayerConfirm.Left = (Me.ScaleWidth - Me.lblConvertLayerConfirm.Width) / 2
+                
+                'Display the panel
+                Me.picConvertLayer.Visible = True
+                
+            Else
+                Me.picConvertLayer.Visible = False
+            End If
+        
+        Else
+            Me.picConvertLayer.Visible = False
+        End If
+        
+    Else
+        Me.picConvertLayer.Visible = False
+    End If
+
+End Sub
 
 'Updating against the current theme accomplishes a number of things:
 ' 1) All user-drawn controls are redrawn according to the current g_Themer settings.

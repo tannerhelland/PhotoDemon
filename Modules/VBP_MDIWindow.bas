@@ -157,6 +157,10 @@ Public Function fullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
         'Unload the backbuffer of the primary canvas
         Viewport_Engine.eraseViewportBuffers
         
+        'Allow any tool panels to redraw themselves.  (Some tool panels dynamically change their contents based on the current image, so if no
+        ' images are loaded, their contents may shift.)
+        Tool_Support.syncToolOptionsUIToCurrentLayer
+        
     End If
     
 End Function

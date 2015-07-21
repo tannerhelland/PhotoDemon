@@ -24,6 +24,44 @@ Begin VB.Form toolpanel_Text
    ScaleWidth      =   1231
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin VB.PictureBox picConvertLayer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   1335
+      Left            =   17280
+      ScaleHeight     =   89
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   97
+      TabIndex        =   12
+      Top             =   0
+      Visible         =   0   'False
+      Width           =   1455
+      Begin PhotoDemon.pdHyperlink lblConvertLayerConfirm 
+         Height          =   240
+         Left            =   120
+         Top             =   900
+         Width           =   285
+         _ExtentX        =   503
+         _ExtentY        =   423
+         Alignment       =   2
+         Caption         =   "yes"
+         Layout          =   2
+         RaiseClickEvent =   -1  'True
+      End
+      Begin PhotoDemon.pdLabel lblConvertLayer 
+         Height          =   735
+         Left            =   0
+         Top             =   120
+         Width           =   10800
+         _ExtentX        =   19050
+         _ExtentY        =   1296
+         Alignment       =   2
+         Caption         =   "yes"
+         Layout          =   1
+      End
+   End
    Begin PhotoDemon.pdComboBox_Font cboTextFontFace 
       Height          =   375
       Left            =   7680
@@ -524,7 +562,10 @@ Private Sub csTextFontColor_LostFocusAPI()
 End Sub
 
 Private Sub Form_Load()
-
+    
+    'Forcibly hide the "convert to text layer" panel
+    toolpanel_Text.picConvertLayer.Visible = False
+    
     'Generate a list of fonts
     If g_IsProgramRunning Then
         
@@ -564,7 +605,7 @@ Private Sub Form_Load()
     btsVAlignment.AssignImageToItem 0, "TEXT_ALIGN_TOP"
     btsVAlignment.AssignImageToItem 1, "TEXT_ALIGN_VCENTER"
     btsVAlignment.AssignImageToItem 2, "TEXT_ALIGN_BOTTOM"
-        
+       
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
     lastUsedSettings.setParentForm Me
@@ -572,7 +613,7 @@ Private Sub Form_Load()
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
     updateAgainstCurrentTheme
-
+    
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
@@ -580,6 +621,21 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     'Save all last-used settings to file
     lastUsedSettings.saveAllControlValues
     lastUsedSettings.setParentForm Nothing
+    
+End Sub
+
+Private Sub Form_Resize()
+    updateAgainstCurrentLayer
+End Sub
+
+Private Sub lblConvertLayerConfirm_Click()
+    
+    'Because of the way this warning panel is constructed, this label will not be visible unless a click is valid.
+    pdImages(g_CurrentImage).getActiveLayer.setLayerType PDL_TEXT
+    
+    'Hide the warning panel and redraw the viewport
+    Me.updateAgainstCurrentLayer
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
@@ -668,6 +724,56 @@ End Sub
 
 Private Sub txtTextTool_LostFocusAPI()
     If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Text ptp_Text, txtTextTool.Text
+End Sub
+
+
+'Outside functions can forcibly request an update against the current layer.  If the current layer is a non-basic-text text layer of
+' some type (e.g. typography), an option will be displayed to convert the layer over.
+Public Sub updateAgainstCurrentLayer()
+
+    If g_OpenImageCount > 0 Then
+
+        If pdImages(g_CurrentImage).getActiveLayer.isLayerText Then
+        
+            'Check for non-basic-text layers.
+            If pdImages(g_CurrentImage).getActiveLayer.getLayerType <> PDL_TEXT Then
+            
+                Select Case pdImages(g_CurrentImage).getActiveLayer.getLayerType
+                
+                    Case PDL_TYPOGRAPHY
+                        Dim newMessage As String
+                        newMessage = g_Language.TranslateMessage("This layer is a typography layer.  To edit it with the basic text tool, you must first convert it to a basic text layer.")
+                        newMessage = newMessage & vbCrLf & g_Language.TranslateMessage("(This action is non-destructive.)")
+                        Me.lblConvertLayer.Caption = newMessage
+                        
+                    'In the future, other text layer types can be added here.
+                
+                End Select
+            
+                Me.lblConvertLayerConfirm.Caption = g_Language.TranslateMessage("Click here to convert this layer to a basic text layer.")
+                
+                'Make the prompt panel the size of the tool window
+                Me.picConvertLayer.Move 0, 0, Me.ScaleWidth, Me.ScaleHeight
+                
+                'Center all labels on the panel
+                Me.lblConvertLayer.Left = (Me.ScaleWidth - Me.lblConvertLayer.Width) / 2
+                Me.lblConvertLayerConfirm.Left = (Me.ScaleWidth - Me.lblConvertLayerConfirm.Width) / 2
+                
+                'Display the panel
+                Me.picConvertLayer.Visible = True
+                
+            Else
+                Me.picConvertLayer.Visible = False
+            End If
+        
+        Else
+            Me.picConvertLayer.Visible = False
+        End If
+        
+    Else
+        Me.picConvertLayer.Visible = False
+    End If
+
 End Sub
 
 

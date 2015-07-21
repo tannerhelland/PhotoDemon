@@ -1323,9 +1323,11 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                     
                     'Create a new text layer directly; note that we *do not* pass this command through the central processor, as we do not
                     ' want the delay associated with full Undo/Redo creation.
-                    '
-                    'TODO: distinguish between text and typography layers
-                    Layer_Handler.addNewLayer pdImages(g_CurrentImage).getActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, "", imgX, imgY, True
+                    If g_CurrentTool = VECTOR_TEXT Then
+                        Layer_Handler.addNewLayer pdImages(g_CurrentImage).getActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, "", imgX, imgY, True
+                    ElseIf g_CurrentTool = VECTOR_FANCYTEXT Then
+                        Layer_Handler.addNewLayer pdImages(g_CurrentImage).getActiveLayerIndex, PDL_TYPOGRAPHY, 0, 0, 0, True, "", imgX, imgY, True
+                    End If
                     
                     'Mirror existing opacity and blend mode values onto the new layer, but only if the values are reasonable.
                     ' (I'm not entirely sold on the utility of this, but I may revisit in the future.)
