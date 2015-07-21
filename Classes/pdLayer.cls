@@ -387,9 +387,16 @@ Public Sub assignLayerID(ByVal thisLayerID As Long)
     
 End Sub
 
-'Get layer type.  Note that there is no SET layer type function; layer type is set at creation, and cannot currently be changed.
+'Get layer type.
 Public Function getLayerType() As LAYER_TYPE
     getLayerType = myLayerType
+End Function
+
+'Set layer type.  Note that this only sets the layer type flag; changing the actual layer contents to match (e.g. rasterization)
+' must be handled separately.
+Public Function setLayerType(ByVal newLayerType As LAYER_TYPE)
+    myLayerType = newLayerType
+    m_VectorDIBSynched = False
 End Function
 
 'If a caller simply wants to determine vector vs raster layers, this helper function takes care of it.  Note that text layers are
@@ -2822,6 +2829,13 @@ Public Function syncInternalDIB() As Boolean
             'Start by prepping a GDI+ font object.  Note that this only needs to be done once; after the font object has been
             ' created successfully, these various functions will not trigger a rebuild.
             If myTextRenderer Is Nothing Then Set myTextRenderer = New pdTextRenderer
+            
+            'Set the correct rendering engine in advance
+            If myLayerType = PDL_TEXT Then
+                myTextData.tld_RenderingEngine = tre_WAPI
+            Else
+                myTextData.tld_RenderingEngine = tre_PHOTODEMON
+            End If
             
             With myTextRenderer
                 .setFontFace myTextData.tld_FontFace

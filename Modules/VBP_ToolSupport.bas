@@ -495,7 +495,19 @@ End Function
 Public Sub syncToolOptionsUIToCurrentLayer()
     
     'Before doing anything else, make sure canvas tool operations are allowed
-    If Not canvasToolsAllowed(False) Then Exit Sub
+    If Not canvasToolsAllowed(False) Then
+        
+        'Some panels may redraw their contents if no images are loaded
+        If g_CurrentTool = VECTOR_TEXT Then
+            toolpanel_Text.updateAgainstCurrentLayer
+        ElseIf g_CurrentTool = VECTOR_FANCYTEXT Then
+            toolpanel_FancyText.updateAgainstCurrentLayer
+        End If
+        
+        'Exit now, as subsequent checks in this function require one or more active images
+        Exit Sub
+        
+    End If
     
     'To improve performance, we'll only sync the UI if a layer-specific tool is active, and the tool options panel is currently
     ' set to VISIBLE.
@@ -509,7 +521,18 @@ Public Sub syncToolOptionsUIToCurrentLayer()
             layerToolActive = True
         
         Case VECTOR_TEXT, VECTOR_FANCYTEXT
-            If pdImages(g_CurrentImage).getActiveLayer.isLayerText Then layerToolActive = True
+            If pdImages(g_CurrentImage).getActiveLayer.isLayerText Then
+                layerToolActive = True
+            Else
+            
+                'Hide the "convert to different type of text panel" prompts
+                If g_CurrentTool = VECTOR_TEXT Then
+                    toolpanel_Text.updateAgainstCurrentLayer
+                ElseIf g_CurrentTool = VECTOR_FANCYTEXT Then
+                    toolpanel_FancyText.updateAgainstCurrentLayer
+                End If
+            
+            End If
         
         Case Else
             layerToolActive = False
@@ -558,9 +581,8 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                     .btsVAlignment.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_VerticalAlignment)
                 End With
                 
-                'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.
-                ' This is because this property changes according to the active text tool.
-                pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_RenderingEngine, tre_WAPI
+                'Display the "convert to basic text layer" panel as necessary
+                toolpanel_Text.updateAgainstCurrentLayer
                 
             Case VECTOR_FANCYTEXT
                 
@@ -598,9 +620,8 @@ Public Sub syncToolOptionsUIToCurrentLayer()
                     .sltCharSpacing.Value = pdImages(g_CurrentImage).getActiveLayer.getTextLayerProperty(ptp_CharSpacing)
                 End With
                 
-                'This is a little weird, but we also make sure to synchronize the current text rendering engine when the UI is synched.
-                ' This is because this property changes according to the active text tool.
-                pdImages(g_CurrentImage).getActiveLayer.setTextLayerProperty ptp_RenderingEngine, tre_PHOTODEMON
+                'Display the "convert to typography layer" panel as necessary
+                toolpanel_FancyText.updateAgainstCurrentLayer
         
         End Select
         

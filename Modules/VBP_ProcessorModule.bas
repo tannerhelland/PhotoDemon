@@ -731,7 +731,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             End If
         
         'TODO: sort out new text layer vs new typography layer behavior
-        Case "New text layer"
+        Case "New text layer", "New typography layer"
             'During normal usage, "New text layer" is a dummy entry used by the on-canvas text tool.  It is called *after* a new layer
             ' has already been created, and the sole purpose of the function is to add the newly created text layer to the Undo/Redo chain.
             '
@@ -739,7 +739,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If (MacroStatus = MacroPLAYBACK) Or (MacroStatus = MacroBATCH) Then
                 
                 'Start by creating a new layer
-                Layer_Handler.addNewLayer pdImages(g_CurrentImage).getActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, "", 0, 0, True
+                If StrComp(processID, "New text layer", vbTextCompare) Then
+                    Layer_Handler.addNewLayer pdImages(g_CurrentImage).getActiveLayerIndex, PDL_TEXT, 0, 0, 0, True, "", 0, 0, True
+                Else
+                    Layer_Handler.addNewLayer pdImages(g_CurrentImage).getActiveLayerIndex, PDL_TYPOGRAPHY, 0, 0, 0, True, "", 0, 0, True
+                End If
                 
                 'Five parameters are passed during text layer creation:
                 ' 1, 2) X, Y offset
