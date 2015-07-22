@@ -374,9 +374,6 @@ Public Function buildGlyphCollection(ByRef srcString As String, Optional ByVal u
         
     End If
     
-    'Before exiting, remove the active font into our temporary "testing" DC
-    SelectObject m_tmpDIB.getDIBDC, m_oldFontHandle
-
 End Function
 
 'Given a Unicode entry point, fill a buffer with the raw output of GetGlyphOutline
@@ -650,7 +647,7 @@ End Function
 Friend Function assembleCompositePath(ByRef dstPath As pdGraphicsPath, ByRef boundingRect As RECTF, ByVal horizontalAlignment As GdiPlusStringAlignment, ByVal verticalAlignment As GdiPlusStringAlignment, Optional lineWrapMode As TEXT_WORDWRAP_MODE = tre_AutoBreakWords) As Boolean
     
     'Initialize the destination path as necessary
-    If dstPath Is Nothing Then Set dstPath = New pdGraphicsPath
+    If dstPath Is Nothing Then Set dstPath = New pdGraphicsPath Else dstPath.resetPath
     
     'Only proceed if the source string is non-empty
     If m_NumOfGlyphs > 0 Then
@@ -855,11 +852,24 @@ Private Function calculateGlyphPositions(ByRef boundingRect As RECTF, ByVal hori
     'Average char width is used to increase/decrease char spacing (if the user has variable character spacing applied)
     Dim customCharOffset As Single
     customCharOffset = CSng(m_TextMetrics.tmAveCharWidth) * m_CharSpacing
-        
+    
+    'Reset various glyph metrics
+    For i = 0 To UBound(m_Glyphs)
+        With m_Glyphs(i)
+            .isFirstGlyphOnLine = False
+            .isLastGlyphOnLine = False
+            .LineID = 0
+        End With
+    Next i
+    
     'Mark the first glyph as first on its line; we use this indicator to prevent infinite loops if wordwrap is activated, but we can't
     ' fit an entire word on a line.  When this happens, we have no choice but to clip the word
     m_Glyphs(0).isFirstGlyphOnLine = True
-    m_LineWidths(0) = 0
+    
+    'Reset our line widths array
+    For i = 0 To UBound(m_LineWidths)
+        m_LineWidths(i) = 0
+    Next i
     
     'For performance reasons, we calculate all initial positioning in a single pass.  I had originally intended to make two passes - one to
     ' determine line break positions, and a second to perform actual (x, y) positioning.  This would make for cleaner code, but it also

@@ -1423,9 +1423,7 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal
         ' repeated characters.
         
         'Start by creating a pdGlyphCollection instance, if one doesn't already exist.
-        'TODO: figure out why we have to recreate the glyph collection here; technically we should be able to re-use it!
-        'If (m_GlyphCollection Is Nothing) Then
-        Set m_GlyphCollection = New pdGlyphCollection
+        If (m_GlyphCollection Is Nothing) Then Set m_GlyphCollection = New pdGlyphCollection
         
         'Notify the glyph collection of our GDI font handle.  It obviously needs this in order to generate glyphs.
         m_GlyphCollection.notifyOfGDIFontChoice m_GDIFont, m_FontUnderline, m_FontStrikeout
