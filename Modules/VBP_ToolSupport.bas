@@ -466,7 +466,7 @@ Public Function canvasToolsAllowed(Optional ByVal alsoCheckBusyState As Boolean 
     
         'Make sure the main form has not been disabled by a modal dialog
         If FormMain.Enabled Then
-        
+            
             'Finally, make sure another process hasn't locked the active canvas.  Note that the caller can disable this behavior
             ' if they don't need it.
             If alsoCheckBusyState Then
