@@ -2090,7 +2090,7 @@ End Sub
 
 'When a control tied to a non-destructive text effect receives focus, it should call this function with its current value (translated
 ' as appropriate).  This function will make a note of that value, which can easily be compared when the control loses focus.
-Public Sub flagInitialNDFXState_Text(ByVal textSettingID As PDLAYER_TEXT_PROPERTY, ByVal textSettingValue As Variant, ByVal targetLayerID As Long)
+Public Sub flagInitialNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVal textSettingValue As Variant, ByVal targetLayerID As Long)
     
     'This function is easy; just store the values we are passed
     prevTextSetting(textSettingID) = textSettingValue
@@ -2103,7 +2103,7 @@ End Sub
 'When a control tied to a non-destructive text effect loses focus, it should call this function with its current value (translated
 ' as appropriate).  This function will compare the value against its previously stored value, and if the two do not match, this
 ' function will add an Undo entry and notify the macro recorder (if active).
-Public Sub flagFinalNDFXState_Text(ByVal textSettingID As PDLAYER_TEXT_PROPERTY, ByVal textSettingValue As Variant)
+Public Sub flagFinalNDFXState_Text(ByVal textSettingID As PD_TEXT_PROPERTY, ByVal textSettingValue As Variant)
     
     'Ignore all requests if no images are loaded
     If g_OpenImageCount = 0 Then Exit Sub
@@ -2290,7 +2290,7 @@ Private Function getNameOfGenericAction(ByVal genericSettingID As PDLAYER_GENERI
     
 End Function
 
-Private Function getNameOfTextAction(ByVal textSettingID As PDLAYER_TEXT_PROPERTY) As String
+Private Function getNameOfTextAction(ByVal textSettingID As PD_TEXT_PROPERTY) As String
     
     Select Case textSettingID
         

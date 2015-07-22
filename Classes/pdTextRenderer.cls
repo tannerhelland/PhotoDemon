@@ -60,6 +60,56 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'To simplify the process of setting/getting text settings for a given layer, this Enum is used to pass text properties
+Public Enum PD_TEXT_PROPERTY
+    ptp_Text = 0
+    ptp_FontColor = 1
+    ptp_FontFace = 2
+    ptp_FontSize = 3
+    ptp_FontSizeUnit = 4
+    ptp_FontBold = 5
+    ptp_FontItalic = 6
+    ptp_FontUnderline = 7
+    ptp_FontStrikeout = 8
+    ptp_HorizontalAlignment = 9
+    ptp_VerticalAlignment = 10
+    ptp_TextAntialiasing = 11
+    ptp_TextContrast = 12
+    ptp_RenderingEngine = 13
+    ptp_TextHinting = 14
+    ptp_WordWrap = 15
+    ptp_FillActive = 16
+    ptp_FillBrush = 17
+    ptp_OutlineActive = 18
+    ptp_OutlinePen = 19
+    ptp_BackgroundActive = 20
+    ptp_BackgroundBrush = 21
+    ptp_BackBorderActive = 22
+    ptp_BackBorderPen = 23
+    ptp_LineSpacing = 24
+    ptp_MarginLeft = 25
+    ptp_MarginTop = 26
+    ptp_MarginRight = 27
+    ptp_MarginBottom = 28
+    ptp_CharRemap = 29
+    ptp_CharSpacing = 30
+    ptp_CharOrientation = 31
+    ptp_CharJitterX = 32
+    ptp_CharJitterY = 33
+    ptp_CharInflation = 34
+    ptp_CharMirror = 35
+End Enum
+
+#If False Then
+    Const ptp_Text = 0, ptp_FontColor = 1, ptp_FontFace = 2, ptp_FontSize = 3, ptp_FontSizeUnit = 4, ptp_FontBold = 5, ptp_FontItalic = 6
+    Const ptp_FontUnderline = 7, ptp_FontStrikeout = 8, ptp_HorizontalAlignment = 9, ptp_VerticalAlignment = 10, ptp_TextAntialiasing = 11
+    Const ptp_TextContrast = 12, ptp_RenderingEngine = 13, ptp_TextHinting = 14, ptp_WordWrap = 15, ptp_FillActive = 16, ptp_FillBrush = 17
+    Const ptp_OutlineActive = 18, ptp_OutlinePen = 19, ptp_BackgroundActive = 20, ptp_BackgroundBrush = 21, ptp_BackBorderActive = 22
+    Const ptp_BackBorderPen = 23, ptp_LineSpacing = 24, ptp_MarginLeft = 25, ptp_MarginTop = 26, ptp_MarginRight = 27, ptp_MarginBottom = 28
+    Const ptp_CharRemap = 29, ptp_CharSpacing = 30, ptp_CharOrientation = 31, ptp_CharJitterX = 32, ptp_CharJitterY = 33, ptp_CharInflation = 34
+    Const ptp_CharMirror = 35
+#End If
+
 'At present, only WAPI font backends are available.  This may change in the future (Cairo+Pango would be particularly nice to implement).
 Private Enum fontBackend
     fb_UNKNOWN = 0
@@ -351,6 +401,9 @@ Private Const DT_MODIFYSTRING = &H10000
 Private Const DT_RTLREADING = &H20000
 Private Const DT_WORD_ELLIPSIS = &H40000
 
+'The current text-to-be-rendered
+Private m_CurrentText As String
+
 'This class internally maintains various font properties.  These properties must be converted into specific GDI+ parameters via
 ' various means, but they are stored in human-friendly format to simplify serializing a class instance to an XML string.
 Private m_FontFace As String
@@ -430,6 +483,16 @@ Private m_FontCacheClean As Boolean
 'If we have to fall back to plain GDI for rendering, we use a temporary 24-bpp DIB to cache the results.  This is then manually
 ' transferred to the 32-bpp target.
 Private m_TmpGdiDIB As pdDIB
+
+'Get/set the current rendering string.  PD uses a lot of tricks to improve rendering performance, including ignoring redraw requests if none of the
+' class's internals have changed, so the current text must be assigned via these functions prior to actual rendering.
+Public Function getCurrentText() As String
+    getCurrentText = m_CurrentText
+End Function
+
+Public Sub setCurrentText(ByRef newText As String)
+    m_CurrentText = newText
+End Sub
 
 'Get functions for various font styles, and whether said styles are supported by the current font.
 ' (If no font name has been set, the function returns *will not be valid*)
@@ -527,253 +590,6 @@ Friend Sub setFontSizeUnit(ByVal newUnit As pdFontUnit)
     End If
 End Sub
 
-'Get/set string alignment.  Note that unlike other settings, these functions have two significant features:
-' 1) These Set functions immediately update a corresponding GDI+ StringFormat object.
-' 2) These Set functions do not affect the current font cache
-Friend Function getHorizontalAlignment() As GdiPlusStringAlignment
-    getHorizontalAlignment = m_HorizontalAlignment
-End Function
-
-Friend Sub setHorizontalAlignment(ByVal newAlignment As GdiPlusStringAlignment)
-    
-    If m_HorizontalAlignment <> newAlignment Then m_HorizontalAlignment = newAlignment
-    
-    'If using GDI+, set this format immediately, as it's inexpensive to do so
-    If m_GDIPlusStringFormat <> 0 Then GdipSetStringFormatAlign m_GDIPlusStringFormat, newAlignment
-    
-End Sub
-
-Friend Function getVerticalAlignment() As GdiPlusStringAlignment
-    getVerticalAlignment = m_VerticalAlignment
-End Function
-
-Friend Sub setVerticalAlignment(ByVal newAlignment As GdiPlusStringAlignment)
-    
-    If m_VerticalAlignment <> newAlignment Then m_VerticalAlignment = newAlignment
-    
-    'If using GDI+, set this format immediately, as it's inexpensive to do so
-    If m_GDIPlusStringFormat <> 0 Then GdipSetStringFormatLineAlign m_GDIPlusStringFormat, newAlignment
-    
-End Sub
-
-'Get/set container-specific font settings.  These are stored in normal variables, but they cannot be passed to GDI+
-' until rendering time, as they are container-specific.  As such, they do not affect the current font cache.
-Friend Function getTextAntialiasing() As pdTextAA
-    getTextAntialiasing = m_TextAntialiasing
-End Function
-
-Friend Sub setTextAntialiasing(ByVal newAASetting As pdTextAA)
-    
-    m_TextAntialiasing = newAASetting
-    
-    'If we're using GDI for rendering, this setting requires us to recreate the font
-    If m_CurrentBackend = fb_GDI Then m_FontCacheClean = False
-    
-End Sub
-
-'Text contrast is a weird one: the values vary from 0 to 12, and 4 is the default.  In PD, I have modified it to use a 0-10 scale with
-' 3 as the default, and we convert it to a 12-based measurement if working with GDI+ specifically.  Note that this *ONLY WORKS IN
-' BASIC RENDERING MODE.  GDI doesn't support this measurement natively, so we have to rig it using a manual system.  PD's manual glyph
-' rendering methods ignore this setting entirely.
-Public Function getTextContrast() As Long
-    getTextContrast = m_TextContrast
-End Function
-
-Public Sub setTextContrast(ByVal newContrast As Long)
-    
-    'Force contrast into valid bounds
-    If newContrast < 0 Then
-        newContrast = 0
-    ElseIf newContrast > 10 Then
-        newContrast = 10
-    End If
-    
-    m_TextContrast = newContrast
-    
-End Sub
-
-'Get/set hinting.  Note that variable hinting is only supported by the PHOTODEMON text rendering engine.
-Public Function getTextHinting() As Boolean
-    getTextHinting = m_TextHinting
-End Function
-
-Public Sub setTextHinting(ByVal newHinting As Boolean)
-    m_TextHinting = newHinting
-    m_FontCacheClean = False
-End Sub
-
-'Get/set wordwrap.  Note that variable wordwrap is only supported by the PHOTODEMON text rendering engine.
-Public Function getWordWrap() As TEXT_WORDWRAP_MODE
-    getWordWrap = m_WordWrap
-End Function
-
-Public Sub setWordWrap(ByVal newWordWrap As TEXT_WORDWRAP_MODE)
-    m_WordWrap = newWordWrap
-End Sub
-
-'Get/set various appearance options.  Note that these features are only supported by the PHOTODEMON text rendering engine.
-Public Function getFillActive() As Boolean
-    getFillActive = m_FillActive
-End Function
-
-Public Sub setFillActive(ByVal newSetting As Boolean)
-    m_FillActive = newSetting
-End Sub
-
-Public Function getFillBrush() As String
-    getFillBrush = m_FillBrush
-End Function
-
-Public Sub setFillBrush(ByVal newSetting As String)
-    m_FillBrush = newSetting
-End Sub
-
-Public Function getOutlineActive() As Boolean
-    getOutlineActive = m_OutlineActive
-End Function
-
-Public Sub setOutlineActive(ByVal newSetting As Boolean)
-    m_OutlineActive = newSetting
-End Sub
-
-Public Function getOutlinePen() As String
-    getOutlinePen = m_OutlinePen
-End Function
-
-Public Sub setOutlinePen(ByVal newSetting As String)
-    m_OutlinePen = newSetting
-End Sub
-
-Public Function getBackgroundActive() As Boolean
-    getBackgroundActive = m_BackgroundActive
-End Function
-
-Public Sub setBackgroundActive(ByVal newSetting As Boolean)
-    m_BackgroundActive = newSetting
-End Sub
-
-Public Function getBackgroundBrush() As String
-    getBackgroundBrush = m_BackgroundBrush
-End Function
-
-Public Sub setBackgroundBrush(ByVal newSetting As String)
-    m_BackgroundBrush = newSetting
-End Sub
-
-Public Function getBackBorderActive() As Boolean
-    getBackBorderActive = m_BackBorderActive
-End Function
-
-Public Sub setBackBorderActive(ByVal newSetting As Boolean)
-    m_BackBorderActive = newSetting
-End Sub
-
-Public Function getBackBorderPen() As String
-    getBackBorderPen = m_BackBorderPen
-End Function
-
-Public Sub setBackBorderPen(ByVal newSetting As String)
-    m_BackBorderPen = newSetting
-End Sub
-
-'Get/set various layout options.  Note that these features are only supported by the PHOTODEMON text rendering engine.
-Public Function getLineSpacing() As Single
-    getLineSpacing = m_LineSpacing
-End Function
-
-Public Sub setLineSpacing(ByVal newSetting As Single)
-    m_LineSpacing = newSetting
-End Sub
-
-Public Function getMarginLeft() As Single
-    getMarginLeft = m_MarginLeft
-End Function
-
-Public Sub setMarginLeft(ByVal newSetting As Single)
-    m_MarginLeft = newSetting
-End Sub
-
-Public Function getMarginTop() As Single
-    getMarginTop = m_MarginTop
-End Function
-
-Public Sub setMarginTop(ByVal newSetting As Single)
-    m_MarginTop = newSetting
-End Sub
-
-Public Function getMarginRight() As Single
-    getMarginRight = m_MarginRight
-End Function
-
-Public Sub setMarginRight(ByVal newSetting As Single)
-    m_MarginRight = newSetting
-End Sub
-
-Public Function getMarginBottom() As Single
-    getMarginBottom = m_MarginBottom
-End Function
-
-Public Sub setMarginBottom(ByVal newSetting As Single)
-    m_MarginBottom = newSetting
-End Sub
-
-'Get/set various character-level modifications.  Note that these functions are only supported by the PHOTODEMON rendering engine.
-Public Function getCharRemap() As Long
-    getCharRemap = m_CharRemap
-End Function
-
-Public Sub setCharRemap(ByVal newValue As Long)
-    m_CharRemap = newValue
-End Sub
-
-Public Function getCharSpacing() As Double
-    getCharSpacing = m_CharSpacing
-End Function
-
-Public Sub setCharSpacing(ByVal newValue As Double)
-    m_CharSpacing = newValue
-End Sub
-
-Public Function getCharOrientation() As Double
-    getCharOrientation = m_CharOrientation
-End Function
-
-Public Sub setCharOrientation(ByVal newValue As Double)
-    m_CharOrientation = newValue
-End Sub
-
-Public Function getCharJitterX() As Double
-    getCharJitterX = m_CharJitterX
-End Function
-
-Public Sub setCharJitterX(ByVal newValue As Double)
-    m_CharJitterX = newValue
-End Sub
-
-Public Function getCharJitterY() As Double
-    getCharJitterY = m_CharJitterY
-End Function
-
-Public Sub setCharJitterY(ByVal newValue As Double)
-    m_CharJitterY = newValue
-End Sub
-
-Public Function getCharInflation() As Double
-    getCharInflation = m_CharInflation
-End Function
-
-Public Sub setCharInflation(ByVal newValue As Double)
-    m_CharInflation = newValue
-End Sub
-
-Public Function getCharMirror() As Long
-    getCharMirror = m_CharMirror
-End Function
-
-Public Sub setCharMirror(ByVal newValue As Long)
-    m_CharMirror = newValue
-End Sub
-
 'Get/set the text rendering engine.  This class currently supports two engines: WAPI (which will use GDI or GDI+, as appropriate), and PHOTODEMON,
 ' which uses GDI and Uniscribe to retrieve individual glyphs, but then does all positioning and rendering manually.
 '
@@ -787,81 +603,490 @@ Public Sub setRenderingEngine(ByVal newEngine As TEXT_RENDERING_ENGINE)
 End Sub
 
 'TODO: XML get/set functions for getting/setting all parameters at once
-Public Function getAllFontSettingsAsXML(Optional ByVal ignoreFluffEntries As Boolean = False) As String
+Public Function getAllFontSettingsAsXML() As String
 
-    'pdXML handles string assembly for us
-    Dim xmlEngine As pdXML
-    Set xmlEngine = New pdXML
+    'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller, lighter pdParamXML class
+    Dim cSerialize As pdParamXML
+    Set cSerialize = New pdParamXML
     
-    xmlEngine.prepareNewXML "pdTextSettings"
-    
-    If Not ignoreFluffEntries Then
-        xmlEngine.writeBlankLine
-        xmlEngine.writeComment "This XML string contains initialization settings for the pdTextRenderer class."
-        xmlEngine.writeBlankLine
-    End If
-    
-    'Properties are added in turn.
-    xmlEngine.writeTag "FontFace", m_FontFace
-    xmlEngine.writeTag "FontSize", m_FontSize
-    xmlEngine.writeTag "FontSizeUnit", m_FontSizeUnit
-    xmlEngine.writeTag "FontBold", m_FontBold
-    xmlEngine.writeTag "FontItalic", m_FontItalic
-    xmlEngine.writeTag "FontUnderline", m_FontUnderline
-    xmlEngine.writeTag "FontStrikeout", m_FontStrikeout
-    xmlEngine.writeTag "FontHorizontalAlignment", m_HorizontalAlignment
-    xmlEngine.writeTag "FontVerticalAlignment", m_VerticalAlignment
-    xmlEngine.writeTag "FontAntialiasing", m_TextAntialiasing
-    xmlEngine.writeTag "FontContrast", m_TextContrast
-    xmlEngine.writeTag "FontRenderingEngine", m_RenderingEngine
+    With cSerialize
+        .Reset 1#
+        .addParam "TextLayerText", m_CurrentText
+        .addParam "TextLayerColor", m_FontColor
+        .addParam "TextLayerFontFace", m_FontFace
+        .addParam "TextLayerFontSize", m_FontSize
+        .addParam "TextLayerFontSizeUnit", m_FontSizeUnit
+        .addParam "TextLayerFontBold", m_FontBold
+        .addParam "TextLayerFontItalic", m_FontItalic
+        .addParam "TextLayerFontUnderline", m_FontUnderline
+        .addParam "TextLayerFontStrikeout", m_FontStrikeout
+        .addParam "TextLayerHorizontalAlignment", m_HorizontalAlignment
+        .addParam "TextLayerVerticalAlignment", m_VerticalAlignment
+        .addParam "TextLayerAntialiasing", m_TextAntialiasing
+        .addParam "TextLayerContrast", m_TextContrast
+        .addParam "TextRenderingEngine", m_RenderingEngine
+        .addParam "TextHinting", m_TextHinting
+        .addParam "TextWordWrap", m_WordWrap
+        .addParam "TextFillActive", m_FillActive
+        .addParam "TextFillBrush", m_FillBrush
+        .addParam "TextOutlineActive", m_OutlineActive
+        .addParam "TextOutlinePen", m_OutlinePen
+        .addParam "TextBackgroundActive", m_BackgroundActive
+        .addParam "TextBackgroundBrush", m_BackgroundBrush
+        .addParam "TextBackBorderActive", m_BackBorderActive
+        .addParam "TextBackBorderPen", m_BackBorderPen
+        .addParam "TextLineSpacing", m_LineSpacing
+        .addParam "TextMarginLeft", m_MarginLeft
+        .addParam "TextMarginTop", m_MarginTop
+        .addParam "TextMarginRight", m_MarginRight
+        .addParam "TextMarginBottom", m_MarginBottom
+        .addParam "TextCharRemap", m_CharRemap
+        .addParam "TextCharSpacing", m_CharSpacing
+        .addParam "TextCharOrientation", m_CharOrientation
+        .addParam "TextCharJitterX", m_CharJitterX
+        .addParam "TextCharJitterY", m_CharJitterY
+        .addParam "TextCharInflation", m_CharInflation
+        .addParam "TextCharMirror", m_CharMirror
+    End With
     
     'Return the completed XML string
-    getAllFontSettingsAsXML = xmlEngine.returnCurrentXMLString
+    getAllFontSettingsAsXML = cSerialize.getParamString()
 
 End Function
 
+'Set all text and font parameters at once, using an XML string created by a previous call to getAllFontSettingsAsXML.
+' (Note that this function manually marks the font cache as dirty, so you should only use it when loading a file for the first time.)
 Public Function setAllFontSettingsFromXML(ByRef srcXMLString As String) As Boolean
     
-    'Note that this function does not manually mark the font cache as dirty.  Individual setXYZ functions will do that as necessary.
+    'We don't need a full-featured XML creator (e.g. with encoding decs and the like), so we can use the smaller, lighter pdParamXML class
+    Dim cSerialize As pdParamXML
+    Set cSerialize = New pdParamXML
     
-    'Prep an XML parser
-    Dim xmlEngine As pdXML
-    Set xmlEngine = New pdXML
-    
-    'Load the source XML string
-    If xmlEngine.loadXMLFromString(srcXMLString) Then
-    
-        'Validate the XML subtype
-        If xmlEngine.isPDDataType("pdTextSettings") Then
+    With cSerialize
+        .setParamString srcXMLString
         
-            'Retrieve all relevant settings in turn.  If a setting is not supported (due to an older version of PD writing this
-            ' XML string), supply a default value.
+        m_CurrentText = .GetString("TextLayerText", "")
+        m_FontColor = .GetLong("TextLayerColor", 0)
+        m_FontFace = .GetString("TextLayerFontFace", g_InterfaceFont)
+        m_FontSize = .GetDouble("TextLayerFontSize", 16#)
+        m_FontSizeUnit = .GetLong("TextLayerFontSizeUnit", pdfu_Pixel)
+        m_FontBold = .GetBool("TextLayerFontBold", False)
+        m_FontItalic = .GetBool("TextLayerFontItalic", False)
+        m_FontUnderline = .GetBool("TextLayerFontUnderline", False)
+        m_FontStrikeout = .GetBool("TextLayerFontStrikeout", False)
+        m_HorizontalAlignment = .GetLong("TextLayerHorizontalAlignment", StringAlignmentNear)
+        m_VerticalAlignment = .GetLong("TextLayerVerticalAlignment", StringAlignmentNear)
+        m_TextAntialiasing = .GetLong("TextLayerAntialiasing", pdta_Standard)
+        m_TextContrast = .GetLong("TextLayerContrast", 5)
+        m_RenderingEngine = .GetLong("TextRenderingEngine", tre_WAPI)
+        m_TextHinting = .GetBool("TextHinting", False)
+        m_WordWrap = .GetLong("TextWordWrap", tre_AutoBreakWords)
+        m_FillActive = .GetBool("TextFillActive", True)
+        m_FillBrush = .GetString("TextFillBrush", "")
+        m_OutlineActive = .GetBool("TextOutlineActive", False)
+        m_OutlinePen = .GetString("TextOutlinePen", "")
+        m_BackgroundActive = .GetBool("TextBackgroundActive", False)
+        m_BackgroundBrush = .GetString("TextBackgroundBrush", "")
+        m_BackBorderActive = .GetBool("TextBackBorderActive", False)
+        m_BackBorderPen = .GetString("TextBackBorderPen", "")
+        m_LineSpacing = .GetDouble("TextLineSpacing", 0)
+        m_MarginLeft = .GetDouble("TextMarginLeft", 0)
+        m_MarginTop = .GetDouble("TextMarginTop", 0)
+        m_MarginRight = .GetDouble("TextMarginRight", 0)
+        m_MarginBottom = .GetDouble("TextMarginBottom", 0)
+        m_CharRemap = .GetLong("TextCharRemap", 0)
+        m_CharSpacing = .GetDouble("TextCharSpacing", 0)
+        m_CharOrientation = .GetDouble("TextCharOrientation", 0)
+        m_CharJitterX = .GetDouble("TextCharJitterX", 0)
+        m_CharJitterY = .GetDouble("TextCharJitterY", 0)
+        m_CharInflation = .GetDouble("TextCharInflation", 0)
+        m_CharMirror = .GetLong("TextCharMirror", 0)
+    End With
+    
+    'This function does not currently provide a fail state; as long as the load request comes from PD herself, failure should be impossible.
+    setAllFontSettingsFromXML = True
+    
+End Function
+
+'Rather than using dedicated get functions or properties, you can retrieve font and text values via this universal function.
+Friend Function getGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY) As Variant
+
+    Select Case desiredProperty
+        
+        Case ptp_Text
+            getGenericTextProperty = m_CurrentText
+        
+        Case ptp_FontColor
+            getGenericTextProperty = m_FontColor
+        
+        Case ptp_FontFace
+            getGenericTextProperty = m_FontFace
+        
+        Case ptp_FontSize
+            getGenericTextProperty = m_FontSize
+        
+        Case ptp_FontSizeUnit
+            getGenericTextProperty = m_FontSizeUnit
+        
+        Case ptp_FontBold
+            getGenericTextProperty = m_FontBold
+        
+        Case ptp_FontItalic
+            getGenericTextProperty = m_FontItalic
+        
+        Case ptp_FontUnderline
+            getGenericTextProperty = m_FontUnderline
+        
+        Case ptp_FontStrikeout
+            getGenericTextProperty = m_FontUnderline
+        
+        Case ptp_HorizontalAlignment
+            getGenericTextProperty = m_HorizontalAlignment
+        
+        Case ptp_VerticalAlignment
+            getGenericTextProperty = m_VerticalAlignment
+        
+        Case ptp_TextAntialiasing
+            getGenericTextProperty = m_TextAntialiasing
+        
+        Case ptp_TextContrast
+            getGenericTextProperty = m_TextContrast
             
-            'TODO: raise some kind of error or message if the listed font is not available.  This is a possibility for PDI images
-            ' traded between PCs.
-            setFontFace xmlEngine.getUniqueTag_String("FontFace", g_InterfaceFont)
-            setFontSize xmlEngine.getUniqueTag_Double("FontSize", 16)
-            setFontSizeUnit xmlEngine.getUniqueTag_Long("FontSizeUnit", pdfu_Pixel)
-            setFontBold xmlEngine.getUniqueTag_Boolean("FontBold", False)
-            setFontItalic xmlEngine.getUniqueTag_Boolean("FontItalic", False)
-            setFontUnderline xmlEngine.getUniqueTag_Boolean("FontUnderline", False)
-            setFontStrikeout xmlEngine.getUniqueTag_Boolean("FontStrikeout", False)
-            setHorizontalAlignment xmlEngine.getUniqueTag_Long("FontHorizontalAlignment", StringAlignmentNear)
-            setVerticalAlignment xmlEngine.getUniqueTag_Long("FontVerticalAlignment", StringAlignmentNear)
-            setTextAntialiasing xmlEngine.getUniqueTag_Long("FontAntialiasing", pdta_Standard)
-            setTextContrast xmlEngine.getUniqueTag_Long("FontContrast", 5)
-            setRenderingEngine xmlEngine.getUniqueTag_Long("FontRenderingEngine", tre_WAPI)
+        Case ptp_RenderingEngine
+            getGenericTextProperty = m_RenderingEngine
             
-            'Return success!
-            setAllFontSettingsFromXML = True
+        Case ptp_TextHinting
+            getGenericTextProperty = m_TextHinting
+            
+        Case ptp_WordWrap
+            getGenericTextProperty = m_WordWrap
+            
+        Case ptp_FillActive
+            getGenericTextProperty = m_FillActive
         
-        Else
-            setAllFontSettingsFromXML = False
-        End If
+        Case ptp_FillBrush
+            getGenericTextProperty = m_FillBrush
         
-    Else
-        setAllFontSettingsFromXML = False
-    End If
+        Case ptp_OutlineActive
+            getGenericTextProperty = m_OutlineActive
+        
+        Case ptp_OutlinePen
+            getGenericTextProperty = m_OutlinePen
+        
+        Case ptp_BackgroundActive
+            getGenericTextProperty = m_BackgroundActive
+        
+        Case ptp_BackgroundBrush
+            getGenericTextProperty = m_BackgroundBrush
+        
+        Case ptp_BackBorderActive
+            getGenericTextProperty = m_BackBorderActive
+            
+        Case ptp_BackBorderPen
+            getGenericTextProperty = m_BackBorderPen
+        
+        Case ptp_LineSpacing
+            getGenericTextProperty = m_LineSpacing
+            
+        Case ptp_MarginLeft
+            getGenericTextProperty = m_MarginLeft
+            
+        Case ptp_MarginTop
+            getGenericTextProperty = m_MarginTop
+            
+        Case ptp_MarginRight
+            getGenericTextProperty = m_MarginRight
+            
+        Case ptp_MarginBottom
+            getGenericTextProperty = m_MarginBottom
+            
+        Case ptp_CharRemap
+            getGenericTextProperty = m_CharRemap
+            
+        Case ptp_CharSpacing
+            getGenericTextProperty = m_CharSpacing
+            
+        Case ptp_CharOrientation
+            getGenericTextProperty = m_CharOrientation
+            
+        Case ptp_CharJitterX
+            getGenericTextProperty = m_CharJitterX
+            
+        Case ptp_CharJitterY
+            getGenericTextProperty = m_CharJitterY
+            
+        Case ptp_CharInflation
+            getGenericTextProperty = m_CharInflation
+            
+        Case ptp_CharMirror
+            getGenericTextProperty = m_CharMirror
+    
+    End Select
+
+End Function
+
+
+'Rather than using dedicated set functions or properties, you can modify values via this universal function.
+' Returns: TRUE if a value was successfully changed; FALSE if the requested value change was meaningless.  The caller can use this return
+'           to know whether the associated text needs to be redrawn.
+Friend Function setGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY, ByVal newValue As Variant) As Boolean
+
+    Select Case desiredProperty
+        
+        Case ptp_Text
+            If StrComp(m_CurrentText, newValue, vbBinaryCompare) <> 0 Then
+                m_CurrentText = newValue
+                setGenericTextProperty = True
+            End If
+        
+        Case ptp_FontColor
+            If m_FontColor <> CLng(newValue) Then
+                m_FontColor = CLng(newValue)
+                setGenericTextProperty = True
+            End If
+        
+        'TODO: consider raising some kind of error or message if the listed font is not available.  This is a possibility for PDI images
+        ' traded between PCs.
+        Case ptp_FontFace
+            If StrComp(m_FontFace, newValue, vbBinaryCompare) <> 0 Then
+                m_FontFace = newValue
+                m_FontCacheClean = False
+                m_CurrentBackend = fb_UNKNOWN
+                setGenericTextProperty = True
+            End If
+        
+        Case ptp_FontSize
+            If m_FontSize <> CSng(newValue) Then
+                m_FontSize = CSng(newValue)
+                m_FontCacheClean = False
+                setGenericTextProperty = True
+            End If
+        
+        Case ptp_FontSizeUnit
+            If m_FontSizeUnit <> CLng(newValue) Then
+                m_FontSizeUnit = CLng(newValue)
+                m_FontCacheClean = False
+                setGenericTextProperty = True
+            End If
+        
+        Case ptp_FontBold
+            If m_FontBold <> CBool(newValue) Then
+                m_FontBold = CBool(newValue)
+                m_FontCacheClean = False
+                setGenericTextProperty = True
+            End If
+        
+        Case ptp_FontItalic
+            If m_FontItalic <> CBool(newValue) Then
+                m_FontItalic = CBool(newValue)
+                m_FontCacheClean = False
+                setGenericTextProperty = True
+            End If
+        
+        Case ptp_FontUnderline
+            If m_FontUnderline <> CBool(newValue) Then
+                m_FontUnderline = CBool(newValue)
+                m_FontCacheClean = False
+                setGenericTextProperty = True
+            End If
+        
+        Case ptp_FontStrikeout
+            If m_FontStrikeout <> CBool(newValue) Then
+                m_FontStrikeout = CBool(newValue)
+                m_FontCacheClean = False
+                setGenericTextProperty = True
+            End If
+        
+        Case ptp_HorizontalAlignment
+            If m_HorizontalAlignment <> CLng(newValue) Then
+                m_HorizontalAlignment = CLng(newValue)
+                setGenericTextProperty = True
+                
+                'If using GDI+, set this format immediately, as it's inexpensive to do so
+                If m_GDIPlusStringFormat <> 0 Then GdipSetStringFormatAlign m_GDIPlusStringFormat, m_HorizontalAlignment
+                
+            End If
+        
+        Case ptp_VerticalAlignment
+            If m_VerticalAlignment <> CLng(newValue) Then
+                m_VerticalAlignment = CLng(newValue)
+                setGenericTextProperty = True
+                
+                'If using GDI+, set this format immediately, as it's inexpensive to do so
+                If m_GDIPlusStringFormat <> 0 Then GdipSetStringFormatLineAlign m_GDIPlusStringFormat, m_VerticalAlignment
+                
+            End If
+        
+        Case ptp_TextAntialiasing
+            If m_TextAntialiasing <> CLng(newValue) Then
+                m_TextAntialiasing = CLng(newValue)
+                setGenericTextProperty = True
+                
+                'If we're using GDI for rendering, changing antialiasing requires us to recreate the font
+                If m_CurrentBackend = fb_GDI Then m_FontCacheClean = False
+                
+            End If
+        
+        'Text contrast is a weird one: the values vary from 0 to 12, and 4 is the default.  In PD, I have modified it to use a 0-10 scale with
+        ' 3 as the default, and we convert it to a 12-based measurement if working with GDI+ specifically.  Note that this *ONLY WORKS IN
+        ' BASIC RENDERING MODE.  GDI doesn't support this measurement natively, so we have to rig it using a manual system.  PD's manual glyph
+        ' rendering methods ignore this setting entirely.
+        Case ptp_TextContrast
+            If m_TextContrast <> CLng(newValue) Then
+                m_TextContrast = CLng(newValue)
+                
+                If m_TextContrast < 0 Then
+                    m_TextContrast = 0
+                ElseIf m_TextContrast > 10 Then
+                    m_TextContrast = 10
+                End If
+                
+                setGenericTextProperty = True
+            End If
+            
+        Case ptp_RenderingEngine
+            If m_RenderingEngine <> CLng(newValue) Then
+                m_RenderingEngine = CLng(newValue)
+                setGenericTextProperty = True
+            End If
+            
+        Case ptp_TextHinting
+            If m_TextHinting <> CBool(newValue) Then
+                m_TextHinting = CBool(newValue)
+                m_FontCacheClean = False
+                setGenericTextProperty = True
+            End If
+            
+        Case ptp_WordWrap
+            If m_WordWrap <> CLng(newValue) Then
+                m_WordWrap = CLng(newValue)
+                setGenericTextProperty = True
+            End If
+            
+        Case ptp_FillActive
+            If m_FillActive <> CBool(newValue) Then
+                m_FillActive = CBool(newValue)
+                setGenericTextProperty = True
+            End If
+        
+        Case ptp_FillBrush
+            If m_FillBrush <> newValue Then
+                m_FillBrush = newValue
+                setGenericTextProperty = True
+            End If
+        
+        Case ptp_OutlineActive
+            If m_OutlineActive <> CBool(newValue) Then
+                m_OutlineActive = CBool(newValue)
+                setGenericTextProperty = True
+            End If
+        
+        Case ptp_OutlinePen
+            If m_OutlinePen <> newValue Then
+                m_OutlinePen = newValue
+                setGenericTextProperty = True
+            End If
+        
+        Case ptp_BackgroundActive
+            If m_BackgroundActive <> CBool(newValue) Then
+                m_BackgroundActive = CBool(newValue)
+                setGenericTextProperty = True
+            End If
+        
+        Case ptp_BackgroundBrush
+            If m_BackgroundBrush <> newValue Then
+                m_BackgroundBrush = newValue
+                setGenericTextProperty = True
+            End If
+        
+        Case ptp_BackBorderActive
+            If m_BackBorderActive <> CBool(newValue) Then
+                m_BackBorderActive = CBool(newValue)
+                setGenericTextProperty = True
+            End If
+        
+        Case ptp_BackBorderPen
+            If m_BackBorderPen <> newValue Then
+                m_BackBorderPen = newValue
+                setGenericTextProperty = True
+            End If
+        
+        Case ptp_LineSpacing
+            If m_LineSpacing <> CSng(newValue) Then
+                m_LineSpacing = CSng(newValue)
+                setGenericTextProperty = True
+            End If
+        
+        Case ptp_MarginLeft
+            If m_MarginLeft <> CSng(newValue) Then
+                m_MarginLeft = CSng(newValue)
+                setGenericTextProperty = True
+            End If
+        
+        Case ptp_MarginTop
+            If m_MarginTop <> CSng(newValue) Then
+                m_MarginTop = CSng(newValue)
+                setGenericTextProperty = True
+            End If
+        
+        Case ptp_MarginRight
+            If m_MarginRight <> CSng(newValue) Then
+                m_MarginRight = CSng(newValue)
+                setGenericTextProperty = True
+            End If
+        
+        Case ptp_MarginBottom
+            If m_MarginBottom <> CSng(newValue) Then
+                m_MarginBottom = CSng(newValue)
+                setGenericTextProperty = True
+            End If
+            
+        Case ptp_CharRemap
+            If m_CharRemap <> CLng(newValue) Then
+                m_CharRemap = CLng(newValue)
+                setGenericTextProperty = True
+            End If
+            
+        Case ptp_CharSpacing
+            If m_CharSpacing <> CDbl(newValue) Then
+                m_CharSpacing = CDbl(newValue)
+                setGenericTextProperty = True
+            End If
+            
+        Case ptp_CharOrientation
+            If m_CharOrientation <> CDbl(newValue) Then
+                m_CharOrientation = CDbl(newValue)
+                setGenericTextProperty = True
+            End If
+            
+        Case ptp_CharJitterX
+            If m_CharJitterX <> CDbl(newValue) Then
+                m_CharJitterX = CDbl(newValue)
+                setGenericTextProperty = True
+            End If
+            
+        Case ptp_CharJitterY
+            If m_CharJitterY <> CDbl(newValue) Then
+                m_CharJitterY = CDbl(newValue)
+                setGenericTextProperty = True
+            End If
+            
+        Case ptp_CharInflation
+            If m_CharInflation <> CDbl(newValue) Then
+                m_CharInflation = CDbl(newValue)
+                setGenericTextProperty = True
+            End If
+            
+        Case ptp_CharMirror
+            If m_CharMirror <> CLng(newValue) Then
+                m_CharMirror = CLng(newValue)
+                setGenericTextProperty = True
+            End If
+        
+        Case Else
+            Debug.Print "WARNING!  Unknown text property requested from pdTextRenderer.setGenericTextProperty()"
+        
+    End Select
     
 End Function
 
@@ -1141,7 +1366,7 @@ End Function
 ' not currently offer a function for that, FYI.)
 '
 'Note also that the crColor parameter should not include alpha; alpha in PD is handled by layers, not the text renderer.
-Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByVal srcString As String, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
+Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal textWidth As Single, ByVal textHeight As Single) As Boolean
     
     'As a convenience to the user, create the font as necessary
     If (Not m_FontCacheClean) Then
@@ -1163,21 +1388,21 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByVal srcString As String
     If m_RenderingEngine = tre_WAPI Then
         
         'These backends have no reason to render if text isn't present
-        If Len(srcString) <> 0 Then
+        If Len(m_CurrentText) <> 0 Then
         
                 'We should now know whether GDI or GDI+ is required for this combination of settings.
             Select Case m_CurrentBackend
                 
                 'GDI+ is sufficient
                 Case fb_GDIPLUS
-                    renderTextToDIB = renderTextToDIB_GDIPlus(dstDIB, srcString, m_FontColor, x1, y1, textWidth, textHeight)
+                    renderTextToDIB = renderTextToDIB_GDIPlus(dstDIB, m_CurrentText, m_FontColor, x1, y1, textWidth, textHeight)
                     
                     'GDI+ may fail when actually drawing (UGH).  If it does, silently fall back to GDI.
-                    If Not renderTextToDIB Then renderTextToDIB = renderTextToDIB_GDI(dstDIB, srcString, m_FontColor, x1, y1, textWidth, textHeight)
+                    If Not renderTextToDIB Then renderTextToDIB = renderTextToDIB_GDI(dstDIB, m_CurrentText, m_FontColor, x1, y1, textWidth, textHeight)
                     
                 'GDI is required
                 Case fb_GDI
-                    renderTextToDIB = renderTextToDIB_GDI(dstDIB, srcString, m_FontColor, x1, y1, textWidth, textHeight)
+                    renderTextToDIB = renderTextToDIB_GDI(dstDIB, m_CurrentText, m_FontColor, x1, y1, textWidth, textHeight)
                     
                 'GDI and GDI+ both failed; at present, we have no fallback for this case
                 Case fb_UNKNOWN
@@ -1198,24 +1423,28 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByVal srcString As String
         ' repeated characters.
         
         'Start by creating a pdGlyphCollection instance, if one doesn't already exist.
-        If (m_GlyphCollection Is Nothing) Then Set m_GlyphCollection = New pdGlyphCollection
+        'TODO: figure out why we have to recreate the glyph collection here; technically we should be able to re-use it!
+        'If (m_GlyphCollection Is Nothing) Then
+        Set m_GlyphCollection = New pdGlyphCollection
         
         'Notify the glyph collection of our GDI font handle.  It obviously needs this in order to generate glyphs.
         m_GlyphCollection.notifyOfGDIFontChoice m_GDIFont, m_FontUnderline, m_FontStrikeout
         
-        'TODO: retrieve kerning pairs here...?
-        
         'Next, pass the glyph collection our target string.  The glyph collection will generate a list of required glyphs and
         ' automatically retrieve any glyph geometry it hasn't already calculated.  (For example, if the last request it received
         ' was "cat", but this request is "cats", only the 's' needs to be newly retrieved.)
-        m_GlyphCollection.buildGlyphCollection srcString, m_TextHinting, m_CharRemap
+        '
+        'Also - because this step may modify the string (via remapping settings), we use a temporary copy of the current string.
+        Dim tmpString As String
+        tmpString = m_CurrentText
+        m_GlyphCollection.buildGlyphCollection tmpString, m_TextHinting, m_CharRemap
         
         'After all glyphs have been created, it's *very important* that we regain control over our GDI font, as we need it for
         ' the actual rendering step!
         m_GlyphCollection.requestGDIFontRelease
         
         'With the glyph collection successfully assembled, proceed with rendering
-        renderTextToDIB = renderTextToDIB_Glyphs(dstDIB, srcString, x1, y1, textWidth, textHeight)
+        renderTextToDIB = renderTextToDIB_Glyphs(dstDIB, tmpString, x1, y1, textWidth, textHeight)
     
     Else
         Debug.Print "WARNING!  Unknown rendering engine set in pdTextRenderer."
@@ -1942,8 +2171,12 @@ Private Sub Class_Initialize()
     m_HorizontalAlignment = StringAlignmentNear
     m_VerticalAlignment = StringAlignmentNear
     
+    m_WordWrap = tre_AutoBreakWords
+    m_FillActive = True
+    
+    
     'Set default graphics container text settings
-    m_TextContrast = 5
+    m_TextContrast = 4
     m_TextAntialiasing = pdta_Standard
 
 End Sub

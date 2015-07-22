@@ -206,100 +206,7 @@ Private m_VectorDIBSynched As Boolean
 
 'TEXT LAYER STRUCTS
 
-'The text layer data struct is currently under heavy construction.  I plan to expose not just every relevant GDI+ font setting,
-' but a number of ones custom to PD (e.g. custom kerning, character spacing, line spacing, etc)
-Private Type textLayerData
-    tld_Text As String
-    tld_FontColor As Long
-    tld_FontFace As String
-    tld_FontSize As Single
-    tld_FontSizeUnit As pdFontUnit
-    tld_FontBold As Boolean
-    tld_FontItalic As Boolean
-    tld_FontUnderline As Boolean
-    tld_FontStrikeout As Boolean
-    tld_HorizontalAlignment As GdiPlusStringAlignment
-    tld_VerticalAlignment As GdiPlusStringAlignment
-    tld_TextAntialiasing As pdTextAA
-    tld_TextContrast As Long
-    tld_RenderingEngine As TEXT_RENDERING_ENGINE
-    tld_TextHinting As Boolean
-    tld_WordWrap As TEXT_WORDWRAP_MODE
-    tld_FillActive As Boolean
-    tld_FillBrush As String
-    tld_OutlineActive As Boolean
-    tld_OutlinePen As String
-    tld_BackgroundActive As Boolean
-    tld_BackgroundBrush As String
-    tld_BackBorderActive As Boolean
-    tld_BackBorderPen As String
-    tld_LineSpacing As Single
-    tld_MarginLeft As Single
-    tld_MarginTop As Single
-    tld_MarginRight As Single
-    tld_MarginBottom As Single
-    tld_CharRemap As Long
-    tld_CharSpacing As Double
-    tld_CharOrientation As Double
-    tld_CharJitterX As Double
-    tld_CharJitterY As Double
-    tld_CharInflation As Double
-    tld_CharMirror As Long
-End Type
-
-Private myTextData As textLayerData
-
-'To simplify the process of setting/getting text settings for a given layer, this Enum is used to pass text properties
-Public Enum PDLAYER_TEXT_PROPERTY
-    ptp_Text = 0
-    ptp_FontColor = 1
-    ptp_FontFace = 2
-    ptp_FontSize = 3
-    ptp_FontSizeUnit = 4
-    ptp_FontBold = 5
-    ptp_FontItalic = 6
-    ptp_FontUnderline = 7
-    ptp_FontStrikeout = 8
-    ptp_HorizontalAlignment = 9
-    ptp_VerticalAlignment = 10
-    ptp_TextAntialiasing = 11
-    ptp_TextContrast = 12
-    ptp_RenderingEngine = 13
-    ptp_TextHinting = 14
-    ptp_WordWrap = 15
-    ptp_FillActive = 16
-    ptp_FillBrush = 17
-    ptp_OutlineActive = 18
-    ptp_OutlinePen = 19
-    ptp_BackgroundActive = 20
-    ptp_BackgroundBrush = 21
-    ptp_BackBorderActive = 22
-    ptp_BackBorderPen = 23
-    ptp_LineSpacing = 24
-    ptp_MarginLeft = 25
-    ptp_MarginTop = 26
-    ptp_MarginRight = 27
-    ptp_MarginBottom = 28
-    ptp_CharRemap = 29
-    ptp_CharSpacing = 30
-    ptp_CharOrientation = 31
-    ptp_CharJitterX = 32
-    ptp_CharJitterY = 33
-    ptp_CharInflation = 34
-    ptp_CharMirror = 35
-End Enum
-
-#If False Then
-    Const ptp_Text = 0, ptp_FontColor = 1, ptp_FontFace = 2, ptp_FontSize = 3, ptp_FontSizeUnit = 4, ptp_FontBold = 5, ptp_FontItalic = 6
-    Const ptp_FontUnderline = 7, ptp_FontStrikeout = 8, ptp_HorizontalAlignment = 9, ptp_VerticalAlignment = 10, ptp_TextAntialiasing = 11
-    Const ptp_TextContrast = 12, ptp_RenderingEngine = 13, ptp_TextHinting = 14, ptp_WordWrap = 15, ptp_FillActive = 16, ptp_FillBrush = 17
-    Const ptp_OutlineActive = 18, ptp_OutlinePen = 19, ptp_BackgroundActive = 20, ptp_BackgroundBrush = 21, ptp_BackBorderActive = 22
-    Const ptp_BackBorderPen = 23, ptp_LineSpacing = 24, ptp_MarginLeft = 25, ptp_MarginTop = 26, ptp_MarginRight = 27, ptp_MarginBottom = 28
-    Const ptp_CharRemap = 29, ptp_CharSpacing = 30, ptp_CharOrientation = 31, ptp_CharJitterX = 32, ptp_CharJitterY = 33, ptp_CharInflation = 34
-    Const ptp_CharMirror = 35
-#End If
-
-'A dedicated text renderer is used to render the backer layer for text layers
+'A dedicated text renderer is used to render the backer layer for text layers.  It also manages all relevant text data.
 Private myTextRenderer As pdTextRenderer
 
 'A DIB that stores the contents of the layer, in DIB format.
@@ -945,343 +852,20 @@ Friend Sub setGenericLayerProperty(ByVal desiredProperty As PDLAYER_GENERIC_PROP
 End Sub
 
 'Text layer properties can be get/set via these singular functions.
-Friend Function getTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPERTY) As Variant
+Friend Function getTextLayerProperty(ByVal desiredProperty As PD_TEXT_PROPERTY) As Variant
 
-    Select Case desiredProperty
-        
-        Case ptp_Text
-            getTextLayerProperty = myTextData.tld_Text
-        
-        Case ptp_FontColor
-            getTextLayerProperty = myTextData.tld_FontColor
-        
-        Case ptp_FontFace
-            getTextLayerProperty = myTextData.tld_FontFace
-        
-        Case ptp_FontSize
-            getTextLayerProperty = myTextData.tld_FontSize
-        
-        Case ptp_FontSizeUnit
-            getTextLayerProperty = myTextData.tld_FontSizeUnit
-        
-        Case ptp_FontBold
-            getTextLayerProperty = myTextData.tld_FontBold
-        
-        Case ptp_FontItalic
-            getTextLayerProperty = myTextData.tld_FontItalic
-        
-        Case ptp_FontUnderline
-            getTextLayerProperty = myTextData.tld_FontUnderline
-        
-        Case ptp_FontStrikeout
-            getTextLayerProperty = myTextData.tld_FontUnderline
-        
-        Case ptp_HorizontalAlignment
-            getTextLayerProperty = myTextData.tld_HorizontalAlignment
-        
-        Case ptp_VerticalAlignment
-            getTextLayerProperty = myTextData.tld_VerticalAlignment
-        
-        Case ptp_TextAntialiasing
-            getTextLayerProperty = myTextData.tld_TextAntialiasing
-        
-        Case ptp_TextContrast
-            getTextLayerProperty = myTextData.tld_TextContrast
-            
-        Case ptp_RenderingEngine
-            getTextLayerProperty = myTextData.tld_RenderingEngine
-            
-        Case ptp_TextHinting
-            getTextLayerProperty = myTextData.tld_TextHinting
-            
-        Case ptp_WordWrap
-            getTextLayerProperty = myTextData.tld_WordWrap
-            
-        Case ptp_FillActive
-            getTextLayerProperty = myTextData.tld_FillActive
-        
-        Case ptp_FillBrush
-            getTextLayerProperty = myTextData.tld_FillBrush
-        
-        Case ptp_OutlineActive
-            getTextLayerProperty = myTextData.tld_OutlineActive
-        
-        Case ptp_OutlinePen
-            getTextLayerProperty = myTextData.tld_OutlinePen
-        
-        Case ptp_BackgroundActive
-            getTextLayerProperty = myTextData.tld_BackgroundActive
-        
-        Case ptp_BackgroundBrush
-            getTextLayerProperty = myTextData.tld_BackgroundBrush
-        
-        Case ptp_BackBorderActive
-            getTextLayerProperty = myTextData.tld_BackBorderActive
-            
-        Case ptp_BackBorderPen
-            getTextLayerProperty = myTextData.tld_BackBorderPen
-        
-        Case ptp_LineSpacing
-            getTextLayerProperty = myTextData.tld_LineSpacing
-            
-        Case ptp_MarginLeft
-            getTextLayerProperty = myTextData.tld_MarginLeft
-            
-        Case ptp_MarginTop
-            getTextLayerProperty = myTextData.tld_MarginTop
-            
-        Case ptp_MarginRight
-            getTextLayerProperty = myTextData.tld_MarginRight
-            
-        Case ptp_MarginBottom
-            getTextLayerProperty = myTextData.tld_MarginBottom
-            
-        Case ptp_CharRemap
-            getTextLayerProperty = myTextData.tld_CharRemap
-            
-        Case ptp_CharSpacing
-            getTextLayerProperty = myTextData.tld_CharSpacing
-            
-        Case ptp_CharOrientation
-            getTextLayerProperty = myTextData.tld_CharOrientation
-            
-        Case ptp_CharJitterX
-            getTextLayerProperty = myTextData.tld_CharJitterX
-            
-        Case ptp_CharJitterY
-            getTextLayerProperty = myTextData.tld_CharJitterY
-            
-        Case ptp_CharInflation
-            getTextLayerProperty = myTextData.tld_CharInflation
-            
-        Case ptp_CharMirror
-            getTextLayerProperty = myTextData.tld_CharMirror
+    'All text properties are managed by the pdTextRenderer class.  This function is simply a passthrough.
+    getTextLayerProperty = myTextRenderer.getGenericTextProperty(desiredProperty)
     
-    End Select
-
 End Function
 
-Friend Sub setTextLayerProperty(ByVal desiredProperty As PDLAYER_TEXT_PROPERTY, ByVal newValue As Variant)
-
-    Select Case desiredProperty
-        
-        Case ptp_Text
-            If myTextData.tld_Text <> CStr(newValue) Then
-                myTextData.tld_Text = CStr(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_FontColor
-            If myTextData.tld_FontColor <> CLng(newValue) Then
-                myTextData.tld_FontColor = CLng(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_FontFace
-            If myTextData.tld_FontFace <> CStr(newValue) Then
-                myTextData.tld_FontFace = CStr(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_FontSize
-            If myTextData.tld_FontSize <> CSng(newValue) Then
-                myTextData.tld_FontSize = CSng(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_FontSizeUnit
-            If myTextData.tld_FontSizeUnit <> CLng(newValue) Then
-                myTextData.tld_FontSizeUnit = CLng(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_FontBold
-            If myTextData.tld_FontBold <> CBool(newValue) Then
-                myTextData.tld_FontBold = CBool(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_FontItalic
-            If myTextData.tld_FontItalic <> CBool(newValue) Then
-                myTextData.tld_FontItalic = CBool(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_FontUnderline
-            If myTextData.tld_FontUnderline <> CBool(newValue) Then
-                myTextData.tld_FontUnderline = CBool(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_FontStrikeout
-            If myTextData.tld_FontStrikeout <> CBool(newValue) Then
-                myTextData.tld_FontStrikeout = CBool(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_HorizontalAlignment
-            If myTextData.tld_HorizontalAlignment <> CLng(newValue) Then
-                myTextData.tld_HorizontalAlignment = CLng(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_VerticalAlignment
-            If myTextData.tld_VerticalAlignment <> CLng(newValue) Then
-                myTextData.tld_VerticalAlignment = CLng(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_TextAntialiasing
-            If myTextData.tld_TextAntialiasing <> CLng(newValue) Then
-                myTextData.tld_TextAntialiasing = CLng(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_TextContrast
-            If myTextData.tld_TextContrast <> CLng(newValue) Then
-                myTextData.tld_TextContrast = CLng(newValue)
-                m_VectorDIBSynched = False
-            End If
-            
-        Case ptp_RenderingEngine
-            If myTextData.tld_RenderingEngine <> CLng(newValue) Then
-                myTextData.tld_RenderingEngine = CLng(newValue)
-                m_VectorDIBSynched = False
-            End If
-            
-        Case ptp_TextHinting
-            If myTextData.tld_TextHinting <> CBool(newValue) Then
-                myTextData.tld_TextHinting = CBool(newValue)
-                m_VectorDIBSynched = False
-            End If
-            
-        Case ptp_WordWrap
-            If myTextData.tld_WordWrap <> CLng(newValue) Then
-                myTextData.tld_WordWrap = CLng(newValue)
-                m_VectorDIBSynched = False
-            End If
-            
-        Case ptp_FillActive
-            If myTextData.tld_FillActive <> CBool(newValue) Then
-                myTextData.tld_FillActive = CBool(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_FillBrush
-            If myTextData.tld_FillBrush <> newValue Then
-                myTextData.tld_FillBrush = newValue
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_OutlineActive
-            If myTextData.tld_OutlineActive <> CBool(newValue) Then
-                myTextData.tld_OutlineActive = CBool(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_OutlinePen
-            If myTextData.tld_OutlinePen <> newValue Then
-                myTextData.tld_OutlinePen = newValue
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_BackgroundActive
-            If myTextData.tld_BackgroundActive <> CBool(newValue) Then
-                myTextData.tld_BackgroundActive = CBool(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_BackgroundBrush
-            If myTextData.tld_BackgroundBrush <> newValue Then
-                myTextData.tld_BackgroundBrush = newValue
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_BackBorderActive
-            If myTextData.tld_BackBorderActive <> CBool(newValue) Then
-                myTextData.tld_BackBorderActive = CBool(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_BackBorderPen
-            If myTextData.tld_BackBorderPen <> newValue Then
-                myTextData.tld_BackBorderPen = newValue
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_LineSpacing
-            If myTextData.tld_LineSpacing <> CSng(newValue) Then
-                myTextData.tld_LineSpacing = CSng(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_MarginLeft
-            If myTextData.tld_MarginLeft <> CSng(newValue) Then
-                myTextData.tld_MarginLeft = CSng(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_MarginTop
-            If myTextData.tld_MarginTop <> CSng(newValue) Then
-                myTextData.tld_MarginTop = CSng(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_MarginRight
-            If myTextData.tld_MarginRight <> CSng(newValue) Then
-                myTextData.tld_MarginRight = CSng(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-        Case ptp_MarginBottom
-            If myTextData.tld_MarginBottom <> CSng(newValue) Then
-                myTextData.tld_MarginBottom = CSng(newValue)
-                m_VectorDIBSynched = False
-            End If
-            
-        Case ptp_CharRemap
-            If myTextData.tld_CharRemap <> CLng(newValue) Then
-                myTextData.tld_CharRemap = CLng(newValue)
-                m_VectorDIBSynched = False
-            End If
-            
-        Case ptp_CharSpacing
-            If myTextData.tld_CharSpacing <> CDbl(newValue) Then
-                myTextData.tld_CharSpacing = CDbl(newValue)
-                m_VectorDIBSynched = False
-            End If
-            
-        Case ptp_CharOrientation
-            If myTextData.tld_CharOrientation <> CDbl(newValue) Then
-                myTextData.tld_CharOrientation = CDbl(newValue)
-                m_VectorDIBSynched = False
-            End If
-            
-        Case ptp_CharJitterX
-            If myTextData.tld_CharJitterX <> CDbl(newValue) Then
-                myTextData.tld_CharJitterX = CDbl(newValue)
-                m_VectorDIBSynched = False
-            End If
-            
-        Case ptp_CharJitterY
-            If myTextData.tld_CharJitterY <> CDbl(newValue) Then
-                myTextData.tld_CharJitterY = CDbl(newValue)
-                m_VectorDIBSynched = False
-            End If
-            
-        Case ptp_CharInflation
-            If myTextData.tld_CharInflation <> CDbl(newValue) Then
-                myTextData.tld_CharInflation = CDbl(newValue)
-                m_VectorDIBSynched = False
-            End If
-            
-        Case ptp_CharMirror
-            If myTextData.tld_CharMirror <> CLng(newValue) Then
-                myTextData.tld_CharMirror = CLng(newValue)
-                m_VectorDIBSynched = False
-            End If
-        
-    End Select
+Friend Sub setTextLayerProperty(ByVal desiredProperty As PD_TEXT_PROPERTY, ByVal newValue As Variant)
+    
+    'All text properties are managed by the pdTextRenderer class.  This function is simply a passthrough.
+    
+    'Note that the setGenericTextProperty function will return TRUE if the requested change matters (e.g. if the text needs to be re-rendered
+    ' due to this property change).  We modify our internal VectorDIBSynched tracker accordingly.
+    m_VectorDIBSynched = m_VectorDIBSynched And (Not myTextRenderer.setGenericTextProperty(desiredProperty, newValue))
     
 End Sub
 
@@ -1733,42 +1317,8 @@ Private Sub Class_Initialize()
         .vd_Height = 0
     End With
     
-    With myTextData
-        .tld_Text = g_Language.TranslateMessage("(enter text here)")
-        .tld_FontColor = RGB(0, 0, 0)
-        .tld_FontFace = g_InterfaceFont
-        .tld_FontSize = 16#
-        .tld_FontSizeUnit = pdfu_Pixel
-        .tld_FontBold = False
-        .tld_FontItalic = False
-        .tld_FontUnderline = False
-        .tld_FontStrikeout = False
-        .tld_HorizontalAlignment = StringAlignmentNear
-        .tld_VerticalAlignment = StringAlignmentNear
-        .tld_TextAntialiasing = pdta_Standard
-        .tld_TextContrast = 4
-        .tld_WordWrap = tre_AutoBreakWords
-        .tld_FillActive = True
-        .tld_FillBrush = ""
-        .tld_OutlineActive = False
-        .tld_OutlinePen = ""
-        .tld_BackgroundActive = False
-        .tld_BackgroundBrush = ""
-        .tld_BackBorderActive = False
-        .tld_BackBorderPen = ""
-        .tld_LineSpacing = 0
-        .tld_MarginLeft = 0
-        .tld_MarginTop = 0
-        .tld_MarginRight = 0
-        .tld_MarginBottom = 0
-        .tld_CharRemap = 0
-        .tld_CharSpacing = 0
-        .tld_CharOrientation = 0
-        .tld_CharJitterX = 0
-        .tld_CharJitterY = 0
-        .tld_CharInflation = 0
-        .tld_CharMirror = 0
-    End With
+    'Initialize a default text renderer, regardless of layer type
+    Set myTextRenderer = New pdTextRenderer
     
     'Initialize the layer's DIB
     Set layerDIB = New pdDIB
@@ -2056,45 +1606,9 @@ Public Function getVectorDataAsXML(Optional ByVal avoidFluffEntries As Boolean =
     Select Case myLayerType
         
         Case PDL_TEXT, PDL_TYPOGRAPHY
-        
-            With xmlEngine
-                .writeTag "TextLayerText", myTextData.tld_Text
-                .writeTag "TextLayerColor", myTextData.tld_FontColor
-                .writeTag "TextLayerFontFace", myTextData.tld_FontFace
-                .writeTag "TextLayerFontSize", myTextData.tld_FontSize
-                .writeTag "TextLayerFontSizeUnit", myTextData.tld_FontSizeUnit
-                .writeTag "TextLayerFontBold", myTextData.tld_FontBold
-                .writeTag "TextLayerFontItalic", myTextData.tld_FontItalic
-                .writeTag "TextLayerFontUnderline", myTextData.tld_FontUnderline
-                .writeTag "TextLayerFontStrikeout", myTextData.tld_FontStrikeout
-                .writeTag "TextLayerHorizontalAlignment", myTextData.tld_HorizontalAlignment
-                .writeTag "TextLayerVerticalAlignment", myTextData.tld_VerticalAlignment
-                .writeTag "TextLayerAntialiasing", myTextData.tld_TextAntialiasing
-                .writeTag "TextLayerContrast", myTextData.tld_TextContrast
-                .writeTag "TextRenderingEngine", myTextData.tld_RenderingEngine
-                .writeTag "TextHinting", myTextData.tld_TextHinting
-                .writeTag "TextWordWrap", myTextData.tld_WordWrap
-                .writeTag "TextFillActive", myTextData.tld_FillActive
-                .writeTag "TextFillBrush", myTextData.tld_FillBrush
-                .writeTag "TextOutlineActive", myTextData.tld_OutlineActive
-                .writeTag "TextOutlinePen", myTextData.tld_OutlinePen
-                .writeTag "TextBackgroundActive", myTextData.tld_BackgroundActive
-                .writeTag "TextBackgroundBrush", myTextData.tld_BackgroundBrush
-                .writeTag "TextBackBorderActive", myTextData.tld_BackBorderActive
-                .writeTag "TextBackBorderPen", myTextData.tld_BackBorderPen
-                .writeTag "TextLineSpacing", myTextData.tld_LineSpacing
-                .writeTag "TextMarginLeft", myTextData.tld_MarginLeft
-                .writeTag "TextMarginTop", myTextData.tld_MarginTop
-                .writeTag "TextMarginRight", myTextData.tld_MarginRight
-                .writeTag "TextMarginBottom", myTextData.tld_MarginBottom
-                .writeTag "TextCharRemap", myTextData.tld_CharRemap
-                .writeTag "TextCharSpacing", myTextData.tld_CharSpacing
-                .writeTag "TextCharOrientation", myTextData.tld_CharOrientation
-                .writeTag "TextCharJitterX", myTextData.tld_CharJitterX
-                .writeTag "TextCharJitterY", myTextData.tld_CharJitterY
-                .writeTag "TextCharInflation", myTextData.tld_CharInflation
-                .writeTag "TextCharMirror", myTextData.tld_CharMirror
-            End With
+            
+            'pdTextRenderer serializes all its data to XML for us, making this step very simple
+            xmlEngine.writeGenericText myTextRenderer.getAllFontSettingsAsXML()
         
     End Select
         
@@ -2125,45 +1639,9 @@ Public Function CreateVectorDataFromXML(ByRef xmlString As String) As Boolean
         Select Case myLayerType
             
             Case PDL_TEXT, PDL_TYPOGRAPHY
-            
-                With myTextData
-                    .tld_Text = xmlEngine.getUniqueTag_String("TextLayerText", "")
-                    .tld_FontColor = xmlEngine.getUniqueTag_Long("TextLayerColor", 0)
-                    .tld_FontFace = xmlEngine.getUniqueTag_String("TextLayerFontFace", g_InterfaceFont)
-                    .tld_FontSize = xmlEngine.getUniqueTag_Double("TextLayerFontSize", 16#)
-                    .tld_FontSizeUnit = xmlEngine.getUniqueTag_Long("TextLayerFontSizeUnit", pdfu_Pixel)
-                    .tld_FontBold = xmlEngine.getUniqueTag_Boolean("TextLayerFontBold", False)
-                    .tld_FontItalic = xmlEngine.getUniqueTag_Boolean("TextLayerFontItalic", False)
-                    .tld_FontUnderline = xmlEngine.getUniqueTag_Boolean("TextLayerFontUnderline", False)
-                    .tld_FontStrikeout = xmlEngine.getUniqueTag_Boolean("TextLayerFontStrikeout", False)
-                    .tld_HorizontalAlignment = xmlEngine.getUniqueTag_Long("TextLayerHorizontalAlignment", StringAlignmentNear)
-                    .tld_VerticalAlignment = xmlEngine.getUniqueTag_Long("TextLayerVerticalAlignment", StringAlignmentNear)
-                    .tld_TextAntialiasing = xmlEngine.getUniqueTag_Long("TextLayerAntialiasing", pdta_Standard)
-                    .tld_TextContrast = xmlEngine.getUniqueTag_Long("TextLayerContrast", 5)
-                    .tld_RenderingEngine = xmlEngine.getUniqueTag_Long("TextRenderingEngine", tre_WAPI)
-                    .tld_TextHinting = xmlEngine.getUniqueTag_Boolean("TextHinting", False)
-                    .tld_WordWrap = xmlEngine.getUniqueTag_Long("TextWordWrap", tre_AutoBreakWords)
-                    .tld_FillActive = xmlEngine.getUniqueTag_Boolean("TextFillActive", True)
-                    .tld_FillBrush = xmlEngine.getUniqueTag_String("TextFillBrush", "")
-                    .tld_OutlineActive = xmlEngine.getUniqueTag_Boolean("TextOutlineActive", False)
-                    .tld_OutlinePen = xmlEngine.getUniqueTag_String("TextOutlinePen", "")
-                    .tld_BackgroundActive = xmlEngine.getUniqueTag_Boolean("TextBackgroundActive", False)
-                    .tld_BackgroundBrush = xmlEngine.getUniqueTag_String("TextBackgroundBrush", "")
-                    .tld_BackBorderActive = xmlEngine.getUniqueTag_Boolean("TextBackBorderActive", False)
-                    .tld_BackBorderPen = xmlEngine.getUniqueTag_String("TextBackBorderPen", "")
-                    .tld_LineSpacing = xmlEngine.getUniqueTag_Double("TextLineSpacing", 0)
-                    .tld_MarginLeft = xmlEngine.getUniqueTag_Double("TextMarginLeft", 0)
-                    .tld_MarginTop = xmlEngine.getUniqueTag_Double("TextMarginTop", 0)
-                    .tld_MarginRight = xmlEngine.getUniqueTag_Double("TextMarginRight", 0)
-                    .tld_MarginBottom = xmlEngine.getUniqueTag_Double("TextMarginBottom", 0)
-                    .tld_CharRemap = xmlEngine.getUniqueTag_Long("TextCharRemap", 0)
-                    .tld_CharSpacing = xmlEngine.getUniqueTag_Double("TextCharSpacing", 0)
-                    .tld_CharOrientation = xmlEngine.getUniqueTag_Double("TextCharOrientation", 0)
-                    .tld_CharJitterX = xmlEngine.getUniqueTag_Double("TextCharJitterX", 0)
-                    .tld_CharJitterY = xmlEngine.getUniqueTag_Double("TextCharJitterY", 0)
-                    .tld_CharInflation = xmlEngine.getUniqueTag_Double("TextCharInflation", 0)
-                    .tld_CharMirror = xmlEngine.getUniqueTag_Long("TextCharMirror", 0)
-                End With
+                
+                'pdTextRenderer serializes all its data from XML for us, making this step very simple
+                myTextRenderer.setAllFontSettingsFromXML xmlEngine.returnCurrentXMLString(True)
                 
         End Select
                 
@@ -2758,45 +2236,6 @@ Public Sub resetLayerParameters()
         .vd_Height = 0
     End With
     
-    'Assign default text layer values
-    With myTextData
-        .tld_Text = g_Language.TranslateMessage("(enter text here)")
-        .tld_FontColor = RGB(0, 0, 0)
-        .tld_FontFace = g_InterfaceFont
-        .tld_FontSize = 16#
-        .tld_FontSizeUnit = pdfu_Pixel
-        .tld_FontBold = False
-        .tld_FontItalic = False
-        .tld_FontUnderline = False
-        .tld_FontStrikeout = False
-        .tld_HorizontalAlignment = StringAlignmentNear
-        .tld_VerticalAlignment = StringAlignmentNear
-        .tld_TextAntialiasing = pdta_Standard
-        .tld_TextContrast = 4
-        .tld_TextHinting = False
-        .tld_WordWrap = tre_AutoBreakWords
-        .tld_FillActive = True
-        .tld_FillBrush = ""
-        .tld_OutlineActive = False
-        .tld_OutlinePen = ""
-        .tld_BackgroundActive = False
-        .tld_BackgroundBrush = ""
-        .tld_BackBorderActive = False
-        .tld_BackBorderPen = ""
-        .tld_LineSpacing = 0
-        .tld_MarginLeft = 0
-        .tld_MarginTop = 0
-        .tld_MarginRight = 0
-        .tld_MarginBottom = 0
-        .tld_CharRemap = 0
-        .tld_CharSpacing = 0
-        .tld_CharOrientation = 0
-        .tld_CharJitterX = 0
-        .tld_CharJitterY = 0
-        .tld_CharInflation = 0
-        .tld_CharMirror = 0
-    End With
-
 End Sub
 
 'If something needs to access the layer DIB directly (like PD's central compositor), this function should first be called for
@@ -2825,55 +2264,13 @@ Public Function syncInternalDIB() As Boolean
     Select Case myLayerType
     
         Case PDL_TEXT, PDL_TYPOGRAPHY
-        
-            'Start by prepping a GDI+ font object.  Note that this only needs to be done once; after the font object has been
-            ' created successfully, these various functions will not trigger a rebuild.
-            If myTextRenderer Is Nothing Then Set myTextRenderer = New pdTextRenderer
             
-            'Set the correct rendering engine in advance
+            'Set the text rendering engine according to the layer type (text vs typography)
             If myLayerType = PDL_TEXT Then
-                myTextData.tld_RenderingEngine = tre_WAPI
+                myTextRenderer.setGenericTextProperty ptp_RenderingEngine, tre_WAPI
             Else
-                myTextData.tld_RenderingEngine = tre_PHOTODEMON
+                myTextRenderer.setGenericTextProperty ptp_RenderingEngine, tre_PHOTODEMON
             End If
-            
-            With myTextRenderer
-                .setFontFace myTextData.tld_FontFace
-                .setFontColor myTextData.tld_FontColor
-                .setFontSize myTextData.tld_FontSize
-                .setFontSizeUnit myTextData.tld_FontSizeUnit
-                .setFontBold myTextData.tld_FontBold
-                .setFontItalic myTextData.tld_FontItalic
-                .setFontUnderline myTextData.tld_FontUnderline
-                .setFontStrikeout myTextData.tld_FontStrikeout
-                .setHorizontalAlignment myTextData.tld_HorizontalAlignment
-                .setVerticalAlignment myTextData.tld_VerticalAlignment
-                .setTextAntialiasing myTextData.tld_TextAntialiasing
-                .setTextContrast myTextData.tld_TextContrast
-                .setRenderingEngine myTextData.tld_RenderingEngine
-                .setTextHinting myTextData.tld_TextHinting
-                .setWordWrap myTextData.tld_WordWrap
-                .setFillActive myTextData.tld_FillActive
-                .setFillBrush myTextData.tld_FillBrush
-                .setOutlineActive myTextData.tld_OutlineActive
-                .setOutlinePen myTextData.tld_OutlinePen
-                .setBackgroundActive myTextData.tld_BackgroundActive
-                .setBackgroundBrush myTextData.tld_BackgroundBrush
-                .setBackBorderActive myTextData.tld_BackBorderActive
-                .setBackBorderPen myTextData.tld_BackBorderPen
-                .setLineSpacing myTextData.tld_LineSpacing
-                .setMarginLeft myTextData.tld_MarginLeft
-                .setMarginTop myTextData.tld_MarginTop
-                .setMarginRight myTextData.tld_MarginRight
-                .setMarginBottom myTextData.tld_MarginBottom
-                .setCharRemap myTextData.tld_CharRemap
-                .setCharSpacing myTextData.tld_CharSpacing
-                .setCharOrientation myTextData.tld_CharOrientation
-                .setCharJitterX myTextData.tld_CharJitterX
-                .setCharJitterY myTextData.tld_CharJitterY
-                .setCharInflation myTextData.tld_CharInflation
-                .setCharMirror myTextData.tld_CharMirror
-            End With
             
             'Initialize the backer DIB as necessary
             If (layerDIB Is Nothing) Then Set layerDIB = New pdDIB
@@ -2886,8 +2283,8 @@ Public Function syncInternalDIB() As Boolean
             
             layerDIB.setInitialAlphaPremultiplicationState True
             
-            'Use the text renderer to paint the string onto the backer DIB
-            myTextRenderer.renderTextToDIB layerDIB, myTextData.tld_Text, 0, 0, myVectorData.vd_Width, myVectorData.vd_Height
+            'Use pdTextRenderer to paint the string onto the backer DIB
+            myTextRenderer.renderTextToDIB layerDIB, 0, 0, myVectorData.vd_Width, myVectorData.vd_Height
             
     End Select
     

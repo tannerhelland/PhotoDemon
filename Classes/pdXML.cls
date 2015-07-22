@@ -86,7 +86,7 @@ Public Function isPDDataType(ByVal expectedType As String) As Boolean
     
 End Function
 
-'Write a blank line into the XML file.  This has no practical purpose, but I'm a big fan of pretty XML output, so I like to use
+'Write a blank line into the XML file.  This has no practical purpose, but I like pretty XML output, so PD occasionally uses
 ' blank lines to separate tag families.
 Public Function writeBlankLine() As Boolean
 
@@ -109,6 +109,30 @@ Public Function writeBlankLine() As Boolean
     End If
 
 End Function
+
+'Write an existing string into the XML file.  The assumption is that this is valid XML the user has already prepared by some other means.
+Public Function writeGenericText(ByRef srcString As String) As Boolean
+
+    'Find the </pdData> tag that signifies the end of PD-compatible XML data
+    Dim tagLocation As Long
+    tagLocation = InStrRev(m_xmlContents, ROOT_TAG_CLOSE, , vbBinaryCompare)
+    
+    If tagLocation > 0 Then
+    
+        'Split the XML file into two halves: the half before the root tag, and the half after
+        Dim topHalf As String, bottomHalf As String
+        splitStringIn2 m_xmlContents, tagLocation - 1, topHalf, bottomHalf
+        
+        'Reassemble the primary string with the user's text inserted
+        m_xmlContents = topHalf & srcString & bottomHalf
+        
+        writeGenericText = True
+    Else
+        writeGenericText = False
+    End If
+
+End Function
+
 
 'Write a comment into the XML file.  This has no practical purpose, but it can be helpful for end-users to understand the file's contents.
 Public Function writeComment(ByVal commentText As String) As Boolean

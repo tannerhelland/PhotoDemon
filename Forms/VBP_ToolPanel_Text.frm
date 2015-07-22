@@ -632,10 +632,12 @@ Private Sub lblConvertLayerConfirm_Click()
     
     'Because of the way this warning panel is constructed, this label will not be visible unless a click is valid.
     pdImages(g_CurrentImage).getActiveLayer.setLayerType PDL_TEXT
+    pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).getActiveLayerIndex
     
-    'Hide the warning panel and redraw the viewport
+    'Hide the warning panel and redraw both the viewport, and the UI (as new UI options may now be available)
     Me.updateAgainstCurrentLayer
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    syncInterfaceToCurrentImage
     
 End Sub
 
