@@ -21,6 +21,7 @@ Begin VB.UserControl pdComboBox_Font
    ScaleHeight     =   65
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   201
+   ToolboxBitmap   =   "pdComboBox_Font.ctx":0000
    Begin VB.Timer tmrHookRelease 
       Enabled         =   0   'False
       Interval        =   100

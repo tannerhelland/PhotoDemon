@@ -21,6 +21,7 @@ Begin VB.UserControl pdComboBox_Hatch
    ScaleHeight     =   65
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   201
+   ToolboxBitmap   =   "pdComboBox_Hatch.ctx":0000
    Begin VB.Timer tmrHookRelease 
       Enabled         =   0   'False
       Interval        =   100
