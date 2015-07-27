@@ -396,3 +396,10 @@ End Enum
 #If False Then
     Private Const PDUT_STABLE = 0, PDUT_BETA = 1, PDUT_NIGHTLY = 2
 #End If
+
+'PD's gradient format is straightforward, and it's declared here so functions can easily create their own gradient interfaces.
+Public Type pdGradientPoint
+    pdgp_RGB As Long
+    pdgp_Opacity As Single
+    pdgp_Position As Single
+End Type

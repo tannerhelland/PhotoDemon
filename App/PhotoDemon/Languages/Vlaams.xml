@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.63</langversion>
+<langversion>6.7.66</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -12052,7 +12052,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation>Nieuwe laag</translation>
 </phrase>
 
-<!-- pdLayer.cls contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- pdLayer.cls contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for pdLayer.cls-->
 
@@ -14128,6 +14128,16 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
+<original>gradient fill settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>gradient</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>pattern fill settings</original>
 <translation></translation>
 </phrase>
@@ -14158,17 +14168,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>gradient fill settings</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>solid</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>gradient</original>
 <translation></translation>
 </phrase>
 
@@ -14177,7 +14177,7 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_DialogBrushSettings.frm contains 17 phrases. 3 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- VBP_DialogBrushSettings.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for VBP_DialogBrushSettings.frm-->
 
@@ -14303,12 +14303,55 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- END text for pdParamXML.cls-->
 
+<!-- BEGIN text for VBP_DialogGradientEditor.frm (dialog_GradientEditor) -->
+
+<phrase>
+<original>Gradient editor</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>node settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Left-click to add new gradient nodes.  Right-click to remove existing nodes.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>manual</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>automatic</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_DialogGradientEditor.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for VBP_DialogGradientEditor.frm-->
+
+<!-- BEGIN text for gradientSelector.ctl -->
+
+<!-- gradientSelector.ctl contains 0 phrases. -->
+
+<!-- END text for gradientSelector.ctl-->
+
+<!-- BEGIN text for pdGradient.cls -->
+
+<!-- pdGradient.cls contains 0 phrases. -->
+
+<!-- END text for pdGradient.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2481</phrasecount>
+<phrasecount>2486</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4264 phrases. -->
-<!-- 1783 are duplicates, so only 2481 unique phrases have been written to file. -->
-<!-- These 2481 phrases contain approximately 13838 total words. -->
+<!-- As of this build, PhotoDemon contains 4269 phrases. -->
+<!-- 1783 are duplicates, so only 2486 unique phrases have been written to file. -->
+<!-- These 2486 phrases contain approximately 13856 total words. -->
 
 </pdData>

@@ -1563,6 +1563,15 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     Dim dstGraphics As Long
     dstGraphics = GDI_Plus.getGDIPlusGraphicsFromDC(dstDIB.getDIBDC, False)
     
+    'Next, convert the input rect to a RECTF
+    Dim boundingRect As RECTF
+    With boundingRect
+        .Left = x1
+        .Top = y1
+        .Width = textWidth
+        .Height = textHeight
+    End With
+    
     'Next, set up all container-specific path settings
     Dim targetSmoothingMode As GdiPlusSmoothingMode, targetOffsetMode As GdiPlusPixelOffsetMode
     
@@ -1619,6 +1628,7 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     
     If m_BackgroundActive Then
         tmpFiller.createBrushFromString m_BackgroundBrush
+        tmpFiller.setBoundaryRect boundingRect
         gdipBackgroundBrush = tmpFiller.getBrushHandle
     Else
         gdipBackgroundBrush = 0
@@ -1634,16 +1644,7 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
         gdipBackBorderPen = 0
     End If
     
-    'Convert the input rect to a RECTF
-    Dim boundingRect As RECTF
-    With boundingRect
-        .Left = x1
-        .Top = y1
-        .Width = textWidth
-        .Height = textHeight
-    End With
-    
-    'Modify the rect according to a few different factors:
+    'Next, modify the bounding rect according to a few different factors:
     
     '1) If outline mode is active, increase padding by 1/2 the outline size.  This ensures that the outline is not cropped.
     If m_OutlineActive Then
@@ -1707,6 +1708,9 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
     
     If m_GlyphCollection.assembleCompositePath(finalTextPath, boundingRect, m_HorizontalAlignment, m_VerticalAlignment, m_WordWrap) Then
         
+        Dim exactTextBounds As RECTF
+        finalTextPath.getPathBounds exactTextBounds
+        
         Dim gdipReturn As Long
                 
         'If background mode is active, fill it now
@@ -1739,6 +1743,16 @@ Private Function renderTextToDIB_Glyphs(ByRef dstDIB As pdDIB, ByRef srcString A
                 
         'If fill mode is active, draw the text now
         If gdipFillBrush <> 0 Then
+        
+            'Update the fill brush against the final rect established by the path renderer.
+            ' (This additional step is necessary to ensure that gradients span the full width/height of the text.)
+            GDI_Plus.releaseGDIPlusBrush gdipFillBrush
+            
+            tmpFiller.createBrushFromString m_FillBrush
+            finalTextPath.getPathBounds boundingRect
+            tmpFiller.setBoundaryRect boundingRect
+            gdipFillBrush = tmpFiller.getBrushHandle
+            
             gdipReturn = GdipFillPath(dstGraphics, gdipFillBrush, finalTextPath.getCopyOfPathHandle)
             If gdipReturn <> 0 Then Debug.Print "WARNING!  GdipFillPath failed; return code was " & gdipReturn
         End If
