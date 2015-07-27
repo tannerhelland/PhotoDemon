@@ -940,7 +940,7 @@ Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     If g_WindowManager.getFloatState(TOOLBAR_WINDOW) Then g_WindowManager.requestTopmostWindow dialogHwnd, getModalOwner().hWnd
     
     'Use VB to actually display the dialog.  Note that the sub will pause here until the form is closed.
-    dialogForm.Show dialogModality, FormMain 'getModalOwner()
+    dialogForm.Show dialogModality, FormMain    'getModalOwner()
     
     'De-register this hWnd with the window manager
     If g_WindowManager.getFloatState(TOOLBAR_WINDOW) Then g_WindowManager.requestTopmostWindow dialogHwnd, 0, True
@@ -1256,7 +1256,7 @@ Public Sub fitWordwrapLabel(ByRef srcLabel As Label, ByRef srcForm As Form)
     tmpFont.setFontBold srcLabel.fontBold
     tmpFont.setFontItalic srcLabel.fontItalic
     tmpFont.setFontFace srcLabel.fontName
-    tmpFont.setFontSize srcLabel.FontSize
+    tmpFont.setFontSize srcLabel.fontSize
     tmpFont.createFontObject
     tmpFont.setTextAlignment srcLabel.Alignment
     tmpFont.attachToDC srcForm.hDC
@@ -1266,7 +1266,7 @@ Public Sub fitWordwrapLabel(ByRef srcLabel As Label, ByRef srcForm As Form)
     lblHeight = tmpFont.getHeightOfWordwrapString(srcLabel.Caption, srcLabel.Width - 1)
     
     Dim curFontSize As Long
-    curFontSize = srcLabel.FontSize
+    curFontSize = srcLabel.fontSize
     
     'If the text is too tall, shrink the font until an acceptable size is found.  Note that the reported text value tends to be
     ' smaller than the space actually required.  I do not know why this happens.  To account for it, I cut a further 10% from
@@ -1288,7 +1288,7 @@ Public Sub fitWordwrapLabel(ByRef srcLabel As Label, ByRef srcForm As Form)
     End If
     
     'When an acceptable size is found, set it and exit.
-    srcLabel.FontSize = curFontSize
+    srcLabel.fontSize = curFontSize
     srcLabel.Refresh
 
 End Sub

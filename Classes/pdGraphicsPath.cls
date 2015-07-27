@@ -181,6 +181,24 @@ Public Sub addBezierCurve(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Si
     GdipAddPathBezier m_PathHandle, x1, y1, x2, y2, x3, y3, x4, y4
 End Sub
 
+'Convenience wrapper for triangles
+Public Sub addTriangle(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal x3 As Single, ByVal y3 As Single)
+
+    'Convert the incoming points to a float array and use the generic polygon wrapper to add 'em
+    Dim tmpPoints() As POINTFLOAT
+    ReDim tmpPoints(0 To 2) As POINTFLOAT
+    
+    tmpPoints(0).x = x1
+    tmpPoints(0).y = y1
+    tmpPoints(1).x = x2
+    tmpPoints(1).y = y2
+    tmpPoints(2).x = x3
+    tmpPoints(2).y = y3
+    
+    Me.addPolygon 3, VarPtr(tmpPoints(0)), True, False
+    
+End Sub
+
 Public Sub addPath(ByRef srcGraphicsPath As pdGraphicsPath, Optional ByVal offsetX As Single = 0, Optional ByVal offsetY As Single = 0, Optional ByVal connectToLastPointOfThisPath As Boolean = False)
     
     'Make sure the glyph exists
@@ -460,6 +478,10 @@ Public Sub cloneExistingPath(ByRef srcPath As pdGraphicsPath)
     'Clone the new path
     GdipClonePath srcPath.getCopyOfPathHandle, m_PathHandle
     
+End Sub
+
+Friend Sub getPathBounds(ByRef dstRect As RECTF)
+    GdipGetPathWorldBounds m_PathHandle, dstRect, 0, 0
 End Sub
 
 ' END: EXTERNAL PATH ACCESS

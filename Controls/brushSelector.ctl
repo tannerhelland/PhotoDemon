@@ -195,7 +195,16 @@ Private Sub drawControl()
         m_BackBuffer.resetDIB
     End If
     
-    'Render the brush first
+    'Render the brush first.  (Gradient brushes require a target width/height, which we want to be the same size as the control.)
+    Dim cBounds As RECTF
+    With cBounds
+        .Left = 1
+        .Top = 1
+        .Width = UserControl.ScaleWidth - 2
+        .Height = UserControl.ScaleHeight - 2
+    End With
+    
+    m_Filler.setBoundaryRect cBounds
     m_Filler.createBrushFromString Me.Brush
     
     Dim tmpBrush As Long

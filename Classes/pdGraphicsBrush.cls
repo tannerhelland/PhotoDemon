@@ -40,11 +40,15 @@ Public Enum PD_GRAPHICS_BRUSH_SETTINGS
     pgbs_PatternColor1Opacity = 5
     pgbs_PatternColor2 = 6
     pgbs_PatternColor2Opacity = 7
+    
+    'Note that individual gradient values cannot be set/read.  Gradients are only supported as a full gradient param string,
+    ' as created by a pdGradient instance.
+    pgbs_GradientString = 8
 End Enum
 
 #If False Then
     Const pgbs_BrushMode = 0, pgbs_PrimaryColor = 1, pgbs_PrimaryOpacity = 2, pgbs_PatternID = 3, pgbs_PatternColor1 = 4
-    Const pgbs_PatternColor1Opacity = 5, pgbs_PatternColor2 = 6, pgbs_PatternColor2Opacity = 7
+    Const pgbs_PatternColor1Opacity = 5, pgbs_PatternColor2 = 6, pgbs_PatternColor2Opacity = 7, pgbs_GradientString = 8
 #End If
 
 'Current brush mode (solid fill, gradient, texture, etc)
@@ -61,10 +65,16 @@ Private m_PatternColor1Opacity As Single
 Private m_PatternColor2 As Long
 Private m_PatternColor2Opacity As Single
 
+'Gradient brushes are more complicated, as they rely on a variable number of settings.
+' We use a specialized class to manage those settings.
+Private cGradient As pdGradient
+
+'Gradient fills also require a boundary rect to define the start/end positions of the gradient line.  You *must set this prior
+' to requesting a gradient brush*!!
+Private m_BoundaryRect As RECTF
+
 'This class is capable of serializing itself to/from XML strings
 Private cSerialize As pdParamXML
-
-'Gradient brush settings (TBD)
 
 'Texture brush settings (TBD)
 
@@ -96,6 +106,9 @@ Public Function getBrushProperty(ByVal propID As PD_GRAPHICS_BRUSH_SETTINGS) As 
             
         Case pgbs_PatternColor2Opacity
             getBrushProperty = m_PatternColor2Opacity
+            
+        Case pgbs_GradientString
+            getBrushProperty = cGradient.getGradientAsString()
             
     End Select
     
@@ -129,8 +142,15 @@ Public Sub setBrushProperty(ByVal propID As PD_GRAPHICS_BRUSH_SETTINGS, ByVal ne
         Case pgbs_PatternColor2Opacity
             m_PatternColor2Opacity = CDbl(newSetting)
             
+        Case pgbs_GradientString
+            cGradient.createGradientFromString newSetting
+            
     End Select
     
+End Sub
+
+Friend Sub setBoundaryRect(ByRef srcRect As RECTF)
+    m_BoundaryRect = srcRect
 End Sub
 
 'For interop purposes, brushes are often passed around PD as strings.  Any brush can be perfectly re-created from just this string.
@@ -146,6 +166,7 @@ Public Function getBrushAsString() As String
         .addParam "PatternColor1Opacity", m_PatternColor1Opacity
         .addParam "PatternColor2", m_PatternColor2
         .addParam "PatternColor2Opacity", m_PatternColor2Opacity
+        .addParam "BrushGradientString", cGradient.getGradientAsString()
     End With
     
     getBrushAsString = cSerialize.getParamString
@@ -165,6 +186,7 @@ Public Sub createBrushFromString(ByRef srcString As String)
         m_PatternColor1Opacity = 100
         m_PatternColor2 = vbWhite
         m_PatternColor2Opacity = 100
+        cGradient.createGradientFromString ""
         
     Else
 
@@ -178,15 +200,17 @@ Public Sub createBrushFromString(ByRef srcString As String)
             m_PatternColor1Opacity = .GetDouble("PatternColor1Opacity", 100)
             m_PatternColor2 = .GetLong("PatternColor2", vbWhite)
             m_PatternColor2Opacity = .GetDouble("PatternColor2Opacity", 100)
+            cGradient.createGradientFromString .GetString("BrushGradientString", "")
         End With
         
     End If
     
 End Sub
 
-'Return an actual GDI+ brush handle matching the current settings.
-' Note that the caller is responsible for freeing that handle once done.
-Public Function getBrushHandle() As Long
+'Return an actual GDI+ brush handle matching the current settings.  Note that the caller is responsible for freeing that handle once done.
+' Also, note that the gradient brush *REQUIRES A SOURCE RECT* to know how to scale the gradient - if you haven't set that rect,
+' this function will fail!
+Friend Function getBrushHandle() As Long
     
     Select Case m_BrushMode
     
@@ -202,7 +226,7 @@ Public Function getBrushHandle() As Long
         
         'Gradient fill
         Case 2
-            getBrushHandle = 0
+            getBrushHandle = cGradient.getBrushHandle(m_BoundaryRect)
         
         'Texture fill
         Case 3
@@ -219,7 +243,19 @@ End Sub
 
 Private Sub Class_Initialize()
     
+    'Set default parameter values
+    m_PrimaryOpacity = 100
+    
     'Prep a string serializer
     Set cSerialize = New pdParamXML
+    
+    'Prep a gradient handler
+    Set cGradient = New pdGradient
+    With m_BoundaryRect
+        .Left = 0
+        .Top = 0
+        .Width = 100
+        .Height = 100
+    End With
     
 End Sub

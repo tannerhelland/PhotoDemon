@@ -46,9 +46,9 @@ Begin VB.Form dialog_FillSettings
       _extenty        =   1323
       font            =   "VBP_DialogBrushSettings.frx":0000
       backcolor       =   14802140
-      autoloadlastpreset=   -1  'True
-      dontautounloadparent=   -1  'True
-      dontresetautomatically=   -1  'True
+      autoloadlastpreset=   -1
+      dontautounloadparent=   -1
+      dontresetautomatically=   -1
    End
    Begin PhotoDemon.buttonStrip btsStyle 
       Height          =   615
@@ -117,6 +117,53 @@ Begin VB.Form dialog_FillSettings
       _extenty        =   556
       caption         =   "fill opacity"
       fontsize        =   12
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4935
+      Index           =   2
+      Left            =   120
+      ScaleHeight     =   329
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   385
+      TabIndex        =   5
+      Top             =   2400
+      Width           =   5775
+      Begin PhotoDemon.gradientSelector gsPrimary 
+         Height          =   1335
+         Left            =   0
+         TabIndex        =   14
+         Top             =   1080
+         Width           =   5775
+         _extentx        =   10186
+         _extenty        =   2355
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   4
+         Left            =   0
+         Top             =   0
+         Width           =   9375
+         _extentx        =   16536
+         _extenty        =   556
+         caption         =   "gradient fill settings"
+         fontsize        =   12
+      End
+      Begin PhotoDemon.pdLabel lblText 
+         Height          =   285
+         Index           =   0
+         Left            =   0
+         Top             =   600
+         Width           =   5565
+         _extentx        =   9816
+         _extenty        =   503
+         caption         =   "gradient:"
+         fontsize        =   12
+         forecolor       =   0
+      End
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -311,32 +358,6 @@ Begin VB.Form dialog_FillSettings
          _extentx        =   16536
          _extenty        =   556
          caption         =   "texture fill settings"
-         fontsize        =   12
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4935
-      Index           =   2
-      Left            =   120
-      ScaleHeight     =   329
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   385
-      TabIndex        =   5
-      Top             =   2400
-      Width           =   5775
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   315
-         Index           =   4
-         Left            =   0
-         Top             =   0
-         Width           =   9375
-         _extentx        =   16536
-         _extenty        =   556
-         caption         =   "gradient fill settings"
          fontsize        =   12
       End
    End
@@ -547,6 +568,7 @@ Private Sub updateFillObject()
         .setBrushProperty pgbs_PatternColor1Opacity, sltPatternOpacity(0).Value
         .setBrushProperty pgbs_PatternColor2, csPattern(1).Color
         .setBrushProperty pgbs_PatternColor2Opacity, sltPatternOpacity(1).Value
+        .setBrushProperty pgbs_GradientString, gsPrimary.Gradient
     End With
 
 End Sub
@@ -559,7 +581,16 @@ Private Sub updatePreview()
         updateFillObject
         
         'Retrieve a matching brush handle
-        Dim gdipBrush As Long
+        Dim gdipBrush As Long, cBounds As RECTF
+        
+        With cBounds
+            .Left = 0
+            .Top = 0
+            .Width = m_PreviewDIB.getDIBWidth
+            .Height = m_PreviewDIB.getDIBHeight
+        End With
+        
+        m_Filler.setBoundaryRect cBounds
         gdipBrush = m_Filler.getBrushHandle()
         
         'Prep the preview DIB
@@ -588,9 +619,12 @@ Private Sub updatePreview()
     
 End Sub
 
+Private Sub gsPrimary_GradientChanged()
+    updatePreview
+End Sub
+
 Private Sub sltFillOpacity_Change()
     updatePreview
-    Debug.Print "opacity:" & m_Filler.getBrushProperty(pgbs_PrimaryOpacity) & ", " & sltFillOpacity.Value
 End Sub
 
 Private Sub sltPatternOpacity_Change(Index As Integer)
@@ -613,6 +647,8 @@ Private Sub syncControlsToFillObject()
         csPattern(1).Color = .getBrushProperty(pgbs_PatternColor2)
         sltPatternOpacity(0).Value = .getBrushProperty(pgbs_PatternColor1Opacity)
         sltPatternOpacity(1).Value = .getBrushProperty(pgbs_PatternColor2Opacity)
+        
+        gsPrimary.Gradient = .getBrushProperty(pgbs_GradientString)
     
     End With
     

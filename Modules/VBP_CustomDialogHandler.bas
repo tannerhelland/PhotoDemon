@@ -448,3 +448,36 @@ Public Function choosePDPen(ByRef oldPen As String, ByRef newPen As String, Opti
     Set dialog_OutlineSettings = Nothing
 
 End Function
+
+'Present the user with PD's custom gradient selection dialog.
+' INPUTS:  1) a String-type variable (ByRef, of course) which will receive the new gradient parameters
+'          2) an optional initial gradient parameter string
+'          3) an optional gradientSelector control reference, if this dialog is being raised by a gradientSelector control.
+'             (This reference will be used to provide live updates as the user plays with the dialog.)
+'
+' OUTPUTS: 1) TRUE if OK was pressed, FALSE for Cancel
+Public Function showGradientDialog(ByRef newGradient As String, Optional ByVal initialGradient As String = "", Optional ByRef callingControl As gradientSelector) As Boolean
+    
+    If choosePDGradient(initialGradient, newGradient, callingControl) = vbOK Then
+        showGradientDialog = True
+    Else
+        showGradientDialog = False
+    End If
+    
+End Function
+
+'Display a custom gradient selection dialog
+' RETURNS: MsgBoxResult from the dialog itself.  For easier interactions, I recommend using the showGradientDialog function, above.
+Public Function choosePDGradient(ByRef oldGradient As String, ByRef newGradient As String, Optional ByRef callingControl As gradientSelector) As VbMsgBoxResult
+
+    Load dialog_GradientEditor
+    dialog_GradientEditor.showDialog oldGradient, callingControl
+    
+    choosePDGradient = dialog_GradientEditor.DialogResult
+    If choosePDGradient = vbOK Then newGradient = dialog_GradientEditor.newGradient
+    
+    Unload dialog_GradientEditor
+    Set dialog_GradientEditor = Nothing
+
+End Function
+
