@@ -358,10 +358,7 @@ Public Sub rasterizeVectorData()
     
     'Rasterizing is a lot simpler than it looks.  Basically, we just change the layer type to PDL_IMAGE and discard any superfluous vector data.
     myLayerType = PDL_IMAGE
-    
-    'Erase any instances related to now-unnecessary vector data
-    Set myTextRenderer = Nothing
-    
+        
     'While possibly unnecessary for some vector layer types, rasterization is a serious enough change that it's wise to regenerate
     ' any/all internal caches.
     Me.notifyOfDestructiveChanges
