@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.66</langversion>
+<langversion>6.7.67</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -14308,7 +14308,17 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
-<original>node settings</original>
+<original>current node settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>node editor</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>edit mode</original>
 <translation></translation>
 </phrase>
 
@@ -14327,7 +14337,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_DialogGradientEditor.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- VBP_DialogGradientEditor.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for VBP_DialogGradientEditor.frm-->
 
@@ -14345,10 +14355,10 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2486</phrasecount>
+<phrasecount>2488</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4269 phrases. -->
-<!-- 1783 are duplicates, so only 2486 unique phrases have been written to file. -->
-<!-- These 2486 phrases contain approximately 13856 total words. -->
+<!-- As of this build, PhotoDemon contains 4274 phrases. -->
+<!-- 1786 are duplicates, so only 2488 unique phrases have been written to file. -->
+<!-- These 2488 phrases contain approximately 13861 total words. -->
 
 </pdData>
