@@ -415,7 +415,7 @@ End Function
 Public Function getLayerByID(ByVal requestedID As Long) As pdLayer
     
     Dim i As Long
-    For i = 0 To UBound(imgLayers)
+    For i = 0 To m_numOfLayers - 1
         If imgLayers(i).getLayerID = requestedID Then
             Set getLayerByID = imgLayers(i)
             Exit Function
