@@ -3,7 +3,7 @@ Begin VB.Form dialog_GradientEditor
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    Caption         =   "Gradient editor"
-   ClientHeight    =   8205
+   ClientHeight    =   8895
    ClientLeft      =   120
    ClientTop       =   450
    ClientWidth     =   12660
@@ -17,53 +17,125 @@ Begin VB.Form dialog_GradientEditor
       Strikethrough   =   0   'False
    EndProperty
    LinkTopic       =   "Form1"
-   ScaleHeight     =   547
+   ScaleHeight     =   593
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   844
    StartUpPosition =   1  'CenterOwner
+   Begin VB.PictureBox picNodePreview 
+      Appearance      =   0  'Flat
+      AutoRedraw      =   -1  'True
+      BackColor       =   &H00FFFFFF&
+      ForeColor       =   &H00000000&
+      Height          =   495
+      Left            =   240
+      ScaleHeight     =   31
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   807
+      TabIndex        =   6
+      Top             =   2400
+      Width           =   12135
+   End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   3975
+      Height          =   3375
       Index           =   0
       Left            =   120
-      ScaleHeight     =   265
+      ScaleHeight     =   225
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   825
       TabIndex        =   4
-      Top             =   3480
+      Top             =   4680
       Width           =   12375
-      Begin PhotoDemon.pdLabel lblInstructions 
-         Height          =   735
-         Left            =   0
-         Top             =   0
-         Width           =   12135
-         _ExtentX        =   21405
-         _ExtentY        =   1296
-         Alignment       =   2
-         Caption         =   "yes"
-         FontSize        =   9
-         Layout          =   1
+      Begin PhotoDemon.sliderTextCombo sltNodeOpacity 
+         Height          =   495
+         Left            =   360
+         TabIndex        =   8
+         Top             =   1920
+         Width           =   5175
+         _ExtentX        =   9128
+         _ExtentY        =   873
+         Max             =   100
+         Value           =   100
+         NotchPosition   =   2
+         NotchValueCustom=   100
+      End
+      Begin PhotoDemon.colorSelector csNode 
+         Height          =   495
+         Left            =   360
+         TabIndex        =   7
+         Top             =   960
+         Width           =   5175
+         _ExtentX        =   9128
+         _ExtentY        =   873
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
          Index           =   0
          Left            =   120
-         Top             =   840
-         Width           =   9375
+         Top             =   120
+         Width           =   5415
          _ExtentX        =   16536
          _ExtentY        =   556
-         Caption         =   "node settings:"
+         Caption         =   "current node settings:"
          FontSize        =   12
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   4
+         Left            =   360
+         Top             =   600
+         Width           =   5175
+         _ExtentX        =   16536
+         _ExtentY        =   556
+         Caption         =   "color:"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   5
+         Left            =   360
+         Top             =   1560
+         Width           =   5175
+         _ExtentX        =   16536
+         _ExtentY        =   556
+         Caption         =   "opacity:"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   6
+         Left            =   360
+         Top             =   2520
+         Width           =   5175
+         _ExtentX        =   16536
+         _ExtentY        =   556
+         Caption         =   "position:"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.sliderTextCombo sltNodePosition 
+         Height          =   495
+         Left            =   360
+         TabIndex        =   9
+         Top             =   2880
+         Width           =   5175
+         _ExtentX        =   9128
+         _ExtentY        =   873
+         Max             =   100
+         SigDigits       =   2
+         SliderTrackStyle=   1
+         Value           =   50
+         NotchPosition   =   1
+         NotchValueCustom=   50
       End
    End
    Begin PhotoDemon.buttonStrip btsEdit 
       Height          =   495
       Left            =   240
       TabIndex        =   3
-      Top             =   2880
+      Top             =   4080
       Width           =   12135
       _ExtentX        =   21405
       _ExtentY        =   873
@@ -81,7 +153,7 @@ Begin VB.Form dialog_GradientEditor
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   841
       TabIndex        =   2
-      Top             =   2310
+      Top             =   2895
       Width           =   12615
    End
    Begin VB.PictureBox picPreview 
@@ -89,9 +161,9 @@ Begin VB.Form dialog_GradientEditor
       AutoRedraw      =   -1  'True
       BackColor       =   &H00FFFFFF&
       ForeColor       =   &H00000000&
-      Height          =   1815
+      Height          =   1455
       Left            =   240
-      ScaleHeight     =   119
+      ScaleHeight     =   95
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   807
       TabIndex        =   1
@@ -103,7 +175,7 @@ Begin VB.Form dialog_GradientEditor
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   7455
+      Top             =   8145
       Width           =   12660
       _ExtentX        =   22331
       _ExtentY        =   1323
@@ -137,15 +209,49 @@ Begin VB.Form dialog_GradientEditor
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   3975
+      Height          =   3495
       Index           =   1
       Left            =   120
-      ScaleHeight     =   265
+      ScaleHeight     =   233
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   825
       TabIndex        =   5
-      Top             =   3480
+      Top             =   4560
       Width           =   12375
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   315
+      Index           =   2
+      Left            =   240
+      Top             =   2040
+      Width           =   9255
+      _ExtentX        =   16536
+      _ExtentY        =   556
+      Caption         =   "node editor:"
+      FontSize        =   12
+   End
+   Begin PhotoDemon.pdLabel lblInstructions 
+      Height          =   285
+      Left            =   0
+      Top             =   3300
+      Width           =   12735
+      _ExtentX        =   22463
+      _ExtentY        =   503
+      Alignment       =   2
+      Caption         =   "yes"
+      FontSize        =   9
+      Layout          =   1
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   315
+      Index           =   3
+      Left            =   240
+      Top             =   3720
+      Width           =   9255
+      _ExtentX        =   16536
+      _ExtentY        =   556
+      Caption         =   "edit mode:"
+      FontSize        =   12
    End
 End
 Attribute VB_Name = "dialog_GradientEditor"
@@ -176,15 +282,14 @@ Private userAnswer As VbMsgBoxResult
 'The original gradient when the dialog was first loaded
 Private m_OldGradient As String
 
-'Gradient strings are generated with the help of PD's core gradient class.  This class also renders a preview of the current gradient.
-Private m_GradientPreview As pdGradient
+'Gradient strings are generated with the help of PD's core gradient class.  This class also renders two previews of the current gradient:
+' 1) The main preview at the top of the page, which reflects all active settings
+' 2) The node editor preview just below, which reflects only the current colors (and allows interactive editing)
+Private m_GradientPreview As pdGradient, m_NodePreview As pdGradient
 
 'If a user control spawned this dialog, it will pass itself as a reference.  We can then send gradient updates back
 ' to the control, allowing for real-time updates on the screen despite a modal dialog being raised!
 Private parentGradientControl As gradientSelector
-
-'Gradient previews are rendered using a pdGraphicsPath as the sample area
-Private m_PreviewPath As pdGraphicsPath
 
 'Recently used gradients are loaded to/saved from a custom XML file
 Private m_XMLEngine As pdXML
@@ -194,10 +299,10 @@ Private m_XMLEngine As pdXML
 Private m_XMLFilename As String
 
 'Gradient preview DIB (required for color management) and interaction DIB (where all the gradient nodes are rendered)
-Private m_PreviewDIB As pdDIB, m_InteractiveDIB As pdDIB
+Private m_MainPreviewDIB As pdDIB, m_NodePreviewDIB As pdDIB, m_InteractiveDIB As pdDIB
 
-'To prevent recursive setting changes, this value can be set to TRUE to prevent live preview updates
-Private m_SuspendRedraws As Boolean
+'To prevent recursive setting changes, this value can be set to TRUE to prevent automatic UI synchronization
+Private m_SuspendUI As Boolean
 
 'All mouse interactions for creating/editing gradients is handled by PD's mouse manager
 Private WithEvents m_MouseEvents As pdInputMouse
@@ -242,6 +347,14 @@ Public Sub showDialog(ByVal initialGradient As String, Optional ByRef callingCon
     Set m_GradientPreview = New pdGradient
     m_GradientPreview.createGradientFromString initialGradient
     
+    'Mirror the gradient settings across the node-editor gradient object as well
+    Set m_NodePreview = New pdGradient
+    m_NodePreview.createGradientFromString m_GradientPreview.getGradientAsString
+    
+    'TODO: force the node preview to be linear-type, angle 0
+    
+    'If the dialog is being initialized for the first time, there will be no "initial gradient".  In this case, the gradient class
+    ' will initialize a placeholder gradient.  We make a copy of it, and use that as the basis of the editor's initial settings.
     If Len(initialGradient) = 0 Then initialGradient = m_GradientPreview.getGradientAsString
     
     'Sync all controls to the initial pen parameters
@@ -289,7 +402,7 @@ End Sub
 Private Sub cmdBar_OKClick()
 
     'Store the newGradient value (which the dialog handler will use to return the selected gradient to the caller)
-    updateGradientObject
+    updateGradientObjects
     
     'TODO: save the current list of recently used gradients
     'saveRecentGradientList
@@ -310,14 +423,24 @@ Private Sub cmdBar_ResetClick()
     m_GradientPreview.createGradientFromString ""
     
     'Synchronize all controls to the updated settings
+    updateGradientObjects
     syncControlsToGradientObject
     updatePreview
     
 End Sub
 
+Private Sub csNode_ColorChanged()
+    
+    If (Not m_SuspendUI) And (m_CurPoint >= 0) Then
+        m_GradientPoints(m_CurPoint).pdgp_RGB = csNode.Color
+        redrawEverything
+    End If
+    
+End Sub
+
 Private Sub Form_Load()
     
-    m_SuspendRedraws = True
+    m_SuspendUI = True
     
     'Add the instructions label
     Dim instructionText As String
@@ -332,7 +455,7 @@ Private Sub Form_Load()
     If g_IsProgramRunning Then
     
         If m_GradientPreview Is Nothing Then Set m_GradientPreview = New pdGradient
-        If m_PreviewDIB Is Nothing Then Set m_PreviewDIB = New pdDIB
+        If m_MainPreviewDIB Is Nothing Then Set m_MainPreviewDIB = New pdDIB
         
         'Set up a special mouse handler for the gradient interaction window
         If m_MouseEvents Is Nothing Then Set m_MouseEvents = New pdInputMouse
@@ -371,17 +494,14 @@ Private Sub Form_Load()
         activeOutlinePen.setPenProperty pgps_PenWidth, 1#
         activeOutlinePen.setPenProperty pgps_PenLineJoin, LineJoinRound
         activeOutlinePen.setPenProperty pgps_PenColor, g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-        
-        'The preview path is simply the rectangular area of the preview box
-        If m_PreviewPath Is Nothing Then Set m_PreviewPath = New pdGraphicsPath
-        syncPreviewPath
-        
+                
         'Draw the initial set of interactive gradient nodes
+        syncUIToActiveNode
         drawGradientNodes
                 
     End If
     
-    m_SuspendRedraws = False
+    m_SuspendUI = False
     
 End Sub
 
@@ -407,7 +527,6 @@ Private Sub resetGradientPoints()
 End Sub
 
 Private Sub Form_Resize()
-    syncPreviewPath
     drawGradientNodes
     updatePreview
 End Sub
@@ -416,23 +535,16 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'Synchronize the preview path against the size of the current preview window.  Note that this function does not request a redraw, by design.
-' The caller must do that manually.
-Private Sub syncPreviewPath()
-    
-    If Not m_PreviewPath Is Nothing Then
-        
-        m_PreviewPath.resetPath
-        m_PreviewPath.addRectangle_Absolute 0, 0, picPreview.ScaleWidth, picPreview.ScaleHeight
-        
-    End If
-    
-End Sub
-
-'Update our internal gradient class against any/all changed settings.
-Private Sub updateGradientObject()
+'Update our two internal gradient classes against any/all changed settings.
+' (Note that the node-editor class only reflects the current collection of colors and positions, not things like angle or gradient type,
+'  so we only sync it against the node collection.)
+Private Sub updateGradientObjects()
 
     With m_GradientPreview
+        .createGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
+    End With
+
+    With m_NodePreview
         .createGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
     End With
 
@@ -440,13 +552,13 @@ End Sub
 
 Private Sub updatePreview()
     
-    If Not m_SuspendRedraws Then
+    If Not m_SuspendUI Then
     
-        'Make sure our gradient object is up-to-date
-        updateGradientObject
+        'Make sure our gradient objects are up-to-date
+        updateGradientObjects
         
-        'Retrieve a matching brush handle
-        Dim gdipBrush As Long, boundsRect As RECTF
+        'Retrieve a matching brush handle for the primary preview
+        Dim gdipBrushMain As Long, boundsRect As RECTF
         
         With boundsRect
             .Left = 0
@@ -455,28 +567,56 @@ Private Sub updatePreview()
             .Height = picPreview.ScaleHeight
         End With
         
-        gdipBrush = m_GradientPreview.getBrushHandle(boundsRect, True, 0)
+        gdipBrushMain = m_GradientPreview.getBrushHandle(boundsRect, True, 0)
         
         'Prep the preview DIB
-        If m_PreviewDIB Is Nothing Then Set m_PreviewDIB = New pdDIB
+        If m_MainPreviewDIB Is Nothing Then Set m_MainPreviewDIB = New pdDIB
         
-        If (m_PreviewDIB.getDIBWidth <> Me.picPreview.ScaleWidth) Or (m_PreviewDIB.getDIBHeight <> Me.picPreview.ScaleHeight) Then
-            m_PreviewDIB.createBlank Me.picPreview.ScaleWidth, Me.picPreview.ScaleHeight, 24, 0
+        If (m_MainPreviewDIB.getDIBWidth <> Me.picPreview.ScaleWidth) Or (m_MainPreviewDIB.getDIBHeight <> Me.picPreview.ScaleHeight) Then
+            m_MainPreviewDIB.createBlank Me.picPreview.ScaleWidth, Me.picPreview.ScaleHeight, 24, 0
         Else
-            m_PreviewDIB.resetDIB
+            m_MainPreviewDIB.resetDIB
         End If
         
         'Create the preview image
-        With m_PreviewDIB
-            GDI_Plus.GDIPlusFillDIBRect_Pattern m_PreviewDIB, 0, 0, .getDIBWidth, .getDIBHeight, g_CheckerboardPattern
-            GDI_Plus.GDIPlusFillDC_Brush .getDIBDC, gdipBrush, 0, 0, .getDIBWidth, .getDIBHeight
+        With m_MainPreviewDIB
+            GDI_Plus.GDIPlusFillDIBRect_Pattern m_MainPreviewDIB, 0, 0, .getDIBWidth, .getDIBHeight, g_CheckerboardPattern
+            GDI_Plus.GDIPlusFillDC_Brush .getDIBDC, gdipBrushMain, 0, 0, .getDIBWidth, .getDIBHeight
         End With
         
         'Copy the preview image to the screen
-        m_PreviewDIB.renderToPictureBox Me.picPreview
+        m_MainPreviewDIB.renderToPictureBox Me.picPreview
         
-        'Release our GDI+ handle
-        GDI_Plus.releaseGDIPlusBrush gdipBrush
+        'Next, repeat all the above steps for the node-area preview
+        Dim gdipBrushNodes As Long
+        
+        With boundsRect
+            .Left = 0
+            .Top = 0
+            .Width = picNodePreview.ScaleWidth
+            .Height = picNodePreview.ScaleHeight
+        End With
+        
+        gdipBrushNodes = m_GradientPreview.getBrushHandle(boundsRect, True, 0)
+        
+        If m_NodePreviewDIB Is Nothing Then Set m_NodePreviewDIB = New pdDIB
+        
+        If (m_NodePreviewDIB.getDIBWidth <> Me.picNodePreview.ScaleWidth) Or (m_NodePreviewDIB.getDIBHeight <> Me.picNodePreview.ScaleHeight) Then
+            m_NodePreviewDIB.createBlank Me.picNodePreview.ScaleWidth, Me.picNodePreview.ScaleHeight, 24, 0
+        Else
+            m_NodePreviewDIB.resetDIB
+        End If
+        
+        With m_NodePreviewDIB
+            GDI_Plus.GDIPlusFillDIBRect_Pattern m_NodePreviewDIB, 0, 0, .getDIBWidth, .getDIBHeight, g_CheckerboardPattern
+            GDI_Plus.GDIPlusFillDC_Brush .getDIBDC, gdipBrushNodes, 0, 0, .getDIBWidth, .getDIBHeight
+        End With
+        
+        m_NodePreviewDIB.renderToPictureBox Me.picNodePreview
+        
+        'Release our GDI+ handles
+        GDI_Plus.releaseGDIPlusBrush gdipBrushMain
+        GDI_Plus.releaseGDIPlusBrush gdipBrushNodes
                 
         'Notify our parent of the update
         If Not (parentGradientControl Is Nothing) Then parentGradientControl.notifyOfLiveGradientChange m_GradientPreview.getGradientAsString
@@ -485,9 +625,11 @@ Private Sub updatePreview()
     
 End Sub
 
+'Make all UI elements reflect the current gradient object.  This is typically done after the dialog loads, or after loading a
+' previously created gradient.
 Private Sub syncControlsToGradientObject()
         
-    m_SuspendRedraws = True
+    m_SuspendUI = True
         
     With m_GradientPreview
         .getCopyOfPointCollection m_NumOfGradientPoints, m_GradientPoints
@@ -495,7 +637,10 @@ Private Sub syncControlsToGradientObject()
     
     drawGradientNodes
     
-    m_SuspendRedraws = False
+    m_SuspendUI = False
+    
+    'Also, synchronize the node-specific UI to the active node (if any)
+    syncUIToActiveNode
     
 End Sub
 
@@ -515,12 +660,20 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
         
         If (Button And pdLeftButton) <> 0 Then
             m_CurPoint = tmpPoint
+            
+            
         ElseIf ((Button And pdRightButton) <> 0) And (m_NumOfGradientPoints > 2) Then
             
             m_NumOfGradientPoints = m_NumOfGradientPoints - 1
             For i = tmpPoint To m_NumOfGradientPoints
                 m_GradientPoints(i) = m_GradientPoints(i + 1)
             Next i
+            
+            'Make sure the current point index is not invalid
+            If m_CurPoint >= m_NumOfGradientPoints Then
+                m_CurPoint = -1
+                syncUIToActiveNode
+            End If
             
         End If
         
@@ -541,7 +694,8 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
         
     End If
     
-    'Regardless of outcome, we need to redraw the interaction area and preview
+    'Regardless of outcome, we need to resync the UI to the active node, and redraw the interaction area and preview
+    syncUIToActiveNode
     updatePreview
     drawGradientNodes
 
@@ -566,6 +720,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
         m_GradientPoints(m_CurPoint).pdgp_Position = convertPixelCoordsToNodeCoords(x)
         
         'Redraw the gradient interaction nodes and the gradient itself
+        syncUIToActiveNode
         drawGradientNodes
         updatePreview
         
@@ -634,6 +789,57 @@ Private Function convertPixelCoordsToNodeCoords(ByVal x As Long) As Single
     End If
     
 End Function
+
+'When a new active node is selected (or its parameters somehow changed), call this sub to synchronize all UI elements to that node's properties.
+Private Sub syncUIToActiveNode()
+    
+    If g_IsProgramRunning Then
+    
+        'Disable automatic UI synchronization
+        m_SuspendUI = True
+        
+        If (m_CurPoint >= 0) And (m_CurPoint < m_NumOfGradientPoints) Then
+            
+            'Show all relevant controls
+            If Not lblTitle(4).Visible Then
+            
+                lblTitle(0).Caption = g_Language.TranslateMessage("node settings:")
+                lblTitle(4).Visible = True
+                lblTitle(5).Visible = True
+                lblTitle(6).Visible = True
+                
+                csNode.Visible = True
+                sltNodeOpacity.Visible = True
+                sltNodePosition.Visible = True
+                
+            End If
+            
+            'Sync all UI elements to the current node's settings
+            With m_GradientPoints(m_CurPoint)
+                csNode.Color = .pdgp_RGB
+                sltNodeOpacity.Value = .pdgp_Opacity * 100
+                sltNodePosition.Value = .pdgp_Position * 100
+            End With
+        
+        Else
+        
+            'Hide all relevant controls
+            lblTitle(0).Caption = g_Language.TranslateMessage("please select a node")
+            lblTitle(4).Visible = False
+            lblTitle(5).Visible = False
+            lblTitle(6).Visible = False
+            
+            csNode.Visible = False
+            sltNodeOpacity.Visible = False
+            sltNodePosition.Visible = False
+        
+        End If
+            
+        m_SuspendUI = False
+        
+    End If
+
+End Sub
 
 'Draw all interactive nodes
 Private Sub drawGradientNodes()
@@ -725,4 +931,29 @@ Private Sub drawGradientNodes()
         
     End If
 
+End Sub
+
+'Some user interactions require us to redraw just about everything on the dialog.  Use this shortcut function to do so.
+Private Sub redrawEverything()
+    updateGradientObjects
+    drawGradientNodes
+    updatePreview
+End Sub
+
+Private Sub sltNodeOpacity_Change()
+    
+    If (Not m_SuspendUI) And (m_CurPoint >= 0) Then
+        m_GradientPoints(m_CurPoint).pdgp_Opacity = sltNodeOpacity.Value / 100
+        redrawEverything
+    End If
+    
+End Sub
+
+Private Sub sltNodePosition_Change()
+    
+    If (Not m_SuspendUI) And (m_CurPoint >= 0) Then
+        m_GradientPoints(m_CurPoint).pdgp_Position = sltNodePosition.Value / 100
+        redrawEverything
+    End If
+    
 End Sub
