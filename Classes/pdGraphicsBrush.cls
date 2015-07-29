@@ -226,9 +226,9 @@ Friend Function getBrushHandle() As Long
         
         'Gradient fill
         Case 2
-            getBrushHandle = cGradient.getBrushHandle(m_BoundaryRect)
+            getBrushHandle = cGradient.getBrushHandle(m_BoundaryRect, False, m_PrimaryOpacity / 100)
         
-        'Texture fill
+        'Texture fill (TODO)
         Case 3
             getBrushHandle = 0
     

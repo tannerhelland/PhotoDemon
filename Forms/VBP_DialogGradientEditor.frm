@@ -49,6 +49,24 @@ Begin VB.Form dialog_GradientEditor
       TabIndex        =   4
       Top             =   4680
       Width           =   12375
+      Begin PhotoDemon.pdComboBox cboWrapMode 
+         Height          =   495
+         Left            =   6600
+         TabIndex        =   12
+         Top             =   2880
+         Width           =   5655
+         _ExtentX        =   9975
+         _ExtentY        =   873
+      End
+      Begin PhotoDemon.buttonStrip btsShape 
+         Height          =   495
+         Left            =   6600
+         TabIndex        =   10
+         Top             =   960
+         Width           =   5655
+         _ExtentX        =   9975
+         _ExtentY        =   873
+      End
       Begin PhotoDemon.sliderTextCombo sltNodeOpacity 
          Height          =   495
          Left            =   360
@@ -129,6 +147,61 @@ Begin VB.Form dialog_GradientEditor
          Value           =   50
          NotchPosition   =   1
          NotchValueCustom=   50
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   7
+         Left            =   6360
+         Top             =   120
+         Width           =   5415
+         _ExtentX        =   16536
+         _ExtentY        =   556
+         Caption         =   "full gradient settings:"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   8
+         Left            =   6600
+         Top             =   600
+         Width           =   5175
+         _ExtentX        =   16536
+         _ExtentY        =   556
+         Caption         =   "shape:"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   9
+         Left            =   6600
+         Top             =   1560
+         Width           =   5175
+         _ExtentX        =   16536
+         _ExtentY        =   556
+         Caption         =   "angle:"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.sliderTextCombo sltAngle 
+         Height          =   495
+         Left            =   6600
+         TabIndex        =   11
+         Top             =   1920
+         Width           =   5655
+         _ExtentX        =   9975
+         _ExtentY        =   873
+         Max             =   360
+         SigDigits       =   1
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   10
+         Left            =   6600
+         Top             =   2520
+         Width           =   5175
+         _ExtentX        =   16536
+         _ExtentY        =   556
+         Caption         =   "edge wrapping:"
+         FontSize        =   12
       End
    End
    Begin PhotoDemon.buttonStrip btsEdit 
@@ -392,6 +465,14 @@ Private Sub btsEdit_Click(ByVal buttonIndex As Long)
     
 End Sub
 
+Private Sub btsShape_Click(ByVal buttonIndex As Long)
+    If (Not m_SuspendUI) Then redrawEverything
+End Sub
+
+Private Sub cboWrapMode_Click()
+    If (Not m_SuspendUI) Then redrawEverything
+End Sub
+
 'CANCEL BUTTON
 Private Sub cmdBar_CancelClick()
     userAnswer = vbCancel
@@ -451,6 +532,19 @@ Private Sub Form_Load()
     btsEdit.AddItem "manual", 0
     btsEdit.AddItem "automatic", 1
     btsEdit_Click 0
+    
+    btsShape.AddItem "linear", 0
+    btsShape.AddItem "radial", 1
+    btsShape.AddItem "rectangle", 2
+    btsShape.AddItem "diamond", 3
+    
+    cboWrapMode.Clear
+    cboWrapMode.AddItem "tile", 0
+    cboWrapMode.AddItem "reflect horizontally", 1
+    cboWrapMode.AddItem "reflect vertically", 2
+    cboWrapMode.AddItem "mirror", 3
+    cboWrapMode.AddItem "clamp", 4
+    cboWrapMode.ListIndex = 3
     
     If g_IsProgramRunning Then
     
@@ -541,10 +635,16 @@ End Sub
 Private Sub updateGradientObjects()
 
     With m_GradientPreview
+        .setGradientProperty pdgs_GradientShape, btsShape.ListIndex
+        .setGradientProperty pdgs_GradientAngle, sltAngle.Value
+        .setGradientProperty pdgs_GradientWrapMode, cboWrapMode.ListIndex
         .createGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
     End With
 
     With m_NodePreview
+        .setGradientProperty pdgs_GradientShape, pdgs_ShapeLinear
+        .setGradientProperty pdgs_GradientAngle, 0#
+        .setGradientProperty pdgs_GradientWrapMode, cboWrapMode.ListIndex
         .createGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
     End With
 
@@ -567,7 +667,7 @@ Private Sub updatePreview()
             .Height = picPreview.ScaleHeight
         End With
         
-        gdipBrushMain = m_GradientPreview.getBrushHandle(boundsRect, True, 0)
+        gdipBrushMain = m_GradientPreview.getBrushHandle(boundsRect)
         
         'Prep the preview DIB
         If m_MainPreviewDIB Is Nothing Then Set m_MainPreviewDIB = New pdDIB
@@ -597,7 +697,7 @@ Private Sub updatePreview()
             .Height = picNodePreview.ScaleHeight
         End With
         
-        gdipBrushNodes = m_GradientPreview.getBrushHandle(boundsRect, True, 0)
+        gdipBrushNodes = m_GradientPreview.getBrushHandle(boundsRect, True)
         
         If m_NodePreviewDIB Is Nothing Then Set m_NodePreviewDIB = New pdDIB
         
@@ -630,8 +730,12 @@ End Sub
 Private Sub syncControlsToGradientObject()
         
     m_SuspendUI = True
-        
+    
     With m_GradientPreview
+        btsShape.ListIndex = .getGradientProperty(pdgs_GradientShape)
+        sltAngle.Value = .getGradientProperty(pdgs_GradientAngle)
+        cboWrapMode.ListIndex = .getGradientProperty(pdgs_GradientWrapMode)
+        
         .getCopyOfPointCollection m_NumOfGradientPoints, m_GradientPoints
     End With
     
@@ -938,6 +1042,10 @@ Private Sub redrawEverything()
     updateGradientObjects
     drawGradientNodes
     updatePreview
+End Sub
+
+Private Sub sltAngle_Change()
+    If (Not m_SuspendUI) Then redrawEverything
 End Sub
 
 Private Sub sltNodeOpacity_Change()
