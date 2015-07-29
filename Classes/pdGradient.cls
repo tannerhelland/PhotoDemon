@@ -85,6 +85,7 @@ Private Declare Function GdipCreatePathGradientFromPath Lib "gdiplus" (ByVal ptr
 Private Declare Function GdipSetLinePresetBlend Lib "gdiplus" (ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal ptCount As Long) As Long
 Private Declare Function GdipSetPathGradientPresetBlend Lib "gdiplus" (ByVal hBrush As Long, ByVal ptrToFirstColor As Long, ByVal ptrToFirstPosition As Long, ByVal ptCount As Long) As Long
 Private Declare Function GdipSetPathGradientWrapMode Lib "gdiplus" (ByVal hBrush As Long, ByVal newWrapMode As WrapMode) As Long
+Private Declare Function GdipSetPathGradientCenterPoint Lib "gdiplus" (ByVal hBrush As Long, ByRef newCenterPoints As POINTFLOAT) As Long
 
 'Get/set individual settings by enum type
 Public Function getGradientProperty(ByVal propID As PD_GRADIENT_SETTINGS) As Variant
@@ -344,67 +345,84 @@ Friend Function getBrushHandle(ByRef dstRect As RECTF, Optional ByVal overrideNo
                 'Reset our graphics path reference
                 m_Path.resetPath
                 
-                'Some paths require a modified rect (e.g. square vs rectangle, circle vs ellipse), so construct a square version
-                ' of the destination rect in advance.
-                Dim squareRect As RECTF, whDiff As Single, diagDistance As Single, whDiagDiff As Single
-                whDiff = dstRect.Width - dstRect.Height
+                'Some paths require a modified rect (e.g. square vs rectangle, circle vs ellipse), so construct a few additional
+                ' measurements in advance.
+                Dim halfWidth As Double, halfHeight As Double
+                halfWidth = dstRect.Width / 2
+                halfHeight = dstRect.Height / 2
                 
-                If whDiff >= 0 Then
-                    squareRect.Width = dstRect.Width
-                    squareRect.Height = dstRect.Width
-                    squareRect.Left = dstRect.Left
-                    squareRect.Top = dstRect.Top - (whDiff / 2)
-                Else
-                    squareRect.Width = dstRect.Height
-                    squareRect.Height = dstRect.Height
-                    squareRect.Left = dstRect.Left + (whDiff / 2)
-                    squareRect.Top = dstRect.Top
-                End If
+                Dim centerX As Double, centerY As Double
+                centerX = dstRect.Left + halfWidth
+                centerY = dstRect.Top + halfHeight
                 
-                'We now have a square rect centered around the original path's center point.
+                Dim squareRect As RECTF, maxLength As Double, radiusRect As Double, radiusSquare As Double
+                If dstRect.Width > dstRect.Height Then maxLength = halfWidth Else maxLength = halfHeight
+                radiusRect = Sqr(halfWidth * halfWidth + halfHeight * halfHeight) + 0.5
+                radiusSquare = Sqr(maxLength * maxLength + maxLength * maxLength) + 0.5
+                                
+                With squareRect
+                    .Left = centerX - maxLength
+                    .Top = centerY - maxLength
+                    .Width = maxLength * 2
+                    .Height = maxLength * 2
+                End With
                 
                 'Construct a reference path, using the 1) target rect, and 2) gradient shape to determine path behavior
                 If m_GradientShape = pdgs_ShapeRadial Then
                     
-                    'Expand the path again, to ensure that corner regions are covered by the brush
-                    diagDistance = Sqr((dstRect.Width / 2) ^ 2 + (dstRect.Height / 2) ^ 2)
-                    whDiagDiff = diagDistance - (squareRect.Width / 2) + 1
-                    
-                    With squareRect
-                        .Left = .Left - whDiagDiff '/ 2
-                        .Top = .Top - whDiagDiff '/ 2
-                        .Width = .Width + whDiagDiff * 2
-                        .Height = .Height + whDiagDiff * 2
-                    End With
-                    
-                    m_Path.addEllipse_RectF squareRect
+                    'Enclose the gradient within a circle with the same radius as the bounding rect's diagonal
+                    m_Path.addEllipse_Absolute centerX - radiusRect, centerY - radiusRect, centerX + radiusRect, centerY + radiusRect
                 
                 ElseIf m_GradientShape = pdgs_ShapeRectangle Then
+                    
+                    'Rectangles are easy - just use the bounding rect itself!
                     m_Path.addRectangle_RectF dstRect
                 
                 ElseIf m_GradientShape = pdgs_ShapeDiamond Then
                     
-                    'First, expand the square path by its diagonal distance
-                    diagDistance = Sqr((squareRect.Width / 2) ^ 2 + (squareRect.Height / 2) ^ 2)
-                    whDiagDiff = diagDistance - (squareRect.Width / 2)
+                    'I had to derive this bounding formula by hand, so sorry for the lack of an easy diagram!
                     
+                    'Basically, the crucial measurement for a diamond gradient is the hypotenuse of a triangle that meets
+                    ' the following criteria:
+                    ' 1) right triangle
+                    ' 2) 90 degree node at the center of the bounding rect
+                    ' 3) two other nodes at the intersection of a line that...
+                    '    a) passes through the top-left corner of the bounding rect
+                    '    b) intersects the horizontal and vertical center lines of the bounding rect at 45 degrees
+                    
+                    'Find the sine of a 45 degree angle (which must first be converted to radians, obviously)
+                    Dim sin45 As Double
+                    sin45 = Sin(45 * PI_DIV_180)
+                    
+                    'Use that value to add together the hypotenuses of the two triangles that, together with the top-left
+                    ' quadrant of the bounding rect, form the triangle described above.
+                    Dim dHypotenuse As Double
+                    dHypotenuse = halfWidth / sin45 + halfHeight / sin45 + 0.5
+                    
+                    'Construct a square, using that hypotenuse value as the square's width/height
                     With squareRect
-                        .Left = .Left - whDiagDiff / 2
-                        .Top = .Top - whDiagDiff / 2
-                        .Width = .Width + whDiagDiff
-                        .Height = .Height + whDiagDiff
+                        .Left = centerX - dHypotenuse / 2
+                        .Top = centerY - dHypotenuse / 2
+                        .Width = dHypotenuse
+                        .Height = dHypotenuse
                     End With
                     
-                    'Use the expanded rect to construct a new diamond path
+                    'Rotate the square 45 degrees and bam, we have a perfectly constricted diamond region!
                     m_Path.addRectangle_RectF squareRect
                     m_Path.rotatePathAroundItsCenter 45#
-                
+                    
                 End If
                 
                 'Create a path gradient brush, using our path object as the reference
                 If GdipCreatePathGradientFromPath(m_Path.getCopyOfPathHandle, gdipBrush) <> 0 Then
                     Debug.Print "WARNING!  pdGradient.getBrushHandle failed during path brush creation."
                 End If
+                
+                'Set a default center point (in the future we may make this editable)
+                Dim centerPoint As POINTFLOAT
+                centerPoint.x = centerX
+                centerPoint.y = centerY
+                GdipSetPathGradientCenterPoint gdipBrush, centerPoint
                 
                 'Next, override the brush colors with our custom array
                 If GdipSetPathGradientPresetBlend(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), m_NumOfPoints + gpOffset) <> 0 Then
