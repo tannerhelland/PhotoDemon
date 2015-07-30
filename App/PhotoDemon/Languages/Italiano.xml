@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.67</langversion>
+<langversion>6.7.68</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -14169,12 +14169,7 @@ o il menù File > Apri e File > Importa.</translation>
 <translation></translation>
 </phrase>
 
-<phrase>
-<original>texture</original>
-<translation></translation>
-</phrase>
-
-<!-- VBP_DialogBrushSettings.frm contains 18 phrases. 4 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- VBP_DialogBrushSettings.frm contains 17 phrases. 4 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for VBP_DialogBrushSettings.frm-->
 
@@ -14313,6 +14308,16 @@ o il menù File > Apri e File > Importa.</translation>
 </phrase>
 
 <phrase>
+<original>full gradient settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>edge wrapping</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>node editor</original>
 <translation></translation>
 </phrase>
@@ -14337,7 +14342,57 @@ o il menù File > Apri e File > Importa.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_DialogGradientEditor.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<phrase>
+<original>linear</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>radial</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>rectangle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>diamond</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>tile</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>reflect horizontally</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>reflect vertically</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>clamp</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>node settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>please select a node</original>
+<translation></translation>
+</phrase>
+
+<!-- VBP_DialogGradientEditor.frm contains 30 phrases. 11 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for VBP_DialogGradientEditor.frm-->
 
@@ -14355,10 +14410,10 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2488</phrasecount>
+<phrasecount>2499</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4274 phrases. -->
-<!-- 1786 are duplicates, so only 2488 unique phrases have been written to file. -->
-<!-- These 2488 phrases contain approximately 13861 total words. -->
+<!-- As of this build, PhotoDemon contains 4290 phrases. -->
+<!-- 1791 are duplicates, so only 2499 unique phrases have been written to file. -->
+<!-- These 2499 phrases contain approximately 13881 total words. -->
 
 </pdData>
