@@ -256,7 +256,7 @@ Private Sub sortGradientArray()
 
 End Sub
 
-'Helper for string sorting, above.  This is not optimized at all, but it's sufficient for PD's current usage...
+'Helper for node sorting, above.  This is not optimized at all, but it's sufficient for PD's current usage...
 Private Sub swapGradientPoints(ByVal gIndex1 As Long, ByVal gIndex2 As Long)
     Dim tmpPoint As pdGradientPoint
     tmpPoint = m_GradientPoints(gIndex1)
@@ -456,6 +456,78 @@ Private Function getMergedRGBA(ByVal gpIndex As Long, Optional ByVal customOpaci
     
     getMergedRGBA = placeHolder.lngResult
     
+End Function
+
+'Given a position on the range [0, 1], return the gradient color at that position.  Note that a linear, non-reflected
+' gradient shape is assumed.
+Friend Function getColorAtPosition_RGBA(ByVal cPosition As Single, ByRef dstRGBA As RGBQUAD) As Boolean
+
+    'Make sure we have a filled, sorted input array
+    If m_NumOfPoints > 0 Then
+                
+        'Assume the incoming array is not sorted, then sort it
+        If Not m_IsSorted Then sortGradientArray
+        
+        Dim tmpLowLong As tmpLong, tmpHighLong As tmpLong
+        
+        'The requested position can lie one of three places:
+        ' 1) Before node 0
+        ' 2) After the final node
+        ' 3) In-between two nodes
+        
+        'Tackle these possibilities in turn.
+        If cPosition < m_GradientPoints(0).pdgp_Position Then
+        
+            'Return the base color
+            tmpLowLong.lngResult = getMergedRGBA(0)
+            LSet dstRGBA = tmpLowLong
+            
+        ElseIf cPosition > m_GradientPoints(m_NumOfPoints - 1).pdgp_Position Then
+            
+            'Return the top color
+            tmpHighLong.lngResult = getMergedRGBA(m_NumOfPoints - 1)
+            LSet dstRGBA = tmpHighLong
+            
+        'We must interpolate the color manually
+        Else
+        
+            'Find the indices of the colors surrounding the requested position.
+            Dim i As Long
+            i = 1
+            Do While m_GradientPoints(i).pdgp_Position < cPosition
+                i = i + 1
+            Loop
+            
+            'i now points at the node position just greater than the requested point.
+            
+            'Calculate a linear blend factor between the surrounding positions
+            Dim blendFactor As Double
+            blendFactor = (cPosition - m_GradientPoints(i - 1).pdgp_Position) / (m_GradientPoints(i).pdgp_Position - m_GradientPoints(i - 1).pdgp_Position)
+            
+            'Retrieve the RGBA components of both colors
+            Dim tmpLow As RGBQUAD, tmpHigh As RGBQUAD
+            tmpLowLong.lngResult = getMergedRGBA(i - 1)
+            tmpHighLong.lngResult = getMergedRGBA(i)
+            
+            LSet tmpLow = tmpLowLong
+            LSet tmpHigh = tmpHighLong
+            
+            'Start blending
+            dstRGBA.Red = BlendColors(tmpLow.Red, tmpHigh.Red, blendFactor)
+            dstRGBA.Green = BlendColors(tmpLow.Green, tmpHigh.Green, blendFactor)
+            dstRGBA.Blue = BlendColors(tmpLow.Blue, tmpHigh.Blue, blendFactor)
+            dstRGBA.Alpha = BlendColors(tmpLow.Alpha, tmpHigh.Alpha, blendFactor)
+        
+        End If
+        
+        getColorAtPosition_RGBA = True
+        
+    Else
+        Debug.Print "WARNING!  getColorAtPosition_RGBA was called before the gradient was initialized!"
+        getColorAtPosition_RGBA = False
+    End If
+    
+
 End Function
 
 Private Sub Class_Initialize()

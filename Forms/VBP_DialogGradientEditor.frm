@@ -790,7 +790,12 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
         With m_GradientPoints(m_NumOfGradientPoints)
             .pdgp_Opacity = 1
             .pdgp_Position = convertPixelCoordsToNodeCoords(x)
-            .pdgp_RGB = vbBlack     'TODO: calculate this color intelligently
+            
+            'Preset the RGB value to match whatever the gradient already is at this point
+            Dim newRGBA As RGBQUAD
+            m_GradientPreview.getColorAtPosition_RGBA .pdgp_Position, newRGBA
+            .pdgp_RGB = RGB(newRGBA.Red, newRGBA.Green, newRGBA.Blue)
+            
         End With
         
         m_CurPoint = m_NumOfGradientPoints
