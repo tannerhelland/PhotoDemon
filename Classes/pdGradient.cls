@@ -43,13 +43,14 @@ End Enum
 
 Public Enum PD_GRADIENT_SHAPE
     pdgs_ShapeLinear = 0
-    pdgs_ShapeRadial = 1
-    pdgs_ShapeRectangle = 2
-    pdgs_ShapeDiamond = 3
+    pdgs_ShapeReflection = 1
+    pdgs_ShapeRadial = 2
+    pdgs_ShapeRectangle = 3
+    pdgs_ShapeDiamond = 4
 End Enum
 
 #If False Then
-    Private Const pdgs_ShapeLinear = 0, pdgs_ShapeRadial = 1
+    Private Const pdgs_ShapeLinear = 0, pdgs_ShapeReflection = 1, pdgs_ShapeRadial = 2, pdgs_ShapeRectangle = 3, pdgs_ShapeDiamond = 4
 #End If
 
 Private m_GradientShape As PD_GRADIENT_SHAPE
@@ -275,7 +276,7 @@ Friend Function getBrushHandle(ByRef dstRect As RECTF, Optional ByVal overrideNo
     If Not m_IsSorted Then sortGradientArray
     
     'Next, we need to convert the gradient points into two separate arrays: one with merged RGBA values, and one with positions.
-    ' As part of this process, we also need to insert point 0 and point 1 values if they don't exist.
+    ' As part of this process, we also need to insert discrete points at position 0 and position 1 (if they don't already exist).
     Dim dstRGBA() As Long, dstPosition() As Single
     ReDim dstRGBA(0 To m_NumOfPoints + 1) As Long
     ReDim dstPosition(0 To m_NumOfPoints + 1) As Single
@@ -303,7 +304,36 @@ Friend Function getBrushHandle(ByRef dstRect As RECTF, Optional ByVal overrideNo
         dstRGBA(m_NumOfPoints - 1 + gpOffset) = getMergedRGBA(m_NumOfPoints - 1, customOpacity)
         dstPosition(m_NumOfPoints - 1 + gpOffset) = 1
     End If
+    
+    'The point arrays are now successfully constructed.  The "reflection" gradient type requires one additional step.
+    ' We must manually enlarge the point array, and fill the top half with mirror copies of the existing gradient.
+    Dim finalPointCount As Long
+    
+    If (m_GradientShape = pdgs_ShapeReflection) And (Not overrideNormalSettings) Then
         
+        Dim originalPointCount As Long
+        originalPointCount = m_NumOfPoints + gpOffset
+        finalPointCount = originalPointCount + (originalPointCount - 1)
+        
+        'Start by cutting all positions in half.
+        For i = 0 To originalPointCount - 1
+            dstPosition(i) = dstPosition(i) / 2
+        Next i
+        
+        'Next, enlarge the color and position arrays
+        ReDim Preserve dstRGBA(0 To finalPointCount) As Long
+        ReDim Preserve dstPosition(0 To finalPointCount) As Single
+        
+        'Finally, fill in the new array spots with corresponding color and position values
+        For i = originalPointCount To finalPointCount - 1
+            dstRGBA(i) = dstRGBA(originalPointCount + (originalPointCount - i) - 2)
+            dstPosition(i) = 1 - dstPosition(originalPointCount + (originalPointCount - i) - 2)
+        Next i
+        
+    Else
+        finalPointCount = m_NumOfPoints + gpOffset
+    End If
+    
     'We can now create the brush!  We do this in two steps, as gradient brushes do not have a constructor that accepts
     ' a variable color array like this.
     
@@ -313,12 +343,12 @@ Friend Function getBrushHandle(ByRef dstRect As RECTF, Optional ByVal overrideNo
     If overrideNormalSettings Then
     
         'Create a default linear gradient brush
-        If GdipCreateLineBrushFromRectWithAngle(dstRect, dstRGBA(0), dstRGBA(m_NumOfPoints - 1 + gpOffset), 0#, 1, WrapModeTileFlipXY, gdipBrush) <> 0 Then
+        If GdipCreateLineBrushFromRectWithAngle(dstRect, dstRGBA(0), dstRGBA(1), 0#, 1, WrapModeTileFlipXY, gdipBrush) <> 0 Then
             Debug.Print "WARNING!  pdGradient.getBrushHandle failed during line brush creation."
         End If
         
         'Next, override the brush colors with our custom array
-        If GdipSetLinePresetBlend(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), m_NumOfPoints + gpOffset) <> 0 Then
+        If GdipSetLinePresetBlend(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) <> 0 Then
             Debug.Print "WARNING!  pdGradient.getBrushHandle failed during line preset blending."
         End If
         
@@ -327,15 +357,15 @@ Friend Function getBrushHandle(ByRef dstRect As RECTF, Optional ByVal overrideNo
         'Brush creation varies by shape
         Select Case m_GradientShape
         
-            Case pdgs_ShapeLinear
+            Case pdgs_ShapeLinear, pdgs_ShapeReflection
                 
                 'Create a default linear gradient brush
-                If GdipCreateLineBrushFromRectWithAngle(dstRect, dstRGBA(0), dstRGBA(m_NumOfPoints - 1 + gpOffset), m_GradientAngle, 1, m_GradientWrapMode, gdipBrush) <> 0 Then
+                If GdipCreateLineBrushFromRectWithAngle(dstRect, dstRGBA(0), dstRGBA(1), m_GradientAngle, 1, m_GradientWrapMode, gdipBrush) <> 0 Then
                     Debug.Print "WARNING!  pdGradient.getBrushHandle failed during line brush creation."
                 End If
                 
                 'Next, override the brush colors with our custom array
-                If GdipSetLinePresetBlend(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), m_NumOfPoints + gpOffset) <> 0 Then
+                If GdipSetLinePresetBlend(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) <> 0 Then
                     Debug.Print "WARNING!  pdGradient.getBrushHandle failed during line preset blending."
                 End If
         
@@ -425,7 +455,7 @@ Friend Function getBrushHandle(ByRef dstRect As RECTF, Optional ByVal overrideNo
                 GdipSetPathGradientCenterPoint gdipBrush, centerPoint
                 
                 'Next, override the brush colors with our custom array
-                If GdipSetPathGradientPresetBlend(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), m_NumOfPoints + gpOffset) <> 0 Then
+                If GdipSetPathGradientPresetBlend(gdipBrush, VarPtr(dstRGBA(0)), VarPtr(dstPosition(0)), finalPointCount) <> 0 Then
                     Debug.Print "WARNING!  pdGradient.getBrushHandle failed during pathpreset blending."
                 End If
                 
