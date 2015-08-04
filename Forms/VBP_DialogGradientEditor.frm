@@ -26,15 +26,26 @@ Begin VB.Form dialog_GradientEditor
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   5295
+      Height          =   5775
       Index           =   0
       Left            =   0
-      ScaleHeight     =   353
+      ScaleHeight     =   385
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   841
       TabIndex        =   3
       Top             =   3000
       Width           =   12615
+      Begin PhotoDemon.smartCheckBox chkDistributeEvenly 
+         Height          =   330
+         Left            =   360
+         TabIndex        =   12
+         Top             =   5280
+         Width           =   6735
+         _ExtentX        =   11880
+         _ExtentY        =   582
+         Caption         =   "automatically distribute nodes evenly"
+         Value           =   0
+      End
       Begin VB.PictureBox picInteract 
          Appearance      =   0  'Flat
          AutoRedraw      =   -1  'True
@@ -100,7 +111,7 @@ Begin VB.Form dialog_GradientEditor
          Index           =   0
          Left            =   120
          Top             =   1800
-         Width           =   5415
+         Width           =   12135
          _ExtentX        =   16536
          _ExtentY        =   556
          Caption         =   "current node settings:"
@@ -159,7 +170,7 @@ Begin VB.Form dialog_GradientEditor
          Index           =   7
          Left            =   120
          Top             =   3360
-         Width           =   5415
+         Width           =   12135
          _ExtentX        =   16536
          _ExtentY        =   556
          Caption         =   "full gradient settings:"
@@ -220,6 +231,17 @@ Begin VB.Form dialog_GradientEditor
          Caption         =   "yes"
          FontSize        =   9
          Layout          =   1
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   10
+         Left            =   120
+         Top             =   4800
+         Width           =   12135
+         _ExtentX        =   21405
+         _ExtentY        =   556
+         Caption         =   "additional tools:"
+         FontSize        =   12
       End
    End
    Begin PhotoDemon.buttonStrip btsEdit 
@@ -285,10 +307,10 @@ Begin VB.Form dialog_GradientEditor
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   5655
+      Height          =   5775
       Index           =   1
       Left            =   0
-      ScaleHeight     =   377
+      ScaleHeight     =   385
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   841
       TabIndex        =   4
@@ -461,6 +483,10 @@ Private Sub btsShape_Click(ByVal buttonIndex As Long)
     
 End Sub
 
+Private Sub chkDistributeEvenly_Click()
+    If (Not m_SuspendUI) Then redrawEverything
+End Sub
+
 'CANCEL BUTTON
 Private Sub cmdBar_CancelClick()
     userAnswer = vbCancel
@@ -615,7 +641,46 @@ End Sub
 ' (Note that the node-editor class only reflects the current collection of colors and positions, not things like angle or gradient type,
 '  so we only sync it against the node collection.)
 Private Sub updateGradientObjects()
-
+    
+    'If the "evenly distribute nodes" option is checked, assign positions automatically.
+    If CBool(chkDistributeEvenly.Value) Then
+        
+        'Start by sorting nodes from least-to-greatest.  This has the unintended side-effect of changing the active node, unfortunately,
+        ' so we must also reset the active node (if any).
+        
+        'Start by seeing if nodes require sorting.
+        Dim i As Long
+        
+        Dim sortNeeded As Boolean
+        sortNeeded = False
+        
+        For i = 1 To m_NumOfGradientPoints - 1
+            If m_GradientPoints(i).pdgp_Position < m_GradientPoints(i - 1).pdgp_Position Then
+                sortNeeded = True
+                Exit For
+            End If
+        Next i
+        
+        'If a sort is required, perform it now
+        If sortNeeded Then
+            
+            m_CurPoint = -1
+            m_CurHoverPoint = -1
+            
+            syncUIToActiveNode
+            
+            m_GradientPreview.createGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
+            m_GradientPreview.getCopyOfPointCollection m_NumOfGradientPoints, m_GradientPoints
+            
+        End If
+        
+        'Redistribute points accordingly
+        For i = 0 To m_NumOfGradientPoints - 1
+            m_GradientPoints(i).pdgp_Position = i / (m_NumOfGradientPoints - 1)
+        Next i
+        
+    End If
+    
     With m_GradientPreview
         .setGradientProperty pdgs_GradientShape, btsShape.ListIndex
         .setGradientProperty pdgs_GradientAngle, sltAngle.Value
@@ -727,7 +792,7 @@ Private Sub syncControlsToGradientObject()
     
 End Sub
 
-Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     Dim i As Long
     
@@ -736,7 +801,7 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
     
     'See if an existing has been selected.
     Dim tmpPoint As Long
-    tmpPoint = getPointAtPosition(X, Y)
+    tmpPoint = getPointAtPosition(x, y)
     
     'If this is an existing point, we will either (LMB) mark it as the active point, or (RMB) remove it
     If tmpPoint >= 0 Then
@@ -768,7 +833,7 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
         
         With m_GradientPoints(m_NumOfGradientPoints)
             .pdgp_Opacity = 1
-            .pdgp_Position = convertPixelCoordsToNodeCoords(X)
+            .pdgp_Position = convertPixelCoordsToNodeCoords(x)
             
             'Preset the RGB value to match whatever the gradient already is at this point
             Dim newRGBA As RGBQUAD
@@ -789,23 +854,23 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
 
 End Sub
 
-Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseEvents.setSystemCursor IDC_HAND
 End Sub
 
-Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_CurHoverPoint = -1
     m_MouseEvents.setSystemCursor IDC_DEFAULT
     drawGradientNodes
 End Sub
 
-Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
+Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     'First, separate our handling by mouse button state
     If (Button And pdLeftButton) <> 0 Then
     
         'The left mouse button is down.  Assign the new position to the active node.
-        m_GradientPoints(m_CurPoint).pdgp_Position = convertPixelCoordsToNodeCoords(X)
+        If m_CurPoint >= 0 Then m_GradientPoints(m_CurPoint).pdgp_Position = convertPixelCoordsToNodeCoords(x)
         
         'Redraw the gradient interaction nodes and the gradient itself
         syncUIToActiveNode
@@ -817,7 +882,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     
         'See if a new point is currently being hovered.
         Dim tmpPoint As Long
-        tmpPoint = getPointAtPosition(X, Y)
+        tmpPoint = getPointAtPosition(x, y)
         
         'If a new point is being hovered, highlight it and redraw the interactive area
         If tmpPoint <> m_CurHoverPoint Then
@@ -830,11 +895,11 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
 End Sub
 
 'Given an x-position in the interaction box, return the currently hovered point.  If multiple points are hovered, the nearest one will be returned.
-Private Function getPointAtPosition(ByVal X As Long, Y As Long) As Long
+Private Function getPointAtPosition(ByVal x As Long, y As Long) As Long
     
     'Start by converting the current x-position into the range [0, 1]
     Dim convPoint As Single
-    convPoint = convertPixelCoordsToNodeCoords(X)
+    convPoint = convertPixelCoordsToNodeCoords(x)
     
     'convPoint now contains the position of the mouse on the range [0, 1].  Find the nearest point.
     Dim minDistance As Single, curDistance As Single, minIndex As Long
@@ -860,7 +925,7 @@ Private Function getPointAtPosition(ByVal X As Long, Y As Long) As Long
 End Function
 
 'Given an (x, y) position on the gradient interaction window, convert it to the [0, 1] range used by the gradient control.
-Private Function convertPixelCoordsToNodeCoords(ByVal X As Long) As Single
+Private Function convertPixelCoordsToNodeCoords(ByVal x As Long) As Single
     
     'Start by converting the current x-position into the range [0, 1]
     Dim uiMin As Single, uiMax As Single, uiRange As Single
@@ -868,7 +933,7 @@ Private Function convertPixelCoordsToNodeCoords(ByVal X As Long) As Single
     uiMax = picPreview.Left + picPreview.ScaleWidth
     uiRange = uiMax - uiMin
     
-    convertPixelCoordsToNodeCoords = (CSng(X) - uiMin) / uiRange
+    convertPixelCoordsToNodeCoords = (CSng(x) - uiMin) / uiRange
     
     If convertPixelCoordsToNodeCoords < 0 Then
         convertPixelCoordsToNodeCoords = 0

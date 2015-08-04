@@ -407,7 +407,7 @@ Friend Function getBrushHandle(ByRef dstRect As RECTF, Optional ByVal overrideNo
                     
                     'Rectangles are easy - just use the bounding rect itself!
                     m_Path.addRectangle_RectF dstRect
-                
+                    
                 ElseIf m_GradientShape = pdgs_ShapeDiamond Then
                     
                     'I had to derive this bounding formula by hand, so sorry for the lack of an easy diagram!
