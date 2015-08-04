@@ -3,7 +3,7 @@ Begin VB.Form dialog_GradientEditor
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    Caption         =   "Gradient editor"
-   ClientHeight    =   8895
+   ClientHeight    =   9540
    ClientLeft      =   120
    ClientTop       =   450
    ClientWidth     =   12660
@@ -17,63 +17,69 @@ Begin VB.Form dialog_GradientEditor
       Strikethrough   =   0   'False
    EndProperty
    LinkTopic       =   "Form1"
-   ScaleHeight     =   593
+   ScaleHeight     =   636
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   844
    StartUpPosition =   1  'CenterOwner
-   Begin VB.PictureBox picNodePreview 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H00FFFFFF&
-      ForeColor       =   &H00000000&
-      Height          =   495
-      Left            =   240
-      ScaleHeight     =   31
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   807
-      TabIndex        =   6
-      Top             =   2400
-      Width           =   12135
-   End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   3375
+      Height          =   5295
       Index           =   0
-      Left            =   120
-      ScaleHeight     =   225
+      Left            =   0
+      ScaleHeight     =   353
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   825
-      TabIndex        =   4
-      Top             =   4680
-      Width           =   12375
-      Begin PhotoDemon.pdComboBox cboWrapMode 
+      ScaleWidth      =   841
+      TabIndex        =   3
+      Top             =   3000
+      Width           =   12615
+      Begin VB.PictureBox picInteract 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   330
+         Left            =   0
+         ScaleHeight     =   22
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   841
+         TabIndex        =   11
+         Top             =   855
+         Width           =   12615
+      End
+      Begin VB.PictureBox picNodePreview 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H00FFFFFF&
+         ForeColor       =   &H00000000&
          Height          =   495
-         Left            =   6600
-         TabIndex        =   12
-         Top             =   2880
-         Width           =   5655
-         _ExtentX        =   9975
-         _ExtentY        =   873
+         Left            =   240
+         ScaleHeight     =   31
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   807
+         TabIndex        =   10
+         Top             =   360
+         Width           =   12135
       End
       Begin PhotoDemon.buttonStrip btsShape 
          Height          =   495
-         Left            =   6600
-         TabIndex        =   10
-         Top             =   960
-         Width           =   5655
+         Left            =   360
+         TabIndex        =   8
+         Top             =   4140
+         Width           =   7740
          _ExtentX        =   9975
          _ExtentY        =   873
       End
       Begin PhotoDemon.sliderTextCombo sltNodeOpacity 
          Height          =   495
-         Left            =   360
-         TabIndex        =   8
-         Top             =   1920
-         Width           =   5175
-         _ExtentX        =   9128
+         Left            =   4320
+         TabIndex        =   6
+         Top             =   2580
+         Width           =   3750
+         _ExtentX        =   6615
          _ExtentY        =   873
          Max             =   100
          Value           =   100
@@ -83,17 +89,17 @@ Begin VB.Form dialog_GradientEditor
       Begin PhotoDemon.colorSelector csNode 
          Height          =   495
          Left            =   360
-         TabIndex        =   7
-         Top             =   960
-         Width           =   5175
-         _ExtentX        =   9128
+         TabIndex        =   5
+         Top             =   2580
+         Width           =   3750
+         _ExtentX        =   6615
          _ExtentY        =   873
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
          Index           =   0
          Left            =   120
-         Top             =   120
+         Top             =   1800
          Width           =   5415
          _ExtentX        =   16536
          _ExtentY        =   556
@@ -104,8 +110,8 @@ Begin VB.Form dialog_GradientEditor
          Height          =   315
          Index           =   4
          Left            =   360
-         Top             =   600
-         Width           =   5175
+         Top             =   2220
+         Width           =   3900
          _ExtentX        =   16536
          _ExtentY        =   556
          Caption         =   "color:"
@@ -114,9 +120,9 @@ Begin VB.Form dialog_GradientEditor
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
          Index           =   5
-         Left            =   360
-         Top             =   1560
-         Width           =   5175
+         Left            =   4320
+         Top             =   2220
+         Width           =   3900
          _ExtentX        =   16536
          _ExtentY        =   556
          Caption         =   "opacity:"
@@ -125,9 +131,9 @@ Begin VB.Form dialog_GradientEditor
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
          Index           =   6
-         Left            =   360
-         Top             =   2520
-         Width           =   5175
+         Left            =   8280
+         Top             =   2220
+         Width           =   3900
          _ExtentX        =   16536
          _ExtentY        =   556
          Caption         =   "position:"
@@ -135,11 +141,11 @@ Begin VB.Form dialog_GradientEditor
       End
       Begin PhotoDemon.sliderTextCombo sltNodePosition 
          Height          =   495
-         Left            =   360
-         TabIndex        =   9
-         Top             =   2880
-         Width           =   5175
-         _ExtentX        =   9128
+         Left            =   8280
+         TabIndex        =   7
+         Top             =   2580
+         Width           =   3750
+         _ExtentX        =   6615
          _ExtentY        =   873
          Max             =   100
          SigDigits       =   2
@@ -151,8 +157,8 @@ Begin VB.Form dialog_GradientEditor
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
          Index           =   7
-         Left            =   6360
-         Top             =   120
+         Left            =   120
+         Top             =   3360
          Width           =   5415
          _ExtentX        =   16536
          _ExtentY        =   556
@@ -162,9 +168,9 @@ Begin VB.Form dialog_GradientEditor
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
          Index           =   8
-         Left            =   6600
-         Top             =   600
-         Width           =   5175
+         Left            =   360
+         Top             =   3780
+         Width           =   7740
          _ExtentX        =   16536
          _ExtentY        =   556
          Caption         =   "shape:"
@@ -173,9 +179,9 @@ Begin VB.Form dialog_GradientEditor
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
          Index           =   9
-         Left            =   6600
-         Top             =   1560
-         Width           =   5175
+         Left            =   8280
+         Top             =   3780
+         Width           =   4170
          _ExtentX        =   16536
          _ExtentY        =   556
          Caption         =   "angle:"
@@ -183,10 +189,10 @@ Begin VB.Form dialog_GradientEditor
       End
       Begin PhotoDemon.sliderTextCombo sltAngle 
          Height          =   495
-         Left            =   6600
-         TabIndex        =   11
-         Top             =   1920
-         Width           =   5655
+         Left            =   8280
+         TabIndex        =   9
+         Top             =   4140
+         Width           =   3750
          _ExtentX        =   9975
          _ExtentY        =   873
          Max             =   360
@@ -194,40 +200,37 @@ Begin VB.Form dialog_GradientEditor
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
-         Index           =   10
-         Left            =   6600
-         Top             =   2520
-         Width           =   5175
+         Index           =   2
+         Left            =   240
+         Top             =   0
+         Width           =   9255
          _ExtentX        =   16536
          _ExtentY        =   556
-         Caption         =   "edge wrapping:"
+         Caption         =   "node editor:"
          FontSize        =   12
+      End
+      Begin PhotoDemon.pdLabel lblInstructions 
+         Height          =   285
+         Left            =   0
+         Top             =   1410
+         Width           =   12660
+         _ExtentX        =   22331
+         _ExtentY        =   503
+         Alignment       =   2
+         Caption         =   "yes"
+         FontSize        =   9
+         Layout          =   1
       End
    End
    Begin PhotoDemon.buttonStrip btsEdit 
       Height          =   495
       Left            =   240
-      TabIndex        =   3
-      Top             =   4080
+      TabIndex        =   2
+      Top             =   2400
       Width           =   12135
       _ExtentX        =   21405
       _ExtentY        =   873
       FontSize        =   12
-   End
-   Begin VB.PictureBox picInteract 
-      Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   330
-      Left            =   0
-      ScaleHeight     =   22
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   841
-      TabIndex        =   2
-      Top             =   2895
-      Width           =   12615
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
@@ -248,7 +251,7 @@ Begin VB.Form dialog_GradientEditor
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   8145
+      Top             =   8790
       Width           =   12660
       _ExtentX        =   22331
       _ExtentY        =   1323
@@ -282,44 +285,21 @@ Begin VB.Form dialog_GradientEditor
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   3495
+      Height          =   5655
       Index           =   1
-      Left            =   120
-      ScaleHeight     =   233
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   825
-      TabIndex        =   5
-      Top             =   4560
-      Width           =   12375
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   315
-      Index           =   2
-      Left            =   240
-      Top             =   2040
-      Width           =   9255
-      _ExtentX        =   16536
-      _ExtentY        =   556
-      Caption         =   "node editor:"
-      FontSize        =   12
-   End
-   Begin PhotoDemon.pdLabel lblInstructions 
-      Height          =   285
       Left            =   0
-      Top             =   3300
-      Width           =   12735
-      _ExtentX        =   22463
-      _ExtentY        =   503
-      Alignment       =   2
-      Caption         =   "yes"
-      FontSize        =   9
-      Layout          =   1
+      ScaleHeight     =   377
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   841
+      TabIndex        =   4
+      Top             =   3000
+      Width           =   12615
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   315
       Index           =   3
       Left            =   240
-      Top             =   3720
+      Top             =   2040
       Width           =   9255
       _ExtentX        =   16536
       _ExtentY        =   556
@@ -466,11 +446,19 @@ Private Sub btsEdit_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub btsShape_Click(ByVal buttonIndex As Long)
+    
+    'Show/hide the angle slider depending on the current shape
+    If (buttonIndex = 0) Or (buttonIndex = 1) Then
+        lblTitle(9).Visible = True
+        sltAngle.Visible = True
+    Else
+        lblTitle(9).Visible = False
+        sltAngle.Visible = False
+    End If
+    
+    'Redraw the UI accordingly
     If (Not m_SuspendUI) Then redrawEverything
-End Sub
-
-Private Sub cboWrapMode_Click()
-    If (Not m_SuspendUI) Then redrawEverything
+    
 End Sub
 
 'CANCEL BUTTON
@@ -525,7 +513,7 @@ Private Sub Form_Load()
     
     'Add the instructions label
     Dim instructionText As String
-    instructionText = g_Language.TranslateMessage("Left-click to add new gradient nodes.  Right-click to remove existing nodes.")
+    instructionText = g_Language.TranslateMessage("Left-click to add new nodes or edit existing nodes.  Right-click a node to remove it.")
     lblInstructions.Caption = instructionText
     
     'Populate button strips and drop-downs
@@ -533,18 +521,12 @@ Private Sub Form_Load()
     btsEdit.AddItem "automatic", 1
     btsEdit_Click 0
     
-    btsShape.AddItem "linear", 0
-    btsShape.AddItem "radial", 1
-    btsShape.AddItem "rectangle", 2
-    btsShape.AddItem "diamond", 3
-    
-    cboWrapMode.Clear
-    cboWrapMode.AddItem "tile", 0
-    cboWrapMode.AddItem "reflect horizontally", 1
-    cboWrapMode.AddItem "reflect vertically", 2
-    cboWrapMode.AddItem "mirror", 3
-    cboWrapMode.AddItem "clamp", 4
-    cboWrapMode.ListIndex = 3
+    btsShape.AddItem "line", 0
+    btsShape.AddItem "reflection", 1
+    btsShape.AddItem "circle", 2
+    btsShape.AddItem "rectangle", 3
+    btsShape.AddItem "diamond", 4
+    btsShape_Click 0
     
     If g_IsProgramRunning Then
     
@@ -637,14 +619,12 @@ Private Sub updateGradientObjects()
     With m_GradientPreview
         .setGradientProperty pdgs_GradientShape, btsShape.ListIndex
         .setGradientProperty pdgs_GradientAngle, sltAngle.Value
-        .setGradientProperty pdgs_GradientWrapMode, cboWrapMode.ListIndex
         .createGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
     End With
 
     With m_NodePreview
         .setGradientProperty pdgs_GradientShape, pdgs_ShapeLinear
         .setGradientProperty pdgs_GradientAngle, 0#
-        .setGradientProperty pdgs_GradientWrapMode, cboWrapMode.ListIndex
         .createGradientFromPointCollection m_NumOfGradientPoints, m_GradientPoints
     End With
 
@@ -734,7 +714,6 @@ Private Sub syncControlsToGradientObject()
     With m_GradientPreview
         btsShape.ListIndex = .getGradientProperty(pdgs_GradientShape)
         sltAngle.Value = .getGradientProperty(pdgs_GradientAngle)
-        cboWrapMode.ListIndex = .getGradientProperty(pdgs_GradientWrapMode)
         
         .getCopyOfPointCollection m_NumOfGradientPoints, m_GradientPoints
     End With
@@ -748,7 +727,7 @@ Private Sub syncControlsToGradientObject()
     
 End Sub
 
-Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
 
     Dim i As Long
     
@@ -757,7 +736,7 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
     
     'See if an existing has been selected.
     Dim tmpPoint As Long
-    tmpPoint = getPointAtPosition(x, y)
+    tmpPoint = getPointAtPosition(X, Y)
     
     'If this is an existing point, we will either (LMB) mark it as the active point, or (RMB) remove it
     If tmpPoint >= 0 Then
@@ -789,7 +768,7 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
         
         With m_GradientPoints(m_NumOfGradientPoints)
             .pdgp_Opacity = 1
-            .pdgp_Position = convertPixelCoordsToNodeCoords(x)
+            .pdgp_Position = convertPixelCoordsToNodeCoords(X)
             
             'Preset the RGB value to match whatever the gradient already is at this point
             Dim newRGBA As RGBQUAD
@@ -810,23 +789,23 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
 
 End Sub
 
-Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
     m_MouseEvents.setSystemCursor IDC_HAND
 End Sub
 
-Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
     m_CurHoverPoint = -1
     m_MouseEvents.setSystemCursor IDC_DEFAULT
     drawGradientNodes
 End Sub
 
-Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
     
     'First, separate our handling by mouse button state
     If (Button And pdLeftButton) <> 0 Then
     
         'The left mouse button is down.  Assign the new position to the active node.
-        m_GradientPoints(m_CurPoint).pdgp_Position = convertPixelCoordsToNodeCoords(x)
+        m_GradientPoints(m_CurPoint).pdgp_Position = convertPixelCoordsToNodeCoords(X)
         
         'Redraw the gradient interaction nodes and the gradient itself
         syncUIToActiveNode
@@ -838,7 +817,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
     
         'See if a new point is currently being hovered.
         Dim tmpPoint As Long
-        tmpPoint = getPointAtPosition(x, y)
+        tmpPoint = getPointAtPosition(X, Y)
         
         'If a new point is being hovered, highlight it and redraw the interactive area
         If tmpPoint <> m_CurHoverPoint Then
@@ -851,11 +830,11 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
 End Sub
 
 'Given an x-position in the interaction box, return the currently hovered point.  If multiple points are hovered, the nearest one will be returned.
-Private Function getPointAtPosition(ByVal x As Long, y As Long) As Long
+Private Function getPointAtPosition(ByVal X As Long, Y As Long) As Long
     
     'Start by converting the current x-position into the range [0, 1]
     Dim convPoint As Single
-    convPoint = convertPixelCoordsToNodeCoords(x)
+    convPoint = convertPixelCoordsToNodeCoords(X)
     
     'convPoint now contains the position of the mouse on the range [0, 1].  Find the nearest point.
     Dim minDistance As Single, curDistance As Single, minIndex As Long
@@ -881,7 +860,7 @@ Private Function getPointAtPosition(ByVal x As Long, y As Long) As Long
 End Function
 
 'Given an (x, y) position on the gradient interaction window, convert it to the [0, 1] range used by the gradient control.
-Private Function convertPixelCoordsToNodeCoords(ByVal x As Long) As Single
+Private Function convertPixelCoordsToNodeCoords(ByVal X As Long) As Single
     
     'Start by converting the current x-position into the range [0, 1]
     Dim uiMin As Single, uiMax As Single, uiRange As Single
@@ -889,7 +868,7 @@ Private Function convertPixelCoordsToNodeCoords(ByVal x As Long) As Single
     uiMax = picPreview.Left + picPreview.ScaleWidth
     uiRange = uiMax - uiMin
     
-    convertPixelCoordsToNodeCoords = (CSng(x) - uiMin) / uiRange
+    convertPixelCoordsToNodeCoords = (CSng(X) - uiMin) / uiRange
     
     If convertPixelCoordsToNodeCoords < 0 Then
         convertPixelCoordsToNodeCoords = 0
