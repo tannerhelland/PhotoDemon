@@ -109,7 +109,7 @@ Begin VB.Form toolpanel_FancyText
       Width           =   10935
       Begin PhotoDemon.buttonStripVertical btsAppearanceCategory 
          Height          =   1380
-         Left            =   30
+         Left            =   0
          TabIndex        =   9
          Top             =   30
          Width           =   1815
@@ -131,27 +131,27 @@ Begin VB.Form toolpanel_FancyText
          Width           =   10935
          Begin PhotoDemon.penSelector psTextBackground 
             Height          =   855
-            Left            =   4920
+            Left            =   4680
             TabIndex        =   40
-            Top             =   540
+            Top             =   480
             Width           =   2055
             _ExtentX        =   3625
             _ExtentY        =   1508
          End
          Begin PhotoDemon.brushSelector bsTextBackground 
             Height          =   855
-            Left            =   1440
+            Left            =   1200
             TabIndex        =   38
-            Top             =   540
+            Top             =   480
             Width           =   2055
             _ExtentX        =   3625
             _ExtentY        =   1508
          End
          Begin PhotoDemon.smartCheckBox chkBackground 
             Height          =   330
-            Left            =   195
+            Left            =   120
             TabIndex        =   12
-            Top             =   105
+            Top             =   60
             Width           =   3240
             _ExtentX        =   4445
             _ExtentY        =   582
@@ -162,9 +162,9 @@ Begin VB.Form toolpanel_FancyText
             Height          =   720
             Index           =   15
             Left            =   0
-            Top             =   600
-            Width           =   1245
-            _ExtentX        =   1561
+            Top             =   480
+            Width           =   1095
+            _ExtentX        =   1931
             _ExtentY        =   1270
             Alignment       =   1
             Caption         =   "fill style:"
@@ -174,10 +174,10 @@ Begin VB.Form toolpanel_FancyText
          Begin PhotoDemon.pdLabel lblText 
             Height          =   720
             Index           =   28
-            Left            =   3600
-            Top             =   600
-            Width           =   1125
-            _ExtentX        =   1561
+            Left            =   3360
+            Top             =   480
+            Width           =   1215
+            _ExtentX        =   2143
             _ExtentY        =   1270
             Alignment       =   1
             Caption         =   "border style:"
@@ -186,9 +186,9 @@ Begin VB.Form toolpanel_FancyText
          End
          Begin PhotoDemon.smartCheckBox chkBackgroundBorder 
             Height          =   330
-            Left            =   3840
+            Left            =   3480
             TabIndex        =   39
-            Top             =   120
+            Top             =   60
             Width           =   3240
             _ExtentX        =   4445
             _ExtentY        =   582

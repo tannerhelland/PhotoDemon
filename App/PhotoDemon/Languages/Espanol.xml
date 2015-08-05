@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.71</langversion>
+<langversion>6.7.72</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -14307,6 +14307,11 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
+<original>automatically distribute nodes evenly</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>current node settings</original>
 <translation></translation>
 </phrase>
@@ -14317,12 +14322,12 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>edge wrapping</original>
+<original>node editor</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>node editor</original>
+<original>additional tools</original>
 <translation></translation>
 </phrase>
 
@@ -14332,7 +14337,7 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>Left-click to add new gradient nodes.  Right-click to remove existing nodes.</original>
+<original>Left-click to add new nodes or edit existing nodes.  Right-click a node to remove it.</original>
 <translation></translation>
 </phrase>
 
@@ -14347,12 +14352,17 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>linear</original>
+<original>line</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>radial</original>
+<original>reflection</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>circle</original>
 <translation></translation>
 </phrase>
 
@@ -14367,26 +14377,6 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>tile</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>reflect horizontally</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>reflect vertically</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>clamp</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>node settings</original>
 <translation></translation>
 </phrase>
@@ -14396,7 +14386,7 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <translation></translation>
 </phrase>
 
-<!-- VBP_DialogGradientEditor.frm contains 30 phrases. 11 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- VBP_DialogGradientEditor.frm contains 27 phrases. 10 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for VBP_DialogGradientEditor.frm-->
 
@@ -14414,10 +14404,10 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2499</phrasecount>
+<phrasecount>2497</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4290 phrases. -->
-<!-- 1791 are duplicates, so only 2499 unique phrases have been written to file. -->
-<!-- These 2499 phrases contain approximately 13881 total words. -->
+<!-- As of this build, PhotoDemon contains 4287 phrases. -->
+<!-- 1790 are duplicates, so only 2497 unique phrases have been written to file. -->
+<!-- These 2497 phrases contain approximately 13884 total words. -->
 
 </pdData>
