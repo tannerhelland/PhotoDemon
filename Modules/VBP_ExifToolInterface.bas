@@ -467,11 +467,14 @@ Public Function startMetadataProcessing(ByVal srcFile As String, ByVal srcFormat
     ' automatically supported), but if desired, specific metadata types can be coerced into requested character sets.
     'cmdParams = cmdParams & "-charset" & vbCrLf & "UTF8" & vbCrLf
     
+    'To support Unicode filenames, explicitly request UTF-8-compatible parsing
+    cmdParams = cmdParams & "-charset" & vbCrLf & "filename=UTF8" & vbCrLf
+    
     'Actually, we now forcibly request IPTC data as UTF-8.  IPTC supports charset markers, but in my experience, these are
     ' rarely used.  ExifTool will default to the current code page for conversion if we don't specify otherwise, so UTF-8
     ' is preferable here.
     cmdParams = cmdParams & "-charset" & vbCrLf & "iptc=UTF8" & vbCrLf
-    
+            
     'Requesting binary data also means preview and thumbnail images will be processed.  We DEFINITELY don't want these,
     ' so deny them specifically.
     'cmdParams = cmdParams & "-x" & vbCrLf & "PreviewImage" & vbCrLf
