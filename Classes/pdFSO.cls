@@ -34,24 +34,36 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Const MAX_PATH = 260
+Private Const MAX_PATH As Long = 260
+Private Const GENERIC_READ As Long = &H80000000
+Private Const OPEN_EXISTING As Long = &H3
+Private Const FILE_SHARE_READ As Long = &H1
+Private Const FILE_ATTRIBUTE_ARCHIVE As Long = &H20
+Private Const FILE_ATTRIBUTE_HIDDEN As Long = &H2
+Private Const FILE_ATTRIBUTE_READONLY As Long = &H1
+Private Const FILE_ATTRIBUTE_SYSTEM As Long = &H4
+Private Const FILE_ATTRIBUTE_NORMAL As Long = &H80&
+Private Const INVALID_HANDLE_VALUE As Long = -1
+
+Private Declare Function CreateFileW Lib "kernel32" (ByVal lpFileName As Long, ByVal dwDesiredAccess As Long, ByVal dwShareMode As Long, ByVal lpSecurityAttributes As Long, ByVal dwCreationDisposition As Long, ByVal dwFlagsAndAttributes As Long, ByVal hTemplateFile As Long) As Long
+Private Declare Function GetFileSize Lib "kernel32" (ByVal hFile As Long, ByRef lpFileSizeHigh As Long) As Long
+Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
 
 Private Type WIN32_FIND_DATA
-   dwFileAttributes As Long
-   ftCreationTime As Currency
-   ftLastAccessTime As Currency
-   ftLastWriteTime As Currency
-   nFileSizeBig As Currency
-   dwReserved0 As Long
-   dwReserved1 As Long
-   cFileName As String * MAX_PATH
-   cAlternate As String * 14
+    dwFileAttributes As Long
+    ftCreationTime As Currency
+    ftLastAccessTime As Currency
+    ftLastWriteTime As Currency
+    nFileSizeBig As Currency
+    dwReserved0 As Long
+    dwReserved1 As Long
+    cFileName As String * MAX_PATH
+    cAlternate As String * 14
 End Type
 
 Private Declare Function FindFirstFileW Lib "kernel32" (ByVal lpFileName As Long, ByVal lpFindFileData As Long) As Long
 Private Declare Function FindNextFileW Lib "kernel32" (ByVal hFindFile As Long, ByVal lpFindFileData As Long) As Long
 Private Declare Function FindClose Lib "kernel32" (ByVal hFindFile As Long) As Long
-Private Const INVALID_HANDLE_VALUE As Long = -1
 Private Const ERROR_FILE_NOT_FOUND As Long = 2
 Private Const ERROR_PATH_NOT_FOUND As Long = 3
 Private Const ERROR_NO_MORE_FILES As Long = 18
@@ -1356,6 +1368,29 @@ Public Function GetShortPath(ByRef longPath As String) As String
         GetShortPath = Left$(tmpString, lenFinalBuffer)
     Else
         GetShortPath = longPath
+    End If
+    
+End Function
+
+'Return the size of a file with a Unicode filename.  For now, only the low 4-bytes (signed!) of the full 8-byte return are used.
+' This is all PD requires at present, since it can't work with 2 GB+ images anyway.
+' IMPORTANT!  It's assumed that the caller checked the file's existence PRIOR to calling this function.
+Public Function FileLenW(ByRef srcPath As String) As Long
+
+    'First, we need to create a file handle to the file in question.
+    Dim genericFlags As Long
+    genericFlags = FILE_ATTRIBUTE_ARCHIVE Or FILE_ATTRIBUTE_HIDDEN Or FILE_ATTRIBUTE_NORMAL Or FILE_ATTRIBUTE_READONLY Or FILE_ATTRIBUTE_SYSTEM
+    
+    Dim hFile As Long
+    hFile = CreateFileW(StrPtr(srcPath), GENERIC_READ, FILE_SHARE_READ, 0&, OPEN_EXISTING, genericFlags, 0&)
+    
+    'hFile should technically never be zero, FYI.  An invalid handle value may be returned for generic filesystem errors,
+    ' but if a previous "does file exist" check passed, that outcome is extremely unlikely.
+    If (hFile <> 0) And (hFile <> INVALID_HANDLE_VALUE) Then
+        FileLenW = GetFileSize(hFile, 0&)
+        CloseHandle hFile
+    Else
+        FileLenW = 0
     End If
     
 End Function
