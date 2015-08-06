@@ -411,13 +411,6 @@ Private Declare Function ReadFile Lib "kernel32" _
      ByRef lpNumberOfBytesRead As Long, _
      ByVal lpOverlapped As Any) As Long
 
-'Private Declare Function ReadFile Lib "kernel32" _
-'    (ByVal hFile As Long, _
-'     ByVal lpBuf As String, _
-'     ByVal nNumberOfBytesToRead As Long, _
-'     ByRef lpNumberOfBytesRead As Long, _
-'     ByVal lpOverlapped As Any) As Long
-
 Private Declare Function SetHandleInformation Lib "kernel32" _
     (ByVal hObject As Long, _
      ByVal dwMask As Long, _
@@ -442,13 +435,6 @@ Private Declare Function WriteFile Lib "kernel32" _
      ByVal cToWrite As Long, _
      ByRef cWritten As Long, _
      ByVal lpOverlapped As Any) As Long
-
-'Private Declare Function WriteFile Lib "kernel32" _
-'    (ByVal hFile As Long, _
-'     ByVal lpBuf As String, _
-'     ByVal cToWrite As Long, _
-'     ByRef cWritten As Long, _
-'     ByVal lpOverlapped As Any) As Long
 
 Private piProc As PROCESSINFO
 Private saPipe As SECURITY_ATTRIBUTES
