@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.69</langversion>
+<langversion>6.7.70</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -764,6 +764,11 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 </phrase>
 
 <phrase>
+<original>Select an image</original>
+<translation>Bild auswählen</translation>
+</phrase>
+
+<phrase>
 <original>An error occurred: %1</original>
 <translation>Ein Fehler ist aufgetreten: %1</translation>
 </phrase>
@@ -771,11 +776,6 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 <phrase>
 <original>Common dialog error</original>
 <translation>Standarddialog-Fehler</translation>
-</phrase>
-
-<phrase>
-<original>Select an image</original>
-<translation>Bild auswählen</translation>
 </phrase>
 
 <phrase>
@@ -812,7 +812,7 @@ Danach werden die verlustfreien Kopien im gleichen Ordner wie beim ersten Speich
 <translation>Hintergrund</translation>
 </phrase>
 
-<!-- VBP_MenuModule.bas contains 29 phrases. 19 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- VBP_MenuModule.bas contains 27 phrases. 17 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for VBP_MenuModule.bas-->
 
@@ -14400,12 +14400,18 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 
 <!-- END text for pdGradient.cls-->
 
+<!-- BEGIN text for pdOpenSaveDialog.cls -->
+
+<!-- pdOpenSaveDialog.cls contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<!-- END text for pdOpenSaveDialog.cls-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2497</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4287 phrases. -->
-<!-- 1790 are duplicates, so only 2497 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4288 phrases. -->
+<!-- 1791 are duplicates, so only 2497 unique phrases have been written to file. -->
 <!-- These 2497 phrases contain approximately 13884 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.11</langversion>
+<langversion>6.6.12</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -764,6 +764,11 @@ Dukung Di Perbolehkan untuk ciri ini, Tolong Salin Berkas FreeImage.dll ke Dalam
 </phrase>
 
 <phrase>
+<original>Select an image</original>
+<translation>Pilih Gambar yang</translation>
+</phrase>
+
+<phrase>
 <original>An error occurred: %1</original>
 <translation>Kesalahan Berlaku: %1</translation>
 </phrase>
@@ -771,11 +776,6 @@ Dukung Di Perbolehkan untuk ciri ini, Tolong Salin Berkas FreeImage.dll ke Dalam
 <phrase>
 <original>Common dialog error</original>
 <translation>Dialog Kesalahan</translation>
-</phrase>
-
-<phrase>
-<original>Select an image</original>
-<translation>Pilih Gambar yang</translation>
 </phrase>
 
 <phrase>
@@ -812,7 +812,7 @@ Lossless akan disimpan ke folder yang sama dengan Gambar Yang Telah Di Simpan.</
 <translation>latar Belakang</translation>
 </phrase>
 
-<!-- VBP_MenuModule.bas contains 29 phrases. 19 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- VBP_MenuModule.bas contains 27 phrases. 17 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for VBP_MenuModule.bas-->
 
@@ -14407,12 +14407,18 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <!-- END text for pdGradient.cls-->
 
+<!-- BEGIN text for pdOpenSaveDialog.cls -->
+
+<!-- pdOpenSaveDialog.cls contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<!-- END text for pdOpenSaveDialog.cls-->
+
 <!-- Automatic text extraction complete. -->
 
 <phrasecount>2497</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4287 phrases. -->
-<!-- 1790 are duplicates, so only 2497 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4288 phrases. -->
+<!-- 1791 are duplicates, so only 2497 unique phrases have been written to file. -->
 <!-- These 2497 phrases contain approximately 13884 total words. -->
 
 </pdData>

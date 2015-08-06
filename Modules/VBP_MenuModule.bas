@@ -32,15 +32,14 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
 
     'Disable user input until the dialog closes
     Interface.disableUserInput
-    
-    'Common dialog interface
-    Dim CC As cCommonDialog
-    
+        
     'Get the last "open image" path from the preferences file
     Dim tempPathString As String
     tempPathString = g_UserPreferences.GetPref_String("Paths", "Open Image", "")
     
-    Set CC = New cCommonDialog
+    'Prep a common dialog interface
+    Dim openDialog As pdOpenSaveDialog
+    Set openDialog = New pdOpenSaveDialog
         
     Dim sFileList As String
     
@@ -48,8 +47,8 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     ' appear over the top of the common dialog.
     g_WindowManager.resetTopmostForAllWindows False
     
-    'Use Steve McMahon's excellent Common Dialog class to launch a dialog (this way, no OCX is required)
-    If CC.VBGetOpenFileName(sFileList, , True, True, False, True, g_ImageFormats.getCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Open an image"), , ownerHwnd, 0) Then
+    'Retrieve one (or more) files to open
+    If openDialog.GetOpenFileName(sFileList, , True, True, g_ImageFormats.getCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Open an image"), , ownerHwnd, 0) Then
         
         'Message "Preparing to load image..."
         
@@ -110,10 +109,10 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
         'All done!
         PhotoDemon_OpenImageDialog = True
         
-    'If the user cancels the commondialog box, simply exit out
+    'If the user cancels the commondialog box, simply exit out.
     Else
         
-        If CC.ExtendedError <> 0 Then pdMsgBox "An error occurred: %1", vbCritical + vbOKOnly + vbApplicationModal, "Common dialog error", CC.ExtendedError
+        'If CC.ExtendedError <> 0 Then pdMsgBox "An error occurred: %1", vbCritical + vbOKOnly + vbApplicationModal, "Common dialog error", CC.ExtendedError
     
         PhotoDemon_OpenImageDialog = False
     End If
@@ -125,7 +124,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     g_WindowManager.resetTopmostForAllWindows True
     
     'Release the common dialog object
-    Set CC = Nothing
+    Set openDialog = Nothing
 
 End Function
 

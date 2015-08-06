@@ -1241,7 +1241,9 @@ PDI_Load_Continuation:
 
         
         'Mark the original file size and file format of the image
-        If FileExist(sFile(thisImage)) Then targetImage.originalFileSize = FileLen(sFile(thisImage))
+        Dim cFSO As pdFSO
+        Set cFSO = New pdFSO
+        If cFSO.FileExist(sFile(thisImage)) Then targetImage.originalFileSize = cFSO.FileLenW(sFile(thisImage))
         targetImage.currentFileFormat = targetImage.originalFileFormat
         
         'If Debug Mode is active, supply a basic image summary

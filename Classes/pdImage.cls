@@ -1304,7 +1304,7 @@ Public Function estimateRAMUsage() As Long
     Next i
     
     'Assume a 10% overhead for the pdImage as a whole, to cover things like metadata, loose ICC profiles, class instances, and more
-    estimateRAMUsage = estimateRAMUsage * 1.1
+    estimateRAMUsage = CDbl(estimateRAMUsage) * 1.1
 
 End Function
 
