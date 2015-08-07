@@ -229,7 +229,12 @@ End Function
 
 'Open a string as a hyperlink in the user's default browser
 Public Sub OpenURL(ByVal targetURL As String)
-    ShellExecute FormMain.hWnd, "Open", targetURL, "", 0, SW_SHOWNORMAL
+    
+    Dim targetAction As String
+    targetAction = "Open"
+    
+    ShellExecute FormMain.hWnd, StrPtr(targetAction), StrPtr(targetURL), 0&, 0&, SW_SHOWNORMAL
+    
 End Sub
 
 'Execute another program (in PhotoDemon's case, a plugin), then wait for it to finish running.
@@ -386,7 +391,7 @@ Public Function GetExtension(sFile As String) As String
 End Function
 
 'Take a string and replace any invalid characters with "_"
-Public Sub makeValidWindowsFilename(ByRef fileName As String)
+Public Sub makeValidWindowsFilename(ByRef FileName As String)
 
     Dim strInvalidChars As String
     strInvalidChars = "\/*?""<>|:"
@@ -395,9 +400,9 @@ Public Sub makeValidWindowsFilename(ByRef fileName As String)
     
     Dim x As Long
     For x = 1 To Len(strInvalidChars)
-        invLoc = InStr(fileName, Mid$(strInvalidChars, x, 1))
+        invLoc = InStr(FileName, Mid$(strInvalidChars, x, 1))
         If invLoc <> 0 Then
-            fileName = Left(fileName, invLoc - 1) & "_" & Right(fileName, Len(fileName) - invLoc)
+            FileName = Left(FileName, invLoc - 1) & "_" & Right(FileName, Len(FileName) - invLoc)
         End If
     Next x
 

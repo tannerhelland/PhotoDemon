@@ -669,8 +669,11 @@ Public Function patchProgramFiles() As Boolean
     'We must tell the patcher where to find the update information
     patchParams = patchParams & " /start " & m_TrackStartPosition & " /end " & m_TrackEndPosition
     
+    Dim targetPath As String
+    targetPath = g_UserPreferences.getProgramPath & patchFileName
+    
     Dim shellReturn As Long
-    shellReturn = ShellExecute(0, vbNullString, g_UserPreferences.getProgramPath & patchFileName, patchParams, vbNullString, 0)
+    shellReturn = ShellExecute(0, 0, StrPtr(targetPath), StrPtr(patchParams), 0, 0)
     
     'ShellExecute returns a value > 32 if successful (https://msdn.microsoft.com/en-us/library/windows/desktop/bb762153%28v=vs.85%29.aspx)
     If shellReturn < 32 Then

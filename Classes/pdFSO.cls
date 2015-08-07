@@ -36,8 +36,14 @@ Option Explicit
 
 Private Const MAX_PATH As Long = 260
 Private Const GENERIC_READ As Long = &H80000000
+Private Const GENERIC_WRITE As Long = &H40000000
+
 Private Const OPEN_EXISTING As Long = &H3
+Private Const CREATE_ALWAYS As Long = &H2
+Private Const CREATE_NEW As Long = &H1
+
 Private Const FILE_SHARE_READ As Long = &H1
+Private Const FILE_SHARE_WRITE As Long = &H2
 Private Const FILE_ATTRIBUTE_ARCHIVE As Long = &H20
 Private Const FILE_ATTRIBUTE_HIDDEN As Long = &H2
 Private Const FILE_ATTRIBUTE_READONLY As Long = &H1
@@ -46,6 +52,7 @@ Private Const FILE_ATTRIBUTE_NORMAL As Long = &H80&
 Private Const INVALID_HANDLE_VALUE As Long = -1
 
 Private Declare Function CreateFileW Lib "kernel32" (ByVal lpFileName As Long, ByVal dwDesiredAccess As Long, ByVal dwShareMode As Long, ByVal lpSecurityAttributes As Long, ByVal dwCreationDisposition As Long, ByVal dwFlagsAndAttributes As Long, ByVal hTemplateFile As Long) As Long
+Private Declare Function WriteFile Lib "kernel32" (ByVal hFile As Long, ByVal ptrToSourceBuffer As Long, ByVal nNumberOfBytesToWrite As Long, ByRef lpNumberOfBytesWritten As Long, ByVal ptrToOverlappedStruct As Long) As Long
 Private Declare Function GetFileSize Lib "kernel32" (ByVal hFile As Long, ByRef lpFileSizeHigh As Long) As Long
 Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
 
@@ -1306,40 +1313,54 @@ Public Function SaveStringToTextFile(ByRef srcString As String, ByRef dstFilenam
     'Kill the output file as necessary
     KillFile dstFilename
     
-    'Dump the string to file
-    
-    'Dump file contents into a byte array.  Native VB methods can be used by wrapping the (potentially Unicode) srcFile with GetShortPathNameW.
-    Dim fileNum As Integer
-    fileNum = FreeFile
-    
     If useUTF8 Then
         
-        Open GetShortPath(dstFilename) For Binary As #fileNum
+        'Open the file
+        Dim hFile As Long, tmpReturn As Long
+        hFile = CreateFileW(StrPtr(dstFilename), GENERIC_WRITE, FILE_SHARE_WRITE, 0&, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0&)
+        
+        'hFile should technically never be zero, FYI.  An invalid handle value may be returned for generic filesystem errors,
+        ' but if a previous "does file exist" check passed, that outcome is extremely unlikely.
+        If (hFile = 0) Or (hFile = INVALID_HANDLE_VALUE) Then
             
-            'If requested, write a BOM first.  This is desirable for PD's internal files, as it makes it very quick to identify the new UTF-8
-            ' ones vs old Windows-1252 ones.
-            If useUTF8_BOM Then
-                
-                Dim bomMarker(0 To 2) As Byte
-                bomMarker(0) = &HEF: bomMarker(1) = &HBB: bomMarker(2) = &HBF
-                Put #fileNum, , bomMarker
-                
-            End If
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "SaveStringToTextFile failed to generate a valid output file handle on " & dstFilename & ". Abandoning save."
+            #End If
             
-            'Write the byte array and exit!
-            Put #fileNum, , fileBytes
+            SaveStringToTextFile = False
+            Exit Function
+            
+        End If
+            
+        'If requested, write a BOM first.  This is desirable for PD's internal files, as it makes it very quick to identify the new UTF-8
+        ' ones vs old Windows-1252 ones.
+        If useUTF8_BOM Then
+            
+            Dim bomMarker(0 To 2) As Byte
+            bomMarker(0) = &HEF: bomMarker(1) = &HBB: bomMarker(2) = &HBF
+            
+            WriteFile hFile, VarPtr(bomMarker(0)), 3, tmpReturn, 0&
+            
+        End If
+        
+        'Write the byte array and exit!
+        WriteFile hFile, VarPtr(fileBytes(0)), UBound(fileBytes) + 1, tmpReturn, 0&
+        CloseHandle hFile
         
     'If UTF-8 is not requested, allow VB to perform its own innate SBCS conversion
     Else
-    
+        
+        'Since we're using a cheap ASCII conversion, we may as well use native VB methods too, by wrapping the
+        ' (potentially Unicode) srcFile with GetShortPathNameW.
+        Dim fileNum As Integer
+        fileNum = FreeFile
+        
         Open GetShortPath(dstFilename) For Output As #fileNum
             Print #fileNum, srcString
+        Close #fileNum
         
     End If
-    
-    'Close the file and exit
-    Close #fileNum
-    
+        
     SaveStringToTextFile = True
     
     Exit Function
@@ -1347,7 +1368,7 @@ Public Function SaveStringToTextFile(ByRef srcString As String, ByRef dstFilenam
 StopSaveStringToTextFile:
 
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "SaveStringToTextFile threw error " & Err.Number & " on " & dstFilename & ". Abandoning load."
+        pdDebug.LogAction "SaveStringToTextFile threw error " & Err.Description & " (" & Err.Number & ") on " & dstFilename & ". Abandoning save."
     #End If
     
     SaveStringToTextFile = False

@@ -348,7 +348,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Image bit-depth of " & fi_BPP & " and data type " & fi_DataType & " detected."
     #End If
-        
+    
     'A number of other variables may be required as we adjust the bit-depth of the image to match PhotoDemon's internal requirements.
     Dim new_hDIB As Long
     

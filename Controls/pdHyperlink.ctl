@@ -349,7 +349,14 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
     
     'In its default configuration, URLs are shelled automatically
     Else
-        If Len(m_URL) <> 0 Then ShellExecute containerHwnd, "Open", m_URL, "", 0, SW_SHOWNORMAL
+        If Len(m_URL) <> 0 Then
+            
+            Dim targetAction As String
+            targetAction = "Open"
+            
+            ShellExecute containerHwnd, StrPtr(targetAction), StrPtr(m_URL), 0&, 0&, SW_SHOWNORMAL
+            
+        End If
     End If
     
 End Sub

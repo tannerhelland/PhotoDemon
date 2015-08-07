@@ -225,27 +225,17 @@ Private Sub writeMetadataDatabaseToFile()
 
     Dim mdDatabasePath As String
     mdDatabasePath = g_PluginPath & "ExifToolDatabase.xml"
-    
-    'If the database already exists, remove it.  (I have also added a DoEvents here after noticing random errors in this
-    ' sub - it's important to wait for the file to be deleted, so that the write attempt below does not fail.)
-    If FileExist(mdDatabasePath) Then
-        Kill mdDatabasePath
-        DoEvents
-    End If
-    
+        
     'Replace the {ready} text supplied by ExifTool itself, which will be at the end of the metadata database
     databaseString = Replace$(databaseString, "{ready}", "")
     
     'Write our XML string out to file
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
     
-    'Open the specified file
-    Dim fileNum As Integer
-    fileNum = FreeFile
-    
-    Open mdDatabasePath For Output As #fileNum
-        Print #fileNum, databaseString
-    Close #fileNum
-    
+    cFile.SaveStringToTextFile databaseString, mdDatabasePath
+        
+    'Reset the database mode trackers, so the database doesn't accidentally get rebuilt again
     databaseString = ""
     databaseModeActive = False
     
@@ -264,12 +254,16 @@ Private Sub stopVerificationMode()
     
     verificationModeActive = False
     
+    'All file interactions are handled through pdFSO, PhotoDemon's Unicode-compatible file system object
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
     If Not technicalReportModeActive Then
     
         verificationString = ""
         
         'Verification mode is a bit different.  We need to erase our temporary metadata file if it exists; then we can exit.
-        If FileExist(tmpMetadataFilePath) Then Kill tmpMetadataFilePath
+        cFile.KillFile tmpMetadataFilePath
         
     Else
     
@@ -279,18 +273,12 @@ Private Sub stopVerificationMode()
         'Write the completed technical report out to a temp file
         Dim tmpFilename As String
         tmpFilename = g_UserPreferences.GetTempPath & "MetadataReport_" & getFilenameWithoutExtension(technicalReportSrcImage) & ".html"
-        'MsgBox tmpFilename
-        If FileExist(tmpFilename) Then Kill tmpFilename
-        Dim fileNum As Integer
-        fileNum = FreeFile
         
-        Open tmpFilename For Output As #fileNum
-            Print #fileNum, verificationString
-        Close #fileNum
+        cFile.SaveStringToTextFile verificationString, tmpFilename  ', True, False
         
         'Shell the default HTML viewer for the user
         verificationString = ""
-        ShellExecute FormMain.hWnd, "open", tmpFilename, "", "", 0
+        OpenURL tmpFilename
         
         technicalReportSrcImage = ""
         technicalReportModeActive = False
@@ -467,7 +455,7 @@ Public Function startMetadataProcessing(ByVal srcFile As String, ByVal srcFormat
     ' automatically supported), but if desired, specific metadata types can be coerced into requested character sets.
     'cmdParams = cmdParams & "-charset" & vbCrLf & "UTF8" & vbCrLf
     
-    'To support Unicode filenames, explicitly request UTF-8-compatible parsing
+    'To support Unicode filenames, explicitly request UTF-8-compatible parsing.
     cmdParams = cmdParams & "-charset" & vbCrLf & "filename=UTF8" & vbCrLf
     
     'Actually, we now forcibly request IPTC data as UTF-8.  IPTC supports charset markers, but in my experience, these are
@@ -518,6 +506,9 @@ Public Function createTechnicalMetadataReport(ByRef srcImage As pdImage) As Bool
         
         'Add -u, which will also report unknown tags
         cmdParams = cmdParams & "-u" & vbCrLf
+                
+        'To support Unicode filenames, explicitly request UTF-8-compatible parsing.
+        cmdParams = cmdParams & "-charset" & vbCrLf & "filename=UTF8" & vbCrLf
                 
         'Add the source image to the list
         technicalReportSrcImage = srcImage.locationOnDisk
@@ -638,6 +629,9 @@ Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     'Overwrite the original destination file, but only if the metadata was embedded succesfully
     cmdParams = cmdParams & "-overwrite_original" & vbCrLf
     
+    'To support Unicode filenames, explicitly request UTF-8-compatible parsing.
+    cmdParams = cmdParams & "-charset" & vbCrLf & "filename=UTF8" & vbCrLf
+    
     'Copy all tags.  It is important to do this first, because ExifTool applies operations in a left-to-right order - so we must
     ' start by copying all tags, then applying manual updates as necessary.
     cmdParams = cmdParams & "-tagsfromfile" & vbCrLf & srcMetadataFile & vbCrLf
@@ -757,7 +751,7 @@ Public Function startExifTool() As Boolean
     
     'Tell ExifTool to stay open (e.g. do not exit after completing its operation), and to accept input from stdIn.
     ' (Note that exiftool.exe must be included as param [0], per C convention)
-    cmdParams = cmdParams & "exiftool.exe -stay_open true -@ -"
+    cmdParams = cmdParams & "exiftool.exe -charset filename=UTF8 -stay_open true -@ -"
     
     'Attempt to open ExifTool
     Dim returnVal As SP_RESULTS
@@ -886,7 +880,7 @@ Public Function ShellExecuteCapture(ByVal sApplicationPath As String, sCommandLi
         Message "Failed to start plugin service (couldn't create process: %1).", Err.LastDllError
         Exit Function
     End If
-
+    
     CloseHandle hPipeRead
     If hPipeWrite Then CloseHandle hPipeWrite
     If hCurProcess Then CloseHandle hCurProcess

@@ -77,9 +77,9 @@ Public Declare Function SendMessageA Lib "user32" (ByVal hWnd As Long, ByVal wMs
 Public Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal rastOp As Long) As Boolean
 Public Declare Function StretchBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal hSrcDC As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal rastOp As Long) As Long
 Public Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDestDC As Long, ByVal nStretchMode As Long) As Long
-Public Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal nScan As Long, ByVal NumScans As Long, ByRef lpBits As Any, ByRef BitsInfo As Any, ByVal wUsage As Long) As Long
-Public Declare Function SetDIBitsToDC Lib "gdi32" Alias "SetDIBitsToDevice" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal nScan As Long, ByVal NumScans As Long, ByVal lpBits As Long, ByVal lpBitsInfo As Long, ByVal wUsage As Long) As Long
-Public Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dx As Long, ByVal dy As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, ByVal lpBits As Long, ByVal lpBitsInfo As Long, ByVal wUsage As Long, ByVal dwRop As Long) As Long
+Public Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dX As Long, ByVal dY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal nScan As Long, ByVal NumScans As Long, ByRef lpBits As Any, ByRef BitsInfo As Any, ByVal wUsage As Long) As Long
+Public Declare Function SetDIBitsToDC Lib "gdi32" Alias "SetDIBitsToDevice" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dX As Long, ByVal dY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal nScan As Long, ByVal NumScans As Long, ByVal lpBits As Long, ByVal lpBitsInfo As Long, ByVal wUsage As Long) As Long
+Public Declare Function StretchDIBits Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal dX As Long, ByVal dY As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal wSrcWidth As Long, ByVal wSrcHeight As Long, ByVal lpBits As Long, ByVal lpBitsInfo As Long, ByVal wUsage As Long, ByVal dwRop As Long) As Long
 Public Const STRETCHBLT_COLORONCOLOR As Long = 3
 Public Const STRETCHBLT_HALFTONE As Long = 4
 
@@ -88,8 +88,9 @@ Public Const STRETCHBLT_HALFTONE As Long = 4
 Public Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryA" (ByVal lpLibFileName As String) As Long
 Public Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
 
-'ShellExecute is preferable to VB's 'Shell' command; I use it for launching URLs using the system's default web browser
-Public Declare Function ShellExecute Lib "shell32" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+'ShellExecute is preferable to VB's 'Shell' command; I use it for launching URLs using the system's default web browser.
+' (Note the use of pointers
+Public Declare Function ShellExecute Lib "shell32" Alias "ShellExecuteW" (ByVal hWnd As Long, ByVal ptrToOperationString As Long, ByVal ptrToFileString As Long, ByVal ptrToParameters As Long, ByVal ptrToDirectory As Long, ByVal nShowCmd As Long) As Long
 Public Const SW_SHOWNORMAL = 1
 
 'Various API calls for manually downloading files from the Internet
@@ -159,4 +160,4 @@ Public Type PAINTSTRUCT
     rgbReserved(0 To 31) As Byte
 End Type
 
-Public Declare Function GetUpdateRect Lib "user32" (ByVal targetHWnd As Long, ByRef lpRect As RECT, ByVal bErase As Long) As Long
+Public Declare Function GetUpdateRect Lib "user32" (ByVal targetHwnd As Long, ByRef lpRect As RECT, ByVal bErase As Long) As Long
