@@ -1873,7 +1873,7 @@ Dim m_LastPreviewSource As Long
 Dim m_wordForBatchList As String, m_wordForItem As String, m_wordForItems As String
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'System progress bar control
 Private sysProgBar As cProgressBarOfficial
@@ -1897,8 +1897,8 @@ Private Sub chkEnablePreview_Click()
     If Not CBool(chkEnablePreview) Then
         Dim strToPrint As String
         strToPrint = g_Language.TranslateMessage("Previews disabled")
-        picPreview.CurrentX = (picPreview.ScaleWidth - picPreview.TextWidth(strToPrint)) \ 2
-        picPreview.CurrentY = (picPreview.ScaleHeight - picPreview.TextHeight(strToPrint)) \ 2
+        picPreview.CurrentX = (picPreview.ScaleWidth - picPreview.textWidth(strToPrint)) \ 2
+        picPreview.CurrentY = (picPreview.ScaleHeight - picPreview.textHeight(strToPrint)) \ 2
         picPreview.Print strToPrint
     'If the user is enabling previews, try to display the last item the user selected in the SOURCE list box
     Else
@@ -2111,47 +2111,66 @@ Private Sub cmdLoadList_Click()
         StripDirectory listPath
         g_UserPreferences.SetPref_String "Batch Process", "List Folder", listPath
         
-        Dim fileNum As Integer
-        fileNum = FreeFile
-    
-        Open sFile For Input As #fileNum
-            Dim tmpLine As String
-            Input #fileNum, tmpLine
-            If tmpLine <> ("<" & PROGRAMNAME & " BATCH CONVERSION LIST>") Then
+        'Load the file using pdFSO, which is Unicode-compatible
+        Dim cFile As pdFSO
+        Set cFile = New pdFSO
+        
+        Dim fileContents As String
+        If cFile.LoadTextFileAsString(sFile, fileContents) And (InStr(1, fileContents, vbCrLf) > 0) Then
+            
+            'The file was originally delimited by vbCrLf.  Parse it now.
+            Dim fileLines() As String
+            fileLines = Split(fileContents, vbCrLf)
+            
+            If UBound(fileLines) > 0 Then
+                
+                'Validate the first line of the file
+                If StrComp(fileLines(0), "<" & PROGRAMNAME & " BATCH CONVERSION LIST>", vbTextCompare) = 0 Then
+                    
+                    'If the user has already created a list of files to process, ask if they want to replace or append
+                    ' the loaded entries to their current list.
+                    If lstFiles.ListCount > 0 Then
+                
+                    Dim msgReturn As VbMsgBoxResult
+                    msgReturn = pdMsgBox("You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.", vbOKCancel + vbApplicationModal + vbInformation, "Batch process notification")
+                    
+                    If msgReturn = vbCancel Then Exit Sub
+                    
+                End If
+                            
+                Screen.MousePointer = vbHourglass
+            
+                'Now that everything is in place, load the entries from the previously saved file
+                Dim numOfEntries As Long
+                numOfEntries = CLng(fileLines(1))
+                
+                Dim suppressDuplicatesCheck As Boolean
+                If numOfEntries > 100 Then suppressDuplicatesCheck = True
+                
+                Dim i As Long
+                For i = 2 To numOfEntries + 1
+                    addFileToBatchList fileLines(i), suppressDuplicatesCheck
+                Next i
+                
+                fixHorizontalListBoxScrolling lstFiles, 16
+                lstFiles.Refresh
+                
+                Screen.MousePointer = vbDefault
+                        
+                Else
+                    pdMsgBox "This is not a valid list of images. Please try a different file.", vbExclamation + vbApplicationModal + vbOKOnly, "Invalid list file"
+                    Exit Sub
+                End If
+                
+            Else
                 pdMsgBox "This is not a valid list of images. Please try a different file.", vbExclamation + vbApplicationModal + vbOKOnly, "Invalid list file"
                 Exit Sub
             End If
             
-            'Check to see if the user wants to append this list to the current list,
-            ' or if they want to load just the list data
-            If lstFiles.ListCount > 0 Then
-                
-                Dim msgReturn As VbMsgBoxResult
-                msgReturn = pdMsgBox("You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.", vbOKCancel + vbApplicationModal + vbInformation, "Batch process notification")
-                
-                If msgReturn = vbCancel Then Exit Sub
-                
-            End If
-            
-            Screen.MousePointer = vbHourglass
-            
-            'Now that everything is in place, load the entries from the file
-            Input #fileNum, tmpLine
-            Dim numOfEntries As Long
-            numOfEntries = CLng(tmpLine)
-            
-            Dim suppressDuplicatesCheck As Boolean
-            If numOfEntries > 100 Then suppressDuplicatesCheck = True
-            Dim i As Long
-            For i = 0 To numOfEntries - 1
-                Input #fileNum, tmpLine
-                addFileToBatchList tmpLine, suppressDuplicatesCheck
-            Next i
-            fixHorizontalListBoxScrolling lstFiles, 16
-            lstFiles.Refresh
-            Screen.MousePointer = vbDefault
-            'makeFormPretty Me, m_ToolTip
-        Close #fileNum
+        Else
+            pdMsgBox "This is not a valid list of images. Please try a different file.", vbExclamation + vbApplicationModal + vbOKOnly, "Invalid list file"
+            Exit Sub
+        End If
         
         'Note that the current list has been saved (technically it hasn't, I realize, but it exists in a file in this exact state
         ' so close enough!)
@@ -2495,23 +2514,25 @@ Private Function saveCurrentBatchList() As Boolean
         StripDirectory listPath
         g_UserPreferences.SetPref_String "Batch Process", "List Folder", listPath
         
-        If FileExist(sFile) Then Kill sFile
-        Dim fileNum As Integer
-        fileNum = FreeFile
+        'Assemble the output string, which basically just contains the currently selected list of files.
+        Dim outputText As String
         
-        Dim x As Long
+        outputText = "<" & PROGRAMNAME & " BATCH CONVERSION LIST>" & vbCrLf
+        outputText = outputText & Trim$(Str(lstFiles.ListCount)) & vbCrLf
         
-        Open sFile For Output As #fileNum
-            Print #fileNum, "<" & PROGRAMNAME & " BATCH CONVERSION LIST>"
-            Print #fileNum, Trim(Str(lstFiles.ListCount))
-            For x = 0 To lstFiles.ListCount - 1
-                Print #fileNum, lstFiles.List(x)
-            Next x
-            Print #fileNum, "<END OF LIST>"
-        Close #fileNum
+        Dim i As Long
+        For i = 0 To lstFiles.ListCount - 1
+            outputText = outputText & lstFiles.List(i) & vbCrLf
+        Next i
         
-        saveCurrentBatchList = True
+        outputText = outputText & "<END OF LIST>" & vbCrLf
         
+        'Write the text out to file using a pdFSO instance
+        Dim cFile As pdFSO
+        Set cFile = New pdFSO
+        
+        saveCurrentBatchList = cFile.SaveStringToTextFile(outputText, sFile)
+                
     Else
         saveCurrentBatchList = False
     End If
@@ -2833,8 +2854,8 @@ Private Sub Form_Load()
     Next i
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'For some reason, the container picture boxes automatically acquire the cursor of children objects.
     ' Manually force those cursors to arrows to prevent this.
@@ -3016,9 +3037,9 @@ End Sub
 Private Sub fixHorizontalListBoxScrolling(ByRef srcListBox As ListBox, Optional ByVal lenModifier As Long = 0)
     
     Dim i As Long, lenText As Long, maxWidth As Long
-    maxWidth = Me.TextWidth(srcListBox.List(0) & "     ")
+    maxWidth = Me.textWidth(srcListBox.List(0) & "     ")
     For i = 0 To srcListBox.ListCount - 1
-        lenText = Me.TextWidth(srcListBox.List(i) & "     ")
+        lenText = Me.textWidth(srcListBox.List(i) & "     ")
         If lenText > maxWidth Then maxWidth = lenText
     Next i
     
@@ -3062,8 +3083,8 @@ Private Sub updatePreview(ByVal srcImagePath As String)
             picPreview.Picture = LoadPicture("")
             Dim strToPrint As String
             strToPrint = g_Language.TranslateMessage("Preview not available")
-            picPreview.CurrentX = (picPreview.ScaleWidth - picPreview.TextWidth(strToPrint)) \ 2
-            picPreview.CurrentY = (picPreview.ScaleHeight - picPreview.TextHeight(strToPrint)) \ 2
+            picPreview.CurrentX = (picPreview.ScaleWidth - picPreview.textWidth(strToPrint)) \ 2
+            picPreview.CurrentY = (picPreview.ScaleHeight - picPreview.textHeight(strToPrint)) \ 2
             picPreview.Print strToPrint
         Else
             tmpDIB.renderToPictureBox picPreview
