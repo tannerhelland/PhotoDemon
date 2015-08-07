@@ -150,7 +150,10 @@ Public Sub printViaWindowsPhotoPrinter()
     
     'Once that is complete, use ShellExecute to launch the default Windows Photo Print dialog.  (Note that this
     ' DOES NOT work on XP.)
-    ShellExecute getModalOwner().hWnd, "print", tmpFilename, "", 0, SW_SHOWNORMAL
+    Dim actionName As String
+    actionName = "print"
+    
+    ShellExecute getModalOwner().hWnd, StrPtr(actionName), StrPtr(tmpFilename), 0&, 0&, SW_SHOWNORMAL
     
 End Sub
 

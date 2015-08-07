@@ -295,21 +295,12 @@ Public Sub generateProfileReport(Optional ByVal writeToFile As Boolean = False)
     
         Dim logFile As String
         logFile = getReportFilename()
-    
-        'If the file already exists, remove it.  (I have also added a DoEvents here after noticing random errors in this
-        ' sub - it's important to wait for the file to be deleted, so that the write attempt below does not fail.)
-        If FileExist(logFile) Then
-            Kill logFile
-            DoEvents
-        End If
-    
-        'Open the specified file
-        Dim fileNum As Integer
-        fileNum = FreeFile
         
-        Open logFile For Output As #fileNum
-            Print #fileNum, reportString
-        Close #fileNum
+        'Write the data to file using pdFSO
+        Dim cFile As pdFSO
+        Set cFile = New pdFSO
+        
+        cFile.SaveStringToTextFile reportString, logFile
         
         'If the user wants us to use a persistent database for timing data, write out the current session's data now.
         If m_UseDatabase Then writeUpdatedDatabase

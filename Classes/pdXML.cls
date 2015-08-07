@@ -574,19 +574,8 @@ Private Function getFileAsString(ByVal fName As String) As String
     'Ensure that the file exists before attempting to load it
     If m_File.FileExist(fName) Then
         
-        Dim fileNum As Integer
-        fileNum = FreeFile
-        
-        Open fName For Binary As #fileNum
-            tmpFileContents = Space$(LOF(fileNum))
-            Get #fileNum, , tmpFileContents
-        Close #fileNum
-        
-        'Once Unicode support is added, investigate alternate means of file loading, perhaps like the code below??
-        'Open fName For Input As #fileNum
-        '    tmpFileContents = StrConv(InputB(LOF(fileNum), fileNum), vbUnicode)
-        'Close #fileNum
-    
+        m_File.LoadTextFileAsString fName, tmpFileContents
+            
         'Remove all tabs from the source file (which may have been added in by an XML editor, but are not relevant to our own XML processing)
         If InStr(1, tmpFileContents, vbTab) <> 0 Then tmpFileContents = Replace(tmpFileContents, vbTab, "")
         
