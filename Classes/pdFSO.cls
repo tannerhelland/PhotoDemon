@@ -15,14 +15,18 @@ Attribute VB_Exposed = False
 'PhotoDemon File System Object Interface
 'Copyright 2014-2015 by Tanner Helland
 'Created: 04/February/15
-'Last updated: 11/February/15
-'Last update: add version retrieval functions for arbitrary files
+'Last updated: 09/August/15
+'Last update: rewrite tons of functions against actual system APIs (instead of just wrapping VB functions with GetShortPath())
 'Dependencies: pdStringStack (used internally for performance-friendly string collection management)
 '              pdUnicode (for simplifying various string format conversions, when reading/writing text files primarily)
 '
-'This class is currently under heavy construction.
+'This class provides convenient, Unicode-friendly replacements for VB's various file and folder functions.  In some cases, the VB
+' equivalents have been directly reproduced.  In others, the functions have been rewritten to make fail states easier to detect
+' (e.g. returning Boolean's instead of raising errors).
 '
-'The end goal is to provide convenient, Unicode-friendly replacements for VB's various file and folder functions.
+'Pay careful attention to the requirements of each function.  Some functions that operate on bare file handles require that the
+' handle was created with certain permissions (e.g. you can't check file size using an hFile unless the hFile was created with
+' read access).
 '
 'Thank you to the many invaluable references I used while constructing this class, particularly:
 ' - Dana Seaman's UnicodeTutorialVB (http://www.cyberactivex.com/UnicodeTutorialVb.htm)
@@ -38,22 +42,40 @@ Private Const MAX_PATH As Long = 260
 Private Const GENERIC_READ As Long = &H80000000
 Private Const GENERIC_WRITE As Long = &H40000000
 
+Private Const OPEN_ALWAYS As Long = &H4
 Private Const OPEN_EXISTING As Long = &H3
 Private Const CREATE_ALWAYS As Long = &H2
 Private Const CREATE_NEW As Long = &H1
 
+Private Const FILE_FLAG_SEQUENTIAL_SCAN As Long = &H8000000
+Private Const FILE_FLAG_RANDOM_ACCESS As Long = &H10000000
+
 Private Const FILE_SHARE_READ As Long = &H1
 Private Const FILE_SHARE_WRITE As Long = &H2
+Private Const FILE_SHARE_DELETE As Long = &H4
 Private Const FILE_ATTRIBUTE_ARCHIVE As Long = &H20
 Private Const FILE_ATTRIBUTE_HIDDEN As Long = &H2
 Private Const FILE_ATTRIBUTE_READONLY As Long = &H1
 Private Const FILE_ATTRIBUTE_SYSTEM As Long = &H4
 Private Const FILE_ATTRIBUTE_NORMAL As Long = &H80&
+Private Const FILE_ATTRIBUTE_TEMPORARY As Long = &H100&
+
 Private Const INVALID_HANDLE_VALUE As Long = -1
 
+Public Enum PDFSO_FILE_ACCESS_OPTIMIZE
+    OptimizeNone = 0
+    OptimizeRandomAccess = 1
+    OptimizeSequentialAccess = 2
+    OptimizeTempFile = 3
+End Enum
+
+#If False Then
+    Private Const OptimizeNone = 0, OptimizeRandomAccess = 1, OptimizeSequentialAccess = 2, OptimizeTempFile = 3
+#End If
+
 Private Declare Function CreateFileW Lib "kernel32" (ByVal lpFileName As Long, ByVal dwDesiredAccess As Long, ByVal dwShareMode As Long, ByVal lpSecurityAttributes As Long, ByVal dwCreationDisposition As Long, ByVal dwFlagsAndAttributes As Long, ByVal hTemplateFile As Long) As Long
+Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, ByVal ptrToDstBuffer As Long, ByVal nNumberOfBytesToRead As Long, ByRef lpNumberOfBytesRead As Long, ByVal lpOverlapped As Long) As Long
 Private Declare Function WriteFile Lib "kernel32" (ByVal hFile As Long, ByVal ptrToSourceBuffer As Long, ByVal nNumberOfBytesToWrite As Long, ByRef lpNumberOfBytesWritten As Long, ByVal ptrToOverlappedStruct As Long) As Long
-Private Declare Function GetFileSize Lib "kernel32" (ByVal hFile As Long, ByRef lpFileSizeHigh As Long) As Long
 Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
 
 Private Type WIN32_FIND_DATA
@@ -154,6 +176,8 @@ Private Type VS_FIXEDFILEINFO
    dwFileDateMS As Long           ' e.g. 0
    dwFileDateLS As Long           ' e.g. 0
 End Type
+Private Declare Function GetFileSize Lib "kernel32" (ByVal hFile As Long, ByRef lpFileSizeHigh As Long) As Long
+Private Declare Function GetFileSizeEx Lib "kernel32" (ByVal hFile As Long, ByRef lpFileSize As Currency) As Long
 Private Declare Function GetFileVersionInfo Lib "Version" Alias "GetFileVersionInfoA" (ByVal lptstrFilename As String, ByVal dwhandle As Long, ByVal dwlen As Long, lpData As Any) As Long
 Private Declare Function GetFileVersionInfoSize Lib "Version" Alias "GetFileVersionInfoSizeA" (ByVal lptstrFilename As String, lpdwHandle As Long) As Long
 Private Declare Function VerQueryValue Lib "Version" Alias "VerQueryValueA" (pBlock As Any, ByVal lpSubBlock As String, lplpBuffer As Any, puLen As Long) As Long
@@ -1200,16 +1224,33 @@ Public Function LoadFileAsByteArray(ByRef srcFile As String, ByRef dstArray() As
         Exit Function
     End If
     
-    'Dump file contents into a byte array.  Native VB methods can be used by wrapping the (potentially Unicode) srcFile with GetShortPathNameW.
-    Dim fileNum As Integer
-    fileNum = FreeFile
+    'Dump file contents into a byte array.
+    Dim hFile As Long
+    If CreateFileHandle(srcFile, hFile, True, False, OptimizeSequentialAccess) Then
+        
+        'Prep the destination buffer
+        Dim lenOfFile As Long
+        lenOfFile = CLng(FileLengthLarge(hFile))
+        ReDim dstArray(0 To lenOfFile - 1) As Byte
+        
+        'Retrieve the full file contents
+        Dim tmpVerify As Long
+        If ReadFile(hFile, VarPtr(dstArray(0)), lenOfFile, tmpVerify, 0&) <> 0 Then
+            LoadFileAsByteArray = True
+        Else
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "pdFSO.LoadFileAsByteArray experienced failure when calling ReadFile on " & srcFile & ". Abandoning load."
+            #End If
+        End If
+        
+        CloseHandle hFile
+        
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "pdFSO.LoadFileAsByteArray failed to create a valid handle for " & srcFile & ". Abandoning load."
+        #End If
+    End If
     
-    Open GetShortPath(srcFile) For Binary Access Read As #fileNum
-        ReDim dstArray(0 To LOF(fileNum) - 1) As Byte
-        Get fileNum, , dstArray
-    Close fileNum
-    
-    LoadFileAsByteArray = True
     Exit Function
     
 StopFileLoad:
@@ -1223,11 +1264,11 @@ StopFileLoad:
 End Function
 
 'Shortcut function for dumping a byte array into a file.
-Public Function SaveByteArrayToFile(ByRef srcArray() As Byte, ByVal pathToFile As String, Optional ByVal overwriteExistingIfPresent As Boolean = True) As Boolean
+Public Function SaveByteArrayToFile(ByRef srcArray() As Byte, ByVal pathToFile As String, Optional ByVal overwriteExistingIfPresent As Boolean = True, Optional ByVal fileIsTempFile As Boolean = False) As Boolean
     
     On Error GoTo SaveByteArrayToFile_Failure
     
-    'See if the file exists
+    'See if the file exists, and delete as necessary
     If FileExist(pathToFile) Then
     
         If (Not overwriteExistingIfPresent) Then
@@ -1239,15 +1280,22 @@ Public Function SaveByteArrayToFile(ByRef srcArray() As Byte, ByVal pathToFile A
         End If
         
     End If
-        
-    Dim fileNum As Integer
-    fileNum = FreeFile
     
-    Open GetShortPath(pathToFile) For Binary Access Write As #fileNum
-        Put fileNum, , srcArray
-    Close #fileNum
+    'Create a file handle
+    Dim hFile As Long
     
-    SaveByteArrayToFile = True
+    If fileIsTempFile Then
+        CreateFileHandle pathToFile, hFile, False, True, OptimizeTempFile
+    Else
+        CreateFileHandle pathToFile, hFile, False, True, OptimizeSequentialAccess
+    End If
+    
+    'Write the array
+    SaveByteArrayToFile = WriteDataToFile(hFile, VarPtr(srcArray(LBound(srcArray))), UBound(srcArray) - LBound(srcArray) + 1)
+    
+    'Release our handle
+    CloseHandle hFile
+    
     Exit Function
     
 SaveByteArrayToFile_Failure:
@@ -1295,6 +1343,77 @@ StopTextFileRead:
     
 End Function
 
+'Given a file path, access indicators, and a destination long, retrieve a generic hFile handle.
+' Note that this function (by design) assumes normal file attributes and active sharing rights (e.g. other functions can access files
+' we currently have open).  If this behavior is not desired, modify the attributeFlags and shareFlags settings below.
+' RETURNS: TRUE if handle generated successfully; FALSE otherwise.
+Friend Function CreateFileHandle(ByRef srcFilePath As String, ByRef dstFileHandle As Long, Optional ByVal requestReadAccess As Boolean = False, Optional ByVal requestWriteAccess As Boolean = False, Optional ByVal optimizeAccess As PDFSO_FILE_ACCESS_OPTIMIZE = OptimizeNone) As Boolean
+    
+    Dim accessFlags As Long, shareFlags As Long, createFlags As Long, optimizeFlags As Long, attributeFlags As Long
+    accessFlags = 0
+    If requestReadAccess Then accessFlags = accessFlags Or GENERIC_READ
+    If requestWriteAccess Then accessFlags = accessFlags Or GENERIC_WRITE
+    
+    'Regardless of what the user plans to do with this file, we enable all sharing flags.  This is important while working from the IDE,
+    ' as a crash (or use of the STOP button) may cause a file handle to go unclosed, preventing all access to the file until the PC is rebooted.
+    shareFlags = FILE_SHARE_WRITE Or FILE_SHARE_READ Or FILE_SHARE_DELETE
+    
+    If requestWriteAccess Then
+        createFlags = CREATE_ALWAYS
+    Else
+        createFlags = OPEN_EXISTING
+    End If
+    
+    attributeFlags = FILE_ATTRIBUTE_NORMAL
+    
+    Select Case optimizeAccess
+        
+        Case OptimizeNone
+            optimizeFlags = 0
+        
+        Case OptimizeRandomAccess
+            optimizeFlags = FILE_FLAG_RANDOM_ACCESS
+        
+        Case OptimizeSequentialAccess
+            optimizeFlags = FILE_FLAG_SEQUENTIAL_SCAN
+        
+        Case OptimizeTempFile
+            optimizeFlags = 0
+            attributeFlags = attributeFlags Or FILE_ATTRIBUTE_TEMPORARY
+        
+    End Select
+    
+    Dim hFile As Long
+    hFile = CreateFileW(StrPtr(srcFilePath), accessFlags, shareFlags, 0&, createFlags, attributeFlags Or optimizeFlags, 0&)
+    
+    If (hFile = 0) Or (hFile = INVALID_HANDLE_VALUE) Then
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  pdFSO.CreateFileHandle failed to create a handle for " & srcFilePath & "."
+        #End If
+        
+        CreateFileHandle = False
+    Else
+        dstFileHandle = hFile
+        CreateFileHandle = True
+    End If
+    
+End Function
+
+'Close an open file handle.
+' Returns: TRUE if successful.
+Public Function CloseFileHandle(ByRef srcHandle As Long) As Boolean
+    CloseFileHandle = CBool(CloseHandle(srcHandle) <> 0)
+End Function
+
+'Write arbitrary binary data to file.  It is up to the caller to make sure the passed pointer and number of bytes are valid and accurate.
+' (The write will be performed synchronously, FYI.)
+' Returns: TRUE if successful; FALSE otherwise.
+Public Function WriteDataToFile(ByVal dstHandle As Long, ByVal srcDataPointer As Long, ByVal numOfBytesToWrite As Long) As Boolean
+    Dim tmpReturn As Long
+    WriteDataToFile = CBool(WriteFile(dstHandle, srcDataPointer, numOfBytesToWrite, tmpReturn, 0&) <> 0)
+End Function
+
 'Write a string out to text file.  UTF-8 is assumed, but old-style ANSI can also be used by setting the optional useUTF8 parameter to FALSE.
 ' If UTF-8 is requested, the optional parameter useUTF8_BOM specifies whether to preface the file with a BOM.
 '
@@ -1316,37 +1435,33 @@ Public Function SaveStringToTextFile(ByRef srcString As String, ByRef dstFilenam
     If useUTF8 Then
         
         'Open the file
-        Dim hFile As Long, tmpReturn As Long
-        hFile = CreateFileW(StrPtr(dstFilename), GENERIC_WRITE, FILE_SHARE_WRITE, 0&, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0&)
+        Dim hFile As Long
+        If CreateFileHandle(dstFilename, hFile, False, True, OptimizeSequentialAccess) Then
         
+            'If requested, write a BOM first.  This is desirable for PD's internal files, as it makes it very quick to identify the new UTF-8
+            ' ones vs old Windows-1252 ones.
+            If useUTF8_BOM Then
+                
+                Dim bomMarker(0 To 2) As Byte
+                bomMarker(0) = &HEF: bomMarker(1) = &HBB: bomMarker(2) = &HBF
+                
+                WriteDataToFile hFile, VarPtr(bomMarker(0)), 3
+                
+            End If
+            
+            'Write the byte array and exit!
+            WriteDataToFile hFile, VarPtr(fileBytes(0)), UBound(fileBytes) + 1
+            CloseFileHandle hFile
+            
         'hFile should technically never be zero, FYI.  An invalid handle value may be returned for generic filesystem errors,
         ' but if a previous "does file exist" check passed, that outcome is extremely unlikely.
-        If (hFile = 0) Or (hFile = INVALID_HANDLE_VALUE) Then
-            
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "SaveStringToTextFile failed to generate a valid output file handle on " & dstFilename & ". Abandoning save."
-            #End If
+        Else
             
             SaveStringToTextFile = False
             Exit Function
             
         End If
-            
-        'If requested, write a BOM first.  This is desirable for PD's internal files, as it makes it very quick to identify the new UTF-8
-        ' ones vs old Windows-1252 ones.
-        If useUTF8_BOM Then
-            
-            Dim bomMarker(0 To 2) As Byte
-            bomMarker(0) = &HEF: bomMarker(1) = &HBB: bomMarker(2) = &HBF
-            
-            WriteFile hFile, VarPtr(bomMarker(0)), 3, tmpReturn, 0&
-            
-        End If
-        
-        'Write the byte array and exit!
-        WriteFile hFile, VarPtr(fileBytes(0)), UBound(fileBytes) + 1, tmpReturn, 0&
-        CloseHandle hFile
-        
+                
     'If UTF-8 is not requested, allow VB to perform its own innate SBCS conversion
     Else
         
@@ -1368,7 +1483,9 @@ Public Function SaveStringToTextFile(ByRef srcString As String, ByRef dstFilenam
 StopSaveStringToTextFile:
 
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "SaveStringToTextFile threw error " & Err.Description & " (" & Err.Number & ") on " & dstFilename & ". Abandoning save."
+        If Not pdDebug Is Nothing Then
+            pdDebug.LogAction "SaveStringToTextFile threw error " & Err.Description & " (" & Err.Number & ") on " & dstFilename & ". Abandoning save."
+        End If
     #End If
     
     SaveStringToTextFile = False
@@ -1397,22 +1514,33 @@ End Function
 ' This is all PD requires at present, since it can't work with 2 GB+ images anyway.
 ' IMPORTANT!  It's assumed that the caller checked the file's existence PRIOR to calling this function.
 Public Function FileLenW(ByRef srcPath As String) As Long
-
-    'First, we need to create a file handle to the file in question.
-    Dim genericFlags As Long
-    genericFlags = FILE_ATTRIBUTE_ARCHIVE Or FILE_ATTRIBUTE_HIDDEN Or FILE_ATTRIBUTE_NORMAL Or FILE_ATTRIBUTE_READONLY Or FILE_ATTRIBUTE_SYSTEM
     
+    'Get a handle to the file in question
     Dim hFile As Long
-    hFile = CreateFileW(StrPtr(srcPath), GENERIC_READ, FILE_SHARE_READ, 0&, OPEN_EXISTING, genericFlags, 0&)
-    
-    'hFile should technically never be zero, FYI.  An invalid handle value may be returned for generic filesystem errors,
-    ' but if a previous "does file exist" check passed, that outcome is extremely unlikely.
-    If (hFile <> 0) And (hFile <> INVALID_HANDLE_VALUE) Then
-        FileLenW = GetFileSize(hFile, 0&)
+    If CreateFileHandle(srcPath, hFile, True) Then
+        FileLenW = CLng(FileLengthLarge(hFile))
         CloseHandle hFile
     Else
         FileLenW = 0
     End If
+    
+End Function
+
+'Unicode-compatible LOF variant.  Note that the hFile must have generic read attributes active; write-alone won't work.
+Public Function FileLengthLarge(ByVal hFile As Long) As Currency
+    
+    Dim tmpVal As Currency
+    tmpVal = 0
+    
+    If GetFileSizeEx(hFile, tmpVal) <> 0 Then
+        FileLengthLarge = tmpVal * 10000
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  pdFSO.FileLength failed on hFile " & hFile & ".  Sorry, but I don't have more info for you."
+        #End If
+        FileLengthLarge = 0
+    End If
+
     
 End Function
 
