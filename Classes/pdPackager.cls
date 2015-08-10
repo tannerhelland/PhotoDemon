@@ -763,28 +763,31 @@ Public Function writePackageToFile(ByVal dstFilename As String, Optional ByVal s
     'Kill the destination file if it already exists
     If m_File.FileExist(dstFilename) Then Kill dstFilename
     
-    'Open the target file
-    Dim fileNum As Integer
-    fileNum = FreeFile
+    'Retrieve a writable handle
+    Dim hFile As Long
+    If m_File.CreateFileHandle(dstFilename, hFile, True, True, OptimizeSequentialAccess) Then
     
-    Open dstFilename For Binary As #fileNum
+        'Writing out the three crucial pieces of data: the header, the directory, and the data
+        With m_File
+            .WriteDataToFile hFile, VarPtr(m_FileHeader), LenB(m_FileHeader)
+            .WriteDataToFile hFile, VarPtr(rawDirectoryBuffer(0)), UBound(rawDirectoryBuffer) + 1
+            .WriteDataToFile hFile, VarPtr(rawDataBuffer(0)), UBound(rawDataBuffer) + 1
+        End With
+        
+        m_File.CloseFileHandle hFile
+        
+        writePackageToFile = True
     
-        'Writing the actual data to file is incredibly easy!
-        
-        'Header
-        Put #fileNum, 1, m_FileHeader
-        
-        'Directory chunk
-        Put #fileNum, , rawDirectoryBuffer
-        
-        'Data chunk
-        Put #fileNum, , rawDataBuffer
-        
-    Close #fileNum
+    Else
     
-    'Easy as pie.  Return TRUE and exit.
-    writePackageToFile = True
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  pdPackager.writePackageToFile failed to create a valid destination file handle.  Package was not written."
+        #End If
+        
+        writePackageToFile = False
     
+    End If
+        
     'TODO!  Add basic error handling.
 
 End Function
@@ -871,8 +874,7 @@ End Function
 Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal subTypeValidator As Long = 0) As Boolean
 
     On Error GoTo StopPackageFileRead
-
-    Dim fileNum As Integer
+    
     Dim rawBuffer() As Byte, tmpCompressionBuffer() As Byte
     Dim zLibResult As Long
     
@@ -883,38 +885,36 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
     End If
     
     'Open the file
-    fileNum = FreeFile
-    Open srcFilename For Binary As #fileNum
-    
-        'Validate the file signature.  Valid pdPackage files must have their first 4 bytes set to "PDPK" in ASCII.
-        Dim pdpCheck As Long
-        Get #fileNum, 1, pdpCheck
+    Dim hFile As Long
+    If m_File.CreateFileHandle(srcFilename, hFile, True, False, OptimizeSequentialAccess) Then
         
-        If (pdpCheck <> PDP_UNIVERSAL_IDENTIFIER) Then
+        'Attempt to load the file header.  If the file is invalid, this may potentially be gibberish, but we won't know until we try!
+        m_File.ReadDataFromFile hFile, VarPtr(m_FileHeader), LenB(m_FileHeader)
+        
+        'Validate the file signature.  Valid pdPackage files must have their first 4 bytes set to "PDPK" in ASCII.
+        If (m_FileHeader.PDP_ID <> PDP_UNIVERSAL_IDENTIFIER) Then
             raiseInternalMessage "File doesn't have valid pdPackage header.  Abandoning load."
             GoTo StopPackageFileRead
         End If
         
         'If the caller requested a sub-type validation, perform that now
         If subTypeValidator <> 0 Then
-        
-            Get #fileNum, 5, pdpCheck
-        
-            If (pdpCheck <> subTypeValidator) Then
+            
+            If (m_FileHeader.PDP_SubID <> subTypeValidator) Then
                 raiseInternalMessage "File doesn't match requested sub-type value.  Abandoning load."
                 GoTo StopPackageFileRead
             End If
         
         End If
         
-        'If both the file signature and the sub-type check out, load the full file header now.
-        Get #fileNum, 1, m_FileHeader
-        
-        'Check the PDP version.  If it's older than the current version, loading will be handled by one of the legacy load functions.
+        'Finally, check the PDP version.  If it's older than the current version, loading will be handled by one of our legacy load functions.
         If m_FileHeader.PDP_Version < THIS_PDPACKAGE_VERSION Then
             
-            pdpCheck = loadLegacyPDPackage(fileNum)
-            If Not pdpCheck Then
+            'Close our handle prior to continuing
+            m_File.CloseFileHandle hFile
+            
+            'Let the legacy load function have a go at the data
+            If Not loadLegacyPDPackage(srcFilename) Then
                 raiseInternalMessage "Legacy file format could not be decoded."
                 GoTo StopPackageFileRead
             End If
@@ -934,7 +934,7 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             
                 'No compression applied, so we can retrieve the node directory as-is.
                 ReDim rawBuffer(0 To m_FileHeader.DirectoryChunkSize - 1) As Byte
-                Get #fileNum, , rawBuffer
+                m_File.ReadDataFromFile hFile, VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSize
                 
             Else
             
@@ -946,10 +946,13 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     
                     'Resize the source buffer to the compressed directory size, and retrieve the compressed directory.
                     ReDim tmpCompressionBuffer(0 To m_FileHeader.DirectoryChunkSizeCompressed - 1) As Byte
-                    Get #fileNum, , tmpCompressionBuffer
+                    m_File.ReadDataFromFile hFile, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizeCompressed
                     
                     'Use zLib to decompress the data
                     zLibResult = uncompress(rawBuffer(0), m_FileHeader.DirectoryChunkSize, tmpCompressionBuffer(0), m_FileHeader.DirectoryChunkSizeCompressed)
+                    
+                    'Free the temporary compression buffer
+                    Erase tmpCompressionBuffer
                     
                     If zLibResult <> 0 Then
                         
@@ -977,7 +980,7 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             
                 'No compression applied, so we can retrieve the node directory as-is.
                 ReDim rawBuffer(0 To m_FileHeader.DataChunkSize - 1) As Byte
-                Get #fileNum, , rawBuffer
+                m_File.ReadDataFromFile hFile, VarPtr(rawBuffer(0)), m_FileHeader.DataChunkSize
                 
             Else
             
@@ -987,12 +990,15 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     'Resize the destination buffer to the original size of the data
                     ReDim rawBuffer(0 To m_FileHeader.DataChunkSize - 1) As Byte
                     
-                    'Resize the source buffer to the compressed directory size, and retrieve the compressed directory.
+                    'Resize the source buffer to the compressed data chunk size, and retrieve the compressed chunk.
                     ReDim tmpCompressionBuffer(0 To m_FileHeader.DataChunkSizeCompressed - 1) As Byte
-                    Get #fileNum, , tmpCompressionBuffer
+                    m_File.ReadDataFromFile hFile, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DataChunkSizeCompressed
                     
                     'Use zLib to decompress the data
                     zLibResult = uncompress(rawBuffer(0), m_FileHeader.DataChunkSize, tmpCompressionBuffer(0), m_FileHeader.DataChunkSizeCompressed)
+                    
+                    'Free our temporary buffer
+                    Erase tmpCompressionBuffer
                     
                     If zLibResult <> 0 Then
                         
@@ -1017,69 +1023,88 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             
         End If
         
-    'And that's all, folks!  Close the file and exit.
-    Close #fileNum
+        'Close the handle when finished, obviously!
+        If hFile <> 0 Then m_File.CloseFileHandle hFile
+        
+    Else
+        readPackageFromFile = False
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  pdPackager.readPackageFromFile failed to create a valid handle for " & srcFilename & ".  Read abandoned."
+        #End If
+    End If
     
+    'File load complete!  If we didn't already break to StopPackageFileRead, assume success.
     readPackageFromFile = True
     Exit Function
     
 StopPackageFileRead:
     
     Debug.Print "An error occurred in the pdPackager.readPackageFromFile function.  Additional data should have been supplied by the Message() function."
-    If fileNum <> 0 Then Close #fileNum
+    If hFile <> 0 Then m_File.CloseFileHandle hFile
     readPackageFromFile = False
     Exit Function
 
 End Function
 
-'Any PDPackage versions prior to the current version (THIS_PDPACKAGE_VERSION) are loaded via this function, after the file header
-' has been parsed.  That means that the filePointer passed to this function already points to the byte IMMEDIATELY FOLLOWING the header.
-Private Function loadLegacyPDPackage(ByRef fileNum As Integer) As Boolean
-
+'Any PDPackage versions prior to the current version (THIS_PDPACKAGE_VERSION) are loaded via this function.  This function does not use
+' Unicode-aware parsing code, FYI!
+Private Function loadLegacyPDPackage(ByRef srcFile As String) As Boolean
+    
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Legacy pdPackage format detected.  Attempting decoding now..."
     #End If
-
-    'Separate handling based on the file header, which has already been stored to m_FileHeader
-    Select Case m_FileHeader.PDP_Version
     
-        'The original pdPackage format is very simple.  I had not intended to replace it, but at the time I created it, I didn't
-        ' realize that VB stored UDTs to file in a non-standard, non-obvious way that differs from their in-memory representation.
-        Case OLD_PDPACKAGE_VERSION_SUMMER_2014
-            
-            'Make sure the struct size matches; if it doesn't, all subsequent parsing will fail
-            Dim tmpNode As PDP_NODE
-            If m_FileHeader.NodeStructSize = Len(tmpNode) Then
-                
-                'Use information from the file header to prepare the directory array.
-                m_NumOfNodes = m_FileHeader.NodeCount
-                ReDim m_NodeDirectory(0 To m_NumOfNodes - 1) As PDP_NODE
-                
-                'Retrieve the node directory
-                Get #fileNum, , m_NodeDirectory
-                
-                'Finally, retrieve the data chunk, and pass it to the m_DataBuffer class (which we'll use for further parsing).
-                Dim rawDataBuffer() As Byte
-                ReDim rawDataBuffer(0 To m_FileHeader.DataChunkSize - 1) As Byte
-                Get #fileNum, , rawDataBuffer
-                
-                Set m_DataBuffer = New clsBasicBuffer
-                m_DataBuffer.OpenBuf
-                m_DataBuffer.WriteBytes rawDataBuffer
-                
-                'We do not close the file here; that is handled by the caller, which may have additional validation steps to perform.
-                loadLegacyPDPackage = True
-                
-            'Struct size mismatch - file is probably not PDI type.
-            Else
-                raiseInternalMessage "Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load."
-                loadLegacyPDPackage = False
-            End If
-            
-        Case Else
-            loadLegacyPDPackage = False
+    'Open the file
+    Dim fileNum As Integer
+    fileNum = FreeFile
+    Open srcFile For Binary As #fileNum
+    
+        'Load the full file header.
+        Get #fileNum, 1, m_FileHeader
         
-    End Select
+        'Separate handling based on the file header, which has already been stored to m_FileHeader
+        Select Case m_FileHeader.PDP_Version
+        
+            'The original pdPackage format is very simple.  I had not intended to replace it, but at the time I created it, I didn't
+            ' realize that VB stored UDTs to file in a non-standard, non-obvious way that differs from their in-memory representation.
+            Case OLD_PDPACKAGE_VERSION_SUMMER_2014
+                
+                'Make sure the struct size matches; if it doesn't, all subsequent parsing will fail
+                Dim tmpNode As PDP_NODE
+                If m_FileHeader.NodeStructSize = Len(tmpNode) Then
+                    
+                    'Use information from the file header to prepare the directory array.
+                    m_NumOfNodes = m_FileHeader.NodeCount
+                    ReDim m_NodeDirectory(0 To m_NumOfNodes - 1) As PDP_NODE
+                    
+                    'Retrieve the node directory
+                    Get #fileNum, , m_NodeDirectory
+                    
+                    'Finally, retrieve the data chunk, and pass it to the m_DataBuffer class (which we'll use for further parsing).
+                    Dim rawDataBuffer() As Byte
+                    ReDim rawDataBuffer(0 To m_FileHeader.DataChunkSize - 1) As Byte
+                    Get #fileNum, , rawDataBuffer
+                    
+                    Set m_DataBuffer = New clsBasicBuffer
+                    m_DataBuffer.OpenBuf
+                    m_DataBuffer.WriteBytes rawDataBuffer
+                    
+                    'Mark the load as successful
+                    loadLegacyPDPackage = True
+                    
+                'Struct size mismatch - file is probably not PDI type.
+                Else
+                    raiseInternalMessage "Node struct size in header is invalid.  This file looks to be corrupt!  Abandoning load."
+                    loadLegacyPDPackage = False
+                End If
+                
+            Case Else
+                loadLegacyPDPackage = False
+            
+        End Select
+        
+    'Close the file
+    Close #fileNum
 
 End Function
 
