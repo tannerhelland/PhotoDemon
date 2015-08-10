@@ -73,8 +73,19 @@ End Enum
     Private Const OptimizeNone = 0, OptimizeRandomAccess = 1, OptimizeSequentialAccess = 2, OptimizeTempFile = 3
 #End If
 
+Private Enum FILE_POINTER_MOVE_METHOD
+    FILE_BEGIN = 0
+    FILE_CURRENT = 1
+    FILE_END = 2
+End Enum
+
+#If False Then
+    Private Const FILE_BEGIN = 0, FILE_CURRENT = 1, FILE_END = 2
+#End If
+
 Private Declare Function CreateFileW Lib "kernel32" (ByVal lpFileName As Long, ByVal dwDesiredAccess As Long, ByVal dwShareMode As Long, ByVal lpSecurityAttributes As Long, ByVal dwCreationDisposition As Long, ByVal dwFlagsAndAttributes As Long, ByVal hTemplateFile As Long) As Long
 Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, ByVal ptrToDstBuffer As Long, ByVal nNumberOfBytesToRead As Long, ByRef lpNumberOfBytesRead As Long, ByVal lpOverlapped As Long) As Long
+Private Declare Function SetFilePointer Lib "kernel32" (ByVal hFile As Long, ByVal lDistanceToMove As Long, ByRef lpDistanceToMoveHigh As Long, ByVal dwMoveMethod As FILE_POINTER_MOVE_METHOD) As Long
 Private Declare Function WriteFile Lib "kernel32" (ByVal hFile As Long, ByVal ptrToSourceBuffer As Long, ByVal nNumberOfBytesToWrite As Long, ByRef lpNumberOfBytesWritten As Long, ByVal ptrToOverlappedStruct As Long) As Long
 Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
 
@@ -234,7 +245,7 @@ Public Function FolderExist(ByRef fullPath As String, Optional ByVal checkWriteA
     
         'Attempt to create a file within this directory.  If we succeed, delete the file and return "true".
         ' If we fail, we do not have access rights.
-        Open tmpFilename For Binary As #fileNum
+        Open GetShortPath(tmpFilename) For Binary As #fileNum
             Put #fileNum, 1, 1
         Close #fileNum
         
@@ -1389,7 +1400,7 @@ Friend Function CreateFileHandle(ByRef srcFilePath As String, ByRef dstFileHandl
     If (hFile = 0) Or (hFile = INVALID_HANDLE_VALUE) Then
         
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdFSO.CreateFileHandle failed to create a handle for " & srcFilePath & "."
+            pdDebug.LogAction "WARNING!  pdFSO.CreateFileHandle failed to create a handle for " & srcFilePath & ".  Relevant last error: " & Err.LastDllError
         #End If
         
         CreateFileHandle = False
@@ -1403,7 +1414,49 @@ End Function
 'Close an open file handle.
 ' Returns: TRUE if successful.
 Public Function CloseFileHandle(ByRef srcHandle As Long) As Boolean
-    CloseFileHandle = CBool(CloseHandle(srcHandle) <> 0)
+    
+    If srcHandle <> 0 Then
+        CloseFileHandle = CBool(CloseHandle(srcHandle) <> 0)
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  pdFSO.CloseFileHandle was passed an empty handle.  Ask yourself why this handle was already closed!"
+        #End If
+    End If
+    
+    'As a convenience to the caller, manually reset the handle to 0
+    srcHandle = 0
+    
+End Function
+
+'Reads arbitrary binary data from file.  It is up to the caller to make sure the requested number of bytes are valid and accurate,
+' and most importantly, *that the destination memory is already sized appropriately*.
+' - The read will be performed synchronously, FYI.
+' - An optional newFilePointer value can be passed.  A pointer move method can also be specified.  Note that by default, the pointer
+'   will be reset *relative to the start of the file*, *not relative to its current position*.  This is meant to mimic file positions
+'   from old VB file access code, but you can change it to be relative to the current pointer position by modifying the
+'   filePointerMoveMethod param.
+'
+' Returns: TRUE if successful; FALSE otherwise.
+Friend Function ReadDataFromFile(ByVal srcHandle As Long, ByVal ptrToDestinationObject As Long, ByVal numOfBytesToRead As Long, Optional ByVal newFilePointer As Long = -1, Optional ByVal filePointerMoveMethod As FILE_POINTER_MOVE_METHOD = FILE_BEGIN) As Boolean
+    
+    'Manually move the pointer only if required
+    If newFilePointer <> -1 Then
+        SetFilePointer srcHandle, newFilePointer, ByVal 0&, filePointerMoveMethod
+    End If
+    
+    'Read the data!
+    Dim tmpReturn As Long
+    ReadDataFromFile = CBool(ReadFile(srcHandle, ptrToDestinationObject, numOfBytesToRead, tmpReturn, 0&) <> 0)
+    
+    'As a convenience to the caller, print out scenarios where the actual amount read differs from the amount of data requested.
+    If tmpReturn <> numOfBytesToRead Then
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "POTENTIAL WARNING: pdFSO.ReadDataFromFile retrieved " & CStr(tmpReturn) & " bytes instead of the " & CStr(numOfBytesToRead) & " bytes you requested.  Check your math."
+        #End If
+        
+    End If
+    
 End Function
 
 'Write arbitrary binary data to file.  It is up to the caller to make sure the passed pointer and number of bytes are valid and accurate.
