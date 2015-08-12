@@ -340,7 +340,7 @@ Public Function patchLanguageFile(ByVal entryKey As String, downloadedData() As 
     'The downloaded data is saved in the /Data/Updates folder.  Retrieve it directly into a pdPackager object.
     Dim cPackage As pdPackager
     Set cPackage = New pdPackager
-    If g_ZLibEnabled Then cPackage.init_ZLib g_PluginPath & "zlibwapi.dll"
+    cPackage.init_ZLib "", True, g_ZLibEnabled
     
     If cPackage.readPackageFromFile(savedToThisFile) Then
     
@@ -649,7 +649,7 @@ Public Function patchProgramFiles() As Boolean
     'The patching .exe is embedded inside the update package.  Extract it now.
     Dim cPackage As pdPackager
     Set cPackage = New pdPackager
-    If g_ZLibEnabled Then cPackage.init_ZLib g_PluginPath & "zlibwapi.dll"
+    cPackage.init_ZLib "", True, g_ZLibEnabled
     
     Dim patchFileName As String
     patchFileName = "PD_Update_Patcher.exe"

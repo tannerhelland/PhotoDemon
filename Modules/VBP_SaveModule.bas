@@ -647,7 +647,7 @@ Public Function SaveBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, By
     
         'The DIB class is capable of doing this without any outside help.
         tmpImageCopy.writeToBitmapFile BMPPath
-    
+        
         Message "%1 save complete.", sFileType
         
     'If some other color depth is specified, use FreeImage or GDI+ to write the file
@@ -741,7 +741,7 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     ' and storing everything to a running byte stream.
     Dim pdiWriter As pdPackager
     Set pdiWriter = New pdPackager
-    If g_ZLibEnabled Then pdiWriter.init_ZLib g_PluginPath & "zlibwapi.dll"
+    pdiWriter.init_ZLib "", True, g_ZLibEnabled
     
     'When creating the actual package, we specify numOfLayers + 1 nodes.  The +1 is for the pdImage header itself, which
     ' gets its own node, separate from the individual layer nodes.
@@ -846,7 +846,7 @@ Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As 
     'First things first: create a pdPackage instance.  It will handle all the messy business of assembling the layer file.
     Dim pdiWriter As pdPackager
     Set pdiWriter = New pdPackager
-    If g_ZLibEnabled Then pdiWriter.init_ZLib g_PluginPath & "zlibwapi.dll"
+    pdiWriter.init_ZLib "", True, g_ZLibEnabled
     
     'Unlike an actual PDI file, which stores a whole bunch of images, these temp layer files only have two pieces of data:
     ' the layer header, and the DIB bytestream.  Thus, we know there will only be 1 node required.
