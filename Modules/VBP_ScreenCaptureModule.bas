@@ -131,13 +131,17 @@ Public Sub getDesktopAsDIB(ByRef dstDIB As pdDIB)
     screenWidth = g_cMonitors.DesktopWidth
     screenHeight = g_cMonitors.DesktopHeight
     
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Preparing to capture screen using rect (" & screenLeft & ", " & screenTop & ")x(" & screenWidth & ", " & screenHeight & ")"
+    #End If
+    
     'Retrieve an hWnd and DC for the screen
     Dim screenHwnd As Long, desktopDC As Long
     screenHwnd = GetDesktopWindow()
     desktopDC = GetDC(screenHwnd)
     
     'Copy the bitmap into the specified DIB
-    dstDIB.createBlank screenWidth, screenHeight
+    dstDIB.createBlank screenWidth, screenHeight, 32
     BitBlt dstDIB.getDIBDC, 0, 0, screenWidth, screenHeight, desktopDC, 0, 0, vbSrcCopy
     
     'Release everything we generated for the capture, then exit
@@ -174,15 +178,15 @@ Public Sub getPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RECTL)
 End Sub
 
 'Copy the visual contents of any hWnd into a DIB; window chrome can be optionally included, if desired
-Public Function getHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHWnd As Long, Optional ByVal includeChrome As Boolean = True) As Boolean
+Public Function getHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHwnd As Long, Optional ByVal includeChrome As Boolean = True) As Boolean
 
     'Start by retrieving the necessary dimensions from the target window
     Dim targetRect As winRect
     
     If includeChrome Then
-        GetWindowRect targetHWnd, targetRect
+        GetWindowRect targetHwnd, targetRect
     Else
-        GetClientRect targetHWnd, targetRect
+        GetClientRect targetHwnd, targetRect
     End If
     
     'Check to make sure the window hasn't been unloaded
@@ -196,9 +200,9 @@ Public Function getHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHWnd As 
     
     'Ask the window in question to paint itself into our DIB
     If includeChrome Then
-        PrintWindow targetHWnd, dstDIB.getDIBDC, 0
+        PrintWindow targetHwnd, dstDIB.getDIBDC, 0
     Else
-        PrintWindow targetHWnd, dstDIB.getDIBDC, PW_CLIENTONLY
+        PrintWindow targetHwnd, dstDIB.getDIBDC, PW_CLIENTONLY
     End If
     
     getHwndContentsAsDIB = True
