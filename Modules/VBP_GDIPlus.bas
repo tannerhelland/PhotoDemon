@@ -500,7 +500,7 @@ Private Declare Function GdipCreateHatchBrush Lib "gdiplus" (ByVal bHatchStyle A
 Private Declare Function GdipSetPenDashStyle Lib "gdiplus" (ByVal dstPen As Long, ByVal newDashStyle As DashStyle) As Long
 Private Declare Function GdipSetPenDashCap197819 Lib "gdiplus" (ByVal dstPen As Long, ByVal newDashCap As DashCap) As Long
 Private Declare Function GdipSetPenMiterLimit Lib "gdiplus" (ByVal dstPen As Long, ByVal newMiterLimit As Single) As Long
-Private Declare Function GdipSetPenMode Lib "gdiplus" (ByVal pen As Long, ByVal penMode As PenAlignment) As Long
+Private Declare Function GdipSetPenMode Lib "gdiplus" (ByVal Pen As Long, ByVal penMode As PenAlignment) As Long
 
 'Transforms
 Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal order As Long) As Long
@@ -909,12 +909,19 @@ Public Function GDIPlusBlurDIB(ByRef dstDIB As pdDIB, ByVal blurRadius As Long, 
             'Attempt to render the blur effect
             Dim GDIPlusDebug As Long
             GDIPlusDebug = GdipDrawImageFX(iGraphics, tBitmap, tmpRect, tmpMatrix, hEffect, 0&, UnitPixel)
-            If GDIPlusDebug > 0 Then Message "GDI+ failed to render blur effect (Error Code %1).", GDIPlusDebug
+            
+            If GDIPlusDebug = 0 Then
+                GDIPlusBlurDIB = True
+            Else
+                GDIPlusBlurDIB = False
+                Message "GDI+ failed to render blur effect (Error Code %1).", GDIPlusDebug
+            End If
             
             'Delete our temporary transformation matrix
             GdipDeleteMatrix tmpMatrix
             
         Else
+            GDIPlusBlurDIB = False
             Message "GDI+ failed to set effect parameters."
         End If
     
@@ -922,6 +929,7 @@ Public Function GDIPlusBlurDIB(ByRef dstDIB As pdDIB, ByVal blurRadius As Long, 
         GdipDeleteEffect hEffect
     
     Else
+        GDIPlusBlurDIB = False
         Message "GDI+ failed to create blur effect object"
     End If
         

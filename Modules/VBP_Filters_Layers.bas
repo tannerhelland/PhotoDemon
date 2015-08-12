@@ -103,14 +103,25 @@ Public Function quickBlurDIB(ByRef srcDIB As pdDIB, ByVal blurRadius As Long, Op
             gdiPlusIsAcceptable = False
         End If
         
+        Dim tmpDIB As pdDIB
+        
         If gdiPlusIsAcceptable Then
-            GDIPlusBlurDIB srcDIB, blurRadius * 2, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight
+        
+            'GDI+ blurs are prone to failure, so as a failsafe, provide a fallback to internal PD mechanisms.
+            If Not GDIPlusBlurDIB(srcDIB, blurRadius * 2, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight) Then
+                
+                Set tmpDIB = New pdDIB
+                tmpDIB.createFromExistingDIB srcDIB
+                CreateApproximateGaussianBlurDIB blurRadius, tmpDIB, srcDIB, 1, True
+                
+            End If
+            
         Else
-            Dim tmpDIB As pdDIB
+            
             Set tmpDIB = New pdDIB
             tmpDIB.createFromExistingDIB srcDIB
             CreateApproximateGaussianBlurDIB blurRadius, tmpDIB, srcDIB, 1, True
-            Set tmpDIB = Nothing
+            
         End If
     
     End If
@@ -551,10 +562,10 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     Dim r As Long, g As Long, b As Long
     
     'Maximum and minimum values, which will be detected by our initial histogram run
-    Dim rMax As Byte, gMax As Byte, bMax As Byte
-    Dim rMin As Byte, gMin As Byte, bMin As Byte
-    rMax = 0: gMax = 0: bMax = 0
-    rMin = 255: gMin = 255: bMin = 255
+    Dim RMax As Byte, gMax As Byte, bMax As Byte
+    Dim RMin As Byte, gMin As Byte, bMin As Byte
+    RMax = 0: gMax = 0: bMax = 0
+    RMin = 255: gMin = 255: bMin = 255
     
     'Shrink the percentIgnore value down to 1% of the value we are passed (you'll see why in a moment)
     percentIgnore = percentIgnore / 100
@@ -603,7 +614,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
             r = r + 1
             rTally = rTally + rCount(r)
         Else
-            rMin = r
+            RMin = r
             foundYet = True
         End If
     Loop While foundYet = False
@@ -643,7 +654,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
             r = r - 1
             rTally = rTally + rCount(r)
         Else
-            rMax = r
+            RMax = r
             foundYet = True
         End If
     Loop While foundYet = False
@@ -674,7 +685,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     
     'Finally, calculate the difference between max and min for each color
     Dim rDif As Long, gDif As Long, bDif As Long
-    rDif = CLng(rMax) - CLng(rMin)
+    rDif = CLng(RMax) - CLng(RMin)
     gDif = CLng(gMax) - CLng(gMin)
     bDif = CLng(bMax) - CLng(bMin)
     
@@ -682,7 +693,7 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     Dim rFinal(0 To 255) As Byte, gFinal(0 To 255) As Byte, bFinal(0 To 255) As Byte
     
     For x = 0 To 255
-        If rDif <> 0 Then r = 255 * ((x - rMin) / rDif) Else r = x
+        If rDif <> 0 Then r = 255 * ((x - RMin) / rDif) Else r = x
         If gDif <> 0 Then g = 255 * ((x - gMin) / gDif) Else g = x
         If bDif <> 0 Then b = 255 * ((x - bMin) / bDif) Else b = x
         If r > 255 Then r = 255
