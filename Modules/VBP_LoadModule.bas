@@ -902,6 +902,12 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 ' be prompted to save it as a BMP.
                 targetImage.originalFileFormat = FIF_JPEG
                 mustCountColors = True
+                
+                #If DEBUGMODE = 1 Then
+                    If Not loadSuccessful Then
+                        pdDebug.LogAction "WARNING!  LoadFileAsNewImage failed on an internal file; both GDI+ and VB failed to handle " & sFile(thisImage) & " correctly."
+                    End If
+                #End If
                             
             'All other formats follow a set pattern: try to load them via FreeImage (if available), then GDI+, then finally
             ' VB's internal LoadPicture function.
@@ -1797,7 +1803,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
     ' from the source file.
     Dim pdiReader As pdPackager
     Set pdiReader = New pdPackager
-    If g_ZLibEnabled Then pdiReader.init_ZLib g_PluginPath & "zlibwapi.dll"
+    pdiReader.init_ZLib "", True, g_ZLibEnabled
     
     'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
@@ -1969,7 +1975,7 @@ Public Function LoadPhotoDemonImageHeaderOnly(ByVal PDIPath As String, ByRef dst
     ' from the source file.
     Dim pdiReader As pdPackager
     Set pdiReader = New pdPackager
-    If g_ZLibEnabled Then pdiReader.init_ZLib g_PluginPath & "zlibwapi.dll"
+    pdiReader.init_ZLib "", True, g_ZLibEnabled
     
     'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
@@ -2086,7 +2092,7 @@ Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer A
     ' from the source file.
     Dim pdiReader As pdPackager
     Set pdiReader = New pdPackager
-    If g_ZLibEnabled Then pdiReader.init_ZLib g_PluginPath & "zlibwapi.dll"
+    pdiReader.init_ZLib "", True, g_ZLibEnabled
     
     'Load the file into the pdPackager instance.  It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
@@ -2206,7 +2212,7 @@ Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As p
     ' from the source file.
     Dim pdiReader As pdPackager
     Set pdiReader = New pdPackager
-    If g_ZLibEnabled Then pdiReader.init_ZLib g_PluginPath & "zlibwapi.dll"
+    pdiReader.init_ZLib "", True, g_ZLibEnabled
     
     'Load the file into the pdPackager instance.  pdPackager It will cache the file contents, so we only have to do this once.
     ' Note that this step will also validate the incoming file.
@@ -2756,13 +2762,13 @@ Public Sub LoadPlugins()
         FormMain.MnuImportSepBar1.Visible = g_ScanEnabled
     
     'Check for zLib compression capabilities
-    If isZLibAvailable Then
+    If Plugin_zLib_Interface.isZLibAvailable() Then
     
         'Check to see if zLib has been forcibly disabled.
         If g_UserPreferences.GetPref_Boolean("Plugins", "Force ZLib Disable", False) Then
             g_ZLibEnabled = False
         Else
-            g_ZLibEnabled = True
+            g_ZLibEnabled = Plugin_zLib_Interface.initializeZLib()
         End If
         
     Else
