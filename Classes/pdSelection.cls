@@ -51,7 +51,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Used when writing/reading selection data to/from a file
-Private Const SELECTION_IDENTIFIER As String * 4 = "PDsd"
+Private Const SELECTION_IDENTIFIER As Long = &H64734450     'PDsd
 Private Const SELECTION_FILE_VERSION_2014 As Long = &H1002
 Private Const SELECTION_FILE_VERSION_2014_2 As Long = &H1003
 
@@ -2433,8 +2433,12 @@ End Sub
 ' (NOTE: this function will not generate a selection mask or render the selection on-screen - it will only apply the stored values to
 '        the relevant variables!  The calling function must explicitly request a redraw if desired.)
 Public Function readSelectionFromFile(ByVal srcFilename As String, Optional ignoreLockStatus As Boolean = False) As Boolean
-
-    If Not FileExist(srcFilename) Then
+    
+    'All file interactions are handled via pdFSO
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If Not cFile.FileExist(srcFilename) Then
         Message "Requested selection file could not be located.  Selection load abandoned."
         readSelectionFromFile = False
         Exit Function
@@ -2443,68 +2447,88 @@ Public Function readSelectionFromFile(ByVal srcFilename As String, Optional igno
     'Note that our mask is not yet ready
     isMaskReady = False
     
-    Dim fileNum As Integer
-    fileNum = FreeFile
-    
     Dim dibLoadedSuccessfully As Boolean
     dibLoadedSuccessfully = False
     
-    Open srcFilename For Binary As #fileNum
+    'Open the file
+    Dim hFile As Long
+    If cFile.CreateFileHandle(srcFilename, hFile, True, False, OptimizeSequentialAccess) Then
     
-        'Check to make sure this is actually a PhotoDemon selection file
-        Dim selectionIDCheck As String * 4
-        Get #fileNum, 1, selectionIDCheck
+        'Make sure this is actually a PhotoDemon selection file
+        Dim selectionIDCheck As Long
+        cFile.ReadDataFromFile hFile, VarPtr(selectionIDCheck), 4&
+        
         If (selectionIDCheck <> SELECTION_IDENTIFIER) Then
-            Close #fileNum
-            Debug.Print "Blank or missing selection mask found.  Abandoning selection load for performance reasons..."
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  pdSelection.readSelectionFromFile was passed an invalid file: " & srcFilename
+            #End If
+            
+            cFile.CloseFileHandle hFile
             readSelectionFromFile = False
+            
             Exit Function
+            
         End If
         
         'Check to make sure this selection file verison is supported (not implemented right now, because there's only one selection version!)
         Dim selectionVersionCheck As Long
-        Get #fileNum, , selectionVersionCheck
+        cFile.ReadDataFromFile hFile, VarPtr(selectionVersionCheck), 4&
         
         'Size of the original image associated with this selection.  These values can be used to resize the selection mask as necessary if
         ' the selection is saved in raster format, and its original image was a different size from this one.
         Dim origWidth As Long, origHeight As Long
-        Get #fileNum, , origWidth
-        Get #fileNum, , origHeight
+        cFile.ReadDataFromFile hFile, VarPtr(origWidth), 4&
+        cFile.ReadDataFromFile hFile, VarPtr(origHeight), 4&
         
-        'Retrieve the selection parameters into a string
+        'Retrieve the selection parameters into a string.
+        ' (TODO: make this Unicode-compatible, but note that we have to change the file version number to support this.)
         Dim paramString As String, lenParamString As Long
-        Get #fileNum, , lenParamString
-        paramString = String(lenParamString, " ")
-        Get #fileNum, , paramString
+        cFile.ReadDataFromFile hFile, VarPtr(lenParamString), 4&
         
-        'Parse the parameter string into its individual components, and use those to initialize this selection
-        initFromParamString paramString
+        Dim tmpParamBuffer() As Byte
+        ReDim tmpParamBuffer(0 To lenParamString - 1) As Byte
+        cFile.ReadDataFromFile hFile, VarPtr(tmpParamBuffer(0)), lenParamString
+        paramString = StrConv(tmpParamBuffer, vbUnicode)
         
-        'Was the selection locked in?
-        Get #fileNum, , lockedIn
+        'Parse the parameter string into its individual components, and use those to initialize the rest of the selection
+        Me.initFromParamString paramString
         
-        'Is the selection transformable?
-        Get #fileNum, , isTransformable
+        'Was the selection locked in?  What about transformable?
+        cFile.ReadDataFromFile hFile, VarPtr(lockedIn), 2&
+        cFile.ReadDataFromFile hFile, VarPtr(isTransformable), 2&
         
-        'If this selection is of raster type (meaning it could not be described in vector format), a full copy of its selection mask
-        ' will be embedded in the file.  Load that data now.
+        'Raster selections (e.g. selections that can't be described with vectors) store a full copy of their selection mask
+        ' in the selection file.  Load it conditionally.
         If (sShape = sRaster) Then
-        
-            Dim tmpDIB As pdDIB
-            Set tmpDIB = New pdDIB
             
-            dibLoadedSuccessfully = tmpDIB.createFromFile("", True, fileNum)
+            'If the original containing image had the same dimensions as the current image (e.g. during Undo/Redo operations),
+            ' we can create the selection mask directly from the file data.  Otherwise, we have no choice but to perform a
+            ' resize so that the old mask matches the new dimensions.
+            If (origWidth = containingPDImage.Width) And (origHeight = containingPDImage.Height) Then
+                dibLoadedSuccessfully = selMask.createFromFile("", True, hFile)
+            Else
             
-            'Create a mask for this selection that is the size of the current image.  (Remember: the selection mask is always the full size
-            ' of the image.)  Then, copy the contents of the embedded selection mask into this selection mask, with resizing as necessary.
-            If dibLoadedSuccessfully Then selMask.createFromExistingDIB tmpDIB, containingPDImage.Width, containingPDImage.Height, True
+                Dim tmpDIB As pdDIB
+                Set tmpDIB = New pdDIB
+                
+                dibLoadedSuccessfully = tmpDIB.createFromFile("", True, hFile)
+                
+                'Create a mask for this selection that is the size of the current image.  (Remember: the selection mask is always the full size
+                ' of the image.)  Then, copy the contents of the embedded selection mask into this selection mask, with resizing as necessary.
+                If dibLoadedSuccessfully Then selMask.createFromExistingDIB tmpDIB, containingPDImage.Width, containingPDImage.Height, True
+            
+            End If
             
             maskHasBeenCreated = True
             isMaskReady = True
             
         End If
         
-    Close #fileNum
+        'We have everything we need from the file!
+        cFile.CloseFileHandle hFile
+        
+    End If
     
     'MsgBox "read from file: " & vbCrLf & srcFilename & vbCrLf & lockedIn & vbCrLf & paramString
     
@@ -2532,51 +2556,65 @@ End Function
 'Write all relevant information about this selection out to a file.
 Public Function writeSelectionToFile(ByVal dstFilename As String) As Boolean
 
+    'We use pdFSO for all file interactions, so Unicode paths are correctly supported
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+        
     'Delete any existing file (overwrite)
-    If FileExist(dstFilename) Then Kill dstFilename
-        
-    Dim fileNum As Integer
-    fileNum = FreeFile
+    If cFile.FileExist(dstFilename) Then cFile.KillFile dstFilename
     
-    'Open the file and dump out only the essential information
-    Open dstFilename For Binary As #fileNum
+    'Open the target file
+    Dim hFile As Long
+    If cFile.CreateFileHandle(dstFilename, hFile, True, True, OptimizeSequentialAccess) Then
     
-        'Identifiers
-        Put #fileNum, 1, SELECTION_IDENTIFIER
-        Put #fileNum, , SELECTION_FILE_VERSION_2014
+        'Write identifiers first
+        Dim tmpLong As Long
         
-        'Size of the attached image.  This is used to resize the selection mask as necessary if the selection is saved in raster format,
-        ' and its original image was a different size from this one.
-        Put #fileNum, , containingPDImage.Width
-        Put #fileNum, , containingPDImage.Height
+        tmpLong = SELECTION_IDENTIFIER
+        cFile.WriteDataToFile hFile, VarPtr(tmpLong), 4&
         
-        'Sometimes we write the selection's current state to file.  Other times (Undo/Redo, specifically) we write out the selection's
-        ' previous state.  Check for that and write the desired data as necessary.
+        tmpLong = SELECTION_FILE_VERSION_2014
+        cFile.WriteDataToFile hFile, VarPtr(tmpLong), 4&
+        
+        'Write the size of the attached DIB.  This is used to resize the selection mask (as necessary) if the selection is saved
+        ' in raster format, and its original image was a different size from this one.
+        cFile.WriteDataToFile hFile, VarPtr(containingPDImage.Width), 4&
+        cFile.WriteDataToFile hFile, VarPtr(containingPDImage.Height), 4&
+        
+        'Sometimes we write the selection's current state to file.  Other times (Undo/Redo, specifically) we write out the
+        ' selection's *previous* state.
         Dim writeSelectionState As Boolean, writeTransformable As Boolean
         Dim writeParamString As String
-        Dim writeDIB As pdDIB
-        Set writeDIB = New pdDIB
         
         writeSelectionState = lockedIn
         writeTransformable = isTransformable
         writeParamString = getSelectionParamString()
-        If (sShape = sRaster) Then writeDIB.createFromExistingDIB selMask
         
-        Put #fileNum, , CLng(Len(writeParamString))
-        Put #fileNum, , writeParamString
+        tmpLong = CLng(Len(writeParamString))
+        cFile.WriteDataToFile hFile, VarPtr(tmpLong), 4&
         
-        'Write out the selection's current stated (locked in or not), as well as its transformability.
-        Put #fileNum, , writeSelectionState
-        Put #fileNum, , writeTransformable
+        'For historic reasons, we write the param string as an ASCII string.  I would like to change this, but it requires a new
+        ' selection file version - TODO!
+        Dim tmpBytes() As Byte
+        tmpBytes = StrConv(writeParamString, vbFromUnicode)
+        cFile.WriteDataToFile hFile, VarPtr(tmpBytes(0)), tmpLong
         
-        'If this selection is not transformable, we must also embed the full selection mask.
-        If (sShape = sRaster) And maskHasBeenCreated Then writeDIB.writeToFile "", True, True, fileNum
+        'Write out the selection's current state (locked or not), as well as its transformability.  At load-time, we'll use these
+        ' to determine if we need to load raster data or if we can recreate the mask using just the param string.
+        cFile.WriteDataToFile hFile, VarPtr(writeSelectionState), 2&
+        cFile.WriteDataToFile hFile, VarPtr(writeTransformable), 2&
         
-    Close #fileNum
-    
-    'Debug.Print "wrote to file: " & vbCrLf & dstFilename & vbCrLf & paramString
-    
-    writeSelectionToFile = True
+        'If this selection is *not* transformable, we must also embed the full selection mask.
+        If (sShape = sRaster) And maskHasBeenCreated Then selMask.writeToFile "", True, True, hFile
+        
+        'All done!
+        cFile.CloseFileHandle hFile
+        
+        writeSelectionToFile = True
+            
+    Else
+        writeSelectionToFile = False
+    End If
     
 End Function
 

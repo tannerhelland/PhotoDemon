@@ -761,7 +761,7 @@ Public Function writePackageToFile(ByVal dstFilename As String, Optional ByVal s
     End If
     
     'Kill the destination file if it already exists
-    If m_File.FileExist(dstFilename) Then Kill dstFilename
+    If m_File.FileExist(dstFilename) Then m_File.KillFile dstFilename
     
     'Retrieve a writable handle
     Dim hFile As Long
@@ -1057,6 +1057,7 @@ Private Function loadLegacyPDPackage(ByRef srcFile As String) As Boolean
     'Open the file
     Dim fileNum As Integer
     fileNum = FreeFile
+    
     Open srcFile For Binary As #fileNum
     
         'Load the full file header.

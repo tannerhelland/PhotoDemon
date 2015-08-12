@@ -2882,27 +2882,11 @@ Private Sub Form_Load()
     '        so we ignore this request if the user was already notified of a program update.)
     If (Not isZLibAvailable) Or (Not isEZTwainAvailable) Or (Not isFreeImageAvailable) Or (Not isPngQuantAvailable) Or (Not isExifToolAvailable) Then
     
-        Message "Some core plugins could not be found. Preparing updater..."
+        'TODO: rework this to scan for missing plugins in the current application folder.  Some .zip clients - e.g. WinZip - may not
+        '      preserve folders during extraction.  PD should automatically detect and repair this situation.
         
-        'As a courtesy, if the user has asked us to stop bugging them about downloading plugins, obey their request
-        Dim promptToDownload As Boolean
-        promptToDownload = g_UserPreferences.GetPref_Boolean("Updates", "Update Plugins Independently", True)
-                
-        'Finally, if allowed, we can prompt the user to download the recommended plugin set
-        If promptToDownload Then
-            showPDDialog vbModal, FormPluginDownloader
+        'Message "Some core plugins could not be found. Preparing updater..."
             
-            'Since plugins may have been downloaded, update the interface to match any new features that may be available.
-            LoadPlugins
-            applyAllMenuIcons
-            resetMenuIcons
-            g_ImageFormats.generateInputFormats
-            g_ImageFormats.generateOutputFormats
-            
-        Else
-            Message "Ignoring plugin update request per user's saved preference"
-        End If
-    
     End If
         
     
@@ -3100,6 +3084,17 @@ Private Sub Form_Unload(Cancel As Integer)
             pdDebug.LogAction "FreeImage released"
         #End If
         
+    End If
+    
+    'Release zLib (if available)
+    If g_ZLibEnabled Then
+    
+        Plugin_zLib_Interface.releaseZLib
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "zLib released"
+        #End If
+    
     End If
     
     #If DEBUGMODE = 1 Then
