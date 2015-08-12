@@ -166,9 +166,8 @@ Public Property Get Size() As Long
     Size = mSize
 End Property
 
+'Erase current Buffer contents and reset all internals.
 Public Sub CloseBuf()
-    'Get rid of Buffer contents, prepare for new open and reuse.
-    
     Erase Buffer
     mOpen = False
     mPosition = 0
@@ -201,8 +200,8 @@ Public Function CurrentBytesPointer() As Long
 End Function
 
 'Open a new buffer.
-' Added by Tanner: allow the caller to specify a starting buffer size.  This can be helpful if we have some idea
-'  of the buffer's size in advance, as we avoid the need for costly ReDim Preserve statements.
+' Added by Tanner: allow the caller to specify a starting buffer size.  In many cases in PD, I have some notion
+'  of the buffer's size in advance, which spares the need for costly ReDim Preserve statements during buffer construction.
 Public Sub OpenBuf(Optional ByVal startingBufferSize As Long = 0)
 
     If mOpen Then
@@ -218,9 +217,11 @@ Public Sub OpenBuf(Optional ByVal startingBufferSize As Long = 0)
     
 End Sub
 
+'Return the requested number of bytes, or all bytes if -1 is specified as the length.  This function makes no changes
+' to the buffer itself, but it *does* move the current buffer position by [length] bytes.
+' NOTE: you obviously should not pass zero as the length.
 Public Function ReadBytes(Optional ByVal Length As Long = -1) As Byte()
-    'Return requested number of bytes (or less if less in buffer) or
-    'all bytes.
+    
     '
     'Requesting Length = 0 bytes (or any bytes when the buffer is empty)
     'raises an exception since we can't return an "empty" Byte array.
@@ -256,7 +257,46 @@ Public Function ReadBytes(Optional ByVal Length As Long = -1) As Byte()
     ReadBytes = Bytes
 End Function
 
-Public Function ScanForBytes(ByRef Target() As Byte) As Long
+'Added by Tanner: variant approach to ReadBytes(), above.  This function behaves identically to ReadBytes in that it
+' moves the buffer pointer according to the requested length.  HOWEVER, it only returns a pointer to the current position,
+' not a full copy of the buffer bytes.  This is ideal for subsequent API interactions like zLib, because we can simply
+' pass it that pointer, sparing us the need for costly (and pointless) MoveMemory calls.
+'
+'IMPORTANT NOTE: adding data to the buffer may force it to allocate new memory, invalidating all previously returned
+' pointers.  You must use the return of this function immediately, as its correctness is not guaranteed if any other
+' class functions are called.
+Public Function ReadBytes_PointerOnly(Optional ByVal Length As Long = -1) As Long
+    
+    'This If() block is roughly identical to ReadBytes, above
+    If mOpen Then
+        If Length < 0 Then
+            'A Length = -1 (or < 0) means read all.
+            If EOS Then
+                Err.Raise 5, TypeName(Me), "Nothing to read"
+            Else
+                Length = mSize - mPosition
+            End If
+        ElseIf Length > 0 Then
+            If mPosition + Length > mSize Then
+                'Handle requests extending past EOS.
+                Length = mSize - mPosition
+            End If
+        Else
+            Err.Raise 5, TypeName(Me), "Can't request 0 (no) bytes"
+        End If
+    Else
+        Err.Raise &H8004C300, TypeName(Me), "Not open"
+    End If
+    
+    'Return a pointer to the current buffer position
+    ReadBytes_PointerOnly = VarPtr(Buffer(mPosition))
+    
+    'Advance the buffer position identically to ReadBytes(), above
+    mPosition = mPosition + Length
+    
+End Function
+
+Public Function ScanForBytes(ByRef target() As Byte) As Long
     'Scan forward from Position, looking for Target value which can be
     'one or more bytes.
     '
@@ -264,8 +304,8 @@ Public Function ScanForBytes(ByRef Target() As Byte) As Long
     'returns -1.
     
     If mOpen Then
-        ScanForBytes = InStrB(mPosition + 1, Buffer, Target) - 1
-        If ScanForBytes > mSize - (UBound(Target) - LBound(Target) + 1) Then ScanForBytes = -1
+        ScanForBytes = InStrB(mPosition + 1, Buffer, target) - 1
+        If ScanForBytes > mSize - (UBound(target) - LBound(target) + 1) Then ScanForBytes = -1
     Else
         Err.Raise &H8004C300, TypeName(Me), "Not open"
     End If
