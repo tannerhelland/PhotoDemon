@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.12</langversion>
+<langversion>6.6.13</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -3659,16 +3659,6 @@ Pembaruan otomatis pengolahan di latar belakang. Anda akan menerima pemberitahua
 </phrase>
 
 <phrase>
-<original>Some core plugins could not be found. Preparing updater</original>
-<translation>Beberapa plugin inti tidak dapat ditemukan. mempersiapkan pembaruan</translation>
-</phrase>
-
-<phrase>
-<original>Ignoring plugin update request per user's saved preference</original>
-<translation>Mengabaikan permintaan update Plugin per preferensi pengguna disimpan</translation>
-</phrase>
-
-<phrase>
 <original>Shadow and highlight</original>
 <translation></translation>
 </phrase>
@@ -4036,7 +4026,7 @@ Catatan: beberapa teks Program kecil tidak bisa hidup-update. Teks tersebut akan
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 560 phrases. 168 were duplicates of existing phrases, so only 392 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 558 phrases. 168 were duplicates of existing phrases, so only 390 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -4379,32 +4369,7 @@ Untuk mengaktifkan dukungan scanner, silahkan salin file EZTW32.dll (tersedia un
 
 <!-- BEGIN text for VBP_CompressionUtility.bas -->
 
-<phrase>
-<original>An error (#%1) has occurred.  Compression halted.</original>
-<translation>Satu Kesalahan (# %1) berlaku. Kompres dihentikan.</translation>
-</phrase>
-
-<phrase>
-<original>zLib error</original>
-<translation>Kesalahan zlib</translation>
-</phrase>
-
-<phrase>
-<original>File compressed from %1 bytes to %2 bytes.  Ratio: %3 %</original>
-<translation>Berkas kompres dari %1 bytes ke %2 bait. resio: %3%</translation>
-</phrase>
-
-<phrase>
-<original>Compression results</original>
-<translation>Hasil Kompres</translation>
-</phrase>
-
-<phrase>
-<original>File decompressed from %1 bytes to %2 bytes.</original>
-<translation>Berkas didekompresi dari %1 bytes ke %2 bait.</translation>
-</phrase>
-
-<!-- VBP_CompressionUtility.bas contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- VBP_CompressionUtility.bas contains 0 phrases. -->
 
 <!-- END text for VBP_CompressionUtility.bas-->
 
@@ -6158,265 +6123,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 
 <!-- END text for VBP_FormInternetImport.frm-->
 
-<!-- BEGIN text for VBP_FormPluginDownloader.frm (FormPluginDownloader) -->
-
-<phrase>
-<original>PhotoDemon Plugin Downloader</original>
-<translation>PhotoDemon Plugin Downloader</translation>
-</phrase>
-
-<phrase>
-<original>Yes. Download these files to the plugins folder.</original>
-<translation>Ya. Muat turun fail-fail ini ke folder plugin ini.</translation>
-</phrase>
-
-<phrase>
-<original>Download All Plugins</original>
-<translation>Muat Turun Semua Plugins</translation>
-</phrase>
-
-<phrase>
-<original>Not right now, but please remind me later.</original>
-<translation>Bukan sekarang, tetapi sila mengingatkan saya kemudian.</translation>
-</phrase>
-
-<phrase>
-<original>Postpone Plugin Download</original>
-<translation>Menangguhkan Plugin turun</translation>
-</phrase>
-
-<phrase>
-<original>Not now, not ever. Do not prompt me again.</original>
-<translation>Tidak sekarang, tidak pernah. Jangan meminta saya lagi.</translation>
-</phrase>
-
-<phrase>
-<original>Never Download Plugins</original>
-<translation>Jangan sekali-kali turun Plugins</translation>
-</phrase>
-
-<phrase>
-<original>ExifTool 9.69</original>
-<translation>ExifTool 9.69</translation>
-</phrase>
-
-<phrase>
-<original>free, open-source image metadata library (camera settings, GPS coordinates, etc)</original>
-<translation>percuma, sumber terbuka metadata imej perpustakaan (tetapan kamera, koordinat GPS, dan lain-lain)</translation>
-</phrase>
-
-<phrase>
-<original>Explanation appears here at run-time</original>
-<translation>Huraian muncul di sini pada jangka masa</translation>
-</phrase>
-
-<phrase>
-<original>free, open-source library for optimizing portable network graphics (PNG files)</original>
-<translation>percuma, perpustakaan sumber terbuka untuk mengoptimumkan rangkaian mudah alih grafik (fail PNG)</translation>
-</phrase>
-
-<phrase>
-<original>free, open-source interface for importing images from scanners and digital cameras</original>
-<translation>percuma, antara muka sumber terbuka untuk mengimport imej dari pengimbas dan kamera digital</translation>
-</phrase>
-
-<phrase>
-<original>free, open-source compression library; required to decompress all other plugins</original>
-<translation>percuma, perpustakaan pemampatan sumber terbuka; diperlukan untuk nyahmampat semua plugin lain</translation>
-</phrase>
-
-<phrase>
-<original>free, open-source library for importing and exporting a variety of image formats</original>
-<translation>percuma, perpustakaan sumber terbuka untuk mengimport dan mengeksport pelbagai format imej</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage 3.16.1</original>
-<translation>FreeImage 3.16.1</translation>
-</phrase>
-
-<phrase>
-<original>Would you like PhotoDemon to download these plugins for you?</original>
-<translation>Adakah anda ingin PhotoDemon turun plugin ini untuk anda?</translation>
-</phrase>
-
-<phrase>
-<original>total download size of all plugins</original>
-<translation>Jumlah saiz muat semua plugin</translation>
-</phrase>
-
-<phrase>
-<original>Core Plugins Missing - Download Recommended</original>
-<translation>Plugin Teras Hilang - Muat Disyorkan</translation>
-</phrase>
-
-<phrase>
-<original>Downloading file %1 of %2 (%3 of %4 bytes received)</original>
-<translation>Memuat turun fail %1 daripada %2 ( %3 %4 bait yang diterima)</translation>
-</phrase>
-
-<phrase>
-<original>download progress</original>
-<translation>turun kemajuan</translation>
-</phrase>
-
-<phrase>
-<original>Plugins could not be downloaded at this time.  Carry on!</original>
-<translation>Plugins tidak boleh dimuat turun pada masa ini. Menjalankan!</translation>
-</phrase>
-
-<phrase>
-<original>Automatic plugin download canceled.  Plugin-related features disabled for this session.</original>
-<translation>Automatik plugin turun dibatalkan. Ciri Plugin berkaitan dilumpuhkan untuk sesi ini.</translation>
-</phrase>
-
-<phrase>
-<original>Automatic plugin download canceled.  Plugin-related features permanently disabled.</original>
-<translation>Automatik plugin turun dibatalkan. Ciri Plugin berkaitan secara kekal dimatikan.</translation>
-</phrase>
-
-<phrase>
-<original>Checking for Internet connection</original>
-<translation>Memeriksa sambungan Internet</translation>
-</phrase>
-
-<phrase>
-<original>Thank you for using PhotoDemon.  Unfortunately, one or more core plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated.
-
-To improve your user experience, please connect to the Internet, then allow the program to automatically download these free, open-source plugin(s)</original>
-<translation>Terima kasih kerana menggunakan PhotoDemon. Malangnya, satu atau lebih plugin teras tidak boleh ditempat. PhotoDemon tetap berfungsi tanpa plugin ini, tetapi beberapa ciri-ciri akan deactivated.
-
-To meningkatkan pengalaman pengguna anda, sila sambung kepada Internet, kemudian membenarkan program untuk memuat turun secara automatik ini percuma, sumber terbuka plugin (s)</translation>
-</phrase>
-
-<phrase>
-<original>Thank you for using PhotoDemon.  Unfortunately, one or more core plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated.
-
-To improve your user experience, please allow the program to automatically download these free, open-source plugin(s)</original>
-<translation>Terima kasih kerana menggunakan PhotoDemon. Malangnya, satu atau lebih plugin teras tidak boleh ditempat. PhotoDemon tetap berfungsi tanpa plugin ini, tetapi beberapa ciri-ciri akan deactivated.
-
-To meningkatkan pengalaman pengguna anda, sila membenarkan program untuk memuat turun secara automatik ini percuma, sumber terbuka plugin (s)...</translation>
-</phrase>
-
-<phrase>
-<original>Missing plugins detected.  Generating download information (this feature can be disabled from the Tools -> Options menu)</original>
-<translation>Hilang plugin dikesan. Menjana muat turun maklumat (ciri ini boleh dimatikan dari Tools -> Menu Pilihan)</translation>
-</phrase>
-
-<phrase>
-<original>This is the recommended selection.  PhotoDemon will automatically download the selected plugins for you.  These plugins will be saved in the program's /Data/Plugins subdirectory.</original>
-<translation>Ini adalah pilihan yang disyorkan. PhotoDemon secara automatik akan memuat turun plugin dipilih untuk anda. Ini plugin akan disimpan di dalam program/??Data/Plugins subdirektori.</translation>
-</phrase>
-
-<phrase>
-<original>This option is not recommended.  PhotoDemon will still run without plugins, but many features and tools will be temporarily disabled until these plugins are available.</original>
-<translation>Pilihan ini tidak digalakkan. PhotoDemon masih akan berjalan tanpa plugin, tetapi ciri-ciri alat dan banyak akan dilumpuhkan buat sementara waktu sehingga plugin ini boleh didapati.</translation>
-</phrase>
-
-<phrase>
-<original>This option is not recommended.  PhotoDemon will still run without plugins, but many features and tools will be permanently disabled.</original>
-<translation>Pilihan ini tidak digalakkan. PhotoDemon masih akan berjalan tanpa plugin, tetapi ciri-ciri alat dan banyak akan dilumpuhkan secara kekal.</translation>
-</phrase>
-
-<phrase>
-<original>Ready to download required plugins. Awaiting user permission</original>
-<translation>Bersedia untuk memuat turun plugin diperlukan. Menunggu kebenaran pengguna</translation>
-</phrase>
-
-<phrase>
-<original>Checking again for Internet connection</original>
-<translation>Semakan lagi untuk sambungan Internet</translation>
-</phrase>
-
-<phrase>
-<original>No Internet connection found.</original>
-<translation>Tiada sambungan Internet dijumpai.</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, %1 could not connect to the Internet.  Please connect to the Internet and try again.</original>
-<translation>Malangnya, %1 tidak boleh menyambung ke Internet. Sila menyambung ke Internet dan cuba lagi.</translation>
-</phrase>
-
-<phrase>
-<original>No Internet Connection</original>
-<translation>Tiada Sambungan Internet</translation>
-</phrase>
-
-<phrase>
-<original>Checking for plugin directory</original>
-<translation>Memeriksa direktori plugin</translation>
-</phrase>
-
-<phrase>
-<original>Creating plugin directory</original>
-<translation>Mewujudkan direktori plugin</translation>
-</phrase>
-
-<phrase>
-<original>Downloading core plugin files</original>
-<translation>Memuat turun fail plugin teras</translation>
-</phrase>
-
-<phrase>
-<original>Due to an unforeseen error, %1 is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)</original>
-<translation>Oleh kerana satu kesilapan yang tidak dijangka, %1 menangguhkan plugin memuat turun buat masa ini. Lain kali anda menjalankan aplikasi ini, ia akan cuba muat turun sekali lagi. (Memohon maaf atas sebarang kesulitan.)</translation>
-</phrase>
-
-<phrase>
-<original>Unspecified Download Error</original>
-<translation>Tidak ditentukan turun Ralat</translation>
-</phrase>
-
-<phrase>
-<original>All downloads successful.  This screen will automatically close in three seconds.</original>
-<translation>Semua muat turun berjaya. Skrin ini secara automatik akan menutup dalam tiga saat.</translation>
-</phrase>
-
-<phrase>
-<original>Plugins downloaded successfully.  To complete plugin setup, please restart the program.</original>
-<translation>Plugins dimuat turun. Untuk melengkapkan persediaan plugin, sila memulakan semula program.</translation>
-</phrase>
-
-<phrase>
-<original>Verifying plugin URL</original>
-<translation>Mengesahkan URL plugin</translation>
-</phrase>
-
-<phrase>
-<original>%1 could not locate the plugin server.  Please double-check your Internet connection.  If the problem persists, please try again at another time.</original>
-<translation> %1 tidak dapat mencari pelayan plugin. Sila semak sambungan internet anda. Jika masalah berterusan, sila cuba lagi di masa yang lain.</translation>
-</phrase>
-
-<phrase>
-<original>Plugin Server Not Responding</original>
-<translation>Server Plugin Tidak Menjawab</translation>
-</phrase>
-
-<phrase>
-<original>Plugin download postponed.</original>
-<translation>Muat turun plugin ditangguhkan.</translation>
-</phrase>
-
-<phrase>
-<original>Downloading file %1 of %2</original>
-<translation>Memuat turun fail %1 daripada %2</translation>
-</phrase>
-
-<phrase>
-<original>%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, please try the download again at a later time.</original>
-<translation> %1 kehilangan akses kepada Internet. Sila semak sambungan internet anda. Jika masalah berterusan, sila cuba muat turun sekali lagi pada masa lain.</translation>
-</phrase>
-
-<phrase>
-<original>total download size</original>
-<translation>Jumlah saiz muat turun</translation>
-</phrase>
-
-<!-- VBP_FormPluginDownloader.frm contains 70 phrases. 21 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
-
-<!-- END text for VBP_FormPluginDownloader.frm-->
-
 <!-- BEGIN text for VBP_OutsideDevelopment_SetIcon.bas -->
 
 <!-- VBP_OutsideDevelopment_SetIcon.bas contains 0 phrases. -->
@@ -6583,16 +6289,11 @@ To meningkatkan pengalaman pengguna anda, sila membenarkan program untuk memuat 
 </phrase>
 
 <phrase>
-<original>Compression requested, but zLib plugin is disabled or missing.  Data will not be compressed.</original>
-<translation>Mampatan yang diminta, tetapi zlib plugin adalah orang kurang upaya atau hilang. Data tidak akan dimampatkan.</translation>
-</phrase>
-
-<phrase>
 <original>Compression failed (unspecified zLib plugin error).  Uncompressed data written instead.</original>
 <translation>Mampatan gagal (tidak ditentukan zlib plugin ralat). Data tidak mampat bertulis sebaliknya.</translation>
 </phrase>
 
-<!-- pdDIB.cls contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- pdDIB.cls contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <!-- END text for pdDIB.cls-->
 
@@ -8976,16 +8677,6 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 </phrase>
 
 <phrase>
-<original>This is not a valid list of images. Please try a different file.</original>
-<translation>Ini bukan senarai yang sah imej. Sila cuba fail yang berbeza.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid list file</original>
-<translation>Fail senarai tidak sah</translation>
-</phrase>
-
-<phrase>
 <original>You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.</original>
 <translation>Anda telah membuat senarai imej untuk diproses. Senarai imej dalam fail ini akan dilampirkan ke bahagian bawah senarai semasa anda.</translation>
 </phrase>
@@ -8993,6 +8684,16 @@ Would kemudian anda suka untuk menyimpan senarai kumpulan anda sebelum keluar?</
 <phrase>
 <original>Batch process notification</original>
 <translation>Pemberitahuan proses batch</translation>
+</phrase>
+
+<phrase>
+<original>This is not a valid list of images. Please try a different file.</original>
+<translation>Ini bukan senarai yang sah imej. Sila cuba fail yang berbeza.</translation>
+</phrase>
+
+<phrase>
+<original>Invalid list file</original>
+<translation>Fail senarai tidak sah</translation>
 </phrase>
 
 <phrase>
@@ -9299,7 +9000,7 @@ By lalai, ketelusan akan berpecah ke tengah-tengah, atau anda boleh menentukan n
 <translation>diproses sebelum pembatalan. Last imej diproses adalah " %1".</translation>
 </phrase>
 
-<!-- VBP_FormBatchWizard.frm contains 260 phrases. 138 were duplicates of existing phrases, so only 122 new phrases were written to file. -->
+<!-- VBP_FormBatchWizard.frm contains 264 phrases. 142 were duplicates of existing phrases, so only 122 new phrases were written to file. -->
 
 <!-- END text for VBP_FormBatchWizard.frm-->
 
@@ -14415,10 +14116,10 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2497</phrasecount>
+<phrasecount>2440</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4288 phrases. -->
-<!-- 1791 are duplicates, so only 2497 unique phrases have been written to file. -->
-<!-- These 2497 phrases contain approximately 13884 total words. -->
+<!-- As of this build, PhotoDemon contains 4211 phrases. -->
+<!-- 1771 are duplicates, so only 2440 unique phrases have been written to file. -->
+<!-- These 2440 phrases contain approximately 13315 total words. -->
 
 </pdData>

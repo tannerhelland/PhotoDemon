@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.70</langversion>
+<langversion>6.7.71</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -3654,16 +3654,6 @@ The uppdatering automatiskt bearbetning i bakgrunden. Du kommer att få en ny an
 </phrase>
 
 <phrase>
-<original>Some core plugins could not be found. Preparing updater</original>
-<translation>Vissa kärn plugins kunde inte hittas. Förbereda uppdaterare</translation>
-</phrase>
-
-<phrase>
-<original>Ignoring plugin update request per user's saved preference</original>
-<translation>Ignorera plugin uppdatering begäran per användarens sparade preferens</translation>
-</phrase>
-
-<phrase>
 <original>Shadow and highlight</original>
 <translation></translation>
 </phrase>
@@ -4031,7 +4021,7 @@ Note förändrats framgångsrikt: några mindre program kan inte vara levande up
 <translation>Ta bort alfakanal</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 560 phrases. 168 were duplicates of existing phrases, so only 392 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 558 phrases. 168 were duplicates of existing phrases, so only 390 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -4374,32 +4364,7 @@ To aktivera skannerstödet, vänligen kopiera EZTW32.dll fil (finns att ladda ne
 
 <!-- BEGIN text for VBP_CompressionUtility.bas -->
 
-<phrase>
-<original>An error (#%1) has occurred.  Compression halted.</original>
-<translation>Ett fel (# %1) har inträffat. Kompression stoppats.</translation>
-</phrase>
-
-<phrase>
-<original>zLib error</original>
-<translation>zLIB fel</translation>
-</phrase>
-
-<phrase>
-<original>File compressed from %1 bytes to %2 bytes.  Ratio: %3 %</original>
-<translation>Fil komprimerad från %1 byte till %2 byte. Förhållande: %3%</translation>
-</phrase>
-
-<phrase>
-<original>Compression results</original>
-<translation>Kompressions resultat</translation>
-</phrase>
-
-<phrase>
-<original>File decompressed from %1 bytes to %2 bytes.</original>
-<translation>Fil expand från %1 byte till %2 byte.</translation>
-</phrase>
-
-<!-- VBP_CompressionUtility.bas contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- VBP_CompressionUtility.bas contains 0 phrases. -->
 
 <!-- END text for VBP_CompressionUtility.bas-->
 
@@ -6153,265 +6118,6 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 
 <!-- END text for VBP_FormInternetImport.frm-->
 
-<!-- BEGIN text for VBP_FormPluginDownloader.frm (FormPluginDownloader) -->
-
-<phrase>
-<original>PhotoDemon Plugin Downloader</original>
-<translation>PhotoDemon Plugin Loader</translation>
-</phrase>
-
-<phrase>
-<original>Yes. Download these files to the plugins folder.</original>
-<translation>Ja. Ladda ner dessa filer till mappen plugins.</translation>
-</phrase>
-
-<phrase>
-<original>Download All Plugins</original>
-<translation>Ladda ner alla plugins</translation>
-</phrase>
-
-<phrase>
-<original>Not right now, but please remind me later.</original>
-<translation>Inte just nu, men påminn mig senare.</translation>
-</phrase>
-
-<phrase>
-<original>Postpone Plugin Download</original>
-<translation>Skjut upp Plugin Download</translation>
-</phrase>
-
-<phrase>
-<original>Not now, not ever. Do not prompt me again.</original>
-<translation>Inte nu, inte någonsin. Fråga inte mig igen.</translation>
-</phrase>
-
-<phrase>
-<original>Never Download Plugins</original>
-<translation>Ladda aldrig Plugins</translation>
-</phrase>
-
-<phrase>
-<original>ExifTool 9.69</original>
-<translation>ExifTool 9,69</translation>
-</phrase>
-
-<phrase>
-<original>free, open-source image metadata library (camera settings, GPS coordinates, etc)</original>
-<translation>fri, öppen källkod bildens metadata bibliotek (kamerainställningar, GPS-koordinater, etc)</translation>
-</phrase>
-
-<phrase>
-<original>Explanation appears here at run-time</original>
-<translation>Förklaring visas här på run-time</translation>
-</phrase>
-
-<phrase>
-<original>free, open-source library for optimizing portable network graphics (PNG files)</original>
-<translation>fri, öppen källkod bibliotek för att optimera Portable Network Graphics (PNG-filer)</translation>
-</phrase>
-
-<phrase>
-<original>free, open-source interface for importing images from scanners and digital cameras</original>
-<translation>fri, öppen källkod-gränssnitt för att importera bilder från skannrar och digitalkameror</translation>
-</phrase>
-
-<phrase>
-<original>free, open-source compression library; required to decompress all other plugins</original>
-<translation>fri, öppen källkod komprimeringsbibliotek; erfordras för att dekomprimera alla andra insticksmoduler</translation>
-</phrase>
-
-<phrase>
-<original>free, open-source library for importing and exporting a variety of image formats</original>
-<translation>fri, öppen källkod bibliotek för att importera och exportera en mängd olika bildformat</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage 3.16.1</original>
-<translation>FreeImage 3.16.1</translation>
-</phrase>
-
-<phrase>
-<original>Would you like PhotoDemon to download these plugins for you?</original>
-<translation>Vill du PhotoDemon att ladda ner dessa plugins för dig?</translation>
-</phrase>
-
-<phrase>
-<original>total download size of all plugins</original>
-<translation>total nedladdning storleken på alla plugins</translation>
-</phrase>
-
-<phrase>
-<original>Core Plugins Missing - Download Recommended</original>
-<translation>Kärn Plugins saknas - Download Rekommenderat</translation>
-</phrase>
-
-<phrase>
-<original>Downloading file %1 of %2 (%3 of %4 bytes received)</original>
-<translation>Nedladdning av fil %1 av %2 ( %3 på %4 byte emot)</translation>
-</phrase>
-
-<phrase>
-<original>download progress</original>
-<translation>hämta framsteg</translation>
-</phrase>
-
-<phrase>
-<original>Plugins could not be downloaded at this time.  Carry on!</original>
-<translation>Insticksprogram kan inte laddas ned vid denna tidpunkt. Fortsätt!</translation>
-</phrase>
-
-<phrase>
-<original>Automatic plugin download canceled.  Plugin-related features disabled for this session.</original>
-<translation>Automatisk plugin nedladdning avbryts. Plugin-relaterade funktioner inaktiverats för den här sessionen.</translation>
-</phrase>
-
-<phrase>
-<original>Automatic plugin download canceled.  Plugin-related features permanently disabled.</original>
-<translation>Automatisk plugin nedladdning avbryts. Plugin-relaterade funktioner permanent handikappad.</translation>
-</phrase>
-
-<phrase>
-<original>Checking for Internet connection</original>
-<translation>Kontroll av Internet-anslutning</translation>
-</phrase>
-
-<phrase>
-<original>Thank you for using PhotoDemon.  Unfortunately, one or more core plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated.
-
-To improve your user experience, please connect to the Internet, then allow the program to automatically download these free, open-source plugin(s)</original>
-<translation>Tack för att du använder PhotoDemon. Tyvärr kunde en eller flera kärninsticksmoduler inte lokaliseras. PhotoDemon kommer fortfarande att fungera utan dessa plugins, men ett antal funktioner blir deactivated.
-
-To höja prestandan, vänligen ansluta till Internet och sedan låta programmet automatiskt hämta dessa gratis, open-source plugin (s)</translation>
-</phrase>
-
-<phrase>
-<original>Thank you for using PhotoDemon.  Unfortunately, one or more core plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated.
-
-To improve your user experience, please allow the program to automatically download these free, open-source plugin(s)</original>
-<translation>Tack för att du använder PhotoDemon. Tyvärr kunde en eller flera kärninsticksmoduler inte lokaliseras. PhotoDemon kommer fortfarande att fungera utan dessa plugins, men ett antal funktioner blir deactivated.
-
-To höja prestandan, låt programmet för att automatiskt ladda ner dessa gratis, open-source plugin (s)</translation>
-</phrase>
-
-<phrase>
-<original>Missing plugins detected.  Generating download information (this feature can be disabled from the Tools -> Options menu)</original>
-<translation>Saknade plugins upptäckts. Generera hämta informationen (kan denna funktion inaktiveras från Verktyg -> Alternativ)</translation>
-</phrase>
-
-<phrase>
-<original>This is the recommended selection.  PhotoDemon will automatically download the selected plugins for you.  These plugins will be saved in the program's /Data/Plugins subdirectory.</original>
-<translation>Detta är det rekommenderade valet. PhotoDemon kommer automatiskt hämta de valda plugins för dig. Dessa plugins kommer att sparas i programmets/Data/Plugins katalogen.</translation>
-</phrase>
-
-<phrase>
-<original>This option is not recommended.  PhotoDemon will still run without plugins, but many features and tools will be temporarily disabled until these plugins are available.</original>
-<translation>Det här alternativet är inte att rekommendera. PhotoDemon kommer fortfarande köra utan plugins, men många funktioner och verktyg kommer att inaktiveras tillfälligt tills dessa plugins finns tillgängliga.</translation>
-</phrase>
-
-<phrase>
-<original>This option is not recommended.  PhotoDemon will still run without plugins, but many features and tools will be permanently disabled.</original>
-<translation>Det här alternativet är inte att rekommendera. PhotoDemon kommer fortfarande köra utan plugins, men många funktioner och verktyg spärras permanent.</translation>
-</phrase>
-
-<phrase>
-<original>Ready to download required plugins. Awaiting user permission</original>
-<translation>Redo att hämta nödvändiga plugins. Väntar på användarbehörighet</translation>
-</phrase>
-
-<phrase>
-<original>Checking again for Internet connection</original>
-<translation>Kontrollera igen för Internet-anslutning</translation>
-</phrase>
-
-<phrase>
-<original>No Internet connection found.</original>
-<translation>Ingen Internet-förbindelse hittades.</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, %1 could not connect to the Internet.  Please connect to the Internet and try again.</original>
-<translation>Tyvärr, %1 kunde inte ansluta till Internet. Anslut till Internet och försök igen.</translation>
-</phrase>
-
-<phrase>
-<original>No Internet Connection</original>
-<translation>Ingen Internet-anslutning</translation>
-</phrase>
-
-<phrase>
-<original>Checking for plugin directory</original>
-<translation>Kontroll av instickskatalog</translation>
-</phrase>
-
-<phrase>
-<original>Creating plugin directory</original>
-<translation>Skapa plugin katalog</translation>
-</phrase>
-
-<phrase>
-<original>Downloading core plugin files</original>
-<translation>Nedladdning av kärn plugin filer</translation>
-</phrase>
-
-<phrase>
-<original>Due to an unforeseen error, %1 is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)</original>
-<translation>På grund av ett oförutsett fel, är %1 skjuta plugin nedladdning för tillfället. Nästa gång du kör det här programmet, kommer det att försöka ladda ner igen. (Ber om ursäkt för besväret.)</translation>
-</phrase>
-
-<phrase>
-<original>Unspecified Download Error</original>
-<translation>Unspecified Download Error</translation>
-</phrase>
-
-<phrase>
-<original>All downloads successful.  This screen will automatically close in three seconds.</original>
-<translation>Alla nedladdningar framgångsrika. Den här skärmen kommer automatiskt att stängas i tre sekunder.</translation>
-</phrase>
-
-<phrase>
-<original>Plugins downloaded successfully.  To complete plugin setup, please restart the program.</original>
-<translation>Plugins hämtades. För att slutföra plugin installation, starta om programmet.</translation>
-</phrase>
-
-<phrase>
-<original>Verifying plugin URL</original>
-<translation>Verifiera plugin URL</translation>
-</phrase>
-
-<phrase>
-<original>%1 could not locate the plugin server.  Please double-check your Internet connection.  If the problem persists, please try again at another time.</original>
-<translation> %1 kunde inte lokalisera insticks servern. Vänligen dubbelkolla din Internetanslutning. Om problemet kvarstår, försök igen en annan gång.</translation>
-</phrase>
-
-<phrase>
-<original>Plugin Server Not Responding</original>
-<translation>Plugin Server svarar inte</translation>
-</phrase>
-
-<phrase>
-<original>Plugin download postponed.</original>
-<translation>Plugin nedladdning skjutas upp.</translation>
-</phrase>
-
-<phrase>
-<original>Downloading file %1 of %2</original>
-<translation>Nedladdning av fil %1 av %2</translation>
-</phrase>
-
-<phrase>
-<original>%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, please try the download again at a later time.</original>
-<translation> %1 förlorat tillgång till Internet. Vänligen dubbelkolla din Internetanslutning. Om problemet kvarstår, försök nedladdningen igen vid en senare tidpunkt.</translation>
-</phrase>
-
-<phrase>
-<original>total download size</original>
-<translation>total nedladdning storlek</translation>
-</phrase>
-
-<!-- VBP_FormPluginDownloader.frm contains 70 phrases. 21 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
-
-<!-- END text for VBP_FormPluginDownloader.frm-->
-
 <!-- BEGIN text for VBP_OutsideDevelopment_SetIcon.bas -->
 
 <!-- VBP_OutsideDevelopment_SetIcon.bas contains 0 phrases. -->
@@ -6578,16 +6284,11 @@ To höja prestandan, låt programmet för att automatiskt ladda ner dessa gratis
 </phrase>
 
 <phrase>
-<original>Compression requested, but zLib plugin is disabled or missing.  Data will not be compressed.</original>
-<translation>Komprimering begärts, men Zlib plugin är inaktiverad eller saknas. Data kommer inte att komprimeras.</translation>
-</phrase>
-
-<phrase>
 <original>Compression failed (unspecified zLib plugin error).  Uncompressed data written instead.</original>
 <translation>Kompression misslyckades (ospecificerat Zlib plugin fel). Okomprimerad data skriven i stället.</translation>
 </phrase>
 
-<!-- pdDIB.cls contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- pdDIB.cls contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <!-- END text for pdDIB.cls-->
 
@@ -8971,16 +8672,6 @@ Would du spara din satslistan innan du avslutar?</translation>
 </phrase>
 
 <phrase>
-<original>This is not a valid list of images. Please try a different file.</original>
-<translation>Detta är inte en giltig lista med bilder. Försök med en annan fil.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid list file</original>
-<translation>Ogiltig fillistan</translation>
-</phrase>
-
-<phrase>
 <original>You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.</original>
 <translation>Du har redan skapat en lista med bilder för bearbetning. Listan med bilder inuti denna fil kommer att läggas till botten av din nuvarande lista.</translation>
 </phrase>
@@ -8988,6 +8679,16 @@ Would du spara din satslistan innan du avslutar?</translation>
 <phrase>
 <original>Batch process notification</original>
 <translation>Satsprocess anmälan</translation>
+</phrase>
+
+<phrase>
+<original>This is not a valid list of images. Please try a different file.</original>
+<translation>Detta är inte en giltig lista med bilder. Försök med en annan fil.</translation>
+</phrase>
+
+<phrase>
+<original>Invalid list file</original>
+<translation>Ogiltig fillistan</translation>
 </phrase>
 
 <phrase>
@@ -9294,7 +8995,7 @@ By standard kommer öppenheten att delas i mitten, eller så kan du ange en anpa
 <translation>bearbetats före inställandet. Senast bearbetade bilden var " %1".</translation>
 </phrase>
 
-<!-- VBP_FormBatchWizard.frm contains 260 phrases. 138 were duplicates of existing phrases, so only 122 new phrases were written to file. -->
+<!-- VBP_FormBatchWizard.frm contains 264 phrases. 142 were duplicates of existing phrases, so only 122 new phrases were written to file. -->
 
 <!-- END text for VBP_FormBatchWizard.frm-->
 
@@ -14410,10 +14111,10 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2497</phrasecount>
+<phrasecount>2440</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4288 phrases. -->
-<!-- 1791 are duplicates, so only 2497 unique phrases have been written to file. -->
-<!-- These 2497 phrases contain approximately 13884 total words. -->
+<!-- As of this build, PhotoDemon contains 4211 phrases. -->
+<!-- 1771 are duplicates, so only 2440 unique phrases have been written to file. -->
+<!-- These 2440 phrases contain approximately 13315 total words. -->
 
 </pdData>

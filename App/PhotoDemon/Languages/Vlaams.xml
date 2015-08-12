@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.70</langversion>
+<langversion>6.7.71</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -3653,16 +3653,6 @@ De update wordt automatisch verwerkt op de achtergrond. U krijgt een nieuwe mede
 </phrase>
 
 <phrase>
-<original>Some core plugins could not be found. Preparing updater</original>
-<translation>Sommige kerninsteekmodules kunnen niet worden gevonden. Voorbereiden updater</translation>
-</phrase>
-
-<phrase>
-<original>Ignoring plugin update request per user's saved preference</original>
-<translation>Negeren insteekmodule updateaanvraag per gebruikers bewaarde voorkeur </translation>
-</phrase>
-
-<phrase>
 <original>Shadow and highlight</original>
 <translation></translation>
 </phrase>
@@ -4030,7 +4020,7 @@ Nota: enkele kleine programmateksten kunnen niet live worden  bijgewerkt. Een de
 <translation>Verwijder alfakanaal</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 560 phrases. 168 were duplicates of existing phrases, so only 392 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 558 phrases. 168 were duplicates of existing phrases, so only 390 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -4373,32 +4363,7 @@ Om de scannerondersteuning in te schakelen, kopieer je het EZTW32.dll bestand (b
 
 <!-- BEGIN text for VBP_CompressionUtility.bas -->
 
-<phrase>
-<original>An error (#%1) has occurred.  Compression halted.</original>
-<translation>Er heeft een fout (#%1) plaatsgevonden. Compressie gestopt.</translation>
-</phrase>
-
-<phrase>
-<original>zLib error</original>
-<translation>zLib fout</translation>
-</phrase>
-
-<phrase>
-<original>File compressed from %1 bytes to %2 bytes.  Ratio: %3 %</original>
-<translation>Bestand gecomprimeerd van %1 bytes naar %2 bytes. Ratio: %3 %</translation>
-</phrase>
-
-<phrase>
-<original>Compression results</original>
-<translation>Compressie resultaten</translation>
-</phrase>
-
-<phrase>
-<original>File decompressed from %1 bytes to %2 bytes.</original>
-<translation>Bestand gedecomprimeerd van %1 bytes naar %2 bytes.</translation>
-</phrase>
-
-<!-- VBP_CompressionUtility.bas contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- VBP_CompressionUtility.bas contains 0 phrases. -->
 
 <!-- END text for VBP_CompressionUtility.bas-->
 
@@ -6152,265 +6117,6 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 
 <!-- END text for VBP_FormInternetImport.frm-->
 
-<!-- BEGIN text for VBP_FormPluginDownloader.frm (FormPluginDownloader) -->
-
-<phrase>
-<original>PhotoDemon Plugin Downloader</original>
-<translation>PhotoDemon Insteekmodule Downloader</translation>
-</phrase>
-
-<phrase>
-<original>Yes. Download these files to the plugins folder.</original>
-<translation>Ja. Download deze bestanden naar de plugins map.</translation>
-</phrase>
-
-<phrase>
-<original>Download All Plugins</original>
-<translation>Downloaden Alle Insteekmodules</translation>
-</phrase>
-
-<phrase>
-<original>Not right now, but please remind me later.</original>
-<translation>Niet nu, maar herinneren me later.</translation>
-</phrase>
-
-<phrase>
-<original>Postpone Plugin Download</original>
-<translation>Uitstellen Insteekmodule Download</translation>
-</phrase>
-
-<phrase>
-<original>Not now, not ever. Do not prompt me again.</original>
-<translation>Nu niet, nooit. Niet opnieuw vragen.</translation>
-</phrase>
-
-<phrase>
-<original>Never Download Plugins</original>
-<translation>Insteekmodules Nooit Downloaden </translation>
-</phrase>
-
-<phrase>
-<original>ExifTool 9.69</original>
-<translation>ExifTool 9.69</translation>
-</phrase>
-
-<phrase>
-<original>free, open-source image metadata library (camera settings, GPS coordinates, etc)</original>
-<translation>gratis, open-source image metadata bibliotheek (camera-instellingen, GPS-coördinaten, etc)</translation>
-</phrase>
-
-<phrase>
-<original>Explanation appears here at run-time</original>
-<translation>Toelichting verschijnt hier in run-time</translation>
-</phrase>
-
-<phrase>
-<original>free, open-source library for optimizing portable network graphics (PNG files)</original>
-<translation>gratis, open-source bibliotheek voor het optimaliseren van Portable Network Graphics (PNG-bestanden)</translation>
-</phrase>
-
-<phrase>
-<original>free, open-source interface for importing images from scanners and digital cameras</original>
-<translation>gratis, open-source -interface voor het importeren van afbeeldingen van scanners en digitale camera's</translation>
-</phrase>
-
-<phrase>
-<original>free, open-source compression library; required to decompress all other plugins</original>
-<translation>gratis, open-source compressie bibliotheek; nodig om alle andere insteekmodules te decomprimeren</translation>
-</phrase>
-
-<phrase>
-<original>free, open-source library for importing and exporting a variety of image formats</original>
-<translation>gratis, open-source bibliotheek voor het importeren en exporteren van een verscheidenheid van beeldformaten</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage 3.16.1</original>
-<translation>FreeImage 3.16.1</translation>
-</phrase>
-
-<phrase>
-<original>Would you like PhotoDemon to download these plugins for you?</original>
-<translation>Wilt u dat PhotoDemon deze insteekmodules voor u download?</translation>
-</phrase>
-
-<phrase>
-<original>total download size of all plugins</original>
-<translation>totale downloadgrootte van alle insteekmodules</translation>
-</phrase>
-
-<phrase>
-<original>Core Plugins Missing - Download Recommended</original>
-<translation>Kerninsteekmodules Ontbreken - Download Aanbevolen</translation>
-</phrase>
-
-<phrase>
-<original>Downloading file %1 of %2 (%3 of %4 bytes received)</original>
-<translation>Downloaden bestand %1 van %2 (%3 van %4 bytes ontvangen)</translation>
-</phrase>
-
-<phrase>
-<original>download progress</original>
-<translation>vooruitgang downloaden</translation>
-</phrase>
-
-<phrase>
-<original>Plugins could not be downloaded at this time.  Carry on!</original>
-<translation>Insteekmodules konden niet worden gedownload op dit moment. Ga door!</translation>
-</phrase>
-
-<phrase>
-<original>Automatic plugin download canceled.  Plugin-related features disabled for this session.</original>
-<translation>Automatisch insteekmodule downloaden geannuleerd. insteekmodule-gerelateerde functies zijn uitgeschakeld voor deze sessie.</translation>
-</phrase>
-
-<phrase>
-<original>Automatic plugin download canceled.  Plugin-related features permanently disabled.</original>
-<translation>Automatisch insteekmodule downloaden geannuleerd. insteekmodule-gerelateerde functies zijn blijvend uitgeschakeld.</translation>
-</phrase>
-
-<phrase>
-<original>Checking for Internet connection</original>
-<translation>Controleren op Internet-verbinding</translation>
-</phrase>
-
-<phrase>
-<original>Thank you for using PhotoDemon.  Unfortunately, one or more core plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated.
-
-To improve your user experience, please connect to the Internet, then allow the program to automatically download these free, open-source plugin(s)</original>
-<translation>Bedankt voor het gebruik van PhotoDemon. Helaas kon één of meerdere kerninsteekmodules niet worden gevonden. PhotoDemon zal nog wel werken zonder deze insteekmodules, maar een aantal functies zullen gedeactiveerd zijn.
-
-Om uw gebruikerservaring te verbeteren, maakt u verbinding met het internet, en laat u het programma deze gratis open-source insteekmodule(s) automatisch downloaden.</translation>
-</phrase>
-
-<phrase>
-<original>Thank you for using PhotoDemon.  Unfortunately, one or more core plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated.
-
-To improve your user experience, please allow the program to automatically download these free, open-source plugin(s)</original>
-<translation>Bedankt voor het gebruik van PhotoDemon. Helaas kon één of meer kerninsteekmodules niet worden gevonden. PhotoDemon zal nog wel werken zonder deze insteekmodules, maar een aantal functies zijn uitgeschakeld.
-
-Sta het programma toe om deze gratis, open-source insteekmodule(s) automatisch te downloaden, om uw gebruikerservaring te verbeteren.</translation>
-</phrase>
-
-<phrase>
-<original>Missing plugins detected.  Generating download information (this feature can be disabled from the Tools -> Options menu)</original>
-<translation>Ontbrekende insteekmodules gedetecteerd. Genereren van download-informatie (deze functie kan worden uitgeschakeld vanuit het menu Tools - > Opties)</translation>
-</phrase>
-
-<phrase>
-<original>This is the recommended selection.  PhotoDemon will automatically download the selected plugins for you.  These plugins will be saved in the program's /Data/Plugins subdirectory.</original>
-<translation>Dit is de aanbevolen keuze. PhotoDemon zal de geselecteerde insteekmodules automatisch downloaden voor u. Deze insteekmodules worden opgeslagen in submap van het programma /Data/Plugins.</translation>
-</phrase>
-
-<phrase>
-<original>This option is not recommended.  PhotoDemon will still run without plugins, but many features and tools will be temporarily disabled until these plugins are available.</original>
-<translation>Deze optie wordt niet aanbevolen. PhotoDemon zal nog steeds werken zonder insteekmodules, maar veel functies en tools worden tijdelijk uitgeschakeld totdat deze insteekmodules beschikbaar zijn.</translation>
-</phrase>
-
-<phrase>
-<original>This option is not recommended.  PhotoDemon will still run without plugins, but many features and tools will be permanently disabled.</original>
-<translation>Deze optie wordt niet aanbevolen. PhotoDemon zal nog steeds werken zonder insteekmodules, maar veel functies en tools zullen permanent worden uitgeschakeld.</translation>
-</phrase>
-
-<phrase>
-<original>Ready to download required plugins. Awaiting user permission</original>
-<translation>Klaar om de gewenste insteekmodules te downloaden. Wachten op toestemming van de gebruiker</translation>
-</phrase>
-
-<phrase>
-<original>Checking again for Internet connection</original>
-<translation>Nogmaals controleren op een Internetverbinding</translation>
-</phrase>
-
-<phrase>
-<original>No Internet connection found.</original>
-<translation>Geen internetverbinding gevonden.</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, %1 could not connect to the Internet.  Please connect to the Internet and try again.</original>
-<translation>Helaas, kan %1 geen verbinding maken met het internet. Maak verbinding met het internet en probeer opnieuw.</translation>
-</phrase>
-
-<phrase>
-<original>No Internet Connection</original>
-<translation>Geen Internetverbinding</translation>
-</phrase>
-
-<phrase>
-<original>Checking for plugin directory</original>
-<translation>Controleren op plugin map</translation>
-</phrase>
-
-<phrase>
-<original>Creating plugin directory</original>
-<translation>Creëren van plugin map</translation>
-</phrase>
-
-<phrase>
-<original>Downloading core plugin files</original>
-<translation>Downloaden van core insteekmodule-bestanden</translation>
-</phrase>
-
-<phrase>
-<original>Due to an unforeseen error, %1 is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)</original>
-<translation>Als gevolg van een onvoorziene fout, stelt %1 het downloaden van insteekmodules uit voor het moment. Volgende keer dat u deze toepassing start, zal het de download opnieuw proberen. (Excuses voor het ongemak.)</translation>
-</phrase>
-
-<phrase>
-<original>Unspecified Download Error</original>
-<translation>Onbekende Downloadfout</translation>
-</phrase>
-
-<phrase>
-<original>All downloads successful.  This screen will automatically close in three seconds.</original>
-<translation>Alle downloads succesvol. Dit scherm sluit automatisch na drie seconden.</translation>
-</phrase>
-
-<phrase>
-<original>Plugins downloaded successfully.  To complete plugin setup, please restart the program.</original>
-<translation>Insteekmodules succesvol gedownload. Herstart het programma om de insteekmodule-installatie te voltooien, .</translation>
-</phrase>
-
-<phrase>
-<original>Verifying plugin URL</original>
-<translation>Verifiëren plugin URL</translation>
-</phrase>
-
-<phrase>
-<original>%1 could not locate the plugin server.  Please double-check your Internet connection.  If the problem persists, please try again at another time.</original>
-<translation>%1 kon de insteekmodule-server niet vinden. Gelieve uw internetverbinding te dubbel-checken. Als het probleem zich blijft voordoen, probeer het dan opnieuw op een ander tijdstip.</translation>
-</phrase>
-
-<phrase>
-<original>Plugin Server Not Responding</original>
-<translation>Insteekmodule-server reageert niet</translation>
-</phrase>
-
-<phrase>
-<original>Plugin download postponed.</original>
-<translation>Insteekmodule downloaden uitgesteld.</translation>
-</phrase>
-
-<phrase>
-<original>Downloading file %1 of %2</original>
-<translation>Downloaden bestand %1 van %2</translation>
-</phrase>
-
-<phrase>
-<original>%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, please try the download again at a later time.</original>
-<translation>%1 heeft de toegang tot het internet verloren. Gelieve uw internetverbinding te dubbel-checken. Als het probleem zich blijft voordoen, probeer het dan opnieuw op een later tijdstip.</translation>
-</phrase>
-
-<phrase>
-<original>total download size</original>
-<translation>Totale downloadgrootte</translation>
-</phrase>
-
-<!-- VBP_FormPluginDownloader.frm contains 70 phrases. 21 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
-
-<!-- END text for VBP_FormPluginDownloader.frm-->
-
 <!-- BEGIN text for VBP_OutsideDevelopment_SetIcon.bas -->
 
 <!-- VBP_OutsideDevelopment_SetIcon.bas contains 0 phrases. -->
@@ -6577,16 +6283,11 @@ Sta het programma toe om deze gratis, open-source insteekmodule(s) automatisch t
 </phrase>
 
 <phrase>
-<original>Compression requested, but zLib plugin is disabled or missing.  Data will not be compressed.</original>
-<translation>Compressie gevraagd, maar Zlib insteekmodule is uitgeschakeld of ontbreekt. Gegevens worden niet gecomprimeerd.</translation>
-</phrase>
-
-<phrase>
 <original>Compression failed (unspecified zLib plugin error).  Uncompressed data written instead.</original>
 <translation>Compressie is mislukt (niet gespecificeerd Zlib insteekmodule fout). Ongecomprimeerde data in plaats waggeschreven.</translation>
 </phrase>
 
-<!-- pdDIB.cls contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- pdDIB.cls contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <!-- END text for pdDIB.cls-->
 
@@ -8970,16 +8671,6 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 </phrase>
 
 <phrase>
-<original>This is not a valid list of images. Please try a different file.</original>
-<translation>Dit is geen geldige lijst van afbeeldingen. Probeer een ander bestand.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid list file</original>
-<translation>Ongeldig lijstbestand</translation>
-</phrase>
-
-<phrase>
 <original>You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.</original>
 <translation>U hebt al een lijst met afbeeldingen voor verwerking. De lijst van afbeeldingen in dit bestand wordt toegevoegd aan de onderkant van uw huidige lijst.</translation>
 </phrase>
@@ -8987,6 +8678,16 @@ Wil je de batchlijst opslaan voordat je afsluit?</translation>
 <phrase>
 <original>Batch process notification</original>
 <translation>Batchproces bericht</translation>
+</phrase>
+
+<phrase>
+<original>This is not a valid list of images. Please try a different file.</original>
+<translation>Dit is geen geldige lijst van afbeeldingen. Probeer een ander bestand.</translation>
+</phrase>
+
+<phrase>
+<original>Invalid list file</original>
+<translation>Ongeldig lijstbestand</translation>
 </phrase>
 
 <phrase>
@@ -9293,7 +8994,7 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 <translation>verwerkt voor annulering. Laatst bewerkte afbeelding was "%1"</translation>
 </phrase>
 
-<!-- VBP_FormBatchWizard.frm contains 260 phrases. 138 were duplicates of existing phrases, so only 122 new phrases were written to file. -->
+<!-- VBP_FormBatchWizard.frm contains 264 phrases. 142 were duplicates of existing phrases, so only 122 new phrases were written to file. -->
 
 <!-- END text for VBP_FormBatchWizard.frm-->
 
@@ -14409,10 +14110,10 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2497</phrasecount>
+<phrasecount>2440</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4288 phrases. -->
-<!-- 1791 are duplicates, so only 2497 unique phrases have been written to file. -->
-<!-- These 2497 phrases contain approximately 13884 total words. -->
+<!-- As of this build, PhotoDemon contains 4211 phrases. -->
+<!-- 1771 are duplicates, so only 2440 unique phrases have been written to file. -->
+<!-- These 2440 phrases contain approximately 13315 total words. -->
 
 </pdData>

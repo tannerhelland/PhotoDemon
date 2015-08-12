@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.70</langversion>
+<langversion>6.7.71</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -3651,16 +3651,6 @@ The elabora automaticamente in background. Riceverai una nuova notifica quando c
 </phrase>
 
 <phrase>
-<original>Some core plugins could not be found. Preparing updater</original>
-<translation>Alcuni plugin di base non sono stati trovati. Preparazione dell'aggiornamento</translation>
-</phrase>
-
-<phrase>
-<original>Ignoring plugin update request per user's saved preference</original>
-<translation>Ignorando la richiesta di aggiornamento del plugin per la preferenza salvata dall'utente</translation>
-</phrase>
-
-<phrase>
 <original>Shadow and highlight</original>
 <translation></translation>
 </phrase>
@@ -4028,7 +4018,7 @@ Nota: un testo meno significativo del programma non può essere aggiornato dal v
 <translation>Rimuovi il canale alfa</translation>
 </phrase>
 
-<!-- VBP_FormMain.frm contains 560 phrases. 168 were duplicates of existing phrases, so only 392 new phrases were written to file. -->
+<!-- VBP_FormMain.frm contains 558 phrases. 168 were duplicates of existing phrases, so only 390 new phrases were written to file. -->
 
 <!-- END text for VBP_FormMain.frm-->
 
@@ -4371,32 +4361,7 @@ Per attivare il supporto dello scanner, per favore copia il file EZTW32.dll (dis
 
 <!-- BEGIN text for VBP_CompressionUtility.bas -->
 
-<phrase>
-<original>An error (#%1) has occurred.  Compression halted.</original>
-<translation>Si è verificato un errore (#%1).  Compressione fermata.</translation>
-</phrase>
-
-<phrase>
-<original>zLib error</original>
-<translation>errore zLib</translation>
-</phrase>
-
-<phrase>
-<original>File compressed from %1 bytes to %2 bytes.  Ratio: %3 %</original>
-<translation>File compresso da %1 byte a %2 byte.  Rapporto: %3%</translation>
-</phrase>
-
-<phrase>
-<original>Compression results</original>
-<translation>Risultati della compressione</translation>
-</phrase>
-
-<phrase>
-<original>File decompressed from %1 bytes to %2 bytes.</original>
-<translation>File decompresso da %1 byte à %2 byte.</translation>
-</phrase>
-
-<!-- VBP_CompressionUtility.bas contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- VBP_CompressionUtility.bas contains 0 phrases. -->
 
 <!-- END text for VBP_CompressionUtility.bas-->
 
@@ -6150,264 +6115,6 @@ Mi scuso per l'inconveniente, ma purtroppo non c'è nulla che %2 può fare a rig
 
 <!-- END text for VBP_FormInternetImport.frm-->
 
-<!-- BEGIN text for VBP_FormPluginDownloader.frm (FormPluginDownloader) -->
-
-<phrase>
-<original>PhotoDemon Plugin Downloader</original>
-<translation>Gestore scaricamento dei Plugin di PhotoDemon</translation>
-</phrase>
-
-<phrase>
-<original>Yes. Download these files to the plugins folder.</original>
-<translation>Sì. Scarica questi file nella cartella plugin.</translation>
-</phrase>
-
-<phrase>
-<original>Download All Plugins</original>
-<translation>Scarica tutti i Plugin</translation>
-</phrase>
-
-<phrase>
-<original>Not right now, but please remind me later.</original>
-<translation>Non adesso, ma ricordamelo più tardi.</translation>
-</phrase>
-
-<phrase>
-<original>Postpone Plugin Download</original>
-<translation>Rimanda lo scaricamento dei Plugin</translation>
-</phrase>
-
-<phrase>
-<original>Not now, not ever. Do not prompt me again.</original>
-<translation>Ne ora, ne mai. Non chiedermelo nuovamente.</translation>
-</phrase>
-
-<phrase>
-<original>Never Download Plugins</original>
-<translation>Non scaricare mai i Plugin</translation>
-</phrase>
-
-<phrase>
-<original>ExifTool 9.69</original>
-<translation>ExifTool 9.69</translation>
-</phrase>
-
-<phrase>
-<original>free, open-source image metadata library (camera settings, GPS coordinates, etc)</original>
-<translation>gratuita, libreria metadati dell'immagine open-source (impostazioni della fotocamera, coordinate GPS, ecc)</translation>
-</phrase>
-
-<phrase>
-<original>Explanation appears here at run-time</original>
-<translation>La spiegazione apparirà quì durante l'esecuzione</translation>
-</phrase>
-
-<phrase>
-<original>free, open-source library for optimizing portable network graphics (PNG files)</original>
-<translation>liberie gratuite open-source, per l'ottimizzazione delle Portable Network Graphics (file PNG)</translation>
-</phrase>
-
-<phrase>
-<original>free, open-source interface for importing images from scanners and digital cameras</original>
-<translation>liberie gratuite open-source, per l'importazione delle immagini da scanner o fotocamere digitali</translation>
-</phrase>
-
-<phrase>
-<original>free, open-source compression library; required to decompress all other plugins</original>
-<translation>liberie di compressione gratuite open-source, necessarie per decomprimere tutti gli altri plugin</translation>
-</phrase>
-
-<phrase>
-<original>free, open-source library for importing and exporting a variety of image formats</original>
-<translation>liberie gratuite open-source, per importare ed esportare una varietà di formati immagine</translation>
-</phrase>
-
-<phrase>
-<original>FreeImage 3.16.1</original>
-<translation>FreeImage 3.16.1</translation>
-</phrase>
-
-<phrase>
-<original>Would you like PhotoDemon to download these plugins for you?</original>
-<translation>Vuoi che PhotoDemon scarichi questi plugin per te?</translation>
-</phrase>
-
-<phrase>
-<original>total download size of all plugins</original>
-<translation>dimensione totale dello scaricamento di tutti i plugin</translation>
-</phrase>
-
-<phrase>
-<original>Core Plugins Missing - Download Recommended</original>
-<translation>Plugin di base mancanti - Il loro scaricamento è raccomandato</translation>
-</phrase>
-
-<phrase>
-<original>Downloading file %1 of %2 (%3 of %4 bytes received)</original>
-<translation>Scaricamento dei file %1 di %2 (%3 di %4 byte ricevuti)</translation>
-</phrase>
-
-<phrase>
-<original>download progress</original>
-<translation>avanzamento dello scaricamento</translation>
-</phrase>
-
-<phrase>
-<original>Plugins could not be downloaded at this time.  Carry on!</original>
-<translation>I Plugin non possono essere scaricati.  Continua!</translation>
-</phrase>
-
-<phrase>
-<original>Automatic plugin download canceled.  Plugin-related features disabled for this session.</original>
-<translation>Scaricamento automatico dei Plugin annullato.  Le funzionalità dei Plugin sono disabilitate per questa sessione.</translation>
-</phrase>
-
-<phrase>
-<original>Automatic plugin download canceled.  Plugin-related features permanently disabled.</original>
-<translation>Scaricamento automatico dei Plugin annullato.  Le funzionalità dei Plugin sono disabilitate permanentemente.</translation>
-</phrase>
-
-<phrase>
-<original>Checking for Internet connection</original>
-<translation>Verifica della connessione a Internet</translation>
-</phrase>
-
-<phrase>
-<original>Thank you for using PhotoDemon.  Unfortunately, one or more core plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated.
-
-To improve your user experience, please connect to the Internet, then allow the program to automatically download these free, open-source plugin(s)</original>
-<translation>Grazie per aver scelto PhotoDemon.  Purtroppo, uno o più plugin non possono essere localizzati.  PhotoDemon continuerà a funzionare senza questi plugin, ma una serie di caratteristiche saranno disattivate.
-
-Per migliorare l'esperienza dell'utente, si prega di collegarsi a Internet, quindi consentire al programma di scaricare automaticamente questi gratuiti plug-in open-source</translation>
-</phrase>
-
-<phrase>
-<original>Thank you for using PhotoDemon.  Unfortunately, one or more core plugins could not be located.  PhotoDemon will still work without these plugins, but a number of features will be deactivated.
-
-To improve your user experience, please allow the program to automatically download these free, open-source plugin(s)</original>
-<translation>Grazie per aver scelto PhotoDemon.  Purtroppo, uno o più plugin non possono essere localizzati.  PhotoDemon continuerà a funzionare senza questi plugin, ma una serie di caratteristiche saranno disattivate.
-Per migliorare l'esperienza dell'utente, si prega di lasciare che il programma scarichi automaticamente questi gratuiti plug-in open-source</translation>
-</phrase>
-
-<phrase>
-<original>Missing plugins detected.  Generating download information (this feature can be disabled from the Tools -> Options menu)</original>
-<translation>I plugin mancanti sono stati rilevati.  Generazione dell'informazione per lo scaricamento (questa funzionalità può essere disattivata nel menù Utilità -> Opzioni)</translation>
-</phrase>
-
-<phrase>
-<original>This is the recommended selection.  PhotoDemon will automatically download the selected plugins for you.  These plugins will be saved in the program's /Data/Plugins subdirectory.</original>
-<translation>Questa è una selezione raccomandata.  PhotoDemon scaricherà automaticamente i plugin selezionati per te. Questi plugin saranno salvati nella sottocartella del programma /Data/Plugins.</translation>
-</phrase>
-
-<phrase>
-<original>This option is not recommended.  PhotoDemon will still run without plugins, but many features and tools will be temporarily disabled until these plugins are available.</original>
-<translation>Questa opzione non è raccomandata.  PhotoDemon continuerà lo stesso a lavorare senza plugin, ma alcune funzionalità saranno temporaneamente disabilitate fino a che questi plugin non saranno disponibili.</translation>
-</phrase>
-
-<phrase>
-<original>This option is not recommended.  PhotoDemon will still run without plugins, but many features and tools will be permanently disabled.</original>
-<translation>Questa opzione non è raccomandata.  PhotoDemon continuerà lo stesso a lavorare senza plugin, ma alcune funzionalità e utilità saranno permanentemente disabilitate.</translation>
-</phrase>
-
-<phrase>
-<original>Ready to download required plugins. Awaiting user permission</original>
-<translation>Pronto per scaricare i plugin richiesti. In attesa del permesso dell'utente</translation>
-</phrase>
-
-<phrase>
-<original>Checking again for Internet connection</original>
-<translation>Verifica ancora la connessione a Internet</translation>
-</phrase>
-
-<phrase>
-<original>No Internet connection found.</original>
-<translation>Nessuna connessione a Internet trovata.</translation>
-</phrase>
-
-<phrase>
-<original>Unfortunately, %1 could not connect to the Internet.  Please connect to the Internet and try again.</original>
-<translation>Sfortunatamente, %1 non può connetersi a Internet.  Per favore connettiti a Internet e rirpova.</translation>
-</phrase>
-
-<phrase>
-<original>No Internet Connection</original>
-<translation>Nessuna connessione a Internet</translation>
-</phrase>
-
-<phrase>
-<original>Checking for plugin directory</original>
-<translation>Verifica della cartella plugin</translation>
-</phrase>
-
-<phrase>
-<original>Creating plugin directory</original>
-<translation>Creazione della cartella plugin</translation>
-</phrase>
-
-<phrase>
-<original>Downloading core plugin files</original>
-<translation>Scaricamento file dei plugin base</translation>
-</phrase>
-
-<phrase>
-<original>Due to an unforeseen error, %1 is postponing plugin downloading for the moment.  Next time you run this application, it will try the download again.  (Apologies for the inconvenience.)</original>
-<translation>A causa di un errore imprevisto, %1 ha rinviato lo scaricamento dei plugin per il momento.  La prossima volta che avvierai l'applicazione, proverà a scaricarli nuovamente. (Mi scuso per l'inconveniente.)</translation>
-</phrase>
-
-<phrase>
-<original>Unspecified Download Error</original>
-<translation>Errore non specificato durante lo scaricamento</translation>
-</phrase>
-
-<phrase>
-<original>All downloads successful.  This screen will automatically close in three seconds.</original>
-<translation>Tutti gli scaricamenti riusciti.  Questa schermata verrà automaticamente chiusa in tre secondi.</translation>
-</phrase>
-
-<phrase>
-<original>Plugins downloaded successfully.  To complete plugin setup, please restart the program.</original>
-<translation>Plugin scaricati con successo.  Per terminare la configurazione dei plugin, per favore riavvia il programma.</translation>
-</phrase>
-
-<phrase>
-<original>Verifying plugin URL</original>
-<translation>Verifica plugin di URL</translation>
-</phrase>
-
-<phrase>
-<original>%1 could not locate the plugin server.  Please double-check your Internet connection.  If the problem persists, please try again at another time.</original>
-<translation>%1 non può localizzare il server dei plugin.  Per favore riverifica la connessione a Internet. Se il problema persiste, riprova in un altro momento.</translation>
-</phrase>
-
-<phrase>
-<original>Plugin Server Not Responding</original>
-<translation>Il Server dei Plugin Non Risponde</translation>
-</phrase>
-
-<phrase>
-<original>Plugin download postponed.</original>
-<translation>Scaricamento dei plugin rinviato.</translation>
-</phrase>
-
-<phrase>
-<original>Downloading file %1 of %2</original>
-<translation>Scaricamento del file %1 di %2</translation>
-</phrase>
-
-<phrase>
-<original>%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, please try the download again at a later time.</original>
-<translation>%1 ha perduto l'accesso a Internet. Per favore ricontrolla la connessione a Internet.  Se il problema persiste, prova a scaricarli più tardi.</translation>
-</phrase>
-
-<phrase>
-<original>total download size</original>
-<translation>dimensione totale dello scaricamento</translation>
-</phrase>
-
-<!-- VBP_FormPluginDownloader.frm contains 70 phrases. 21 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
-
-<!-- END text for VBP_FormPluginDownloader.frm-->
-
 <!-- BEGIN text for VBP_OutsideDevelopment_SetIcon.bas -->
 
 <!-- VBP_OutsideDevelopment_SetIcon.bas contains 0 phrases. -->
@@ -6574,16 +6281,11 @@ Per migliorare l'esperienza dell'utente, si prega di lasciare che il programma s
 </phrase>
 
 <phrase>
-<original>Compression requested, but zLib plugin is disabled or missing.  Data will not be compressed.</original>
-<translation>La compressione è richiesta, ma il plugin zLib è disabilitato o mancante.  I dati non verranno compressi.</translation>
-</phrase>
-
-<phrase>
 <original>Compression failed (unspecified zLib plugin error).  Uncompressed data written instead.</original>
 <translation>La compressione non è riuscita (errore non specificato nel plugin zLib).  Dati non compressi saranno scritti.</translation>
 </phrase>
 
-<!-- pdDIB.cls contains 5 phrases.  All 5 were unique, so 5 new phrases were written to file. -->
+<!-- pdDIB.cls contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <!-- END text for pdDIB.cls-->
 
@@ -8967,16 +8669,6 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 </phrase>
 
 <phrase>
-<original>This is not a valid list of images. Please try a different file.</original>
-<translation>Questa non è una lista di immagini valida. Per favore prova un file differente.</translation>
-</phrase>
-
-<phrase>
-<original>Invalid list file</original>
-<translation>File della lista non valido</translation>
-</phrase>
-
-<phrase>
 <original>You have already created a list of images for processing.  The list of images inside this file will be appended to the bottom of your current list.</original>
 <translation>Hai già creato una lista di immagini da processare.  La lista delle immagini contenute in questo file, verrà aggiunta in coda alla lista corrente.</translation>
 </phrase>
@@ -8984,6 +8676,16 @@ Vuoi salvare la tua lista prima di uscire?</translation>
 <phrase>
 <original>Batch process notification</original>
 <translation>Notifica del processo automatico</translation>
+</phrase>
+
+<phrase>
+<original>This is not a valid list of images. Please try a different file.</original>
+<translation>Questa non è una lista di immagini valida. Per favore prova un file differente.</translation>
+</phrase>
+
+<phrase>
+<original>Invalid list file</original>
+<translation>File della lista non valido</translation>
 </phrase>
 
 <phrase>
@@ -9290,7 +8992,7 @@ Come predefinito, la trasparenza sarà divisa a metà, oppure puoi specificare u
 <translation>processata(e) prima della cancellazione. L'ultima immagine processata è stata "%1".</translation>
 </phrase>
 
-<!-- VBP_FormBatchWizard.frm contains 260 phrases. 138 were duplicates of existing phrases, so only 122 new phrases were written to file. -->
+<!-- VBP_FormBatchWizard.frm contains 264 phrases. 142 were duplicates of existing phrases, so only 122 new phrases were written to file. -->
 
 <!-- END text for VBP_FormBatchWizard.frm-->
 
@@ -14406,10 +14108,10 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2497</phrasecount>
+<phrasecount>2440</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4288 phrases. -->
-<!-- 1791 are duplicates, so only 2497 unique phrases have been written to file. -->
-<!-- These 2497 phrases contain approximately 13884 total words. -->
+<!-- As of this build, PhotoDemon contains 4211 phrases. -->
+<!-- 1771 are duplicates, so only 2440 unique phrases have been written to file. -->
+<!-- These 2440 phrases contain approximately 13315 total words. -->
 
 </pdData>
