@@ -260,23 +260,25 @@ Private Sub UserControl_AsyncReadComplete(AsyncProp As AsyncProperty)
                     
                     'Make sure the checksum passed (if one was specified).
                     If checkSumPassed Then
-                    
+                        
+                        'All file interactions are handled through pdFSO
+                        Dim cFile As pdFSO
+                        Set cFile = New pdFSO
+                        
                         'Kill the destination file if it already exists
-                        If FileExist(.TargetFileWhenComplete) Then Kill .TargetFileWhenComplete
+                        If cFile.FileExist(.TargetFileWhenComplete) Then cFile.KillFile .TargetFileWhenComplete
                         
-                        'Open the target file
-                        Dim fileNum As Integer
-                        fileNum = FreeFile
-                        
-                        Open .TargetFileWhenComplete For Binary As #fileNum
-                        
-                            'Writing the actual data to file is incredibly easy!
+                        'Dump the downloaded data to file
+                        Dim hFile As Long
+                        If cFile.CreateFileHandle(.TargetFileWhenComplete, hFile, True, True, OptimizeSequentialAccess) Then
                             
-                            'Header
-                            Put #fileNum, 1, .DataBytes
+                            cFile.WriteDataToFile hFile, VarPtr(.DataBytes(0)), UBound(.DataBytes) + 1
+                            cFile.CloseFileHandle hFile
                             
-                        Close #fileNum
-                    
+                        Else
+                            Debug.Print "WARNING! File was downloaded successfully, but we couldn't write it to the hard drive.  Check the path: " & .TargetFileWhenComplete
+                        End If
+                                            
                     Else
                         Debug.Print "WARNING! File was downloaded successfully, but checksum failed.  Please investigate: " & m_DownloadList(itemIndex).DownloadURL
                     End If
