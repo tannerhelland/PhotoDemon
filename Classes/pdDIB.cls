@@ -170,7 +170,7 @@ Private m_dibArrayWidth As Long
 Private m_dibColorDepth As Long
 
 'Used when writing/reading DIB data to/from a file
-Private Const DIB_IDENTIFIER As String * 4 = "PDlr"
+Private Const DIB_IDENTIFIER As Long = &H726C4450  'PDlr
 Private Const DIB_FILE_VERSION_2012 As Long = &H1000
 Private Const DIB_FILE_VERSION_2015 As Long = &H1001
 
@@ -696,22 +696,22 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
             If createBlank(tmpBitmap.Width, tmpBitmap.Height, tmpBitmap.BitsPerPixel) Then
             
                 'Create a new DC
-                Dim TmpDC As Long
-                TmpDC = CreateCompatibleDC(0)
+                Dim tmpDC As Long
+                tmpDC = CreateCompatibleDC(0)
                 
                 'If successful, select the object into that DC
-                If TmpDC <> 0 Then
+                If tmpDC <> 0 Then
                 
                     'Temporary holder for the object selection
                     Dim oldBitmap As Long
-                    oldBitmap = SelectObject(TmpDC, srcPicture.Handle)
+                    oldBitmap = SelectObject(tmpDC, srcPicture.Handle)
                     
                     'Use BitBlt to copy the pixel data to this DIB
-                    BitBlt m_dibDC, 0, 0, m_dibWidth, m_dibHeight, TmpDC, 0, 0, vbSrcCopy
+                    BitBlt m_dibDC, 0, 0, m_dibWidth, m_dibHeight, tmpDC, 0, 0, vbSrcCopy
                     
                     'Now that we have the pixel data, erase all temporary objects
-                    SelectObject TmpDC, oldBitmap
-                    DeleteDC TmpDC
+                    SelectObject tmpDC, oldBitmap
+                    DeleteDC tmpDC
                     
                     'Finally, if the copied image contains an alpha channel (icons, PNGs, etc), it will be set against a
                     ' black background. We typically want the background to be white, so perform a composite if requested.
@@ -878,11 +878,11 @@ End Sub
 Public Sub resetDIB()
 
     'Retrieve a pointer to the DIB array and the array's current size
-    Dim tmpDibPointer As Long, tmpDibSize As Long
-    retrieveDIBPointerAndSize tmpDibPointer, tmpDibSize
+    Dim tmpDIBPointer As Long, tmpDibSize As Long
+    retrieveDIBPointerAndSize tmpDIBPointer, tmpDibSize
     
     'Erase everything
-    FillMemory tmpDibPointer, tmpDibSize, 0
+    FillMemory tmpDIBPointer, tmpDibSize, 0
     
 End Sub
 
@@ -987,36 +987,55 @@ End Sub
 'Load a DIB's header and image information from file.  If the file is compressed, it will automatically be decompressed.
 ' Optionally, if the DIB data is embedded inside another file, that handle can be passed to the this function, and it will attempt to
 ' load DIB data from the current file pointer location.  (In this case, just supply a blank filename.)
-Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEmbeddedLocation As Boolean = False, Optional ByRef fileNum As Integer = 0) As Boolean
+Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEmbeddedLocation As Boolean = False, Optional ByVal hFile As Long = 0) As Boolean
+    
+    'pdFSO is used so we can support Unicode paths
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
     
     'If this is not an embedded file, create and open it now
     If Not useEmbeddedLocation Then
-        fileNum = FreeFile
-        Open srcFilename For Binary As #fileNum
+        
+        If Not cFile.CreateFileHandle(srcFilename, hFile, True, False, OptimizeSequentialAccess) Then
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  pdDIB.createFromFile failed to generate a handle for " & srcFilename & ".  Load abandoned."
+            #End If
+            
+            createFromFile = False
+            Exit Function
+            
+        End If
+        
     End If
     
     'Check to make sure this file actually contains DIB data
-    Dim DIBIDCheck As String * 4
-    Get #fileNum, , DIBIDCheck
+    Dim DIBIDCheck As Long
+    cFile.ReadDataFromFile hFile, VarPtr(DIBIDCheck), 4&
+        
     If (DIBIDCheck <> DIB_IDENTIFIER) Then
-        Close #fileNum
+        
         Message "Failed to load embedded image; invalid header found."
         createFromFile = False
+        
+        If Not useEmbeddedLocation Then cFile.CloseFileHandle hFile
         Exit Function
+        
     End If
-
-    'Now check to make sure that the version number is supported (not implemented right now, because there's only one version)
-    Dim DIBVersionCheck As Long
-    Get #fileNum, , DIBVersionCheck
     
-    'Get color depth
+    'In the future, we may need to branch due to version differences, but for now, we can make any adjustments in-line
+    Dim DIBVersionCheck As Long
+    cFile.ReadDataFromFile hFile, VarPtr(DIBVersionCheck), 4&
+    
+    'Retrieve color depth
     Dim fColorDepth As Long
-    Get #fileNum, , fColorDepth
+    cFile.ReadDataFromFile hFile, VarPtr(fColorDepth), 4&
     
     'The newest, 2015 version of PD DIBs retrieves alpha premultiplication as well
     If DIBVersionCheck = DIB_FILE_VERSION_2015 Then
-        Get #fileNum, , m_IsAlphaPremultiplied
-    
+        
+        cFile.ReadDataFromFile hFile, VarPtr(m_IsAlphaPremultiplied), 2&
+        
     'If alpha premultiplication state is not stored, make a best guess based on color depth
     Else
         
@@ -1027,22 +1046,24 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
         End If
         
     End If
-    
-    'Get size
+        
+    'Retrieve DIB dimensions
     Dim fWidth As Long, fHeight As Long, fArrayWidth As Long
-    Get #fileNum, , fWidth
-    Get #fileNum, , fHeight
-    Get #fileNum, , fArrayWidth
+    cFile.ReadDataFromFile hFile, VarPtr(fWidth), 4&
+    cFile.ReadDataFromFile hFile, VarPtr(fHeight), 4&
+    cFile.ReadDataFromFile hFile, VarPtr(fArrayWidth), 4&
     
     'Is the DIB data compressed?
     Dim toDecompress As Boolean
-    Get #fileNum, , toDecompress
+    cFile.ReadDataFromFile hFile, VarPtr(toDecompress), 2&
     
     Dim fileData() As Byte
     
-    'If the data is compressed, we need to retrieve two additional pieces of information: the original and compressed size
+    'If the data *is* compressed, we need to retrieve two additional pieces of information: the original and compressed size
+    ' of the entire pixel chunk.
     Dim origDataSize As Long, compressedDataSize As Long
     
+    'Also, as a failsafe, make sure the DIB has dimensions prior to loading pixel data.
     If (fWidth > 0) And (fHeight > 0) Then
     
         If toDecompress Then
@@ -1054,56 +1075,45 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
                 Exit Function
             End If
             
-            Get #fileNum, , origDataSize
-            Get #fileNum, , compressedDataSize
+            'Retrieve chunk sizes
+            cFile.ReadDataFromFile hFile, VarPtr(origDataSize), 4&
+            cFile.ReadDataFromFile hFile, VarPtr(compressedDataSize), 4&
             
-            'Pull the raw pixel data straight from the file
-            ReDim fileData(0 To compressedDataSize) As Byte
-            Get #fileNum, , fileData
+            'In one fell swoop, load the entire pixel chunk into a temporary array
+            ReDim fileData(0 To compressedDataSize - 1) As Byte
+            cFile.ReadDataFromFile hFile, VarPtr(fileData(0)), compressedDataSize
             
         Else
             
-            'Pull the raw pixel data straight from the file
-            ReDim fileData(0 To fArrayWidth - 1, 0 To fHeight - 1) As Byte
-            Get #fileNum, , fileData
-            
+            'If the pixel data is uncompressed, we can load it directly into the DIB itself, avoiding the need for
+            ' a temporary copy.  Do nothing at this stage.
+                        
         End If
     
     End If
     
-    'If we've made it this far, attempt to load pixel data. Start by erasing and re-initializing this object to the proper size.
+    'Initialize a blank DIB at the requested size.  Besides giving us a memory target, this will also initialize all module-level
+    ' parameters to match the file's settings.
     If createBlank(fWidth, fHeight, fColorDepth) Then
         
-        'Now it's time to overwrite our current DIB with the pixel data we pulled from the file.
-        ' Start, as always, with a SafeArray pointed at the DIB data.
-        Dim iData() As Byte
-        Dim tmpSA As SAFEARRAY2D
-        prepInternalSafeArray tmpSA
-        CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+        'Now it's time to overwrite the DIB memory region with the pixel data in the file.
+        Dim tmpDIBPointer As Long, tmpDIBLength As Long
+        Me.retrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
         
-        'If the DIB data is compressed, decompress it now
+        'If the DIB data is compressed, decompress it now.  Note that we decompress directly into the DIB itself, to avoid the
+        ' need for a costly CopyMemory call.
         If toDecompress Then
-        
-            Dim uncompressedImageData() As Byte
             
             'If the data is decompressed succesfully, convert it to a 2D array and copy it into this class's DIB memory chunk
-            If decompressArray(fileData, uncompressedImageData, origDataSize) Then
+            If Plugin_zLib_Interface.decompressNakedPointers(VarPtr(fileData(0)), compressedDataSize, tmpDIBPointer, tmpDIBLength) Then
             
-                Dim iData2D() As Byte
-                ReDim iData2D(0 To fArrayWidth - 1, 0 To fHeight - 1) As Byte
-                CopyMemory iData2D(0, 0), uncompressedImageData(0), UBound(uncompressedImageData) + 1
-                CopyMemory iData(0, 0), iData2D(0, 0), fArrayWidth * fHeight
-                
-                Erase iData2D
-                Erase uncompressedImageData
+                'Immediately release our copy of the compressed file data
                 Erase fileData
             
             'If decompression failed, abandon further processing
             Else
                 
                 Message "Decompression was not successful (unspecified zLib plugin error).  DIB processing abandoned."
-                CopyMemory ByVal VarPtrArray(iData), 0&, 4
-                Erase iData
                 createFromFile = False
                 Exit Function
                 
@@ -1111,121 +1121,147 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
         
         'If the DIB data is not compressed, copy it straight into the DIB
         Else
-        
-            'Bulk copy the contents of fileData() over to iData() - which is pointing at this object's DIB, remember
-            CopyMemory iData(0, 0), fileData(0, 0), fArrayWidth * fHeight
-        
+            
+            'In one fell swoop, load the entire pixel chunk into our already-created DIB
+            cFile.ReadDataFromFile hFile, tmpDIBPointer, tmpDIBLength
+            
         End If
         
-        'With our work complete, point iData() away from the DIB and deallocate it
-        CopyMemory ByVal VarPtrArray(iData), 0&, 4
-        Erase iData
-        
         createFromFile = True
+        
     Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  pdDIB.createFromFile failed to create a new DIB using the stored file settings.  Load abandoned."
+        #End If
         createFromFile = False
     End If
-    
+        
     'If this is an embedded file, leave the file open for further processing.  Otherwise, close it.
-    If Not useEmbeddedLocation Then Close #fileNum
+    If Not useEmbeddedLocation Then cFile.CloseFileHandle hFile
     
 End Function
 
 'Write this class's DIB information to file.  Compression can optionally be applied to the DIB data.
 ' Also, if the calling function wants to embed the DIB's data inside an existing file, specify the embedInFile parameter and pass a valid
 ' file handle, with the pointer already moved to the location desired for embedding.
-Public Function writeToFile(ByRef dstFilename As String, Optional ByVal toCompress As Boolean = True, Optional ByVal embedInFile As Boolean = False, Optional ByRef fileNum As Integer) As Boolean
+Public Function writeToFile(ByRef dstFilename As String, Optional ByVal toCompress As Boolean = True, Optional ByVal embedInFile As Boolean = False, Optional ByRef hFile As Long) As Boolean
+    
+    'Before proceeding, make sure this DIB actually exists
+    If (Me.getDIBWidth <= 0) Or (Me.getDIBHeight <= 0) Then
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  pdDIB.writeToFile was called on an empty DIB.  Fix this!"
+        #End If
+        
+        writeToFile = False
+        Exit Function
+        
+    End If
+    
+    'File interactions are handled via pdFSO, so we can easily support Unicode paths
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
     
     'If we are not embedding the data inside an existing file, create a new file now.
     If Not embedInFile Then
         
         'Delete any existing file (overwrite)
-        If FileExist(dstFilename) Then Kill dstFilename
+        If cFile.FileExist(dstFilename) Then cFile.KillFile dstFilename
         
-        'Open the file
-        fileNum = FreeFile
-        Open dstFilename For Binary As #fileNum
+        'Open a new file
+        If Not cFile.CreateFileHandle(dstFilename, hFile, True, True, OptimizeSequentialAccess) Then
         
-    End If
-    
-    'Identifiers
-    Put #fileNum, , DIB_IDENTIFIER
-    Put #fileNum, , DIB_FILE_VERSION_2015
-    
-    'Color depth
-    Put #fileNum, , m_dibColorDepth
-    
-    'Alpha premultiplication (yes, this is stored even for 24-bit images)
-    Put #fileNum, , m_IsAlphaPremultiplied
-    
-    'Size
-    Put #fileNum, , m_dibWidth
-    Put #fileNum, , m_dibHeight
-    Put #fileNum, , m_dibArrayWidth
-        
-    'And finally, the pixel data.  Start by pointing a VB array at the DIB data
-    Dim iData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    prepInternalSafeArray tmpSA
-    CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
-    
-    If toCompress And Not g_ZLibEnabled Then Message "Compression requested, but zLib plugin is disabled or missing.  Data will not be compressed."
-    
-    'If compression has been requested, and zLib is available, apply compression now.
-    If toCompress And g_ZLibEnabled And (m_dibWidth > 0) And (m_dibHeight > 0) Then
-        
-        'Convert the DIB to a 1D array
-        Dim src1DImage() As Byte
-        Dim aSize As Long
-        aSize = (UBound(iData, 1) + 1) * (UBound(iData, 2) + 1) - 1
-        ReDim src1DImage(0 To aSize) As Byte
-        CopyMemory src1DImage(0), iData(0, 0), aSize
-        
-        'Compress that 1D array
-        Dim origSize As Long, compressSize As Long
-        Dim compressedImageData() As Byte
-        
-        CopyMemory ByVal VarPtrArray(iData), 0&, 4
-        Erase iData
-        
-        'If compression was successful, write out the compressed data to file
-        If compressArray(src1DImage, compressedImageData, origSize, compressSize) Then
-        
-            'Mark the data as compressed
-            Put #fileNum, , toCompress
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  pdDIB.writeToFile failed to create a file handle for " & dstFilename & ".  Write abandoned."
+            #End If
             
-            'Write the original size of the array, followed by the compressed size, followed by the image data itself.  (The array sizes will
-            ' help us automatically create intelligently-sized buffers at decompression time.)
-            Put #fileNum, , origSize
-            Put #fileNum, , compressSize
-            Put #fileNum, , compressedImageData
+            writeToFile = False
+            Exit Function
         
-        'If compression failed, write uncompressed data instead.
-        Else
-            Message "Compression failed (unspecified zLib plugin error).  Uncompressed data written instead."
-            toCompress = False
-            Put #fileNum, , toCompress
-            Put #fileNum, , iData
         End If
         
-        Erase compressedImageData
-        
-    'If compression has not been requested, or zLib is unavailable, dump the raw image data to file.
-    Else
-        
-        'Now dump the entire array into the file. To my knowledge, this is the fastest way to do this in VB.
-        toCompress = False
-        Put #fileNum, , toCompress
-        Put #fileNum, , iData
-        
     End If
     
-    'Release the VB array that points at the DIB
-    CopyMemory ByVal VarPtrArray(iData), 0&, 4
-    Erase iData
+    'Write identifiers first
+    Dim tmpLong As Long
     
+    tmpLong = DIB_IDENTIFIER
+    cFile.WriteDataToFile hFile, VarPtr(tmpLong), 4&
+    
+    tmpLong = DIB_FILE_VERSION_2015
+    cFile.WriteDataToFile hFile, VarPtr(tmpLong), 4&
+    
+    'Color depth
+    cFile.WriteDataToFile hFile, VarPtr(Me.getDIBColorDepth), 4&
+    
+    'Alpha premultiplication (yes, this is stored even for 24-bit images)
+    cFile.WriteDataToFile hFile, VarPtr(Me.getAlphaPremultiplication()), 2&
+    
+    'Size
+    cFile.WriteDataToFile hFile, VarPtr(Me.getDIBWidth), 4&
+    cFile.WriteDataToFile hFile, VarPtr(Me.getDIBHeight), 4&
+    cFile.WriteDataToFile hFile, VarPtr(Me.getDIBArrayWidth), 4&
+        
+    'And finally, the pixel data.  Start by retrieving two key items of business: a pointer to this DIB's raw pixel data,
+    ' and the total length of that pixel data.
+    Dim tmpDIBPointer As Long, tmpDIBLength As Long
+    Me.retrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
+        
+    'If compression has been requested, and zLib is available, we'll shrink the DIB data down before writing it.
+    If toCompress Then
+        
+        If g_ZLibEnabled Then
+            
+            'Compress that 1D array
+            Dim compressedImageData() As Byte, compressedSize As Long
+            
+            'If compression was successful, write out the compressed data to file
+            If Plugin_zLib_Interface.compressNakedPointerToArray(tmpDIBPointer, tmpDIBLength, compressedImageData, compressedSize) Then
+            
+                'Mark the data as compressed
+                cFile.WriteDataToFile hFile, VarPtr(toCompress), 2&
+                
+                'Write the original size of the array, followed by the compressed size, followed by the image data itself.  (The array sizes will
+                ' help us automatically create intelligently-sized buffers at decompression time.)
+                cFile.WriteDataToFile hFile, VarPtr(tmpDIBLength), 4&
+                cFile.WriteDataToFile hFile, VarPtr(compressedSize), 4&
+                cFile.WriteDataToFile hFile, VarPtr(compressedImageData(0)), compressedSize
+                            
+            'If compression failed, write uncompressed data instead.
+            Else
+                
+                Message "Compression failed (unspecified zLib plugin error).  Uncompressed data written instead."
+                toCompress = False
+                cFile.WriteDataToFile hFile, VarPtr(toCompress), 2&
+                cFile.WriteDataToFile hFile, tmpDIBPointer, tmpDIBLength
+                
+            End If
+            
+        Else
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  pdDIB.writeToFile requested zLib compression, but zLib is missing or disabled.  Data will not be compressed!"
+            #End If
+            
+            toCompress = False
+            cFile.WriteDataToFile hFile, VarPtr(toCompress), 2&
+            cFile.WriteDataToFile hFile, tmpDIBPointer, tmpDIBLength
+            
+        End If
+        
+        'Immediately free our temporary array
+        Erase compressedImageData
+        
+    'If compression has not been requested, or zLib is unavailable, we can dump the raw image data to file as-is.
+    Else
+        
+        cFile.WriteDataToFile hFile, VarPtr(toCompress), 2&
+        cFile.WriteDataToFile hFile, tmpDIBPointer, tmpDIBLength
+        
+    End If
+        
     'If this is not an embedding, close the file now
-    If Not embedInFile Then Close #fileNum
+    If Not embedInFile Then cFile.CloseFileHandle hFile
 
 End Function
 
@@ -1234,56 +1270,88 @@ Public Sub writeToBitmapFile(ByRef dstFilename As String)
 
     'First, make sure this DIB actually contains image data
     If Not Me.hasImage() Then Exit Sub
-        
+    
     'Calculate the size of a scanline
     Dim slWidth As Long
-    slWidth = ((m_dibWidth * m_dibColorDepth + 31) \ 32) * 4
+    
+    If Me.getDIBColorDepth = 32 Then
+        slWidth = Me.getDIBArrayWidth
+    Else
+        slWidth = ((m_dibWidth * m_dibColorDepth + 31) \ 32) * 4
+    End If
     
     'A valid bitmap header consists of two parts: a file header, and an image header.
     Dim bmpFileHeader As BITMAPFILEHEADER
-    Dim bmpInfoHeader As BITMAPINFO
+    Dim bmpInfoHeader As BITMAPINFOHEADER
     
     'Build the file header first
     With bmpFileHeader
-        .Type = &H4D42 'BMP identifier
-        .Size = Len(bmpFileHeader) + (slWidth * m_dibHeight) 'Length of the file
-        .OffBits = Len(bmpFileHeader) + Len(bmpInfoHeader) 'Length of the header area
+        
+        'BMP identifier
+        .Type = &H4D42
+        
+        'Length of the file
+        .Size = LenB(bmpFileHeader) + LenB(bmpInfoHeader) + (slWidth * Me.getDIBHeight)
+        
+        'Length of the header area (e.g. offset to the actual pixel data)
+        .OffBits = LenB(bmpFileHeader)
+        
     End With
     
     '...then the image header
-    With bmpInfoHeader.Header
+    With bmpInfoHeader
         .Size = 40
         .Planes = 1
-        .BitCount = m_dibColorDepth
-        .Width = m_dibWidth
-        .Height = m_dibHeight
+        .BitCount = Me.getDIBColorDepth()
+        .Width = Me.getDIBWidth()
+        .Height = Me.getDIBHeight()
     End With
     
-    'Finally, the image bytes
+    'Finally, the image bytes.  We call GetDIBits here because DIBs are upside-down, but we need to store them rightside-up in the BMP.
+    ' We could do this manually on a per-scanline basis, but this is more succinct.
     Dim iData() As Byte
     ReDim iData(0 To slWidth - 1, 0 To m_dibHeight - 1) As Byte
-    GetDIBits m_dibDC, m_dibHandle, 0, m_dibHeight, iData(0, 0), bmpInfoHeader, 0
+    GetDIBits m_dibDC, m_dibHandle, 0, m_dibHeight, iData(0, 0), bmpInfoHeader, 0&
     
     'With all our information in place, check to see if that file already exists. Delete it if necessary.
     If FileExist(dstFilename) Then Kill dstFilename
+    
+    'Writing the file is easy; just dump the two headers and image data into it!
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+
+    Dim hFile As Long
+    If cFile.CreateFileHandle(dstFilename, hFile, False, True, OptimizeSequentialAccess) Then
+    
+        With cFile
+            
+            'To avoid automatic struct alignment, we'll write out the header manually.
+            .WriteDataToFile hFile, VarPtr(bmpFileHeader.Type), 2&
+            .WriteDataToFile hFile, VarPtr(bmpFileHeader.Size), 4&
+
+            Dim reservedBytes As Long
+            .WriteDataToFile hFile, VarPtr(reservedBytes), 4&
+            .WriteDataToFile hFile, VarPtr(bmpFileHeader.OffBits), 4&
+            
+            'With the header finished, we add the lightweight BMP header and the actual pixel data
+            .WriteDataToFile hFile, VarPtr(bmpInfoHeader), LenB(bmpInfoHeader)
+            .WriteDataToFile hFile, VarPtr(iData(0, 0)), slWidth * m_dibHeight
+            
+        End With
         
-    Dim fileNum As Integer
-    fileNum = FreeFile
-    
-    'Open the file and dump the two headers and image data into it
-    Open dstFilename For Binary As #fileNum
-    
-        'Headers
-        Put #fileNum, 1, bmpFileHeader
-        Put #fileNum, , bmpInfoHeader
+        'That's it!
+        cFile.CloseFileHandle hFile
+
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "pdDIB.writeToBitmapFile successfully wrote " & dstFilename & "."
+        #End If
+
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  pdDIB.writeToBitmapFile failed to create a valid file handle for " & dstFilename & ".  Write abandoned."
+        #End If
+    End If
         
-        'Image data
-        Put #fileNum, , iData()
-        
-    Close #fileNum
-    
-    Erase iData
-    
 End Sub
 
 'As a helper to external functions, this sub can be used to fill a destination array with a copy the image's current data.

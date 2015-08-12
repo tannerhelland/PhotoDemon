@@ -44,7 +44,7 @@ Public Function displaySelectionDialog(ByVal typeOfDialog As SelectionDialogType
     FormSelectionDialogs.showDialog typeOfDialog
     
     displaySelectionDialog = FormSelectionDialogs.DialogResult
-    ReturnValue = FormSelectionDialogs.ParamValue
+    ReturnValue = FormSelectionDialogs.paramValue
     
     Unload FormSelectionDialogs
     Set FormSelectionDialogs = Nothing
@@ -1225,6 +1225,7 @@ Public Function getSelectionSubPanelFromSelectionShape(ByRef srcImage As pdImage
             getSelectionSubPanelFromSelectionShape = 5
         
         Case Else
+            'Debug.Print "WARNING!  Selection_Handler.getSelectionSubPanelFromSelectionShape() was called, despite a selection not being active!"
             getSelectionSubPanelFromSelectionShape = -1
     
     End Select

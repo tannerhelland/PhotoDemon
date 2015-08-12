@@ -119,6 +119,16 @@ Public Function compressNakedPointerToArray(ByVal srcPointer As Long, ByVal srcL
     
 End Function
 
+'Given arbitrary pointers to both source and destination buffers, decompress a zLib stream.  Obviously, it's assumed the caller
+' has knowledge of the size required by the destination buffer (e.g. the decompressed data size was previously stored in a
+' file or something), because this function will not modify any buffer sizes.
+Public Function decompressNakedPointers(ByVal srcPointer As Long, ByVal srcLength As Long, ByVal dstPointer As Long, ByVal dstLength As Long) As Boolean
+    
+    'Decompress the data using zLib
+    decompressNakedPointers = CBool(uncompress(ByVal dstPointer, dstLength, ByVal srcPointer, srcLength) = 0)
+    
+End Function
+
 'Fill a destination array with the compressed version of a source array.  Also, ask for the original size,
 ' which allows us to avoid wasting time creating poorly sized buffers.
 Public Function decompressArray(ByRef srcArray() As Byte, ByRef dstArray() As Byte, ByRef origSize As Long) As Boolean

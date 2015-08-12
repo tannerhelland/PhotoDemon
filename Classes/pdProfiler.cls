@@ -221,7 +221,7 @@ Public Sub stopProfiling()
 End Sub
 
 'Generate a report on this profile instance.  Optional parameters may be added in the future to make the data easier to use.
-Public Sub generateProfileReport(Optional ByVal writeToFile As Boolean = False)
+Public Sub generateProfileReport(Optional ByVal alsoWriteToFile As Boolean = False)
     
     'For convenience, assemble the report into one giant string.  We will decide where to stick the data later.
     Dim reportString As String
@@ -291,7 +291,7 @@ Public Sub generateProfileReport(Optional ByVal writeToFile As Boolean = False)
     reportString = reportString & vbCrLf & "-- End of timing report --" & vbCrLf
     
     'If an output path was specified, write the timing report out to file now
-    If writeToFile Then
+    If alsoWriteToFile Then
     
         Dim logFile As String
         logFile = getReportFilename()
