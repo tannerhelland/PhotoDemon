@@ -1290,7 +1290,7 @@ Public Function getNumOfHiddenLayers() As Long
 End Function
 
 'Estimate the RAM usage for this image, based on the number of layers and the size of each layer
-Public Function estimateRAMUsage() As Long
+Public Function estimateRAMUsage() As Double
 
     estimateRAMUsage = 0
 

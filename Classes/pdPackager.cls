@@ -1603,10 +1603,37 @@ Public Function getNodeDataByID(ByVal targetNodeID As Long, ByVal useHeaderBuffe
     Next i
     
     'If a matching node was found, use getNodeDataByIndex() to retrieve its data
-    If nodeIndex > 0 Then
+    If nodeIndex >= 0 Then
         getNodeDataByID = getNodeDataByIndex(nodeIndex, useHeaderBuffer, dstArray(), disableChecksumValidation)
     Else
         getNodeDataByID = False
+    End If
+
+End Function
+
+Public Function getNodeDataByID_UnsafeDstPointer(ByVal targetNodeID As Long, ByVal useHeaderBuffer As Boolean, ByVal dstPointer As Long, Optional ByVal disableChecksumValidation As Boolean = False) As Boolean
+
+    'Search the node array for a matching ID
+    Dim i As Long, nodeIndex As Long
+    nodeIndex = -1
+    
+    For i = 0 To UBound(m_NodeDirectory)
+    
+        If targetNodeID = m_NodeDirectory(i).NodeID Then
+        
+            'This node is the one!
+            nodeIndex = i
+            Exit For
+        
+        End If
+    
+    Next i
+    
+    'If a matching node was found, use getNodeDataByIndex() to retrieve its data
+    If nodeIndex >= 0 Then
+        getNodeDataByID_UnsafeDstPointer = getNodeDataByIndex_UnsafeDstPointer(nodeIndex, useHeaderBuffer, dstPointer, disableChecksumValidation)
+    Else
+        getNodeDataByID_UnsafeDstPointer = False
     End If
 
 End Function
@@ -1631,10 +1658,8 @@ Public Function getNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
         dataOriginalSize = m_NodeDirectory(nodeIndex).NodeDataOriginalSize
     End If
     
-    'Move the data buffer position to the relevant offset, then retrieve the data arary
-    Dim tmpDataArray() As Byte
+    'Move the data buffer position to the relevant offset for the requested chunk
     m_DataBuffer.Position = dataOffset
-    tmpDataArray = m_DataBuffer.ReadBytes(dataPackedSize)
     
     'If the original size and packed size are different, assume the data is compressed.
     If (dataPackedSize <> dataOriginalSize) Then
@@ -1642,12 +1667,12 @@ Public Function getNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
         'Make sure zLib is available.  If it isn't, the user is screwed.
         If m_ZLibAvailable Then
         
-            'Resize the temporary buffer to the original size of the data
+            'Resize the destination buffer to the original size of the data
             ReDim dstArray(0 To dataOriginalSize - 1) As Byte
             
             'Use zLib to decompress the data
             Dim zLibResult As Long
-            zLibResult = uncompress(dstArray(0), dataOriginalSize, tmpDataArray(0), UBound(tmpDataArray) + 1)
+            zLibResult = uncompress(dstArray(0), dataOriginalSize, ByVal m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize)
             
             If zLibResult <> 0 Then
                 
@@ -1665,9 +1690,9 @@ Public Function getNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
         
         End If
         
-    'The data is uncompressed.  No further processing is necessary.
+    'If the data is uncompressed, make a direct copy of the corresponding chunk of the master buffer
     Else
-        dstArray = tmpDataArray
+        dstArray = m_DataBuffer.ReadBytes(dataPackedSize)
     End If
     
     'Retrieve the stored checksum value for this node (if any).
@@ -1707,6 +1732,110 @@ Public Function getNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
     
     'If we made it all the way here, the node has been successfully loaded!
     getNodeDataByIndex = True
+
+End Function
+
+'WARNING!  This function is for expert users only.  Do not use it unless you fully understand the repercussions described below.
+'
+'Given a node index and a target buffer region (header or data), blindly copy the contents of that data buffer to a pointer supplied by the user.
+' As with the normal getNodeDataByIndex() function, decompression and checksum validation is handled automatically, depending on the contents of the node.
+'
+'What makes this function different is that it completely relies on the caller to create a correctly sized buffer for the extracted data.
+' For common cases, this is simply not possible, as the caller does not have enough knowledge necessary to prep such a buffer.  Instead, it relies
+' on pdPackager to construct the destination buffer for it, using the size values stored inside the pdPackage instance.
+'
+'PhotoDemon is unique in this regard, as it can correctly calculate the size of raster layer pixel buffers (because it knows the associated
+' width, height, stride and color depth of the buffer).  Because PD has to create a matching DIB in advance, a destination buffer of perfect size
+' is already implicitly allocated, so there is no need for a temporary VB array to shuttle the data around.
+'
+'That said, note that PD only uses this function sparingly, when it is *absolutely certain of its safety*.  You would be wise to do the same.
+' An incorrectly allocated destination buffer will cause mass destruction (and a guaranteed hard crash), so do not use this function ignorantly.
+Public Function getNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByVal useHeaderBuffer As Boolean, ByVal dstPointer As Long, Optional ByVal disableChecksumValidation As Boolean = False) As Boolean
+
+    'Retrieve the offset, packed size, and original (unpacked) size of the target data
+    Dim dataOffset As Long, dataPackedSize As Long, dataOriginalSize As Long
+    
+    If useHeaderBuffer Then
+        dataOffset = m_NodeDirectory(nodeIndex).NodeHeaderOffset
+        dataPackedSize = m_NodeDirectory(nodeIndex).NodeHeaderPackedSize
+        dataOriginalSize = m_NodeDirectory(nodeIndex).NodeHeaderOriginalSize
+    Else
+        dataOffset = m_NodeDirectory(nodeIndex).NodeDataOffset
+        dataPackedSize = m_NodeDirectory(nodeIndex).NodeDataPackedSize
+        dataOriginalSize = m_NodeDirectory(nodeIndex).NodeDataOriginalSize
+    End If
+    
+    'Move the data buffer position to the relevant offset for the requested chunk
+    m_DataBuffer.Position = dataOffset
+    
+    'If the original size and packed size are different, assume the data is compressed.
+    If (dataPackedSize <> dataOriginalSize) Then
+        
+        'Make sure zLib is available.  If it isn't, the user is screwed.
+        If m_ZLibAvailable Then
+            
+            'Use zLib to decompress the data directly into the pointer we've been given
+            Dim zLibResult As Long
+            zLibResult = uncompress(ByVal dstPointer, dataOriginalSize, ByVal m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize)
+            
+            If zLibResult <> 0 Then
+                
+                raiseInternalMessage "File node is compressed, but zLib failed to decompress it.  Error code returned: %1", zLibResult
+                getNodeDataByIndex_UnsafeDstPointer = False
+                Exit Function
+            
+            End If
+            
+        Else
+        
+            raiseInternalMessage "File node is compressed, but zLib is missing.  Decompression impossible; abandoning load."
+            getNodeDataByIndex_UnsafeDstPointer = False
+            Exit Function
+        
+        End If
+        
+    'If the data is uncompressed, make a direct copy of the corresponding chunk of the master buffer
+    Else
+        CopyMemory dstPointer, m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize
+    End If
+    
+    'Retrieve the stored checksum value for this node (if any).
+    Dim checkSumOriginal As Long
+    
+    If useHeaderBuffer Then
+        checkSumOriginal = m_NodeDirectory(nodeIndex).NodeHeaderAdler32
+    Else
+        checkSumOriginal = m_NodeDirectory(nodeIndex).NodeDataAdler32
+    End If
+    
+    'Apply checksum validation now, unless one of three criteria is met:
+    ' 1) The node does not contain a checksum to validate against
+    ' 2) The user has forcibly disabled checksumming this node
+    ' 3) zLib is missing
+    If (checkSumOriginal <> 0) And (Not disableChecksumValidation) And m_ZLibAvailable Then
+    
+        'Like CRC32 functions, Adler checksums accept a previous value as their initial input.  If you don't want to supply
+        ' this, you can supply a null buffer to get the library's recommended initial value.  (That's what we do here.)
+        Dim zLibAdlerSum As Long
+        zLibAdlerSum = checkSumArbitraryData(dstPointer, dataOriginalSize)
+        
+        'If the checksums do not match, fail the function and exit
+        If checkSumOriginal <> zLibAdlerSum Then
+            raiseInternalMessage "Checksum failed for node #" & nodeIndex & ".  Expected value: " & checkSumOriginal & ", calculated value: " & zLibAdlerSum & ". Load abandoned."
+            getNodeDataByIndex_UnsafeDstPointer = False
+            Exit Function
+        Else
+            If useHeaderBuffer Then
+                Debug.Print "Checksum successfully verified for node #" & nodeIndex & " (header)."
+            Else
+                Debug.Print "Checksum successfully verified for node #" & nodeIndex & " (data)."
+            End If
+        End If
+        
+    End If
+    
+    'If we made it all the way here, the node has been successfully loaded!
+    getNodeDataByIndex_UnsafeDstPointer = True
 
 End Function
 

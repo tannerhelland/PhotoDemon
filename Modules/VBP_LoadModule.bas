@@ -1860,41 +1860,53 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
                 Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
             End If
             
-            'Next, retrieve the layer's raw DIB data
-            If pdiReader.getNodeDataByIndex(i + 1, False, retBytes, sourceIsUndoFile) Then
+            'How we extract the rest of the layer's data varies by layer type.  Raster layers can skip the need for a temporary buffer,
+            ' because we've already created a DIB with a built-in buffer for the pixel data.
+            '
+            'Other layer types (e.g. vector layers) are tiny so a temporary buffer does not matter; also, unlike raster buffers, we cannot
+            ' easily predict the buffer size in advance, so we rely on pdPackage to do it for us
+            Dim nodeLoadedSuccessfully As Boolean
+            nodeLoadedSuccessfully = False
+            
+            'Image (raster) layers
+            If dstImage.getLayerByIndex(i).isLayerRaster Then
                 
-                'How we handle this data varies by layer type.
+                'We are going to load the node data directly into the DIB, completely bypassing the need for a temporary array.
+                Dim tmpDIBPointer As Long, tmpDIBLength As Long
+                dstImage.getLayerByIndex(i).layerDIB.retrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
                 
-                'Image (raster) layers
-                If dstImage.getLayerByIndex(i).isLayerRaster Then
+                nodeLoadedSuccessfully = pdiReader.getNodeDataByIndex_UnsafeDstPointer(i + 1, False, tmpDIBPointer, sourceIsUndoFile)
+            
+            'Text and other vector layers
+            ElseIf dstImage.getLayerByIndex(i).isLayerVector Then
                 
-                    'This chunk of data is a raw stream of the target layer's DIB.  Ask the target layer's DIB to copy
-                    ' the byte array over its existing DIB data (which will have been initialized to zero by the
-                    ' CreateNewLayerFromXML() call, above).
-                    dstImage.getLayerByIndex(i).layerDIB.copyStreamOverImageArray retBytes
-                    
-                'Text and other vector layers
-                ElseIf dstImage.getLayerByIndex(i).isLayerVector Then
-                    
+                If pdiReader.getNodeDataByIndex(i + 1, False, retBytes, sourceIsUndoFile) Then
+                
                     'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
                     ' as vector layers were implemented after pdPackager gained full Unicode compatibility.
                     retString = Space$((UBound(retBytes) + 1) \ 2)
                     CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
                     
                     'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-                    If Not dstImage.getLayerByIndex(i).CreateVectorDataFromXML(retString) Then
+                    If dstImage.getLayerByIndex(i).CreateVectorDataFromXML(retString) Then
+                        nodeLoadedSuccessfully = True
+                    Else
                         Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
                     End If
-                        
-                'In the future, additional layer types can be handled here
+                    
                 Else
-                    Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstImage.getLayerByIndex(i).getLayerType
-                
+                    Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
                 End If
-                
-                'Notify the parent of the change
+                    
+            'In the future, additional layer types can be handled here
+            Else
+                Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstImage.getLayerByIndex(i).getLayerType
+            
+            End If
+            
+            'If successful, notify the parent of the change
+            If nodeLoadedSuccessfully Then
                 dstImage.notifyImageChanged UNDO_LAYER, i
-                
             Else
                 Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
             End If
@@ -2129,38 +2141,52 @@ Public Function LoadSingleLayerFromPDI(ByVal PDIPath As String, ByRef dstLayer A
         'If this is not a header-only operation, repeat the above steps, but for the layer DIB this time
         If Not loadHeaderOnly Then
         
-            If pdiReader.getNodeDataByID(targetLayerID, False, retBytes, True) Then
+            'How we extract this data varies by layer type.  Raster layers can skip the need for a temporary buffer, because we've
+            ' already created a DIB with a built-in buffer for the pixel data.
+            '
+            'Other layer types (e.g. vector layers) are tiny so a temporary buffer does not matter; also, unlike raster buffers, we cannot
+            ' easily predict the buffer size in advance, so we rely on pdPackage to do it for us
+            Dim nodeLoadedSuccessfully As Boolean
+            nodeLoadedSuccessfully = False
             
-                'How we handle this data varies by layer type.
+            'Image (raster) layers
+            If dstLayer.isLayerRaster Then
                 
-                'Image (raster) layers
-                If dstLayer.isLayerRaster Then
+                'We are going to load the node data directly into the DIB, completely bypassing the need for a temporary array.
+                Dim tmpDIBPointer As Long, tmpDIBLength As Long
+                dstLayer.layerDIB.retrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
                 
-                    'This chunk of data is a raw stream of the target layer's DIB.  Ask the target layer's DIB to copy
-                    ' the byte array over its existing DIB data (which will have been initialized to zero by the
-                    ' CreateNewLayerFromXML() call, above).
-                    dstLayer.layerDIB.copyStreamOverImageArray retBytes
+                nodeLoadedSuccessfully = pdiReader.getNodeDataByID_UnsafeDstPointer(targetLayerID, False, tmpDIBPointer, True)
                     
-                'Text and other vector layers
-                ElseIf dstLayer.isLayerVector Then
-                    
+            'Text and other vector layers
+            ElseIf dstLayer.isLayerVector Then
+                
+                If pdiReader.getNodeDataByID(targetLayerID, False, retBytes, True) Then
+                
                     'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
                     ' as vector layers were implemented after pdPackager was given Unicode compatibility.
                     retString = Space$((UBound(retBytes) + 1) \ 2)
                     CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
                     
                     'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-                    If Not dstLayer.CreateVectorDataFromXML(retString) Then
+                    If dstLayer.CreateVectorDataFromXML(retString) Then
+                        nodeLoadedSuccessfully = True
+                    Else
                         Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
                     End If
                 
-                'In the future, additional layer types can be handled here
                 Else
-                    Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstLayer.getLayerType
-                
+                    Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
                 End If
+            
+            'In the future, additional layer types can be handled here
+            Else
+                Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstLayer.getLayerType
+            
+            End If
                 
-                'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+            'If successful, notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+            If nodeLoadedSuccessfully Then
                 dstLayer.notifyOfDestructiveChanges
                 
             'Bytes could not be read, or alternately, checksums didn't match for the first node.
@@ -2245,42 +2271,57 @@ Public Function LoadPhotoDemonLayer(ByVal PDIPath As String, ByRef dstLayer As p
         ' (a raw DIB stream for raster layers, or an XML string for vector/text layers)
         If Not loadHeaderOnly Then
         
-            If pdiReader.getNodeDataByIndex(0, False, retBytes, True) Then
+            'How we extract this data varies by layer type.  Raster layers can skip the need for a temporary buffer, because we've
+            ' already created a DIB with a built-in buffer for the pixel data.
+            '
+            'Other layer types (e.g. vector layers) are tiny so a temporary buffer does not matter; also, unlike raster buffers, we cannot
+            ' easily predict the buffer size in advance, so we rely on pdPackage to do it for us
+            Dim nodeLoadedSuccessfully As Boolean
+            nodeLoadedSuccessfully = False
             
-                'How we handle this data varies by layer type.
+            'Image (raster) layers
+            If dstLayer.isLayerRaster Then
                 
-                'Image (raster) layers
-                If dstLayer.isLayerRaster Then
+                'We are going to load the node data directly into the DIB, completely bypassing the need for a temporary array.
+                Dim tmpDIBPointer As Long, tmpDIBLength As Long
+                dstLayer.layerDIB.retrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
                 
-                    'This chunk of data is a raw stream of the target layer's DIB.  Ask the target layer's DIB to copy
-                    ' the byte array over its existing DIB data (which will have been initialized to zero by the
-                    ' CreateNewLayerFromXML() call, above).
-                    dstLayer.layerDIB.copyStreamOverImageArray retBytes
-                    
-                'Text and other vector layers
-                ElseIf dstLayer.isLayerVector Then
-                    
+                nodeLoadedSuccessfully = pdiReader.getNodeDataByIndex_UnsafeDstPointer(0, False, tmpDIBPointer, True)
+                
+            'Text and other vector layers
+            ElseIf dstLayer.isLayerVector Then
+                
+                If pdiReader.getNodeDataByIndex(0, False, retBytes, True) Then
+                
                     'Convert the byte array to a Unicode string.  Note that we do not need an ASCII branch for old versions,
                     ' as vector layers were implemented after pdPackager was given Unicode compatibility.
                     retString = Space$((UBound(retBytes) + 1) \ 2)
                     CopyMemory ByVal StrPtr(retString), ByVal VarPtr(retBytes(0)), UBound(retBytes) + 1
                     
                     'Pass the string to the target layer, which will read the XML data and initialize itself accordingly
-                    If Not dstLayer.CreateVectorDataFromXML(retString) Then
+                    If dstLayer.CreateVectorDataFromXML(retString) Then
+                        nodeLoadedSuccessfully = True
+                    Else
                         Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
                     End If
-                
-                'In the future, additional layer types can be handled here
+                    
                 Else
-                    Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstLayer.getLayerType
-                
+                    Err.Raise PDP_GENERIC_ERROR, , "PDI Node (vector type) could not be read; data invalid or checksums did not match."
                 End If
+            
+            'In the future, additional layer types can be handled here
+            Else
+                Debug.Print "WARNING! Unknown layer type exists in this PDI file: " & dstLayer.getLayerType
+            
+            End If
                 
-                'Notify the target layer that its DIB data has been changed; the layer will use this to regenerate various internal caches
+            'If the load was successful, notify the target layer that its DIB data has been changed; the layer will use this to
+            ' regenerate various internal caches.
+            If nodeLoadedSuccessfully Then
                 dstLayer.notifyOfDestructiveChanges
                 
-            'Bytes could not be read, or alternately, checksums didn't match.  (Note that checksums are currently disabled
-            ' for this function, for performance reasons, but I'm leaving this check in case we someday decide to re-enable them.)
+            'Failure means package bytes could not be read, or alternately, checksums didn't match.  (Note that checksums are currently
+            ' disabled for this function, for performance reasons, but I'm leaving this check in case we someday decide to re-enable them.)
             Else
                 Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
             End If

@@ -2292,11 +2292,11 @@ Public Function syncInternalDIB() As Boolean
 End Function
 
 'Estimate the RAM usage for this layer, based on known heavy memory users (layer DIB, in particular)
-Public Function estimateRAMUsage() As Long
+Public Function estimateRAMUsage() As Double
 
     'Calculate the raw memory size of both the layer and the cached thumbnail DIB, if any
     If Not (layerDIB Is Nothing) Then estimateRAMUsage = layerDIB.getDIBArrayWidth * layerDIB.getDIBHeight
-    If Not (tmpDIB Is Nothing) Then estimateRAMUsage = tmpDIB.getDIBArrayWidth * tmpDIB.getDIBHeight
+    If Not (tmpDIB Is Nothing) Then estimateRAMUsage = estimateRAMUsage + tmpDIB.getDIBArrayWidth * tmpDIB.getDIBHeight
     If Not (layerThumbnail Is Nothing) Then estimateRAMUsage = estimateRAMUsage + layerThumbnail.getDIBArrayWidth * layerThumbnail.getDIBHeight
     
     'Assume a 10% overhead for this class instance and other miscellaneous layer data
