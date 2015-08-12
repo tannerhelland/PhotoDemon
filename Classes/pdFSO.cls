@@ -1463,8 +1463,16 @@ End Function
 ' (The write will be performed synchronously, FYI.)
 ' Returns: TRUE if successful; FALSE otherwise.
 Public Function WriteDataToFile(ByVal dstHandle As Long, ByVal srcDataPointer As Long, ByVal numOfBytesToWrite As Long) As Boolean
+    
     Dim tmpReturn As Long
     WriteDataToFile = CBool(WriteFile(dstHandle, srcDataPointer, numOfBytesToWrite, tmpReturn, 0&) <> 0)
+    
+    #If DEBUGMODE = 1 Then
+        If Not WriteDataToFile Then
+            pdDebug.LogAction "WARNING!  WriteDataToFile failed to write to handle " & dstHandle & ".  Relevant error is " & Err.LastDllError & "."
+        End If
+    #End If
+    
 End Function
 
 'Write a string out to text file.  UTF-8 is assumed, but old-style ANSI can also be used by setting the optional useUTF8 parameter to FALSE.
