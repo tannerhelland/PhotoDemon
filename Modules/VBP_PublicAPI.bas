@@ -98,7 +98,7 @@ Public Declare Function InternetGetLastResponseInfo Lib "wininet.dll" Alias "Int
 Public Declare Function InternetOpen Lib "wininet.dll" Alias "InternetOpenA" (ByVal lpszAgent As String, ByVal dwAccessType As Long, ByVal lpszProxyName As String, ByVal lpszProxyBypass As String, ByVal dwFlags As Long) As Long
 Public Declare Function InternetOpenUrl Lib "wininet.dll" Alias "InternetOpenUrlA" (ByVal hInternetSession As Long, ByVal lpszUrl As String, ByVal lpszHeaders As String, ByVal dwHeadersLength As Long, ByVal dwFlags As Long, ByVal dwContext As Long) As Long
 Public Declare Function InternetCloseHandle Lib "wininet.dll" (ByVal hInet As Long) As Integer
-Public Declare Function InternetReadFile Lib "wininet.dll" (ByVal hFile As Long, ByVal lpBuffer As String, ByVal dwNumberOfBytesToRead As Long, lNumberOfBytesRead As Long) As Integer
+Public Declare Function InternetReadFile Lib "wininet.dll" (ByVal hFile As Long, ByVal ptrToBuffer As Long, ByVal dwNumberOfBytesToRead As Long, ByRef lNumberOfBytesRead As Long) As Integer
 Public Declare Function HttpQueryInfo Lib "wininet.dll" Alias "HttpQueryInfoA" (ByVal hHttpRequest As Long, ByVal lInfoLevel As Long, ByRef sBuffer As Any, ByRef lBufferLength As Long, ByRef lIndex As Long) As Boolean
 
 'Constants used by the Windows Internet APIs

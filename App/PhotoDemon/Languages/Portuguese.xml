@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.71</langversion>
+<langversion>6.7.72</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -11987,7 +11987,7 @@ or os menus File> Open e File> Import.</translation>
 <translation>Checksum falhou por nó #</translation>
 </phrase>
 
-<!-- pdPackager.cls contains 12 phrases.  One was a duplicate of an existing phrase, so only 11 new phrases were written to file. -->
+<!-- pdPackager.cls contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for pdPackager.cls-->
 
@@ -14113,8 +14113,8 @@ or os menus File> Open e File> Import.</translation>
 
 <phrasecount>2440</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4211 phrases. -->
-<!-- 1771 are duplicates, so only 2440 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4214 phrases. -->
+<!-- 1774 are duplicates, so only 2440 unique phrases have been written to file. -->
 <!-- These 2440 phrases contain approximately 13315 total words. -->
 
 </pdData>

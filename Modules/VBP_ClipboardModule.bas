@@ -374,7 +374,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
         
         tmpDownloadFile = Trim$(Clipboard.GetText)
         
-        If (StrComp(UCase$(Left$(tmpDownloadFile, 7)), "HTTP://", vbBinaryCompare) = 0) Or (StrComp(UCase$(Left$(tmpDownloadFile, 6)), "FTP://", vbBinaryCompare) = 0) Then
+        If (StrComp(UCase$(Left$(tmpDownloadFile, 4)), "HTTP", vbBinaryCompare) = 0) Or (StrComp(UCase$(Left$(tmpDownloadFile, 6)), "FTP://", vbBinaryCompare) = 0) Then
         
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Probably URL found on clipboard.  Attempting to retrieve data..."
@@ -597,7 +597,7 @@ Public Function loadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
         Dim tmpDownloadFile As String
         tmpDownloadFile = Trim$(Data.GetData(vbCFText))
         
-        If (StrComp(UCase$(Left$(tmpDownloadFile, 7)), "HTTP://", vbBinaryCompare) = 0) Or (StrComp(UCase$(Left$(tmpDownloadFile, 6)), "FTP://", vbBinaryCompare) = 0) Then
+        If (StrComp(UCase$(Left$(tmpDownloadFile, 7)), "HTTP://", vbBinaryCompare) = 0) Or (StrComp(UCase$(Left$(tmpDownloadFile, 8)), "HTTPS://", vbBinaryCompare) = 0) Or (StrComp(UCase$(Left$(tmpDownloadFile, 6)), "FTP://", vbBinaryCompare) = 0) Then
         
             Message "Image URL found on clipboard.  Attempting to download..."
             

@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.13</langversion>
+<langversion>6.6.14</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -11992,7 +11992,7 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 <translation>Checksum gagal untuk nod #</translation>
 </phrase>
 
-<!-- pdPackager.cls contains 12 phrases.  One was a duplicate of an existing phrase, so only 11 new phrases were written to file. -->
+<!-- pdPackager.cls contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for pdPackager.cls-->
 
@@ -14118,8 +14118,8 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrasecount>2440</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4211 phrases. -->
-<!-- 1771 are duplicates, so only 2440 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4214 phrases. -->
+<!-- 1774 are duplicates, so only 2440 unique phrases have been written to file. -->
 <!-- These 2440 phrases contain approximately 13315 total words. -->
 
 </pdData>

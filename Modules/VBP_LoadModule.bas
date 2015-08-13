@@ -94,7 +94,7 @@ Public Sub LoadTheProgram()
     CheckLoadingEnvironment
     
     If g_GDIPlusAvailable Then
-        If g_IsProgramCompiled Then m_LoadTime = 1.5 Else m_LoadTime = 1#
+        If g_IsProgramCompiled Then m_LoadTime = 1# Else m_LoadTime = 0.5
     Else
         m_LoadTime = 0#
     End If
