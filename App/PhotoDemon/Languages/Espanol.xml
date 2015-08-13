@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.74</langversion>
+<langversion>6.7.75</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -11987,7 +11987,7 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <translation>Suma de comprobación no para el nodo #</translation>
 </phrase>
 
-<!-- pdPackager.cls contains 12 phrases.  One was a duplicate of an existing phrase, so only 11 new phrases were written to file. -->
+<!-- pdPackager.cls contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for pdPackager.cls-->
 
@@ -14113,8 +14113,8 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <phrasecount>2440</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4211 phrases. -->
-<!-- 1771 are duplicates, so only 2440 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4214 phrases. -->
+<!-- 1774 are duplicates, so only 2440 unique phrases have been written to file. -->
 <!-- These 2440 phrases contain approximately 13315 total words. -->
 
 </pdData>

@@ -119,7 +119,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Import an image from the Internet; all that's required is a valid URL (must be prefaced with http:// or ftp://)
 Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
@@ -228,13 +228,18 @@ Public Function downloadURLToTempFile(ByVal URL As String) As String
     
     'Open the temporary file and begin downloading the image to it
     Message "Image URL verified.  Downloading image..."
-    Dim fileNum As Integer
-    fileNum = FreeFile
-    Open tmpFile For Binary As fileNum
+    
+    'pdFSO is used for Unicode-compatible file writing.  (It's also faster than VB's internal methods.)
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    Dim hFile As Long
+    If cFile.CreateFileHandle(tmpFile, hFile, True, True, OptimizeSequentialAccess) Then
     
         'Prepare a receiving buffer (this will be used to hold chunks of the image)
-        Dim Buffer As String
-        Buffer = Space(4096)
+        Const DEFAULT_BUFFER_SIZE As Long = 65536
+        Dim Buffer() As Byte
+        ReDim Buffer(0 To DEFAULT_BUFFER_SIZE - 1) As Byte
    
         'We will need to verify each chunk as its downloaded
         Dim chunkOK As Boolean
@@ -245,39 +250,44 @@ Public Function downloadURLToTempFile(ByVal URL As String) As String
         'This will track of how many bytes we've downloaded so far
         Dim totalBytesRead As Long
         totalBytesRead = 0
-   
+                
         Do
    
             'Read the next chunk of the image
-            chunkOK = InternetReadFile(hUrl, Buffer, Len(Buffer), numOfBytesRead)
+            chunkOK = InternetReadFile(hUrl, VarPtr(Buffer(0)), DEFAULT_BUFFER_SIZE, numOfBytesRead)
    
-            'If something went wrong, terminate
+            'If something goes horribly wrong, terminate the download
             If Not chunkOK Then
+                
                 pdMsgBox "%1 lost access to the Internet. Please double-check your Internet connection.  If the problem persists, try downloading the file manually using your Internet browser.", vbExclamation + vbApplicationModal + vbOKOnly, "Internet Connection Error", PROGRAMNAME
-                If FileExist(tmpFile) Then
-                    Close #fileNum
-                    Kill tmpFile
+                
+                If cFile.FileExist(tmpFile) Then
+                    cFile.CloseFileHandle hFile
+                    cFile.KillFile tmpFile
                 End If
+                
                 If hUrl Then InternetCloseHandle hUrl
                 If hInternetSession Then InternetCloseHandle hInternetSession
+                
                 SetProgBarVal 0
                 releaseProgressBar
                 downloadURLToTempFile = ""
                 Screen.MousePointer = 0
+                
                 Exit Function
+                
             End If
    
             'If the file is done, exit this loop
-            If numOfBytesRead = 0 Then
-                Exit Do
-            End If
-   
-            'If we've made it this far, assume we've received legitimate data.  Place that data into the file.
-            Put #fileNum, , Left$(Buffer, numOfBytesRead)
-   
+            If numOfBytesRead = 0 Then Exit Do
+            
+            'If we've made it this far, assume we've received legitimate data.  Place that data into the temp file.
+            cFile.WriteDataToFile hFile, VarPtr(Buffer(0)), numOfBytesRead
+               
             totalBytesRead = totalBytesRead + numOfBytesRead
             
             If downloadSize <> 0 Then
+            
                 SetProgBarVal totalBytesRead
                 
                 'Display a download update in the message area, but do not log it in the debugger (as there may be
@@ -293,8 +303,10 @@ Public Function downloadURLToTempFile(ByVal URL As String) As String
         'Carry on
         Loop
         
+    End If
+    
     'Close the temporary file
-    Close #fileNum
+    If hFile <> 0 Then cFile.CloseFileHandle hFile
     
     'Close this URL and Internet session
     If hUrl Then InternetCloseHandle hUrl
@@ -313,7 +325,7 @@ Public Function downloadURLToTempFile(ByVal URL As String) As String
         domainName = GetDomainName(URL)
         pdMsgBox "Unfortunately, %1 is preventing %2 from directly downloading this image. (Direct downloads are sometimes mistaken as hotlinking by misconfigured servers.)" & vbCrLf & vbCrLf & "You will need to download this file using your Internet browser, then manually load it into %2." & vbCrLf & vbCrLf & "I sincerely apologize for this inconvenience, but unfortunately there is nothing %2 can do about stingy server configurations.  :(", vbCritical + vbApplicationModal + vbOKOnly, "Download Unsuccessful", domainName, PROGRAMNAME
         
-        If FileExist(tmpFile) Then Kill tmpFile
+        If cFile.FileExist(tmpFile) Then cFile.KillFile tmpFile
         If hUrl Then InternetCloseHandle hUrl
         If hInternetSession Then InternetCloseHandle hInternetSession
         
@@ -350,7 +362,7 @@ Private Sub CmdOK_Click()
     Dim fullURL As String
     fullURL = txtURL
     
-    If (Left$(fullURL, 7) <> "http://") And (Left$(fullURL, 6) <> "ftp://") Then
+    If (LCase(Left$(fullURL, 7)) <> "http://") And (LCase(Left$(fullURL, 8)) <> "https://") And (LCase(Left$(fullURL, 6)) <> "ftp://") Then
         pdMsgBox "This URL is not valid.  Please make sure the URL begins with ""http://"" or ""ftp://"".", vbApplicationModal + vbOKOnly + vbExclamation, "Invalid URL"
         txtURL.selectAll
         Exit Sub
@@ -382,8 +394,8 @@ Private Sub Form_Load()
     Message "Waiting for user input..."
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
 
 End Sub
 

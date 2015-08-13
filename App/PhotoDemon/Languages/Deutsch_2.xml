@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (rk)</langname>
-<langversion>6.7.72</langversion>
+<langversion>6.7.73</langversion>
 <langstatus>Nicht abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -11987,7 +11987,7 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 <translation>Prüfsumme fehlgeschlagen für Knoten #</translation>
 </phrase>
 
-<!-- pdPackager.cls contains 12 phrases.  One was a duplicate of an existing phrase, so only 11 new phrases were written to file. -->
+<!-- pdPackager.cls contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for pdPackager.cls-->
 
@@ -14113,8 +14113,8 @@ oder das Menü "Datei > Öffnen" bzw. "Datei > Importieren".</translation>
 
 <phrasecount>2440</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4211 phrases. -->
-<!-- 1771 are duplicates, so only 2440 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4214 phrases. -->
+<!-- 1774 are duplicates, so only 2440 unique phrases have been written to file. -->
 <!-- These 2440 phrases contain approximately 13315 total words. -->
 
 </pdData>
