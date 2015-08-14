@@ -104,7 +104,10 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
     End If
     
     'Sanitize the calculated string to remove any potentially invalid characters
-    makeValidWindowsFilename sTitle
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    sTitle = cFile.makeValidWindowsFilename(sTitle)
     
     Dim sTitlePlusDate As String
     sTitlePlusDate = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
@@ -112,7 +115,7 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
     LoadFileAsNewImage sFile, False, sTitle, sTitlePlusDate
     
     'Erase the temp file
-    If FileExist(tmpFilename) Then Kill tmpFilename
+    If cFile.FileExist(tmpFilename) Then cFile.KillFile tmpFilename
     
     Message "Screen capture complete."
     

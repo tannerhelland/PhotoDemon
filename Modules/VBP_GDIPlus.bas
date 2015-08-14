@@ -368,7 +368,7 @@ Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal Token As Long) As 
 
 'Load image from file, process said file, etc.
 Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, ByRef gpImage As Long) As Long
-Private Declare Function GdipLoadImageFromFileICM Lib "gdiplus" (ByVal srcFilename As String, ByRef gpImage As Long) As Long
+Private Declare Function GdipLoadImageFromFileICM Lib "gdiplus" (ByVal srcFileName As String, ByRef gpImage As Long) As Long
 Private Declare Function GdipGetImageFlags Lib "gdiplus" (ByVal gpBitmap As Long, ByRef gpFlags As Long) As Long
 Private Declare Function GdipCloneBitmapAreaI Lib "gdiplus" (ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal iPixelFormat As Long, ByVal srcBitmap As Long, ByRef dstBitmap As Long) As GDIPlusStatus
 Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal lStride As Long, ByVal ePixelFormat As Long, ByRef Scan0 As Any, ByRef pBitmap As Long) As Long
@@ -1439,14 +1439,14 @@ Public Sub GDIPlusConvertDIB24to32(ByRef dstDIB As pdDIB)
 End Sub
 
 'Use GDI+ to load an image file.  Pretty bare-bones, but should be sufficient for any supported image type.
-Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As pdDIB) As Boolean
+Public Function GDIPlusLoadPicture(ByVal srcFileName As String, ByRef dstDIB As pdDIB) As Boolean
 
     'Used to hold the return values of various GDI+ calls
     Dim GDIPlusReturn As Long
       
     'Use GDI+ to load the image
     Dim hImage As Long
-    GDIPlusReturn = GdipLoadImageFromFile(StrPtr(srcFilename), hImage)
+    GDIPlusReturn = GdipLoadImageFromFile(StrPtr(srcFileName), hImage)
     
     If (GDIPlusReturn <> [OK]) Then
         GdipDisposeImage hImage
@@ -2017,7 +2017,10 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     'With our encoder prepared, we can finally continue with the save
     
     'Check to see if a file already exists at this location
-    If FileExist(dstFilename) Then Kill dstFilename
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.FileExist(dstFilename) Then cFile.KillFile dstFilename
     
     Message "Saving the file..."
     
@@ -2105,7 +2108,10 @@ Public Function GDIPlusQuickSavePNG(ByVal dstFilename As String, ByRef srcDIB As
     CopyMemory aEncParams(1), uEncParams, Len(uEncParams)
     
     'Check to see if a file already exists at this location
-    If FileExist(dstFilename) Then Kill dstFilename
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.FileExist(dstFilename) Then cFile.KillFile dstFilename
     
     'Perform the encode and save
     GDIPlusReturn = GdipSaveImageToFile(hImage, StrConv(dstFilename, vbUnicode), uEncCLSID, aEncParams(1))

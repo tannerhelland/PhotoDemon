@@ -866,24 +866,27 @@ Public Sub clearUndos()
     'If Undo data has already been cleared, exit
     If undoTotal = 0 Then Exit Sub
     
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
     'Destroy every potential Undo file
     Dim i As Long
     For i = 0 To undoTotal
         
         'Check image data first...
-        If FileExist(generateUndoFilename(i)) Then Kill generateUndoFilename(i)
+        If cFile.FileExist(generateUndoFilename(i)) Then cFile.KillFile generateUndoFilename(i)
         
         '...followed by layer data
-        If FileExist(generateUndoFilename(i) & ".layer") Then Kill generateUndoFilename(i) & ".layer"
+        If cFile.FileExist(generateUndoFilename(i) & ".layer") Then cFile.KillFile generateUndoFilename(i) & ".layer"
         
         '...followed by selection data
-        If FileExist(generateUndoFilename(i) & ".selection") Then Kill generateUndoFilename(i) & ".selection"
+        If cFile.FileExist(generateUndoFilename(i) & ".selection") Then cFile.KillFile generateUndoFilename(i) & ".selection"
         
     Next i
     
     'Destroy the header file and preview image, if any
-    If FileExist(generateUndoHeaderFilename()) Then Kill generateUndoHeaderFilename()
-    If FileExist(generateUndoHeaderFilename() & ".asp") Then Kill generateUndoHeaderFilename() & ".asp"
+    If cFile.FileExist(generateUndoHeaderFilename()) Then cFile.KillFile generateUndoHeaderFilename()
+    If cFile.FileExist(generateUndoHeaderFilename() & ".asp") Then cFile.KillFile generateUndoHeaderFilename() & ".asp"
     
     'Set the current and maximum Undo number to 0
     undoNum = 0

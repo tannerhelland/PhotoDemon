@@ -67,7 +67,10 @@ Public Function incrementFilename(ByRef dstDirectory As String, ByRef fName As S
 
     'First, check to see if a file with that name and extension appears in the destination directory.
     ' If it does, just return the filename we were passed.
-    If Not FileExist(dstDirectory & fName & "." & desiredExtension) Then
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If Not cFile.FileExist(dstDirectory & fName & "." & desiredExtension) Then
         incrementFilename = fName
         Exit Function
     End If
@@ -76,25 +79,25 @@ Public Function incrementFilename(ByRef dstDirectory As String, ByRef fName As S
     
     'Start by figuring out if the file is already in the format: "filename (#).ext"
     Dim tmpFilename As String
-    tmpFilename = Trim(fName)
+    tmpFilename = Trim$(fName)
     
     Dim numToAppend As Long
     
     'Check the trailing character.  If it is a closing parentheses ")", we need to analyze more
-    If Right(tmpFilename, 1) = ")" Then
+    If Right$(tmpFilename, 1) = ")" Then
     
         Dim i As Long
         For i = Len(tmpFilename) - 2 To 1 Step -1
             
             ' If it isn't a number, see if it's an initial parentheses: "("
-            If Not (IsNumeric(Mid(tmpFilename, i, 1))) Then
+            If Not (IsNumeric(Mid$(tmpFilename, i, 1))) Then
                 
                 'If it is a parentheses, then this file already has a "( #)" appended to it.  Figure out what the
                 ' number inside the parentheses is, and strip that entire block from the filename.
-                If Mid(tmpFilename, i, 1) = "(" Then
+                If Mid$(tmpFilename, i, 1) = "(" Then
                 
-                    numToAppend = CLng(Val(Mid(tmpFilename, i + 1, Len(tmpFilename) - i - 1)))
-                    tmpFilename = Left(tmpFilename, i - 2)
+                    numToAppend = CLng(Val(Mid$(tmpFilename, i + 1, Len(tmpFilename) - i - 1)))
+                    tmpFilename = Left$(tmpFilename, i - 2)
                     Exit For
                 
                 'If this character is non-numeric and NOT an initial parentheses, this filename is not in the format we want.
@@ -115,97 +118,13 @@ Public Function incrementFilename(ByRef dstDirectory As String, ByRef fName As S
     End If
             
     'Loop through
-    Do While FileExist(dstDirectory & tmpFilename & " (" & CStr(numToAppend) & ")" & "." & desiredExtension)
+    Do While cFile.FileExist(dstDirectory & tmpFilename & " (" & CStr(numToAppend) & ")" & "." & desiredExtension)
         numToAppend = numToAppend + 1
     Loop
         
     'If the loop has terminated, a unique filename has been found.  Make that the recommended filename.
     incrementFilename = tmpFilename & " (" & CStr(numToAppend) & ")"
 
-End Function
-
-'Returns a boolean as to whether or not a given file exists
-Public Function FileExist(ByRef fName As String) As Boolean
-    Select Case (GetFileAttributesW(StrPtr(fName)) And vbDirectory) = 0
-        Case True: FileExist = True
-        Case Else: FileExist = (Err.LastDllError = ERROR_SHARING_VIOLATION)
-    End Select
-End Function
-
-'Returns a boolean as to whether or not a given directory exists AND whether we have write access to it or not.
-' (If we do not have write access, the function will return "False".)
-Public Function DirectoryExist(ByRef dName As String) As Boolean
-    
-    'First, make sure the directory exists
-    Dim chkExistence As Boolean
-    chkExistence = Abs(GetFileAttributesW(StrPtr(dName))) And vbDirectory
-        
-    'Next, make sure we have write access
-    On Error GoTo noWriteAccess
-    
-    If chkExistence Then
-        
-        Dim tmpFilename As String
-        tmpFilename = FixPath(dName) & "tmp.tmp"
-        
-        Dim fileNum As Integer
-        fileNum = FreeFile
-    
-        'Attempt to create a file within this directory.  If we succeed, delete the file and return "true".
-        ' If we fail, we do not have access rights.
-        Open tmpFilename For Binary As #fileNum
-            Put #fileNum, 1, "0"
-        Close #fileNum
-        
-        If FileExist(tmpFilename) Then Kill tmpFilename
-        
-        DirectoryExist = True
-        Exit Function
-        
-    End If
-    
-noWriteAccess:
-
-    DirectoryExist = False
-End Function
-
-'Returns a boolean as to whether or not we have write access to a given directory.
-' (If we do not have write access, the function will return "False".)
-Public Function DirectoryHasWriteAccess(ByRef dName As String) As Boolean
-    
-    'Before checking write access, make sure the directory exists
-    Dim chkExistence As Boolean
-    chkExistence = Abs(GetFileAttributesW(StrPtr(dName))) And vbDirectory
-        
-    'Next, make sure we have write access
-    On Error GoTo noWriteAccess
-    
-    If chkExistence Then
-        
-        Dim tmpFilename As String
-        tmpFilename = FixPath(dName) & "tmp.tmp"
-        
-        Dim fileNum As Integer
-        fileNum = FreeFile
-    
-        'Attempt to create a file within this directory.  If we succeed, delete the file and return "true".
-        ' If we fail, we do not have access rights.
-        Open tmpFilename For Binary As #fileNum
-            Put #fileNum, 1, "0"
-        Close #fileNum
-        
-        If FileExist(tmpFilename) Then Kill tmpFilename
-        
-        DirectoryHasWriteAccess = True
-        Exit Function
-        
-    Else
-        DirectoryHasWriteAccess = True
-    End If
-    
-noWriteAccess:
-
-    DirectoryHasWriteAccess = False
 End Function
 
 'Straight from MSDN - generate a "browse for folder" dialog
@@ -316,13 +235,13 @@ Public Sub StripFilename(ByRef sString As String)
 End Sub
 
 'Return the filename chunk of a path
-Public Function getFilename(ByVal sString As String) As String
+Public Function GetFilename(ByVal sString As String) As String
 
     Dim i As Long
     
     For i = Len(sString) - 1 To 1 Step -1
         If (Mid$(sString, i, 1) = "/") Or (Mid$(sString, i, 1) = "\") Then
-            getFilename = Right$(sString, Len(sString) - i)
+            GetFilename = Right$(sString, Len(sString) - i)
             Exit Function
         End If
     Next i
@@ -389,24 +308,6 @@ Public Function GetExtension(sFile As String) As String
     GetExtension = ""
             
 End Function
-
-'Take a string and replace any invalid characters with "_"
-Public Sub makeValidWindowsFilename(ByRef FileName As String)
-
-    Dim strInvalidChars As String
-    strInvalidChars = "\/*?""<>|:"
-    
-    Dim invLoc As Long
-    
-    Dim x As Long
-    For x = 1 To Len(strInvalidChars)
-        invLoc = InStr(FileName, Mid$(strInvalidChars, x, 1))
-        If invLoc <> 0 Then
-            FileName = Left(FileName, invLoc - 1) & "_" & Right(FileName, Len(FileName) - invLoc)
-        End If
-    Next x
-
-End Sub
 
 'This lovely function comes from "penagate"; it was downloaded from http://www.vbforums.com/showthread.php?t=342995 on 08 June '12
 Public Function GetDomainName(ByVal Address As String) As String
@@ -505,80 +406,5 @@ Private Function Win32ToVbTime(ft As Currency) As Date
     Else
         Debug.Print "FileTimeToLocalFileTime failed!"
     End If
-    
-End Function
-
-'Shortcut function for copying a file into a byte array.
-Public Function loadFileToArray(ByVal pathToFile As String, ByRef dstArray() As Byte) As Boolean
-    
-    On Error GoTo loadFileToArray_Failure
-    
-    'Attempt to load the file into a byte array
-    If FileExist(pathToFile) Then
-    
-        Dim fileNum As Integer
-        fileNum = FreeFile
-        
-        Open pathToFile For Binary Access Read As #fileNum
-            If LOF(fileNum) > 0 Then
-                ReDim dstArray(0 To LOF(fileNum) - 1)
-                Get fileNum, 1, dstArray
-            End If
-        Close #fileNum
-        
-        'Make sure the file loaded successfully
-        If UBound(dstArray) >= LBound(dstArray) Then
-            loadFileToArray = True
-        Else
-            Debug.Print "WARNING! File passed to loadFileAsArray() was empty."
-            loadFileToArray = False
-        End If
-        
-    Else
-        Debug.Print "WARNING! File passed to loadFileAsArray() does not exist.  File was (obviously) not loaded."
-        loadFileToArray = False
-    End If
-    
-    Exit Function
-    
-loadFileToArray_Failure:
-
-    Debug.Print "WARNING! Unspecified error occurred in loadFileAsArray().  Load abandoned."
-    loadFileToArray = False
-
-End Function
-
-'Shortcut function for dumping a byte array into a file.
-Public Function writeArrayToFile(ByRef srcArray() As Byte, ByVal pathToFile As String, Optional ByVal overwriteExistingIfPresent As Boolean = True) As Boolean
-    
-    On Error GoTo writeArrayToFile_Failure
-    
-    'See if the file exists
-    If FileExist(pathToFile) Then
-    
-        If (Not overwriteExistingIfPresent) Then
-            writeArrayToFile = False
-            Debug.Print "WARNING!  File passed to writeArrayToFile() already exists, and overwrites not allowed.  Write abandoned."
-            Exit Function
-        Else
-            Kill pathToFile
-        End If
-        
-    End If
-        
-    Dim fileNum As Integer
-    fileNum = FreeFile
-    
-    Open pathToFile For Binary Access Write As #fileNum
-        Put fileNum, , srcArray
-    Close #fileNum
-    
-    writeArrayToFile = True
-    Exit Function
-    
-writeArrayToFile_Failure:
-
-    Debug.Print "WARNING! Unspecified error occurred in writeArrayToFile().  Write abandoned."
-    writeArrayToFile = False
     
 End Function

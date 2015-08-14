@@ -27,7 +27,12 @@ Private m_ZLibHandle As Long
 
 'Is zLib available as a plugin?  (NOTE: this is now determined separately from g_ZLibEnabled.)
 Public Function isZLibAvailable() As Boolean
-    If FileExist(g_PluginPath & "zlibwapi.dll") Then isZLibAvailable = True Else isZLibAvailable = False
+    
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.FileExist(g_PluginPath & "zlibwapi.dll") Then isZLibAvailable = True Else isZLibAvailable = False
+    
 End Function
 
 'Initialize zLib.  Do not call this until you have verified zLib's existence via isZLibAvailable(), above.

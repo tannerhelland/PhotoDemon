@@ -1278,10 +1278,13 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
                     
                     'Make sure both FreeImage and PNGQuant were able to generate valid files, then rewrite the FreeImage one
                     ' with the PNGQuant one.
-                    If FileExist(srcFile) And FileExist(PNGPath) Then
-                        Kill PNGPath
-                        FileCopy srcFile, PNGPath
-                        Kill srcFile
+                    Dim cFile As pdFSO
+                    Set cFile = New pdFSO
+                    
+                    If cFile.FileExist(srcFile) And cFile.FileExist(PNGPath) Then
+                        cFile.KillFile PNGPath
+                        cFile.CopyFile srcFile, PNGPath
+                        cFile.KillFile srcFile
                     Else
                         Message "PNGQuant could not write file.  Saving 32bpp image instead..."
                     End If

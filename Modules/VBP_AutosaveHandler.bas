@@ -56,7 +56,10 @@ Public Function peekLastShutdownClean() As Boolean
     safeShutdownPath = g_UserPreferences.getPresetPath & "SafeShutdown.xml"
     
     'If a previous program session terminated unexpectedly, its safe shutdown file will still be present
-    If FileExist(safeShutdownPath) Then peekLastShutdownClean = False Else peekLastShutdownClean = True
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.FileExist(safeShutdownPath) Then peekLastShutdownClean = False Else peekLastShutdownClean = True
 
 End Function
 
@@ -68,7 +71,10 @@ Public Function wasLastShutdownClean() As Boolean
     safeShutdownPath = g_UserPreferences.getPresetPath & "SafeShutdown.xml"
     
     'If a previous program session terminated unexpectedly, its safe shutdown file will still be present
-    If FileExist(safeShutdownPath) Then
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.FileExist(safeShutdownPath) Then
     
         wasLastShutdownClean = False
 
@@ -104,7 +110,10 @@ Public Sub notifyCleanShutdown()
     Dim safeShutdownPath As String
     safeShutdownPath = g_UserPreferences.getPresetPath & "SafeShutdown.xml"
     
-    If FileExist(safeShutdownPath) Then Kill safeShutdownPath
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.FileExist(safeShutdownPath) Then cFile.KillFile safeShutdownPath
 
 End Sub
 
@@ -233,6 +242,9 @@ Public Sub purgeOldAutosaveData()
         Dim tmpFilename As String
         Dim i As Long, j As Long
         
+        Dim cFile As pdFSO
+        Set cFile = New pdFSO
+        
         'Loop through all XML files found.  We will not only be deleting the XML files themselves, but also any child
         ' files they may reference
         For i = 0 To m_numOfXMLFound - 1
@@ -243,21 +255,19 @@ Public Sub purgeOldAutosaveData()
                 tmpFilename = tmpUndoEngine.generateUndoFilenameExternal(m_XmlEntries(i).parentImageID, j, m_XmlEntries(i).originalSessionID)
             
                 'Check image data first...
-                If FileExist(tmpFilename) Then Kill tmpFilename
+                If cFile.FileExist(tmpFilename) Then cFile.KillFile tmpFilename
             
                 '...followed by layer data
-                If FileExist(tmpFilename & ".layer") Then Kill tmpFilename & ".layer"
+                If cFile.FileExist(tmpFilename & ".layer") Then cFile.KillFile tmpFilename & ".layer"
             
                 '...followed by selection data
-                If FileExist(tmpFilename & ".selection") Then Kill tmpFilename & ".selection"
+                If cFile.FileExist(tmpFilename & ".selection") Then cFile.KillFile tmpFilename & ".selection"
             
             Next j
             
             'Finally, kill the Autosave XML file and preview image associated with this entry
-            ' TODO: tie this into a new file management class, which will do things like check access before deleting, etc.
-            On Error Resume Next
-            If FileExist(m_XmlEntries(i).xmlPath) Then Kill m_XmlEntries(i).xmlPath
-            If FileExist(m_XmlEntries(i).xmlPath & ".asp") Then Kill m_XmlEntries(i).xmlPath & ".asp"
+            If cFile.FileExist(m_XmlEntries(i).xmlPath) Then cFile.KillFile m_XmlEntries(i).xmlPath
+            If cFile.FileExist(m_XmlEntries(i).xmlPath & ".asp") Then cFile.KillFile m_XmlEntries(i).xmlPath & ".asp"
         
         Next i
         
@@ -403,6 +413,9 @@ Private Sub renameAllUndoFiles(ByRef autosaveData As AutosaveXML, ByVal newImage
     Dim tmpUndoEngine As pdUndo
     Set tmpUndoEngine = New pdUndo
     
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
     'The autosaveData object knows how many autosave files are available
     Dim i As Long
     For i = 0 To autosaveData.undoStackAbsoluteMaximum
@@ -411,21 +424,21 @@ Private Sub renameAllUndoFiles(ByRef autosaveData As AutosaveXML, ByVal newImage
         newFilename = tmpUndoEngine.generateUndoFilenameExternal(newImageID, i, g_SessionID)
         
         'Check image data first...
-        If FileExist(oldFilename) Then
-            If FileExist(newFilename) Then Kill newFilename
-            Name oldFilename As newFilename
+        If cFile.FileExist(oldFilename) Then
+            If cFile.FileExist(newFilename) Then cFile.KillFile newFilename
+            cFile.CopyFile oldFilename, newFilename
         End If
         
         '...followed by layer data
-        If FileExist(oldFilename & ".layer") Then
-            If FileExist(newFilename & ".layer") Then Kill newFilename & ".layer"
-            Name oldFilename & ".layer" As newFilename & ".layer"
+        If cFile.FileExist(oldFilename & ".layer") Then
+            If cFile.FileExist(newFilename & ".layer") Then cFile.KillFile newFilename & ".layer"
+            cFile.CopyFile oldFilename & ".layer", newFilename & ".layer"
         End If
         
         '...followed by selection data
-        If FileExist(oldFilename & ".selection") Then
-            If FileExist(newFilename & ".selection") Then Kill newFilename & ".selection"
-            Name oldFilename & ".selection" As newFilename & ".selection"
+        If cFile.FileExist(oldFilename & ".selection") Then
+            If cFile.FileExist(newFilename & ".selection") Then cFile.KillFile newFilename & ".selection"
+            cFile.CopyFile oldFilename & ".selection", newFilename & ".selection"
         End If
         
     Next i

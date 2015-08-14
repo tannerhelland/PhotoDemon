@@ -639,6 +639,9 @@ Public Sub resetMenuIcons()
         Dim iconLocation As Long
         iconLocation = 0
         
+        Dim cFile As pdFSO
+        Set cFile = New pdFSO
+        
         'Loop through the MRU list, and attempt to load thumbnail images for each entry
         Dim i As Long
         For i = 0 To numOfMRUFiles
@@ -649,7 +652,7 @@ Public Sub resetMenuIcons()
             If Len(tmpFilename) <> 0 Then
             
                 'If the file exists, add it to the MRU icon handler
-                If FileExist(tmpFilename) Then
+                If cFile.FileExist(tmpFilename) Then
                         
                     iconLocation = iconLocation + 1
                     cMRUIcons.AddImageFromFile tmpFilename

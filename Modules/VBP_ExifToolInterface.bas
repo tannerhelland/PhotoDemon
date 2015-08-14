@@ -367,7 +367,12 @@ End Function
 
 'Is ExifTool available as a plugin?
 Public Function isExifToolAvailable() As Boolean
-    If FileExist(g_PluginPath & "exiftool.exe") Then isExifToolAvailable = True Else isExifToolAvailable = False
+    
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.FileExist(g_PluginPath & "exiftool.exe") Then isExifToolAvailable = True Else isExifToolAvailable = False
+    
 End Function
 
 'Retrieve the ExifTool version.
@@ -496,7 +501,10 @@ End Function
 Public Function createTechnicalMetadataReport(ByRef srcImage As pdImage) As Boolean
 
     'Start by checking for an existing copy of the XML database.  If it already exists, no need to recreate it.
-    If FileExist(srcImage.locationOnDisk) Then
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.FileExist(srcImage.locationOnDisk) Then
     
         Dim cmdParams As String
         cmdParams = ""
@@ -541,7 +549,10 @@ End Function
 Public Function writeTagDatabase() As Boolean
 
     'Start by checking for an existing copy of the XML database.  If it already exists, no need to recreate it.
-    If FileExist(g_PluginPath & "exifToolDatabase.xml") Then
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.FileExist(g_PluginPath & "exifToolDatabase.xml") Then
     
         'Database already exists - no need to recreate it!
         writeTagDatabase = True

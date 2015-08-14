@@ -253,7 +253,10 @@ Public Sub generateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
     
     'If the user has enabled database support, and a database file exists, update our recorded times with any
     ' saved values from previous runs.
-    If m_UseDatabase And FileExist(getDatabaseFilename) Then
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If m_UseDatabase And cFile.FileExist(getDatabaseFilename) Then
     
         'Retrieve values from file
         retrieveDatabase
@@ -297,9 +300,6 @@ Public Sub generateProfileReport(Optional ByVal alsoWriteToFile As Boolean = Fal
         logFile = getReportFilename()
         
         'Write the data to file using pdFSO
-        Dim cFile As pdFSO
-        Set cFile = New pdFSO
-        
         cFile.SaveStringToTextFile reportString, logFile
         
         'If the user wants us to use a persistent database for timing data, write out the current session's data now.
@@ -441,7 +441,10 @@ Private Function getReportFilename()
     dstFilename = dstFilename & ".log"
     
     'Make sure the report name can be used as a valid filename
-    File_And_Path_Handling.makeValidWindowsFilename dstFilename
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    dstFilename = cFile.MakeValidWindowsFilename(dstFilename)
     If InStr(1, dstFilename, " ") > 0 Then dstFilename = Replace(dstFilename, " ", "_")
     
     'Use the report's name to write the file out to PhotoDemon's default Debug directory; since the profiler is only over used
@@ -462,7 +465,10 @@ Private Function getDatabaseFilename()
     dstFilename = dstFilename & ".xml"
     
     'Make sure the report name can be used as a valid filename
-    File_And_Path_Handling.makeValidWindowsFilename dstFilename
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    dstFilename = cFile.MakeValidWindowsFilename(dstFilename)
     If InStr(1, dstFilename, " ") > 0 Then dstFilename = Replace(dstFilename, " ", "_")
     
     'Use the report's name to write the file out to PhotoDemon's default Debug directory; since the profiler is only over used

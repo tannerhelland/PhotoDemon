@@ -194,6 +194,9 @@ Private Declare Function GetFileVersionInfoSize Lib "Version" Alias "GetFileVers
 Private Declare Function VerQueryValue Lib "Version" Alias "VerQueryValueA" (pBlock As Any, ByVal lpSubBlock As String, lplpBuffer As Any, puLen As Long) As Long
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpDst As Any, lpSrc As Any, ByVal byteLength As Long)
 
+'Unicode-friendly App.Path replacement
+Private Declare Function GetModuleFileNameW Lib "kernel32" (ByVal hModule As Long, ByVal ptrToFileNameBuffer As Long, ByVal nSize As Long) As Long
+
 'Unicode file deletion
 Private Declare Function DeleteFileW Lib "kernel32" (ByVal lpFileName As Long) As Long
 
@@ -226,41 +229,31 @@ Public Function FolderExist(ByRef fullPath As String, Optional ByVal checkWriteA
     'First, make sure the directory exists
     Dim chkExistence As Boolean
     chkExistence = Abs(GetFileAttributesW(StrPtr(fullPath))) And vbDirectory
-        
-    'If the caller doesn't care about write access, or the folder wasn't found, exit now.
-    If (Not chkExistence) Or (Not checkWriteAccessAsWell) Then
-        FolderExist = chkExistence
-        
+    
     'The folder was found, but the caller wants to know about write access, so a few more checks are needed.
-    Else
-        
-        'Writing to an inaccessible folder will raise an error; this is an ugly way to check, but security descriptors are a hassle...
-        On Error GoTo noWriteAccess
+    If chkExistence And checkWriteAccessAsWell Then
         
         Dim tmpFilename As String
-        tmpFilename = EnforcePathSlash(fullPath) & "tmp.tmp"
+        tmpFilename = EnforcePathSlash(fullPath) & "writecheck.tmp"
         
-        Dim fileNum As Integer
-        fileNum = FreeFile
-    
-        'Attempt to create a file within this directory.  If we succeed, delete the file and return "true".
-        ' If we fail, we do not have access rights.
-        Open GetShortPath(tmpFilename) For Binary As #fileNum
-            Put #fileNum, 1, 1
-        Close #fileNum
+        'Attempt to open a temp file handle inside the given folder
+        Dim hFile As Long
+        If Me.CreateFileHandle(tmpFilename, hFile, True, True, OptimizeTempFile) Then
+            
+            'The folder is writable!  Close and kill the temp file.
+            Me.CloseFileHandle hFile
+            Me.KillFile tmpFilename
+            
+            FolderExist = True
+            
+        Else
+            FolderExist = False
+        End If
         
-        KillFile tmpFilename
-        
-        'If we made it all the way here, the file was written and deleted successfully.
-        FolderExist = True
-        
+    'If the caller doesn't care about write access, or the folder wasn't found, exit now.
+    Else
+        FolderExist = chkExistence
     End If
-    
-    Exit Function
-    
-noWriteAccess:
-
-    FolderExist = False
     
 End Function
 
@@ -268,21 +261,21 @@ End Function
 ' to calling this function, it will still return TRUE.)
 '
 'A FALSE return indicates the file still exists.  The debug window will contain additional debug data.
-Public Function KillFile(ByVal srcFilename As String, Optional ByVal attemptToKillEvenIfNotFound As Boolean = False) As Boolean
+Public Function KillFile(ByVal srcFileName As String, Optional ByVal attemptToKillEvenIfNotFound As Boolean = False) As Boolean
     
     'If the file doesn't exist, return TRUE in advance.
     ' (Note that the user can override this behavior, and attempt a kill regardless of FileExists's return value)
-    If FileExist(srcFilename) Or attemptToKillEvenIfNotFound Then
+    If FileExist(srcFileName) Or attemptToKillEvenIfNotFound Then
     
         Dim APIReturn As Long
-        APIReturn = DeleteFileW(StrPtr(srcFilename))
+        APIReturn = DeleteFileW(StrPtr(srcFileName))
         
         If APIReturn <> 0 Then
             KillFile = True
         Else
             KillFile = False
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING! KillFile was unable to kill " & srcFilename & " due to WAPI error " & Err.LastDllError
+                pdDebug.LogAction "WARNING! KillFile was unable to kill " & srcFileName & " due to WAPI error " & Err.LastDllError
             #End If
         End If
         
@@ -293,27 +286,27 @@ Public Function KillFile(ByVal srcFilename As String, Optional ByVal attemptToKi
 End Function
 
 'Copy a given file.  Returns TRUE if successful; false otherwise.  The debug window will contain additional failure information.
-Public Function CopyFile(ByVal srcFilename As String, ByVal dstFilename As String) As Boolean
+Public Function CopyFile(ByVal srcFileName As String, ByVal dstFilename As String) As Boolean
 
     'If the source file doesn't exist, fail in advance
-    If FileExist(srcFilename) Then
+    If FileExist(srcFileName) Then
     
         Dim copyResult As Long
-        copyResult = CopyFileW(StrPtr(srcFilename), StrPtr(dstFilename), 0)
+        copyResult = CopyFileW(StrPtr(srcFileName), StrPtr(dstFilename), 0)
         
         If copyResult <> 0 Then
             CopyFile = True
         Else
             CopyFile = False
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING! CopyFile was unable to copy " & srcFilename & " due to WAPI error " & Err.LastDllError
+                pdDebug.LogAction "WARNING! CopyFile was unable to copy " & srcFileName & " due to WAPI error " & Err.LastDllError
             #End If
         End If
     
     Else
     
         CopyFile = False
-        Debug.Print "WARNING! CopyFile failed because the source file (" & srcFilename & ") doesn't exist."
+        Debug.Print "WARNING! CopyFile failed because the source file (" & srcFileName & ") doesn't exist."
     
     End If
 
@@ -415,7 +408,7 @@ End Function
 ' 2) by avoiding disallowed extensions, using a pipe-delimited list of unacceptable extensions (e.g. "bak|tmp")
 '
 'Use either the whitelist or the blacklist option, but not both (obviously).
-Public Function retrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pdStringStack, Optional ByVal recurseSubfolders As Boolean, Optional ByVal returnRelativeStrings As Boolean = True, Optional ByVal onlyAllowTheseExtensions As String = "", Optional ByVal doNotAllowTheseExtensions As String = "") As Boolean
+Public Function RetrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pdStringStack, Optional ByVal recurseSubfolders As Boolean, Optional ByVal returnRelativeStrings As Boolean = True, Optional ByVal onlyAllowTheseExtensions As String = "", Optional ByVal doNotAllowTheseExtensions As String = "") As Boolean
         
     'Enforce strict trailing slash formatting of the base folder
     srcFolder = EnforcePathSlash(srcFolder)
@@ -549,9 +542,9 @@ Public Function retrieveAllFiles(ByVal srcFolder As String, ByRef dstFiles As pd
     ' string stack, but that's okay - the assumption is that they'll be processing the stack as one continuous list, so this return
     ' value won't be relevant anyway.)
     If dstFiles.getNumOfStrings > 0 Then
-        retrieveAllFiles = True
+        RetrieveAllFiles = True
     Else
-        retrieveAllFiles = False
+        RetrieveAllFiles = False
     End If
     
 
@@ -564,7 +557,7 @@ End Function
 '
 'Returns TRUE if at least one subfolder is found; FALSE otherwise.  If the incoming dstFolders parameter already contains strings, TRUE will
 ' always be returned.
-Public Function retrieveAllFolders(ByVal srcFolder As String, ByRef dstFolders As pdStringStack, Optional ByVal recurseSubfolders As Boolean = True, Optional ByVal returnRelativeStrings As Boolean = True) As Boolean
+Public Function RetrieveAllFolders(ByVal srcFolder As String, ByRef dstFolders As pdStringStack, Optional ByVal recurseSubfolders As Boolean = True, Optional ByVal returnRelativeStrings As Boolean = True) As Boolean
 
     'Enforce strict trailing slash formatting of the base folder
     srcFolder = EnforcePathSlash(srcFolder)
@@ -634,9 +627,9 @@ Public Function retrieveAllFolders(ByVal srcFolder As String, ByRef dstFolders A
     ' (Note that this value might be incorrect if the user sent us an already-populated string stack, but that's okay - the assumption is that
     ' they'll be processing the stack as one continuous list, so individual returns don't matter.)
     If dstFolders.getNumOfStrings > 0 Then
-        retrieveAllFolders = True
+        RetrieveAllFolders = True
     Else
-        retrieveAllFolders = False
+        RetrieveAllFolders = False
     End If
     
 End Function
@@ -1148,19 +1141,19 @@ Public Function EnforcePathSlash(ByRef srcPath As String) As String
 End Function
 
 'Return just the filename from a full path
-Public Function getFilename(ByRef sString As String) As String
+Public Function GetFilename(ByRef sString As String) As String
 
     Dim i As Long
     
     For i = Len(sString) - 1 To 1 Step -1
         If (Mid$(sString, i, 1) = "/") Or (Mid$(sString, i, 1) = "\") Then
-            getFilename = Right$(sString, Len(sString) - i)
+            GetFilename = Right$(sString, Len(sString) - i)
             Exit Function
         End If
     Next i
     
     'If we made it here, no slash was found, so presume that the entire incoming string was the filename
-    getFilename = sString
+    GetFilename = sString
     
 End Function
 
@@ -1191,7 +1184,7 @@ End Function
 'Given a full path+filename string, return only the folder portion.
 ' Returns a blank string if a folder cannot be extracted.
 Public Function GetPathOnly(ByRef sFilename As String) As String
-    
+        
     Dim slashPosition As Long
     slashPosition = InStrRev(sFilename, "\", , vbBinaryCompare)
     
@@ -1219,6 +1212,28 @@ End Function
 'VB's default string comparison function is overly cumbersome.  This wrapper makes string equality checks tidier.
 Private Function StringsEqual(ByRef srcString1 As String, ByRef srcString2 As String) As Boolean
     StringsEqual = (StrComp(srcString1, srcString2, vbBinaryCompare) = 0)
+End Function
+
+'Given a potential filename, scan and replace any invalid characters with a character of the caller's choosing
+Public Function MakeValidWindowsFilename(ByVal srcFileName As String, Optional ByVal replacementChar As String = "_") As String
+    
+    Dim strInvalidChars As String
+    strInvalidChars = "\/*?""<>|:"
+    
+    Dim invLoc As Long, testChar As String
+    
+    Dim i As Long
+    For i = 1 To Len(strInvalidChars)
+        
+        testChar = Mid$(strInvalidChars, i, 1)
+    
+        'If this invalid character exists in the target string, replace it with whatever the user specified
+        If InStr(1, srcFileName, testChar, vbBinaryCompare) Then srcFileName = Replace$(srcFileName, testChar, replacementChar)
+        
+    Next i
+    
+    MakeValidWindowsFilename = srcFileName
+
 End Function
 
 'Dump a specified file directly into a VB byte array.  No additional processing is performed.
@@ -1602,6 +1617,50 @@ Public Function FileLengthLarge(ByVal hFile As Long) As Currency
         FileLengthLarge = 0
     End If
 
+    
+End Function
+
+'Use the API to retrieve a Unicode-friendly version of app.path
+Public Function AppPathW() As String
+    
+    'When running from the IDE, App.Path is our only option
+    If Not g_IsProgramCompiled Then
+        AppPathW = App.Path
+        AppPathW = Me.EnforcePathSlash(AppPathW)
+        Exit Function
+    
+    Else
+    
+        'MAX_PATH no longer applies, but the docs are unclear on a reasonable buffer size.  Because buffer behavior is sketchy on XP
+        ' (see https://msdn.microsoft.com/en-us/library/windows/desktop/ms683197%28v=vs.85%29.aspx) it's easier to just go with a
+        ' huge buffer, then manually trim the result.
+        Dim TEMPORARY_LARGE_BUFFER As Long
+        TEMPORARY_LARGE_BUFFER = 1024
+        
+        Dim tmpString As String
+        tmpString = String$(TEMPORARY_LARGE_BUFFER, 0)
+        
+        If GetModuleFileNameW(0&, StrPtr(tmpString), TEMPORARY_LARGE_BUFFER / 2) <> 0 Then
+            
+            AppPathW = Me.TrimNull(tmpString)
+            AppPathW = Me.GetPathOnly(AppPathW)
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "pdFSO.AppPathW determined the following App.Path equivalent: " & AppPathW
+            #End If
+            
+        Else
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  pdFSO.AppPathW was unable to retrieve a Unicode-friendly version of App.Path.  Falling back to the default VB path."
+            #End If
+            
+            AppPathW = App.Path
+            AppPathW = Me.EnforcePathSlash(AppPathW)
+            
+        End If
+        
+    End If
     
 End Function
 
