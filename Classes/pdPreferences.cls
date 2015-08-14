@@ -164,13 +164,30 @@ End Function
 'Set the current temp directory
 Public Sub setTempPath(ByVal newTempPath As String)
     
-    StripDirectory newTempPath
-    newTempPath = FixPath(newTempPath)
-    TempPath = newTempPath
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+        
+    'If the folder exists and is writable as-is, great: save it and exit
+    If cFile.FolderExist(newTempPath, True) Or cFile.FolderExist(cFile.EnforcePathSlash(newTempPath), True) Then
+        TempPath = cFile.EnforcePathSlash(newTempPath)
+        
+    'If it doesn't exist, make sure the user didn't do something weird, like supply a file instead of a folder
+    Else
     
-    'Ensure that this directory exists AND that we have write access to it.  If we do not, substitute the default system temp folder.
-    If DirectoryExist(TempPath) = False Then TempPath = GetSystemTemporaryPath()
+        newTempPath = cFile.EnforcePathSlash(cFile.GetPathOnly(newTempPath))
+        
+        'Test the path again
+        If cFile.FolderExist(newTempPath, True) Or cFile.FolderExist(cFile.EnforcePathSlash(newTempPath), True) Then
+            TempPath = cFile.EnforcePathSlash(newTempPath)
+            
+        'If it still fails, revert to the default system temp path
+        Else
+            TempPath = GetSystemTemporaryPath()
+        End If
     
+    End If
+    
+    'Write the final path out to file
     SetPref_String "Paths", "TempFiles", TempPath
     
 End Sub
@@ -216,55 +233,57 @@ End Function
 'Initialize key program directories
 Public Sub initializePaths()
     
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
     'First things first: figure out where this .exe was launched from
-    ProgramPath = App.Path
-    ProgramPath = FixPath(ProgramPath)
+    ProgramPath = cFile.AppPathW
     
     'Create an "App" path based off the ProgramPath - this is where essential application files (like plugins) are stored.
     ' Also, make sure the directory exists; if it doesn't, create it.
     AppPath = ProgramPath & "App\"
-    If Not DirectoryExist(AppPath) Then MkDir AppPath
+    If Not cFile.FolderExist(AppPath) Then cFile.CreateFolder AppPath
     
     AppPath = AppPath & "PhotoDemon\"
-    If Not DirectoryExist(AppPath) Then MkDir AppPath
+    If Not cFile.FolderExist(AppPath) Then cFile.CreateFolder AppPath
     
     'Within the App\PhotoDemon\ folder, create a folder for any available OFFICIAL translations.  (User translations go in the Data folder.)
     LanguagePath = AppPath & "Languages\"
-    If Not DirectoryExist(LanguagePath) Then MkDir LanguagePath
+    If Not cFile.FolderExist(LanguagePath) Then cFile.CreateFolder LanguagePath
     
     'Within the App\PhotoDemon\ folder, create a folder for any available OFFICIAL themes.  (User themes go in the Data folder.)
     ThemePath = AppPath & "Themes\"
-    If Not DirectoryExist(ThemePath) Then MkDir ThemePath
+    If Not cFile.FolderExist(ThemePath) Then cFile.CreateFolder ThemePath
     
     'Create a "Data" path based off the ProgramPath - this is where the preferences file and any other user-specific files
     ' (saved filters, macros) will be stored.  Also, make sure the directory exists; if it doesn't, create it.
     DataPath = ProgramPath & "Data\"
-    If Not DirectoryExist(DataPath) Then MkDir DataPath
+    If Not cFile.FolderExist(DataPath) Then cFile.CreateFolder DataPath
     
     'Within the \Data subfolder, check for additional user folders - saved macros, filters, selections, etc...
     MacroPath = DataPath & "Macros\"
-    If Not DirectoryExist(MacroPath) Then MkDir MacroPath
+    If Not cFile.FolderExist(MacroPath) Then cFile.CreateFolder MacroPath
             
     SelectionPath = DataPath & "Selections\"
-    If Not DirectoryExist(SelectionPath) Then MkDir SelectionPath
+    If Not cFile.FolderExist(SelectionPath) Then cFile.CreateFolder SelectionPath
     
     UserLanguagePath = DataPath & "Languages\"
-    If Not DirectoryExist(UserLanguagePath) Then MkDir UserLanguagePath
+    If Not cFile.FolderExist(UserLanguagePath) Then cFile.CreateFolder UserLanguagePath
     
     PresetPath = DataPath & "Presets\"
-    If Not DirectoryExist(PresetPath) Then MkDir PresetPath
+    If Not cFile.FolderExist(PresetPath) Then cFile.CreateFolder PresetPath
     
     IconPath = DataPath & "Icons\"
-    If Not DirectoryExist(IconPath) Then MkDir IconPath
+    If Not cFile.FolderExist(IconPath) Then cFile.CreateFolder IconPath
         
     DebugPath = DataPath & "Debug\"
-    If Not DirectoryExist(DebugPath) Then MkDir DebugPath
+    If Not cFile.FolderExist(DebugPath) Then cFile.CreateFolder DebugPath
     
     UserThemePath = DataPath & "Themes\"
-    If Not DirectoryExist(UserThemePath) Then MkDir UserThemePath
+    If Not cFile.FolderExist(UserThemePath) Then cFile.CreateFolder UserThemePath
     
     UpdatesPath = DataPath & "Updates\"
-    If Not DirectoryExist(UpdatesPath) Then MkDir UpdatesPath
+    If Not cFile.FolderExist(UpdatesPath) Then cFile.CreateFolder UpdatesPath
     
     'The user preferences file is also located in the \Data subdirectory
     PreferencesPath = DataPath & PROGRAMNAME & "_settings.xml"
@@ -300,8 +319,11 @@ End Sub
 'Load all user settings from file
 Public Sub loadUserSettings()
     
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
     'If no preferences file exists, build a default one
-    If Not FileExist(PreferencesPath) Then createNewPreferencesFile
+    If Not cFile.FileExist(PreferencesPath) Then createNewPreferencesFile
     
     'Start batch processing mode for preferences, which is much faster (as we don't have to go out to the hard drive
     ' for each preference access).
@@ -310,7 +332,7 @@ Public Sub loadUserSettings()
     'Pull the temp file path from the preferences file and make sure it exists. (If it doesn't, transparently set it to
     ' the system temp path.)
     TempPath = GetPref_String("Paths", "TempFiles", "")
-    If Not DirectoryExist(TempPath) Then
+    If Not cFile.FolderExist(TempPath) Then
         TempPath = GetSystemTemporaryPath
         SetPref_String "Paths", "TempFiles", TempPath
     End If
@@ -353,9 +375,15 @@ End Sub
 
 'Reset the preferences file to its default state.  (Basically, delete any existing file, then create a new one from scratch.)
 Public Sub resetPreferences()
-    If FileExist(PreferencesPath) Then Kill PreferencesPath
+
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.FileExist(PreferencesPath) Then cFile.KillFile PreferencesPath
+    
     createNewPreferencesFile
     loadUserSettings
+    
 End Sub
 
 'Create a new preferences XML file from scratch.  When new preferences are added to the preferences dialog, they should also be
@@ -370,10 +398,13 @@ Private Sub createNewPreferencesFile()
     '     treating the program as if its being run for the first time is as good a plan as any.
     g_IsFirstRun = True
     
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
     'As a failsafe against data corruption, if this is determined to be a first run, we also delete some settings-related
     ' files in the Presets folder (if they exist).
     If g_IsFirstRun Then
-        If FileExist(PresetPath & "Program_WindowLocations.xml") Then Kill PresetPath & "Program_WindowLocations.xml"
+        If cFile.FileExist(PresetPath & "Program_WindowLocations.xml") Then cFile.KillFile PresetPath & "Program_WindowLocations.xml"
     End If
     
     'Create a pdXML class, which will help us assemble the preferences file (in XML format, obviously)

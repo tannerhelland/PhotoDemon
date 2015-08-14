@@ -197,26 +197,25 @@ End Function
 '------------------------------------------------------------------------
 'pone una imagen desde archivo(Ico,Png,jpg,bmp, etc.)  al boton
 '------------------------------------------------------------------------
-Public Function LoadImageFromFile(hWnd As Long, ByVal FileName As String, Optional ByVal cx As Long = 16, Optional ByVal cy As Long = 16)
+Public Function LoadImageFromFile(hWnd As Long, ByVal FileName As String, Optional ByVal cx As Long = 16, Optional ByVal cy As Long = 16) As Boolean
 
     On Local Error GoTo LoadImageFromFile_Error
     
-    Dim bvData()    As Byte
-    Dim hFile       As Integer
+    Dim bvData() As Byte
     
-    If Len(Dir(FileName)) = 0 Then Exit Function
-
-    hFile = FreeFile
-        
-    Open FileName For Binary As #hFile
-        ReDim bvData(LOF(hFile) - 1)
-        Get #hFile, , bvData
-    Close #hFile: hFile = 0
+    'Change by Tanner: support Unicode paths via pdFSO
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
     
-    LoadImageFromFile = LoadImageFromStream(hWnd, bvData, cx, cy)
-
+    If cFile.LoadFileAsByteArray(FileName, bvData) Then
+        LoadImageFromFile = LoadImageFromStream(hWnd, bvData, cx, cy)
+    Else
+        LoadImageFromFile = False
+    End If
+    
 LoadImageFromFile_Error:
-    If hFile Then Close #hFile
+    LoadImageFromFile = False
+    
 End Function
 
 '------------------------------------------------------------------------

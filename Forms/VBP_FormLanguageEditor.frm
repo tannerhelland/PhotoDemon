@@ -836,7 +836,7 @@ Option Explicit
 Option Compare Text
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'The current list of available languages.  This list is not currently updated with the language the user is working on.
 ' It only contains a list of languages already stored in the /App/PhotoDemon/Languages and Data/Languages folders.
@@ -1011,7 +1011,10 @@ End Sub
 
 'Allow the user to delete the selected language file, if they so desire.
 Private Sub cmdDeleteLanguage_Click()
-
+    
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
     'Make sure a language is selected
     If lstLanguages.ListIndex < 0 Then Exit Sub
     
@@ -1021,12 +1024,12 @@ Private Sub cmdDeleteLanguage_Click()
     If listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex)).langType = "Official" Then
         
         'Make sure we have write access to this folder before attempting to delete anything
-        If DirectoryHasWriteAccess(getDirectory(listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex)).fileName)) Then
+        If cFile.FolderExist(getDirectory(listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex)).FileName), True) Then
         
             msgReturn = pdMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Even though this is an official PhotoDemon language file, you can safely delete it.)", vbYesNo + vbApplicationModal + vbInformation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
             
             If msgReturn = vbYes Then
-                Kill listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex)).fileName
+                cFile.KillFile listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex)).FileName
                 lstLanguages.RemoveItem lstLanguages.ListIndex
                 cmdDeleteLanguage.Enabled = False
             End If
@@ -1042,7 +1045,7 @@ Private Sub cmdDeleteLanguage_Click()
         msgReturn = pdMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Unless you have manually backed up this language file, this action cannot be undone.)", vbYesNo + vbApplicationModal + vbInformation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
         
         If msgReturn = vbYes Then
-            Kill listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex)).fileName
+            cFile.KillFile listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex)).FileName
             lstLanguages.RemoveItem lstLanguages.ListIndex
             cmdDeleteLanguage.Enabled = False
         End If
@@ -1134,7 +1137,10 @@ End Sub
 'Change the active wizard page.  If moveForward is set to TRUE, the wizard page will be advanced; otherwise, it will move
 ' to the previous page.
 Private Sub changeWizardPage(ByVal moveForward As Boolean)
-
+    
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
     Dim i As Long
 
     Dim unloadFormNow As Boolean
@@ -1188,7 +1194,7 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
                     
                     'Populate the current language's metadata container with some default values
                     With curLanguage
-                        .fileName = g_UserPreferences.getLanguagePath(True) & "new language.xml"
+                        .FileName = g_UserPreferences.getLanguagePath(True) & "new language.xml"
                         .langID = "en-US"
                         .langName = g_Language.TranslateMessage("New Language")
                         .langStatus = g_Language.TranslateMessage("incomplete")
@@ -1211,10 +1217,10 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
                 'Fill the current language metadata container with matching information from the selected language,
                 ' with a few changes
                 curLanguage = listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex))
-                curLanguage.fileName = g_UserPreferences.getLanguagePath(True) & getFilename(listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex)).fileName)
+                curLanguage.FileName = g_UserPreferences.getLanguagePath(True) & GetFilename(listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex)).FileName)
                 
                 'Attempt to load the selected language from file
-                If loadAllPhrasesFromFile(listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex)).fileName) Then
+                If loadAllPhrasesFromFile(listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex)).FileName) Then
                     
                     'No further action is necessary!
                     
@@ -1275,11 +1281,10 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
                 Dim sFile As String
                 
                 If curLanguage.langType = "Autosave" Then
-                    sFile = curLanguage.langName
-                    makeValidWindowsFilename sFile
-                    sFile = getDirectory(curLanguage.fileName) & sFile & ".xml"
+                    sFile = cFile.MakeValidWindowsFilename(curLanguage.langName)
+                    sFile = cFile.GetPathOnly(curLanguage.FileName) & sFile & ".xml"
                 Else
-                    sFile = getDirectory(curLanguage.fileName) & getFilenameWithoutExtension(curLanguage.fileName) & ".xml"
+                    sFile = cFile.GetPathOnly(curLanguage.FileName) & getFilenameWithoutExtension(curLanguage.FileName) & ".xml"
                 End If
                 
                 Dim cdFilter As String
@@ -1461,8 +1466,8 @@ Private Sub Form_Load()
     autoTranslate.setSrcLanguage "en"
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Advance to the first page
     changeWizardPage True
@@ -1665,7 +1670,7 @@ Private Sub populateAvailableLanguages()
                     .Author = tmpXMLEngine.getUniqueTag_String("author")
                     
                     'Finally, add some internal metadata
-                    .fileName = g_UserPreferences.getLanguagePath(True) & chkFile
+                    .FileName = g_UserPreferences.getLanguagePath(True) & chkFile
                     .langType = "Autosave"
                     
                 End With
@@ -1728,7 +1733,7 @@ Private Sub populateAvailableLanguages()
                 listEntry = listEntry & " ("
                 listEntry = listEntry & g_Language.TranslateMessage("autosaved on")
                 listEntry = listEntry & " "
-                listEntry = listEntry & Format(FileDateTime(listOfAvailableLanguages(i).fileName), "hh:mm:ss AM/PM, dd-mmm-yy")
+                listEntry = listEntry & Format(FileDateTime(listOfAvailableLanguages(i).FileName), "hh:mm:ss AM/PM, dd-mmm-yy")
                 listEntry = listEntry & ") "
             
             End If

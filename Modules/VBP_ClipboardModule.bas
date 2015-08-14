@@ -516,9 +516,12 @@ Public Function loadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
         Dim countFiles As Long
         countFiles = 0
         
+        Dim cFile As pdFSO
+        Set cFile = New pdFSO
+        
         For Each oleFilename In Data.Files
             tmpString = oleFilename
-            If (Len(tmpString) <> 0) And FileExist(tmpString) Then
+            If (Len(tmpString) <> 0) And cFile.FileExist(tmpString) Then
                 sFile(countFiles) = tmpString
                 countFiles = countFiles + 1
             End If
@@ -584,7 +587,7 @@ Public Function loadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
         End If
             
         'Be polite and remove the temporary file
-        If FileExist(tmpString) Then Kill tmpString
+        If cFile.FileExist(tmpString) Then cFile.KillFile tmpString
             
         Message "Image imported successfully "
         
@@ -616,7 +619,7 @@ Public Function loadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
                 End If
                 
                 'Delete the temporary file
-                If FileExist(tmpDownloadFile) Then Kill tmpDownloadFile
+                If cFile.FileExist(tmpDownloadFile) Then cFile.KillFile tmpDownloadFile
                 
                 'Exit!
                 loadImageFromDragDrop = True

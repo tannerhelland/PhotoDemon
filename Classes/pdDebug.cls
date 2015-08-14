@@ -98,17 +98,23 @@ Private cSysInfo As pdSystemInfo
 ' Returns: TRUE if successful, FALSE otherwise.
 Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean = False) As Boolean
     
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
     If writeLogDataToFile Then
     
         'First things first: we need to make sure a Debug path exists.  Otherwise, we can't write any of our debug data to file.
         m_logPath = g_UserPreferences.getDebugPath
         
         'Make sure the path exists, and make sure we have write access.  If either of these fail, terminate the debugger.
-        If Not DirectoryExist(m_logPath) Then
+        If Not cFile.FolderExist(m_logPath) Then
+            
             Debug.Print "Log path invalid.  Debug logs not available for this session."
+            
             m_debuggerActive = False
             InitializeDebugger = False
             Exit Function
+            
         End If
         
         'We now know the Debug path exists.  Retrieve a relevant ID for this file.
@@ -122,8 +128,8 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
         Dim overwroteOldLog As Boolean
         overwroteOldLog = False
         
-        If FileExist(m_logPath) Then
-            Kill m_logPath
+        If cFile.FileExist(m_logPath) Then
+            cFile.KillFile m_logPath
             overwroteOldLog = True
         End If
         

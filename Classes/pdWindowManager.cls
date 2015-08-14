@@ -1450,7 +1450,10 @@ End Function
 'Load previous window locations from file.
 Public Function loadAllWindowLocations() As Boolean
     
-    If FileExist(windowDataPath) Then
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.FileExist(windowDataPath) Then
             
         'Attempt to load and validate the relevant preset file; if we can't, create a new, blank XML object
         If (Not xmlEngine.loadXMLFile(windowDataPath)) Or Not (xmlEngine.isPDDataType("Window locations")) Then

@@ -111,8 +111,12 @@ Private m_temporaryPrintPath As String
 Public Sub performPrinterCleanup()
 
     If m_userPrintedThisSession Then
-        On Error Resume Next
-        If FileExist(m_temporaryPrintPath) Then Kill m_temporaryPrintPath
+        
+        Dim cFile As pdFSO
+        Set cFile = New pdFSO
+        
+        If cFile.FileExist(m_temporaryPrintPath) Then cFile.KillFile m_temporaryPrintPath
+        
     End If
 
 End Sub

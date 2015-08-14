@@ -1031,7 +1031,10 @@ End Sub
 Private Sub loadRecentColorList()
 
     'Start by seeing if an XML file with previously saved color data exists
-    If FileExist(XMLFilename) Then
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.FileExist(XMLFilename) Then
         
         'Attempt to load and validate the current file; if we can't, create a new, blank XML object
         If Not xmlEngine.loadXMLFile(XMLFilename) Then

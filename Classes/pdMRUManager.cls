@@ -91,7 +91,7 @@ Private Function getMRUCaption(ByRef newFile As String) As String
     
     'Based on the user's preference, display just the filename or the entire file path (up to the max character length)
     If g_UserPreferences.GetPref_Long("Core", "MRU Caption Length", 0) = 0 Then
-        getMRUCaption = File_And_Path_Handling.getFilename(newFile)
+        getMRUCaption = File_And_Path_Handling.GetFilename(newFile)
     Else
         getMRUCaption = getShortMRU(newFile)
     End If
@@ -149,7 +149,10 @@ End Function
 Public Sub MRU_LoadFromFile()
 
     'Start by seeing if an XML file with previously saved MRU data exists
-    If FileExist(m_XMLFilename) Then
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.FileExist(m_XMLFilename) Then
         
         'Attempt to load and validate the current file; if we can't, create a new, blank XML object
         If Not m_XMLEngine.loadXMLFile(m_XMLFilename) Then

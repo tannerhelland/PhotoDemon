@@ -658,7 +658,11 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
     
     'Display a busy cursor
     If Screen.MousePointer <> vbHourglass Then Screen.MousePointer = vbHourglass
-            
+    
+    'Additional file interactions are handled via pdFSO
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
     'One of the things we'll be doing in this routine is establishing an original color depth for this image. FreeImage and GDI+ will
     ' return this automatically; VB's LoadPicture will not.  We use a tracking variable to determine if a manual color count needs to
     ' be performed.
@@ -771,7 +775,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
     
         'If isThisPrimaryImage Then Message "Verifying that file exists..."
     
-        If isThisPrimaryImage And (Not FileExist(sFile(thisImage))) Then
+        If isThisPrimaryImage And (Not cFile.FileExist(sFile(thisImage))) Then
             
             'If multiple files are being loaded, suppress any errors until the end
             If multipleFilesLoading Then
@@ -1247,9 +1251,7 @@ PDI_Load_Continuation:
 
         
         'Mark the original file size and file format of the image
-        Dim cFSO As pdFSO
-        Set cFSO = New pdFSO
-        If cFSO.FileExist(sFile(thisImage)) Then targetImage.originalFileSize = cFSO.FileLenW(sFile(thisImage))
+        If cFile.FileExist(sFile(thisImage)) Then targetImage.originalFileSize = cFile.FileLenW(sFile(thisImage))
         targetImage.currentFileFormat = targetImage.originalFileFormat
         
         'If Debug Mode is active, supply a basic image summary
@@ -1658,7 +1660,10 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
     FormMain.Enabled = False
     
     'Before attempting to load an image, make sure it exists
-    If Not FileExist(imagePath) Then
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If Not cFile.FileExist(imagePath) Then
         pdMsgBox "Unfortunately, the image '%1' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found", imagePath
         QuickLoadImageToDIB = False
         FormMain.Enabled = True
@@ -2776,7 +2781,10 @@ Public Sub LoadPlugins()
     g_PluginPath = g_UserPreferences.getAppPath & "Plugins\"
     
     'Make sure the plugin path exists
-    If Not DirectoryExist(g_PluginPath) Then MkDir g_PluginPath
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If Not cFile.FolderExist(g_PluginPath) Then MkDir g_PluginPath
         
     'Check for image scanning
     'First, make sure we have our dll file
@@ -2921,7 +2929,10 @@ Public Sub DuplicateCurrentImage()
     LoadFileAsNewImage sFile, False, sTitle, sFilename
                     
     'Be polite and remove the temporary file
-    If FileExist(tmpDuplicationFile) Then Kill tmpDuplicationFile
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.FileExist(tmpDuplicationFile) Then cFile.KillFile tmpDuplicationFile
     
     Message "Image duplication complete."
         

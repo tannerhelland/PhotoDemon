@@ -376,7 +376,7 @@ Public Function patchLanguageFile(ByVal entryKey As String, downloadedData() As 
                     If cFile.FileExist(newFilename) Then
                         
                         'Make a temporary backup of the existing file, then delete it
-                        loadFileToArray newFilename, rawOldFile
+                        cFile.LoadFileAsByteArray newFilename, rawOldFile
                         cFile.KillFile newFilename
                         
                     End If

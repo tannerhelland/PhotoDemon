@@ -68,7 +68,10 @@ Public Function loadAllControlValues() As Boolean
     parentToolName = Replace$(parentForm.Name, "Form", "", , , vbTextCompare)
     parentToolPath = g_UserPreferences.getPresetPath & parentToolName & ".xml"
     
-    If FileExist(parentToolPath) Then
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.FileExist(parentToolPath) Then
             
         'Attempt to load and validate the relevant preset file; if we can't, create a new, blank XML object
         If (Not xmlEngine.loadXMLFile(parentToolPath)) Or Not (xmlEngine.validateLoadedXMLData("toolName")) Then

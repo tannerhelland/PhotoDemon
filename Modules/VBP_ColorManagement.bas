@@ -321,33 +321,19 @@ End Function
 ' and return the result.  Returns a non-zero handle if successful.
 Public Function loadICCProfileFromFile(ByVal profilePath As String) As Long
 
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+
     'Start by loading the specified path into a byte array
     Dim tmpProfileArray() As Byte
-    
-    If FileExist(profilePath) Then
-    
-        Dim fileNum As Integer
-        fileNum = FreeFile
         
-        'Open the file
-        Open profilePath For Binary Access Read As #fileNum
+    If cFile.FileExist(profilePath) Then
         
-            'Dump the unmodified file contents into a byte array
-            If LOF(fileNum) > 0 Then
-            
-                ReDim tmpProfileArray(0 To LOF(fileNum) - 1)
-                Get #fileNum, , tmpProfileArray
-                
-            Else
-            
-                Close #fileNum
-                loadICCProfileFromFile = 0
-                Exit Function
-            
-            End If
-            
-        Close #fileNum
-    
+        If Not cFile.LoadFileAsByteArray(profilePath, tmpProfileArray) Then
+            loadICCProfileFromFile = 0
+            Exit Function
+        End If
+        
     Else
         loadICCProfileFromFile = 0
         Exit Function

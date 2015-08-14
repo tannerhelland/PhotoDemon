@@ -987,7 +987,7 @@ End Sub
 'Load a DIB's header and image information from file.  If the file is compressed, it will automatically be decompressed.
 ' Optionally, if the DIB data is embedded inside another file, that handle can be passed to the this function, and it will attempt to
 ' load DIB data from the current file pointer location.  (In this case, just supply a blank filename.)
-Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEmbeddedLocation As Boolean = False, Optional ByVal hFile As Long = 0) As Boolean
+Public Function createFromFile(ByRef srcFileName As String, Optional ByVal useEmbeddedLocation As Boolean = False, Optional ByVal hFile As Long = 0) As Boolean
     
     'pdFSO is used so we can support Unicode paths
     Dim cFile As pdFSO
@@ -996,10 +996,10 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
     'If this is not an embedded file, create and open it now
     If Not useEmbeddedLocation Then
         
-        If Not cFile.CreateFileHandle(srcFilename, hFile, True, False, OptimizeSequentialAccess) Then
+        If Not cFile.CreateFileHandle(srcFileName, hFile, True, False, OptimizeSequentialAccess) Then
             
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  pdDIB.createFromFile failed to generate a handle for " & srcFilename & ".  Load abandoned."
+                pdDebug.LogAction "WARNING!  pdDIB.createFromFile failed to generate a handle for " & srcFileName & ".  Load abandoned."
             #End If
             
             createFromFile = False
@@ -1314,12 +1314,13 @@ Public Sub writeToBitmapFile(ByRef dstFilename As String)
     GetDIBits m_dibDC, m_dibHandle, 0, m_dibHeight, iData(0, 0), bmpInfoHeader, 0&
     
     'With all our information in place, check to see if that file already exists. Delete it if necessary.
-    If FileExist(dstFilename) Then Kill dstFilename
-    
-    'Writing the file is easy; just dump the two headers and image data into it!
     Dim cFile As pdFSO
     Set cFile = New pdFSO
-
+    
+    If cFile.FileExist(dstFilename) Then cFile.KillFile dstFilename
+    
+    'Writing the file is easy; just dump the two headers and image data into it!
+    
     Dim hFile As Long
     If cFile.CreateFileHandle(dstFilename, hFile, False, True, OptimizeSequentialAccess) Then
     

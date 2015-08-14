@@ -2730,12 +2730,17 @@ End Sub
 
 'If the selected temp folder doesn't have write access, warn the user
 Private Sub TxtTempPath_Change()
-    If Not DirectoryExist(txtTempPath.Text) Then
+
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If Not cFile.FolderExist(txtTempPath.Text) Then
         lblTempPathWarning.Caption = g_Language.TranslateMessage("WARNING: this folder is invalid (access prohibited).  Please provide a valid folder.  If no new folder is provided, PhotoDemon will use the system's default temp location.")
         lblTempPathWarning.Visible = True
     Else
         lblTempPathWarning.Visible = False
     End If
+    
 End Sub
 
 

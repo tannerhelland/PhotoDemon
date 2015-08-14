@@ -30,7 +30,12 @@ Option Explicit
 
 'Is PNGQuant.exe available on this PC?
 Public Function isPngQuantAvailable() As Boolean
-    If FileExist(g_PluginPath & "pngquant.exe") Then isPngQuantAvailable = True Else isPngQuantAvailable = False
+    
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.FileExist(g_PluginPath & "pngquant.exe") Then isPngQuantAvailable = True Else isPngQuantAvailable = False
+    
 End Function
 
 'Retrieve the PNGQuant plugin version.  Shelling the executable with the "--version" tag will cause it to return

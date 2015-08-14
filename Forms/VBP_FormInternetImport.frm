@@ -151,7 +151,10 @@ Public Function ImportImageFromInternet(ByVal URL As String) As Boolean
         If Not pdImages(g_CurrentImage) Is Nothing Then pdImages(g_CurrentImage).originalFileNameAndExtension = tmpFilename
         
         'Delete the temporary file
-        If FileExist(downloadedFilename) Then Kill downloadedFilename
+        Dim cFile As pdFSO
+        Set cFile = New pdFSO
+        
+        If cFile.FileExist(downloadedFilename) Then cFile.KillFile downloadedFilename
         
         Message "Image download complete. "
         ImportImageFromInternet = True
@@ -170,7 +173,11 @@ End Function
 '
 'Note that the calling function is responsible for cleaning up the temp file!
 Public Function downloadURLToTempFile(ByVal URL As String) As String
-
+    
+    'pdFSO is used for Unicode-compatible file writing.  (It's also faster than VB's internal methods.)
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
     'Normally changing the cursor is handled by the software processor, but because this function routes
     ' internally, we'll make an exception and change it here. Note that everywhere this function can
     ' terminate (and it's many places - a lot can go wrong while downloading) - the cursor needs to be reset.
@@ -215,10 +222,9 @@ Public Function downloadURLToTempFile(ByVal URL As String) As String
     
     'We need a temporary file to house the file; generate it automatically, using the extension of the original file.
     Message "Creating temporary file..."
+    
     Dim tmpFilename As String
-    tmpFilename = URL
-    StripFilename tmpFilename
-    makeValidWindowsFilename tmpFilename
+    tmpFilename = cFile.MakeValidWindowsFilename(cFile.GetFilename(URL))
     
     'As an added convenience, replace %20 indicators in the filename with actual spaces
     If InStr(1, tmpFilename, "%20", vbBinaryCompare) Then tmpFilename = Replace$(tmpFilename, "%20", " ")
@@ -228,11 +234,7 @@ Public Function downloadURLToTempFile(ByVal URL As String) As String
     
     'Open the temporary file and begin downloading the image to it
     Message "Image URL verified.  Downloading image..."
-    
-    'pdFSO is used for Unicode-compatible file writing.  (It's also faster than VB's internal methods.)
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
+        
     Dim hFile As Long
     If cFile.CreateFileHandle(tmpFile, hFile, True, True, OptimizeSequentialAccess) Then
     

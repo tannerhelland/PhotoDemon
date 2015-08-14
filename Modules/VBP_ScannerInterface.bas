@@ -35,7 +35,12 @@ Dim hLib_Scanner As Long
 
 'Is EZTwain available as a plugin?  (NOTE: this is now determined separately from g_ScanEnabled.)
 Public Function isEZTwainAvailable() As Boolean
-    If FileExist(g_PluginPath & "eztw32.dll") Then isEZTwainAvailable = True Else isEZTwainAvailable = False
+    
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    If cFile.FileExist(g_PluginPath & "eztw32.dll") Then isEZTwainAvailable = True Else isEZTwainAvailable = False
+    
 End Function
 
 'Return the EZTwain version number, as a string
@@ -113,7 +118,7 @@ Public Sub Twain32Scan()
     Message "Acquiring image..."
     
     'Make sure the EZTW32.dll file exists
-    If g_ScanEnabled = False Then
+    If Not g_ScanEnabled Then
         pdMsgBox "The scanner/digital camera interface plug-in (EZTW32.dll) was marked as missing upon program initialization." & vbCrLf & vbCrLf & "To enable scanner support, please copy the EZTW32.dll file (available for download from http://eztwain.com/ezt1_download.htm) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, " Scanner Interface Error"
         Message "Scanner/digital camera import disabled "
         Exit Sub
@@ -167,7 +172,10 @@ Public Sub Twain32Scan()
         LoadFileAsNewImage sFile, False, sTitle, sFilename
         
         'Be polite and remove the temporary file acquired from the scanner
-        Kill ScannerCaptureFile
+        Dim cFile As pdFSO
+        Set cFile = New pdFSO
+        
+        If cFile.FileExist(ScannerCaptureFile) Then cFile.KillFile ScannerCaptureFile
         
         Message "Image acquired successfully "
         

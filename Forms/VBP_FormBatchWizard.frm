@@ -2329,17 +2329,19 @@ Private Sub changeBatchPage(ByVal moveForward As Boolean)
         
         'Select output directory and file name
         Case 3
-                
+            
+            Dim cFile As pdFSO
+            Set cFile = New pdFSO
+            
             'Make sure we have write access to the output folder.  If we don't, cancel and warn the user.
-            If Not DirectoryExist(txtOutputPath) Then
-                If DirectoryHasWriteAccess(txtOutputPath) Then
-                    'The folder simply does not exist - so create it.
-                    MkDir txtOutputPath
-                Else
+            If Not cFile.FolderExist(txtOutputPath) Then
+                
+                If Not cFile.CreateFolder(txtOutputPath) Then
                     pdMsgBox "PhotoDemon cannot access the requested output folder.  Please select a non-system, unrestricted folder for the batch process.", vbExclamation + vbOKOnly + vbApplicationModal, "Folder access unavailable"
                     txtOutputPath.selectAll
                     Exit Sub
                 End If
+                
             End If
     
     End Select
@@ -2782,13 +2784,16 @@ Private Sub Form_Load()
             cmbPPMFormat.ToolTipText = g_Language.TranslateMessage("Binary encoding of PPM files is strongly suggested.  (In other words, don't change this setting unless you are certain that ASCII encoding is what you want. :)")
             
     'Build default paths from preference file values
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
     Dim tempPathString As String
     tempPathString = g_UserPreferences.GetPref_String("Batch Process", "Drive Box", "")
-    If (tempPathString <> "") And (DirectoryExist(tempPathString)) Then Drive1 = tempPathString
+    If (tempPathString <> "") And (cFile.FolderExist(tempPathString)) Then Drive1 = tempPathString
     tempPathString = g_UserPreferences.GetPref_String("Batch Process", "Input Folder", "")
-    If (tempPathString <> "") And (DirectoryExist(tempPathString)) Then Dir1.Path = tempPathString Else Dir1.Path = Drive1
+    If (tempPathString <> "") And (cFile.FolderExist(tempPathString)) Then Dir1.Path = tempPathString Else Dir1.Path = Drive1
     tempPathString = g_UserPreferences.GetPref_String("Batch Process", "Output Folder", "")
-    If (tempPathString <> "") And (DirectoryExist(tempPathString)) Then txtOutputPath.Text = tempPathString Else txtOutputPath.Text = Dir1
+    If (tempPathString <> "") And (cFile.FolderExist(tempPathString)) Then txtOutputPath.Text = tempPathString Else txtOutputPath.Text = Dir1
         
     'Populate a combo box that will display user-friendly summaries of all possible input image types
     Dim x As Long
@@ -2993,13 +2998,21 @@ Private Sub lstFiles_OLEDragDrop(Data As DataObject, Effect As Long, Button As I
         Dim oleFilename
         Dim tmpString As String
         
+        Dim cFile As pdFSO
+        Set cFile = New pdFSO
+        
         For Each oleFilename In Data.Files
+            
             tmpString = CStr(oleFilename)
+            
             If Len(tmpString) <> 0 Then
-                If FileExist(tmpString) Then addFileToBatchList tmpString
+                If cFile.FileExist(tmpString) Then addFileToBatchList tmpString
             End If
+            
         Next oleFilename
+        
         fixHorizontalListBoxScrolling lstFiles, 16
+        
     End If
     
 End Sub
@@ -3118,11 +3131,16 @@ Private Sub addFileToBatchList(ByVal srcFile As String, Optional ByVal suppressD
     
     'Only add this file to the list if a) it doesn't already appear there, and b) the file actually exists (important when loading
     ' a previously saved batch list from file)
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
     If novelAddition Then
-        If FileExist(srcFile) Then
+    
+        If cFile.FileExist(srcFile) Then
             lstFiles.AddItem srcFile
             updateBatchListCount
         End If
+        
     End If
     
     'Enable the "remove all images" button if at least one image exists in the processing list
@@ -3260,9 +3278,12 @@ Private Sub prepareForBatchConversion()
     Dim sFile(0) As String
     
     'Prepare the folder that will receive the processed images
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
     Dim outputPath As String
-    outputPath = FixPath(txtOutputPath)
-    If Not DirectoryExist(outputPath) Then MkDir outputPath
+    outputPath = cFile.EnforcePathSlash(txtOutputPath)
+    If Not cFile.FolderExist(outputPath) Then cFile.CreateFolder outputPath, True
     
     'Prepare the progress bar, which will keep the user updated on our progress.
     Set sysProgBar = New cProgressBarOfficial
@@ -3302,7 +3323,7 @@ Private Sub prepareForBatchConversion()
         sysProgBar.Refresh
         
         'As a failsafe, check to make sure the current input file exists before attempting to load it
-        If FileExist(tmpFilename) Then
+        If cFile.FileExist(tmpFilename) Then
             
             sFile(0) = tmpFilename
             
