@@ -27,21 +27,12 @@ Begin VB.Form FormPrint
    Begin PhotoDemon.smartCheckBox chkCenter 
       Height          =   330
       Left            =   4080
-      TabIndex        =   23
+      TabIndex        =   22
       Top             =   3480
       Width           =   4440
       _ExtentX        =   7832
       _ExtentY        =   582
       Caption         =   "center on page"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.CommandButton CmdOK 
       Caption         =   "&Print"
@@ -72,7 +63,7 @@ Begin VB.Form FormPrint
       ScaleHeight     =   41
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   57
-      TabIndex        =   20
+      TabIndex        =   19
       Top             =   2760
       Visible         =   0   'False
       Width           =   855
@@ -89,26 +80,9 @@ Begin VB.Form FormPrint
       EndProperty
       Height          =   360
       Left            =   4080
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   5040
       Width           =   1335
-   End
-   Begin VB.CommandButton cmdPaperSize 
-      Caption         =   "Change Paper Size..."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   240
-      TabIndex        =   3
-      Top             =   5040
-      Width           =   3300
    End
    Begin VB.PictureBox picThumbFinal 
       Appearance      =   0  'Flat
@@ -120,7 +94,7 @@ Begin VB.Form FormPrint
       ScaleHeight     =   15
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   15
-      TabIndex        =   15
+      TabIndex        =   14
       Top             =   4920
       Visible         =   0   'False
       Width           =   255
@@ -135,7 +109,7 @@ Begin VB.Form FormPrint
       ScaleHeight     =   15
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   15
-      TabIndex        =   14
+      TabIndex        =   13
       Top             =   4920
       Visible         =   0   'False
       Width           =   255
@@ -150,7 +124,7 @@ Begin VB.Form FormPrint
       ScaleHeight     =   15
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   15
-      TabIndex        =   13
+      TabIndex        =   12
       Top             =   4920
       Visible         =   0   'False
       Width           =   255
@@ -171,7 +145,7 @@ Begin VB.Form FormPrint
       Left            =   4080
       List            =   "VBP_FormPrint.frx":0002
       Style           =   2  'Dropdown List
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   2550
       Width           =   2610
    End
@@ -191,7 +165,7 @@ Begin VB.Form FormPrint
       Left            =   4080
       List            =   "VBP_FormPrint.frx":0006
       Style           =   2  'Dropdown List
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   1575
       Width           =   2610
    End
@@ -227,7 +201,7 @@ Begin VB.Form FormPrint
       ForeColor       =   &H00800000&
       Height          =   360
       Left            =   7080
-      TabIndex        =   5
+      TabIndex        =   4
       TabStop         =   0   'False
       Text            =   "1"
       Top             =   1575
@@ -244,7 +218,7 @@ Begin VB.Form FormPrint
       ScaleHeight     =   258
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   218
-      TabIndex        =   8
+      TabIndex        =   7
       TabStop         =   0   'False
       Top             =   360
       Width           =   3300
@@ -253,7 +227,7 @@ Begin VB.Form FormPrint
          ForeColor       =   &H00C00000&
          Height          =   3015
          Left            =   120
-         TabIndex        =   16
+         TabIndex        =   15
          Top             =   480
          Visible         =   0   'False
          Width           =   3015
@@ -262,21 +236,12 @@ Begin VB.Form FormPrint
    Begin PhotoDemon.smartCheckBox chkFit 
       Height          =   330
       Left            =   4080
-      TabIndex        =   24
+      TabIndex        =   23
       Top             =   3960
       Width           =   4440
       _ExtentX        =   7832
       _ExtentY        =   582
       Caption         =   "fit on page"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblQuality 
       AutoSize        =   -1  'True
@@ -294,14 +259,14 @@ Begin VB.Form FormPrint
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   3960
-      TabIndex        =   22
+      TabIndex        =   21
       Top             =   1200
       Width           =   795
    End
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   -120
-      TabIndex        =   21
+      TabIndex        =   20
       Top             =   5880
       Width           =   8895
    End
@@ -320,7 +285,7 @@ Begin VB.Form FormPrint
       ForeColor       =   &H00800000&
       Height          =   855
       Left            =   5640
-      TabIndex        =   19
+      TabIndex        =   18
       Top             =   4980
       Width           =   3015
    End
@@ -340,7 +305,7 @@ Begin VB.Form FormPrint
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   3960
-      TabIndex        =   18
+      TabIndex        =   17
       Top             =   4560
       Width           =   2295
    End
@@ -360,7 +325,7 @@ Begin VB.Form FormPrint
       ForeColor       =   &H00404040&
       Height          =   375
       Left            =   240
-      TabIndex        =   17
+      TabIndex        =   16
       Top             =   4560
       Width           =   3300
    End
@@ -380,7 +345,7 @@ Begin VB.Form FormPrint
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   3960
-      TabIndex        =   12
+      TabIndex        =   11
       Top             =   3120
       Width           =   1590
    End
@@ -400,7 +365,7 @@ Begin VB.Form FormPrint
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   3945
-      TabIndex        =   11
+      TabIndex        =   10
       Top             =   2205
       Width           =   1230
    End
@@ -420,7 +385,7 @@ Begin VB.Form FormPrint
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   3960
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   240
       Width           =   795
    End
@@ -440,7 +405,7 @@ Begin VB.Form FormPrint
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6840
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   1200
       Width           =   1290
    End
@@ -493,7 +458,7 @@ End Enum
 Dim baseDPI As Double, desiredDPI As Double
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Changing the orientation box forces a refresh of the preview
 Private Sub cbOrientation_Click()
@@ -573,15 +538,6 @@ Private Sub cmbDPI_Scroll()
     End If
 End Sub
 
-'Rather than implement our own paper size mechanic, I cheat and use the default Windows one.  It isn't pretty - but it gets the job done.
-Private Sub cmdPaperSize_Click()
-    Dim cdReturn As Boolean
-    Dim cDialog As cCommonDialog
-    Set cDialog = New cCommonDialog
-    cdReturn = cDialog.VBPageSetupDlg2(Me.hWnd, True, True, False, False, , , , , , , , , Printer.PaperSize, cbOrientation.ListIndex + 1, -(cbQuality.ListIndex + 1), epsuinches, Printer)
-    If cdReturn = True Then UpdatePaperSize
-End Sub
-
 'LOAD form
 Private Sub Form_Load()
 
@@ -649,11 +605,11 @@ Private Sub Form_Load()
     Set pic = picOut.Picture
     
     Dim tPrnPicWidth As Double, tPrnPicHeight As Double
-    tPrnPicWidth = Printer.ScaleX(pic.Width, vbHiMetric, Printer.ScaleMode)
-    tPrnPicHeight = Printer.ScaleY(pic.Height, vbHiMetric, Printer.ScaleMode)
+    tPrnPicWidth = Printer.scaleX(pic.Width, vbHiMetric, Printer.ScaleMode)
+    tPrnPicHeight = Printer.scaleY(pic.Height, vbHiMetric, Printer.ScaleMode)
     Dim dpiX As Double, dpiY As Double
-    dpiX = CSng(pdImages(g_CurrentImage).Width) / Printer.ScaleX(tPrnPicWidth, Printer.ScaleMode, vbInches)
-    dpiY = CSng(pdImages(g_CurrentImage).Height) / Printer.ScaleY(tPrnPicHeight, Printer.ScaleMode, vbInches)
+    dpiX = CSng(pdImages(g_CurrentImage).Width) / Printer.scaleX(tPrnPicWidth, Printer.ScaleMode, vbInches)
+    dpiY = CSng(pdImages(g_CurrentImage).Height) / Printer.scaleY(tPrnPicHeight, Printer.ScaleMode, vbInches)
     baseDPI = Int((dpiX + dpiY) / 2 + 0.5)
     desiredDPI = baseDPI
     
@@ -669,14 +625,11 @@ Private Sub Form_Load()
     cmbDPI = baseDPI
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
 
-    If g_UseFancyFonts Then
-        txtCopies.Height = txtCopies.Height + 1
-        cmdPaperSize.Top = cmdPaperSize.Top + 1
-    End If
-
+    If g_UseFancyFonts Then txtCopies.Height = txtCopies.Height + 1
+    
 End Sub
 
 'OK Button
@@ -751,8 +704,8 @@ Public Function PrintPictureToFitPage(Prn As Printer, pic As StdPicture, ByVal i
     e = e Or Err
 
     'Calculate the printable dimensions (affected by page size)
-    PrnWidth = Prn.ScaleX(Prn.ScaleWidth, Prn.ScaleMode, vbHiMetric)
-    PrnHeight = Prn.ScaleY(Prn.ScaleHeight, Prn.ScaleMode, vbHiMetric)
+    PrnWidth = Prn.scaleX(Prn.ScaleWidth, Prn.ScaleMode, vbHiMetric)
+    PrnHeight = Prn.scaleY(Prn.ScaleHeight, Prn.ScaleMode, vbHiMetric)
 
     'Calculate aspect ratio for the printed page
     PrnRatio = PrnWidth / PrnHeight
@@ -762,17 +715,17 @@ Public Function PrintPictureToFitPage(Prn As Printer, pic As StdPicture, ByVal i
     If (Not iFit) Then
         Dim dpiRatio As Double
         dpiRatio = baseDPI / desiredDPI
-        PrnPicWidth = Prn.ScaleX(pic.Width, vbHiMetric, Prn.ScaleMode) * dpiRatio
-        PrnPicHeight = Prn.ScaleY(pic.Height, vbHiMetric, Prn.ScaleMode) * dpiRatio
+        PrnPicWidth = Prn.scaleX(pic.Width, vbHiMetric, Prn.ScaleMode) * dpiRatio
+        PrnPicHeight = Prn.scaleY(pic.Height, vbHiMetric, Prn.ScaleMode) * dpiRatio
     
     'Otherwise, set the printable size and image size to the same dimensions
     Else
         If (PicRatio >= PrnRatio) Then
-            PrnPicWidth = Prn.ScaleX(PrnWidth, vbHiMetric, Prn.ScaleMode)
-            PrnPicHeight = Prn.ScaleY(PrnWidth / PicRatio, vbHiMetric, Prn.ScaleMode)
+            PrnPicWidth = Prn.scaleX(PrnWidth, vbHiMetric, Prn.ScaleMode)
+            PrnPicHeight = Prn.scaleY(PrnWidth / PicRatio, vbHiMetric, Prn.ScaleMode)
         Else
-            PrnPicHeight = Prn.ScaleY(PrnHeight, vbHiMetric, Prn.ScaleMode)
-            PrnPicWidth = Prn.ScaleX(PrnHeight * PicRatio, vbHiMetric, Prn.ScaleMode)
+            PrnPicHeight = Prn.scaleY(PrnHeight, vbHiMetric, Prn.ScaleMode)
+            PrnPicWidth = Prn.scaleX(PrnHeight * PicRatio, vbHiMetric, Prn.ScaleMode)
         End If
     End If
 
@@ -809,11 +762,11 @@ Private Sub UpdatePrintPreview(Optional forceDPI As Boolean = False)
         If cbOrientation.ListIndex = 0 Then
             iSrc.Picture = picThumb.Picture
             iSrc.Refresh
-            UpdateDPI CSng(pdImages(g_CurrentImage).Width) / Printer.ScaleX(Printer.Width, Printer.ScaleMode, vbInches)
+            UpdateDPI CSng(pdImages(g_CurrentImage).Width) / Printer.scaleX(Printer.Width, Printer.ScaleMode, vbInches)
         Else
             iSrc.Picture = picThumbFinal.Picture
             iSrc.Refresh
-            UpdateDPI CSng(pdImages(g_CurrentImage).Height) / Printer.ScaleX(Printer.Width, Printer.ScaleMode, vbInches)
+            UpdateDPI CSng(pdImages(g_CurrentImage).Height) / Printer.scaleX(Printer.Width, Printer.ScaleMode, vbInches)
         End If
         
         Exit Sub
@@ -838,21 +791,21 @@ Private Sub UpdatePrintPreview(Optional forceDPI As Boolean = False)
     Printer.PrintQuality = -(cbQuality.ListIndex + 1)
     
     'Calculate the dimensions of the printable area in HiMetric
-    PrnWidth = Printer.ScaleX(Printer.ScaleWidth, Printer.ScaleMode, vbHiMetric)
-    PrnHeight = Printer.ScaleY(Printer.ScaleHeight, Printer.ScaleMode, vbHiMetric)
+    PrnWidth = Printer.scaleX(Printer.ScaleWidth, Printer.ScaleMode, vbHiMetric)
+    PrnHeight = Printer.scaleY(Printer.ScaleHeight, Printer.ScaleMode, vbHiMetric)
 
     Dim pic As StdPicture
     Set pic = picOut.Picture
 
-    PrnPicWidth = Printer.ScaleX(pic.Width, vbHiMetric, Printer.ScaleMode)
-    PrnPicHeight = Printer.ScaleY(pic.Height, vbHiMetric, Printer.ScaleMode)
+    PrnPicWidth = Printer.scaleX(pic.Width, vbHiMetric, Printer.ScaleMode)
+    PrnPicHeight = Printer.scaleY(pic.Height, vbHiMetric, Printer.ScaleMode)
     
     'Estimate DPI
     Dim dpiRatio As Double
     If forceDPI = False Then
         Dim dpiX As Double, dpiY As Double
-        dpiX = CSng(pdImages(g_CurrentImage).Width) / Printer.ScaleX(PrnPicWidth, Printer.ScaleMode, vbInches)
-        dpiY = CSng(pdImages(g_CurrentImage).Height) / Printer.ScaleY(PrnPicHeight, Printer.ScaleMode, vbInches)
+        dpiX = CSng(pdImages(g_CurrentImage).Width) / Printer.scaleX(PrnPicWidth, Printer.ScaleMode, vbInches)
+        dpiY = CSng(pdImages(g_CurrentImage).Height) / Printer.scaleY(PrnPicHeight, Printer.ScaleMode, vbInches)
         UpdateDPI ((dpiX + dpiY) / 2)
         dpiRatio = 1
     Else
@@ -951,8 +904,8 @@ Private Sub UpdatePaperSize()
     ' values be set to whatever size the user desires.  Thus this code is abstracted away from the actual paper size selection
     ' process, and any new selection method will require zero changes here.
     Dim pWidth As Double, pHeight As Double
-    pWidth = Printer.ScaleX(Printer.Width, Printer.ScaleMode, vbInches)
-    pHeight = Printer.ScaleY(Printer.Height, Printer.ScaleMode, vbInches)
+    pWidth = Printer.scaleX(Printer.Width, Printer.ScaleMode, vbInches)
+    pHeight = Printer.scaleY(Printer.Height, Printer.ScaleMode, vbInches)
     Dim TxtWidth As String, TxtHeight As String
     TxtWidth = Format(pWidth, "#0.##")
     TxtHeight = Format(pHeight, "#0.##")

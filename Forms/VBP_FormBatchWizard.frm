@@ -2100,10 +2100,10 @@ Private Sub cmdLoadList_Click()
     Dim cdTitle As String
     cdTitle = g_Language.TranslateMessage("Load a list of images")
     
-    Dim CC As cCommonDialog
-    Set CC = New cCommonDialog
+    Dim openDialog As pdOpenSaveDialog
+    Set openDialog = New pdOpenSaveDialog
     
-    If CC.VBGetOpenFileName(sFile, , True, False, False, True, cdFilter, 0, tempPathString, cdTitle, ".pdl", FormBatchWizard.hWnd, OFN_HIDEREADONLY) Then
+    If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, tempPathString, cdTitle, ".pdl", FormBatchWizard.hWnd) Then
         
         'Save this new directory as the default path for future usage
         Dim listPath As String
@@ -2504,11 +2504,11 @@ Private Function saveCurrentBatchList() As Boolean
     Dim cdTitle As String
     cdTitle = g_Language.TranslateMessage("Save the current list of images")
     
-    Dim CC As cCommonDialog
-    Set CC = New cCommonDialog
+    Dim saveDialog As pdOpenSaveDialog
+    Set saveDialog = New pdOpenSaveDialog
     
     Dim sFile As String
-    If CC.VBGetSaveFileName(sFile, , True, cdFilter, 0, tempPathString, cdTitle, ".pdl", FormBatchWizard.hWnd, OFN_HIDEREADONLY) Then
+    If saveDialog.GetSaveFileName(sFile, , True, cdFilter, 1, tempPathString, cdTitle, ".pdl", FormBatchWizard.hWnd) Then
         
         'Save this new directory as the default path for future usage
         Dim listPath As String
@@ -2595,13 +2595,13 @@ Private Sub cmdSelectMacro_Click()
     cdFilter = cdFilter & "|" & g_Language.TranslateMessage("All files") & "|*.*"
     
     'Prepare a common dialog object
-    Dim cDialog As cCommonDialog
-    Set cDialog = New cCommonDialog
+    Dim openDialog As pdOpenSaveDialog
+    Set openDialog = New pdOpenSaveDialog
     
     Dim sFile As String
    
     'If the user provides a valid macro file, use that as part of the batch process
-    If cDialog.VBGetOpenFileName(sFile, , , , , True, cdFilter, , tempPathString, g_Language.TranslateMessage("Open Macro File"), "." & MACRO_EXT, Me.hWnd, OFN_HIDEREADONLY) Then
+    If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, tempPathString, g_Language.TranslateMessage("Open Macro File"), "." & MACRO_EXT, Me.hWnd) Then
         
         'As a convenience to the user, save this directory as the default macro path
         tempPathString = sFile

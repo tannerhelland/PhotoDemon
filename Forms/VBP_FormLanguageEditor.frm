@@ -1271,10 +1271,6 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
         Case 3
         
             If moveForward Then
-            
-                'On this page, the "Next" button is relabeled as "Save and Exit".  It does exactly what it claims!
-                Dim CC As cCommonDialog
-                Set CC = New cCommonDialog
                 
                 'If the user is working from an official file or an autosave, the folder and/or extension of the original filename
                 ' may not be usable.  Strip just the original filename, and append our own folder and extension.
@@ -1290,7 +1286,11 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
                 Dim cdFilter As String
                 cdFilter = g_Language.TranslateMessage("XML file") & " (.xml)|*.xml"
                 
-                If CC.VBGetSaveFileName(sFile, , True, cdFilter, , getDirectory(sFile), g_Language.TranslateMessage("Save current language file"), ".xml", Me.hWnd, 0) Then
+                'On this page, the "Next" button is relabeled as "Save and Exit".  It does exactly what it claims!
+                Dim saveDialog As pdOpenSaveDialog
+                Set saveDialog = New pdOpenSaveDialog
+                
+                If saveDialog.GetSaveFileName(sFile, , True, cdFilter, , getDirectory(sFile), g_Language.TranslateMessage("Save current language file"), ".xml", Me.hWnd) Then
                 
                     'Write the current XML file out to the user's requested path
                     xmlEngine.writeXMLToFile sFile, True
