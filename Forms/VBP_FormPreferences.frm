@@ -1743,10 +1743,10 @@ Private Sub cmdColorProfilePath_Click()
     Dim cdTitle As String
     cdTitle = g_Language.TranslateMessage("Please select a color profile")
     
-    Dim CC As cCommonDialog
-    Set CC = New cCommonDialog
+    Dim openDialog As pdOpenSaveDialog
+    Set openDialog = New pdOpenSaveDialog
     
-    If CC.VBGetOpenFileName(sFile, , True, False, False, True, cdFilter, 0, tempPathString, cdTitle, ".icc", FormPreferences.hWnd, OFN_HIDEREADONLY) Then
+    If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, tempPathString, cdTitle, ".icc", FormPreferences.hWnd) Then
         
         'Save this new directory as the default path for future usage
         Dim listPath As String

@@ -70,12 +70,13 @@ Public Sub StopMacro()
     FormMain.MnuRecordMacro(1).Enabled = False
     
     'Automatically launch the save macro data routine
-    Dim CC As cCommonDialog
+    Dim saveDialog As pdOpenSaveDialog
+    Set saveDialog = New pdOpenSaveDialog
+        
     Dim sFile As String
-    Set CC = New cCommonDialog
     
     Dim cdFilter As String
-    cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Macro Data") & " (." & MACRO_EXT & ")|*." & MACRO_EXT
+    cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Macro") & " (." & MACRO_EXT & ")|*." & MACRO_EXT
             
     Dim cdTitle As String
     cdTitle = g_Language.TranslateMessage("Save macro data")
@@ -90,7 +91,7 @@ Public Sub StopMacro()
 SaveMacroAgain:
      
     'If we get the data we want, save the information
-    If CC.VBGetSaveFileName(sFile, , True, cdFilter, , g_UserPreferences.getMacroPath, cdTitle, "." & MACRO_EXT, getModalOwner().hWnd, 0) Then
+    If saveDialog.GetSaveFileName(sFile, , True, cdFilter, 1, g_UserPreferences.getMacroPath, cdTitle, "." & MACRO_EXT, getModalOwner().hWnd) Then
         
         'Save this macro's directory as the default macro path
         g_UserPreferences.setMacroPath sFile
@@ -180,13 +181,13 @@ Public Sub PlayMacro()
     Interface.disableUserInput
 
     'Automatically launch the load Macro data routine
-    Dim CC As cCommonDialog
-    Set CC = New cCommonDialog
+    Dim openDialog As pdOpenSaveDialog
+    Set openDialog = New pdOpenSaveDialog
     
     Dim sFile As String
         
     Dim cdFilter As String
-    cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Macro Data") & " (." & MACRO_EXT & ")|*." & MACRO_EXT & ";*.thm"
+    cdFilter = PROGRAMNAME & " " & g_Language.TranslateMessage("Macro") & " (." & MACRO_EXT & ")|*." & MACRO_EXT & ";*.thm"
     cdFilter = cdFilter & "|" & g_Language.TranslateMessage("All files") & "|*.*"
     
     Dim cdTitle As String
@@ -197,7 +198,7 @@ Public Sub PlayMacro()
     g_WindowManager.resetTopmostForAllWindows False
     
     'If we get a path, load that file
-    If CC.VBGetOpenFileName(sFile, , , , , True, cdFilter, , g_UserPreferences.getMacroPath, cdTitle, "." & MACRO_EXT, getModalOwner().hWnd, OFN_HIDEREADONLY) Then
+    If openDialog.GetOpenFileName(sFile, , True, , cdFilter, 1, g_UserPreferences.getMacroPath, cdTitle, "." & MACRO_EXT, getModalOwner().hWnd) Then
         
         Message "Loading macro data..."
         

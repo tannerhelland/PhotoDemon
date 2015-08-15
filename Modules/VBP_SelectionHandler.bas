@@ -123,10 +123,10 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         Interface.disableUserInput
     
         'Simple open dialog
-        Dim CC As cCommonDialog
-            
+        Dim openDialog As pdOpenSaveDialog
+        Set openDialog = New pdOpenSaveDialog
+        
         Dim sFile As String
-        Set CC = New cCommonDialog
         
         Dim cdFilter As String
         cdFilter = g_Language.TranslateMessage("PhotoDemon Selection") & " (." & SELECTION_EXT & ")|*." & SELECTION_EXT & "|"
@@ -139,7 +139,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         ' appear over the top of the common dialog.
         g_WindowManager.resetTopmostForAllWindows False
         
-        If CC.VBGetOpenFileName(sFile, , , , , True, cdFilter, , g_UserPreferences.getSelectionPath, cdTitle, , getModalOwner().hWnd, 0) Then
+        If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, g_UserPreferences.getSelectionPath, cdTitle, , getModalOwner().hWnd) Then
             
             'Use a temporary selection object to validate the requested selection file
             Dim tmpSelection As pdSelection
@@ -191,10 +191,10 @@ End Sub
 Public Sub SaveSelectionToFile()
 
     'Simple save dialog
-    Dim CC As cCommonDialog
-        
+    Dim saveDialog As pdOpenSaveDialog
+    Set saveDialog = New pdOpenSaveDialog
+    
     Dim sFile As String
-    Set CC = New cCommonDialog
     
     Dim cdFilter As String
     cdFilter = g_Language.TranslateMessage("PhotoDemon Selection") & " (." & SELECTION_EXT & ")|*." & SELECTION_EXT
@@ -206,7 +206,7 @@ Public Sub SaveSelectionToFile()
     ' appear over the top of the common dialog.
     g_WindowManager.resetTopmostForAllWindows False
     
-    If CC.VBGetSaveFileName(sFile, , True, cdFilter, , g_UserPreferences.getSelectionPath, cdTitle, "." & SELECTION_EXT, getModalOwner().hWnd, 0) Then
+    If saveDialog.GetSaveFileName(sFile, , True, cdFilter, 1, g_UserPreferences.getSelectionPath, cdTitle, "." & SELECTION_EXT, getModalOwner().hWnd) Then
         
         'Save the new directory as the default path for future usage
         g_UserPreferences.setSelectionPath sFile
@@ -260,11 +260,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
         
     'Give the selection a basic filename
     tmpImage.originalFileName = g_Language.TranslateMessage("PhotoDemon selection")
-    
-    'Now it's time to prepare a standard Save Image common dialog
-    Dim CC As cCommonDialog
-    Set CC = New cCommonDialog
-    
+        
     'Get the last "save image" path from the preferences file
     Dim tempPathString As String
     tempPathString = g_UserPreferences.GetPref_String("Paths", "Save Image", "")
@@ -277,12 +273,16 @@ Public Function ExportSelectedAreaAsImage() As Boolean
         saveFormat = g_ImageFormats.getIndexOfOutputFIF(FIF_PNG) + 1
     End If
     
+    'Now it's time to prepare a standard Save Image common dialog
+    Dim saveDialog As pdOpenSaveDialog
+    Set saveDialog = New pdOpenSaveDialog
+    
     'Provide a string to the common dialog; it will fill this with the user's chosen path + filename
     Dim sFile As String
     sFile = tempPathString & incrementFilename(tempPathString, tmpImage.originalFileName, g_ImageFormats.getOutputFormatExtension(saveFormat - 1))
     
     'Present a common dialog to the user
-    If CC.VBGetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, saveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), g_ImageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd, 0) Then
+    If saveDialog.GetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, saveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), g_ImageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd) Then
                 
         'Store the selected file format to the image object
         tmpImage.currentFileFormat = g_ImageFormats.getOutputFIF(saveFormat - 1)
@@ -293,10 +293,7 @@ Public Function ExportSelectedAreaAsImage() As Boolean
     Else
         ExportSelectedAreaAsImage = False
     End If
-    
-    'Release the common dialog object
-    Set CC = Nothing
-    
+        
     'Release our temporary image
     Set tmpDIB = Nothing
     Set tmpImage = Nothing
@@ -337,11 +334,7 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     
     'Give the selection a basic filename
     tmpImage.originalFileName = g_Language.TranslateMessage("PhotoDemon selection")
-    
-    'Now it's time to prepare a standard Save Image common dialog
-    Dim CC As cCommonDialog
-    Set CC = New cCommonDialog
-    
+        
     'Get the last "save image" path from the preferences file
     Dim tempPathString As String
     tempPathString = g_UserPreferences.GetPref_String("Paths", "Save Image", "")
@@ -354,8 +347,12 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     Dim sFile As String
     sFile = tempPathString & incrementFilename(tempPathString, tmpImage.originalFileName, "png")
     
+    'Now it's time to prepare a standard Save Image common dialog
+    Dim saveDialog As pdOpenSaveDialog
+    Set saveDialog = New pdOpenSaveDialog
+    
     'Present a common dialog to the user
-    If CC.VBGetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, saveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), g_ImageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd, 0) Then
+    If saveDialog.GetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, saveFormat, tempPathString, g_Language.TranslateMessage("Export selection as image"), g_ImageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd) Then
                 
         'Store the selected file format to the image object
         tmpImage.currentFileFormat = g_ImageFormats.getOutputFIF(saveFormat - 1)
@@ -366,9 +363,6 @@ Public Function ExportSelectionMaskAsImage() As Boolean
     Else
         ExportSelectionMaskAsImage = False
     End If
-    
-    'Release the common dialog object
-    Set CC = Nothing
     
     'Release our temporary image
     Set tmpImage = Nothing
