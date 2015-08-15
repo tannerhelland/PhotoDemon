@@ -3,9 +3,8 @@ Attribute VB_Name = "File_Menu"
 'File Menu Handler
 'Copyright 2001-2015 by Tanner Helland
 'Created: 15/Apr/01
-'Last updated: 22/May/14
-'Last update: add a failsafe check for an image filename prior to requesting a common dialog; unbeknownst to me,
-'             passing a blank filename will cause the common dialog request to fail!
+'Last updated: 15/August/15
+'Last update: convert the old cCommonDialog references to the newer, lighter pdOpenSaveDialog instance
 '
 'Functions for controlling standard file menu options.  Currently only handles "open image" and "save image".
 '
@@ -48,7 +47,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     g_WindowManager.resetTopmostForAllWindows False
     
     'Retrieve one (or more) files to open
-    If openDialog.GetOpenFileName(sFileList, , True, True, g_ImageFormats.getCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Open an image"), , ownerHwnd, 0) Then
+    If openDialog.GetOpenFileName(sFileList, , True, True, g_ImageFormats.getCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Open an image"), , ownerHwnd) Then
         
         'Message "Preparing to load image..."
         
@@ -111,9 +110,6 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
         
     'If the user cancels the commondialog box, simply exit out.
     Else
-        
-        'If CC.ExtendedError <> 0 Then pdMsgBox "An error occurred: %1", vbCritical + vbOKOnly + vbApplicationModal, "Common dialog error", CC.ExtendedError
-    
         PhotoDemon_OpenImageDialog = False
     End If
     
@@ -123,9 +119,6 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     'Restore window status
     g_WindowManager.resetTopmostForAllWindows True
     
-    'Release the common dialog object
-    Set openDialog = Nothing
-
 End Function
 
 'Provide a common dialog that allows the user to retrieve a single image filename, which the calling function can
@@ -260,8 +253,8 @@ End Function
 'Subroutine for displaying a commondialog save box, then saving an image to the specified file
 Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     
-    Dim CC As cCommonDialog
-    Set CC = New cCommonDialog
+    Dim saveFileDialog As pdOpenSaveDialog
+    Set saveFileDialog = New pdOpenSaveDialog
     
     'Get the last "save image" path from the preferences file
     Dim tempPathString As String
@@ -317,7 +310,7 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     ' appear over the top of the common dialog.
     g_WindowManager.resetTopmostForAllWindows False
     
-    If CC.VBGetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, g_LastSaveFilter, tempPathString, g_Language.TranslateMessage("Save an image"), g_ImageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd, 0) Then
+    If saveFileDialog.GetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, g_LastSaveFilter, tempPathString, g_Language.TranslateMessage("Save an image"), g_ImageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd) Then
                 
         'Store the selected file format to the image object
         pdImages(imageID).currentFileFormat = g_ImageFormats.getOutputFIF(g_LastSaveFilter - 1)
@@ -339,10 +332,7 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     
     'Restore window status
     g_WindowManager.resetTopmostForAllWindows True
-    
-    'Release the common dialog object
-    Set CC = Nothing
-    
+        
 End Function
 
 'Save a lossless copy of the current image.  I've debated a lot of small details about how to best implement this (e.g. how to
