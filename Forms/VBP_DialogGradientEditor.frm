@@ -487,6 +487,16 @@ Private Sub chkDistributeEvenly_Click()
     If (Not m_SuspendUI) Then redrawEverything
 End Sub
 
+Private Sub cmdBar_AddCustomPresetData()
+
+    'This control (obviously) requires a lot of extra custom preset data.
+    '
+    'However, there's no reason to require horrible duplication code, when the gradient class is already capable of serializing
+    ' all relevant data for this control!
+    cmdBar.addPresetData "FullGradientDefinition", m_GradientPreview.getGradientAsString
+
+End Sub
+
 'CANCEL BUTTON
 Private Sub cmdBar_CancelClick()
     userAnswer = vbCancel
@@ -505,6 +515,19 @@ Private Sub cmdBar_OKClick()
     userAnswer = vbOK
     Me.Visible = False
 
+End Sub
+
+Private Sub cmdBar_ReadCustomPresetData()
+    
+    'This control (obviously) requires a lot of extra custom preset data.
+    '
+    'However, there's no reason to require horrible duplication code, when the gradient class is already capable of serializing
+    ' all relevant data for this control!
+    m_GradientPreview.createGradientFromString cmdBar.retrievePresetData("FullGradientDefinition")
+    
+    'Synchronize all controls to the updated settings
+    syncControlsToGradientObject
+        
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
