@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.72</langversion>
+<langversion>6.7.73</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -769,16 +769,6 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 </phrase>
 
 <phrase>
-<original>An error occurred: %1</original>
-<translation>Ein Fehler ist aufgetreten: %1</translation>
-</phrase>
-
-<phrase>
-<original>Common dialog error</original>
-<translation>Standarddialog-Fehler</translation>
-</phrase>
-
-<phrase>
 <original>New image</original>
 <translation>Neues Bild</translation>
 </phrase>
@@ -812,7 +802,7 @@ Danach werden die verlustfreien Kopien im gleichen Ordner wie beim ersten Speich
 <translation>Hintergrund</translation>
 </phrase>
 
-<!-- VBP_MenuModule.bas contains 27 phrases. 17 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- VBP_MenuModule.bas contains 25 phrases. 17 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for VBP_MenuModule.bas-->
 
@@ -1669,27 +1659,6 @@ Wenn Sie fertig sind, klicken Sie bitte auf "Senden". Danke!</translation>
 
 <!-- END text for VBP_FastDrawing.bas-->
 
-<!-- BEGIN text for cCommonDialog.cls -->
-
-<phrase>
-<original>Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
-<translation>Leider kann Windows® so viele Bilder nicht gleichzeitig laden. Bitte wählen Sie eine kleinere Gruppe von Bildern aus und versuchen es noch mal.</translation>
-</phrase>
-
-<phrase>
-<original>Error: too many images</original>
-<translation>Fehler: zu viele Bilder</translation>
-</phrase>
-
-<phrase>
-<original>Image load canceled.</original>
-<translation>Bilder-Laden abgebrochen.</translation>
-</phrase>
-
-<!-- cCommonDialog.cls contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
-
-<!-- END text for cCommonDialog.cls-->
-
 <!-- BEGIN text for VBP_FormGamma.frm (FormGamma) -->
 
 <phrase>
@@ -1845,8 +1814,8 @@ Wenn Sie fertig sind, klicken Sie bitte auf "Senden". Danke!</translation>
 </phrase>
 
 <phrase>
-<original>Macro Data</original>
-<translation>Makrodaten</translation>
+<original>Macro</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5779,11 +5748,6 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 </phrase>
 
 <phrase>
-<original>Change Paper Size</original>
-<translation>Papierformat ändern</translation>
-</phrase>
-
-<phrase>
 <original>fit on page</original>
 <translation>an Seitengröße anpassen</translation>
 </phrase>
@@ -5883,7 +5847,7 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 <translation>Das Bild wurde gedruckt. (Hinweis: Je nach Drucker kann ein zusätzlicher Bestätigungsdialog erscheinen.)</translation>
 </phrase>
 
-<!-- VBP_FormPrint.frm contains 29 phrases. 6 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
+<!-- VBP_FormPrint.frm contains 28 phrases. 6 were duplicates of existing phrases, so only 22 new phrases were written to file. -->
 
 <!-- END text for VBP_FormPrint.frm-->
 
@@ -8865,6 +8829,11 @@ Möchten Sie Ihre Batchliste vor dem Beenden speichern?</translation>
 </phrase>
 
 <phrase>
+<original>Macro Data</original>
+<translation>Makrodaten</translation>
+</phrase>
+
+<phrase>
 <original>stretching to fit</original>
 <translation>passend strecken bzw. stauchen</translation>
 </phrase>
@@ -8993,7 +8962,7 @@ In der Standardeinstellung wird Transparenz in der Mitte geteilt, oder Sie geben
 <translation>verarbeitet werden vor dem Abbruch. Das zuletzt bearbeitete Bild war Nummer %1.</translation>
 </phrase>
 
-<!-- VBP_FormBatchWizard.frm contains 264 phrases. 142 were duplicates of existing phrases, so only 122 new phrases were written to file. -->
+<!-- VBP_FormBatchWizard.frm contains 264 phrases. 141 were duplicates of existing phrases, so only 123 new phrases were written to file. -->
 
 <!-- END text for VBP_FormBatchWizard.frm-->
 
@@ -14103,16 +14072,31 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 
 <!-- BEGIN text for pdOpenSaveDialog.cls -->
 
-<!-- pdOpenSaveDialog.cls contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>Unfortunately, the number of images you selected exceeds what Windows® allows for a single load operation.  Please try again with a smaller set of selected images.</original>
+<translation>Leider kann Windows® so viele Bilder nicht gleichzeitig laden. Bitte wählen Sie eine kleinere Gruppe von Bildern aus und versuchen es noch mal.</translation>
+</phrase>
+
+<phrase>
+<original>Error: too many images</original>
+<translation>Fehler: zu viele Bilder</translation>
+</phrase>
+
+<phrase>
+<original>Load canceled.</original>
+<translation></translation>
+</phrase>
+
+<!-- pdOpenSaveDialog.cls contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <!-- END text for pdOpenSaveDialog.cls-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2440</phrasecount>
+<phrasecount>2438</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4214 phrases. -->
-<!-- 1774 are duplicates, so only 2440 unique phrases have been written to file. -->
-<!-- These 2440 phrases contain approximately 13315 total words. -->
+<!-- As of this build, PhotoDemon contains 4209 phrases. -->
+<!-- 1771 are duplicates, so only 2438 unique phrases have been written to file. -->
+<!-- These 2438 phrases contain approximately 13306 total words. -->
 
 </pdData>
