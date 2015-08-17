@@ -498,7 +498,7 @@ Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
     Set CmdOK.Font = mFont
     Set CmdCancel.Font = mFont
-    cboPreset.FontSize = mFont.Size
+    cboPreset.fontSize = mFont.Size
 End Sub
 
 'Backcolor is used to control the color of the base user control; nothing else is affected by it
@@ -926,10 +926,18 @@ Private Sub storePreset(Optional ByVal presetName As String = "last-used setting
             Case "buttonStrip", "buttonStripVertical"
                 controlValue = Str(eControl.ListIndex)
             
-            'Color pickers have a .Color property (which is just a Long-type value now; in the future, it might be nice to
-            ' set/retrieve a hex value)
+            'Various PD controls have their own custom "value"-type properties.
             Case "colorSelector"
                 controlValue = Str(eControl.Color)
+            
+            Case "brushSelector"
+                controlValue = eControl.Brush
+                
+            Case "penSelector"
+                controlValue = eControl.Pen
+                
+            Case "gradientSelector"
+                controlValue = eControl.Gradient
             
             'VB scroll bars return a standard .Value property
             Case "HScrollBar", "VScrollBar"
@@ -1100,10 +1108,18 @@ Private Function loadPreset(Optional ByVal presetName As String = "last-used set
                             If eControl.ListCount > 0 Then eControl.ListIndex = eControl.ListCount - 1
                         End If
                     
-                    'Color pickers have a .Color property (Long-type).  In the future, I'd like to move to storing all colors as
-                    ' hex values, but this'll have to do for now.
+                    'Various PD controls have their own custom "value"-type properties.
                     Case "colorSelector"
                         eControl.Color = CLng(controlValue)
+                               
+                    Case "brushSelector"
+                        eControl.Brush = controlValue
+                    
+                    Case "penSelector"
+                        eControl.Pen = controlValue
+                    
+                    Case "gradientSelector"
+                        eControl.Gradient = controlValue
                     
                     'Traditional scroll bar values are cast as Longs, despite them only having Int ranges
                     ' (hopefully the original caller planned for this!)

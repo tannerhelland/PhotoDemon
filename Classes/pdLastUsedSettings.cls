@@ -156,13 +156,18 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
             Case "buttonStrip", "buttonStripVertical"
                 controlValue = Str(eControl.ListIndex)
                 
-            'Color pickers have a .Color property
+            'Various PD controls have their own custom "value"-type properties.
             Case "colorSelector"
                 controlValue = Str(eControl.Color)
-                
-            'Brush pickers have a .Brush property
+            
             Case "brushSelector"
                 controlValue = eControl.Brush
+                
+            Case "penSelector"
+                controlValue = eControl.Pen
+                
+            Case "gradientSelector"
+                controlValue = eControl.Gradient
             
             'Intrinsic VB controls may have different names for their value properties
             Case "HScrollBar", "VScrollBar"
@@ -296,14 +301,19 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                         If eControl.ListCount > 0 Then eControl.ListIndex = eControl.ListCount - 1
                     End If
                 
-                'Color pickers have a .Color property
+                'Various PD controls have their own custom "value"-type properties.
                 Case "colorSelector"
                     eControl.Color = CLng(controlValue)
-                    
-                'Brush pickers have a .Brush property
+                           
                 Case "brushSelector"
                     eControl.Brush = controlValue
                 
+                Case "penSelector"
+                    eControl.Pen = controlValue
+                
+                Case "gradientSelector"
+                    eControl.Gradient = controlValue
+                                
                 'Intrinsic VB controls may have different names for their value properties
                 Case "HScrollBar", "VScrollBar"
                     eControl.Value = CLng(controlValue)
