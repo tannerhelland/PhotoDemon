@@ -111,7 +111,7 @@ Public Sub prepareSplashLogo(ByVal maxProgressValue As Long)
     If fixDPIFloat(1) = 1 Then
         quickBlurDIB shadowDIB, 7, True
     Else
-        quickBlurDIB shadowDIB, 7 * (1 / fixDPIFloat(1)), False
+        quickBlurDIB shadowDIB, 7 * (1 / fixDPIFloat(1)), True
     End If
     
     'Set the StretchBlt mode of the underlying form in advance
