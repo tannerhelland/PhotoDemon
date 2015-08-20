@@ -208,10 +208,10 @@ Private Sub drawControl()
         
         Dim cBounds As RECTF
         With cBounds
-            .Left = 1
-            .Top = 1
-            .Width = UserControl.ScaleWidth - 2
-            .Height = UserControl.ScaleHeight - 2
+            .Left = 0
+            .Top = 0
+            .Width = UserControl.ScaleWidth
+            .Height = UserControl.ScaleHeight
         End With
         
         m_Brush.setBoundaryRect cBounds
