@@ -49,7 +49,7 @@ Begin VB.Form FormBatchWizard
       ForeColor       =   &H80000008&
       Height          =   525
       Left            =   720
-      Picture         =   "VBP_FormBatchWizard.frx":0000
+      Picture         =   "File_BatchWizard.frx":0000
       ScaleHeight     =   33
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   33
@@ -66,7 +66,7 @@ Begin VB.Form FormBatchWizard
       ForeColor       =   &H80000008&
       Height          =   540
       Left            =   120
-      Picture         =   "VBP_FormBatchWizard.frx":09F6
+      Picture         =   "File_BatchWizard.frx":09F6
       ScaleHeight     =   34
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   34

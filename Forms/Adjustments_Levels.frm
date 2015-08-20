@@ -65,7 +65,7 @@ Begin VB.Form FormLevels
       Mode            =   1
       Value           =   -1  'True
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormImageLevels.frx":0000
+      PictureNormal   =   "Adjustments_Levels.frx":0000
       CaptionEffects  =   0
       ToolTip         =   "When this button is active, you can set the shadow input level color by right-clicking a color in the preview window."
       ColorScheme     =   3
@@ -260,7 +260,7 @@ Begin VB.Form FormLevels
       Caption         =   ""
       Mode            =   1
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormImageLevels.frx":0852
+      PictureNormal   =   "Adjustments_Levels.frx":0852
       CaptionEffects  =   0
       ToolTip         =   "When this button is active, you can set the highlight input level color by right-clicking a color in the preview window."
       ColorScheme     =   3

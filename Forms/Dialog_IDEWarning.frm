@@ -66,7 +66,7 @@ Begin VB.Form dialog_IDEWarning
       EndProperty
       Caption         =   "I understand the risks of running PhotoDemon in the IDE"
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormIDEWarning.frx":0000
+      PictureNormal   =   "Dialog_IDEWarning.frx":0000
       PictureAlign    =   0
       DisabledPictureMode=   1
       CaptionEffects  =   0
