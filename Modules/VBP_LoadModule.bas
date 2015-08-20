@@ -84,9 +84,8 @@ Public Sub LoadTheProgram()
     ' care about using them.)  Check its availability.
     If isGDIPlusAvailable() Then
     
-        'Load FormSplash into memory, but don't make it visible.  Then ask it to prepare itself.
+        'Load FormSplash into memory, but don't make it visible.
         FormSplash.Visible = False
-        FormSplash.prepareSplashLogo NUMBER_OF_LOADING_STEPS
         
     End If
         
@@ -121,6 +120,8 @@ Public Sub LoadTheProgram()
     g_IsWin8OrLater = cSysInfo.isOSWin8OrLater
     g_IsWin81OrLater = cSysInfo.isOSWin81OrLater
     g_IsWin10OrLater = cSysInfo.isOSWin10OrLater
+    
+    Debug.Print "OS checks: " & g_IsVistaOrLater & ", " & g_IsWin7OrLater & ", " & g_IsWin8OrLater & ", " & g_IsWin81OrLater & ", " & g_IsWin10OrLater
     
     'If we are on Windows 7, prepare some Win7-specific features (like taskbar progress bars)
     If g_IsWin7OrLater Then prepWin7Features
@@ -266,6 +267,7 @@ Public Sub LoadTheProgram()
     FormSplash.lblMessage.fontName = g_InterfaceFont
     
     'Ask the splash screen to finish whatever initializing it needs prior to displaying itself
+    FormSplash.prepareSplashLogo NUMBER_OF_LOADING_STEPS
     FormSplash.prepareRestOfSplash
     
     'Display the splash screen, centered on whichever monitor the user previously used the program on.
@@ -753,7 +755,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
     
         'If debug mode is active, post some helpful debugging information
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "Image load requested for """ & getFilename(sFile(thisImage)) & """"
+            pdDebug.LogAction "Image load requested for """ & GetFilename(sFile(thisImage)) & """"
         #End If
     
         '*************************************************************************************************************************************
@@ -779,7 +781,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             
             'If multiple files are being loaded, suppress any errors until the end
             If multipleFilesLoading Then
-                missingFiles = missingFiles & getFilename(sFile(thisImage)) & vbCrLf
+                missingFiles = missingFiles & GetFilename(sFile(thisImage)) & vbCrLf
             Else
                 If Not suspendWarnings Then
                     pdMsgBox "Unfortunately, the image '%1' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found", sFile(thisImage)
@@ -1036,7 +1038,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             
             'If multiple files are being loaded, suppress any errors until the end
             If multipleFilesLoading Then
-                brokenFiles = brokenFiles & getFilename(sFile(thisImage)) & vbCrLf
+                brokenFiles = brokenFiles & GetFilename(sFile(thisImage)) & vbCrLf
             Else
                 If (MacroStatus <> MacroBATCH) And (Not suspendWarnings) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then
                     pdMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Import Failed", sFile(thisImage)
@@ -1257,7 +1259,7 @@ PDI_Load_Continuation:
         'If Debug Mode is active, supply a basic image summary
         #If DEBUGMODE = 1 Then
         
-            pdDebug.LogAction "~ Summary of image """ & getFilename(sFile(thisImage)) & """ follows ~", , True
+            pdDebug.LogAction "~ Summary of image """ & GetFilename(sFile(thisImage)) & """ follows ~", , True
             pdDebug.LogAction vbTab & "Image ID: " & targetImage.imageID, , True
             
             Select Case decoderUsed
@@ -1573,7 +1575,7 @@ PDI_Load_Continuation:
         'In debug mode, note the new memory baseline, post-load
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "targetImage.loadedSuccessfully set to TRUE"
-            pdDebug.LogAction "New memory report after loading image """ & getFilename(sFile(thisImage)) & """:"
+            pdDebug.LogAction "New memory report after loading image """ & GetFilename(sFile(thisImage)) & """:"
             pdDebug.LogAction "", PDM_MEM_REPORT
             
             'Also report an estimated memory delta, based on the pdImage object's self-reported memory usage.
@@ -1963,7 +1965,7 @@ LoadPDIFail:
     
     'Case 1: zLib is required for this file, but the user doesn't have the zLib plugin
     If pdiReader.getPackageFlag(PDP_FLAG_ZLIB_REQUIRED, PDP_LOCATION_ANY) And (Not g_ZLibEnabled) Then
-        pdMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbInformation + vbOKOnly + vbApplicationModal, "zLib plugin missing", getFilename(PDIPath)
+        pdMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbInformation + vbOKOnly + vbApplicationModal, "zLib plugin missing", GetFilename(PDIPath)
         Exit Function
     End If
 
