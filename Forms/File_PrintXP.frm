@@ -141,9 +141,9 @@ Begin VB.Form FormPrint
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      ItemData        =   "VBP_FormPrint.frx":0000
+      ItemData        =   "File_PrintXP.frx":0000
       Left            =   4080
-      List            =   "VBP_FormPrint.frx":0002
+      List            =   "File_PrintXP.frx":0002
       Style           =   2  'Dropdown List
       TabIndex        =   5
       Top             =   2550
@@ -161,9 +161,9 @@ Begin VB.Form FormPrint
       EndProperty
       ForeColor       =   &H00800000&
       Height          =   360
-      ItemData        =   "VBP_FormPrint.frx":0004
+      ItemData        =   "File_PrintXP.frx":0004
       Left            =   4080
-      List            =   "VBP_FormPrint.frx":0006
+      List            =   "File_PrintXP.frx":0006
       Style           =   2  'Dropdown List
       TabIndex        =   3
       Top             =   1575

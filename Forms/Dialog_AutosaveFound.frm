@@ -88,7 +88,7 @@ Begin VB.Form dialog_AutosaveWarning
       EndProperty
       Caption         =   "Restore selected images  "
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormAutosaveWarning.frx":0000
+      PictureNormal   =   "Dialog_AutosaveFound.frx":0000
       PictureAlign    =   0
       DisabledPictureMode=   1
       CaptionEffects  =   0
@@ -116,7 +116,7 @@ Begin VB.Form dialog_AutosaveWarning
       EndProperty
       Caption         =   "Discard all images  "
       HandPointer     =   -1  'True
-      PictureNormal   =   "VBP_FormAutosaveWarning.frx":1052
+      PictureNormal   =   "Dialog_AutosaveFound.frx":1052
       PictureAlign    =   0
       DisabledPictureMode=   1
       CaptionEffects  =   0

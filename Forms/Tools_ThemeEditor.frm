@@ -31,7 +31,7 @@ Begin VB.Form FormThemeEditor
       Width           =   10335
       _ExtentX        =   18230
       _ExtentY        =   1508
-      Caption         =   $"VBP_FormThemeEditor.frx":0000
+      Caption         =   $"Tools_ThemeEditor.frx":0000
       FontSize        =   12
       Layout          =   3
    End
