@@ -2,10 +2,11 @@ VERSION 5.00
 Begin VB.Form dialog_FillSettings 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
+   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Fill settings"
    ClientHeight    =   7905
-   ClientLeft      =   120
-   ClientTop       =   450
+   ClientLeft      =   45
+   ClientTop       =   375
    ClientWidth     =   12270
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -17,9 +18,12 @@ Begin VB.Form dialog_FillSettings
       Strikethrough   =   0   'False
    EndProperty
    LinkTopic       =   "Form1"
+   MaxButton       =   0   'False
+   MinButton       =   0   'False
    ScaleHeight     =   527
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   818
+   ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.PictureBox picBrushPreview 
       Appearance      =   0  'Flat

@@ -2,10 +2,11 @@ VERSION 5.00
 Begin VB.Form dialog_GradientEditor 
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
+   BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Gradient editor"
    ClientHeight    =   9540
-   ClientLeft      =   120
-   ClientTop       =   450
+   ClientLeft      =   45
+   ClientTop       =   375
    ClientWidth     =   12660
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -17,9 +18,12 @@ Begin VB.Form dialog_GradientEditor
       Strikethrough   =   0   'False
    EndProperty
    LinkTopic       =   "Form1"
+   MaxButton       =   0   'False
+   MinButton       =   0   'False
    ScaleHeight     =   636
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   844
+   ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
