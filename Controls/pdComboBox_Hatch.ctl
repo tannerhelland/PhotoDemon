@@ -673,11 +673,11 @@ Public Property Let Enabled(ByVal newValue As Boolean)
 End Property
 
 'Font properties; only a subset are used, as PD handles most font settings automatically
-Public Property Get fontSize() As Single
-    fontSize = m_FontSize
+Public Property Get FontSize() As Single
+    FontSize = m_FontSize
 End Property
 
-Public Property Let fontSize(ByVal newSize As Single)
+Public Property Let FontSize(ByVal newSize As Single)
     
     If newSize <> m_FontSize Then
         
@@ -790,7 +790,7 @@ End Sub
 
 Private Sub UserControl_InitProperties()
     Enabled = True
-    fontSize = 10
+    FontSize = 10
 End Sub
 
 Private Sub UserControl_LostFocus()
@@ -807,7 +807,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
         Enabled = .ReadProperty("Enabled", True)
-        fontSize = .ReadProperty("FontSize", 10)
+        FontSize = .ReadProperty("FontSize", 10)
     End With
 
 End Sub
@@ -1189,163 +1189,6 @@ Public Sub updateAgainstCurrentTheme()
         
     End If
     
-End Sub
-
-'If an object of type Control is capable of receiving focus, this will return TRUE.
-Private Function isControlFocusable(ByRef Ctl As Control) As Boolean
-
-    If Not (TypeOf Ctl Is Timer) And Not (TypeOf Ctl Is Line) And Not (TypeOf Ctl Is pdLabel) And Not (TypeOf Ctl Is Frame) And Not (TypeOf Ctl Is Shape) And Not (TypeOf Ctl Is Image) And Not (TypeOf Ctl Is vbalHookControl) And Not (TypeOf Ctl Is ShellPipe) And Not (TypeOf Ctl Is pdDownload) Then
-        isControlFocusable = True
-    Else
-        isControlFocusable = False
-    End If
-
-End Function
-
-'Iterate through all sibling controls in our container, and if one is capable of receiving focus, activate it.  I had *really* hoped
-' to bypass this kind of manual handling by using WM_NEXTDLGCTL, but I failed to get it working reliably with all types of VB forms.
-' I'm honestly not sure whether VB even uses that message, or whether it uses some internal mechanism for focus tracking; the latter
-' might explain why a manual approach like this seems to be necessary for us as well.
-Private Sub forwardFocusManually(ByVal focusDirectionForward As Boolean)
-
-    'If the user has deactivated tab support, or we are invisible/disabled, ignore this completely
-    If UserControl.Extender.TabStop And UserControl.Extender.Visible And UserControl.Enabled Then
-        
-        'Iterate through all controls in the container, looking for the next TabStop index
-        Dim myIndex As Long
-        myIndex = UserControl.Extender.TabIndex
-        
-        Dim newIndex As Long
-        Const MAX_INDEX As Long = 99999
-        
-        'Forward and back focus checks require different search strategies
-        If focusDirectionForward Then
-            newIndex = MAX_INDEX
-        Else
-            newIndex = myIndex
-        End If
-        
-        'Some controls may not have a TabStop property.  That's okay - just keep iterating if it happens.
-        On Error GoTo NextControlCheck
-        
-        Dim Ctl As Control, targetControl As Control
-        For Each Ctl In Parent.Controls
-            
-            'Hypothetically, our error handler should remove the need for this kind of check.  That said, I prefer to handle the
-            ' non-focusable objects like this, although this requires any outside user to complete the list with their own potentially
-            ' non-focusable controls.  Not ideal, but I don't know a good way (short of error handling) to see whether a VB object
-            ' is focusable.
-            If isControlFocusable(Ctl) Then
-            
-                'Ignore controls whose TabStop property is False, who are not visible, or who are disabled
-                If Ctl.TabStop And Ctl.Visible And Ctl.Enabled Then
-                        
-                    If focusDirectionForward Then
-                    
-                        'Check the tab index of this control.  We're looking for the lowest tab index that is also larger than our tab index.
-                        If (Ctl.TabIndex > myIndex) And (Ctl.TabIndex < newIndex) Then
-                            newIndex = Ctl.TabIndex
-                            Set targetControl = Ctl
-                        End If
-                        
-                    Else
-                    
-                        'Check the tab index of this control.  We're looking for the highest tab index that is also larger than our tab index.
-                        If (Ctl.TabIndex > newIndex) Then
-                            newIndex = Ctl.TabIndex
-                            Set targetControl = Ctl
-                        End If
-                    
-                    End If
-    
-                End If
-                
-            End If
-            
-NextControlCheck:
-        Next
-        
-        'When moving focus forward, we now have one of two possibilites:
-        ' 1) NewIndex represents the tab index of a valid control whose index is higher than us.
-        ' 2) NewIndex is still MAX_INDEX, because no control with a valid tab index was found.
-        
-        'When moving focus backward, we also have two possibilities:
-        ' 1) NewIndex represents the tab index of a valid control whose index is higher than us.  (Required if Shift+Tab will push the
-        '     TabIndex below 0.)
-        ' 2) NewIndex is still MY_INDEX, because no control with a valid tab index was found.
-        
-        'Handle case 2 now.
-        If (focusDirectionForward And (newIndex = MAX_INDEX)) Or (Not focusDirectionForward) Then
-            
-            If focusDirectionForward Then
-                newIndex = myIndex
-            Else
-                newIndex = -1
-            End If
-            
-            'Some controls may not have a TabStop property.  That's okay - just keep iterating if it happens.
-            On Error GoTo NextControlCheck2
-            
-            'If our control is last in line for tabstops, we need to now find the LOWEST tab index to forward focus to.
-            For Each Ctl In Parent.Controls
-                
-                'Hypothetically, our error handler should remove the need for this kind of check.  That said, I prefer to handle the
-                ' non-focusable objects like this, although this requires any outside user to complete the list with their own potentially
-                ' non-focusable controls.  Not ideal, but I don't know a good way (short of error handling) to see whether a VB object
-                ' is focusable.
-                If isControlFocusable(Ctl) Then
-                    
-                    'Ignore controls whose TabStop property is False, who are not visible, or who are disabled
-                    If Ctl.TabStop And Ctl.Visible And Ctl.Enabled Then
-                            
-                        If focusDirectionForward Then
-                        
-                            'Check the tab index of this control.  We're looking for the lowest valid tab index.
-                            If (Ctl.TabIndex < myIndex) And (Ctl.TabIndex < newIndex) Then
-                                newIndex = Ctl.TabIndex
-                                Set targetControl = Ctl
-                            End If
-                            
-                        Else
-                        
-                            'Check the tab index of this control.  We're looking for the lowest valid tab index, if one exists.
-                            If (Ctl.TabIndex < myIndex) And (Ctl.TabIndex > newIndex) Then
-                                newIndex = Ctl.TabIndex
-                                Set targetControl = Ctl
-                            End If
-                        
-                        End If
-                    
-                    End If
-                    
-                End If
-                
-NextControlCheck2:
-            Next
-        
-        End If
-        
-        If (Not focusDirectionForward) Then
-            If newIndex = -1 Then newIndex = myIndex
-        End If
-        
-        'Regardless of focus direction, we once again have one of two possibilites.
-        ' 1) NewIndex represents the tab index of the next valid control in VB's tab order.
-        ' 2) NewIndex = our index, because no control with a valid tab index was found.
-        
-        'SetFocus can fail under a variety of circumstances, so error handling is still required
-        On Error GoTo NoFocusRecipient
-        
-        'Ignore the second case completely, as tab should have no effect
-        If newIndex <> myIndex Then
-            targetControl.SetFocus
-        
-NoFocusRecipient:
-        
-        End If
-        
-    End If
-
 End Sub
 
 'Given a virtual keycode, return TRUE if the keycode is a command key that must be manually forwarded to a combo box.  Command keys include
@@ -1876,7 +1719,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                         If isVirtualKeyDown(VK_SHIFT) Then m_FocusDirection = 2 Else m_FocusDirection = 1
                                                         
                         'Forward focus to the next control
-                        forwardFocusManually (m_FocusDirection = 1)
+                        UserControl_Support.ForwardFocusToNewControl Me, (m_FocusDirection = 1)
                         m_FocusDirection = 0
                         
                         bHandled = True
