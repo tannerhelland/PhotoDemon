@@ -90,7 +90,7 @@ Public Function quickBlurDIB(ByRef srcDIB As pdDIB, ByVal blurRadius As Long, Op
         
             'Next, make sure one of two things are true:
             ' 1) We are on Windows 7, OR
-            ' 2) We are on Windows 8 and the blur radius is > 20.  Below this radius, Windows 8 doesn't blur correctly, and we've gone long
+            ' 2) We are on Windows 8+ and the blur radius is > 20.  Below this radius, Windows 8 doesn't blur correctly, and we've gone long
             '    enough without a patch (years!) that I don't expect MS to fix it.
             If g_IsWin8OrLater And (blurRadius <= 20) Then
                 gdiPlusIsAcceptable = False
