@@ -109,9 +109,9 @@ Public Sub prepareSplashLogo(ByVal maxProgressValue As Long)
     dibsLoadedSuccessfully = dibsLoadedSuccessfully And loadResourceToDIB("PDLOGOBLACK", shadowDIB)
     
     If fixDPIFloat(1) = 1 Then
-        quickBlurDIB shadowDIB, 7, True
+        quickBlurDIB shadowDIB, 7, False
     Else
-        quickBlurDIB shadowDIB, 7 * (1 / fixDPIFloat(1)), True
+        quickBlurDIB shadowDIB, 7 * (1 / fixDPIFloat(1)), False
     End If
     
     'Set the StretchBlt mode of the underlying form in advance

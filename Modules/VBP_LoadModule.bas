@@ -121,8 +121,6 @@ Public Sub LoadTheProgram()
     g_IsWin81OrLater = cSysInfo.isOSWin81OrLater
     g_IsWin10OrLater = cSysInfo.isOSWin10OrLater
     
-    Debug.Print "OS checks: " & g_IsVistaOrLater & ", " & g_IsWin7OrLater & ", " & g_IsWin8OrLater & ", " & g_IsWin81OrLater & ", " & g_IsWin10OrLater
-    
     'If we are on Windows 7, prepare some Win7-specific features (like taskbar progress bars)
     If g_IsWin7OrLater Then prepWin7Features
     
