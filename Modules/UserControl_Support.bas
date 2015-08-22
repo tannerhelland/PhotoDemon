@@ -16,3 +16,19 @@ Attribute VB_Name = "UserControl_Support"
 
 Option Explicit
 
+'The tab key presents a particular problem when intermixing API windows and VB controls.  VB (obviously) ignores the
+' API windows entirely, and PD further complicates this by sometimes mixing API windows and VB controls on the same UC.
+' To avoid this disaster, we manage our own tab key presses using an automated system that sorts controls from top-left
+' to bottom-right, and automatically figures out tab order from there.
+'
+'To make sure the automated system works correctly, some controls actually raise a TabPress event, which their parent
+' UC can use to cycle control focus within the UC.  When focus is tabbed-out from the last control on the UC, the UC
+' itself can then notify the master TabHandler to pass focus to an entirely new control.
+Public Enum PDUC_TAB_BEHAVIOR
+    TabDefaultBehavior = 0
+    TabRaiseEvent = 1
+End Enum
+
+#If False Then
+    Private Const TabDefaultBehavior = 0, TabRaiseEvent = 1
+#End If

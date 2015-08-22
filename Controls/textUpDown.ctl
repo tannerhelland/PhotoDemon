@@ -38,6 +38,7 @@ Begin VB.UserControl textUpDown
       Width           =   750
       _ExtentX        =   1323
       _ExtentY        =   556
+      TabBehavior     =   1
    End
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
