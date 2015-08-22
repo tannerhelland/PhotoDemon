@@ -73,6 +73,7 @@ Public Event KeyPress(ByVal vKey As Long, ByRef preventFurtherHandling As Boolea
 Public Event Resize()
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
+Public Event TabPress(ByVal focusDirectionForward As Boolean)
 
 'Window styles
 Private Enum enWindowStyles
@@ -302,6 +303,9 @@ Private m_DeadCharKeyStateData(0 To 255) As Byte
 Private m_AltKeyMode As Boolean
 Private assembledVirtualKeyString As String
 
+'Like other custom PD UC's, tab behavior can be modified depending where the text box is sited
+Private m_TabMode As PDUC_TAB_BEHAVIOR
+
 'Dynamic hooking requires us to track focus events with care.  When focus is lost, we must relinquish control of the keyboard.
 ' This value will be set to TRUE if the API edit box currently has focus.
 Private m_HasFocus As Boolean
@@ -311,7 +315,6 @@ Private m_HasFocus As Boolean
 ' *within* the control.  To prevent this from happening, we enforce a slight time delay from when our hook procedure begins, to when
 ' we capture Tab keypresses.  This prevents faulty Tab-key handling.
 Private m_TimeAtFocusEnter As Long
-Private m_FocusDirection As Long
 
 'Tracks whether the control (any component) has focus.  This is helpful as we must synchronize between VB's focus events and API
 ' focus events.  This value is deliberately kept separate from m_HasFocus, above, as we only use this value to raise our own
@@ -439,6 +442,19 @@ Public Property Let SelStart(ByVal newPosition As Long)
         SendMessage m_EditBoxHwnd, EM_SETSEL, newPosition, newPosition
     End If
     
+End Property
+
+'Tab handling for API windows is complicated.  This control (like most other PD controls) supports variable tab key behavior.
+' For UC instances embedded inside other UCs, we will raise a "TabPress" event, which the UC can then handle in any way it chooses
+' (for example, forwarding focus to another control in the UC, vs forwarding focus outside the UC).  For standalone instances,
+' the default tab behavior can be specified.
+Public Property Get TabBehavior() As PDUC_TAB_BEHAVIOR
+    TabBehavior = m_TabMode
+End Property
+
+Public Property Let TabBehavior(ByVal newBehavior As PDUC_TAB_BEHAVIOR)
+    m_TabMode = newBehavior
+    PropertyChanged "TabBehavior"
 End Property
 
 'For performance reasons, the current control's text is not stored persistently.  It is retrieved, as needed, using an on-demand model.
@@ -616,6 +632,7 @@ Private Sub UserControl_InitProperties()
     Enabled = True
     FontSize = 10
     Multiline = False
+    TabBehavior = TabDefaultBehavior
     Text = ""
 End Sub
 
@@ -635,6 +652,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         Enabled = .ReadProperty("Enabled", True)
         FontSize = .ReadProperty("FontSize", 10)
         Multiline = .ReadProperty("Multiline", False)
+        TabBehavior = .ReadProperty("TabBehavior", TabDefaultBehavior)
         Text = .ReadProperty("Text", "")
     End With
 
@@ -904,6 +922,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "Enabled", Me.Enabled, True
         .WriteProperty "FontSize", m_FontSize, 10
         .WriteProperty "Multiline", m_Multiline, False
+        .WriteProperty "TabBehavior", m_TabMode, TabDefaultBehavior
         .WriteProperty "Text", m_TextBackup, ""
     End With
     
@@ -1026,6 +1045,7 @@ Private Sub forwardFocusManually(ByVal focusDirectionForward As Boolean)
         For Each Ctl In Parent.Controls
         
         'Some controls may not have a TabStop property.  That's okay - just keep iterating if it happens.
+        On Error GoTo 0
         On Error GoTo NextControlCheck
             
             'Hypothetically, our error handler should remove the need for this kind of check.  That said, I prefer to handle the
@@ -1083,6 +1103,7 @@ ParentHasNoControls:
             End If
             
             'Some controls may not have a TabStop property.  That's okay - just keep iterating if it happens.
+            On Error GoTo 0
             On Error GoTo NextControlCheck2
             
             'If our control is last in line for tabstops, we need to now find the LOWEST tab index to forward focus to.
@@ -1133,6 +1154,7 @@ NextControlCheck2:
         ' 2) NewIndex = our index, because no control with a valid tab index was found.
         
         'SetFocus can fail under a variety of circumstances, so error handling is still required
+        On Error GoTo 0
         On Error GoTo NoFocusRecipient
         
         'Ignore the second case completely, as tab should have no effect
@@ -1379,13 +1401,18 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                         ' request to forward (or reverse) focus.
                         If (Not m_Multiline) And ((GetTickCount - m_TimeAtFocusEnter) > 250) Then
                             
-                            'Set a module-level shift state, and a flag that tells the hook to deactivate after it eats this keypress.
-                            If isVirtualKeyDown(VK_SHIFT) Then m_FocusDirection = 2 Else m_FocusDirection = 1
+                            'We can handle this tab press one of two ways, based on the TabBehavior property
+                            If m_TabMode = TabDefaultBehavior Then
+                                
+                                'Immediately forward focus to the next control
+                                forwardFocusManually Not isVirtualKeyDown(VK_SHIFT)
+                                
+                            'Let the caller determine how to handle the keypress
+                            Else
+                                RaiseEvent TabPress(Not isVirtualKeyDown(VK_SHIFT))
+                            End If
                             
-                            'Forward focus to the next control
-                            forwardFocusManually (m_FocusDirection = 1)
-                            m_FocusDirection = 0
-                            
+                            'Eat the keypress
                             bHandled = True
                             
                         End If

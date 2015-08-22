@@ -7,6 +7,7 @@ Begin VB.UserControl smartResize
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   8280
+   ControlContainer=   -1  'True
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   9.75
