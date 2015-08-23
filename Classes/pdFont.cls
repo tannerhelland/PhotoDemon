@@ -194,8 +194,8 @@ Private m_origFontBold As Boolean
 Private m_origFontItalic As Boolean
 
 'Sometimes, the caller wants us to measure fonts for them.  GDI requires that a font be selected into a DC prior to calculating
-' specific metrics, so if the caller doesn't hand us a DC of their own, we'll use an internal one.
-Private m_tmpDIB As pdDIB
+' specific metrics, so if the caller doesn't hand us a DC of their own, we'll use a temporary internal one.
+Private m_TemporaryDC As Long
 
 'If the user wants to call DrawText manually, they can use this function.  Note that hDC is *not* part of the call, as it's assumed
 ' the caller has already selected this object into the relevant DC!
@@ -207,14 +207,6 @@ End Function
 ' font settings (including alignment).  It is designed for one-off renderings of centered text.
 Public Sub drawCenteredText(ByRef srcString As String, Optional ByVal customWidth As Long = -1, Optional ByVal customHeight As Long = -1)
 
-    'Check for multiline text first; it requires special handling
-    Dim textIsMultiline As Boolean
-    If InStr(1, srcString, vbCrLf, vbBinaryCompare) > 0 Then
-        textIsMultiline = True
-    Else
-        textIsMultiline = False
-    End If
-    
     'Because DCs are dimensionless abstractions, we need to retrieve the attached window and use it to calculate the output rect.
     ' (Note that this does not work when rendering to a windowless DC, like a DIB.)
     Dim winClientRect As winRect
@@ -230,40 +222,17 @@ Public Sub drawCenteredText(ByRef srcString As String, Optional ByVal customWidt
         halfDCHeight = winClientRect.y2 \ 2
     End If
     
-    'Next, determine the height of the string we were passed
-    Dim strHeightHalf As Long
-    If textIsMultiline Then
-        strHeightHalf = getHeightOfWordwrapString(srcString, getWidthOfString(srcString)) \ 2
-    Else
-        strHeightHalf = getHeightOfString(srcString) \ 2
-    End If
+    'Create a bounding rect for the text
+    Dim tmpRect As RECT
     
-    'Back-up the current text alignment, then change it to horizontally aligned
-    Dim backupAlignment As Long
-    backupAlignment = curTextAlignment
-    curTextAlignment = TA_CENTER
+    tmpRect.Left = halfDCWidth
+    tmpRect.Right = tmpRect.Left + getWidthOfString(srcString)
+    tmpRect.Top = halfDCHeight
+    tmpRect.Bottom = tmpRect.Top + getHeightOfWordwrapString(srcString, getWidthOfString(srcString))
     
-    'Render the text
-    If textIsMultiline Then
+    'DrawText handles the actual rendering
+    DrawText curDC, StrPtr(srcString), Len(srcString), tmpRect, DT_WORDBREAK Or DT_NOCLIP
     
-        'Create a bounding rect for the text
-        Dim tmpRect As RECT
-        
-        tmpRect.Left = halfDCWidth
-        tmpRect.Right = tmpRect.Left + getWidthOfString(srcString)
-        tmpRect.Top = halfDCHeight
-        tmpRect.Bottom = tmpRect.Top + getHeightOfWordwrapString(srcString, getWidthOfString(srcString))
-        
-        'If the text is going to extend past the target rect, draw it with ellipses
-        DrawText curDC, StrPtr(srcString), Len(srcString), tmpRect, DT_WORDBREAK Or DT_NOCLIP
-    
-    Else
-        ExtTextOutNoRect curDC, halfDCWidth, halfDCHeight - strHeightHalf, 0, ByVal 0&, StrPtr(srcString), Len(srcString), ByVal 0&
-    End If
-    
-    'Restore the original text alignment
-    curTextAlignment = backupAlignment
-
 End Sub
 
 'This function draws horizontally and vertically centered text within a specified rect, and it does it without modifying any of the current
@@ -292,7 +261,8 @@ Public Sub fastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, By
     'Because the string may be modified to fit within the clipping boundaries, we need to extend the string array by four chars.
     Dim srcStringLen As Long
     srcStringLen = Len(srcString)
-    If useEllipses Then srcString = srcString & ChrW(0) & ChrW(0) & ChrW(0) & ChrW(0)
+    
+    If useEllipses Then srcString = srcString & String$(4, ChrW(0))
     
     Dim tmpRect As RECT
     tmpRect.Left = dstX
@@ -305,30 +275,35 @@ Public Sub fastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, By
     ' string is too long to fit inside the clipping rect, DrawText may choose to extend the character count of the string.
     ' As such, we pass only the currently relevant length of the string, without our added null chars, and DrawText can use
     ' the extra buffer space as necessary.)
+    Dim dtFlags As Long
+    dtFlags = DT_TOP
+    
     Select Case curTextAlignment
         
         Case TA_LEFT
             If useEllipses Then
-                DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, DT_WORD_ELLIPSIS Or DT_MODIFYSTRING Or DT_LEFT Or DT_TOP
+                dtFlags = dtFlags Or DT_WORD_ELLIPSIS Or DT_MODIFYSTRING Or DT_LEFT
             Else
-                DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, DT_SINGLELINE Or DT_LEFT Or DT_TOP Or DT_NOCLIP
+                dtFlags = dtFlags Or DT_SINGLELINE Or DT_LEFT Or DT_NOCLIP
             End If
             
         Case TA_RIGHT
             If useEllipses Then
-                DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, DT_WORD_ELLIPSIS Or DT_MODIFYSTRING Or DT_RIGHT Or DT_TOP
+                dtFlags = dtFlags Or DT_WORD_ELLIPSIS Or DT_MODIFYSTRING Or DT_RIGHT
             Else
-                DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, DT_SINGLELINE Or DT_RIGHT Or DT_TOP Or DT_NOCLIP
+                dtFlags = dtFlags Or DT_SINGLELINE Or DT_RIGHT Or DT_NOCLIP
             End If
             
         Case TA_CENTER
             If useEllipses Then
-                DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, DT_WORD_ELLIPSIS Or DT_MODIFYSTRING Or DT_CENTER Or DT_TOP
+                dtFlags = dtFlags Or DT_WORD_ELLIPSIS Or DT_MODIFYSTRING Or DT_CENTER
             Else
-                DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, DT_SINGLELINE Or DT_CENTER Or DT_TOP Or DT_NOCLIP
+                dtFlags = dtFlags Or DT_SINGLELINE Or DT_CENTER Or DT_NOCLIP
             End If
         
     End Select
+    
+    DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, dtFlags
     
 End Sub
 
@@ -350,18 +325,23 @@ Public Sub fastRenderMultilineTextWithClipping(ByVal dstX As Long, ByVal dstY As
     ' is too long to fit inside the clipping rect, DrawText may choose to extend the character count of the string.  As such
     ' we pass only the currently relevant length of the string, without our added null chars, and DrawText can use the extra
     ' buffer space as necessary.)
+    Dim dtFlags As Long
+    dtFlags = DT_TOP Or DT_WORDBREAK
+    
     Select Case curTextAlignment
         
         Case TA_LEFT
-            DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, DT_WORDBREAK Or DT_LEFT Or DT_TOP
+            dtFlags = dtFlags Or DT_LEFT
             
         Case TA_RIGHT
-            DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, DT_WORDBREAK Or DT_RIGHT Or DT_TOP
+            dtFlags = dtFlags Or DT_RIGHT
             
         Case TA_CENTER
-            DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, DT_WORDBREAK Or DT_CENTER Or DT_TOP
+            dtFlags = dtFlags Or DT_CENTER
         
     End Select
+    
+    DrawText curDC, StrPtr(srcString), srcStringLen, tmpRect, dtFlags
     
 End Sub
 
@@ -520,48 +500,36 @@ Public Function getWidthOfString(ByVal srcString As String) As Long
     
     Dim txtSize As POINTAPI
     
-    If curDC = 0 Then
-        
-        'If we're not currently selected into a DC, we'll create a temporary one, for measurement purposes only
-        attachToDC m_tmpDIB.getDIBDC
-        
-        GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
-        getWidthOfString = txtSize.x
-        
-        releaseFromDC
-        curDC = 0
-        
-    Else
-        GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
-        getWidthOfString = txtSize.x
-    End If
+    'If we're not currently selected into a DC, silently plug in our temporary DC
+    If curDC = 0 Then attachToDC m_TemporaryDC
+    
+    'Retrieve the string's dimensions
+    GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
+    getWidthOfString = txtSize.x
+    
+    'Release the temporary DC, as necessary
+    If curDC = m_TemporaryDC Then releaseFromDC
     
 End Function
 
+'With the current font settings, find the height of either a single-line string, or a word-wrapped string.
+' For convenience, I've separated these into separate functions, as the underlying logic is actually quite different.
 Public Function getHeightOfString(ByVal srcString As String) As Long
     
     Dim txtSize As POINTAPI
     
-    If curDC = 0 Then
-        
-        'If we're not currently selected into a DC, we'll create a temporary one, for measurement purposes only
-        attachToDC m_tmpDIB.getDIBDC
-        
-        GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
-        getHeightOfString = txtSize.y
-        
-        releaseFromDC
-        curDC = 0
-        
-    Else
-        GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
-        getHeightOfString = txtSize.y
-    End If
+    'If we're not currently selected into a DC, silently plug in our temporary DC
+    If curDC = 0 Then attachToDC m_TemporaryDC
+    
+    'Retrieve the string's dimensions
+    GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
+    getHeightOfString = txtSize.y
+    
+    'Release the temporary DC, as necessary
+    If curDC = m_TemporaryDC Then releaseFromDC
     
 End Function
 
-'With the current font settings, find the height of a word-wrapped string.  This action REQUIRES that a DC be currently
-' set for this object, as the DC's font settings are used to calculate the word-wrapped string's dimensions.
 Public Function getHeightOfWordwrapString(ByVal srcString As String, ByVal strWidth As Long) As Long
 
     Dim tmpRect As RECT
@@ -570,9 +538,15 @@ Public Function getHeightOfWordwrapString(ByVal srcString As String, ByVal strWi
     tmpRect.Bottom = 0
     tmpRect.Right = strWidth - 1
     
-    DrawText curDC, StrPtr(srcString), Len(srcString), tmpRect, DT_LEFT Or DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_NOPREFIX Or DT_TOP
+    'As a convenience to the caller, we'll supply a temporary DC if one isn't set.
+    If curDC = 0 Then attachToDC m_TemporaryDC
     
+    'Retrieve the string's dimensions
+    DrawText curDC, StrPtr(srcString), Len(srcString), tmpRect, DT_LEFT Or DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_NOPREFIX Or DT_TOP
     getHeightOfWordwrapString = tmpRect.Bottom
+    
+    'If we used our temporary DC for testing, free it now
+    If curDC = m_TemporaryDC Then releaseFromDC
 
 End Function
 
@@ -630,10 +604,7 @@ Private Sub Class_Initialize()
     curTextAlignment = TA_LEFT
     
     'Also, create a temporary DC we can use for metrics
-    If g_IsProgramRunning Then
-        Set m_tmpDIB = New pdDIB
-        m_tmpDIB.createBlank 4, 4, 32
-    End If
+    m_TemporaryDC = Drawing.getTemporaryDC()
     
 End Sub
 
@@ -643,7 +614,7 @@ Private Sub Class_Terminate()
     deleteCurrentFont
     
     'Free our temporary metrics DC
-    Set m_tmpDIB = Nothing
+    If m_TemporaryDC <> 0 Then Drawing.freeTemporaryDC m_TemporaryDC
     
 End Sub
 
@@ -719,7 +690,7 @@ Public Function getMaxFontSizeToFitStringWidth(ByVal srcString As String, ByVal 
     backupDC = curDC
     
     If curDC = 0 Then
-        targetDC = m_tmpDIB.getDIBDC
+        targetDC = m_TemporaryDC
     Else
         targetDC = curDC
     End If

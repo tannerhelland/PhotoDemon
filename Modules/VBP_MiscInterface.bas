@@ -1253,10 +1253,10 @@ Public Sub fitWordwrapLabel(ByRef srcLabel As Label, ByRef srcForm As Form)
     'We will use a pdFont object to help us measure the label in question
     Dim tmpFont As pdFont
     Set tmpFont = New pdFont
-    tmpFont.setFontBold srcLabel.fontBold
-    tmpFont.setFontItalic srcLabel.fontItalic
+    tmpFont.setFontBold srcLabel.FontBold
+    tmpFont.setFontItalic srcLabel.FontItalic
     tmpFont.setFontFace srcLabel.fontName
-    tmpFont.setFontSize srcLabel.fontSize
+    tmpFont.setFontSize srcLabel.FontSize
     tmpFont.createFontObject
     tmpFont.setTextAlignment srcLabel.Alignment
     tmpFont.attachToDC srcForm.hDC
@@ -1266,7 +1266,7 @@ Public Sub fitWordwrapLabel(ByRef srcLabel As Label, ByRef srcForm As Form)
     lblHeight = tmpFont.getHeightOfWordwrapString(srcLabel.Caption, srcLabel.Width - 1)
     
     Dim curFontSize As Long
-    curFontSize = srcLabel.fontSize
+    curFontSize = srcLabel.FontSize
     
     'If the text is too tall, shrink the font until an acceptable size is found.  Note that the reported text value tends to be
     ' smaller than the space actually required.  I do not know why this happens.  To account for it, I cut a further 10% from
@@ -1288,7 +1288,7 @@ Public Sub fitWordwrapLabel(ByRef srcLabel As Label, ByRef srcForm As Form)
     End If
     
     'When an acceptable size is found, set it and exit.
-    srcLabel.fontSize = curFontSize
+    srcLabel.FontSize = curFontSize
     srcLabel.Refresh
 
 End Sub
