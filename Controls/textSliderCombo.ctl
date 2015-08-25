@@ -1,6 +1,5 @@
 VERSION 5.00
 Begin VB.UserControl sliderTextCombo 
-   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    ClientHeight    =   495
    ClientLeft      =   0
@@ -26,8 +25,8 @@ Begin VB.UserControl sliderTextCombo
       TabIndex        =   1
       Top             =   45
       Width           =   960
-      _extentx        =   1693
-      _extenty        =   741
+      _ExtentX        =   1693
+      _ExtentY        =   741
    End
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
@@ -36,7 +35,7 @@ Begin VB.UserControl sliderTextCombo
       FillStyle       =   0  'Solid
       ForeColor       =   &H80000008&
       Height          =   360
-      Left            =   120
+      Left            =   60
       ScaleHeight     =   24
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   321
@@ -54,8 +53,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Text / Slider custom control
 'Copyright 2013-2015 by Tanner Helland
 'Created: 19/April/13
-'Last updated: 31/October/14
-'Last update: drop AutoRedraw and move to our own flicker-free rendering solution
+'Last updated: 25/August/15
+'Last update: integrate captions directly into the control itself
 '
 'Software like PhotoDemon requires a lot of UI elements.  Ideally, every setting should be adjustable by at least
 ' two mechanisms: direct text entry, and some kind of slider or scroll bar, which allows for a quick method to
@@ -81,6 +80,7 @@ Attribute VB_Exposed = False
 ' 4) A single "Change" event that fires for either scroll or text changes, and only if a text change is valid
 ' 5) Support for integer or floating-point values via the "SigDigits" property
 ' 6) Several different drawing modes, including support for 2- or 3-point gradients
+' 7) Self-captioning, to remove the need for a redundant label control next to this one
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -101,9 +101,11 @@ Public Event LostFocusAPI()
 Private WithEvents cFocusDetector As pdFocusDetector
 Attribute cFocusDetector.VB_VarHelpID = -1
 
-'Flicker-free window painter
-Private WithEvents cPainter As pdWindowPainter
-Attribute cPainter.VB_VarHelpID = -1
+'Flicker-free window painters for both the slider, and the text region
+Private WithEvents cSliderPainter As pdWindowPainter
+Attribute cSliderPainter.VB_VarHelpID = -1
+Private WithEvents cTextPainter As pdWindowPainter
+Attribute cTextPainter.VB_VarHelpID = -1
 
 'API technique for drawing a focus rectangle; used only for designer mode (see the Paint method for details)
 Private Type RECT
@@ -115,9 +117,6 @@ End Type
 
 Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
 
-'Forecolor handling is not currently handled, but it may be in the future
-Private origForecolor As Long
-
 'Additional helper for rendering themed and multiline tooltips
 Private toolTipManager As pdToolTip
 
@@ -127,9 +126,20 @@ Private controlVal As Double, controlMin As Double, controlMax As Double
 'The number of significant digits for this control.  0 means integer values.
 Private significantDigits As Long
 
-'Font size is the only variable parameter as far as fonts are concerned.  (Font face is set automatically, by the
-' updateAgainstCurrentTheme function.)
-Private m_FontSize As Single
+'If the current caption is longer than the underlying slider control, we must dynamically shrink the captions' font size
+' until it fits inside the control.  This variable represents the *currently in-use caption font size*, not the originally
+' given caption font size property.
+Private m_FontSizeCaptionCurrent As Long
+
+'Current caption string (persistent within the IDE, but must be set at run-time for Unicode languages).  Note that m_CaptionEn
+' is the ENGLISH CAPTION ONLY.  A translated caption will be stored in m_CaptionTranslated; the translated copy will be updated
+' by any caption change, or by a call to updateAgainstCurrentTheme.
+Private m_CaptionEn As String
+Private m_CaptionTranslated As String
+
+'Two font sizes are currently supported: one for the control caption, and one for the text entry area.
+Private m_FontSizeCaption As Single
+Private m_FontSizeTUD As Single
 
 'If the text box is initiating a value change, we must track that so as to not overwrite the user's entry mid-typing
 Private textBoxInitiated As Boolean
@@ -219,15 +229,103 @@ Private m_BackBuffer As pdDIB
 ' loses focus, we decrement the counter by 1.  When the counter hits 0, we report a control-wide Got/LostFocusAPI event.
 Private m_ControlFocusCount As Long
 
-Public Property Get FontSize() As Single
-    FontSize = m_FontSize
+'Used to prevent recursive redraws
+Private m_InternalResizeActive As Boolean
+
+'If a caption is active, pdFont will handle all text rendering duties.
+Private m_TextRenderer As pdFont
+Private m_BackBufferText As pdDIB
+
+'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
+' if present, will not be processed until run-time.
+' IMPORTANT NOTE: only the ENGLISH caption is returned.  I don't have a reason for returning a translated caption (if any),
+'                  but I can revisit in the future if it ever becomes relevant.
+Public Property Get Caption() As String
+Attribute Caption.VB_UserMemId = -518
+    Caption = m_CaptionEn
 End Property
 
-Public Property Let FontSize(ByVal newSize As Single)
-    If m_FontSize <> newSize Then
-        m_FontSize = newSize
-        tudPrimary.FontSize = m_FontSize
-        PropertyChanged "FontSize"
+Public Property Let Caption(ByRef newCaption As String)
+
+    If StrComp(newCaption, m_CaptionEn, vbBinaryCompare) <> 0 Then
+        
+        m_CaptionEn = newCaption
+        
+        'During run-time, apply translations as necessary
+        If g_IsProgramRunning Then
+        
+            'See if translations are necessary.
+            Dim isTranslationActive As Boolean
+                
+            If Not (g_Language Is Nothing) Then
+                If g_Language.translationActive Then
+                    isTranslationActive = True
+                Else
+                    isTranslationActive = False
+                End If
+            Else
+                isTranslationActive = False
+            End If
+            
+            'Update the translated caption accordingly
+            If isTranslationActive Then
+                m_CaptionTranslated = g_Language.TranslateMessage(m_CaptionEn)
+            Else
+                m_CaptionTranslated = m_CaptionEn
+            End If
+        
+        Else
+            m_CaptionTranslated = m_CaptionEn
+        End If
+        
+        PropertyChanged "Caption"
+        
+        updateControlLayout
+        
+    End If
+        
+End Property
+
+'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
+Public Property Get Enabled() As Boolean
+    Enabled = UserControl.Enabled
+End Property
+
+Public Property Let Enabled(ByVal newValue As Boolean)
+    
+    UserControl.Enabled = newValue
+    
+    'Disable text entry
+    tudPrimary.Enabled = newValue
+    
+    'Redraw the slider; when disabled, the slider itself is not drawn (only the track behind it is)
+    redrawSlider
+    
+    PropertyChanged "Enabled"
+    
+End Property
+
+Public Property Get FontSizeCaption() As Single
+    FontSizeCaption = m_FontSizeCaption
+End Property
+
+Public Property Let FontSizeCaption(ByVal newSize As Single)
+    If m_FontSizeCaption <> newSize Then
+        m_FontSizeCaption = newSize
+        PropertyChanged "FontSizeCaption"
+        updateAgainstCurrentTheme
+    End If
+End Property
+
+Public Property Get FontSizeTUD() As Single
+    FontSizeTUD = m_FontSizeTUD
+End Property
+
+Public Property Let FontSizeTUD(ByVal newSize As Single)
+    If m_FontSizeTUD <> newSize Then
+        m_FontSizeTUD = newSize
+        tudPrimary.FontSize = m_FontSizeTUD
+        PropertyChanged "FontSizeTUD"
     End If
 End Property
 
@@ -298,6 +396,61 @@ Public Property Let GradientMiddleValue(ByVal newValue As Double)
     
 End Property
 
+Public Property Get hWnd() As Long
+    hWnd = UserControl.hWnd
+End Property
+
+'If the current text value is NOT valid, this will return FALSE.  Note that this property is read-only.
+Public Property Get IsValid(Optional ByVal showError As Boolean = True) As Boolean
+    IsValid = tudPrimary.IsValid
+End Property
+
+'Note: the control's maximum value is settable at run-time
+Public Property Get Max() As Double
+    Max = controlMax
+End Property
+
+Public Property Let Max(ByVal newValue As Double)
+    
+    controlMax = newValue
+    tudPrimary.Max = controlMax
+    
+    'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
+    If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Then redrawInternalGradientDIB
+    
+    'If the current control value is greater than the new max, update it to match (and raise a corresponding _Change event)
+    If controlVal > controlMax Then Value = controlMax
+    
+    'Redraw the control
+    redrawSlider
+    
+    PropertyChanged "Max"
+    
+End Property
+
+'Note: the control's minimum value is settable at run-time
+Public Property Get Min() As Double
+    Min = controlMin
+End Property
+
+Public Property Let Min(ByVal newValue As Double)
+    
+    controlMin = newValue
+    tudPrimary.Min = controlMin
+    
+    'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
+    If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Then redrawInternalGradientDIB
+    
+    'If the current control value is less than the new minimum, update it to match (and raise a corresponding _Change event)
+    If controlVal < controlMin Then Value = controlMin
+    
+    'Redraw the control
+    redrawSlider
+    
+    PropertyChanged "Min"
+    
+End Property
+
 'Notch positioning technique.  If CUSTOM is set, make sure to supply a custom value to match!
 Public Property Get NotchPosition() As SLIDER_NOTCH_POSITION
     NotchPosition = curNotchPosition
@@ -334,6 +487,17 @@ Public Property Let NotchValueCustom(ByVal newValue As Double)
     
 End Property
 
+'Significant digits determines whether the control allows float values or int values (and with how much precision)
+Public Property Get SigDigits() As Long
+    SigDigits = significantDigits
+End Property
+
+Public Property Let SigDigits(ByVal newValue As Long)
+    significantDigits = newValue
+    tudPrimary.SigDigits = significantDigits
+    PropertyChanged "SigDigits"
+End Property
+
 Public Property Get SliderTrackStyle() As SLIDER_TRACK_STYLE
     SliderTrackStyle = curSliderStyle
 End Property
@@ -350,29 +514,55 @@ Public Property Let SliderTrackStyle(ByVal newStyle As SLIDER_TRACK_STYLE)
     PropertyChanged "SliderTrackStyle"
     
 End Property
-    
-'If the current text value is NOT valid, this will return FALSE.  Note that this property is read-only.
-Public Property Get IsValid(Optional ByVal showError As Boolean = True) As Boolean
-    IsValid = tudPrimary.IsValid
+
+'The control's value is simply a reflection of the embedded scroll bar and text box
+Public Property Get Value() As Double
+Attribute Value.VB_UserMemId = 0
+    Value = controlVal
 End Property
 
-'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
-Public Property Get Enabled() As Boolean
-Attribute Enabled.VB_UserMemId = -514
-    Enabled = UserControl.Enabled
-End Property
-
-Public Property Let Enabled(ByVal newValue As Boolean)
+Public Property Let Value(ByVal newValue As Double)
     
-    UserControl.Enabled = newValue
+    'Don't make any changes unless the new value deviates from the existing one
+    If newValue <> controlVal Then
     
-    'Disable text entry
-    tudPrimary.Enabled = newValue
-    
-    'Redraw the slider; when disabled, the slider itself is not drawn (only the track behind it is)
-    redrawSlider
-    
-    PropertyChanged "Enabled"
+        'Internally track the value of the control
+        controlVal = newValue
+        
+        'Check bounds
+        If controlVal < controlMin Then controlVal = controlMin
+        If controlVal > controlMax Then controlVal = controlMax
+        
+        'Mirror the value to the text box
+        If Not textBoxInitiated Then
+            
+            'Normally, we want to make sure that the control's value has changed; otherwise, updating the text box causes unnecessary
+            ' recursive refreshing.  However, we can't compare the text box value to the control value if the user has entered invalid
+            ' input, so first make sure that the text box contains meaningful data.
+            If tudPrimary.IsValid(False) Then
+                
+                'The text box contains valid numerical data.  If it matches the current control value, skip the refresh step.
+                If StrComp(getFormattedStringValue(tudPrimary), CStr(controlVal), vbBinaryCompare) <> 0 Then
+                    tudPrimary.Value = CStr(controlVal)
+                End If
+            
+            'The text box is currently in an error state.  Copy the new text into place without a duplication check.
+            Else
+            
+                tudPrimary.Value = CStr(controlVal)
+            
+            End If
+            
+        End If
+                
+        'Redraw the slider to reflect the new value
+        drawSliderKnob
+        
+        'Mark the value property as being changed, and raise the corresponding event.
+        PropertyChanged "Value"
+        RaiseEvent Change
+        
+    End If
     
 End Property
 
@@ -493,131 +683,17 @@ End Function
 
 'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
 ' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
-Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
+Private Sub cSliderPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
     BitBlt picScroll.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
 End Sub
 
-Public Property Get hWnd() As Long
-    hWnd = UserControl.hWnd
-End Property
-
-'The control's value is simply a reflection of the embedded scroll bar and text box
-Public Property Get Value() As Double
-Attribute Value.VB_UserMemId = 0
-    Value = controlVal
-End Property
-
-Public Property Let Value(ByVal newValue As Double)
+Private Sub cTextPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
     
-    'Don't make any changes unless the new value deviates from the existing one
-    If newValue <> controlVal Then
-    
-        'Internally track the value of the control
-        controlVal = newValue
-        
-        'Check bounds
-        If controlVal < controlMin Then controlVal = controlMin
-        If controlVal > controlMax Then controlVal = controlMax
-        
-        'Mirror the value to the text box
-        If Not textBoxInitiated Then
-            
-            'Normally, we want to make sure that the control's value has changed; otherwise, updating the text box causes unnecessary
-            ' recursive refreshing.  However, we can't compare the text box value to the control value if the user has entered invalid
-            ' input, so first make sure that the text box contains meaningful data.
-            If tudPrimary.IsValid(False) Then
-                
-                'The text box contains valid numerical data.  If it matches the current control value, skip the refresh step.
-                If StrComp(getFormattedStringValue(tudPrimary), CStr(controlVal), vbBinaryCompare) <> 0 Then
-                    tudPrimary.Value = CStr(controlVal)
-                End If
-            
-            'The text box is currently in an error state.  Copy the new text into place without a duplication check.
-            Else
-            
-                tudPrimary.Value = CStr(controlVal)
-            
-            End If
-            
-        End If
-                
-        'Redraw the slider to reflect the new value
-        drawSliderKnob
-        
-        'Mark the value property as being changed, and raise the corresponding event.
-        PropertyChanged "Value"
-        RaiseEvent Change
-        
+    If Not m_InternalResizeActive Then
+        BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBufferText.getDIBDC, winLeft, winTop, vbSrcCopy
     End If
     
-End Property
-
-'Note: the control's minimum value is settable at run-time
-Public Property Get Min() As Double
-    Min = controlMin
-End Property
-
-Public Property Let Min(ByVal newValue As Double)
-    
-    controlMin = newValue
-    tudPrimary.Min = controlMin
-    
-    'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
-    If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Then redrawInternalGradientDIB
-    
-    'If the current control value is less than the new minimum, update it to match (and raise a corresponding _Change event)
-    If controlVal < controlMin Then Value = controlMin
-    
-    'Redraw the control
-    redrawSlider
-    
-    PropertyChanged "Min"
-    
-End Property
-
-'Note: the control's maximum value is settable at run-time
-Public Property Get Max() As Double
-    Max = controlMax
-End Property
-
-Public Property Let Max(ByVal newValue As Double)
-    
-    controlMax = newValue
-    tudPrimary.Max = controlMax
-    
-    'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
-    If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Then redrawInternalGradientDIB
-    
-    'If the current control value is greater than the new max, update it to match (and raise a corresponding _Change event)
-    If controlVal > controlMax Then Value = controlMax
-    
-    'Redraw the control
-    redrawSlider
-    
-    PropertyChanged "Max"
-    
-End Property
-
-'Significant digits determines whether the control allows float values or int values (and with how much precision)
-Public Property Get SigDigits() As Long
-    SigDigits = significantDigits
-End Property
-
-Public Property Let SigDigits(ByVal newValue As Long)
-    significantDigits = newValue
-    tudPrimary.SigDigits = significantDigits
-    PropertyChanged "SigDigits"
-End Property
-
-'Forecolor may be used in the future as part of theming, but right now it serves no purpose
-Public Property Get ForeColor() As OLE_COLOR
-    ForeColor = origForecolor
-End Property
-
-Public Property Let ForeColor(ByVal newColor As OLE_COLOR)
-    origForecolor = newColor
-    PropertyChanged "ForeColor"
-End Property
+End Sub
 
 Private Sub tudPrimary_Change()
     If tudPrimary.IsValid(False) Then
@@ -647,9 +723,12 @@ Private Sub UserControl_Initialize()
     'When not in design mode, initialize a tracker for mouse and keyboard events
     If g_IsProgramRunning Then
         
-        'Start a flicker-free window painter
-        Set cPainter = New pdWindowPainter
-        cPainter.startPainter picScroll.hWnd
+        'Start our flicker-free window painters
+        Set cSliderPainter = New pdWindowPainter
+        cSliderPainter.startPainter picScroll.hWnd
+        
+        Set cTextPainter = New pdWindowPainter
+        cTextPainter.startPainter UserControl.hWnd
         
         'Set up mouse events
         Set cMouseEvents = New pdInputMouse
@@ -677,15 +756,11 @@ Private Sub UserControl_Initialize()
     m_SliderAreaWidth = picScroll.ScaleWidth
     m_SliderAreaHeight = picScroll.ScaleHeight
     
-    'Forecolor tracking may be supported in the future, but for now it's irrelevant
-    origForecolor = ForeColor
-    
-    '10 is the default font size for sliders in PD
-    m_FontSize = 10
-    
-    'Initialize the back buffer and background DIB
+    'Initialize various back buffers and background DIBs
     Set m_SliderBackgroundDIB = New pdDIB
     Set m_BackBuffer = New pdDIB
+    
+    Set m_BackBufferText = New pdDIB
         
 End Sub
 
@@ -695,48 +770,29 @@ Private Sub UserControl_InitProperties()
     'Reset all controls to their default state.  For each public property, matching internal tracker variables are also updated;
     ' this is not necessary, but it's helpful for reminding me of the names of the internal tracker variables relevant to their
     ' connected property.
-    FontSize = 10
-    m_FontSize = 10
-    
-    ForeColor = &H404040
-    origForecolor = ForeColor
+    FontSizeTUD = 10
+    FontSizeCaption = 12
+    Caption = ""
     
     Value = 0
-    controlVal = 0
-    
     Min = 0
-    controlMin = 0
-    
     Max = 10
-    controlMax = 10
-    
     SigDigits = 0
-    significantDigits = 0
     
     SliderTrackStyle = DefaultStyle
-    curSliderStyle = DefaultStyle
     
     'These default gradient values are useless; if you're using a gradient style, MAKE CERTAIN TO SPECIFY ACTUAL COLORS!
     GradientColorLeft = RGB(0, 0, 0)
-    gradColorLeft = RGB(0, 0, 0)
-    
     GradientColorRight = RGB(255, 255, 25)
-    gradColorRight = RGB(255, 255, 255)
-    
     GradientColorMiddle = RGB(121, 131, 135)
-    gradColorMiddle = RGB(121, 131, 135)
     
     'This default gradient middle value is useless; if you use the 3-color gradient style, MAKE CERTAIN TO SPECIFY THIS VALUE!
     GradientMiddleValue = 0
-    gradMiddleValue = 0
     
     'Default notch position; for most controls, it should be set to AUTOMATIC.  If CUSTOM is set, make sure to supply whatever
     ' custom value you want in the corresponding property!
     NotchPosition = AutomaticPosition
-    curNotchPosition = AutomaticPosition
-    
     NotchValueCustom = 0
-    customNotchValue = 0
     
 End Sub
 
@@ -746,9 +802,14 @@ Private Sub UserControl_LostFocus()
 End Sub
 
 Private Sub UserControl_Paint()
-
-    'Provide minimal painting within the designer
-    If Not g_IsProgramRunning Then redrawSlider
+    
+    'Provide some visual feedback in the IDE
+    If Not g_IsProgramRunning Then
+    
+        BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBufferText.getDIBDC, 0, 0, vbSrcCopy
+        redrawSlider
+    
+    End If
     
 End Sub
 
@@ -756,8 +817,9 @@ End Sub
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
     With PropBag
-        FontSize = .ReadProperty("FontSize", 10)
-        ForeColor = .ReadProperty("ForeColor", &H404040)
+        Caption = .ReadProperty("Caption", "")
+        FontSizeCaption = .ReadProperty("FontSizeCaption", 12)
+        FontSizeTUD = .ReadProperty("FontSizeTUD", 10)
         SigDigits = .ReadProperty("SigDigits", 0)
         Max = .ReadProperty("Max", 10)
         Min = .ReadProperty("Min", 0)
@@ -771,43 +833,10 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         NotchValueCustom = .ReadProperty("NotchValueCustom", 0)
     End With
     
-    'These values should have already been set by their respective property read, but I list them here to help me remember
-    ' which internal values correspond to which properties:
-    'controlMin = Min
-    'controlMax = Max
-    'controlVal = Value
-    'significantDigits = SigDigits
-    'curSliderStyle = SliderTrackStyle
-    '
-    'gradColorLeft = GradientColorLeft
-    'gradColorRight = GradientColorRight
-    'gradColorMiddle = GradientColorMiddle
-    'gradMiddleValue = GradientMiddleValue
-    
-    'curNotchPosition = NotchPosition
-    'customNotchValue = NotchValueCustom
-    
 End Sub
 
 Private Sub UserControl_Resize()
-
-    'We want to keep the text box and scroll bar universally aligned.  Thus, I have hard-coded specific spacing values.
-    tudPrimary.Left = UserControl.ScaleWidth - (tudPrimary.Width + fixDPI(2))
-    
-    'It's possible - but obviously not recommended - to shrink the control so much that the scroll bar is invisible.
-    ' Please do not do this.
-    If tudPrimary.Left - fixDPI(10) > 0 Then picScroll.Width = tudPrimary.Left - fixDPI(10)
-    
-    'Update slider area width/height to match the new picScroll size
-    m_SliderAreaWidth = picScroll.ScaleWidth
-    m_SliderAreaHeight = picScroll.ScaleHeight
-    
-    'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
-    If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Or (curSliderStyle = HueSpectrum360) Then redrawInternalGradientDIB
-    
-    'Redraw the control
-    redrawSlider
-
+    If Not m_InternalResizeActive Then updateControlLayout
 End Sub
 
 Private Sub UserControl_Show()
@@ -827,8 +856,9 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 
     'Store all associated properties
     With PropBag
-        .WriteProperty "FontSize", m_FontSize, 10
-        .WriteProperty "ForeColor", ForeColor, &H404040
+        .WriteProperty "Caption", m_CaptionEn, ""
+        .WriteProperty "FontSizeTUD", m_FontSizeTUD, 10
+        .WriteProperty "FontSizeCaption", m_FontSizeCaption, 12
         .WriteProperty "Min", controlMin, 0
         .WriteProperty "Max", controlMax, 10
         .WriteProperty "SigDigits", significantDigits, 0
@@ -841,6 +871,176 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "NotchPosition", curNotchPosition, 0
         .WriteProperty "NotchValueCustom", customNotchValue, 0
     End With
+    
+End Sub
+
+Private Sub initializeTextRenderer()
+
+    If m_TextRenderer Is Nothing Then
+        
+        Set m_TextRenderer = New pdFont
+            
+        'Prep the font using default settings
+        With m_TextRenderer
+            
+            If g_IsProgramRunning Then .setFontFace g_InterfaceFont
+            
+            .setFontBold False
+            .setFontItalic False
+            .setFontStrikeout False
+            .setFontUnderline False
+            
+            .setFontSize FontSizeCaption
+            .setTextAlignment vbLeftJustify
+            
+        End With
+            
+    End If
+    
+    'Make sure the font has been created
+    If Not m_TextRenderer.hasFontBeenCreated Then m_TextRenderer.createFontObject
+    
+    'Set font color (which may change due to theming)
+    If g_IsProgramRunning Then
+        m_TextRenderer.setFontColor g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
+    Else
+        m_TextRenderer.setFontColor RGB(96, 96, 96)
+    End If
+        
+    'If the current caption + font size will overflow control boundaries, resize the font automatically
+    Dim newFontSize As Single
+    newFontSize = m_TextRenderer.getMaxFontSizeToFitStringWidth(m_CaptionTranslated, UserControl.ScaleWidth, Me.FontSizeCaption)
+    
+    With m_TextRenderer
+        If .getFontSize <> newFontSize Then
+            .deleteCurrentFont
+            .setFontSize newFontSize
+            .createFontObject
+        End If
+    End With
+
+End Sub
+
+'When the control is resized, the caption is changed, or font sizes for either the caption or text up/down are modified,
+' this function should be called.  It controls the physical positioning of various control sub-elements
+' (specifically, the caption area, the slider area, and the text up/down area).
+Private Sub updateControlLayout()
+    
+    If m_InternalResizeActive Then Exit Sub
+    
+    'Set a control-level flag to prevent recursive redraws
+    m_InternalResizeActive = True
+    
+    'To avoid long-running redraw operations, we only want to apply new positions and sizes as necessary (e.g. if they don't match
+    ' existing values)
+    Dim newLeft_TUD As Long, newLeft_Slider As Long
+    Dim newTop_TUD As Long, newTop_Slider As Long
+    Dim newWidth_Slider As Long, newHeight As Long
+    Dim newControlHeight As Long
+    
+    'NB: order of operations is important in this function.  We first calculate all new size/position values.  When all new values
+    '    are known, we apply them in a single fell swoop to avoid the need for costly redraws.
+    
+    'The first (and most complicated) size consideration is accounting for the presence of a control caption.  If no caption exists,
+    ' we can bypass much of this function.
+    If Len(m_CaptionTranslated) <> 0 Then
+    
+        'Start by initializing our font object.  The initialization step will automatically determine a new font size, if the currently
+        ' requested font size results in text that overflows the control's boundarines.
+        initializeTextRenderer
+        
+        'We now have all the font information necessary to calculate caption positioning (and by extension, slider and
+        ' text up/down positioning, too!)
+        
+        'Calculate a new height for the usercontrol as a whole.  This is simple formula:
+        ' (height of text up/down) + (2 px padding around text up/down) + (height of caption) + (1 px padding around caption)
+        Dim textHeight As Long
+        textHeight = m_TextRenderer.getHeightOfString(m_CaptionTranslated)
+        newControlHeight = tudPrimary.Height + fixDPI(4) + textHeight + fixDPI(2)
+        If UserControl.Extender.Height <> newControlHeight Then UserControl.Extender.Height = newControlHeight
+        
+        'Calculate a new top position for the slider box (which will be vertically centered in the space below the caption)
+        newTop_Slider = ((newControlHeight - (textHeight + fixDPI(4))) - tudPrimary.Height) \ 2
+        newTop_Slider = textHeight + fixDPI(4) + newTop_Slider
+        
+    'When a slider lacks a caption, we hard-code its height to preset values
+    Else
+        
+        'Start by setting the control height
+        newControlHeight = tudPrimary.Height + fixDPI(4)
+        If UserControl.Extender.Height <> newControlHeight Then UserControl.Extender.Height = newControlHeight
+        
+        'Center the slider box inside the newly calculated height
+        newTop_Slider = (newControlHeight - picScroll.Height) \ 2
+                
+    End If
+    
+    'With the control correctly sized, prep the back buffer to match
+    Dim controlBackgroundColor As Long
+    If g_IsProgramRunning Then
+        controlBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+    Else
+        controlBackgroundColor = vbWhite
+    End If
+    
+    If (m_BackBufferText.getDIBWidth <> UserControl.ScaleWidth) Or (m_BackBufferText.getDIBHeight <> UserControl.ScaleHeight) Or (Not g_IsProgramRunning) Then
+        m_BackBufferText.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, controlBackgroundColor
+    Else
+        GDI_Plus.GDIPlusFillDIBRect m_BackBufferText, 0, 0, m_BackBufferText.getDIBWidth, m_BackBufferText.getDIBHeight, controlBackgroundColor
+    End If
+    
+    'If text exists, paint it onto the newly created back buffer
+    If Len(m_CaptionTranslated) <> 0 Then
+        
+        m_TextRenderer.attachToDC m_BackBufferText.getDIBDC
+        m_TextRenderer.fastRenderText 1, 1, m_CaptionTranslated
+        m_TextRenderer.releaseFromDC
+        
+    End If
+    
+    'With height correctly set, we next want to left-align the TUD against the slider region
+    newLeft_TUD = UserControl.ScaleWidth - (tudPrimary.Width + fixDPI(2))
+    
+    'If the slider width changes, we need to redraw the entire custom control, so we track this value specifically.
+    Dim widthChanged As Boolean
+    newWidth_Slider = newLeft_TUD - fixDPI(10)
+    If (newWidth_Slider > 0) And (picScroll.Width <> newWidth_Slider) Then widthChanged = True Else widthChanged = False
+    
+    'We now know enough to reposition the slider picture box
+    If ((picScroll.Top <> newTop_Slider) Or (picScroll.Width <> newWidth_Slider)) And (newWidth_Slider > 0) Then picScroll.Move picScroll.Left, newTop_Slider, newWidth_Slider
+    
+    'Vertically center the text up/down relative to the slider
+    Dim sliderVerticalCenter As Single
+    sliderVerticalCenter = picScroll.Top + (CSng(picScroll.ScaleHeight) / 2)
+    newTop_TUD = sliderVerticalCenter - Int(CSng(tudPrimary.Height) / 2)
+    
+    'Now that we've calculated new text up/down positioning, we can apply it as necessary
+    If tudPrimary.Top <> newTop_TUD Or tudPrimary.Left <> newLeft_TUD Then tudPrimary.Move newLeft_TUD, newTop_TUD
+    
+    'Update slider area width/height to match the new picScroll size
+    m_SliderAreaWidth = picScroll.ScaleWidth
+    m_SliderAreaHeight = picScroll.ScaleHeight
+    
+    'If the slider area changed, redraw it now
+    If widthChanged Then
+    
+        'If the track style is some kind of custom gradient, start by redrawing the background gradient DIB
+        If ((curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Or (curSliderStyle = HueSpectrum360)) Then redrawInternalGradientDIB
+        
+        'Redraw the slider as well
+        redrawSlider
+        
+    End If
+    
+    'Paint the background text buffer to the screen, as relevant
+    If g_IsProgramRunning Then
+        cTextPainter.requestRepaint
+    Else
+        BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBufferText.getDIBDC, 0, 0, vbSrcCopy
+    End If
+    
+    'Reset the redraw flag, and request a background repaint
+    m_InternalResizeActive = False
     
 End Sub
 
@@ -937,27 +1137,7 @@ Private Sub redrawSlider()
         .Top = (m_SliderAreaHeight / 2) - ((m_trackDiameter + 1) / 2)
         .Height = m_trackDiameter + 1
     End With
-    
-    'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
-    If Not g_IsProgramRunning Then
         
-        UserControl.Picture = LoadPicture("")
-        
-        Dim tmpRect As RECT
-        With tmpRect
-            .Left = 0
-            .Top = 0
-            .Right = UserControl.ScaleWidth
-            .Bottom = UserControl.ScaleHeight
-        End With
-        
-        DrawFocusRect UserControl.hDC, tmpRect
-        
-        UserControl.Picture = UserControl.Image
-        UserControl.Refresh
-    
-    End If
-    
     'The slider background is now ready for action.  As a final step, pass control to the knob renderer function.
     drawSliderKnob
         
@@ -1016,13 +1196,14 @@ Private Sub drawSliderKnob()
     End If
     
     'Paint the buffer to the screen
-    If g_IsProgramRunning Then cPainter.requestRepaint Else BitBlt picScroll.hDC, 0, 0, picScroll.ScaleWidth, picScroll.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    If g_IsProgramRunning Then cSliderPainter.requestRepaint Else BitBlt picScroll.hDC, 0, 0, picScroll.ScaleWidth, picScroll.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
     
 End Sub
 
 'Post-translation, we can request an immediate refresh
 Public Sub requestRefresh()
-    cPainter.requestRepaint
+    cTextPainter.requestRepaint
+    cSliderPainter.requestRepaint
 End Sub
 
 'Render a slight notch at the specified position on the specified DIB.  Note that this sub WILL automatically convert a custom notch
@@ -1315,6 +1496,9 @@ Public Sub updateAgainstCurrentTheme()
     
     'Our tooltip object must also be refreshed (in case the language has changed)
     If g_IsProgramRunning Then toolTipManager.updateAgainstCurrentTheme
+    
+    'Update the control's layout
+    updateControlLayout
     
     'Redraw the control to match any updated settings
     redrawSlider
