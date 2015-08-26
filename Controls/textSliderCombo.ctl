@@ -1494,10 +1494,34 @@ Public Sub updateAgainstCurrentTheme()
     'The text up/down can redraw itself
     tudPrimary.updateAgainstCurrentTheme
     
-    'Our tooltip object must also be refreshed (in case the language has changed)
-    If g_IsProgramRunning Then toolTipManager.updateAgainstCurrentTheme
+    If g_IsProgramRunning Then
+            
+        'Our tooltip object must also be refreshed (in case the language has changed)
+        toolTipManager.updateAgainstCurrentTheme
+        
+        'See if translations are necessary
+        Dim isTranslationActive As Boolean
+            
+        If Not (g_Language Is Nothing) Then
+            If g_Language.translationActive Then
+                isTranslationActive = True
+            Else
+                isTranslationActive = False
+            End If
+        Else
+            isTranslationActive = False
+        End If
+        
+        'Update the translated caption accordingly
+        If isTranslationActive Then
+            m_CaptionTranslated = g_Language.TranslateMessage(m_CaptionEn)
+        Else
+            m_CaptionTranslated = m_CaptionEn
+        End If
+        
+    End If
     
-    'Update the control's layout
+    'Update the control's layout to account for new translations and/or theme changes
     updateControlLayout
     
     'Redraw the control to match any updated settings
