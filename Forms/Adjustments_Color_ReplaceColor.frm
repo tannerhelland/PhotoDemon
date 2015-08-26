@@ -41,6 +41,7 @@ Begin VB.Form FormReplaceColor
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -53,31 +54,33 @@ Begin VB.Form FormReplaceColor
       ColorSelection  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltErase 
-      Height          =   495
-      Left            =   6120
-      TabIndex        =   4
-      Top             =   3240
-      Width           =   5565
-      _ExtentX        =   9816
-      _ExtentY        =   873
+      Height          =   720
+      Left            =   6000
+      TabIndex        =   3
+      Top             =   3000
+      Width           =   5685
+      _ExtentX        =   10028
+      _ExtentY        =   1270
+      Caption         =   "replace threshold"
       Max             =   199
       Value           =   15
    End
    Begin PhotoDemon.sliderTextCombo sltBlend 
-      Height          =   495
-      Left            =   6120
-      TabIndex        =   5
-      Top             =   4320
-      Width           =   5565
-      _ExtentX        =   9816
-      _ExtentY        =   873
+      Height          =   720
+      Left            =   6000
+      TabIndex        =   4
+      Top             =   4080
+      Width           =   5685
+      _ExtentX        =   10028
+      _ExtentY        =   1270
+      Caption         =   "edge blending"
       Max             =   200
       Value           =   15
    End
    Begin PhotoDemon.colorSelector colorOld 
       Height          =   615
       Left            =   6240
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   840
       Width           =   5295
       _ExtentX        =   9340
@@ -87,7 +90,7 @@ Begin VB.Form FormReplaceColor
    Begin PhotoDemon.colorSelector colorNew 
       Height          =   615
       Left            =   6240
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   2040
       Width           =   5295
       _ExtentX        =   9340
@@ -97,7 +100,7 @@ Begin VB.Form FormReplaceColor
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "new color:"
+      Caption         =   "new color"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -111,56 +114,14 @@ Begin VB.Form FormReplaceColor
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   8
-      Top             =   1680
-      Width           =   1125
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "edge blending:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
-      Left            =   6000
       TabIndex        =   6
-      Top             =   3960
-      Width           =   1590
+      Top             =   1680
+      Width           =   1035
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "replace threshold:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      TabIndex        =   3
-      Top             =   2880
-      Width           =   1905
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "color to replace (right-click preview to select):"
+      Caption         =   "color to replace (right-click preview to select)"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -176,7 +137,7 @@ Begin VB.Form FormReplaceColor
       Left            =   6000
       TabIndex        =   2
       Top             =   480
-      Width           =   4860
+      Width           =   4770
    End
 End
 Attribute VB_Name = "FormReplaceColor"
@@ -203,7 +164,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'OK button
 Private Sub cmdBar_OKClick()
@@ -228,8 +189,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Render a preview of the alpha effect
     updatePreview

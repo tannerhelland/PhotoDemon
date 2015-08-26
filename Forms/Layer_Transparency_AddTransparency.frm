@@ -41,6 +41,7 @@ Begin VB.Form FormTransparency_Basic
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.smartOptionButton optAlpha 
       Height          =   375
@@ -50,17 +51,8 @@ Begin VB.Form FormTransparency_Basic
       Top             =   1920
       Width           =   5325
       _ExtentX        =   9393
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "fully opaque"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -79,46 +71,30 @@ Begin VB.Form FormTransparency_Basic
       Top             =   2400
       Width           =   5325
       _ExtentX        =   9393
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "fully transparent"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton optAlpha 
-      Height          =   375
+      Height          =   330
       Index           =   2
       Left            =   6240
       TabIndex        =   5
       Top             =   2880
       Width           =   5325
       _ExtentX        =   9393
-      _ExtentY        =   661
-      Caption         =   "partially transparent:"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _ExtentY        =   582
+      Caption         =   "partially transparent"
    End
    Begin PhotoDemon.sliderTextCombo sltConstant 
-      Height          =   495
-      Left            =   6480
+      Height          =   675
+      Left            =   6600
       TabIndex        =   6
       Top             =   3360
-      Width           =   5205
-      _ExtentX        =   9181
-      _ExtentY        =   873
+      Width           =   5085
+      _ExtentX        =   8969
+      _ExtentY        =   1191
+      Caption         =   "new opacity"
+      FontSizeCaption =   10
       Min             =   1
       Max             =   254
       Value           =   127
@@ -170,7 +146,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'OK button
 Private Sub cmdBar_OKClick()
@@ -188,8 +164,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Render a preview of the alpha effect
     updatePreview

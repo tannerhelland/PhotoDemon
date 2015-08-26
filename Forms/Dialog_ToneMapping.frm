@@ -85,265 +85,6 @@ Begin VB.Form dialog_ToneMapping
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   3375
-      Index           =   2
-      Left            =   4800
-      ScaleHeight     =   225
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   457
-      TabIndex        =   8
-      Top             =   2040
-      Visible         =   0   'False
-      Width           =   6855
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   330
-         Index           =   2
-         Left            =   120
-         Top             =   0
-         Width           =   6495
-         _ExtentX        =   11456
-         _ExtentY        =   582
-         Caption         =   "gamma"
-         FontSize        =   11
-      End
-      Begin PhotoDemon.sliderTextCombo sltGamma 
-         Height          =   495
-         Index           =   1
-         Left            =   120
-         TabIndex        =   9
-         Top             =   360
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   873
-         ForeColor       =   0
-         Min             =   1
-         Max             =   5
-         SigDigits       =   2
-         Value           =   1
-         NotchPosition   =   2
-         NotchValueCustom=   1
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   330
-         Index           =   3
-         Left            =   120
-         Top             =   960
-         Width           =   6495
-         _ExtentX        =   11456
-         _ExtentY        =   582
-         Caption         =   "exposure"
-         FontSize        =   11
-      End
-      Begin PhotoDemon.sliderTextCombo sltExposure 
-         Height          =   495
-         Index           =   0
-         Left            =   120
-         TabIndex        =   10
-         Top             =   1320
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   873
-         ForeColor       =   0
-         Min             =   -8
-         Max             =   8
-         SigDigits       =   2
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   3375
-      Index           =   3
-      Left            =   4800
-      ScaleHeight     =   225
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   457
-      TabIndex        =   6
-      Top             =   2040
-      Visible         =   0   'False
-      Width           =   6855
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   330
-         Index           =   4
-         Left            =   120
-         Top             =   0
-         Width           =   6495
-         _ExtentX        =   11456
-         _ExtentY        =   582
-         Caption         =   "intensity"
-         FontSize        =   11
-      End
-      Begin PhotoDemon.sliderTextCombo sltIntensity 
-         Height          =   495
-         Left            =   120
-         TabIndex        =   11
-         Top             =   360
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   873
-         ForeColor       =   0
-         Min             =   -4
-         Max             =   4
-         SigDigits       =   2
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   330
-         Index           =   5
-         Left            =   120
-         Top             =   960
-         Width           =   6495
-         _ExtentX        =   11456
-         _ExtentY        =   582
-         Caption         =   "adaptation"
-         FontSize        =   11
-      End
-      Begin PhotoDemon.sliderTextCombo sltAdaptation 
-         Height          =   495
-         Left            =   120
-         TabIndex        =   12
-         Top             =   1320
-         Width           =   6615
-         _ExtentX        =   11456
-         _ExtentY        =   873
-         ForeColor       =   0
-         Max             =   1
-         SigDigits       =   2
-         SliderTrackStyle=   1
-         Value           =   1
-         NotchPosition   =   2
-         NotchValueCustom=   1
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   330
-         Index           =   1
-         Left            =   120
-         Top             =   1920
-         Width           =   6495
-         _ExtentX        =   11456
-         _ExtentY        =   582
-         Caption         =   "color correction"
-         FontSize        =   11
-      End
-      Begin PhotoDemon.sliderTextCombo sltColorCorrection 
-         Height          =   495
-         Left            =   120
-         TabIndex        =   13
-         Top             =   2280
-         Width           =   6615
-         _ExtentX        =   11456
-         _ExtentY        =   873
-         ForeColor       =   0
-         Max             =   1
-         SigDigits       =   2
-         SliderTrackStyle=   1
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   3375
-      Index           =   1
-      Left            =   4800
-      ScaleHeight     =   225
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   457
-      TabIndex        =   14
-      Top             =   2040
-      Visible         =   0   'False
-      Width           =   6855
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   330
-         Index           =   6
-         Left            =   120
-         Top             =   0
-         Width           =   6495
-         _ExtentX        =   11456
-         _ExtentY        =   582
-         Caption         =   "gamma"
-         FontSize        =   11
-      End
-      Begin PhotoDemon.sliderTextCombo sltGamma 
-         Height          =   495
-         Index           =   2
-         Left            =   120
-         TabIndex        =   15
-         Top             =   360
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   873
-         ForeColor       =   0
-         Min             =   1
-         Max             =   5
-         SigDigits       =   2
-         Value           =   2.2
-         NotchPosition   =   2
-         NotchValueCustom=   2.2
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   330
-         Index           =   7
-         Left            =   120
-         Top             =   960
-         Width           =   6495
-         _ExtentX        =   11456
-         _ExtentY        =   582
-         Caption         =   "exposure"
-         FontSize        =   11
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   330
-         Index           =   8
-         Left            =   120
-         Top             =   1920
-         Width           =   6495
-         _ExtentX        =   11456
-         _ExtentY        =   582
-         Caption         =   "white point"
-         FontSize        =   11
-      End
-      Begin PhotoDemon.sliderTextCombo sltExposure 
-         Height          =   495
-         Index           =   1
-         Left            =   120
-         TabIndex        =   16
-         Top             =   1320
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   873
-         ForeColor       =   0
-         Min             =   0.01
-         Max             =   8
-         SigDigits       =   2
-         Value           =   2
-         NotchPosition   =   2
-         NotchValueCustom=   2
-      End
-      Begin PhotoDemon.sliderTextCombo sltWhitepoint 
-         Height          =   495
-         Left            =   120
-         TabIndex        =   17
-         Top             =   2280
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   873
-         ForeColor       =   0
-         Min             =   1
-         Max             =   40
-         SigDigits       =   2
-         Value           =   11.2
-         NotchPosition   =   2
-         NotchValueCustom=   11.2
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   3375
       Index           =   0
       Left            =   4800
       ScaleHeight     =   225
@@ -352,27 +93,17 @@ Begin VB.Form dialog_ToneMapping
       TabIndex        =   5
       Top             =   2040
       Width           =   6855
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   330
-         Index           =   0
-         Left            =   120
-         Top             =   0
-         Width           =   6495
-         _ExtentX        =   11456
-         _ExtentY        =   582
-         Caption         =   "gamma"
-         FontSize        =   11
-      End
       Begin PhotoDemon.sliderTextCombo sltGamma 
-         Height          =   495
+         Height          =   705
          Index           =   0
          Left            =   120
          TabIndex        =   7
-         Top             =   360
+         Top             =   0
          Width           =   6615
          _ExtentX        =   11668
-         _ExtentY        =   873
-         ForeColor       =   0
+         _ExtentY        =   1244
+         Caption         =   "gamma"
+         FontSizeCaption =   11
          Min             =   1
          Max             =   5
          SigDigits       =   2
@@ -424,6 +155,185 @@ Begin VB.Form dialog_ToneMapping
          _ExtentX        =   11033
          _ExtentY        =   582
          Caption         =   "full spectrum"
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   3375
+      Index           =   2
+      Left            =   4800
+      ScaleHeight     =   225
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   457
+      TabIndex        =   8
+      Top             =   2040
+      Visible         =   0   'False
+      Width           =   6855
+      Begin PhotoDemon.sliderTextCombo sltGamma 
+         Height          =   705
+         Index           =   1
+         Left            =   120
+         TabIndex        =   9
+         Top             =   0
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1244
+         Caption         =   "gamma"
+         FontSizeCaption =   11
+         Min             =   1
+         Max             =   5
+         SigDigits       =   2
+         Value           =   1
+         NotchPosition   =   2
+         NotchValueCustom=   1
+      End
+      Begin PhotoDemon.sliderTextCombo sltExposure 
+         Height          =   705
+         Index           =   0
+         Left            =   120
+         TabIndex        =   10
+         Top             =   960
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1244
+         Caption         =   "exposure"
+         FontSizeCaption =   11
+         Min             =   -8
+         Max             =   8
+         SigDigits       =   2
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   3375
+      Index           =   3
+      Left            =   4800
+      ScaleHeight     =   225
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   457
+      TabIndex        =   6
+      Top             =   2040
+      Visible         =   0   'False
+      Width           =   6855
+      Begin PhotoDemon.sliderTextCombo sltIntensity 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   11
+         Top             =   0
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1244
+         Caption         =   "intensity"
+         FontSizeCaption =   11
+         Min             =   -4
+         Max             =   4
+         SigDigits       =   2
+      End
+      Begin PhotoDemon.sliderTextCombo sltAdaptation 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   12
+         Top             =   960
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1244
+         Caption         =   "adaptation"
+         FontSizeCaption =   11
+         Max             =   1
+         SigDigits       =   2
+         SliderTrackStyle=   1
+         Value           =   1
+         NotchPosition   =   2
+         NotchValueCustom=   1
+      End
+      Begin PhotoDemon.sliderTextCombo sltColorCorrection 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   13
+         Top             =   1920
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1244
+         Caption         =   "color correction"
+         FontSizeCaption =   11
+         Max             =   1
+         SigDigits       =   2
+         SliderTrackStyle=   1
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   3375
+      Index           =   1
+      Left            =   4800
+      ScaleHeight     =   225
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   457
+      TabIndex        =   14
+      Top             =   2040
+      Visible         =   0   'False
+      Width           =   6855
+      Begin PhotoDemon.sliderTextCombo sltGamma 
+         Height          =   705
+         Index           =   2
+         Left            =   120
+         TabIndex        =   15
+         Top             =   0
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1244
+         Caption         =   "gamma"
+         FontSizeCaption =   11
+         Min             =   1
+         Max             =   5
+         SigDigits       =   2
+         Value           =   2.2
+         NotchPosition   =   2
+         NotchValueCustom=   2.2
+      End
+      Begin PhotoDemon.sliderTextCombo sltExposure 
+         Height          =   705
+         Index           =   1
+         Left            =   120
+         TabIndex        =   16
+         Top             =   960
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1244
+         Caption         =   "exposure"
+         FontSizeCaption =   11
+         Min             =   0.01
+         Max             =   8
+         SigDigits       =   2
+         Value           =   2
+         NotchPosition   =   2
+         NotchValueCustom=   2
+      End
+      Begin PhotoDemon.sliderTextCombo sltWhitepoint 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   17
+         Top             =   1920
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   1244
+         Caption         =   "white point"
+         FontSizeCaption =   11
+         Min             =   1
+         Max             =   40
+         SigDigits       =   2
+         Value           =   11.2
+         NotchPosition   =   2
+         NotchValueCustom=   11.2
       End
    End
    Begin VB.Label lblWarning 

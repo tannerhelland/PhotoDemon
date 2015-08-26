@@ -42,6 +42,7 @@ Begin VB.Form FormPinch
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin VB.ComboBox cmbEdges 
       BackColor       =   &H00FFFFFF&
@@ -58,14 +59,14 @@ Begin VB.Form FormPinch
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   6
+      TabIndex        =   2
       Top             =   5295
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -74,25 +75,27 @@ Begin VB.Form FormPinch
       PointSelection  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   8
-      Top             =   2610
+      TabIndex        =   4
+      Top             =   2310
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "whirl angle"
       Min             =   -360
       Max             =   360
       SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   9
-      Top             =   3450
+      TabIndex        =   5
+      Top             =   3180
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "radius (percentage)"
       Min             =   1
       Max             =   100
       Value           =   100
@@ -100,22 +103,23 @@ Begin VB.Form FormPinch
       NotchValueCustom=   100
    End
    Begin PhotoDemon.sliderTextCombo sltAmount 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   10
-      Top             =   1770
+      TabIndex        =   6
+      Top             =   1440
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "pinch amount"
       Min             =   -1
       Max             =   1
       SigDigits       =   2
       Value           =   0.2
    End
    Begin PhotoDemon.sliderTextCombo sltXCenter 
-      Height          =   495
+      Height          =   405
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   7
       Top             =   480
       Width           =   2895
       _ExtentX        =   5106
@@ -127,9 +131,9 @@ Begin VB.Form FormPinch
       NotchValueCustom=   0.5
    End
    Begin PhotoDemon.sliderTextCombo sltYCenter 
-      Height          =   495
+      Height          =   405
       Left            =   9000
-      TabIndex        =   12
+      TabIndex        =   8
       Top             =   480
       Width           =   2895
       _ExtentX        =   5106
@@ -141,13 +145,14 @@ Begin VB.Form FormPinch
       NotchValueCustom=   0.5
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   15
-      Top             =   4320
+      TabIndex        =   11
+      Top             =   4050
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "quality"
       Min             =   1
       Max             =   5
       Value           =   2
@@ -161,7 +166,7 @@ Begin VB.Form FormPinch
       Height          =   435
       Index           =   0
       Left            =   6120
-      TabIndex        =   14
+      TabIndex        =   10
       Top             =   1050
       Width           =   5655
       WordWrap        =   -1  'True
@@ -183,7 +188,7 @@ Begin VB.Form FormPinch
       Height          =   285
       Index           =   4
       Left            =   6000
-      TabIndex        =   13
+      TabIndex        =   9
       Top             =   120
       Width           =   2205
    End
@@ -204,97 +209,9 @@ Begin VB.Form FormPinch
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   3
       Top             =   4920
       Width           =   3315
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "pinch amount:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   3
-      Left            =   6000
-      TabIndex        =   4
-      Top             =   1440
-      Width           =   1545
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "radius (percentage):"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      TabIndex        =   3
-      Top             =   3120
-      Width           =   2145
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "quality:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   3960
-      Width           =   795
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "whirl angle:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   2280
-      Width           =   1260
    End
 End
 Attribute VB_Name = "FormPinch"
@@ -325,7 +242,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub cmbEdges_Click()
     updatePreview
@@ -597,8 +514,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
         
     'Create the preview
     cmdBar.markPreviewStatus True

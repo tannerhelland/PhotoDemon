@@ -76,106 +76,40 @@ Begin VB.Form FormShadowHighlight
       Top             =   120
       Width           =   6135
       Begin PhotoDemon.sliderTextCombo sltShadowAmount 
-         Height          =   495
+         Height          =   720
          Left            =   120
          TabIndex        =   6
-         Top             =   1020
+         Top             =   720
          Width           =   5895
          _ExtentX        =   10398
-         _ExtentY        =   873
+         _ExtentY        =   1270
+         Caption         =   "shadows"
          Min             =   -100
          Max             =   100
       End
       Begin PhotoDemon.sliderTextCombo sltHighlightAmount 
-         Height          =   495
+         Height          =   720
          Left            =   120
          TabIndex        =   7
-         Top             =   3330
+         Top             =   2820
          Width           =   5895
          _ExtentX        =   10398
-         _ExtentY        =   873
+         _ExtentY        =   1270
+         Caption         =   "highlights"
          Min             =   -100
          Max             =   100
       End
       Begin PhotoDemon.sliderTextCombo sltMidtoneContrast 
-         Height          =   495
-         Left            =   120
-         TabIndex        =   11
-         Top             =   2190
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   873
-         Min             =   -100
-         Max             =   100
-      End
-      Begin VB.Label lblTitle 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "midtone contrast:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   1
-         Left            =   120
-         TabIndex        =   10
-         Top             =   1830
-         Width           =   1875
-      End
-      Begin VB.Label lblTitle 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "shadows:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   0
-         Left            =   120
-         TabIndex        =   9
-         Top             =   660
-         Width           =   1005
-      End
-      Begin VB.Label lblTitle 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "highlights:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   2
+         Height          =   720
          Left            =   120
          TabIndex        =   8
-         Top             =   3000
-         Width           =   1125
+         Top             =   1770
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "midtone contrast"
+         Min             =   -100
+         Max             =   100
       End
    End
    Begin VB.PictureBox picContainer 
@@ -193,148 +127,60 @@ Begin VB.Form FormShadowHighlight
       Top             =   120
       Width           =   6135
       Begin PhotoDemon.sliderTextCombo sltShadowWidth 
-         Height          =   495
-         Left            =   360
-         TabIndex        =   16
-         Top             =   780
-         Width           =   5535
-         _ExtentX        =   9763
-         _ExtentY        =   873
+         Height          =   720
+         Left            =   240
+         TabIndex        =   11
+         Top             =   360
+         Width           =   5700
+         _ExtentX        =   10054
+         _ExtentY        =   1270
+         Caption         =   "tonal width"
          Max             =   100
          Value           =   75
          NotchPosition   =   2
          NotchValueCustom=   75
       End
       Begin PhotoDemon.sliderTextCombo sltShadowRadius 
-         Height          =   495
-         Left            =   360
-         TabIndex        =   17
-         Top             =   1620
-         Width           =   5535
-         _ExtentX        =   9763
-         _ExtentY        =   873
+         Height          =   720
+         Left            =   240
+         TabIndex        =   12
+         Top             =   1200
+         Width           =   5700
+         _ExtentX        =   10054
+         _ExtentY        =   1270
+         Caption         =   "radius"
          Max             =   200
          Value           =   25
          NotchPosition   =   2
          NotchValueCustom=   25
       End
       Begin PhotoDemon.sliderTextCombo sltHighlightWidth 
-         Height          =   495
-         Left            =   360
-         TabIndex        =   20
-         Top             =   3120
-         Width           =   5535
-         _ExtentX        =   9763
-         _ExtentY        =   873
+         Height          =   720
+         Left            =   240
+         TabIndex        =   13
+         Top             =   2760
+         Width           =   5700
+         _ExtentX        =   10054
+         _ExtentY        =   1270
+         Caption         =   "tonal width"
          Max             =   100
          Value           =   75
          NotchPosition   =   2
          NotchValueCustom=   75
       End
       Begin PhotoDemon.sliderTextCombo sltHighlightRadius 
-         Height          =   495
-         Left            =   360
-         TabIndex        =   21
-         Top             =   3960
-         Width           =   5535
-         _ExtentX        =   9763
-         _ExtentY        =   873
+         Height          =   720
+         Left            =   240
+         TabIndex        =   14
+         Top             =   3600
+         Width           =   5700
+         _ExtentX        =   10054
+         _ExtentY        =   1270
+         Caption         =   "radius"
          Max             =   200
          Value           =   25
          NotchPosition   =   2
          NotchValueCustom=   25
-      End
-      Begin VB.Label lblTitle 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "radius:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   9
-         Left            =   360
-         TabIndex        =   19
-         Top             =   3600
-         Width           =   735
-      End
-      Begin VB.Label lblTitle 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "tonal width:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   8
-         Left            =   360
-         TabIndex        =   18
-         Top             =   2760
-         Width           =   1275
-      End
-      Begin VB.Label lblTitle 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "radius:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   7
-         Left            =   360
-         TabIndex        =   15
-         Top             =   1260
-         Width           =   735
-      End
-      Begin VB.Label lblTitle 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "tonal width:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   5
-         Left            =   360
-         TabIndex        =   14
-         Top             =   420
-         Width           =   1275
       End
       Begin VB.Label lblTitle 
          Appearance      =   0  'Flat
@@ -355,7 +201,7 @@ Begin VB.Form FormShadowHighlight
          Height          =   285
          Index           =   4
          Left            =   0
-         TabIndex        =   13
+         TabIndex        =   10
          Top             =   2340
          Width           =   1035
       End
@@ -378,7 +224,7 @@ Begin VB.Form FormShadowHighlight
          Height          =   285
          Index           =   3
          Left            =   0
-         TabIndex        =   12
+         TabIndex        =   9
          Top             =   0
          Width           =   915
       End
@@ -386,7 +232,7 @@ Begin VB.Form FormShadowHighlight
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "options:"
+      Caption         =   "options"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -402,7 +248,7 @@ Begin VB.Form FormShadowHighlight
       Left            =   6000
       TabIndex        =   3
       Top             =   4680
-      Width           =   870
+      Width           =   780
    End
 End
 Attribute VB_Name = "FormShadowHighlight"

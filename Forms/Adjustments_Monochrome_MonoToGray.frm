@@ -41,6 +41,7 @@ Begin VB.Form FormMonoToColor
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -52,13 +53,14 @@ Begin VB.Form FormMonoToColor
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   5
-      Top             =   2400
+      TabIndex        =   4
+      Top             =   2040
       Width           =   5895
-      _ExtentX        =   10186
-      _ExtentY        =   873
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "radius"
       Min             =   1
       Max             =   8
       Value           =   3
@@ -66,7 +68,7 @@ Begin VB.Form FormMonoToColor
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "advice from the experts:"
+      Caption         =   "advice from the experts"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -79,9 +81,9 @@ Begin VB.Form FormMonoToColor
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   3240
-      Width           =   2580
+      Width           =   2490
    End
    Begin VB.Label lblExplanation 
       AutoSize        =   -1  'True
@@ -99,30 +101,10 @@ Begin VB.Form FormMonoToColor
       ForeColor       =   &H00404040&
       Height          =   210
       Left            =   6120
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   3840
       Width           =   5535
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblRadius 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "radius:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   2040
-      Width           =   735
    End
 End
 Attribute VB_Name = "FormMonoToColor"
@@ -162,7 +144,7 @@ Option Explicit
 Dim iWidth As Long, iHeight As Long
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Given a monochrome image, convert it to grayscale
 'Input: radius of the search area (min 1, no real max - but there are diminishing returns above 50)
@@ -457,8 +439,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Provide a small explanation about how this process works
     lblExplanation.Caption = g_Language.TranslateMessage("Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)")

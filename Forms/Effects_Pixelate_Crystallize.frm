@@ -39,7 +39,7 @@ Begin VB.Form FormCrystallize
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   8
+      TabIndex        =   6
       Top             =   4125
       Width           =   5775
    End
@@ -58,7 +58,7 @@ Begin VB.Form FormCrystallize
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   3180
       Width           =   5775
    End
@@ -85,32 +85,34 @@ Begin VB.Form FormCrystallize
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltSize 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   3
-      Top             =   1050
+      TabIndex        =   2
+      Top             =   840
       Width           =   5895
-      _ExtentX        =   10186
-      _ExtentY        =   873
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "cell size"
       Min             =   3
       Max             =   200
       Value           =   50
    End
    Begin PhotoDemon.sliderTextCombo sltTurbulence 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   5
-      Top             =   2115
+      TabIndex        =   3
+      Top             =   1800
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "turbulence"
       Max             =   1
       SigDigits       =   2
       Value           =   0.5
@@ -120,7 +122,7 @@ Begin VB.Form FormCrystallize
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "distance method:"
+      Caption         =   "distance method"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -134,14 +136,14 @@ Begin VB.Form FormCrystallize
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   3765
-      Width           =   1830
+      Width           =   1740
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "color sampling:"
+      Caption         =   "color sampling"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -155,51 +157,9 @@ Begin VB.Form FormCrystallize
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   6
-      Top             =   2820
-      Width           =   1650
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "turbulence:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
-      Left            =   6000
       TabIndex        =   4
-      Top             =   1755
-      Width           =   1200
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "cell size:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   720
-      Width           =   900
+      Top             =   2820
+      Width           =   1560
    End
 End
 Attribute VB_Name = "FormCrystallize"

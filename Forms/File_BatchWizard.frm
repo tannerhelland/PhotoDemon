@@ -724,7 +724,7 @@ Begin VB.Form FormBatchWizard
          Top             =   2520
          Width           =   11055
          Begin PhotoDemon.sliderTextCombo sltThreshold 
-            Height          =   495
+            Height          =   405
             Left            =   360
             TabIndex        =   95
             Top             =   1080
@@ -1016,7 +1016,7 @@ Begin VB.Form FormBatchWizard
          Top             =   2520
          Width           =   10575
          Begin PhotoDemon.sliderTextCombo sltJP2Quality 
-            Height          =   495
+            Height          =   405
             Left            =   480
             TabIndex        =   96
             Top             =   1650
@@ -1243,7 +1243,7 @@ Begin VB.Form FormBatchWizard
          Top             =   2520
          Width           =   10935
          Begin PhotoDemon.sliderTextCombo sltQuality 
-            Height          =   495
+            Height          =   405
             Left            =   2640
             TabIndex        =   94
             Top             =   945

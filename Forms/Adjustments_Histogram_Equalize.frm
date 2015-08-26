@@ -41,6 +41,7 @@ Begin VB.Form FormEqualize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.smartCheckBox chkRed 
       Height          =   375
@@ -49,17 +50,8 @@ Begin VB.Form FormEqualize
       Top             =   2040
       Width           =   3750
       _ExtentX        =   6615
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "red"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -77,17 +69,8 @@ Begin VB.Form FormEqualize
       Top             =   2520
       Width           =   3750
       _ExtentX        =   6615
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "green"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkBlue 
       Height          =   375
@@ -96,17 +79,8 @@ Begin VB.Form FormEqualize
       Top             =   3000
       Width           =   3750
       _ExtentX        =   6615
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "blue"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkLuminance 
       Height          =   375
@@ -115,22 +89,13 @@ Begin VB.Form FormEqualize
       Top             =   3480
       Width           =   3750
       _ExtentX        =   6615
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "luminance"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblEqualize 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "equalize:"
+      Caption         =   "equalize"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -145,7 +110,7 @@ Begin VB.Form FormEqualize
       Left            =   6000
       TabIndex        =   1
       Top             =   1620
-      Width           =   945
+      Width           =   855
    End
 End
 Attribute VB_Name = "FormEqualize"
@@ -171,7 +136,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Whenever a check box is changed, redraw the preview
 Private Sub chkBlue_Click()
@@ -201,8 +166,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Request a preview
     updatePreview

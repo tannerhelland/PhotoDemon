@@ -125,7 +125,7 @@ Begin VB.Form FormReduceColors
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "quantization method:"
+      Caption         =   "quantization method:="
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -136,11 +136,11 @@ Begin VB.Form FormReduceColors
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   405
+      Height          =   285
       Left            =   6000
       TabIndex        =   1
       Top             =   1560
-      Width           =   2265
+      Width           =   2445
    End
 End
 Attribute VB_Name = "FormReduceColors"

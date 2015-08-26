@@ -41,6 +41,7 @@ Begin VB.Form FormPosterize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -58,17 +59,8 @@ Begin VB.Form FormPosterize
       Top             =   4080
       Width           =   5700
       _ExtentX        =   10054
-      _ExtentY        =   635
+      _ExtentY        =   582
       Caption         =   "apply dithering"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkSmartColors 
       Height          =   360
@@ -77,113 +69,47 @@ Begin VB.Form FormPosterize
       Top             =   4560
       Width           =   5700
       _ExtentX        =   10054
-      _ExtentY        =   635
+      _ExtentY        =   582
       Caption         =   "match existing colors"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltRed 
-      Height          =   495
+      Height          =   720
       Left            =   6000
       TabIndex        =   4
-      Top             =   1440
+      Top             =   1080
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "possible red values"
       Min             =   2
       Max             =   64
       Value           =   6
    End
    Begin PhotoDemon.sliderTextCombo sltGreen 
-      Height          =   495
+      Height          =   720
       Left            =   6000
       TabIndex        =   5
-      Top             =   2400
+      Top             =   2040
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "possible green values"
       Min             =   2
       Max             =   64
       Value           =   7
    End
    Begin PhotoDemon.sliderTextCombo sltBlue 
-      Height          =   495
+      Height          =   720
       Left            =   6000
       TabIndex        =   6
-      Top             =   3360
+      Top             =   3000
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "possible blue values"
       Min             =   2
       Max             =   64
       Value           =   6
-   End
-   Begin VB.Label lblRedValues 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "possible red values:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   9
-      Top             =   1080
-      Width           =   2100
-   End
-   Begin VB.Label lblGreenValues 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "possible green values:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   8
-      Top             =   2040
-      Width           =   2355
-   End
-   Begin VB.Label lblBlueValues 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "possible blue values:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   7
-      Top             =   2985
-      Width           =   2205
    End
 End
 Attribute VB_Name = "FormPosterize"
@@ -210,7 +136,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub chkDither_Click()
     updatePreview
@@ -242,8 +168,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Create a preview
     updatePreview

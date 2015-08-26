@@ -39,7 +39,7 @@ Begin VB.Form FormGrayscale
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   14
+      TabIndex        =   13
       Top             =   4080
       Width           =   5535
    End
@@ -61,15 +61,17 @@ Begin VB.Form FormGrayscale
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltShades 
-      Height          =   495
+      Height          =   720
       Left            =   6000
       TabIndex        =   11
-      Top             =   3000
+      Top             =   2700
       Width           =   5655
       _ExtentX        =   9975
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "number of gray shades"
       Min             =   2
       Max             =   256
       Value           =   4
@@ -125,18 +127,9 @@ Begin VB.Form FormGrayscale
          Top             =   0
          Width           =   2235
          _ExtentX        =   3942
-         _ExtentY        =   635
+         _ExtentY        =   582
          Caption         =   "minimum"
          Value           =   -1  'True
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin PhotoDemon.smartOptionButton optDecompose 
          Height          =   360
@@ -146,17 +139,8 @@ Begin VB.Form FormGrayscale
          Top             =   0
          Width           =   2235
          _ExtentX        =   3942
-         _ExtentY        =   635
+         _ExtentY        =   582
          Caption         =   "maximum"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
    End
    Begin VB.PictureBox picChannel 
@@ -180,18 +164,9 @@ Begin VB.Form FormGrayscale
          Top             =   0
          Width           =   1500
          _ExtentX        =   2646
-         _ExtentY        =   635
+         _ExtentY        =   582
          Caption         =   "red"
          Value           =   -1  'True
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin PhotoDemon.smartOptionButton optChannel 
          Height          =   360
@@ -201,17 +176,8 @@ Begin VB.Form FormGrayscale
          Top             =   0
          Width           =   1500
          _ExtentX        =   2646
-         _ExtentY        =   635
+         _ExtentY        =   582
          Caption         =   "green"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin PhotoDemon.smartOptionButton optChannel 
          Height          =   360
@@ -221,43 +187,14 @@ Begin VB.Form FormGrayscale
          Top             =   0
          Width           =   1500
          _ExtentX        =   2646
-         _ExtentY        =   635
+         _ExtentY        =   582
          Caption         =   "blue"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
    End
    Begin VB.Label lblDithering 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "dithering options:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   13
-      Top             =   3720
-      Width           =   1890
-   End
-   Begin VB.Label lblShades 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "number of gray shades:"
+      Caption         =   "dithering options"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -271,13 +208,13 @@ Begin VB.Form FormGrayscale
       Height          =   285
       Left            =   6000
       TabIndex        =   12
-      Top             =   2640
-      Width           =   2535
+      Top             =   3720
+      Width           =   1800
    End
    Begin VB.Label lblAlgorithm 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "style:"
+      Caption         =   "style"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -292,7 +229,7 @@ Begin VB.Form FormGrayscale
       Left            =   6000
       TabIndex        =   2
       Top             =   1200
-      Width           =   570
+      Width           =   480
    End
 End
 Attribute VB_Name = "FormGrayscale"
@@ -320,7 +257,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Preview the current grayscale conversion technique
 Private Sub updatePreview()
@@ -417,8 +354,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     setArrowCursor picChannel
     setArrowCursor picDecompose
     

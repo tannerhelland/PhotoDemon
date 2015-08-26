@@ -79,7 +79,7 @@ Begin VB.Form dialog_AddPreset
       Width           =   6465
       _ExtentX        =   11404
       _ExtentY        =   661
-      Caption         =   "enter a name for this preset:"
+      Caption         =   "enter a name for this preset"
       FontSize        =   11
    End
 End

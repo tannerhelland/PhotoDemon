@@ -26,7 +26,7 @@ Begin VB.Form FormFadeLast
    Begin PhotoDemon.pdComboBox cboBlendMode 
       Height          =   375
       Left            =   6240
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   3240
       Width           =   5895
       _ExtentX        =   10398
@@ -62,13 +62,14 @@ Begin VB.Form FormFadeLast
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltOpacity 
-      Height          =   495
-      Left            =   6120
+      Height          =   720
+      Left            =   6000
       TabIndex        =   3
-      Top             =   2010
-      Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   873
+      Top             =   1920
+      Width           =   6135
+      _ExtentX        =   10821
+      _ExtentY        =   1270
+      Caption         =   "opacity"
       Min             =   1
       Max             =   100
       Value           =   50
@@ -76,32 +77,11 @@ Begin VB.Form FormFadeLast
       NotchValueCustom=   50
    End
    Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "opacity:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      TabIndex        =   4
-      Top             =   1680
-      Width           =   840
-   End
-   Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "blend mode:"
+      Caption         =   "blend mode"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -117,7 +97,7 @@ Begin VB.Form FormFadeLast
       Left            =   6000
       TabIndex        =   1
       Top             =   2880
-      Width           =   1350
+      Width           =   1260
    End
 End
 Attribute VB_Name = "FormFadeLast"

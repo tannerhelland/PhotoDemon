@@ -102,11 +102,11 @@ Begin VB.UserControl smartResize
       Height          =   285
       Left            =   0
       Top             =   1260
-      Width           =   2055
-      _ExtentX        =   3625
+      Width           =   1950
+      _ExtentX        =   3440
       _ExtentY        =   503
       Alignment       =   1
-      Caption         =   "resolution:"
+      Caption         =   "resolution"
       FontSize        =   12
       ForeColor       =   4210752
    End
@@ -115,11 +115,11 @@ Begin VB.UserControl smartResize
       Index           =   0
       Left            =   0
       Top             =   1830
-      Width           =   2055
-      _ExtentX        =   3625
+      Width           =   1950
+      _ExtentX        =   3440
       _ExtentY        =   503
       Alignment       =   1
-      Caption         =   "dimensions:"
+      Caption         =   "dimensions"
       FontSize        =   12
       ForeColor       =   4210752
    End
@@ -151,11 +151,11 @@ Begin VB.UserControl smartResize
       Height          =   285
       Left            =   0
       Top             =   60
-      Width           =   2055
-      _ExtentX        =   3625
+      Width           =   1950
+      _ExtentX        =   3440
       _ExtentY        =   503
       Alignment       =   1
-      Caption         =   "width:"
+      Caption         =   "width"
       FontSize        =   12
       ForeColor       =   4210752
    End
@@ -163,11 +163,11 @@ Begin VB.UserControl smartResize
       Height          =   285
       Left            =   0
       Top             =   660
-      Width           =   2055
-      _ExtentX        =   3625
+      Width           =   1950
+      _ExtentX        =   3440
       _ExtentY        =   503
       Alignment       =   1
-      Caption         =   "height:"
+      Caption         =   "height"
       FontSize        =   12
       ForeColor       =   4210752
    End
@@ -176,11 +176,11 @@ Begin VB.UserControl smartResize
       Index           =   0
       Left            =   0
       Top             =   2400
-      Width           =   2055
-      _ExtentX        =   3625
+      Width           =   1950
+      _ExtentX        =   3440
       _ExtentY        =   503
       Alignment       =   1
-      Caption         =   "aspect ratio:"
+      Caption         =   "aspect ratio"
       FontSize        =   12
       ForeColor       =   4210752
    End

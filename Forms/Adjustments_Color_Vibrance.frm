@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormVibrance 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   "Vibrance"
+   Caption         =   " Vibrance"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
@@ -41,47 +41,28 @@ Begin VB.Form FormVibrance
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltVibrance 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   3
-      Top             =   2760
+      TabIndex        =   2
+      Top             =   2400
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
-      ForeColor       =   0
+      _ExtentY        =   1270
+      Caption         =   "vibrance"
       Min             =   -100
       Max             =   200
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
-   End
-   Begin VB.Label Label1 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "vibrance:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   2400
-      Width           =   975
    End
 End
 Attribute VB_Name = "FormVibrance"
@@ -111,7 +92,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Public Sub Vibrance(ByVal vibranceAdjustment As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
@@ -222,8 +203,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Draw a preview of the effect
     updatePreview

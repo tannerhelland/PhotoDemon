@@ -61,6 +61,7 @@ Begin VB.Form FormPerspective
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin VB.PictureBox picDraw 
       Appearance      =   0  'Flat
@@ -105,13 +106,14 @@ Begin VB.Form FormPerspective
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   495
-      Left            =   240
+      Height          =   720
+      Left            =   120
       TabIndex        =   7
-      Top             =   7230
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   873
+      Top             =   6840
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1270
+      Caption         =   "quality"
       Min             =   1
       Max             =   5
       Value           =   2
@@ -119,32 +121,9 @@ Begin VB.Form FormPerspective
       NotchValueCustom=   2
    End
    Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "quality:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
-      Left            =   120
-      TabIndex        =   8
-      Top             =   6840
-      Width           =   795
-   End
-   Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "transformation type:"
+      Caption         =   "transformation type"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -160,7 +139,7 @@ Begin VB.Form FormPerspective
       Left            =   120
       TabIndex        =   5
       Top             =   5880
-      Width           =   2175
+      Width           =   2085
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -244,7 +223,7 @@ Private m_isMouseDown As Boolean
 Private m_selPoint As Long
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub cmbEdges_Click()
     updatePreview
@@ -706,8 +685,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
         
     'Create the preview
     cmdBar.markPreviewStatus True

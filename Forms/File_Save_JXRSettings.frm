@@ -42,7 +42,7 @@ Begin VB.Form dialog_ExportJXR
       Width           =   5535
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   495
+      Height          =   405
       Left            =   6120
       TabIndex        =   4
       Top             =   2880
@@ -72,6 +72,7 @@ Begin VB.Form dialog_ExportJXR
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
       dontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -90,17 +91,8 @@ Begin VB.Form dialog_ExportJXR
       Top             =   3840
       Width           =   5625
       _ExtentX        =   9922
-      _ExtentY        =   635
+      _ExtentY        =   582
       Caption         =   "use progressive encoding"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblBefore 
       AutoSize        =   -1  'True
@@ -146,7 +138,7 @@ Begin VB.Form dialog_ExportJXR
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "image compression ratio:"
+      Caption         =   "image compression ratio"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -162,7 +154,7 @@ Begin VB.Form dialog_ExportJXR
       Left            =   6000
       TabIndex        =   1
       Top             =   1920
-      Width           =   2700
+      Width           =   2610
    End
 End
 Attribute VB_Name = "dialog_ExportJXR"
@@ -194,7 +186,7 @@ Private userAnswer As VbMsgBoxResult
 Public imageBeingExported As pdImage
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'When rendering the preview, we don't want to always re-request a copy of the main image.  Instead, we
 ' store one in this DIB (at the size of the preview) and simply re-use it when we need to render a preview.
@@ -321,8 +313,8 @@ Public Sub showDialog()
     Message "Waiting for user to specify JPEG XR export options... "
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Retrieve a composited version of the target image
     Set origImageCopy = New pdDIB

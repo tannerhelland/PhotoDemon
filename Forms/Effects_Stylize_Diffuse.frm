@@ -41,94 +41,48 @@ Begin VB.Form FormDiffuse
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltX 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   5
-      Top             =   2160
+      TabIndex        =   3
+      Top             =   1680
       Width           =   6015
       _ExtentX        =   10610
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "horizontal strength"
       Value           =   1
    End
    Begin PhotoDemon.smartCheckBox chkWrap 
       Height          =   330
       Left            =   6120
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   3600
       Width           =   5550
       _ExtentX        =   9790
       _ExtentY        =   582
       Caption         =   "wrap edge values"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltY 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   6
-      Top             =   3000
+      TabIndex        =   4
+      Top             =   2640
       Width           =   6015
       _ExtentX        =   10610
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "vertical strength"
       Value           =   1
-   End
-   Begin VB.Label Label2 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "vertical strength:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   2640
-      Width           =   1785
-   End
-   Begin VB.Label Label1 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "horizontal strength:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   1800
-      Width           =   2085
    End
 End
 Attribute VB_Name = "FormDiffuse"
@@ -157,7 +111,7 @@ Option Explicit
 Dim iWidth As Long, iHeight As Long
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub ChkWrap_Click()
     updatePreview
@@ -175,8 +129,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Re-enable previews and request an initial render
     cmdBar.markPreviewStatus True

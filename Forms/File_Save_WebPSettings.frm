@@ -42,7 +42,7 @@ Begin VB.Form dialog_ExportWebP
       Width           =   5535
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   495
+      Height          =   405
       Left            =   6120
       TabIndex        =   4
       Top             =   3120
@@ -72,6 +72,7 @@ Begin VB.Form dialog_ExportWebP
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
       dontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -127,7 +128,7 @@ Begin VB.Form dialog_ExportWebP
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "image compression ratio:"
+      Caption         =   "image compression ratio"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -143,7 +144,7 @@ Begin VB.Form dialog_ExportWebP
       Left            =   6000
       TabIndex        =   1
       Top             =   2160
-      Width           =   2700
+      Width           =   2610
    End
 End
 Attribute VB_Name = "dialog_ExportWebP"
@@ -175,7 +176,7 @@ Private userAnswer As VbMsgBoxResult
 Public imageBeingExported As pdImage
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'When rendering the preview, we don't want to always re-request a copy of the main image.  Instead, we
 ' store one in this DIB (at the size of the preview) and simply re-use it when we need to render a preview.
@@ -299,8 +300,8 @@ Public Sub showDialog()
     Message "Waiting for user to specify WebP export options... "
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Retrieve a composited version of the target image
     Set origImageCopy = New pdDIB

@@ -26,7 +26,7 @@ Begin VB.Form FormMezzotint
    Begin PhotoDemon.buttonStrip btsType 
       Height          =   615
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   600
       Width           =   5895
       _ExtentX        =   10398
@@ -62,26 +62,28 @@ Begin VB.Form FormMezzotint
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltSmoothness 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   4
-      Top             =   2880
+      TabIndex        =   3
+      Top             =   2520
       Width           =   5895
-      _ExtentX        =   10186
-      _ExtentY        =   873
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "smoothness"
       Max             =   100
       Value           =   10
       NotchPosition   =   2
       NotchValueCustom=   10
    End
    Begin PhotoDemon.sliderTextCombo sltRandom 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   6
-      Top             =   1800
+      TabIndex        =   5
+      Top             =   1560
       Width           =   5895
-      _ExtentX        =   10186
-      _ExtentY        =   873
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "randomness"
       Max             =   100
       Value           =   50
       NotchPosition   =   2
@@ -90,7 +92,7 @@ Begin VB.Form FormMezzotint
    Begin PhotoDemon.buttonStrip btsStippling 
       Height          =   615
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   6
       Top             =   4020
       Width           =   5895
       _ExtentX        =   10398
@@ -99,7 +101,7 @@ Begin VB.Form FormMezzotint
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "stippling:"
+      Caption         =   "stippling"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -113,35 +115,14 @@ Begin VB.Form FormMezzotint
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   9
-      Top             =   3600
-      Width           =   990
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "randomness:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
-      Left            =   6000
       TabIndex        =   7
-      Top             =   1440
-      Width           =   1380
+      Top             =   3600
+      Width           =   900
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "type:"
+      Caption         =   "type"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -155,30 +136,9 @@ Begin VB.Form FormMezzotint
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   3
-      Top             =   180
-      Width           =   540
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "smoothness:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6000
       TabIndex        =   2
-      Top             =   2520
-      Width           =   1350
+      Top             =   180
+      Width           =   450
    End
 End
 Attribute VB_Name = "FormMezzotint"

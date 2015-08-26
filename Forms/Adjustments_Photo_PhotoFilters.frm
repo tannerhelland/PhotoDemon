@@ -2,14 +2,14 @@ VERSION 5.00
 Begin VB.Form FormPhotoFilters 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Apply Photo Filter"
+   Caption         =   " Photo filters"
    ClientHeight    =   6540
-   ClientLeft      =   48
-   ClientTop       =   288
-   ClientWidth     =   14748
+   ClientLeft      =   45
+   ClientTop       =   285
+   ClientWidth     =   14745
    BeginProperty Font 
       Name            =   "Tahoma"
-      Size            =   8.4
+      Size            =   8.25
       Charset         =   0
       Weight          =   400
       Underline       =   0   'False
@@ -19,9 +19,9 @@ Begin VB.Form FormPhotoFilters
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   545
+   ScaleHeight     =   436
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1229
+   ScaleWidth      =   983
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -30,17 +30,18 @@ Begin VB.Form FormPhotoFilters
       TabIndex        =   0
       Top             =   5796
       Width           =   14748
-      _ExtentX        =   26014
-      _ExtentY        =   1312
+      _ExtentX        =   26009
+      _ExtentY        =   1323
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
-         Size            =   9.6
+         Size            =   9.75
          Charset         =   0
          Weight          =   400
          Underline       =   0   'False
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin VB.PictureBox picBuffer 
       Appearance      =   0  'Flat
@@ -51,10 +52,10 @@ Begin VB.Form FormPhotoFilters
       ForeColor       =   &H80000008&
       Height          =   4245
       Left            =   6000
-      ScaleHeight     =   352
+      ScaleHeight     =   281
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   689
-      TabIndex        =   6
+      ScaleWidth      =   551
+      TabIndex        =   5
       Top             =   480
       Width           =   8295
    End
@@ -62,27 +63,28 @@ Begin VB.Form FormPhotoFilters
       Height          =   4185
       LargeChange     =   32
       Left            =   14280
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   480
       Width           =   330
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9927
-      _ExtentY        =   9927
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltDensity 
-      Height          =   495
-      Left            =   7800
-      TabIndex        =   3
-      Top             =   5040
-      Width           =   5895
-      _ExtentX        =   10393
-      _ExtentY        =   868
+      Height          =   720
+      Left            =   6000
+      TabIndex        =   2
+      Top             =   4860
+      Width           =   8535
+      _ExtentX        =   15055
+      _ExtentY        =   1270
+      Caption         =   "density"
       Min             =   1
       Max             =   100
       SliderTrackStyle=   2
@@ -92,7 +94,7 @@ Begin VB.Form FormPhotoFilters
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "available filters:"
+      Caption         =   "available filters"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -106,31 +108,9 @@ Begin VB.Form FormPhotoFilters
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   120
-      Width           =   1665
-   End
-   Begin VB.Label lblTitle 
-      Alignment       =   1  'Right Justify
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "density:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6810
-      TabIndex        =   1
-      Top             =   5130
-      Width           =   840
+      Width           =   1575
    End
 End
 Attribute VB_Name = "FormPhotoFilters"
@@ -206,7 +186,7 @@ Private WithEvents cKeyEvents As pdInputKeyboard
 Attribute cKeyEvents.VB_VarHelpID = -1
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Extra variables for custom list rendering
 Dim bufferDIB As pdDIB
@@ -458,8 +438,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Display the previewed effect in the neighboring window, then render the list of available filters
     cmdBar.markPreviewStatus True

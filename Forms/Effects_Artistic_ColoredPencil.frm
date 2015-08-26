@@ -38,7 +38,7 @@ Begin VB.Form FormPencil
       Height          =   360
       Left            =   6000
       Style           =   2  'Dropdown List
-      TabIndex        =   8
+      TabIndex        =   6
       Top             =   1740
       Width           =   5895
    End
@@ -65,39 +65,41 @@ Begin VB.Form FormPencil
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   5
-      Top             =   2760
+      TabIndex        =   3
+      Top             =   2520
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "tip radius"
       Min             =   1
       Max             =   100
       Value           =   5
    End
    Begin PhotoDemon.sliderTextCombo sltIntensity 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   6
-      Top             =   3840
+      TabIndex        =   4
+      Top             =   3600
       Width           =   5925
       _ExtentX        =   10451
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "pressure"
       Min             =   -100
       Max             =   200
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "style:"
+      Caption         =   "style"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -111,30 +113,9 @@ Begin VB.Form FormPencil
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   1320
-      Width           =   570
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "pressure:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      TabIndex        =   4
-      Top             =   3480
-      Width           =   990
+      Width           =   480
    End
    Begin VB.Label lblIDEWarning 
       BackStyle       =   0  'Transparent
@@ -148,34 +129,13 @@ Begin VB.Form FormPencil
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H000000FF&
-      Height          =   1215
+      Height          =   1095
       Left            =   6000
-      TabIndex        =   3
-      Top             =   4440
+      TabIndex        =   2
+      Top             =   4560
       Visible         =   0   'False
       Width           =   5775
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "tip radius:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   2400
-      Width           =   1080
    End
 End
 Attribute VB_Name = "FormPencil"
@@ -288,11 +248,11 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         qvDepth = curDIBValues.BytesPerPixel
                 
         'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
-        Dim grayLookup() As Byte
-        ReDim grayLookup(0 To 765) As Byte
+        Dim grayLookUp() As Byte
+        ReDim grayLookUp(0 To 765) As Byte
         
         For x = 0 To 765
-            grayLookup(x) = x \ 3
+            grayLookUp(x) = x \ 3
         Next x
                 
         'Invert the source DIB, and optionally, apply grayscale as well
@@ -312,7 +272,7 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
             
             '...but for the "luminous" color mode, we also convert the image to grayscale
             Else
-                g = grayLookup(r + g + b)
+                g = grayLookUp(r + g + b)
                 srcImageData(QuickVal + 2, y) = 255 - g
                 srcImageData(QuickVal + 1, y) = 255 - g
                 srcImageData(QuickVal, y) = 255 - g
@@ -410,7 +370,7 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
             
                 Case 0, 1
             
-                    avgVal = grayLookup(r + g + b)
+                    avgVal = grayLookUp(r + g + b)
                     maxVal = Max3Int(r, g, b)
                     
                     'Calculate a vibrance-adjusted average, using the gray as our base
@@ -434,7 +394,7 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
                     b = gammaTable(b)
                     
                 Case 3
-                    r = gammaTable(grayLookup(r + g + b))
+                    r = gammaTable(grayLookUp(r + g + b))
                     g = r
                     b = r
                 

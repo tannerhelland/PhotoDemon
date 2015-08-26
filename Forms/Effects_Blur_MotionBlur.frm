@@ -41,24 +41,26 @@ Begin VB.Form FormMotionBlur
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   4
-      Top             =   1440
+      TabIndex        =   3
+      Top             =   1080
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "angle"
       Max             =   359.9
       SigDigits       =   1
    End
@@ -66,94 +68,47 @@ Begin VB.Form FormMotionBlur
       Height          =   360
       Index           =   0
       Left            =   6120
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   3990
       Width           =   5700
       _ExtentX        =   10054
-      _ExtentY        =   635
+      _ExtentY        =   582
       Caption         =   "quality"
       Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
       Height          =   360
       Index           =   1
       Left            =   6120
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   4410
       Width           =   5700
       _ExtentX        =   10054
-      _ExtentY        =   635
+      _ExtentY        =   582
       Caption         =   "speed"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkSymmetry 
       Height          =   300
       Left            =   6120
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   3000
       Width           =   5655
       _ExtentX        =   3413
       _ExtentY        =   582
       Caption         =   "blur symmetrically"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltDistance 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   10
-      Top             =   2400
+      TabIndex        =   8
+      Top             =   2040
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "distance"
       Min             =   1
       Max             =   500
       Value           =   5
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "distance:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
-      Left            =   6000
-      TabIndex        =   9
-      Top             =   2040
-      Width           =   945
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
@@ -174,7 +129,7 @@ Begin VB.Form FormMotionBlur
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   3600
       Width           =   1845
    End
@@ -192,32 +147,11 @@ Begin VB.Form FormMotionBlur
       ForeColor       =   &H000000FF&
       Height          =   1215
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   4680
       Visible         =   0   'False
       Width           =   5775
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "angle:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   1080
-      Width           =   660
    End
 End
 Attribute VB_Name = "FormMotionBlur"
@@ -250,7 +184,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Apply motion blur to an image
 'Inputs: angle of the blur, distance of the blur
@@ -307,7 +241,7 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
     'Internal pure-VB code:
     ' I have chosen to go with this mode for motion blur, because our custom clamping code ensures that no dead pixels
     ' are introduced prior to the blur function, below.
-    rotateDIB.createBlank tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, tmpClampDIB.getDIBColorDepth, 0, 255
+    rotateDIB.createBlank tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, tmpClampDIB.getDIBColorDepth, 0, 0
     CreateRotatedDIB bAngle, EDGE_CLAMP, True, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3
     
     'Next, apply a horizontal blur, using the blur radius supplied by the user
@@ -321,15 +255,15 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
         ' (because we will manually be cropping out the relevant rect from the center), there is no penalty to using it:
         
         'GDI+ code:
-        GDI_Plus.GDIPlusFillDIBRect rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, 0, 255
-        GDIPlusRotateDIB rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, tmpClampDIB, 0, 0, tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, bAngle, InterpolationModeHighQualityBicubic, WrapModeClamp
+        'GDI_Plus.GDIPlusFillDIBRect rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, 0, 0
+        'GDIPlusRotateDIB rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, tmpClampDIB, 0, 0, tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, bAngle, InterpolationModeHighQualityBicubic, WrapModeClamp
         
         'FreeImage code:
         'Plugin_FreeImage_Expanded_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, bAngle, False, False
         
         'Internal pure-VB code:
-        'GDI_Plus.GDIPlusFillDIBRect rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, 0, 255
-        'CreateRotatedDIB -bAngle, EDGE_CLAMP, True, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth * 2
+        GDI_Plus.GDIPlusFillDIBRect rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, 0, 0
+        CreateRotatedDIB -bAngle, EDGE_CLAMP, True, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth * 2
         
         'Erase the temporary clamp DIB
         tmpClampDIB.eraseDIB
@@ -365,8 +299,8 @@ End Sub
 Private Sub Form_Activate()
 
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'If the program is not compiled, display a special warning for this tool
     If Not g_IsProgramCompiled Then

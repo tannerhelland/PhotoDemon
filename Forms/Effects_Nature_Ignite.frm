@@ -24,14 +24,14 @@ Begin VB.Form FormIgnite
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.sliderTextCombo sltIntensity 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   3
-      Top             =   1920
+      TabIndex        =   2
+      Top             =   1320
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
-      ForeColor       =   0
+      _ExtentY        =   1270
+      Caption         =   "color intensity"
       Min             =   1
       SigDigits       =   1
       Value           =   5
@@ -41,7 +41,7 @@ Begin VB.Form FormIgnite
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -68,93 +68,30 @@ Begin VB.Form FormIgnite
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   4
-      Top             =   3000
+      TabIndex        =   3
+      Top             =   2520
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
-      ForeColor       =   0
+      _ExtentY        =   1270
+      Caption         =   "flame height"
       Min             =   1
       Max             =   500
       Value           =   50
    End
    Begin PhotoDemon.sliderTextCombo sltOpacity 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   6
-      Top             =   4080
+      TabIndex        =   4
+      Top             =   3720
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
-      ForeColor       =   0
+      _ExtentY        =   1270
+      Caption         =   "strength"
       Min             =   1
       Max             =   100
       Value           =   50
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "strength:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
-      Left            =   6000
-      TabIndex        =   7
-      Top             =   3720
-      Width           =   960
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "flame height:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      TabIndex        =   5
-      Top             =   2640
-      Width           =   1410
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "color intensity:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   1560
-      Width           =   1575
    End
 End
 Attribute VB_Name = "FormIgnite"
@@ -242,9 +179,9 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     Dim grayVal As Byte
     
     'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
-    Dim grayLookup(0 To 765) As Byte
+    Dim grayLookUp(0 To 765) As Byte
     For x = 0 To 765
-        grayLookup(x) = x \ 3
+        grayLookUp(x) = x \ 3
     Next x
     
     Dim distLookUp(0 To 765) As Single
@@ -317,7 +254,7 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
         b = ImageData(QuickVal, y)
         
         'Calculate the gray value using the look-up table
-        grayVal = grayLookup(r + g + b)
+        grayVal = grayLookUp(r + g + b)
         
         'Perform the fire conversion
         r = grayVal * fxIntensity

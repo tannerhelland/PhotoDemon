@@ -47,7 +47,7 @@ Begin VB.Form FormStraighten
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -55,38 +55,17 @@ Begin VB.Form FormStraighten
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   3
-      Top             =   2520
+      TabIndex        =   2
+      Top             =   2160
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "angle"
       Min             =   -15
       Max             =   15
       SigDigits       =   2
-   End
-   Begin VB.Label lblAmount 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "straightening angle:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   2160
-      Width           =   2115
    End
 End
 Attribute VB_Name = "FormStraighten"

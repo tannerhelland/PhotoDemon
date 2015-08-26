@@ -48,7 +48,7 @@ Begin VB.Form FormRotate
       Height          =   360
       Index           =   0
       Left            =   6120
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   3330
       Width           =   5715
       _ExtentX        =   10081
@@ -59,7 +59,7 @@ Begin VB.Form FormRotate
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -70,7 +70,7 @@ Begin VB.Form FormRotate
       Height          =   360
       Index           =   1
       Left            =   6120
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   3720
       Width           =   5715
       _ExtentX        =   10081
@@ -78,13 +78,14 @@ Begin VB.Form FormRotate
       Caption         =   "keep image at its present size"
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   6
-      Top             =   2280
+      TabIndex        =   5
+      Top             =   1920
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "angle"
       Min             =   -360
       Max             =   360
       SigDigits       =   2
@@ -94,29 +95,7 @@ Begin VB.Form FormRotate
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "rotated image size:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   2880
-      Width           =   2025
-   End
-   Begin VB.Label lblAmount 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "rotation angle:"
+      Caption         =   "rotated image size"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -130,8 +109,8 @@ Begin VB.Form FormRotate
       Height          =   285
       Left            =   6000
       TabIndex        =   1
-      Top             =   1920
-      Width           =   1560
+      Top             =   2880
+      Width           =   1935
    End
 End
 Attribute VB_Name = "FormRotate"

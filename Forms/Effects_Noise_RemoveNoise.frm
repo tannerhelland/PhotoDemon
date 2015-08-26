@@ -41,15 +41,17 @@ Begin VB.Form FormBilateral
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   5
-      Top             =   1170
+      TabIndex        =   2
+      Top             =   720
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "radius"
       Min             =   3
       Max             =   25
       Value           =   9
@@ -57,59 +59,63 @@ Begin VB.Form FormBilateral
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltSpatialFactor 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   6
-      Top             =   2130
+      TabIndex        =   3
+      Top             =   1680
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "edge strength"
       Min             =   1
       Max             =   100
       SigDigits       =   1
       Value           =   10
    End
    Begin PhotoDemon.sliderTextCombo sltSpatialPower 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   5250
       Visible         =   0   'False
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "spatial power (currently hidden)"
       Min             =   1
       SigDigits       =   2
       Value           =   2
    End
    Begin PhotoDemon.sliderTextCombo sltColorFactor 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   8
-      Top             =   3090
+      TabIndex        =   5
+      Top             =   2640
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "color strength"
       Min             =   1
       Max             =   100
       SigDigits       =   1
       Value           =   50
    End
    Begin PhotoDemon.sliderTextCombo sltColorPower 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   10
-      Top             =   4050
+      TabIndex        =   6
+      Top             =   3600
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "color preservation"
       Min             =   1
       SigDigits       =   2
       Value           =   2
@@ -117,122 +123,12 @@ Begin VB.Form FormBilateral
    Begin PhotoDemon.smartCheckBox chkSeparable 
       Height          =   330
       Left            =   6000
-      TabIndex        =   12
-      Top             =   4680
+      TabIndex        =   7
+      Top             =   4560
       Width           =   5820
       _ExtentX        =   10266
       _ExtentY        =   582
       Caption         =   "use estimation to improve performance"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin VB.Label Label2 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "color preservation:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   11
-      Top             =   3690
-      Width           =   1995
-   End
-   Begin VB.Label Label1 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "color strength:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   9
-      Top             =   2730
-      Width           =   1560
-   End
-   Begin VB.Label lblLuminance 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "spatial power (currently hidden):"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   3
-      Top             =   4890
-      Visible         =   0   'False
-      Width           =   3480
-   End
-   Begin VB.Label lblSaturation 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "edge strength:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   1770
-      Width           =   1545
-   End
-   Begin VB.Label lblHue 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "radius:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   810
-      Width           =   735
    End
 End
 Attribute VB_Name = "FormBilateral"
@@ -280,7 +176,7 @@ Private spatialFunc() As Double
 Private colorFunc() As Double
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub initSpatialFunc(ByVal kernelSize As Long, ByVal spatialFactor As Double, ByVal spatialPower As Double)
     
@@ -538,8 +434,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Display the previewed effect in the neighboring window
     updatePreview

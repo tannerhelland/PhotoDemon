@@ -42,6 +42,7 @@ Begin VB.Form FormTwins
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.smartOptionButton optTwins 
       Height          =   375
@@ -51,18 +52,9 @@ Begin VB.Form FormTwins
       Top             =   2640
       Width           =   3240
       _ExtentX        =   5715
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "horizontal"
       Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -82,22 +74,13 @@ Begin VB.Form FormTwins
       Top             =   3090
       Width           =   3240
       _ExtentX        =   5715
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "vertical"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblAlgorithm 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "twin orientation:"
+      Caption         =   "orientation"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -112,7 +95,7 @@ Begin VB.Form FormTwins
       Left            =   6000
       TabIndex        =   2
       Top             =   2160
-      Width           =   1755
+      Width           =   1140
    End
 End
 Attribute VB_Name = "FormTwins"
@@ -137,7 +120,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'This routine mirrors and alphablends an image, making it "tilable" or symmetrical
 Public Sub GenerateTwins(ByVal tType As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -252,8 +235,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Render an image preview
     updatePreview

@@ -84,15 +84,6 @@ Begin VB.Form FormScreenCapture
       _ExtentX        =   9022
       _ExtentY        =   582
       Caption         =   "minimize PhotoDemon prior to capture"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.ListBox lstWindows 
       BeginProperty Font 
@@ -119,18 +110,9 @@ Begin VB.Form FormScreenCapture
       Top             =   600
       Width           =   5370
       _ExtentX        =   9472
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "entire desktop"
       Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton optSource 
       Height          =   375
@@ -140,17 +122,8 @@ Begin VB.Form FormScreenCapture
       Top             =   1680
       Width           =   5370
       _ExtentX        =   9472
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "specific program (listed by window title)"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkChrome 
       Height          =   330
@@ -161,20 +134,11 @@ Begin VB.Form FormScreenCapture
       _ExtentX        =   8599
       _ExtentY        =   582
       Caption         =   "include window decorations"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "screenshot preview:"
+      Caption         =   "preview"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -187,10 +151,10 @@ Begin VB.Form FormScreenCapture
       ForeColor       =   &H00404040&
       Height          =   285
       Index           =   1
-      Left            =   5880
+      Left            =   6120
       TabIndex        =   10
       Top             =   180
-      Width           =   2115
+      Width           =   825
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -202,7 +166,7 @@ Begin VB.Form FormScreenCapture
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "screenshot source:"
+      Caption         =   "screenshot source"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -218,7 +182,7 @@ Begin VB.Form FormScreenCapture
       Left            =   240
       TabIndex        =   0
       Top             =   180
-      Width           =   1980
+      Width           =   1890
    End
 End
 Attribute VB_Name = "FormScreenCapture"
@@ -244,7 +208,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'APIs for listing currently open applications (windows)
 Private Declare Function EnumWindows Lib "user32" (ByVal lpEnumFunc As Long, ByVal lParam As Long) As Long
@@ -275,7 +239,7 @@ Private Sub CmdOK_Click()
         End If
         
         Me.Visible = False
-        Process "Screen capture", False, buildParams(False, CBool(chkMinimize), IIf(lstWindows.ListIndex > -1, lstWindows.ItemData(lstWindows.ListIndex), 0), CBool(chkChrome), IIf(lstWindows.ListIndex > -1, lstWindows.List(lstWindows.ListIndex), "Screen capture")), UNDO_NOTHING
+        Process "Screen capture", False, buildParams(False, CBool(chkMinimize), IIf(lstWindows.ListIndex > -1, lstWindows.itemData(lstWindows.ListIndex), 0), CBool(chkChrome), IIf(lstWindows.ListIndex > -1, lstWindows.List(lstWindows.ListIndex), "Screen capture")), UNDO_NOTHING
         
     End If
     
@@ -290,8 +254,8 @@ Private Sub Form_Load()
     fillListWithOpenApplications lstWindows
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Wait just a moment before continuing, to give the corresponding menu time to animate away (otherwise it may
     ' get caught in the capture preview)
@@ -346,7 +310,7 @@ Private Sub updatePreview()
             
             'Make sure the function returns successfully; if a window is unloaded after the listbox has been
             ' filled, the function will (obviously) fail to capture the screen contents.
-            If Screen_Capture.getHwndContentsAsDIB(tmpDIB, lstWindows.ItemData(lstWindows.ListIndex), chkChrome) Then
+            If Screen_Capture.getHwndContentsAsDIB(tmpDIB, lstWindows.itemData(lstWindows.ListIndex), chkChrome) Then
                 tmpDIB.renderToPictureBox picPreview
             Else
                 lstWindows.RemoveItem lstWindows.ListIndex

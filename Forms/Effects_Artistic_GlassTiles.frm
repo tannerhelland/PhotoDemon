@@ -38,7 +38,7 @@ Begin VB.Form FormGlassTiles
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   4995
       Width           =   5700
    End
@@ -60,15 +60,17 @@ Begin VB.Form FormGlassTiles
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   5
-      Top             =   600
+      TabIndex        =   2
+      Top             =   360
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "angle"
       Min             =   -45
       Max             =   45
       SigDigits       =   1
@@ -77,7 +79,7 @@ Begin VB.Form FormGlassTiles
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -85,38 +87,41 @@ Begin VB.Form FormGlassTiles
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltSize 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   6
-      Top             =   1680
+      TabIndex        =   3
+      Top             =   1440
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "size"
       Min             =   2
       Max             =   200
       Value           =   40
    End
    Begin PhotoDemon.sliderTextCombo sltCurvature 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   7
-      Top             =   2760
+      TabIndex        =   4
+      Top             =   2520
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "curvature"
       Min             =   -20
       Max             =   20
       SigDigits       =   1
       Value           =   8
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   11
-      Top             =   3840
+      TabIndex        =   7
+      Top             =   3600
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "quality"
       Min             =   1
       Max             =   5
       Value           =   2
@@ -140,92 +145,9 @@ Begin VB.Form FormGlassTiles
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   6
       Top             =   4560
       Width           =   3315
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "quality:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
-      Left            =   6000
-      TabIndex        =   9
-      Top             =   3480
-      Width           =   795
-   End
-   Begin VB.Label lblLuminance 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "curvature:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   3
-      Top             =   2400
-      Width           =   1080
-   End
-   Begin VB.Label lblSaturation 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "size:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   1320
-      Width           =   480
-   End
-   Begin VB.Label lblHue 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "angle:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   240
-      Width           =   660
    End
 End
 Attribute VB_Name = "FormGlassTiles"
@@ -260,7 +182,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Apply a glass tile filter to an image
 Public Sub GlassTiles(ByVal lSquareSize As Long, ByVal lCurvature As Double, ByVal lAngle As Double, ByVal superSamplingAmount As Long, ByVal edgeHandling As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -475,8 +397,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Display the previewed effect in the neighboring window
     cmdBar.markPreviewStatus True

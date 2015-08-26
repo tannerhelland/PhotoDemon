@@ -121,7 +121,7 @@ Begin VB.Form FormNewLayer
       Width           =   8850
       _ExtentX        =   15610
       _ExtentY        =   582
-      Caption         =   "custom color:"
+      Caption         =   "custom color"
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   615
@@ -146,7 +146,7 @@ Begin VB.Form FormNewLayer
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "position:"
+      Caption         =   "position"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -162,12 +162,12 @@ Begin VB.Form FormNewLayer
       Left            =   240
       TabIndex        =   8
       Top             =   3840
-      Width           =   930
+      Width           =   840
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "background:"
+      Caption         =   "background"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -183,12 +183,12 @@ Begin VB.Form FormNewLayer
       Left            =   240
       TabIndex        =   2
       Top             =   1200
-      Width           =   1335
+      Width           =   1245
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "name:"
+      Caption         =   "name"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -204,7 +204,7 @@ Begin VB.Form FormNewLayer
       Left            =   240
       TabIndex        =   1
       Top             =   120
-      Width           =   675
+      Width           =   585
    End
 End
 Attribute VB_Name = "FormNewLayer"

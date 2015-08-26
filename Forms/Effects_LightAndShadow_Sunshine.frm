@@ -24,13 +24,14 @@ Begin VB.Form FormSunshine
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   3
-      Top             =   1875
+      TabIndex        =   1
+      Top             =   1560
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "radius"
       Min             =   1
       Max             =   200
       Value           =   72
@@ -38,7 +39,7 @@ Begin VB.Form FormSunshine
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -47,21 +48,22 @@ Begin VB.Form FormSunshine
       PointSelection  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltRayCount 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   4
-      Top             =   2850
+      TabIndex        =   2
+      Top             =   2520
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "number of rays"
       Min             =   1
       Max             =   360
       Value           =   100
    End
    Begin PhotoDemon.sliderTextCombo sltXCenter 
-      Height          =   495
+      Height          =   405
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   480
       Width           =   2895
       _ExtentX        =   5106
@@ -73,9 +75,9 @@ Begin VB.Form FormSunshine
       NotchValueCustom=   0.5
    End
    Begin PhotoDemon.sliderTextCombo sltYCenter 
-      Height          =   495
+      Height          =   405
       Left            =   9000
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   480
       Width           =   2895
       _ExtentX        =   5106
@@ -90,7 +92,7 @@ Begin VB.Form FormSunshine
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   5790
       Width           =   12090
       _ExtentX        =   21325
@@ -104,11 +106,12 @@ Begin VB.Form FormSunshine
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.colorSelector cpShine 
       Height          =   615
       Left            =   6120
-      TabIndex        =   10
+      TabIndex        =   8
       Top             =   3915
       Width           =   5655
       _ExtentX        =   9975
@@ -116,40 +119,20 @@ Begin VB.Form FormSunshine
       curColor        =   8978431
    End
    Begin PhotoDemon.sliderTextCombo sltVariance 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   12
-      Top             =   5100
+      TabIndex        =   10
+      Top             =   4800
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "color variance"
       Max             =   100
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "color variance:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   3
-      Left            =   6000
-      TabIndex        =   13
-      Top             =   4740
-      Width           =   1560
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "color:"
+      Caption         =   "color"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -163,9 +146,9 @@ Begin VB.Form FormSunshine
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   9
       Top             =   3555
-      Width           =   615
+      Width           =   525
    End
    Begin VB.Label lblExplanation 
       BackStyle       =   0  'Transparent
@@ -174,7 +157,7 @@ Begin VB.Form FormSunshine
       Height          =   435
       Index           =   0
       Left            =   6120
-      TabIndex        =   8
+      TabIndex        =   6
       Top             =   1050
       Width           =   5655
       WordWrap        =   -1  'True
@@ -196,51 +179,9 @@ Begin VB.Form FormSunshine
       Height          =   285
       Index           =   4
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   120
       Width           =   2205
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "number of rays:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   2490
-      Width           =   1710
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "radius:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      TabIndex        =   0
-      Top             =   1545
-      Width           =   735
    End
 End
 Attribute VB_Name = "FormSunshine"
@@ -268,7 +209,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Apply a "sunshine" or "starburst" effect to an image
 Public Sub SunShine(ByVal lRadius As Long, ByVal lSpokeCount As Long, ByVal lSpokeColor As Long, ByVal lColorShift As Long, Optional ByVal centerX As Double = 0.1, Optional ByVal centerY As Double = 0.1, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -516,8 +457,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Display the previewed effect in the neighboring window
     cmdBar.markPreviewStatus True

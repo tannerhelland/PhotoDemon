@@ -73,7 +73,7 @@ Begin VB.Form FormInternetImport
    Begin VB.Label lblDownloadPath 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "full download path (must begin with ""http://"" or ""ftp://""):"
+      Caption         =   "full download path (must begin with ""http://"" or ""ftp://"")"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -88,7 +88,7 @@ Begin VB.Form FormInternetImport
       Left            =   120
       TabIndex        =   2
       Top             =   360
-      Width           =   6090
+      Width           =   6000
    End
 End
 Attribute VB_Name = "FormInternetImport"

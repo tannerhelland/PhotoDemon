@@ -28,7 +28,7 @@ Begin VB.Form FormSplitTone
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   5730
       Width           =   12090
       _ExtentX        =   21325
@@ -42,24 +42,26 @@ Begin VB.Form FormSplitTone
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltBalance 
-      Height          =   495
-      Left            =   6120
-      TabIndex        =   2
-      Top             =   2295
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   873
+      Height          =   720
+      Left            =   6000
+      TabIndex        =   1
+      Top             =   2040
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "balance"
       Min             =   -100
       Max             =   100
       SliderTrackStyle=   3
@@ -68,7 +70,7 @@ Begin VB.Form FormSplitTone
    Begin PhotoDemon.colorSelector cpHighlight 
       Height          =   615
       Left            =   6240
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   1080
       Width           =   5535
       _ExtentX        =   9763
@@ -78,7 +80,7 @@ Begin VB.Form FormSplitTone
    Begin PhotoDemon.colorSelector cpShadow 
       Height          =   615
       Left            =   6240
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   3480
       Width           =   5535
       _ExtentX        =   9763
@@ -86,62 +88,23 @@ Begin VB.Form FormSplitTone
       curColor        =   32767
    End
    Begin PhotoDemon.sliderTextCombo sltStrength 
-      Height          =   495
-      Left            =   6120
-      TabIndex        =   8
-      Top             =   4665
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   873
+      Height          =   720
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   4440
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "toning strength"
       Max             =   100
       Value           =   50
       NotchPosition   =   2
       NotchValueCustom=   100
    End
-   Begin VB.Label lblStrength 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "toning strength:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   9
-      Top             =   4320
-      Width           =   1710
-   End
    Begin VB.Label lblShadow 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "shadow color:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   4
-      Top             =   3060
-      Width           =   1500
-   End
-   Begin VB.Label lblHue 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "highlight color:"
+      Caption         =   "shadow color"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -155,13 +118,13 @@ Begin VB.Form FormSplitTone
       Height          =   285
       Left            =   6000
       TabIndex        =   3
-      Top             =   690
-      Width           =   1620
+      Top             =   3060
+      Width           =   1410
    End
-   Begin VB.Label lblBalance 
+   Begin VB.Label lblHue 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "balance:"
+      Caption         =   "highlight color"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -174,9 +137,9 @@ Begin VB.Form FormSplitTone
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   0
-      Top             =   1950
-      Width           =   885
+      TabIndex        =   2
+      Top             =   690
+      Width           =   1530
    End
 End
 Attribute VB_Name = "FormSplitTone"
@@ -220,7 +183,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Apply a split-tone filter to the current layer or selection
 'Inputs:
@@ -388,8 +351,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Display the previewed effect in the neighboring window
     updatePreview

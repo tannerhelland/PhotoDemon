@@ -129,7 +129,7 @@ Begin VB.Form dialog_ExportColorDepth
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "please choose an output color depth:"
+      Caption         =   "please choose an output color depth"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -145,7 +145,7 @@ Begin VB.Form dialog_ExportColorDepth
       Left            =   360
       TabIndex        =   2
       Top             =   240
-      Width           =   3930
+      Width           =   3840
    End
 End
 Attribute VB_Name = "dialog_ExportColorDepth"

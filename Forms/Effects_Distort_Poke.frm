@@ -39,14 +39,14 @@ Begin VB.Form FormPoke
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   4440
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -55,13 +55,14 @@ Begin VB.Form FormPoke
       PointSelection  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltStrength 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   5
-      Top             =   2400
+      TabIndex        =   3
+      Top             =   2160
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "strength"
       Min             =   0.01
       Max             =   3
       SigDigits       =   2
@@ -70,9 +71,9 @@ Begin VB.Form FormPoke
       NotchValueCustom=   1
    End
    Begin PhotoDemon.sliderTextCombo sltXCenter 
-      Height          =   495
+      Height          =   405
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   1080
       Width           =   2895
       _ExtentX        =   5106
@@ -84,9 +85,9 @@ Begin VB.Form FormPoke
       NotchValueCustom=   0.5
    End
    Begin PhotoDemon.sliderTextCombo sltYCenter 
-      Height          =   495
+      Height          =   405
       Left            =   9000
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   1080
       Width           =   2895
       _ExtentX        =   5106
@@ -101,7 +102,7 @@ Begin VB.Form FormPoke
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   10
+      TabIndex        =   8
       Top             =   5790
       Width           =   12090
       _ExtentX        =   21325
@@ -115,15 +116,17 @@ Begin VB.Form FormPoke
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   11
-      Top             =   3360
+      TabIndex        =   9
+      Top             =   3060
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "quality"
       Min             =   1
       Max             =   5
       Value           =   2
@@ -147,7 +150,7 @@ Begin VB.Form FormPoke
       Height          =   285
       Index           =   4
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   720
       Width           =   2205
    End
@@ -158,7 +161,7 @@ Begin VB.Form FormPoke
       Height          =   435
       Index           =   0
       Left            =   6120
-      TabIndex        =   8
+      TabIndex        =   6
       Top             =   1650
       Width           =   5655
       WordWrap        =   -1  'True
@@ -180,54 +183,9 @@ Begin VB.Form FormPoke
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   3960
       Width           =   3315
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "quality:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   3000
-      Width           =   795
-   End
-   Begin VB.Label lblStrength 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "strength:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   0
-      Top             =   2040
-      Width           =   960
    End
 End
 Attribute VB_Name = "FormPoke"
@@ -264,7 +222,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub cmbEdges_Click()
     updatePreview
@@ -526,8 +484,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True

@@ -24,159 +24,6 @@ Begin VB.Form FormDonut
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4335
-      Index           =   0
-      Left            =   5880
-      ScaleHeight     =   289
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   409
-      TabIndex        =   2
-      Top             =   120
-      Width           =   6135
-      Begin PhotoDemon.sliderTextCombo sltAngle 
-         Height          =   495
-         Left            =   120
-         TabIndex        =   3
-         Top             =   450
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   873
-         Min             =   -360
-         Max             =   360
-         SigDigits       =   1
-      End
-      Begin PhotoDemon.sliderTextCombo sltSpread 
-         Height          =   495
-         Left            =   120
-         TabIndex        =   5
-         Top             =   1530
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   873
-         Max             =   360
-         SigDigits       =   1
-         Value           =   360
-         NotchPosition   =   2
-         NotchValueCustom=   360
-      End
-      Begin PhotoDemon.sliderTextCombo sltRadius 
-         Height          =   495
-         Left            =   120
-         TabIndex        =   7
-         Top             =   2610
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   873
-         Max             =   100
-         SigDigits       =   1
-         NotchPosition   =   2
-      End
-      Begin PhotoDemon.sliderTextCombo sltHeight 
-         Height          =   495
-         Left            =   120
-         TabIndex        =   9
-         Top             =   3690
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   873
-         Max             =   100
-         SigDigits       =   1
-         Value           =   50
-         NotchPosition   =   2
-         NotchValueCustom=   50
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "height:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   6
-         Left            =   120
-         TabIndex        =   10
-         Top             =   3360
-         Width           =   750
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "interior radius:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   1
-         Left            =   120
-         TabIndex        =   8
-         Top             =   2280
-         Width           =   1575
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "spread:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   3
-         Left            =   120
-         TabIndex        =   6
-         Top             =   1200
-         Width           =   795
-      End
-      Begin VB.Label lblTitle 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "initial angle:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   0
-         Left            =   120
-         TabIndex        =   4
-         Top             =   120
-         Width           =   1305
-      End
-   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -211,7 +58,7 @@ Begin VB.Form FormDonut
    Begin PhotoDemon.buttonStrip btsOptions 
       Height          =   600
       Left            =   6240
-      TabIndex        =   20
+      TabIndex        =   15
       Top             =   5040
       Width           =   5595
       _ExtentX        =   9869
@@ -228,7 +75,7 @@ Begin VB.Form FormDonut
       ScaleHeight     =   289
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   409
-      TabIndex        =   11
+      TabIndex        =   7
       Top             =   120
       Width           =   6135
       Begin VB.ComboBox cmbEdges 
@@ -246,14 +93,14 @@ Begin VB.Form FormDonut
          Height          =   360
          Left            =   240
          Style           =   2  'Dropdown List
-         TabIndex        =   18
+         TabIndex        =   13
          Top             =   2895
          Width           =   5700
       End
       Begin PhotoDemon.sliderTextCombo sltXCenter 
-         Height          =   495
+         Height          =   405
          Left            =   120
-         TabIndex        =   12
+         TabIndex        =   8
          Top             =   480
          Width           =   2895
          _ExtentX        =   5106
@@ -265,9 +112,9 @@ Begin VB.Form FormDonut
          NotchValueCustom=   0.5
       End
       Begin PhotoDemon.sliderTextCombo sltYCenter 
-         Height          =   495
+         Height          =   405
          Left            =   3120
-         TabIndex        =   13
+         TabIndex        =   9
          Top             =   480
          Width           =   2895
          _ExtentX        =   5106
@@ -279,13 +126,14 @@ Begin VB.Form FormDonut
          NotchValueCustom=   0.5
       End
       Begin PhotoDemon.sliderTextCombo sltQuality 
-         Height          =   495
+         Height          =   720
          Left            =   120
-         TabIndex        =   16
-         Top             =   1800
+         TabIndex        =   12
+         Top             =   1500
          Width           =   5895
          _ExtentX        =   10398
-         _ExtentY        =   873
+         _ExtentY        =   1270
+         Caption         =   "quality"
          Min             =   1
          Max             =   5
          Value           =   2
@@ -309,32 +157,9 @@ Begin VB.Form FormDonut
          Height          =   285
          Index           =   5
          Left            =   120
-         TabIndex        =   19
+         TabIndex        =   14
          Top             =   2520
          Width           =   3315
-      End
-      Begin VB.Label lblTitle 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "quality:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   2
-         Left            =   120
-         TabIndex        =   17
-         Top             =   1440
-         Width           =   795
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
@@ -353,7 +178,7 @@ Begin VB.Form FormDonut
          Height          =   285
          Index           =   4
          Left            =   120
-         TabIndex        =   15
+         TabIndex        =   11
          Top             =   120
          Width           =   2205
       End
@@ -364,16 +189,87 @@ Begin VB.Form FormDonut
          Height          =   435
          Index           =   0
          Left            =   240
-         TabIndex        =   14
+         TabIndex        =   10
          Top             =   1050
          Width           =   5655
          WordWrap        =   -1  'True
       End
    End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4335
+      Index           =   0
+      Left            =   5880
+      ScaleHeight     =   289
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   409
+      TabIndex        =   2
+      Top             =   120
+      Width           =   6135
+      Begin PhotoDemon.sliderTextCombo sltAngle 
+         Height          =   720
+         Left            =   120
+         TabIndex        =   3
+         Top             =   120
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "initial angle"
+         Min             =   -360
+         Max             =   360
+         SigDigits       =   1
+      End
+      Begin PhotoDemon.sliderTextCombo sltSpread 
+         Height          =   720
+         Left            =   120
+         TabIndex        =   4
+         Top             =   1080
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "spread"
+         Max             =   360
+         SigDigits       =   1
+         Value           =   360
+         NotchPosition   =   2
+         NotchValueCustom=   360
+      End
+      Begin PhotoDemon.sliderTextCombo sltRadius 
+         Height          =   720
+         Left            =   120
+         TabIndex        =   5
+         Top             =   2040
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "interior radius"
+         Max             =   100
+         SigDigits       =   1
+         NotchPosition   =   2
+      End
+      Begin PhotoDemon.sliderTextCombo sltHeight 
+         Height          =   720
+         Left            =   120
+         TabIndex        =   6
+         Top             =   3000
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "height"
+         Max             =   100
+         SigDigits       =   1
+         Value           =   50
+         NotchPosition   =   2
+         NotchValueCustom=   50
+      End
+   End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "options:"
+      Caption         =   "options"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -387,9 +283,9 @@ Begin VB.Form FormDonut
       Height          =   285
       Index           =   7
       Left            =   6000
-      TabIndex        =   21
+      TabIndex        =   16
       Top             =   4680
-      Width           =   870
+      Width           =   780
    End
 End
 Attribute VB_Name = "FormDonut"

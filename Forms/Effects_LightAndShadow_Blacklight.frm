@@ -31,7 +31,7 @@ Begin VB.Form FormBlackLight
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1217
-      Caption         =   "intensity:"
+      Caption         =   "intensity"
       Min             =   1
       SigDigits       =   2
       Value           =   2

@@ -98,7 +98,7 @@ Begin VB.Form dialog_OutlineSettings
       Width           =   9375
       _ExtentX        =   16536
       _ExtentY        =   556
-      Caption         =   "outline style:"
+      Caption         =   "outline style"
       FontSize        =   12
    End
    Begin PhotoDemon.pdLabel lblTitle 
@@ -109,12 +109,12 @@ Begin VB.Form dialog_OutlineSettings
       Width           =   9375
       _ExtentX        =   16536
       _ExtentY        =   556
-      Caption         =   "preview:"
+      Caption         =   "preview"
       FontSize        =   12
    End
    Begin PhotoDemon.sliderTextCombo sltOutlineOpacity 
       CausesValidation=   0   'False
-      Height          =   495
+      Height          =   405
       Left            =   120
       TabIndex        =   3
       Top             =   5760
@@ -134,29 +134,19 @@ Begin VB.Form dialog_OutlineSettings
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   556
-      Caption         =   "outline color and opacity:"
-      FontSize        =   12
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   315
-      Index           =   3
-      Left            =   120
-      Top             =   6360
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   556
-      Caption         =   "outline width:"
+      Caption         =   "outline color and opacity"
       FontSize        =   12
    End
    Begin PhotoDemon.sliderTextCombo sltOutlineWidth 
       CausesValidation=   0   'False
-      Height          =   495
+      Height          =   720
       Left            =   120
       TabIndex        =   5
-      Top             =   6720
+      Top             =   6360
       Width           =   6060
-      _ExtentX        =   4868
-      _ExtentY        =   873
+      _ExtentX        =   10689
+      _ExtentY        =   1270
+      Caption         =   "outline width"
       Min             =   1
       Max             =   100
       SigDigits       =   1
@@ -172,7 +162,7 @@ Begin VB.Form dialog_OutlineSettings
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   556
-      Caption         =   "corner shape:"
+      Caption         =   "corner shape"
       FontSize        =   12
    End
    Begin PhotoDemon.pdLabel lblTitle 
@@ -183,7 +173,7 @@ Begin VB.Form dialog_OutlineSettings
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   556
-      Caption         =   "line cap shape:"
+      Caption         =   "line cap shape"
       FontSize        =   12
    End
    Begin PhotoDemon.pdComboBox cboLineCap 
@@ -195,26 +185,16 @@ Begin VB.Form dialog_OutlineSettings
       _ExtentX        =   10610
       _ExtentY        =   688
    End
-   Begin PhotoDemon.pdLabel lblMiterLimit 
-      Height          =   315
-      Index           =   6
-      Left            =   6480
-      Top             =   6360
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   556
-      Caption         =   "miter limit:"
-      FontSize        =   12
-   End
    Begin PhotoDemon.sliderTextCombo sltMiterLimit 
       CausesValidation=   0   'False
-      Height          =   495
+      Height          =   720
       Left            =   6480
       TabIndex        =   8
-      Top             =   6720
+      Top             =   6360
       Width           =   6060
-      _ExtentX        =   4868
-      _ExtentY        =   873
+      _ExtentX        =   10689
+      _ExtentY        =   1270
+      Caption         =   "miter limit"
       Min             =   1
       Max             =   100
       SigDigits       =   1

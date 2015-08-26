@@ -26,46 +26,49 @@ Begin VB.Form FormChannelMixer
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   480
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltRed 
-      Height          =   495
-      Left            =   6000
-      TabIndex        =   5
-      Top             =   2145
-      Width           =   6015
+      Height          =   720
+      Left            =   6120
+      TabIndex        =   2
+      Top             =   1800
+      Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "red"
       Min             =   -200
       Max             =   200
       SliderTrackStyle=   3
       GradientColorMiddle=   255
    End
    Begin PhotoDemon.sliderTextCombo sltGreen 
-      Height          =   495
-      Left            =   6000
-      TabIndex        =   6
-      Top             =   3090
-      Width           =   6015
+      Height          =   720
+      Left            =   6120
+      TabIndex        =   3
+      Top             =   2760
+      Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "green"
       Min             =   -200
       Max             =   200
       SliderTrackStyle=   3
       GradientColorMiddle=   65280
    End
    Begin PhotoDemon.sliderTextCombo sltBlue 
-      Height          =   495
-      Left            =   6000
-      TabIndex        =   7
-      Top             =   4035
-      Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   873
+      Height          =   720
+      Left            =   6120
+      TabIndex        =   4
+      Top             =   3720
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "blue"
       Min             =   -200
       Max             =   200
       SliderTrackStyle=   3
@@ -74,30 +77,22 @@ Begin VB.Form FormChannelMixer
    Begin PhotoDemon.smartCheckBox chkMonochrome 
       Height          =   375
       Left            =   6120
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   6120
       Width           =   5760
       _ExtentX        =   10160
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "monochrome"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltConstant 
-      Height          =   495
-      Left            =   6000
-      TabIndex        =   9
-      Top             =   4980
-      Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   873
+      Height          =   720
+      Left            =   6120
+      TabIndex        =   6
+      Top             =   4680
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "constant"
       Min             =   -255
       Max             =   255
       SliderTrackStyle=   2
@@ -105,21 +100,12 @@ Begin VB.Form FormChannelMixer
    Begin PhotoDemon.smartCheckBox chkLuminance 
       Height          =   375
       Left            =   6120
-      TabIndex        =   11
+      TabIndex        =   7
       Top             =   6480
       Width           =   5760
       _ExtentX        =   10160
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "preserve luminance"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -139,37 +125,21 @@ Begin VB.Form FormChannelMixer
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.buttonStrip btsChannel 
       Height          =   600
       Left            =   6000
-      TabIndex        =   14
+      TabIndex        =   10
       Top             =   480
       Width           =   6000
       _ExtentX        =   10583
       _ExtentY        =   1058
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin VB.Line Line1 
-      BorderColor     =   &H8000000D&
-      Index           =   1
-      X1              =   392
-      X2              =   800
-      Y1              =   80
-      Y2              =   80
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "input channel(s):"
+      Caption         =   "input channel(s)"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -183,14 +153,14 @@ Begin VB.Form FormChannelMixer
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   15
+      TabIndex        =   11
       Top             =   1320
-      Width           =   1800
+      Width           =   1710
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "options for all channels:"
+      Caption         =   "options for all channels"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -203,22 +173,14 @@ Begin VB.Form FormChannelMixer
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   13
+      TabIndex        =   9
       Top             =   5760
-      Width           =   2550
-   End
-   Begin VB.Line Line1 
-      BorderColor     =   &H8000000D&
-      Index           =   0
-      X1              =   392
-      X2              =   800
-      Y1              =   373
-      Y2              =   373
+      Width           =   2460
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "output channel:"
+      Caption         =   "output channel"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -232,93 +194,9 @@ Begin VB.Form FormChannelMixer
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   12
+      TabIndex        =   8
       Top             =   120
-      Width           =   1665
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "constant:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   4
-      Left            =   6000
-      TabIndex        =   10
-      Top             =   4620
-      Width           =   975
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "blue:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   3
-      Left            =   6000
-      TabIndex        =   3
-      Top             =   3675
-      Width           =   540
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "green:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   2730
-      Width           =   690
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "red:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   1785
-      Width           =   435
+      Width           =   1575
    End
 End
 Attribute VB_Name = "FormChannelMixer"
@@ -375,7 +253,7 @@ Dim curSliderValues(0 To 3, 0 To 3) As Long
 Dim forbidUpdate As Boolean
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub btsChannel_Click(ByVal buttonIndex As Long)
 
@@ -692,8 +570,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'If the last-used settings involve the monochrome check box, the luminance check box may not be deactivated properly
     ' (due to no Click event being fired).  Forcibly check this state in advance.

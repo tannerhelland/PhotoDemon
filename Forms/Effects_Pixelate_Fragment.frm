@@ -39,7 +39,7 @@ Begin VB.Form FormFragment
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   3975
       Width           =   5700
    End
@@ -61,6 +61,7 @@ Begin VB.Form FormFragment
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -73,40 +74,40 @@ Begin VB.Form FormFragment
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltDistance 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   3
-      Top             =   1680
+      TabIndex        =   2
+      Top             =   1440
       Width           =   5775
       _ExtentX        =   10186
-      _ExtentY        =   873
-      ForeColor       =   0
+      _ExtentY        =   1270
+      Caption         =   "distance"
       Max             =   200
       SigDigits       =   1
       Value           =   8
    End
    Begin PhotoDemon.sliderTextCombo sltFragments 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   4
-      Top             =   600
+      TabIndex        =   3
+      Top             =   360
       Width           =   5775
       _ExtentX        =   10186
-      _ExtentY        =   873
-      ForeColor       =   0
+      _ExtentY        =   1270
+      Caption         =   "number of fragments"
       Min             =   1
       Max             =   25
       Value           =   4
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   6
-      Top             =   2760
+      TabIndex        =   4
+      Top             =   2520
       Width           =   5775
       _ExtentX        =   10186
-      _ExtentY        =   873
-      ForeColor       =   0
+      _ExtentY        =   1270
+      Caption         =   "angle"
       Max             =   360
       SigDigits       =   2
    End
@@ -114,49 +115,31 @@ Begin VB.Form FormFragment
       Height          =   360
       Index           =   0
       Left            =   6120
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   4920
       Width           =   5685
       _ExtentX        =   10028
-      _ExtentY        =   635
+      _ExtentY        =   582
       Caption         =   "quality"
       Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
       Height          =   360
       Index           =   1
       Left            =   6120
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   5280
       Width           =   5685
       _ExtentX        =   10028
-      _ExtentY        =   635
+      _ExtentY        =   582
       Caption         =   "speed"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "render emphasis:"
+      Caption         =   "render emphasis"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -170,9 +153,9 @@ Begin VB.Form FormFragment
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   12
+      TabIndex        =   9
       Top             =   4530
-      Width           =   1845
+      Width           =   1755
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -191,69 +174,9 @@ Begin VB.Form FormFragment
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   8
       Top             =   3540
       Width           =   3315
-   End
-   Begin VB.Label lblAngle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "angle:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   7
-      Top             =   2400
-      Width           =   660
-   End
-   Begin VB.Label lblFragments 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "number of fragments:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   5
-      Top             =   240
-      Width           =   2340
-   End
-   Begin VB.Label lblDistance 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "distance:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   1320
-      Width           =   945
    End
 End
 Attribute VB_Name = "FormFragment"
@@ -289,7 +212,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Apply a fragment filter to the active layer
 Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal rotationAngle As Double, ByVal edgeHandling As Long, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -466,8 +389,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
         
     'Create the preview
     cmdBar.markPreviewStatus True

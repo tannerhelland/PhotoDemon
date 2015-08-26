@@ -26,20 +26,11 @@ Begin VB.Form FormZoomBlur
    Begin PhotoDemon.buttonStrip btsStyle 
       Height          =   615
       Left            =   6180
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   2160
       Width           =   5610
       _ExtentX        =   9895
       _ExtentY        =   1085
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -59,6 +50,7 @@ Begin VB.Form FormZoomBlur
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -71,20 +63,21 @@ Begin VB.Form FormZoomBlur
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltDistance 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   3
-      Top             =   3360
+      TabIndex        =   2
+      Top             =   3120
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "distance"
       Min             =   -200
       Max             =   200
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "style:"
+      Caption         =   "style"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -98,30 +91,9 @@ Begin VB.Form FormZoomBlur
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   1800
-      Width           =   570
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "distance:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   3000
-      Width           =   945
+      Width           =   480
    End
 End
 Attribute VB_Name = "FormZoomBlur"
@@ -156,7 +128,7 @@ Option Explicit
 Private Declare Function AlphaBlend Lib "msimg32" (ByVal hDestDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal WidthSrc As Long, ByVal HeightSrc As Long, ByVal blendFunct As Long) As Boolean
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Because PD now provides two styles of zoom blur, I've added this wrapper function, which calls the appropriate *actual* zoom blur
 ' function, without the caller having to know details about either implementation.
@@ -398,8 +370,8 @@ End Sub
 Private Sub Form_Activate()
 
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True

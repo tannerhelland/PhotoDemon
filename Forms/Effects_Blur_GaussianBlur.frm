@@ -44,13 +44,14 @@ Begin VB.Form FormGaussianBlur
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   4
-      Top             =   2040
+      TabIndex        =   3
+      Top             =   1800
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "radius"
       Min             =   0.1
       Max             =   500
       SigDigits       =   1
@@ -59,7 +60,7 @@ Begin VB.Form FormGaussianBlur
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -68,7 +69,7 @@ Begin VB.Form FormGaussianBlur
    Begin PhotoDemon.buttonStrip btsQuality 
       Height          =   600
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   3180
       Width           =   5835
       _ExtentX        =   11774
@@ -77,7 +78,7 @@ Begin VB.Form FormGaussianBlur
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "quality:"
+      Caption         =   "quality"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -88,12 +89,12 @@ Begin VB.Form FormGaussianBlur
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   315
+      Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   2730
-      Width           =   795
+      Width           =   705
    End
    Begin VB.Label lblIDEWarning 
       BackStyle       =   0  'Transparent
@@ -109,32 +110,11 @@ Begin VB.Form FormGaussianBlur
       ForeColor       =   &H000000FF&
       Height          =   1215
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   4560
       Visible         =   0   'False
       Width           =   5775
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "blur radius:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   1680
-      Width           =   1230
    End
 End
 Attribute VB_Name = "FormGaussianBlur"

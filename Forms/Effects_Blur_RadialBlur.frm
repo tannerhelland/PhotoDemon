@@ -41,11 +41,12 @@ Begin VB.Form FormRadialBlur
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -53,13 +54,14 @@ Begin VB.Form FormRadialBlur
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   4
-      Top             =   2160
+      TabIndex        =   3
+      Top             =   1680
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "angle"
       Min             =   1
       Max             =   360
       SigDigits       =   1
@@ -69,68 +71,41 @@ Begin VB.Form FormRadialBlur
       Height          =   360
       Index           =   0
       Left            =   6120
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   3750
       Width           =   5685
       _ExtentX        =   10028
-      _ExtentY        =   635
+      _ExtentY        =   582
       Caption         =   "quality"
       Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
       Height          =   360
       Index           =   1
       Left            =   6120
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   4200
       Width           =   5685
       _ExtentX        =   10028
-      _ExtentY        =   635
+      _ExtentY        =   582
       Caption         =   "speed"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartCheckBox chkSymmetry 
       Height          =   300
       Left            =   6120
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   2760
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   582
       Caption         =   "blur symmetrically"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "render emphasis:"
+      Caption         =   "render emphasis"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -144,9 +119,9 @@ Begin VB.Form FormRadialBlur
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   3360
-      Width           =   1845
+      Width           =   1755
    End
    Begin VB.Label lblIDEWarning 
       BackStyle       =   0  'Transparent
@@ -162,32 +137,11 @@ Begin VB.Form FormRadialBlur
       ForeColor       =   &H000000FF&
       Height          =   1215
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   4440
       Visible         =   0   'False
       Width           =   5775
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "angle:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   1800
-      Width           =   660
    End
 End
 Attribute VB_Name = "FormRadialBlur"
@@ -220,7 +174,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Apply radial blur to an image
 'Inputs: angle of the blur, and whether it should be symmetrical (e.g. equal in +/- angle amounts)
@@ -338,8 +292,8 @@ End Sub
 Private Sub Form_Activate()
 
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'If the program is not compiled, display a special warning for this tool
     If Not g_IsProgramCompiled Then

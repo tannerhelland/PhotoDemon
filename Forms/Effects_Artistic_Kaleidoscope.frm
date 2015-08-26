@@ -42,6 +42,7 @@ Begin VB.Form FormKaleidoscope
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -62,141 +63,6 @@ Begin VB.Form FormKaleidoscope
       Width           =   5595
       _ExtentX        =   9869
       _ExtentY        =   1058
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   3495
-      Index           =   1
-      Left            =   5880
-      ScaleHeight     =   233
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   409
-      TabIndex        =   5
-      Top             =   360
-      Visible         =   0   'False
-      Width           =   6135
-      Begin PhotoDemon.sliderTextCombo sltAngle2 
-         Height          =   495
-         Left            =   120
-         TabIndex        =   14
-         Top             =   555
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   873
-         Max             =   360
-         SigDigits       =   1
-      End
-      Begin PhotoDemon.sliderTextCombo sltRadius 
-         Height          =   495
-         Left            =   120
-         TabIndex        =   15
-         Top             =   1530
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   873
-         Min             =   1
-         Max             =   100
-         Value           =   100
-         NotchPosition   =   2
-         NotchValueCustom=   100
-      End
-      Begin PhotoDemon.buttonStrip btsQuality 
-         Height          =   600
-         Left            =   240
-         TabIndex        =   19
-         Top             =   2640
-         Width           =   5595
-         _ExtentX        =   9869
-         _ExtentY        =   1058
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin VB.Label lblTitle 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "render emphasis:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   2
-         Left            =   120
-         TabIndex        =   18
-         Top             =   2265
-         Width           =   1845
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "radius (percentage):"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   1
-         Left            =   120
-         TabIndex        =   17
-         Top             =   1215
-         Width           =   2145
-      End
-      Begin VB.Label lblTitle 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "secondary angle:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   4
-         Left            =   120
-         TabIndex        =   16
-         Top             =   240
-         Width           =   1800
-      End
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -213,13 +79,14 @@ Begin VB.Form FormKaleidoscope
       Top             =   360
       Width           =   6135
       Begin PhotoDemon.sliderTextCombo sltMirrors 
-         Height          =   495
+         Height          =   720
          Left            =   120
          TabIndex        =   6
-         Top             =   1890
+         Top             =   1560
          Width           =   5895
          _ExtentX        =   10398
-         _ExtentY        =   873
+         _ExtentY        =   1270
+         Caption         =   "number of mirrors"
          Min             =   1
          Max             =   16
          Value           =   3
@@ -227,18 +94,19 @@ Begin VB.Form FormKaleidoscope
          NotchValueCustom=   8
       End
       Begin PhotoDemon.sliderTextCombo sltAngle 
-         Height          =   495
+         Height          =   720
          Left            =   120
          TabIndex        =   7
-         Top             =   2880
+         Top             =   2520
          Width           =   5895
          _ExtentX        =   10398
-         _ExtentY        =   873
+         _ExtentY        =   1270
+         Caption         =   "primary angle"
          Max             =   360
          SigDigits       =   1
       End
       Begin PhotoDemon.sliderTextCombo sltXCenter 
-         Height          =   495
+         Height          =   405
          Left            =   120
          TabIndex        =   8
          Top             =   600
@@ -252,7 +120,7 @@ Begin VB.Form FormKaleidoscope
          NotchValueCustom=   0.5
       End
       Begin PhotoDemon.sliderTextCombo sltYCenter 
-         Height          =   495
+         Height          =   405
          Left            =   3120
          TabIndex        =   9
          Top             =   600
@@ -264,50 +132,6 @@ Begin VB.Form FormKaleidoscope
          Value           =   0.5
          NotchPosition   =   2
          NotchValueCustom=   0.5
-      End
-      Begin VB.Label lblTitle 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "primary angle:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   0
-         Left            =   120
-         TabIndex        =   13
-         Top             =   2520
-         Width           =   1560
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "number of mirrors:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   3
-         Left            =   120
-         TabIndex        =   12
-         Top             =   1560
-         Width           =   2055
       End
       Begin VB.Label lblExplanation 
          BackStyle       =   0  'Transparent
@@ -343,12 +167,87 @@ Begin VB.Form FormKaleidoscope
          Width           =   2205
       End
    End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   3495
+      Index           =   1
+      Left            =   5880
+      ScaleHeight     =   233
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   409
+      TabIndex        =   5
+      Top             =   360
+      Visible         =   0   'False
+      Width           =   6135
+      Begin PhotoDemon.sliderTextCombo sltAngle2 
+         Height          =   720
+         Left            =   120
+         TabIndex        =   12
+         Top             =   240
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "secondary angle"
+         Max             =   360
+         SigDigits       =   1
+      End
+      Begin PhotoDemon.sliderTextCombo sltRadius 
+         Height          =   720
+         Left            =   120
+         TabIndex        =   13
+         Top             =   1200
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "radius (percentage)"
+         Min             =   1
+         Max             =   100
+         Value           =   100
+         NotchPosition   =   2
+         NotchValueCustom=   100
+      End
+      Begin PhotoDemon.buttonStrip btsQuality 
+         Height          =   600
+         Left            =   240
+         TabIndex        =   15
+         Top             =   2640
+         Width           =   5595
+         _ExtentX        =   9869
+         _ExtentY        =   1058
+      End
+      Begin VB.Label lblTitle 
+         Appearance      =   0  'Flat
+         AutoSize        =   -1  'True
+         BackColor       =   &H80000005&
+         BackStyle       =   0  'Transparent
+         Caption         =   "render emphasis"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   2
+         Left            =   120
+         TabIndex        =   14
+         Top             =   2265
+         Width           =   1755
+      End
+   End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "options:"
+      Caption         =   "options"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -364,7 +263,7 @@ Begin VB.Form FormKaleidoscope
       Left            =   6000
       TabIndex        =   2
       Top             =   4200
-      Width           =   870
+      Width           =   780
    End
 End
 Attribute VB_Name = "FormKaleidoscope"
@@ -397,7 +296,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Apply a "kaleidoscope" effect to an image
 Public Sub KaleidoscopeImage(ByVal numMirrors As Long, ByVal primaryAngle As Double, ByVal secondaryAngle As Double, ByVal effectRadius As Double, ByVal useBilinear As Boolean, Optional ByVal centerX As Double = 0.5, Optional ByVal centerY As Double = 0.5, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -558,8 +457,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
         
     'Create the preview
     updatePreview

@@ -44,39 +44,16 @@ Begin VB.Form FormSelectionDialogs
       Width           =   1365
    End
    Begin PhotoDemon.sliderTextCombo sltSelValue 
-      Height          =   495
+      Height          =   405
       Left            =   360
       TabIndex        =   3
-      Top             =   720
+      Top             =   480
       Width           =   5895
       _ExtentX        =   10186
       _ExtentY        =   873
       Min             =   1
       Max             =   500
       Value           =   1
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "slider caption:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   360
-      TabIndex        =   4
-      Top             =   360
-      Width           =   1500
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -119,14 +96,14 @@ Private userAnswer As VbMsgBoxResult
 Private userValue As Double
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
 End Property
 
-Public Property Get ParamValue() As Double
-    ParamValue = userValue
+Public Property Get paramValue() As Double
+    paramValue = userValue
 End Property
 
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
@@ -139,35 +116,35 @@ Public Sub showDialog(ByVal typeOfDialog As SelectionDialogType)
     
         Case SEL_GROW
             titleText = g_Language.TranslateMessage("Grow selection")
-            sliderText = g_Language.TranslateMessage("grow by this many pixels:")
+            sliderText = g_Language.TranslateMessage("grow radius")
         
         Case SEL_SHRINK
             titleText = g_Language.TranslateMessage("Shrink selection")
-            sliderText = g_Language.TranslateMessage("shrink by this many pixels:")
+            sliderText = g_Language.TranslateMessage("shrink radius")
         
         Case SEL_BORDER
             titleText = g_Language.TranslateMessage("Border selection")
-            sliderText = g_Language.TranslateMessage("border radius:")
+            sliderText = g_Language.TranslateMessage("border radius")
         
         Case SEL_FEATHER
             titleText = g_Language.TranslateMessage("Feather selection")
-            sliderText = g_Language.TranslateMessage("feather radius:")
+            sliderText = g_Language.TranslateMessage("feather radius")
         
         Case SEL_SHARPEN
             titleText = g_Language.TranslateMessage("Sharpen selection")
-            sliderText = g_Language.TranslateMessage("sharpen radius:")
+            sliderText = g_Language.TranslateMessage("sharpen radius")
     
     End Select
     
     Me.Caption = " " & titleText
-    lblTitle(0).Caption = sliderText
+    sltSelValue.Caption = sliderText
     
     'Provide a default answer of "first image only" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbNo
 
     'Apply any custom styles to the form
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
 
     'Display the form
     showPDDialog vbModal, Me

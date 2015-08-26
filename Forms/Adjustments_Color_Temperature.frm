@@ -41,24 +41,26 @@ Begin VB.Form FormColorTemp
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltStrength 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   6
-      Top             =   3240
+      TabIndex        =   4
+      Top             =   3000
       Width           =   6135
       _ExtentX        =   10821
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "strength"
       Min             =   1
       Max             =   100
       Value           =   50
@@ -66,13 +68,14 @@ Begin VB.Form FormColorTemp
       NotchValueCustom=   50
    End
    Begin PhotoDemon.sliderTextCombo sltTemperature 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   7
-      Top             =   1830
+      TabIndex        =   5
+      Top             =   1560
       Width           =   6135
       _ExtentX        =   10821
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "new temperature (K)"
       Min             =   1000
       Max             =   15000
       SliderTrackStyle=   3
@@ -94,7 +97,7 @@ Begin VB.Form FormColorTemp
       ForeColor       =   &H00404040&
       Height          =   195
       Left            =   10320
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   2400
       Width           =   735
    End
@@ -114,49 +117,9 @@ Begin VB.Form FormColorTemp
       ForeColor       =   &H00404040&
       Height          =   195
       Left            =   6240
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   2400
       Width           =   840
-   End
-   Begin VB.Label lblStrength 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "strength:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   2880
-      Width           =   960
-   End
-   Begin VB.Label lblTemperature 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "new temperature (K):"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   1440
-      Width           =   2280
    End
 End
 Attribute VB_Name = "FormColorTemp"
@@ -199,7 +162,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Cast an image with a new temperature value
 ' Input: desired temperature, whether to preserve luminance or not, and a blend ratio between 1 and 100
@@ -309,8 +272,8 @@ End Sub
 Private Sub Form_Activate()
             
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
         
 End Sub
 
