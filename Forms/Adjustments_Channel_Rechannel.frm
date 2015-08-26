@@ -42,6 +42,7 @@ Begin VB.Form FormRechannel
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.smartOptionButton optChannel 
       Height          =   375
@@ -51,18 +52,9 @@ Begin VB.Form FormRechannel
       Top             =   480
       Width           =   2415
       _ExtentX        =   4260
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "red"
       Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -81,17 +73,8 @@ Begin VB.Form FormRechannel
       Top             =   840
       Width           =   2415
       _ExtentX        =   4260
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "green"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton optChannel 
       Height          =   375
@@ -101,17 +84,8 @@ Begin VB.Form FormRechannel
       Top             =   1200
       Width           =   2415
       _ExtentX        =   4260
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "blue"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton optChannel 
       Height          =   375
@@ -121,17 +95,8 @@ Begin VB.Form FormRechannel
       Top             =   2160
       Width           =   2415
       _ExtentX        =   4260
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "cyan"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton optChannel 
       Height          =   375
@@ -141,17 +106,8 @@ Begin VB.Form FormRechannel
       Top             =   2520
       Width           =   2415
       _ExtentX        =   4260
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "magenta"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton optChannel 
       Height          =   375
@@ -161,17 +117,8 @@ Begin VB.Form FormRechannel
       Top             =   2880
       Width           =   2415
       _ExtentX        =   4260
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "yellow"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton optChannel 
       Height          =   375
@@ -181,17 +128,8 @@ Begin VB.Form FormRechannel
       Top             =   3840
       Width           =   2415
       _ExtentX        =   4260
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "cyan"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton optChannel 
       Height          =   375
@@ -201,17 +139,8 @@ Begin VB.Form FormRechannel
       Top             =   4200
       Width           =   2415
       _ExtentX        =   4260
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "magenta"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton optChannel 
       Height          =   375
@@ -221,17 +150,8 @@ Begin VB.Form FormRechannel
       Top             =   4560
       Width           =   2415
       _ExtentX        =   4260
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "yellow"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton optChannel 
       Height          =   375
@@ -241,24 +161,15 @@ Begin VB.Form FormRechannel
       Top             =   4920
       Width           =   2415
       _ExtentX        =   4260
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "key (black)"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblCMYK 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "CMYK channels:"
+      Caption         =   "CMYK channels"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -273,14 +184,14 @@ Begin VB.Form FormRechannel
       Left            =   6720
       TabIndex        =   3
       Top             =   3480
-      Width           =   1695
+      Width           =   1605
    End
    Begin VB.Label lblCMY 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "CMY channels:"
+      Caption         =   "CMY channels"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -295,14 +206,14 @@ Begin VB.Form FormRechannel
       Left            =   6720
       TabIndex        =   2
       Top             =   1800
-      Width           =   1560
+      Width           =   1470
    End
    Begin VB.Label lblRGB 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "RGB channels:"
+      Caption         =   "RGB channels"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -317,7 +228,7 @@ Begin VB.Form FormRechannel
       Left            =   6720
       TabIndex        =   1
       Top             =   120
-      Width           =   1530
+      Width           =   1440
    End
 End
 Attribute VB_Name = "FormRechannel"
@@ -343,7 +254,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub cmdBar_OKClick()
     
@@ -361,8 +272,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Render a preview
     updatePreview

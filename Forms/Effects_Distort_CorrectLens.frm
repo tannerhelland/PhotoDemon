@@ -42,6 +42,7 @@ Begin VB.Form FormLensCorrect
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin VB.ComboBox cmbEdges 
       BackColor       =   &H00FFFFFF&
@@ -58,14 +59,14 @@ Begin VB.Form FormLensCorrect
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   6
+      TabIndex        =   2
       Top             =   4725
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -73,25 +74,27 @@ Begin VB.Form FormLensCorrect
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltStrength 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   8
-      Top             =   690
+      TabIndex        =   4
+      Top             =   360
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "correction strength"
       Max             =   20
       SigDigits       =   2
       Value           =   3
    End
    Begin PhotoDemon.sliderTextCombo sltZoom 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   9
-      Top             =   1650
+      TabIndex        =   5
+      Top             =   1320
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "correction zoom"
       Min             =   1
       Max             =   3
       SigDigits       =   2
@@ -100,13 +103,14 @@ Begin VB.Form FormLensCorrect
       NotchValueCustom=   1
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   10
-      Top             =   2610
+      TabIndex        =   6
+      Top             =   2280
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "radius (percentage)"
       Min             =   1
       Max             =   100
       Value           =   100
@@ -114,13 +118,14 @@ Begin VB.Form FormLensCorrect
       NotchValueCustom=   100
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   11
-      Top             =   3600
+      TabIndex        =   7
+      Top             =   3240
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "quality"
       Min             =   1
       Max             =   5
       Value           =   2
@@ -144,95 +149,9 @@ Begin VB.Form FormLensCorrect
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   3
       Top             =   4320
       Width           =   4170
-   End
-   Begin VB.Label Label1 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "correction zoom:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   5
-      Top             =   1320
-      Width           =   1800
-   End
-   Begin VB.Label lblHeight 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "radius (percentage):"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   3
-      Top             =   2280
-      Width           =   2145
-   End
-   Begin VB.Label lblInterpolation 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "quality:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   3240
-      Width           =   795
-   End
-   Begin VB.Label lblStrength 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "correction strength:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   360
-      Width           =   2085
    End
 End
 Attribute VB_Name = "FormLensCorrect"
@@ -265,7 +184,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub cmbEdges_Click()
     updatePreview
@@ -520,8 +439,8 @@ End Sub
 Private Sub Form_Activate()
            
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True

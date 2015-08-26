@@ -48,7 +48,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   8
       Left            =   2040
-      TabIndex        =   12
+      TabIndex        =   11
       Top             =   4920
       Width           =   570
    End
@@ -56,7 +56,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   7
       Left            =   1440
-      TabIndex        =   11
+      TabIndex        =   10
       Top             =   4920
       Width           =   570
    End
@@ -64,7 +64,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   6
       Left            =   840
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   4920
       Width           =   570
    End
@@ -72,7 +72,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   5
       Left            =   2040
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   4320
       Width           =   570
    End
@@ -80,7 +80,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   4
       Left            =   1440
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   4320
       Width           =   570
    End
@@ -88,7 +88,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   3
       Left            =   840
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   4320
       Width           =   570
    End
@@ -96,7 +96,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   2
       Left            =   2040
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   3720
       Width           =   570
    End
@@ -104,7 +104,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   1
       Left            =   1440
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   3720
       Width           =   570
    End
@@ -112,14 +112,14 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   0
       Left            =   840
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   3720
       Width           =   570
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   495
       Left            =   840
-      TabIndex        =   13
+      TabIndex        =   12
       Top             =   6120
       Width           =   7935
       _ExtentX        =   10398
@@ -128,8 +128,8 @@ Begin VB.Form FormCanvasSize
    Begin PhotoDemon.smartResize ucResize 
       Height          =   2850
       Left            =   360
-      TabIndex        =   14
-      Top             =   480
+      TabIndex        =   13
+      Top             =   360
       Width           =   8775
       _ExtentX        =   15478
       _ExtentY        =   5027
@@ -148,7 +148,7 @@ Begin VB.Form FormCanvasSize
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "anchor position:"
+      Caption         =   "anchor position"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -163,14 +163,14 @@ Begin VB.Form FormCanvasSize
       Left            =   360
       TabIndex        =   1
       Top             =   3360
-      Width           =   1725
+      Width           =   1635
    End
    Begin VB.Label lblFill 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "fill empty areas with:"
+      Caption         =   "fill empty areas with"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -182,33 +182,10 @@ Begin VB.Form FormCanvasSize
       EndProperty
       ForeColor       =   &H00404040&
       Height          =   285
-      Left            =   360
-      TabIndex        =   3
-      Top             =   5760
-      Width           =   2235
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "new size:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
       Left            =   360
       TabIndex        =   2
-      Top             =   120
-      Width           =   990
+      Top             =   5760
+      Width           =   2145
    End
 End
 Attribute VB_Name = "FormCanvasSize"

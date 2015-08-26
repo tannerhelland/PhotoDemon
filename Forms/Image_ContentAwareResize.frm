@@ -30,37 +30,21 @@ Begin VB.Form FormResizeContentAware
       TabIndex        =   0
       Top             =   4215
       Width           =   9705
-      _ExtentX        =   17119
-      _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   14802140
-      AutoloadLastPreset=   -1  'True
+      _extentx        =   17119
+      _extenty        =   1323
+      font            =   "Image_ContentAwareResize.frx":0000
+      backcolor       =   14802140
+      autoloadlastpreset=   -1
    End
    Begin PhotoDemon.smartResize ucResize 
       Height          =   2850
       Left            =   480
       TabIndex        =   1
-      Top             =   480
+      Top             =   360
       Width           =   8775
-      _ExtentX        =   15478
-      _ExtentY        =   5027
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   15478
+      _extenty        =   5027
+      font            =   "Image_ContentAwareResize.frx":0028
    End
    Begin VB.Label lblFlatten 
       Alignment       =   2  'Center
@@ -80,33 +64,11 @@ Begin VB.Form FormResizeContentAware
       ForeColor       =   &H00404040&
       Height          =   645
       Left            =   240
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   3480
       Visible         =   0   'False
       Width           =   9330
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblSize 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "new size:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   480
-      TabIndex        =   2
-      Top             =   120
-      Width           =   990
    End
 End
 Attribute VB_Name = "FormResizeContentAware"
@@ -332,7 +294,7 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
         
     Else
     
-        pdImages(g_CurrentImage).undoManager.restoreUndoData
+        pdImages(g_CurrentImage).undoManager.RestoreUndoData
                 
         'Also, redraw the current child form icon and the image tab-bar
         createCustomFormIcon pdImages(g_CurrentImage)

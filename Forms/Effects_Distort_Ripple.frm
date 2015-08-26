@@ -70,6 +70,88 @@ Begin VB.Form FormRipple
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   4335
+      Index           =   1
+      Left            =   5880
+      ScaleHeight     =   289
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   409
+      TabIndex        =   5
+      Top             =   120
+      Visible         =   0   'False
+      Width           =   6135
+      Begin VB.ComboBox cmbEdges 
+         BackColor       =   &H00FFFFFF&
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   240
+         Style           =   2  'Dropdown List
+         TabIndex        =   13
+         Top             =   3840
+         Width           =   5700
+      End
+      Begin PhotoDemon.sliderTextCombo sltRadius 
+         Height          =   720
+         Left            =   120
+         TabIndex        =   14
+         Top             =   1440
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "radius (percentage)"
+         Min             =   1
+         Max             =   100
+         Value           =   100
+         NotchPosition   =   2
+         NotchValueCustom=   100
+      End
+      Begin PhotoDemon.sliderTextCombo sltPhase 
+         Height          =   720
+         Left            =   120
+         TabIndex        =   15
+         Top             =   2400
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "time (phase)"
+         Max             =   360
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "if pixels lie outside the image..."
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   5
+         Left            =   120
+         TabIndex        =   16
+         Top             =   3360
+         Width           =   3315
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4335
       Index           =   0
       Left            =   5880
       ScaleHeight     =   289
@@ -79,36 +161,39 @@ Begin VB.Form FormRipple
       Top             =   120
       Width           =   6135
       Begin PhotoDemon.sliderTextCombo sltAmplitude 
-         Height          =   495
+         Height          =   720
          Left            =   120
          TabIndex        =   6
-         Top             =   2850
+         Top             =   2520
          Width           =   5895
          _ExtentX        =   10398
-         _ExtentY        =   873
+         _ExtentY        =   1270
+         Caption         =   "height of ripples (amplitude)"
          Max             =   100
          Value           =   80
       End
       Begin PhotoDemon.sliderTextCombo sltWavelength 
-         Height          =   495
+         Height          =   720
          Left            =   120
          TabIndex        =   7
-         Top             =   1890
+         Top             =   1560
          Width           =   5895
          _ExtentX        =   10398
-         _ExtentY        =   873
+         _ExtentY        =   1270
+         Caption         =   "length of ripples (wavelength)"
          Min             =   1
          Max             =   200
          Value           =   16
       End
       Begin PhotoDemon.sliderTextCombo sltQuality 
-         Height          =   495
+         Height          =   720
          Left            =   120
-         TabIndex        =   10
-         Top             =   3810
+         TabIndex        =   8
+         Top             =   3480
          Width           =   5895
          _ExtentX        =   10398
-         _ExtentY        =   873
+         _ExtentY        =   1270
+         Caption         =   "quality"
          Min             =   1
          Max             =   5
          Value           =   2
@@ -116,9 +201,9 @@ Begin VB.Form FormRipple
          NotchValueCustom=   2
       End
       Begin PhotoDemon.sliderTextCombo sltXCenter 
-         Height          =   495
+         Height          =   405
          Left            =   120
-         TabIndex        =   12
+         TabIndex        =   9
          Top             =   480
          Width           =   2895
          _ExtentX        =   5106
@@ -130,9 +215,9 @@ Begin VB.Form FormRipple
          NotchValueCustom=   0.5
       End
       Begin PhotoDemon.sliderTextCombo sltYCenter 
-         Height          =   495
+         Height          =   405
          Left            =   3120
-         TabIndex        =   13
+         TabIndex        =   10
          Top             =   480
          Width           =   2895
          _ExtentX        =   5106
@@ -160,7 +245,7 @@ Begin VB.Form FormRipple
          Height          =   285
          Index           =   6
          Left            =   120
-         TabIndex        =   15
+         TabIndex        =   12
          Top             =   120
          Width           =   2205
       End
@@ -171,203 +256,16 @@ Begin VB.Form FormRipple
          Height          =   435
          Index           =   0
          Left            =   240
-         TabIndex        =   14
+         TabIndex        =   11
          Top             =   1050
          Width           =   5655
          WordWrap        =   -1  'True
-      End
-      Begin VB.Label lblTitle 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "quality:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   2
-         Left            =   120
-         TabIndex        =   11
-         Top             =   3450
-         Width           =   795
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "length of ripples (wavelength):"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   0
-         Left            =   120
-         TabIndex        =   9
-         Top             =   1560
-         Width           =   3270
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "height of ripples (amplitude):"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   3
-         Left            =   120
-         TabIndex        =   8
-         Top             =   2520
-         Width           =   3120
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4335
-      Index           =   1
-      Left            =   5880
-      ScaleHeight     =   289
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   409
-      TabIndex        =   5
-      Top             =   120
-      Visible         =   0   'False
-      Width           =   6135
-      Begin VB.ComboBox cmbEdges 
-         BackColor       =   &H00FFFFFF&
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   16
-         Top             =   3840
-         Width           =   5700
-      End
-      Begin PhotoDemon.sliderTextCombo sltRadius 
-         Height          =   495
-         Left            =   120
-         TabIndex        =   17
-         Top             =   1770
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   873
-         Min             =   1
-         Max             =   100
-         Value           =   100
-         NotchPosition   =   2
-         NotchValueCustom=   100
-      End
-      Begin PhotoDemon.sliderTextCombo sltPhase 
-         Height          =   495
-         Left            =   120
-         TabIndex        =   18
-         Top             =   2730
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   873
-         Max             =   360
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "radius (percentage):"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   1
-         Left            =   120
-         TabIndex        =   21
-         Top             =   1440
-         Width           =   2145
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "time (phase):"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   4
-         Left            =   120
-         TabIndex        =   20
-         Top             =   2400
-         Width           =   1425
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "if pixels lie outside the image..."
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   5
-         Left            =   120
-         TabIndex        =   19
-         Top             =   3360
-         Width           =   3315
       End
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "options:"
+      Caption         =   "options"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -383,7 +281,7 @@ Begin VB.Form FormRipple
       Left            =   6000
       TabIndex        =   3
       Top             =   4800
-      Width           =   870
+      Width           =   780
    End
 End
 Attribute VB_Name = "FormRipple"
@@ -419,7 +317,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub btsOptions_Click(ByVal buttonIndex As Long)
     picContainer(buttonIndex).Visible = True
@@ -689,8 +587,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
         
     'Create the preview
     cmdBar.markPreviewStatus True

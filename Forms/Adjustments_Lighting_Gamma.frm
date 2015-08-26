@@ -41,25 +41,17 @@ Begin VB.Form FormGamma
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.smartCheckBox chkUnison 
       Height          =   330
       Left            =   6120
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   5280
       Width           =   5700
       _ExtentX        =   10054
       _ExtentY        =   582
       Caption         =   "keep all colors in sync"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.PictureBox picChart 
       Appearance      =   0  'Flat
@@ -71,111 +63,69 @@ Begin VB.Form FormGamma
       ScaleHeight     =   159
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   231
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   120
       Width           =   3495
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltGamma 
-      Height          =   495
-      Index           =   0
-      Left            =   6000
-      TabIndex        =   8
-      Top             =   3000
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      ForeColor       =   0
-      Min             =   0.01
-      Max             =   3
-      SigDigits       =   2
-      Value           =   1
-      NotchPosition   =   2
-      NotchValueCustom=   1
-   End
-   Begin PhotoDemon.sliderTextCombo sltGamma 
-      Height          =   495
-      Index           =   1
-      Left            =   6000
-      TabIndex        =   9
-      Top             =   3840
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      ForeColor       =   0
-      Min             =   0.01
-      Max             =   3
-      SigDigits       =   2
-      Value           =   1
-      NotchPosition   =   2
-      NotchValueCustom=   1
-   End
-   Begin PhotoDemon.sliderTextCombo sltGamma 
-      Height          =   495
-      Index           =   2
-      Left            =   6000
-      TabIndex        =   10
-      Top             =   4680
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   873
-      ForeColor       =   0
-      Min             =   0.01
-      Max             =   3
-      SigDigits       =   2
-      Value           =   1
-      NotchPosition   =   2
-      NotchValueCustom=   1
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "blue:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   3
-      Left            =   6000
-      TabIndex        =   6
-      Top             =   4320
-      Width           =   540
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "green:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
+      Height          =   720
       Index           =   0
       Left            =   6000
       TabIndex        =   5
-      Top             =   3480
-      Width           =   690
+      Top             =   2640
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "red"
+      Min             =   0.01
+      Max             =   3
+      SigDigits       =   2
+      Value           =   1
+      NotchPosition   =   2
+      NotchValueCustom=   1
+   End
+   Begin PhotoDemon.sliderTextCombo sltGamma 
+      Height          =   720
+      Index           =   1
+      Left            =   6000
+      TabIndex        =   6
+      Top             =   3540
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "green"
+      Min             =   0.01
+      Max             =   3
+      SigDigits       =   2
+      Value           =   1
+      NotchPosition   =   2
+      NotchValueCustom=   1
+   End
+   Begin PhotoDemon.sliderTextCombo sltGamma 
+      Height          =   720
+      Index           =   2
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   4440
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "blue"
+      Min             =   0.01
+      Max             =   3
+      SigDigits       =   2
+      Value           =   1
+      NotchPosition   =   2
+      NotchValueCustom=   1
    End
    Begin VB.Label lblTitle 
       BackStyle       =   0  'Transparent
@@ -193,31 +143,10 @@ Begin VB.Form FormGamma
       Height          =   1005
       Index           =   2
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   1170
       Width           =   2040
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "red:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   2640
-      Width           =   435
    End
 End
 Attribute VB_Name = "FormGamma"
@@ -246,7 +175,7 @@ Option Explicit
 Dim userChange As Boolean
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub chkUnison_Click()
     
@@ -290,8 +219,8 @@ Private Sub Form_Activate()
     userChange = True
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Finally, render a preview
     updatePreview

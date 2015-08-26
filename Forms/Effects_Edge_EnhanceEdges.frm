@@ -74,7 +74,7 @@ Begin VB.Form FormEdgeEnhance
       Height          =   360
       Index           =   0
       Left            =   6240
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   3360
       Width           =   5625
       _ExtentX        =   9922
@@ -85,7 +85,7 @@ Begin VB.Form FormEdgeEnhance
       Height          =   360
       Index           =   1
       Left            =   6240
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   3840
       Width           =   5625
       _ExtentX        =   9922
@@ -93,13 +93,14 @@ Begin VB.Form FormEdgeEnhance
       Caption         =   "vertical"
    End
    Begin PhotoDemon.sliderTextCombo sltStrength 
-      Height          =   495
-      Left            =   6240
-      TabIndex        =   8
-      Top             =   5040
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   873
+      Height          =   720
+      Left            =   6000
+      TabIndex        =   7
+      Top             =   4560
+      Width           =   6015
+      _ExtentX        =   10610
+      _ExtentY        =   1270
+      Caption         =   "strength"
       Max             =   100
       NotchPosition   =   2
       NotchValueCustom=   50
@@ -107,28 +108,7 @@ Begin VB.Form FormEdgeEnhance
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "strength:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
-      Left            =   6000
-      TabIndex        =   5
-      Top             =   4560
-      Width           =   960
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "detection direction(s):"
+      Caption         =   "detection direction(s)"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -144,12 +124,12 @@ Begin VB.Form FormEdgeEnhance
       Left            =   6000
       TabIndex        =   4
       Top             =   3000
-      Width           =   2325
+      Width           =   2235
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "edge detection technique:"
+      Caption         =   "edge detection technique"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -165,7 +145,7 @@ Begin VB.Form FormEdgeEnhance
       Left            =   6000
       TabIndex        =   2
       Top             =   120
-      Width           =   2730
+      Width           =   2640
    End
 End
 Attribute VB_Name = "FormEdgeEnhance"

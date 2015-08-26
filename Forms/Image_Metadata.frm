@@ -137,7 +137,7 @@ Begin VB.Form FormMetadata
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "advanced:"
+      Caption         =   "advanced"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -153,7 +153,7 @@ Begin VB.Form FormMetadata
       Left            =   7440
       TabIndex        =   14
       Top             =   3960
-      Width           =   1020
+      Width           =   945
    End
    Begin VB.Label lblExifTool 
       Appearance      =   0  'Flat
@@ -177,7 +177,7 @@ Begin VB.Form FormMetadata
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "metadata options:"
+      Caption         =   "metadata options"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -193,12 +193,12 @@ Begin VB.Form FormMetadata
       Left            =   7320
       TabIndex        =   11
       Top             =   1320
-      Width           =   1920
+      Width           =   1830
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "tag values:"
+      Caption         =   "tag values"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -214,12 +214,12 @@ Begin VB.Form FormMetadata
       Left            =   7440
       TabIndex        =   8
       Top             =   2820
-      Width           =   1080
+      Width           =   1005
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "tag names:"
+      Caption         =   "tag names"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   11.25
@@ -235,12 +235,12 @@ Begin VB.Form FormMetadata
       Left            =   7440
       TabIndex        =   7
       Top             =   1740
-      Width           =   1125
+      Width           =   1050
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "tags in this category:"
+      Caption         =   "tags in this category"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -256,12 +256,12 @@ Begin VB.Form FormMetadata
       Left            =   120
       TabIndex        =   6
       Top             =   1320
-      Width           =   2220
+      Width           =   2130
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "metadata groups in this image:"
+      Caption         =   "metadata groups in this image"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -277,7 +277,7 @@ Begin VB.Form FormMetadata
       Left            =   120
       TabIndex        =   5
       Top             =   120
-      Width           =   3315
+      Width           =   3225
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -349,7 +349,7 @@ Private m_TitleFont As pdFont, m_DescriptionFont As pdFont
 Private m_SeparatorColor As OLE_COLOR
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'API scrollbar allows for larger scroll values
 Private WithEvents vsMetadata As pdScrollAPI
@@ -439,8 +439,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
 End Sub
 
@@ -480,7 +480,7 @@ Private Sub Form_Load()
     m_DescriptionFont.setTextAlignment vbLeftJustify
     
     'Make the invisible buffer's font match the rest of PD
-    picBuffer.FontName = g_InterfaceFont
+    picBuffer.fontName = g_InterfaceFont
         
     'Initialize the category array
     ReDim mdCategories(0) As mdCategory

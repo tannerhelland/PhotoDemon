@@ -23,6 +23,27 @@ Begin VB.Form FormNoise
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   808
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   285
+      Index           =   0
+      Left            =   6000
+      Top             =   3000
+      Width           =   5880
+      _ExtentX        =   10372
+      _ExtentY        =   503
+      Caption         =   "appearance"
+      FontSize        =   12
+   End
+   Begin PhotoDemon.buttonStrip btsColor 
+      Height          =   615
+      Left            =   6120
+      TabIndex        =   3
+      Top             =   3480
+      Width           =   5730
+      _ExtentX        =   10107
+      _ExtentY        =   1085
+      FontSize        =   11
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -43,56 +64,27 @@ Begin VB.Form FormNoise
       EndProperty
       BackColor       =   14802140
    End
-   Begin PhotoDemon.smartCheckBox chkM 
-      Height          =   330
-      Left            =   6120
-      TabIndex        =   3
-      Top             =   3360
-      Width           =   5730
-      _ExtentX        =   10107
-      _ExtentY        =   582
-      Caption         =   "monochromatic noise only"
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltNoise 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   4
-      Top             =   2760
+      TabIndex        =   2
+      Top             =   1920
       Width           =   5895
-      _ExtentX        =   10186
-      _ExtentY        =   873
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "strength"
       Min             =   1
       Max             =   500
       Value           =   5
-   End
-   Begin VB.Label Label1 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "noise amount:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   2400
-      Width           =   1530
    End
 End
 Attribute VB_Name = "FormNoise"
@@ -221,9 +213,13 @@ Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toP
     
 End Sub
 
+Private Sub btsColor_Click(ByVal buttonIndex As Long)
+    updatePreview
+End Sub
+
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Add RGB noise", , buildParams(sltNoise.Value, CBool(chkM.Value)), UNDO_LAYER
+    Process "Add RGB noise", , buildParams(sltNoise.Value, CBool(btsColor.ListIndex = 1)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -240,6 +236,14 @@ Private Sub Form_Activate()
     
 End Sub
 
+Private Sub Form_Load()
+    
+    'Populate coloring options
+    btsColor.AddItem "color", 0
+    btsColor.AddItem "monochrome", 1
+    
+End Sub
+
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
@@ -249,7 +253,7 @@ Private Sub sltNoise_Change()
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then AddNoise sltNoise.Value, CBool(chkM.Value), True, fxPreview
+    If cmdBar.previewsAllowed Then AddNoise sltNoise.Value, CBool(btsColor.ListIndex = 1), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

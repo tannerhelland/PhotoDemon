@@ -88,334 +88,6 @@ Begin VB.Form FormLanguageEditor
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   7455
-      Index           =   3
-      Left            =   3480
-      ScaleHeight     =   497
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   785
-      TabIndex        =   17
-      TabStop         =   0   'False
-      Top             =   720
-      Width           =   11775
-      Begin PhotoDemon.pdTextBox txtTranslation 
-         Height          =   2325
-         Left            =   5040
-         TabIndex        =   39
-         Top             =   3120
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   3519
-         Multiline       =   -1  'True
-      End
-      Begin PhotoDemon.pdTextBox txtOriginal 
-         Height          =   2355
-         Left            =   5040
-         TabIndex        =   38
-         Top             =   360
-         Width           =   6615
-         _ExtentX        =   11668
-         _ExtentY        =   3519
-         Multiline       =   -1  'True
-      End
-      Begin VB.CommandButton cmdAutoTranslate 
-         Caption         =   "Initiate auto-translation of all missing phrases"
-         Height          =   615
-         Left            =   240
-         TabIndex        =   37
-         Top             =   6600
-         Width           =   4455
-      End
-      Begin VB.CommandButton cmdNextPhrase 
-         Caption         =   "Save this translation and proceed to the next phrase"
-         Height          =   615
-         Left            =   5040
-         TabIndex        =   11
-         Top             =   6600
-         Width           =   6615
-      End
-      Begin PhotoDemon.smartCheckBox chkGoogleTranslate 
-         Height          =   330
-         Left            =   5040
-         TabIndex        =   9
-         Top             =   5520
-         Width           =   6600
-         _ExtentX        =   11642
-         _ExtentY        =   582
-         Caption         =   "automatically estimate missing translations (via Google Translate)"
-      End
-      Begin VB.ComboBox cmbPhraseFilter 
-         BackColor       =   &H00FFFFFF&
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   8
-         Top             =   5985
-         Width           =   4500
-      End
-      Begin VB.ListBox lstPhrases 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   5100
-         Left            =   240
-         TabIndex        =   7
-         Top             =   360
-         Width           =   4500
-      End
-      Begin PhotoDemon.smartCheckBox chkShortcut 
-         Height          =   330
-         Left            =   5040
-         TabIndex        =   10
-         Top             =   6000
-         Width           =   6600
-         _ExtentX        =   11642
-         _ExtentY        =   582
-         Caption         =   "ENTER key automatically saves and proceeds to next phrase"
-      End
-      Begin VB.Label lblTranslatedPhrase 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "translated phrase:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Left            =   4920
-         TabIndex        =   31
-         Top             =   2760
-         Width           =   1905
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "original phrase:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   9
-         Left            =   4920
-         TabIndex        =   30
-         Top             =   0
-         Width           =   1665
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "phrases to display:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   2
-         Left            =   0
-         TabIndex        =   19
-         Top             =   5625
-         Width           =   1995
-      End
-      Begin VB.Label lblPhraseBox 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "list of phrases (%1 items):"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Left            =   0
-         TabIndex        =   18
-         Top             =   0
-         Width           =   2835
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   7455
-      Index           =   0
-      Left            =   3480
-      ScaleHeight     =   497
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   785
-      TabIndex        =   15
-      TabStop         =   0   'False
-      Top             =   720
-      Width           =   11775
-      Begin VB.CommandButton cmdDeleteLanguage 
-         Caption         =   "Delete selected language file"
-         Enabled         =   0   'False
-         Height          =   615
-         Left            =   8385
-         TabIndex        =   6
-         Top             =   6360
-         Width           =   3135
-      End
-      Begin VB.ListBox lstLanguages 
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   4620
-         Left            =   840
-         Sorted          =   -1  'True
-         TabIndex        =   5
-         Top             =   1560
-         Width           =   10695
-      End
-      Begin PhotoDemon.smartOptionButton optBaseLanguage 
-         Height          =   375
-         Index           =   0
-         Left            =   120
-         TabIndex        =   3
-         Top             =   120
-         Width           =   11325
-         _ExtentX        =   19976
-         _ExtentY        =   582
-         Caption         =   "start a new language file from scratch"
-         Value           =   -1  'True
-      End
-      Begin PhotoDemon.smartOptionButton optBaseLanguage 
-         Height          =   375
-         Index           =   1
-         Left            =   120
-         TabIndex        =   4
-         Top             =   600
-         Width           =   11325
-         _ExtentX        =   19976
-         _ExtentY        =   582
-         Caption         =   "edit an existing language file:"
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "language files currently available:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   0
-         Left            =   840
-         TabIndex        =   16
-         Top             =   1080
-         Width           =   3540
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   7455
-      Index           =   1
-      Left            =   3480
-      ScaleHeight     =   497
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   785
-      TabIndex        =   27
-      TabStop         =   0   'False
-      Top             =   720
-      Width           =   11775
-      Begin VB.PictureBox picProgBar 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   495
-         Left            =   0
-         ScaleHeight     =   33
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   785
-         TabIndex        =   29
-         TabStop         =   0   'False
-         Top             =   3000
-         Width           =   11775
-      End
-      Begin VB.Label lblPleaseWait 
-         Alignment       =   2  'Center
-         BackStyle       =   0  'Transparent
-         Caption         =   "please wait..."
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   405
-         Left            =   0
-         TabIndex        =   28
-         Top             =   2400
-         Width           =   11760
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   7455
       Index           =   2
       Left            =   3480
       ScaleHeight     =   497
@@ -723,6 +395,334 @@ Begin VB.Form FormLanguageEditor
          TabIndex        =   21
          Top             =   0
          Width           =   1290
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   7455
+      Index           =   3
+      Left            =   3480
+      ScaleHeight     =   497
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   785
+      TabIndex        =   17
+      TabStop         =   0   'False
+      Top             =   720
+      Width           =   11775
+      Begin PhotoDemon.pdTextBox txtTranslation 
+         Height          =   2325
+         Left            =   5040
+         TabIndex        =   39
+         Top             =   3120
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   3519
+         Multiline       =   -1  'True
+      End
+      Begin PhotoDemon.pdTextBox txtOriginal 
+         Height          =   2355
+         Left            =   5040
+         TabIndex        =   38
+         Top             =   360
+         Width           =   6615
+         _ExtentX        =   11668
+         _ExtentY        =   3519
+         Multiline       =   -1  'True
+      End
+      Begin VB.CommandButton cmdAutoTranslate 
+         Caption         =   "Initiate auto-translation of all missing phrases"
+         Height          =   615
+         Left            =   240
+         TabIndex        =   37
+         Top             =   6600
+         Width           =   4455
+      End
+      Begin VB.CommandButton cmdNextPhrase 
+         Caption         =   "Save this translation and proceed to the next phrase"
+         Height          =   615
+         Left            =   5040
+         TabIndex        =   11
+         Top             =   6600
+         Width           =   6615
+      End
+      Begin PhotoDemon.smartCheckBox chkGoogleTranslate 
+         Height          =   330
+         Left            =   5040
+         TabIndex        =   9
+         Top             =   5520
+         Width           =   6600
+         _ExtentX        =   11642
+         _ExtentY        =   582
+         Caption         =   "automatically estimate missing translations (via Google Translate)"
+      End
+      Begin VB.ComboBox cmbPhraseFilter 
+         BackColor       =   &H00FFFFFF&
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00800000&
+         Height          =   360
+         Left            =   240
+         Style           =   2  'Dropdown List
+         TabIndex        =   8
+         Top             =   5985
+         Width           =   4500
+      End
+      Begin VB.ListBox lstPhrases 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   5100
+         Left            =   240
+         TabIndex        =   7
+         Top             =   360
+         Width           =   4500
+      End
+      Begin PhotoDemon.smartCheckBox chkShortcut 
+         Height          =   330
+         Left            =   5040
+         TabIndex        =   10
+         Top             =   6000
+         Width           =   6600
+         _ExtentX        =   11642
+         _ExtentY        =   582
+         Caption         =   "ENTER key automatically saves and proceeds to next phrase"
+      End
+      Begin VB.Label lblTranslatedPhrase 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "translated phrase"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Left            =   4920
+         TabIndex        =   31
+         Top             =   2760
+         Width           =   1815
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "original phrase"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   9
+         Left            =   4920
+         TabIndex        =   30
+         Top             =   0
+         Width           =   1575
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "phrases to display"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   2
+         Left            =   0
+         TabIndex        =   19
+         Top             =   5625
+         Width           =   1905
+      End
+      Begin VB.Label lblPhraseBox 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "list of phrases (%1 items)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Left            =   0
+         TabIndex        =   18
+         Top             =   0
+         Width           =   2745
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   7455
+      Index           =   0
+      Left            =   3480
+      ScaleHeight     =   497
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   785
+      TabIndex        =   15
+      TabStop         =   0   'False
+      Top             =   720
+      Width           =   11775
+      Begin VB.CommandButton cmdDeleteLanguage 
+         Caption         =   "Delete selected language file"
+         Enabled         =   0   'False
+         Height          =   615
+         Left            =   8385
+         TabIndex        =   6
+         Top             =   6360
+         Width           =   3135
+      End
+      Begin VB.ListBox lstLanguages 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   4620
+         Left            =   840
+         Sorted          =   -1  'True
+         TabIndex        =   5
+         Top             =   1560
+         Width           =   10695
+      End
+      Begin PhotoDemon.smartOptionButton optBaseLanguage 
+         Height          =   375
+         Index           =   0
+         Left            =   120
+         TabIndex        =   3
+         Top             =   120
+         Width           =   11325
+         _ExtentX        =   19976
+         _ExtentY        =   582
+         Caption         =   "start a new language file from scratch"
+         Value           =   -1  'True
+      End
+      Begin PhotoDemon.smartOptionButton optBaseLanguage 
+         Height          =   375
+         Index           =   1
+         Left            =   120
+         TabIndex        =   4
+         Top             =   600
+         Width           =   11325
+         _ExtentX        =   19976
+         _ExtentY        =   582
+         Caption         =   "edit an existing language file:"
+      End
+      Begin VB.Label lblTitle 
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "language files currently available"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   285
+         Index           =   0
+         Left            =   840
+         TabIndex        =   16
+         Top             =   1140
+         Width           =   3450
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   7455
+      Index           =   1
+      Left            =   3480
+      ScaleHeight     =   497
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   785
+      TabIndex        =   27
+      TabStop         =   0   'False
+      Top             =   720
+      Width           =   11775
+      Begin VB.PictureBox picProgBar 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   495
+         Left            =   0
+         ScaleHeight     =   33
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   785
+         TabIndex        =   29
+         TabStop         =   0   'False
+         Top             =   3000
+         Width           =   11775
+      End
+      Begin VB.Label lblPleaseWait 
+         Alignment       =   2  'Center
+         BackStyle       =   0  'Transparent
+         Caption         =   "please wait..."
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   12
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00404040&
+         Height          =   405
+         Left            =   0
+         TabIndex        =   28
+         Top             =   2400
+         Width           =   11760
       End
    End
    Begin VB.Label lblBackground 

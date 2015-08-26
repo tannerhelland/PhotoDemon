@@ -93,7 +93,7 @@ Begin VB.Form FormUndoHistory
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "available image states:"
+      Caption         =   "available image states"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -109,7 +109,7 @@ Begin VB.Form FormUndoHistory
       Left            =   240
       TabIndex        =   0
       Top             =   150
-      Width           =   2400
+      Width           =   2310
    End
 End
 Attribute VB_Name = "FormUndoHistory"

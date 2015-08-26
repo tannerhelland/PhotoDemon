@@ -41,6 +41,7 @@ Begin VB.Form FormRelief
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -52,103 +53,43 @@ Begin VB.Form FormRelief
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltDistance 
-      Height          =   495
-      Left            =   6120
-      TabIndex        =   3
-      Top             =   2520
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   873
+      Height          =   720
+      Left            =   6000
+      TabIndex        =   2
+      Top             =   2400
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "thickness"
       Min             =   -10
       SigDigits       =   2
       Value           =   1
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   495
-      Left            =   6120
-      TabIndex        =   5
-      Top             =   1440
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   873
+      Height          =   720
+      Left            =   6000
+      TabIndex        =   3
+      Top             =   1320
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "angle"
       Min             =   -180
       Max             =   180
       SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltDepth 
-      Height          =   495
-      Left            =   6120
-      TabIndex        =   7
-      Top             =   3600
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   873
+      Height          =   720
+      Left            =   6000
+      TabIndex        =   4
+      Top             =   3480
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "depth"
       Min             =   0.1
       SigDigits       =   2
       Value           =   1
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "depth:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   3
-      Left            =   6000
-      TabIndex        =   6
-      Top             =   3240
-      Width           =   690
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "angle:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
-      Left            =   6000
-      TabIndex        =   4
-      Top             =   1080
-      Width           =   660
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "thickness:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   2160
-      Width           =   1050
    End
 End
 Attribute VB_Name = "FormRelief"
@@ -177,7 +118,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'OK button
 Private Sub cmdBar_OKClick()
@@ -196,8 +137,8 @@ End Sub
 Private Sub Form_Activate()
             
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Render a preview of the effect
     updatePreview

@@ -41,6 +41,7 @@ Begin VB.Form FormCustomFilter
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.textUpDown tudF 
       Height          =   345
@@ -64,15 +65,6 @@ Begin VB.Form FormCustomFilter
       _ExtentX        =   11351
       _ExtentY        =   582
       Caption         =   "automatically normalize divisor and offset"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -424,7 +416,7 @@ Begin VB.Form FormCustomFilter
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "offset:"
+      Caption         =   "offset"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -439,13 +431,13 @@ Begin VB.Form FormCustomFilter
       Left            =   9480
       TabIndex        =   31
       Top             =   4095
-      Width           =   675
+      Width           =   585
    End
    Begin VB.Label lblDivisor 
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "divisor:"
+      Caption         =   "divisor"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -460,13 +452,13 @@ Begin VB.Form FormCustomFilter
       Left            =   7320
       TabIndex        =   30
       Top             =   4095
-      Width           =   795
+      Width           =   705
    End
    Begin VB.Label lblConvolution 
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "convolution matrix:"
+      Caption         =   "convolution matrix"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -481,7 +473,7 @@ Begin VB.Form FormCustomFilter
       Left            =   6000
       TabIndex        =   29
       Top             =   600
-      Width           =   2070
+      Width           =   1980
    End
 End
 Attribute VB_Name = "FormCustomFilter"
@@ -509,7 +501,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Normalizing automatically computes divisor and offset for the user
 Private Sub chkNormalize_Click()
@@ -532,8 +524,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Allow previews now
     cmdBar.markPreviewStatus True

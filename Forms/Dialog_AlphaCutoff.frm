@@ -27,7 +27,7 @@ Begin VB.Form dialog_AlphaCutoff
    Begin PhotoDemon.colorSelector csComposite 
       Height          =   495
       Left            =   5040
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   3900
       Width           =   6255
       _ExtentX        =   11033
@@ -37,7 +37,7 @@ Begin VB.Form dialog_AlphaCutoff
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   5910
       Width           =   11655
       _ExtentX        =   20558
@@ -51,16 +51,18 @@ Begin VB.Form dialog_AlphaCutoff
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
       dontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltThreshold 
-      Height          =   495
+      Height          =   720
       Left            =   4920
       TabIndex        =   0
-      Top             =   2400
+      Top             =   2160
       Width           =   6615
-      _ExtentX        =   11456
-      _ExtentY        =   873
+      _ExtentX        =   11668
+      _ExtentY        =   1270
+      Caption         =   "transparency cut-off"
       Max             =   255
       Value           =   127
       NotchPosition   =   2
@@ -76,14 +78,14 @@ Begin VB.Form dialog_AlphaCutoff
       ScaleHeight     =   298
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   298
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   1200
       Width           =   4500
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "background color for compositing:"
+      Caption         =   "background color for compositing"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -97,9 +99,9 @@ Begin VB.Form dialog_AlphaCutoff
       Height          =   285
       Index           =   1
       Left            =   4920
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   3480
-      Width           =   3675
+      Width           =   3585
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
@@ -117,7 +119,7 @@ Begin VB.Form dialog_AlphaCutoff
       ForeColor       =   &H00404040&
       Height          =   195
       Left            =   8640
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   2940
       Width           =   1710
    End
@@ -137,7 +139,7 @@ Begin VB.Form dialog_AlphaCutoff
       ForeColor       =   &H00404040&
       Height          =   195
       Left            =   5400
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   2940
       Width           =   1230
    End
@@ -156,31 +158,10 @@ Begin VB.Form dialog_AlphaCutoff
       ForeColor       =   &H00202020&
       Height          =   765
       Left            =   975
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   270
       Width           =   10440
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "transparency cut-off:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   4920
-      TabIndex        =   1
-      Top             =   2040
-      Width           =   2205
    End
 End
 Attribute VB_Name = "dialog_AlphaCutoff"
@@ -222,7 +203,7 @@ Private srcDIB As pdDIB
 Private tmpDIB As pdDIB
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
@@ -258,8 +239,8 @@ Public Sub showDialog()
     Message "Waiting for user to specify alpha threshold... "
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Display the dialog
     showPDDialog vbModal, Me, True

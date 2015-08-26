@@ -47,7 +47,7 @@ Begin VB.Form FormMosaic
    Begin PhotoDemon.smartCheckBox chkUnison 
       Height          =   330
       Left            =   6120
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   3600
       Width           =   5790
       _ExtentX        =   10213
@@ -57,75 +57,37 @@ Begin VB.Form FormMosaic
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltWidth 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   5
-      Top             =   2010
+      TabIndex        =   3
+      Top             =   1560
       Width           =   5895
-      _ExtentX        =   10186
-      _ExtentY        =   873
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "block width"
       Min             =   1
       Max             =   64
       Value           =   2
    End
    Begin PhotoDemon.sliderTextCombo sltHeight 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   6
-      Top             =   2970
+      TabIndex        =   4
+      Top             =   2520
       Width           =   5895
-      _ExtentX        =   10186
-      _ExtentY        =   873
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "block height"
       Min             =   1
       Max             =   64
       Value           =   2
-   End
-   Begin VB.Label lblWidth 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "block width:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   1680
-      Width           =   1305
-   End
-   Begin VB.Label lblHeight 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "block height:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   2640
-      Width           =   1380
    End
 End
 Attribute VB_Name = "FormMosaic"
@@ -150,7 +112,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub chkUnison_Click()
     If CBool(chkUnison) Then syncScrollBars True
@@ -335,8 +297,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Request a preview
     cmdBar.markPreviewStatus True

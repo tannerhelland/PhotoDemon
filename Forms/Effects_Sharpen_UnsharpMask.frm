@@ -46,30 +46,32 @@ Begin VB.Form FormUnsharpMask
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltThreshold 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   6
-      Top             =   3210
+      TabIndex        =   3
+      Top             =   2880
       Width           =   5925
       _ExtentX        =   10451
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "threshold"
       Max             =   255
    End
    Begin PhotoDemon.sliderTextCombo sltAmount 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   7
-      Top             =   2250
+      TabIndex        =   4
+      Top             =   1920
       Width           =   5925
       _ExtentX        =   10451
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "amount"
       Min             =   0.1
       SigDigits       =   1
       Value           =   1
@@ -77,13 +79,14 @@ Begin VB.Form FormUnsharpMask
       NotchValueCustom=   1
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   8
-      Top             =   1290
+      TabIndex        =   5
+      Top             =   960
       Width           =   5925
-      _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentX        =   10451
+      _ExtentY        =   1270
+      Caption         =   "radius"
       Min             =   0.1
       Max             =   200
       SigDigits       =   1
@@ -92,7 +95,7 @@ Begin VB.Form FormUnsharpMask
    Begin PhotoDemon.buttonStrip btsQuality 
       Height          =   600
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   4260
       Width           =   5910
       _ExtentX        =   10425
@@ -101,7 +104,7 @@ Begin VB.Form FormUnsharpMask
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "quality:"
+      Caption         =   "quality"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -112,55 +115,12 @@ Begin VB.Form FormUnsharpMask
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   315
+      Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   3840
-      Width           =   795
-   End
-   Begin VB.Label lblAmount 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "amount:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   5
-      Top             =   1920
-      Width           =   900
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "threshold:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      TabIndex        =   4
-      Top             =   2880
-      Width           =   1080
+      Width           =   705
    End
    Begin VB.Label lblIDEWarning 
       BackStyle       =   0  'Transparent
@@ -176,31 +136,11 @@ Begin VB.Form FormUnsharpMask
       ForeColor       =   &H000000FF&
       Height          =   855
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   4920
       Visible         =   0   'False
       Width           =   5775
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label Label1 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "radius:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   960
-      Width           =   735
    End
 End
 Attribute VB_Name = "FormUnsharpMask"

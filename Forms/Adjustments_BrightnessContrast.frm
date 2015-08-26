@@ -41,6 +41,7 @@ Begin VB.Form FormBrightnessContrast
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.smartCheckBox chkSample 
       Height          =   330
@@ -55,75 +56,37 @@ Begin VB.Form FormBrightnessContrast
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltBright 
-      Height          =   495
+      Height          =   720
       Left            =   6000
       TabIndex        =   1
-      Top             =   2160
+      Top             =   1920
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "brightness"
       Min             =   -255
       Max             =   255
       Value           =   -10
    End
    Begin PhotoDemon.sliderTextCombo sltContrast 
-      Height          =   495
+      Height          =   720
       Left            =   6000
       TabIndex        =   2
-      Top             =   3000
+      Top             =   2760
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "contrast"
       Min             =   -100
       Max             =   100
       Value           =   10
-   End
-   Begin VB.Label Label1 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "contrast:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   5
-      Top             =   2655
-      Width           =   930
-   End
-   Begin VB.Label LblBrightness 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "brightness:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   4
-      Top             =   1800
-      Width           =   1185
    End
 End
 Attribute VB_Name = "FormBrightnessContrast"
@@ -156,7 +119,7 @@ Dim previewHasSampled As Boolean
 Dim previewSampledContrast As Long
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Update the preview when the "sample contrast" checkbox value is changed
 Private Sub chkSample_Click()
@@ -364,8 +327,8 @@ Private Sub Form_Activate()
     previewSampledContrast = 0
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
 End Sub
 

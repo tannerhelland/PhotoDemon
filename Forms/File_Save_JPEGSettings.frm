@@ -69,6 +69,85 @@ Begin VB.Form dialog_ExportJPEG
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   4695
+      Index           =   1
+      Left            =   5880
+      ScaleHeight     =   313
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   481
+      TabIndex        =   10
+      Top             =   1080
+      Width           =   7215
+      Begin PhotoDemon.pdComboBox cboMetadata 
+         Height          =   375
+         Left            =   360
+         TabIndex        =   12
+         Top             =   1020
+         Width           =   6735
+         _ExtentX        =   11880
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdHyperlink lblReviewMetadata 
+         Height          =   255
+         Left            =   240
+         Top             =   30
+         Width           =   6780
+         _ExtentX        =   11959
+         _ExtentY        =   503
+         Alignment       =   1
+         Caption         =   "click here to review the image's metadata"
+         RaiseClickEvent =   -1  'True
+      End
+      Begin PhotoDemon.smartCheckBox chkThumbnail 
+         Height          =   330
+         Left            =   360
+         TabIndex        =   11
+         Top             =   3240
+         Width           =   6690
+         _ExtentX        =   11800
+         _ExtentY        =   582
+         Caption         =   "embed thumbnail image"
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   2
+         Left            =   120
+         Top             =   2820
+         Width           =   6975
+         _ExtentX        =   12303
+         _ExtentY        =   503
+         Caption         =   "other metadata options"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblCurMetadata 
+         Height          =   1080
+         Left            =   360
+         Top             =   1560
+         Width           =   6615
+         _ExtentX        =   0
+         _ExtentY        =   503
+         ForeColor       =   4210752
+         Layout          =   1
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   0
+         Left            =   120
+         Top             =   540
+         Width           =   6885
+         _ExtentX        =   12144
+         _ExtentY        =   503
+         Caption         =   "general metadata setting for this image"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4695
       Index           =   0
       Left            =   5880
       ScaleHeight     =   313
@@ -145,7 +224,7 @@ Begin VB.Form dialog_ExportJPEG
          Caption         =   "use specific subsampling:"
       End
       Begin PhotoDemon.sliderTextCombo sltQuality 
-         Height          =   495
+         Height          =   405
          Left            =   2880
          TabIndex        =   8
          Top             =   180
@@ -177,7 +256,7 @@ Begin VB.Form dialog_ExportJPEG
          Width           =   6900
          _ExtentX        =   0
          _ExtentY        =   503
-         Caption         =   "automatic quality detection:"
+         Caption         =   "automatic quality detection"
          FontSize        =   12
          ForeColor       =   4210752
       End
@@ -189,86 +268,7 @@ Begin VB.Form dialog_ExportJPEG
          Width           =   6945
          _ExtentX        =   0
          _ExtentY        =   503
-         Caption         =   "advanced quality settings:"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4695
-      Index           =   1
-      Left            =   5880
-      ScaleHeight     =   313
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   481
-      TabIndex        =   10
-      Top             =   1080
-      Width           =   7215
-      Begin PhotoDemon.pdComboBox cboMetadata 
-         Height          =   375
-         Left            =   360
-         TabIndex        =   12
-         Top             =   1020
-         Width           =   6735
-         _ExtentX        =   11880
-         _ExtentY        =   661
-      End
-      Begin PhotoDemon.pdHyperlink lblReviewMetadata 
-         Height          =   255
-         Left            =   240
-         Top             =   30
-         Width           =   6780
-         _ExtentX        =   11959
-         _ExtentY        =   503
-         Alignment       =   1
-         Caption         =   "click here to review the image's metadata"
-         RaiseClickEvent =   -1  'True
-      End
-      Begin PhotoDemon.smartCheckBox chkThumbnail 
-         Height          =   330
-         Left            =   360
-         TabIndex        =   11
-         Top             =   3240
-         Width           =   6690
-         _ExtentX        =   11800
-         _ExtentY        =   582
-         Caption         =   "embed thumbnail image"
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   2
-         Left            =   120
-         Top             =   2820
-         Width           =   6975
-         _ExtentX        =   12303
-         _ExtentY        =   503
-         Caption         =   "other metadata options:"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblCurMetadata 
-         Height          =   1080
-         Left            =   360
-         Top             =   1560
-         Width           =   6615
-         _ExtentX        =   0
-         _ExtentY        =   503
-         ForeColor       =   4210752
-         Layout          =   1
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   0
-         Left            =   120
-         Top             =   540
-         Width           =   6885
-         _ExtentX        =   12144
-         _ExtentY        =   503
-         Caption         =   "general metadata setting for this image:"
+         Caption         =   "advanced quality settings"
          FontSize        =   12
          ForeColor       =   4210752
       End

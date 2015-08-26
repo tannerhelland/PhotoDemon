@@ -63,7 +63,7 @@ Begin VB.Form FormPluginManager
       Caption         =   "&Reset all plugin options"
       Height          =   495
       Left            =   120
-      TabIndex        =   66
+      TabIndex        =   65
       ToolTipText     =   "Use this to reset all plugin-related options to their default state.  This action cannot be undone."
       Top             =   6480
       Width           =   2775
@@ -120,7 +120,7 @@ Begin VB.Form FormPluginManager
          Left            =   6015
          MouseIcon       =   "Tools_PluginManager.frx":0000
          MousePointer    =   99  'Custom
-         TabIndex        =   83
+         TabIndex        =   82
          Top             =   4125
          Width           =   1350
       End
@@ -141,7 +141,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   1260
-         TabIndex        =   82
+         TabIndex        =   81
          Top             =   4440
          Width           =   3255
       End
@@ -163,7 +163,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   480
-         TabIndex        =   81
+         TabIndex        =   80
          Top             =   4440
          Width           =   675
       End
@@ -184,7 +184,7 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   4
          Left            =   240
-         TabIndex        =   80
+         TabIndex        =   79
          Top             =   4080
          Width           =   870
       End
@@ -599,49 +599,33 @@ Begin VB.Form FormPluginManager
       Begin PhotoDemon.smartCheckBox chkPNGQuantIE6 
          Height          =   330
          Left            =   480
-         TabIndex        =   69
+         TabIndex        =   68
          Top             =   2970
          Width           =   7050
          _ExtentX        =   12435
          _ExtentY        =   582
          Caption         =   "improve IE6 compatibility (reduces image quality; use with caution)"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin PhotoDemon.smartCheckBox chkPNGQuantDither 
          Height          =   330
          Left            =   480
-         TabIndex        =   68
+         TabIndex        =   67
          Top             =   2520
          Width           =   7050
          _ExtentX        =   12435
          _ExtentY        =   582
          Caption         =   "use dithering to improve output"
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin PhotoDemon.sliderTextCombo sltPNGQuantSpeed 
-         Height          =   495
-         Left            =   720
-         TabIndex        =   84
-         Top             =   3960
-         Width           =   6855
-         _ExtentX        =   10398
-         _ExtentY        =   873
+         Height          =   675
+         Left            =   480
+         TabIndex        =   83
+         Top             =   3720
+         Width           =   7095
+         _ExtentX        =   12515
+         _ExtentY        =   1191
+         Caption         =   "performance vs image quality"
+         FontSizeCaption =   10
          Min             =   1
          Max             =   11
          SliderTrackStyle=   1
@@ -667,7 +651,7 @@ Begin VB.Form FormPluginManager
          Height          =   195
          Index           =   1
          Left            =   5280
-         TabIndex        =   65
+         TabIndex        =   64
          Top             =   4560
          Width           =   1155
       End
@@ -688,30 +672,9 @@ Begin VB.Form FormPluginManager
          Height          =   195
          Index           =   0
          Left            =   960
-         TabIndex        =   64
+         TabIndex        =   63
          Top             =   4560
          Width           =   1245
-      End
-      Begin VB.Label lblPngnqSetting 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "performance vs image quality:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
-         Index           =   0
-         Left            =   480
-         TabIndex        =   63
-         Top             =   3600
-         Width           =   2610
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
@@ -941,7 +904,7 @@ Begin VB.Form FormPluginManager
       ScaleHeight     =   393
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   513
-      TabIndex        =   70
+      TabIndex        =   69
       Top             =   240
       Width           =   7695
       Begin VB.Label lblLicenseLink 
@@ -963,7 +926,7 @@ Begin VB.Form FormPluginManager
          Left            =   2640
          MouseIcon       =   "Tools_PluginManager.frx":093E
          MousePointer    =   99  'Custom
-         TabIndex        =   79
+         TabIndex        =   78
          Top             =   1560
          Width           =   2325
       End
@@ -984,7 +947,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   480
-         TabIndex        =   78
+         TabIndex        =   77
          Top             =   1560
          Width           =   1545
       End
@@ -1007,7 +970,7 @@ Begin VB.Form FormPluginManager
          Left            =   2640
          MouseIcon       =   "Tools_PluginManager.frx":0A90
          MousePointer    =   99  'Custom
-         TabIndex        =   77
+         TabIndex        =   76
          Top             =   1080
          Width           =   4575
       End
@@ -1028,7 +991,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   480
-         TabIndex        =   76
+         TabIndex        =   75
          Top             =   1080
          Width           =   1950
       End
@@ -1050,7 +1013,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   3960
-         TabIndex        =   75
+         TabIndex        =   74
          Top             =   600
          Width           =   1395
       End
@@ -1071,7 +1034,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   2400
-         TabIndex        =   74
+         TabIndex        =   73
          Top             =   600
          Width           =   960
       End
@@ -1092,7 +1055,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   5520
-         TabIndex        =   73
+         TabIndex        =   72
          Top             =   600
          Width           =   960
       End
@@ -1114,7 +1077,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   480
-         TabIndex        =   72
+         TabIndex        =   71
          Top             =   600
          Width           =   1740
       End
@@ -1135,7 +1098,7 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   6
          Left            =   120
-         TabIndex        =   71
+         TabIndex        =   70
          Top             =   15
          Width           =   2910
       End
@@ -1777,7 +1740,7 @@ Begin VB.Form FormPluginManager
    Begin VB.Label lblBackground 
       Height          =   855
       Left            =   0
-      TabIndex        =   67
+      TabIndex        =   66
       Top             =   6360
       Width           =   10815
    End
@@ -1848,7 +1811,7 @@ Dim vString(0 To 4) As String
 Dim pEnabled(0 To 4) As Boolean
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub CollectVersionInfo(ByVal FullFileName As String, ByVal strIndex As Long)
    
@@ -2043,8 +2006,8 @@ Private Sub Form_Load()
     Next i
             
     'Apply visual styles
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'If a translation is active, realign text as necessary
     If g_Language.translationActive Then

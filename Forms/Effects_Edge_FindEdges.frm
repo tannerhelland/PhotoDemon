@@ -105,7 +105,7 @@ Begin VB.Form FormFindEdges
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "other options:"
+      Caption         =   "other options"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -121,12 +121,12 @@ Begin VB.Form FormFindEdges
       Left            =   6000
       TabIndex        =   6
       Top             =   4560
-      Width           =   1500
+      Width           =   1410
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "detection direction(s):"
+      Caption         =   "detection direction(s)"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -142,12 +142,12 @@ Begin VB.Form FormFindEdges
       Left            =   6000
       TabIndex        =   5
       Top             =   3000
-      Width           =   2325
+      Width           =   2235
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "edge detection technique:"
+      Caption         =   "edge detection technique"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -163,7 +163,7 @@ Begin VB.Form FormFindEdges
       Left            =   6000
       TabIndex        =   2
       Top             =   120
-      Width           =   2730
+      Width           =   2640
    End
 End
 Attribute VB_Name = "FormFindEdges"

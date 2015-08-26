@@ -42,6 +42,7 @@ Begin VB.Form FormMiscDistorts
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin VB.ListBox lstDistorts 
       BeginProperty Font 
@@ -56,7 +57,7 @@ Begin VB.Form FormMiscDistorts
       ForeColor       =   &H00404040&
       Height          =   2460
       Left            =   6120
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   600
       Width           =   5655
    End
@@ -75,27 +76,28 @@ Begin VB.Form FormMiscDistorts
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   4725
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   7
-      Top             =   3600
+      TabIndex        =   6
+      Top             =   3360
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "quality"
       Min             =   1
       Max             =   5
       Value           =   2
@@ -119,39 +121,16 @@ Begin VB.Form FormMiscDistorts
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   4320
       Width           =   4170
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "quality:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   3210
-      Width           =   795
    End
    Begin VB.Label lblType 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "distortions:"
+      Caption         =   "distortions"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -166,7 +145,7 @@ Begin VB.Form FormMiscDistorts
       Left            =   6000
       TabIndex        =   1
       Top             =   210
-      Width           =   1200
+      Width           =   1110
    End
 End
 Attribute VB_Name = "FormMiscDistorts"
@@ -199,7 +178,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Correct lens distortion in an image
 Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As Long, ByVal edgeHandling As Long, ByVal superSamplingAmount As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -503,8 +482,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True

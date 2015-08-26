@@ -41,15 +41,17 @@ Begin VB.Form FormHSL
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltHue 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   5
-      Top             =   1770
+      TabIndex        =   2
+      Top             =   1560
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "hue"
       Min             =   -180
       Max             =   180
       SliderTrackStyle=   4
@@ -57,95 +59,37 @@ Begin VB.Form FormHSL
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltSaturation 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   6
-      Top             =   2610
+      TabIndex        =   3
+      Top             =   2520
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "saturation"
       Min             =   -100
       Max             =   100
       SliderTrackStyle=   2
    End
    Begin PhotoDemon.sliderTextCombo sltLuminance 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   3480
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "lightness"
       Min             =   -100
       Max             =   100
       SliderTrackStyle=   2
-   End
-   Begin VB.Label lblLuminance 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "lightness:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   3
-      Top             =   3120
-      Width           =   1020
-   End
-   Begin VB.Label lblSaturation 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "saturation:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   2280
-      Width           =   1140
-   End
-   Begin VB.Label lblHue 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "hue:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   1440
-      Width           =   480
    End
 End
 Attribute VB_Name = "FormHSL"
@@ -171,7 +115,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Colorize an image using a hue defined between -1 and 5
 ' Input: desired hue, whether to force saturation to 0.5 or maintain the existing value
@@ -276,8 +220,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Display the previewed effect in the neighboring window
     updatePreview

@@ -41,6 +41,7 @@ Begin VB.Form FormTransparency_FromColor
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -53,31 +54,33 @@ Begin VB.Form FormTransparency_FromColor
       ColorSelection  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltErase 
-      Height          =   495
-      Left            =   6120
-      TabIndex        =   4
-      Top             =   2880
-      Width           =   5565
-      _ExtentX        =   9816
-      _ExtentY        =   873
+      Height          =   720
+      Left            =   6000
+      TabIndex        =   3
+      Top             =   2640
+      Width           =   5685
+      _ExtentX        =   10028
+      _ExtentY        =   1270
+      Caption         =   "erase threshold"
       Max             =   199
       Value           =   15
    End
    Begin PhotoDemon.sliderTextCombo sltBlend 
-      Height          =   495
-      Left            =   6120
-      TabIndex        =   5
-      Top             =   3840
-      Width           =   5565
-      _ExtentX        =   9816
-      _ExtentY        =   873
+      Height          =   720
+      Left            =   6000
+      TabIndex        =   4
+      Top             =   3600
+      Width           =   5685
+      _ExtentX        =   10028
+      _ExtentY        =   1270
+      Caption         =   "edge blending"
       Max             =   200
       Value           =   15
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   615
       Left            =   6240
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   1800
       Width           =   5295
       _ExtentX        =   9340
@@ -87,49 +90,7 @@ Begin VB.Form FormTransparency_FromColor
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "edge blending:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
-      Left            =   6000
-      TabIndex        =   6
-      Top             =   3480
-      Width           =   1590
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "erase threshold:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      TabIndex        =   3
-      Top             =   2520
-      Width           =   1710
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "color to erase (right-click preview to select):"
+      Caption         =   "color to erase (right-click preview to select)"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -145,7 +106,7 @@ Begin VB.Form FormTransparency_FromColor
       Left            =   6000
       TabIndex        =   2
       Top             =   1320
-      Width           =   4665
+      Width           =   4575
    End
 End
 Attribute VB_Name = "FormTransparency_FromColor"
@@ -177,7 +138,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'OK button
 Private Sub cmdBar_OKClick()
@@ -201,8 +162,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Render a preview of the alpha effect
     updatePreview

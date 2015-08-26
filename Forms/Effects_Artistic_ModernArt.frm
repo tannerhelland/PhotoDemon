@@ -41,6 +41,7 @@ Begin VB.Form FormModernArt
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -52,36 +53,17 @@ Begin VB.Form FormModernArt
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   4
-      Top             =   2730
+      TabIndex        =   3
+      Top             =   2280
       Width           =   5895
-      _ExtentX        =   10186
-      _ExtentY        =   873
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "strength"
       Min             =   1
       Max             =   200
       Value           =   5
-   End
-   Begin VB.Label lblStrength 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "strength:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   3
-      Top             =   2400
-      Width           =   960
    End
    Begin VB.Label lblIDEWarning 
       BackStyle       =   0  'Transparent
@@ -136,7 +118,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Convolve an image using a gaussian kernel (separable implementation!)
 'Input: radius of the median (min 1, no real max - but the scroll bar is maxed at 200 presently)
@@ -556,8 +538,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'If the program is not compiled, display a special warning for this tool
     If Not g_IsProgramCompiled Then

@@ -41,6 +41,7 @@ Begin VB.Form FormLensFlare
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -55,149 +56,11 @@ Begin VB.Form FormLensFlare
    Begin PhotoDemon.buttonStrip btsOptions 
       Height          =   600
       Left            =   6240
-      TabIndex        =   19
+      TabIndex        =   15
       Top             =   5160
       Width           =   5595
       _ExtentX        =   9869
       _ExtentY        =   1058
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4695
-      Index           =   1
-      Left            =   5880
-      ScaleHeight     =   313
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   409
-      TabIndex        =   11
-      Top             =   0
-      Visible         =   0   'False
-      Width           =   6135
-      Begin PhotoDemon.sliderTextCombo sltIntensity 
-         Height          =   495
-         Index           =   1
-         Left            =   120
-         TabIndex        =   12
-         Top             =   2400
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   873
-         Min             =   0.01
-         Max             =   3
-         SigDigits       =   2
-         Value           =   1
-         NotchPosition   =   2
-         NotchValueCustom=   1
-      End
-      Begin PhotoDemon.sliderTextCombo sltIntensity 
-         Height          =   495
-         Index           =   2
-         Left            =   120
-         TabIndex        =   13
-         Top             =   3360
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   873
-         Min             =   0.01
-         Max             =   3
-         SigDigits       =   2
-         Value           =   1
-         NotchPosition   =   2
-         NotchValueCustom=   1
-      End
-      Begin PhotoDemon.buttonStrip btsSyncIntensity 
-         Height          =   600
-         Left            =   330
-         TabIndex        =   17
-         Top             =   1140
-         Width           =   5550
-         _ExtentX        =   9790
-         _ExtentY        =   1058
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "synchronize intensity:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   5
-         Left            =   120
-         TabIndex        =   16
-         Top             =   720
-         Width           =   2295
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "secondary intensity:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   0
-         Left            =   120
-         TabIndex        =   15
-         Top             =   2040
-         Width           =   2115
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "tertiary intensity:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   1
-         Left            =   120
-         TabIndex        =   14
-         Top             =   3000
-         Width           =   1800
-      End
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -214,7 +77,7 @@ Begin VB.Form FormLensFlare
       Top             =   0
       Width           =   6135
       Begin PhotoDemon.sliderTextCombo sltXCenter 
-         Height          =   495
+         Height          =   405
          Left            =   120
          TabIndex        =   3
          Top             =   480
@@ -228,7 +91,7 @@ Begin VB.Form FormLensFlare
          NotchValueCustom=   0.5
       End
       Begin PhotoDemon.sliderTextCombo sltYCenter 
-         Height          =   495
+         Height          =   405
          Left            =   3120
          TabIndex        =   4
          Top             =   480
@@ -242,14 +105,15 @@ Begin VB.Form FormLensFlare
          NotchValueCustom=   0.5
       End
       Begin PhotoDemon.sliderTextCombo sltIntensity 
-         Height          =   495
+         Height          =   720
          Index           =   0
          Left            =   120
          TabIndex        =   5
-         Top             =   3120
+         Top             =   2760
          Width           =   5895
          _ExtentX        =   10398
-         _ExtentY        =   873
+         _ExtentY        =   1270
+         Caption         =   "intensity"
          Min             =   0.01
          Max             =   3
          SigDigits       =   2
@@ -258,13 +122,14 @@ Begin VB.Form FormLensFlare
          NotchValueCustom=   1
       End
       Begin PhotoDemon.sliderTextCombo sltRadius 
-         Height          =   495
+         Height          =   720
          Left            =   120
          TabIndex        =   6
-         Top             =   2160
+         Top             =   1800
          Width           =   5895
          _ExtentX        =   10398
-         _ExtentY        =   873
+         _ExtentY        =   1270
+         Caption         =   "radius"
          Min             =   1
          Max             =   200
          Value           =   100
@@ -272,36 +137,16 @@ Begin VB.Form FormLensFlare
          NotchValueCustom=   100
       End
       Begin PhotoDemon.sliderTextCombo sltHue 
-         Height          =   495
+         Height          =   720
          Left            =   120
-         TabIndex        =   20
-         Top             =   4080
+         TabIndex        =   16
+         Top             =   3720
          Width           =   5895
          _ExtentX        =   10398
-         _ExtentY        =   873
+         _ExtentY        =   1270
+         Caption         =   "hue"
          Max             =   359
          SliderTrackStyle=   4
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "hue:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   7
-         Left            =   120
-         TabIndex        =   21
-         Top             =   3720
-         Width           =   480
       End
       Begin VB.Label lblExplanation 
          BackStyle       =   0  'Transparent
@@ -319,7 +164,7 @@ Begin VB.Form FormLensFlare
          Height          =   675
          Index           =   0
          Left            =   120
-         TabIndex        =   10
+         TabIndex        =   8
          Top             =   1080
          Width           =   5895
          WordWrap        =   -1  'True
@@ -341,35 +186,73 @@ Begin VB.Form FormLensFlare
          Height          =   285
          Index           =   4
          Left            =   120
-         TabIndex        =   9
+         TabIndex        =   7
          Top             =   120
          Width           =   1485
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "intensity:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4695
+      Index           =   1
+      Left            =   5880
+      ScaleHeight     =   313
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   409
+      TabIndex        =   9
+      Top             =   0
+      Visible         =   0   'False
+      Width           =   6135
+      Begin PhotoDemon.sliderTextCombo sltIntensity 
+         Height          =   720
+         Index           =   1
+         Left            =   120
+         TabIndex        =   10
+         Top             =   2040
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "secondary intensity"
+         Min             =   0.01
+         Max             =   3
+         SigDigits       =   2
+         Value           =   1
+         NotchPosition   =   2
+         NotchValueCustom=   1
+      End
+      Begin PhotoDemon.sliderTextCombo sltIntensity 
+         Height          =   720
          Index           =   2
          Left            =   120
-         TabIndex        =   8
-         Top             =   2760
-         Width           =   975
+         TabIndex        =   11
+         Top             =   3000
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "tertiary intensity"
+         Min             =   0.01
+         Max             =   3
+         SigDigits       =   2
+         Value           =   1
+         NotchPosition   =   2
+         NotchValueCustom=   1
+      End
+      Begin PhotoDemon.buttonStrip btsSyncIntensity 
+         Height          =   600
+         Left            =   330
+         TabIndex        =   13
+         Top             =   1140
+         Width           =   5550
+         _ExtentX        =   9790
+         _ExtentY        =   1058
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "radius:"
+         Caption         =   "synchronize intensity"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -381,17 +264,17 @@ Begin VB.Form FormLensFlare
          EndProperty
          ForeColor       =   &H00404040&
          Height          =   285
-         Index           =   3
+         Index           =   5
          Left            =   120
-         TabIndex        =   7
-         Top             =   1800
-         Width           =   735
+         TabIndex        =   12
+         Top             =   720
+         Width           =   2205
       End
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "options:"
+      Caption         =   "options"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -405,9 +288,9 @@ Begin VB.Form FormLensFlare
       Height          =   285
       Index           =   6
       Left            =   6000
-      TabIndex        =   18
+      TabIndex        =   14
       Top             =   4800
-      Width           =   870
+      Width           =   780
    End
 End
 Attribute VB_Name = "FormLensFlare"
@@ -489,7 +372,7 @@ Private m_numFlares As Long
 Private m_PrimaryIntensity As Double, m_SecondaryIntensity As Double, m_TertiaryIntensity As Double
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Helper function to initialize a flare
 Private Function SetFlare(ByVal wType As Long, ByVal fScale As Double, ByVal x As Long, ByVal y As Long, _
@@ -953,8 +836,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Display the previewed effect in the neighboring window
     updatePreview

@@ -42,6 +42,7 @@ Begin VB.Form FormCurves
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -60,15 +61,6 @@ Begin VB.Form FormCurves
       Width           =   6675
       _ExtentX        =   11774
       _ExtentY        =   1058
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -107,15 +99,6 @@ Begin VB.Form FormCurves
          Width           =   6675
          _ExtentX        =   11774
          _ExtentY        =   1058
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
@@ -161,15 +144,6 @@ Begin VB.Form FormCurves
          Width           =   6675
          _ExtentX        =   11774
          _ExtentY        =   1058
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin PhotoDemon.buttonStrip btsGrid 
          Height          =   600
@@ -179,15 +153,6 @@ Begin VB.Form FormCurves
          Width           =   6675
          _ExtentX        =   11774
          _ExtentY        =   1058
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin PhotoDemon.buttonStrip btsDiagonalLine 
          Height          =   600
@@ -197,20 +162,11 @@ Begin VB.Form FormCurves
          Width           =   6675
          _ExtentX        =   11774
          _ExtentY        =   1058
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   11.25
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "original curve (diagonal line):"
+         Caption         =   "original curve (diagonal line)"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -226,12 +182,12 @@ Begin VB.Form FormCurves
          Left            =   120
          TabIndex        =   14
          Top             =   3480
-         Width           =   3135
+         Width           =   3045
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "grid:"
+         Caption         =   "grid"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -247,12 +203,12 @@ Begin VB.Form FormCurves
          Left            =   120
          TabIndex        =   12
          Top             =   2160
-         Width           =   510
+         Width           =   420
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
          BackStyle       =   0  'Transparent
-         Caption         =   "histogram overlay:"
+         Caption         =   "histogram overlay"
          BeginProperty Font 
             Name            =   "Tahoma"
             Size            =   12
@@ -268,7 +224,7 @@ Begin VB.Form FormCurves
          Left            =   120
          TabIndex        =   10
          Top             =   840
-         Width           =   1995
+         Width           =   1905
       End
    End
    Begin VB.Label lblTitle 
@@ -400,7 +356,7 @@ Private mouseCoordFont As pdFont
 Private mouseCoordDIB As pdDIB
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'When the active channel is changed, redraw the curve display
 Private Sub btsChannel_Click(ByVal buttonIndex As Long)
@@ -820,8 +776,8 @@ Private Sub Form_Activate()
     Next i
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     cmdBar.markPreviewStatus True
     updatePreview

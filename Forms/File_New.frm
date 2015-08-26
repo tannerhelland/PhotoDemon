@@ -43,6 +43,7 @@ Begin VB.Form FormNewImage
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.smartOptionButton optBackground 
       CausesValidation=   0   'False
@@ -56,15 +57,6 @@ Begin VB.Form FormNewImage
       _ExtentY        =   582
       Caption         =   "transparent"
       Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton optBackground 
       CausesValidation=   0   'False
@@ -77,15 +69,6 @@ Begin VB.Form FormNewImage
       _ExtentX        =   15610
       _ExtentY        =   582
       Caption         =   "black"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton optBackground 
       CausesValidation=   0   'False
@@ -98,15 +81,6 @@ Begin VB.Form FormNewImage
       _ExtentX        =   15610
       _ExtentY        =   582
       Caption         =   "white"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton optBackground 
       CausesValidation=   0   'False
@@ -118,16 +92,7 @@ Begin VB.Form FormNewImage
       Width           =   8850
       _ExtentX        =   15610
       _ExtentY        =   582
-      Caption         =   "custom color:"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      Caption         =   "custom color"
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   615
@@ -143,7 +108,7 @@ Begin VB.Form FormNewImage
       Height          =   2850
       Left            =   360
       TabIndex        =   7
-      Top             =   480
+      Top             =   360
       Width           =   8775
       _ExtentX        =   15478
       _ExtentY        =   5027
@@ -159,32 +124,9 @@ Begin VB.Form FormNewImage
       DisablePercentOption=   -1  'True
    End
    Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "size:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
-      Left            =   240
-      TabIndex        =   8
-      Top             =   120
-      Width           =   480
-   End
-   Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "background:"
+      Caption         =   "background"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -200,7 +142,7 @@ Begin VB.Form FormNewImage
       Left            =   240
       TabIndex        =   1
       Top             =   3480
-      Width           =   1335
+      Width           =   1245
    End
 End
 Attribute VB_Name = "FormNewImage"

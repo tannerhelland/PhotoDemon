@@ -41,51 +41,31 @@ Begin VB.Form FormSolarize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltThreshold 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   3
-      Top             =   2520
+      TabIndex        =   2
+      Top             =   2280
       Width           =   5925
       _ExtentX        =   10451
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "threshold"
       Min             =   1
       Max             =   254
       Value           =   127
       NotchPosition   =   2
       NotchValueCustom=   127
-   End
-   Begin VB.Label lblThreshold 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "solarize threshold:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   2160
-      Width           =   1950
    End
 End
 Attribute VB_Name = "FormSolarize"
@@ -110,7 +90,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Subroutine for "solarizing" an image
 ' Inputs: solarize threshold [0,255], optional previewing information
@@ -192,8 +172,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Render a preview
     updatePreview

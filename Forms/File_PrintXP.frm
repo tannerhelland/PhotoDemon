@@ -246,7 +246,7 @@ Begin VB.Form FormPrint
    Begin VB.Label lblQuality 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "quality:"
+      Caption         =   "quality"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -261,7 +261,7 @@ Begin VB.Form FormPrint
       Left            =   3960
       TabIndex        =   21
       Top             =   1200
-      Width           =   795
+      Width           =   705
    End
    Begin VB.Label lblBackground 
       Height          =   855
@@ -292,7 +292,7 @@ Begin VB.Form FormPrint
    Begin VB.Label lblDPI 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "dpi (print resolution):"
+      Caption         =   "dpi (print resolution)"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -307,12 +307,12 @@ Begin VB.Form FormPrint
       Left            =   3960
       TabIndex        =   17
       Top             =   4560
-      Width           =   2295
+      Width           =   2205
    End
    Begin VB.Label lblPaperSize 
       Alignment       =   2  'Center
       BackStyle       =   0  'Transparent
-      Caption         =   "paper size: "
+      Caption         =   "paper size"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -332,7 +332,7 @@ Begin VB.Form FormPrint
    Begin VB.Label lblLayoutOptions 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "layout options:"
+      Caption         =   "layout options"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -347,12 +347,12 @@ Begin VB.Form FormPrint
       Left            =   3960
       TabIndex        =   11
       Top             =   3120
-      Width           =   1590
+      Width           =   1500
    End
    Begin VB.Label lblOrientation 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "orientation:"
+      Caption         =   "orientation"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -367,12 +367,12 @@ Begin VB.Form FormPrint
       Left            =   3945
       TabIndex        =   10
       Top             =   2205
-      Width           =   1230
+      Width           =   1140
    End
    Begin VB.Label lblPrinter 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "printer:"
+      Caption         =   "printer"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -387,12 +387,12 @@ Begin VB.Form FormPrint
       Left            =   3960
       TabIndex        =   9
       Top             =   240
-      Width           =   795
+      Width           =   705
    End
    Begin VB.Label lblCopies 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "# of copies:"
+      Caption         =   "# of copies"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -407,7 +407,7 @@ Begin VB.Form FormPrint
       Left            =   6840
       TabIndex        =   8
       Top             =   1200
-      Width           =   1290
+      Width           =   1200
    End
 End
 Attribute VB_Name = "FormPrint"

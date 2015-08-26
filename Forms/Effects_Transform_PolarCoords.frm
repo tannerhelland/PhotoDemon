@@ -27,21 +27,12 @@ Begin VB.Form FormPolar
    Begin PhotoDemon.smartCheckBox chkSwapXY 
       Height          =   330
       Left            =   6120
-      TabIndex        =   11
+      TabIndex        =   10
       Top             =   1590
       Width           =   5670
       _ExtentX        =   10001
       _ExtentY        =   582
       Caption         =   "swap x and y coordinates"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -61,6 +52,7 @@ Begin VB.Form FormPolar
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin VB.ComboBox cmbEdges 
       BackColor       =   &H00FFFFFF&
@@ -77,7 +69,7 @@ Begin VB.Form FormPolar
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   3585
       Width           =   5700
    End
@@ -96,14 +88,14 @@ Begin VB.Form FormPolar
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   1200
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -114,51 +106,34 @@ Begin VB.Form FormPolar
       Height          =   360
       Index           =   0
       Left            =   6120
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   4560
       Width           =   5685
       _ExtentX        =   10028
-      _ExtentY        =   635
+      _ExtentY        =   582
       Caption         =   "quality"
       Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptInterpolate 
       Height          =   360
       Index           =   1
       Left            =   6120
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   4920
       Width           =   5685
       _ExtentX        =   10028
-      _ExtentY        =   635
+      _ExtentY        =   582
       Caption         =   "speed"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   10
-      Top             =   2595
+      TabIndex        =   9
+      Top             =   2280
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "radius (percentage)"
       Min             =   1
       Max             =   100
       Value           =   100
@@ -182,36 +157,16 @@ Begin VB.Form FormPolar
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   3210
       Width           =   3315
-   End
-   Begin VB.Label lblHeight 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "radius (percentage):"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   3
-      Top             =   2235
-      Width           =   2145
    End
    Begin VB.Label lblInterpolation 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "render emphasis:"
+      Caption         =   "render emphasis"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -226,14 +181,14 @@ Begin VB.Form FormPolar
       Left            =   6000
       TabIndex        =   2
       Top             =   4170
-      Width           =   1845
+      Width           =   1755
    End
    Begin VB.Label lblConvert 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "conversion technique:"
+      Caption         =   "conversion"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -248,7 +203,7 @@ Begin VB.Form FormPolar
       Left            =   6000
       TabIndex        =   1
       Top             =   840
-      Width           =   2325
+      Width           =   1140
    End
 End
 Attribute VB_Name = "FormPolar"
@@ -279,7 +234,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub cboConvert_Click()
     updatePreview
@@ -345,8 +300,8 @@ End Sub
 Private Sub Form_Activate()
 
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
         
     'Create the preview
     cmdBar.markPreviewStatus True

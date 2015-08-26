@@ -42,6 +42,7 @@ Begin VB.Form FormSpherize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin VB.ComboBox cmbEdges 
       BackColor       =   &H00FFFFFF&
@@ -58,14 +59,14 @@ Begin VB.Form FormSpherize
       Height          =   360
       Left            =   6120
       Style           =   2  'Dropdown List
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   5550
       Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -73,49 +74,53 @@ Begin VB.Form FormSpherize
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   6
-      Top             =   450
+      TabIndex        =   4
+      Top             =   120
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "angle"
       Min             =   -180
       Max             =   180
       SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltOffsetY 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   7
-      Top             =   2370
+      TabIndex        =   5
+      Top             =   2040
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "vertical offset"
       Min             =   -100
       Max             =   100
       SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltOffsetX 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   8
-      Top             =   1410
+      TabIndex        =   6
+      Top             =   1080
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "horizontal offset"
       Min             =   -100
       Max             =   100
       SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   11
-      Top             =   3360
+      TabIndex        =   8
+      Top             =   3000
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "quality"
       Min             =   1
       Max             =   5
       Value           =   2
@@ -125,50 +130,18 @@ Begin VB.Form FormSpherize
    Begin PhotoDemon.buttonStrip btsExterior 
       Height          =   600
       Left            =   6120
-      TabIndex        =   13
+      TabIndex        =   9
       Top             =   4320
       Width           =   5595
       _ExtentX        =   9869
       _ExtentY        =   1058
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "quality:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
-      Left            =   6000
-      TabIndex        =   12
-      Top             =   3000
-      Width           =   795
    End
    Begin VB.Label lblOther 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "area outside sphere:"
+      Caption         =   "area outside sphere"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -181,30 +154,9 @@ Begin VB.Form FormSpherize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   3960
-      Width           =   2160
-   End
-   Begin VB.Label lblOffset 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "horizontal offset:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      TabIndex        =   9
-      Top             =   1080
-      Width           =   1800
+      Width           =   2070
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -223,52 +175,9 @@ Begin VB.Form FormSpherize
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   5130
       Width           =   3315
-   End
-   Begin VB.Label lblOffset 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "vertical offset:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   2040
-      Width           =   1500
-   End
-   Begin VB.Label lblAmount 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "angle:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   120
-      Width           =   660
    End
 End
 Attribute VB_Name = "FormSpherize"
@@ -305,7 +214,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub btsExterior_Click(ByVal buttonIndex As Long)
     updatePreview
@@ -610,8 +519,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
         
     'Create the preview
     cmdBar.markPreviewStatus True

@@ -41,24 +41,26 @@ Begin VB.Form FormChromaBlur
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   4
-      Top             =   2040
+      TabIndex        =   3
+      Top             =   1680
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "blur radius"
       Min             =   0.1
       Max             =   200
       SigDigits       =   1
@@ -68,67 +70,40 @@ Begin VB.Form FormChromaBlur
       Height          =   360
       Index           =   0
       Left            =   6120
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   3150
       Width           =   5700
       _ExtentX        =   10054
-      _ExtentY        =   635
+      _ExtentY        =   582
       Caption         =   "good"
       Value           =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptQuality 
       Height          =   360
       Index           =   1
       Left            =   6120
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   3570
       Width           =   5700
       _ExtentX        =   10054
-      _ExtentY        =   635
+      _ExtentY        =   582
       Caption         =   "better"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.smartOptionButton OptQuality 
       Height          =   360
       Index           =   2
       Left            =   6120
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   3990
       Width           =   5700
       _ExtentX        =   10054
-      _ExtentY        =   635
+      _ExtentY        =   582
       Caption         =   "best"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "quality:"
+      Caption         =   "quality"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -139,12 +114,12 @@ Begin VB.Form FormChromaBlur
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   315
+      Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   2760
-      Width           =   795
+      Width           =   705
    End
    Begin VB.Label lblIDEWarning 
       BackStyle       =   0  'Transparent
@@ -160,32 +135,11 @@ Begin VB.Form FormChromaBlur
       ForeColor       =   &H000000FF&
       Height          =   1215
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   4440
       Visible         =   0   'False
       Width           =   5775
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "blur radius:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   1680
-      Width           =   1230
    End
 End
 Attribute VB_Name = "FormChromaBlur"
@@ -215,7 +169,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Track the active option button, so we can more easily pass it as a parameter when the user clicks OK
 Private qualityIndex As Long
@@ -391,8 +345,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'If the program is not compiled, display a special warning for this tool
     If Not g_IsProgramCompiled Then

@@ -24,13 +24,14 @@ Begin VB.Form FormMonochrome
    ScaleWidth      =   810
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.sliderTextCombo sltThreshold 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   7
-      Top             =   1320
+      TabIndex        =   6
+      Top             =   960
       Width           =   5925
       _ExtentX        =   10451
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "threshold"
       Min             =   1
       Max             =   254
       Value           =   127
@@ -40,7 +41,7 @@ Begin VB.Form FormMonochrome
    Begin PhotoDemon.smartCheckBox chkAutoThreshold 
       Height          =   330
       Left            =   6120
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   1860
       Width           =   5790
       _ExtentX        =   10213
@@ -70,7 +71,7 @@ Begin VB.Form FormMonochrome
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -80,7 +81,7 @@ Begin VB.Form FormMonochrome
       Height          =   615
       Index           =   0
       Left            =   6120
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   3840
       Width           =   2775
       _ExtentX        =   9763
@@ -91,7 +92,7 @@ Begin VB.Form FormMonochrome
       Height          =   615
       Index           =   1
       Left            =   9000
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   3840
       Width           =   2775
       _ExtentX        =   4895
@@ -120,27 +121,7 @@ Begin VB.Form FormMonochrome
    Begin VB.Label Label1 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "colors to use (click boxes to change):"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   4
-      Top             =   3480
-      Width           =   3945
-   End
-   Begin VB.Label lblDither 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "dithering technique:"
+      Caption         =   "final colors"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -154,13 +135,13 @@ Begin VB.Form FormMonochrome
       Height          =   285
       Left            =   6000
       TabIndex        =   3
-      Top             =   2520
-      Width           =   2130
+      Top             =   3480
+      Width           =   1155
    End
-   Begin VB.Label lblHeader 
+   Begin VB.Label lblDither 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "threshold:"
+      Caption         =   "dithering technique"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -174,8 +155,8 @@ Begin VB.Form FormMonochrome
       Height          =   285
       Left            =   6000
       TabIndex        =   2
-      Top             =   960
-      Width           =   1080
+      Top             =   2520
+      Width           =   2040
    End
 End
 Attribute VB_Name = "FormMonochrome"

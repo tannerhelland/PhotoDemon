@@ -37,7 +37,7 @@ Begin VB.Form FormFog
       EndProperty
       Height          =   615
       Left            =   6600
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   4920
       Width           =   4575
    End
@@ -62,13 +62,14 @@ Begin VB.Form FormFog
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltScale 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   4
-      Top             =   840
+      TabIndex        =   2
+      Top             =   600
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "scale"
       Min             =   1
       Max             =   100
       SigDigits       =   1
@@ -79,7 +80,7 @@ Begin VB.Form FormFog
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -87,26 +88,28 @@ Begin VB.Form FormFog
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltContrast 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   5
-      Top             =   1920
+      TabIndex        =   3
+      Top             =   1680
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "contrast"
       Max             =   100
       Value           =   50
       NotchPosition   =   2
       NotchValueCustom=   50
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   6
-      Top             =   4080
+      TabIndex        =   4
+      Top             =   3840
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "quality"
       Min             =   1
       Max             =   8
       Value           =   5
@@ -114,104 +117,19 @@ Begin VB.Form FormFog
       NotchValueCustom=   5
    End
    Begin PhotoDemon.sliderTextCombo sltDensity 
-      Height          =   495
+      Height          =   720
       Left            =   6000
-      TabIndex        =   9
-      Top             =   3000
+      TabIndex        =   6
+      Top             =   2760
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "density"
       Min             =   1
       Max             =   100
       Value           =   50
       NotchPosition   =   2
       NotchValueCustom=   50
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "density:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   3
-      Left            =   6000
-      TabIndex        =   10
-      Top             =   2640
-      Width           =   840
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "quality:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
-      Left            =   6000
-      TabIndex        =   7
-      Top             =   3720
-      Width           =   795
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "contrast:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   1560
-      Width           =   930
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "scale:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   480
-      Width           =   600
    End
 End
 Attribute VB_Name = "FormFog"

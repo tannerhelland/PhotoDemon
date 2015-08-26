@@ -89,13 +89,14 @@ Begin VB.Form dialog_GradientEditor
          _ExtentY        =   873
       End
       Begin PhotoDemon.sliderTextCombo sltNodeOpacity 
-         Height          =   495
+         Height          =   720
          Left            =   4320
          TabIndex        =   6
-         Top             =   2580
+         Top             =   2220
          Width           =   3750
          _ExtentX        =   6615
-         _ExtentY        =   873
+         _ExtentY        =   1270
+         Caption         =   "opacity"
          Max             =   100
          Value           =   100
          NotchPosition   =   2
@@ -118,7 +119,7 @@ Begin VB.Form dialog_GradientEditor
          Width           =   12135
          _ExtentX        =   16536
          _ExtentY        =   556
-         Caption         =   "current node settings:"
+         Caption         =   "current node settings"
          FontSize        =   12
       End
       Begin PhotoDemon.pdLabel lblTitle 
@@ -129,39 +130,18 @@ Begin VB.Form dialog_GradientEditor
          Width           =   3900
          _ExtentX        =   16536
          _ExtentY        =   556
-         Caption         =   "color:"
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   315
-         Index           =   5
-         Left            =   4320
-         Top             =   2220
-         Width           =   3900
-         _ExtentX        =   16536
-         _ExtentY        =   556
-         Caption         =   "opacity:"
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   315
-         Index           =   6
-         Left            =   8280
-         Top             =   2220
-         Width           =   3900
-         _ExtentX        =   16536
-         _ExtentY        =   556
-         Caption         =   "position:"
+         Caption         =   "color"
          FontSize        =   12
       End
       Begin PhotoDemon.sliderTextCombo sltNodePosition 
-         Height          =   495
+         Height          =   720
          Left            =   8280
          TabIndex        =   7
-         Top             =   2580
+         Top             =   2220
          Width           =   3750
          _ExtentX        =   6615
-         _ExtentY        =   873
+         _ExtentY        =   1270
+         Caption         =   "position"
          Max             =   100
          SigDigits       =   2
          SliderTrackStyle=   1
@@ -177,7 +157,7 @@ Begin VB.Form dialog_GradientEditor
          Width           =   12135
          _ExtentX        =   16536
          _ExtentY        =   556
-         Caption         =   "full gradient settings:"
+         Caption         =   "full gradient settings"
          FontSize        =   12
       End
       Begin PhotoDemon.pdLabel lblTitle 
@@ -188,28 +168,18 @@ Begin VB.Form dialog_GradientEditor
          Width           =   7740
          _ExtentX        =   16536
          _ExtentY        =   556
-         Caption         =   "shape:"
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   315
-         Index           =   9
-         Left            =   8280
-         Top             =   3780
-         Width           =   4170
-         _ExtentX        =   16536
-         _ExtentY        =   556
-         Caption         =   "angle:"
+         Caption         =   "shape"
          FontSize        =   12
       End
       Begin PhotoDemon.sliderTextCombo sltAngle 
-         Height          =   495
+         Height          =   720
          Left            =   8280
          TabIndex        =   9
-         Top             =   4140
+         Top             =   3780
          Width           =   3750
-         _ExtentX        =   9975
-         _ExtentY        =   873
+         _ExtentX        =   6615
+         _ExtentY        =   1270
+         Caption         =   "angle"
          Max             =   360
          SigDigits       =   1
       End
@@ -221,7 +191,7 @@ Begin VB.Form dialog_GradientEditor
          Width           =   9255
          _ExtentX        =   16536
          _ExtentY        =   556
-         Caption         =   "node editor:"
+         Caption         =   "node editor"
          FontSize        =   12
       End
       Begin PhotoDemon.pdLabel lblInstructions 
@@ -244,7 +214,7 @@ Begin VB.Form dialog_GradientEditor
          Width           =   12135
          _ExtentX        =   21405
          _ExtentY        =   556
-         Caption         =   "additional tools:"
+         Caption         =   "additional tools"
          FontSize        =   12
       End
    End
@@ -303,7 +273,7 @@ Begin VB.Form dialog_GradientEditor
       Width           =   9255
       _ExtentX        =   16536
       _ExtentY        =   556
-      Caption         =   "preview:"
+      Caption         =   "preview"
       FontSize        =   12
    End
    Begin VB.PictureBox picContainer 
@@ -329,7 +299,7 @@ Begin VB.Form dialog_GradientEditor
       Width           =   9255
       _ExtentX        =   16536
       _ExtentY        =   556
-      Caption         =   "edit mode:"
+      Caption         =   "edit mode"
       FontSize        =   12
    End
 End
@@ -475,10 +445,8 @@ Private Sub btsShape_Click(ByVal buttonIndex As Long)
     
     'Show/hide the angle slider depending on the current shape
     If (buttonIndex = 0) Or (buttonIndex = 1) Then
-        lblTitle(9).Visible = True
         sltAngle.Visible = True
     Else
-        lblTitle(9).Visible = False
         sltAngle.Visible = False
     End If
     

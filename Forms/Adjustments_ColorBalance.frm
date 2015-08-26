@@ -53,7 +53,7 @@ Begin VB.Form FormColorBalance
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltRed 
-      Height          =   495
+      Height          =   405
       Left            =   6000
       TabIndex        =   8
       Top             =   1800
@@ -68,7 +68,7 @@ Begin VB.Form FormColorBalance
       GradientColorMiddle=   8881021
    End
    Begin PhotoDemon.sliderTextCombo sltGreen 
-      Height          =   495
+      Height          =   405
       Left            =   6000
       TabIndex        =   9
       Top             =   2760
@@ -82,7 +82,7 @@ Begin VB.Form FormColorBalance
       GradientColorRight=   65280
    End
    Begin PhotoDemon.sliderTextCombo sltBlue 
-      Height          =   495
+      Height          =   405
       Left            =   6000
       TabIndex        =   10
       Top             =   3720
@@ -117,7 +117,7 @@ Begin VB.Form FormColorBalance
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "new balance:"
+      Caption         =   "new balance"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -133,12 +133,12 @@ Begin VB.Form FormColorBalance
       Left            =   5880
       TabIndex        =   13
       Top             =   1440
-      Width           =   1395
+      Width           =   1305
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "tonal range:"
+      Caption         =   "tonal range"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -154,7 +154,7 @@ Begin VB.Form FormColorBalance
       Left            =   5880
       TabIndex        =   11
       Top             =   120
-      Width           =   1290
+      Width           =   1200
    End
    Begin VB.Label Label1 
       AutoSize        =   -1  'True

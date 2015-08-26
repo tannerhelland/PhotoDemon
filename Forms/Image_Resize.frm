@@ -26,20 +26,20 @@ Begin VB.Form FormResize
    Begin PhotoDemon.pdComboBox cmbFit 
       Height          =   375
       Left            =   840
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   5640
       Width           =   7935
-      _ExtentX        =   13996
-      _ExtentY        =   635
+      _extentx        =   13996
+      _extenty        =   635
    End
    Begin PhotoDemon.pdComboBox cboResampleFriendly 
       Height          =   375
       Left            =   840
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   3960
       Width           =   7935
-      _ExtentX        =   13996
-      _ExtentY        =   635
+      _extentx        =   13996
+      _extenty        =   635
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -48,36 +48,20 @@ Begin VB.Form FormResize
       TabIndex        =   0
       Top             =   6750
       Width           =   9630
-      _ExtentX        =   16986
-      _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   14802140
+      _extentx        =   16986
+      _extenty        =   1323
+      font            =   "Image_Resize.frx":0000
+      backcolor       =   14802140
    End
    Begin PhotoDemon.smartResize ucResize 
       Height          =   2850
       Left            =   480
       TabIndex        =   1
-      Top             =   480
+      Top             =   360
       Width           =   8775
-      _ExtentX        =   15478
-      _ExtentY        =   5027
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   15478
+      _extenty        =   5027
+      font            =   "Image_Resize.frx":0028
    End
    Begin PhotoDemon.smartCheckBox chkNames 
       Height          =   300
@@ -85,9 +69,9 @@ Begin VB.Form FormResize
       TabIndex        =   2
       Top             =   4440
       Width           =   7905
-      _ExtentX        =   13944
-      _ExtentY        =   582
-      Caption         =   "show technical names"
+      _extentx        =   13944
+      _extenty        =   582
+      caption         =   "show technical names"
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   495
@@ -97,46 +81,24 @@ Begin VB.Form FormResize
       Top             =   6120
       Visible         =   0   'False
       Width           =   7935
-      _ExtentX        =   13996
-      _ExtentY        =   873
+      _extentx        =   13996
+      _extenty        =   873
    End
    Begin PhotoDemon.pdComboBox cboResampleTechnical 
       Height          =   375
       Left            =   840
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   3960
       Width           =   7935
-      _ExtentX        =   13996
-      _ExtentY        =   635
-   End
-   Begin VB.Label lblSize 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "new size:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   480
-      TabIndex        =   6
-      Top             =   120
-      Width           =   990
+      _extentx        =   13996
+      _extenty        =   635
    End
    Begin VB.Label lblFit 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "when changing aspect ratio, fit image to new size by:"
+      Caption         =   "when changing aspect ratio, fit image to new size by"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -151,14 +113,14 @@ Begin VB.Form FormResize
       Left            =   480
       TabIndex        =   4
       Top             =   5160
-      Width           =   5655
+      Width           =   5565
    End
    Begin VB.Label lblResample 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "resize quality:"
+      Caption         =   "resize quality"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -173,7 +135,7 @@ Begin VB.Form FormResize
       Left            =   480
       TabIndex        =   3
       Top             =   3480
-      Width           =   1470
+      Width           =   1380
    End
 End
 Attribute VB_Name = "FormResize"

@@ -98,21 +98,22 @@ Begin VB.Form FormRotateDistort
       Caption         =   "speed"
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   495
+      Height          =   720
       Left            =   6000
       TabIndex        =   7
-      Top             =   1920
+      Top             =   1680
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   873
+      _ExtentY        =   1270
+      Caption         =   "angle"
       Min             =   -360
       Max             =   360
       SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltXCenter 
-      Height          =   495
+      Height          =   405
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   600
       Width           =   2895
       _ExtentX        =   5106
@@ -124,9 +125,9 @@ Begin VB.Form FormRotateDistort
       NotchValueCustom=   0.5
    End
    Begin PhotoDemon.sliderTextCombo sltYCenter 
-      Height          =   495
+      Height          =   405
       Left            =   9000
-      TabIndex        =   11
+      TabIndex        =   10
       Top             =   600
       Width           =   2895
       _ExtentX        =   5106
@@ -154,7 +155,7 @@ Begin VB.Form FormRotateDistort
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   13
+      TabIndex        =   12
       Top             =   240
       Width           =   2205
    End
@@ -165,7 +166,7 @@ Begin VB.Form FormRotateDistort
       Height          =   435
       Index           =   0
       Left            =   6120
-      TabIndex        =   12
+      TabIndex        =   11
       Top             =   1170
       Width           =   5655
       WordWrap        =   -1  'True
@@ -187,39 +188,17 @@ Begin VB.Form FormRotateDistort
       Height          =   885
       Index           =   1
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   4800
       Width           =   5925
       WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblAmount 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "angle:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   8
-      Top             =   1560
-      Width           =   660
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
       AutoSize        =   -1  'True
       BackColor       =   &H80000005&
       BackStyle       =   0  'Transparent
-      Caption         =   "render emphasis:"
+      Caption         =   "render emphasis"
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   12
@@ -235,7 +214,7 @@ Begin VB.Form FormRotateDistort
       Left            =   6000
       TabIndex        =   6
       Top             =   3570
-      Width           =   1845
+      Width           =   1755
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -283,7 +262,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub cmbEdges_Click()
     updatePreview
@@ -333,8 +312,8 @@ End Sub
 Private Sub Form_Activate()
 
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Provide an explanation on why this tool doesn't enlarge the canvas to match
     lblExplanation(1).Caption = g_Language.TranslateMessage("If you want to enlarge the canvas to fit the rotated image, please use the Image -> Rotate menu instead.")

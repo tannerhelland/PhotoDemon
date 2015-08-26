@@ -41,25 +41,17 @@ Begin VB.Form FormColorize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.smartCheckBox chkSaturation 
       Height          =   330
       Left            =   6240
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   2760
       Width           =   5790
       _ExtentX        =   10213
       _ExtentY        =   582
       Caption         =   "preserve existing saturation"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -71,37 +63,18 @@ Begin VB.Form FormColorize
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltHue 
-      Height          =   495
-      Left            =   6120
-      TabIndex        =   4
-      Top             =   2040
-      Width           =   6015
-      _ExtentX        =   10398
-      _ExtentY        =   873
+      Height          =   720
+      Left            =   6000
+      TabIndex        =   3
+      Top             =   1800
+      Width           =   6135
+      _ExtentX        =   10821
+      _ExtentY        =   1270
+      Caption         =   "color to apply"
       Max             =   359
       SliderTrackStyle=   4
       Value           =   180
       NotchPosition   =   1
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "color to apply:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   1680
-      Width           =   1545
    End
 End
 Attribute VB_Name = "FormColorize"
@@ -127,7 +100,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub cmdBar_OKClick()
     Process "Colorize", , buildParams(sltHue.Value, CBool(chkSaturation.Value)), UNDO_LAYER
@@ -230,8 +203,8 @@ End Sub
 Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
 End Sub
 
