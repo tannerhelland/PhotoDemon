@@ -25,8 +25,8 @@ Begin VB.UserControl sliderTextCombo
       TabIndex        =   1
       Top             =   45
       Width           =   960
-      _ExtentX        =   1693
-      _ExtentY        =   741
+      _extentx        =   1693
+      _extenty        =   741
    End
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
@@ -101,11 +101,11 @@ Public Event LostFocusAPI()
 Private WithEvents cFocusDetector As pdFocusDetector
 Attribute cFocusDetector.VB_VarHelpID = -1
 
-'Flicker-free window painters for both the slider, and the text region
+'Flicker-free window painters for both the slider, and the background region
 Private WithEvents cSliderPainter As pdWindowPainter
 Attribute cSliderPainter.VB_VarHelpID = -1
-Private WithEvents cTextPainter As pdWindowPainter
-Attribute cTextPainter.VB_VarHelpID = -1
+Private WithEvents cBackgroundPainter As pdWindowPainter
+Attribute cBackgroundPainter.VB_VarHelpID = -1
 
 'API technique for drawing a focus rectangle; used only for designer mode (see the Paint method for details)
 Private Type RECT
@@ -126,19 +126,13 @@ Private controlVal As Double, controlMin As Double, controlMax As Double
 'The number of significant digits for this control.  0 means integer values.
 Private significantDigits As Long
 
-'If the current caption is longer than the underlying slider control, we must dynamically shrink the captions' font size
-' until it fits inside the control.  This variable represents the *currently in-use caption font size*, not the originally
-' given caption font size property.
-Private m_FontSizeCaptionCurrent As Long
+'pdCaption manages all caption-related settings, so we don't have to.  (Note that this includes not just the caption, but related
+' settings like caption font size.)
+Private m_Caption As pdCaption
+Attribute m_Caption.VB_VarHelpID = -1
 
-'Current caption string (persistent within the IDE, but must be set at run-time for Unicode languages).  Note that m_CaptionEn
-' is the ENGLISH CAPTION ONLY.  A translated caption will be stored in m_CaptionTranslated; the translated copy will be updated
-' by any caption change, or by a call to updateAgainstCurrentTheme.
-Private m_CaptionEn As String
-Private m_CaptionTranslated As String
-
-'Two font sizes are currently supported: one for the control caption, and one for the text entry area.
-Private m_FontSizeCaption As Single
+'Two font sizes are currently supported: one for the control caption, and one for the text entry area.  pdCaption manages the
+' caption one for us, so only the text up/down (TUD) font size is relevant here.
 Private m_FontSizeTUD As Single
 
 'If the text box is initiating a value change, we must track that so as to not overwrite the user's entry mid-typing
@@ -217,12 +211,15 @@ Private m_SliderTrackRect As RECTF
 'Internal gradient DIB.  This is recreated as necessary to reflect the gradient colors and positions.
 Private m_GradientDIB As pdDIB
 
-'Full slider DIB, with gradient, outline, notch (if any).  The only thing missing is the slider knob, which is added to the
-' final buffer in a separate step (as it is the most likely to require changes!)
+'Full slider background DIB, with gradient, outline, notch (if any).  The only thing missing is the slider knob, which is added
+' to the final buffer in a separate step (as it is the most likely to require changes!)
 Private m_SliderBackgroundDIB As pdDIB
 
-'Final back buffer DIB, with the entire slider composited atop it
-Private m_BackBuffer As pdDIB
+'This control manages two buffers: one for the control itself (with text painted atop it), and one for the slider.  This improves
+' performance during redraws, as the smaller slider region is most likely to require repaints, so we can simply repaint it when
+' necessary instead of redrawing the entire control.
+Private m_BackBufferControl As pdDIB
+Private m_BackBufferSlider As pdDIB
 
 'Tracks whether the control (any component) has focus.  This is helpful as we must synchronize between VB's focus events and API
 ' focus events.  Every time an individual component gains focus, we increment this counter by 1.  Every time an individual component
@@ -232,9 +229,8 @@ Private m_ControlFocusCount As Long
 'Used to prevent recursive redraws
 Private m_InternalResizeActive As Boolean
 
-'If a caption is active, pdFont will handle all text rendering duties.
-Private m_TextRenderer As pdFont
-Private m_BackBufferText As pdDIB
+'If the control is currently visible, this will be set to TRUE.  This can be used to suppress redraw requests for hidden controls.
+Private m_ControlIsVisible As Boolean
 
 'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
 ' if present, will not be processed until run-time.
@@ -242,48 +238,12 @@ Private m_BackBufferText As pdDIB
 '                  but I can revisit in the future if it ever becomes relevant.
 Public Property Get Caption() As String
 Attribute Caption.VB_UserMemId = -518
-    Caption = m_CaptionEn
+    Caption = m_Caption.getCaptionEn
 End Property
 
 Public Property Let Caption(ByRef newCaption As String)
-
-    If StrComp(newCaption, m_CaptionEn, vbBinaryCompare) <> 0 Then
-        
-        m_CaptionEn = newCaption
-        
-        'During run-time, apply translations as necessary
-        If g_IsProgramRunning Then
-        
-            'See if translations are necessary.
-            Dim isTranslationActive As Boolean
-                
-            If Not (g_Language Is Nothing) Then
-                If g_Language.translationActive Then
-                    isTranslationActive = True
-                Else
-                    isTranslationActive = False
-                End If
-            Else
-                isTranslationActive = False
-            End If
-            
-            'Update the translated caption accordingly
-            If isTranslationActive Then
-                m_CaptionTranslated = g_Language.TranslateMessage(m_CaptionEn)
-            Else
-                m_CaptionTranslated = m_CaptionEn
-            End If
-        
-        Else
-            m_CaptionTranslated = m_CaptionEn
-        End If
-        
-        PropertyChanged "Caption"
-        
-        updateControlLayout
-        
-    End If
-        
+    If m_Caption.setCaption(newCaption) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then updateControlLayout
+    PropertyChanged "Caption"
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
@@ -306,15 +266,12 @@ Public Property Let Enabled(ByVal newValue As Boolean)
 End Property
 
 Public Property Get FontSizeCaption() As Single
-    FontSizeCaption = m_FontSizeCaption
+    FontSizeCaption = m_Caption.getFontSize
 End Property
 
 Public Property Let FontSizeCaption(ByVal newSize As Single)
-    If m_FontSizeCaption <> newSize Then
-        m_FontSizeCaption = newSize
-        PropertyChanged "FontSizeCaption"
-        updateAgainstCurrentTheme
-    End If
+    If m_Caption.setFontSize(newSize) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then updateControlLayout
+    PropertyChanged "FontSizeCaption"
 End Property
 
 Public Property Get FontSizeTUD() As Single
@@ -610,7 +567,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
             m_InitY = y - sliderY
             
             'Force an immediate redraw (instead of waiting for WM_PAINT to process)
-            BitBlt picScroll.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+            BitBlt picScroll.hDC, 0, 0, m_BackBufferSlider.getDIBWidth, m_BackBufferSlider.getDIBHeight, m_BackBufferSlider.getDIBDC, 0, 0, vbSrcCopy
             
         End If
     
@@ -631,7 +588,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         Value = (controlMax - controlMin) * (((x + m_InitX) - getTrackMinPos) / (getTrackMaxPos - getTrackMinPos)) + controlMin
         
         'Force an immediate redraw (instead of waiting for WM_PAINT to process)
-        BitBlt picScroll.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt picScroll.hDC, 0, 0, m_BackBufferSlider.getDIBWidth, m_BackBufferSlider.getDIBHeight, m_BackBufferSlider.getDIBDC, 0, 0, vbSrcCopy
         
     'If the LMB is not down, modify the cursor according to its position relative to the slider
     Else
@@ -684,13 +641,13 @@ End Function
 'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
 ' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
 Private Sub cSliderPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
-    BitBlt picScroll.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
+    BitBlt picScroll.hDC, winLeft, winTop, winWidth, winHeight, m_BackBufferSlider.getDIBDC, winLeft, winTop, vbSrcCopy
 End Sub
 
-Private Sub cTextPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
+Private Sub cBackgroundPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
     
     If Not m_InternalResizeActive Then
-        BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBufferText.getDIBDC, winLeft, winTop, vbSrcCopy
+        BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBufferControl.getDIBDC, winLeft, winTop, vbSrcCopy
     End If
     
 End Sub
@@ -718,6 +675,10 @@ Private Sub UserControl_GotFocus()
     evaluateFocusCount True
 End Sub
 
+Private Sub UserControl_Hide()
+    m_ControlIsVisible = False
+End Sub
+
 Private Sub UserControl_Initialize()
     
     'When not in design mode, initialize a tracker for mouse and keyboard events
@@ -727,8 +688,8 @@ Private Sub UserControl_Initialize()
         Set cSliderPainter = New pdWindowPainter
         cSliderPainter.startPainter picScroll.hWnd
         
-        Set cTextPainter = New pdWindowPainter
-        cTextPainter.startPainter UserControl.hWnd
+        Set cBackgroundPainter = New pdWindowPainter
+        cBackgroundPainter.startPainter UserControl.hWnd
         
         'Set up mouse events
         Set cMouseEvents = New pdInputMouse
@@ -758,9 +719,11 @@ Private Sub UserControl_Initialize()
     
     'Initialize various back buffers and background DIBs
     Set m_SliderBackgroundDIB = New pdDIB
-    Set m_BackBuffer = New pdDIB
+    Set m_BackBufferSlider = New pdDIB
+    Set m_BackBufferControl = New pdDIB
     
-    Set m_BackBufferText = New pdDIB
+    'Prep the caption object
+    Set m_Caption = New pdCaption
         
 End Sub
 
@@ -805,10 +768,8 @@ Private Sub UserControl_Paint()
     
     'Provide some visual feedback in the IDE
     If Not g_IsProgramRunning Then
-    
-        BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBufferText.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBufferControl.getDIBDC, 0, 0, vbSrcCopy
         redrawSlider
-    
     End If
     
 End Sub
@@ -840,7 +801,9 @@ Private Sub UserControl_Resize()
 End Sub
 
 Private Sub UserControl_Show()
-    
+        
+    m_ControlIsVisible = True
+        
     'When the control is first made visible, remove the control's tooltip property and reassign it to the checkbox
     ' using a custom solution (which allows for linebreaks and theming).
     If Len(Extender.ToolTipText) <> 0 Then assignTooltip Extender.ToolTipText
@@ -848,6 +811,7 @@ Private Sub UserControl_Show()
     'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
     If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Or (curSliderStyle = HueSpectrum360) Then redrawInternalGradientDIB
     
+    updateControlLayout
     redrawSlider
         
 End Sub
@@ -856,9 +820,9 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 
     'Store all associated properties
     With PropBag
-        .WriteProperty "Caption", m_CaptionEn, ""
+        .WriteProperty "Caption", m_Caption.getCaptionEn, ""
         .WriteProperty "FontSizeTUD", m_FontSizeTUD, 10
-        .WriteProperty "FontSizeCaption", m_FontSizeCaption, 12
+        .WriteProperty "FontSizeCaption", m_Caption.getFontSize, 12
         .WriteProperty "Min", controlMin, 0
         .WriteProperty "Max", controlMax, 10
         .WriteProperty "SigDigits", significantDigits, 0
@@ -872,53 +836,6 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "NotchValueCustom", customNotchValue, 0
     End With
     
-End Sub
-
-Private Sub initializeTextRenderer()
-
-    If m_TextRenderer Is Nothing Then
-        
-        Set m_TextRenderer = New pdFont
-            
-        'Prep the font using default settings
-        With m_TextRenderer
-            
-            If g_IsProgramRunning Then .setFontFace g_InterfaceFont
-            
-            .setFontBold False
-            .setFontItalic False
-            .setFontStrikeout False
-            .setFontUnderline False
-            
-            .setFontSize FontSizeCaption
-            .setTextAlignment vbLeftJustify
-            
-        End With
-            
-    End If
-    
-    'Make sure the font has been created
-    If Not m_TextRenderer.hasFontBeenCreated Then m_TextRenderer.createFontObject
-    
-    'Set font color (which may change due to theming)
-    If g_IsProgramRunning Then
-        m_TextRenderer.setFontColor g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
-    Else
-        m_TextRenderer.setFontColor RGB(96, 96, 96)
-    End If
-        
-    'If the current caption + font size will overflow control boundaries, resize the font automatically
-    Dim newFontSize As Single
-    newFontSize = m_TextRenderer.getMaxFontSizeToFitStringWidth(m_CaptionTranslated, UserControl.ScaleWidth, Me.FontSizeCaption)
-    
-    With m_TextRenderer
-        If .getFontSize <> newFontSize Then
-            .deleteCurrentFont
-            .setFontSize newFontSize
-            .createFontObject
-        End If
-    End With
-
 End Sub
 
 'When the control is resized, the caption is changed, or font sizes for either the caption or text up/down are modified,
@@ -939,25 +856,23 @@ Private Sub updateControlLayout()
     Dim newControlHeight As Long
     
     'NB: order of operations is important in this function.  We first calculate all new size/position values.  When all new values
-    '    are known, we apply them in a single fell swoop to avoid the need for costly redraws.
+    '    are known, we apply them in a single fell swoop to avoid the need for costly intermediary redraws.
     
     'The first (and most complicated) size consideration is accounting for the presence of a control caption.  If no caption exists,
     ' we can bypass much of this function.
-    If Len(m_CaptionTranslated) <> 0 Then
-    
-        'Start by initializing our font object.  The initialization step will automatically determine a new font size, if the currently
-        ' requested font size results in text that overflows the control's boundarines.
-        initializeTextRenderer
+    If m_Caption.isCaptionActive Then
         
-        'We now have all the font information necessary to calculate caption positioning (and by extension, slider and
+        'Notify the caption renderer of our width.  It will auto-fit its font to match.
+        m_Caption.setControlWidth UserControl.ScaleWidth
+        
+        'We now have all the information necessary to calculate caption positioning (and by extension, slider and
         ' text up/down positioning, too!)
         
         'Calculate a new height for the usercontrol as a whole.  This is simple formula:
         ' (height of text up/down) + (2 px padding around text up/down) + (height of caption) + (1 px padding around caption)
         Dim textHeight As Long
-        textHeight = m_TextRenderer.getHeightOfString(m_CaptionTranslated)
+        textHeight = m_Caption.getCaptionHeight()
         newControlHeight = tudPrimary.Height + fixDPI(4) + textHeight + fixDPI(2)
-        If UserControl.Extender.Height <> newControlHeight Then UserControl.Extender.Height = newControlHeight
         
         'Calculate a new top position for the slider box (which will be vertically centered in the space below the caption)
         newTop_Slider = ((newControlHeight - (textHeight + fixDPI(4))) - tudPrimary.Height) \ 2
@@ -968,12 +883,14 @@ Private Sub updateControlLayout()
         
         'Start by setting the control height
         newControlHeight = tudPrimary.Height + fixDPI(4)
-        If UserControl.Extender.Height <> newControlHeight Then UserControl.Extender.Height = newControlHeight
         
         'Center the slider box inside the newly calculated height
         newTop_Slider = (newControlHeight - picScroll.Height) \ 2
                 
     End If
+    
+    'Apply the new height
+    If UserControl.Extender.Height <> newControlHeight Then UserControl.Extender.Height = newControlHeight
     
     'With the control correctly sized, prep the back buffer to match
     Dim controlBackgroundColor As Long
@@ -983,20 +900,14 @@ Private Sub updateControlLayout()
         controlBackgroundColor = vbWhite
     End If
     
-    If (m_BackBufferText.getDIBWidth <> UserControl.ScaleWidth) Or (m_BackBufferText.getDIBHeight <> UserControl.ScaleHeight) Or (Not g_IsProgramRunning) Then
-        m_BackBufferText.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, controlBackgroundColor
+    If (m_BackBufferControl.getDIBWidth <> UserControl.ScaleWidth) Or (m_BackBufferControl.getDIBHeight <> UserControl.ScaleHeight) Or (Not g_IsProgramRunning) Then
+        m_BackBufferControl.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, controlBackgroundColor
     Else
-        GDI_Plus.GDIPlusFillDIBRect m_BackBufferText, 0, 0, m_BackBufferText.getDIBWidth, m_BackBufferText.getDIBHeight, controlBackgroundColor
+        GDI_Plus.GDIPlusFillDIBRect m_BackBufferControl, 0, 0, m_BackBufferControl.getDIBWidth, m_BackBufferControl.getDIBHeight, controlBackgroundColor
     End If
     
     'If text exists, paint it onto the newly created back buffer
-    If Len(m_CaptionTranslated) <> 0 Then
-        
-        m_TextRenderer.attachToDC m_BackBufferText.getDIBDC
-        m_TextRenderer.fastRenderText 1, 1, m_CaptionTranslated
-        m_TextRenderer.releaseFromDC
-        
-    End If
+    If m_Caption.isCaptionActive Then m_Caption.drawCaption m_BackBufferControl.getDIBDC, 1, 1
     
     'With height correctly set, we next want to left-align the TUD against the slider region
     newLeft_TUD = UserControl.ScaleWidth - (tudPrimary.Width + fixDPI(2))
@@ -1034,9 +945,9 @@ Private Sub updateControlLayout()
     
     'Paint the background text buffer to the screen, as relevant
     If g_IsProgramRunning Then
-        cTextPainter.requestRepaint
+        cBackgroundPainter.requestRepaint
     Else
-        BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBufferText.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBufferControl.getDIBDC, 0, 0, vbSrcCopy
     End If
     
     'Reset the redraw flag, and request a background repaint
@@ -1062,8 +973,8 @@ Private Sub redrawSlider()
     End If
     
     'Initialize the back buffer as well
-    If (m_BackBuffer.getDIBWidth <> m_SliderAreaWidth) Or (m_BackBuffer.getDIBHeight <> m_SliderAreaHeight) Then
-        m_BackBuffer.createBlank m_SliderAreaWidth, m_SliderAreaHeight, 24, 0
+    If (m_BackBufferSlider.getDIBWidth <> m_SliderAreaWidth) Or (m_BackBufferSlider.getDIBHeight <> m_SliderAreaHeight) Then
+        m_BackBufferSlider.createBlank m_SliderAreaWidth, m_SliderAreaHeight, 24, 0
     End If
         
     'There are a few components to the slider:
@@ -1147,7 +1058,7 @@ End Sub
 Private Sub drawSliderKnob()
 
     'Copy the background DIB into the back buffer
-    BitBlt m_BackBuffer.getDIBDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_SliderBackgroundDIB.getDIBDC, 0, 0, vbSrcCopy
+    BitBlt m_BackBufferSlider.getDIBDC, 0, 0, m_BackBufferSlider.getDIBWidth, m_BackBufferSlider.getDIBHeight, m_SliderBackgroundDIB.getDIBDC, 0, 0, vbSrcCopy
     
     'The slider itself is only drawn if the control is enabled; otherwise, we do not display it at all.
     If Me.Enabled Then
@@ -1183,26 +1094,26 @@ Private Sub drawSliderKnob()
             getCustomValueCoordinates relevantMin, customX, customY
             
             'Draw a highlighted line between the slider position and our calculated relevant minimum
-            GDI_Plus.GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, customX, customY, relevantSliderPosX, customY, sliderEdgeColor, 255, m_trackDiameter + 1, True, LineCapRound
+            GDI_Plus.GDIPlusDrawLineToDC m_BackBufferSlider.getDIBDC, customX, customY, relevantSliderPosX, customY, sliderEdgeColor, 255, m_trackDiameter + 1, True, LineCapRound
             
         End If
         
         'Draw the background (interior fill) circle of the slider
-        GDI_Plus.GDIPlusFillEllipseToDC m_BackBuffer.getDIBDC, relevantSliderPosX - (m_sliderDiameter \ 2), relevantSliderPosY - (m_sliderDiameter \ 2), m_sliderDiameter, m_sliderDiameter, sliderBackgroundColor, True
+        GDI_Plus.GDIPlusFillEllipseToDC m_BackBufferSlider.getDIBDC, relevantSliderPosX - (m_sliderDiameter \ 2), relevantSliderPosY - (m_sliderDiameter \ 2), m_sliderDiameter, m_sliderDiameter, sliderBackgroundColor, True
         
         'Draw the edge (exterior) circle around the slider
-        GDI_Plus.GDIPlusDrawCircleToDC m_BackBuffer.getDIBDC, relevantSliderPosX, relevantSliderPosY, m_sliderDiameter \ 2, sliderEdgeColor, 255, 1.5, True
+        GDI_Plus.GDIPlusDrawCircleToDC m_BackBufferSlider.getDIBDC, relevantSliderPosX, relevantSliderPosY, m_sliderDiameter \ 2, sliderEdgeColor, 255, 1.5, True
         
     End If
     
     'Paint the buffer to the screen
-    If g_IsProgramRunning Then cSliderPainter.requestRepaint Else BitBlt picScroll.hDC, 0, 0, picScroll.ScaleWidth, picScroll.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    If g_IsProgramRunning Then cSliderPainter.requestRepaint Else BitBlt picScroll.hDC, 0, 0, picScroll.ScaleWidth, picScroll.ScaleHeight, m_BackBufferSlider.getDIBDC, 0, 0, vbSrcCopy
     
 End Sub
 
 'Post-translation, we can request an immediate refresh
 Public Sub requestRefresh()
-    cTextPainter.requestRepaint
+    cBackgroundPainter.requestRepaint
     cSliderPainter.requestRepaint
 End Sub
 
@@ -1499,25 +1410,8 @@ Public Sub updateAgainstCurrentTheme()
         'Our tooltip object must also be refreshed (in case the language has changed)
         toolTipManager.updateAgainstCurrentTheme
         
-        'See if translations are necessary
-        Dim isTranslationActive As Boolean
-            
-        If Not (g_Language Is Nothing) Then
-            If g_Language.translationActive Then
-                isTranslationActive = True
-            Else
-                isTranslationActive = False
-            End If
-        Else
-            isTranslationActive = False
-        End If
-        
-        'Update the translated caption accordingly
-        If isTranslationActive Then
-            m_CaptionTranslated = g_Language.TranslateMessage(m_CaptionEn)
-        Else
-            m_CaptionTranslated = m_CaptionEn
-        End If
+        'The caption manager will also refresh itself
+        m_Caption.updateAgainstCurrentTheme
         
     End If
     
@@ -1528,7 +1422,6 @@ Public Sub updateAgainstCurrentTheme()
     redrawSlider
     
 End Sub
-
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)

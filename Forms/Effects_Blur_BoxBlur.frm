@@ -28,8 +28,8 @@ Begin VB.Form FormBoxBlur
       Left            =   6000
       TabIndex        =   4
       Top             =   2040
-      Width           =   5895
-      _ExtentX        =   10398
+      Width           =   5880
+      _ExtentX        =   10372
       _ExtentY        =   1270
       Caption         =   "box width"
       Min             =   1
@@ -60,8 +60,8 @@ Begin VB.Form FormBoxBlur
       Left            =   6000
       TabIndex        =   5
       Top             =   3000
-      Width           =   5895
-      _ExtentX        =   10398
+      Width           =   5880
+      _ExtentX        =   10372
       _ExtentY        =   1270
       Caption         =   "box height"
       Min             =   1

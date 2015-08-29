@@ -28,9 +28,9 @@ Begin VB.Form FormBlackLight
       Left            =   6000
       TabIndex        =   2
       Top             =   2280
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   1217
+      Width           =   5880
+      _ExtentX        =   10372
+      _ExtentY        =   1270
       Caption         =   "intensity"
       Min             =   1
       SigDigits       =   2
