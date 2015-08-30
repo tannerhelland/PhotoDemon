@@ -492,7 +492,7 @@ Private Sub updatePreview()
     
     'Retrieve a tone-mapped image, using the master tone-map function
     If mini_FIHandle <> 0 Then
-        tmp_FIHandle = Plugin_FreeImage_Expanded_Interface.applyToneMapping(mini_FIHandle, getToneMapParamString())
+        tmp_FIHandle = Plugin_FreeImage_Interface.applyToneMapping(mini_FIHandle, getToneMapParamString())
     End If
     
     'If successful, create a pdDIB copy, render it to the screen, then kill our temporary FreeImage handle
@@ -500,7 +500,7 @@ Private Sub updatePreview()
     
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
-        If Plugin_FreeImage_Expanded_Interface.getPDDibFromFreeImageHandle(tmp_FIHandle, tmpDIB) Then
+        If Plugin_FreeImage_Interface.getPDDibFromFreeImageHandle(tmp_FIHandle, tmpDIB) Then
             
             'Premultiply as necessary
             If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.setAlphaPremultiplication True

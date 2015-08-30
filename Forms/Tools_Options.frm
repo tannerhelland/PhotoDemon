@@ -87,6 +87,204 @@ Begin VB.Form FormPreferences
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   6480
+      Index           =   5
+      Left            =   3000
+      MousePointer    =   1  'Arrow
+      ScaleHeight     =   432
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   553
+      TabIndex        =   11
+      Top             =   120
+      Width           =   8295
+      Begin PhotoDemon.pdComboBox cboAlphaCheckSize 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   14
+         Top             =   5250
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   582
+      End
+      Begin PhotoDemon.pdComboBox cboAlphaCheck 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   15
+         Top             =   4260
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   582
+      End
+      Begin PhotoDemon.pdComboBox cboMonitors 
+         Height          =   330
+         Left            =   780
+         TabIndex        =   17
+         Top             =   1950
+         Width           =   7440
+         _ExtentX        =   13123
+         _ExtentY        =   582
+      End
+      Begin PhotoDemon.pdTextBox txtColorProfilePath 
+         Height          =   315
+         Left            =   780
+         TabIndex        =   18
+         Top             =   2790
+         Width           =   6495
+         _ExtentX        =   11456
+         _ExtentY        =   556
+         Text            =   "(none)"
+      End
+      Begin VB.CommandButton cmdColorProfilePath 
+         Caption         =   "..."
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   9.75
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   375
+         Left            =   7380
+         TabIndex        =   19
+         Top             =   2760
+         Width           =   810
+      End
+      Begin PhotoDemon.smartOptionButton optColorManagement 
+         Height          =   330
+         Index           =   0
+         Left            =   240
+         TabIndex        =   20
+         Top             =   840
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "use the system color profile"
+         Value           =   -1  'True
+      End
+      Begin PhotoDemon.colorSelector csAlphaOne 
+         Height          =   435
+         Left            =   6240
+         TabIndex        =   21
+         Top             =   4230
+         Width           =   945
+         _ExtentX        =   1667
+         _ExtentY        =   767
+      End
+      Begin PhotoDemon.smartCheckBox chkValidateAlpha 
+         Height          =   330
+         Left            =   240
+         TabIndex        =   58
+         Top             =   5760
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "automatically validate all incoming alpha channels"
+      End
+      Begin PhotoDemon.colorSelector csAlphaTwo 
+         Height          =   435
+         Left            =   7320
+         TabIndex        =   22
+         Top             =   4230
+         Width           =   945
+         _ExtentX        =   1667
+         _ExtentY        =   767
+      End
+      Begin PhotoDemon.smartOptionButton optColorManagement 
+         Height          =   330
+         Index           =   1
+         Left            =   240
+         TabIndex        =   23
+         Top             =   1200
+         Width           =   7920
+         _ExtentX        =   13970
+         _ExtentY        =   582
+         Caption         =   "use one or more custom color profiles"
+      End
+      Begin PhotoDemon.pdLabel lblColorManagement 
+         Height          =   240
+         Index           =   2
+         Left            =   780
+         Top             =   2430
+         Width           =   7440
+         _ExtentX        =   13123
+         _ExtentY        =   503
+         Caption         =   "color profile for selected monitor:"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblColorManagement 
+         Height          =   240
+         Index           =   1
+         Left            =   780
+         Top             =   1590
+         Width           =   7395
+         _ExtentX        =   13044
+         _ExtentY        =   503
+         Caption         =   "available monitors:"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblColorManagement 
+         Height          =   240
+         Index           =   0
+         Left            =   240
+         Top             =   480
+         Width           =   7965
+         _ExtentX        =   14049
+         _ExtentY        =   503
+         Caption         =   "when rendering images to the screen:"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   0
+         Left            =   0
+         Top             =   0
+         Width           =   8220
+         _ExtentX        =   14499
+         _ExtentY        =   503
+         Caption         =   "color management"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblAlphaCheckSize 
+         Height          =   240
+         Left            =   240
+         Top             =   4860
+         Width           =   7935
+         _ExtentX        =   13996
+         _ExtentY        =   503
+         Caption         =   "transparency checkerboard size:"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblAlphaCheck 
+         Height          =   240
+         Left            =   240
+         Top             =   3870
+         Width           =   8010
+         _ExtentX        =   14129
+         _ExtentY        =   503
+         Caption         =   "transparency checkerboard colors:"
+         ForeColor       =   4210752
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   285
+         Index           =   2
+         Left            =   0
+         Top             =   3420
+         Width           =   8205
+         _ExtentX        =   14473
+         _ExtentY        =   503
+         Caption         =   "transparency management"
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
       BackColor       =   &H80000005&
       BorderStyle     =   0  'None
@@ -1328,204 +1526,6 @@ Begin VB.Form FormPreferences
          _ExtentX        =   14499
          _ExtentY        =   503
          Caption         =   "canvas appearance"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   6480
-      Index           =   5
-      Left            =   3000
-      MousePointer    =   1  'Arrow
-      ScaleHeight     =   432
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   553
-      TabIndex        =   11
-      Top             =   120
-      Width           =   8295
-      Begin PhotoDemon.pdComboBox cboAlphaCheckSize 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   14
-         Top             =   5250
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   582
-      End
-      Begin PhotoDemon.pdComboBox cboAlphaCheck 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   15
-         Top             =   4260
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   582
-      End
-      Begin PhotoDemon.pdComboBox cboMonitors 
-         Height          =   330
-         Left            =   780
-         TabIndex        =   17
-         Top             =   1950
-         Width           =   7440
-         _ExtentX        =   13123
-         _ExtentY        =   582
-      End
-      Begin PhotoDemon.pdTextBox txtColorProfilePath 
-         Height          =   315
-         Left            =   780
-         TabIndex        =   18
-         Top             =   2790
-         Width           =   6495
-         _ExtentX        =   11456
-         _ExtentY        =   556
-         Text            =   "(none)"
-      End
-      Begin VB.CommandButton cmdColorProfilePath 
-         Caption         =   "..."
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   375
-         Left            =   7380
-         TabIndex        =   19
-         Top             =   2760
-         Width           =   810
-      End
-      Begin PhotoDemon.smartOptionButton optColorManagement 
-         Height          =   330
-         Index           =   0
-         Left            =   240
-         TabIndex        =   20
-         Top             =   840
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "use the system color profile"
-         Value           =   -1  'True
-      End
-      Begin PhotoDemon.colorSelector csAlphaOne 
-         Height          =   435
-         Left            =   6240
-         TabIndex        =   21
-         Top             =   4230
-         Width           =   945
-         _ExtentX        =   1667
-         _ExtentY        =   767
-      End
-      Begin PhotoDemon.smartCheckBox chkValidateAlpha 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   58
-         Top             =   5760
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "automatically validate all incoming alpha channels"
-      End
-      Begin PhotoDemon.colorSelector csAlphaTwo 
-         Height          =   435
-         Left            =   7320
-         TabIndex        =   22
-         Top             =   4230
-         Width           =   945
-         _ExtentX        =   1667
-         _ExtentY        =   767
-      End
-      Begin PhotoDemon.smartOptionButton optColorManagement 
-         Height          =   330
-         Index           =   1
-         Left            =   240
-         TabIndex        =   23
-         Top             =   1200
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "use one or more custom color profiles"
-      End
-      Begin PhotoDemon.pdLabel lblColorManagement 
-         Height          =   240
-         Index           =   2
-         Left            =   780
-         Top             =   2430
-         Width           =   7440
-         _ExtentX        =   13123
-         _ExtentY        =   503
-         Caption         =   "color profile for selected monitor:"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblColorManagement 
-         Height          =   240
-         Index           =   1
-         Left            =   780
-         Top             =   1590
-         Width           =   7395
-         _ExtentX        =   13044
-         _ExtentY        =   503
-         Caption         =   "available monitors:"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblColorManagement 
-         Height          =   240
-         Index           =   0
-         Left            =   240
-         Top             =   480
-         Width           =   7965
-         _ExtentX        =   14049
-         _ExtentY        =   503
-         Caption         =   "when rendering images to the screen:"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   0
-         Left            =   0
-         Top             =   0
-         Width           =   8220
-         _ExtentX        =   14499
-         _ExtentY        =   503
-         Caption         =   "color management"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblAlphaCheckSize 
-         Height          =   240
-         Left            =   240
-         Top             =   4860
-         Width           =   7935
-         _ExtentX        =   13996
-         _ExtentY        =   503
-         Caption         =   "transparency checkerboard size:"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblAlphaCheck 
-         Height          =   240
-         Left            =   240
-         Top             =   3870
-         Width           =   8010
-         _ExtentX        =   14129
-         _ExtentY        =   503
-         Caption         =   "transparency checkerboard colors:"
-         ForeColor       =   4210752
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   2
-         Left            =   0
-         Top             =   3420
-         Width           =   8205
-         _ExtentX        =   14473
-         _ExtentY        =   503
-         Caption         =   "transparency management"
          FontSize        =   12
          ForeColor       =   4210752
       End

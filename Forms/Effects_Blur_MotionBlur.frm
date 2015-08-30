@@ -236,7 +236,7 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
     'GDIPlusRotateDIB rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, tmpClampDIB, 0, 0, tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, -bAngle, InterpolationModeHighQualityBicubic, WrapModeClamp
     
     'FreeImage code:
-    'Plugin_FreeImage_Expanded_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, -bAngle, False, False
+    'Plugin_FreeImage_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, -bAngle, False, False
     
     'Internal pure-VB code:
     ' I have chosen to go with this mode for motion blur, because our custom clamping code ensures that no dead pixels
@@ -259,7 +259,7 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
         'GDIPlusRotateDIB rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, tmpClampDIB, 0, 0, tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, bAngle, InterpolationModeHighQualityBicubic, WrapModeClamp
         
         'FreeImage code:
-        'Plugin_FreeImage_Expanded_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, bAngle, False, False
+        'Plugin_FreeImage_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, bAngle, False, False
         
         'Internal pure-VB code:
         GDI_Plus.GDIPlusFillDIBRect rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, 0, 0

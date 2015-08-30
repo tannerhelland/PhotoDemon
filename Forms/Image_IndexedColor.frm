@@ -290,13 +290,13 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
             
             'If this is a preview, copy the FreeImage data into the global workingDIB object.
             If toPreview Then
-                Plugin_FreeImage_Expanded_Interface.getPDDibFromFreeImageHandle returnDIB, workingDIB
+                Plugin_FreeImage_Interface.getPDDibFromFreeImageHandle returnDIB, workingDIB
                 
             'This is not a preview.  Overwrite the current active layer with the quantized FreeImage data.
             Else
                 
                 SetProgBarVal 3
-                Plugin_FreeImage_Expanded_Interface.getPDDibFromFreeImageHandle returnDIB, pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB
+                Plugin_FreeImage_Interface.getPDDibFromFreeImageHandle returnDIB, pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB
                 pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB.convertTo32bpp
                 
                 'Ask FreeImage for the size of the quantized image's palette

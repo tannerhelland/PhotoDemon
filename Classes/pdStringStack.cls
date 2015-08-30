@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "String Stack" Class
 'Copyright 2014-2015 by Tanner Helland
 'Created: 05/February/15
-'Last updated: 23/May/15
-'Last update: add ability to remove duplicates during the sort step
+'Last updated: 30/August/15
+'Last update: improve performance of stack resetting by only allocating new memory if absolutely necessary
 '
 'Per its name, this class provides a simple interface to a stack comprised of strings.  PD often has need to deal
 ' with large string collections (iterating folders, image metadata, etc), and rather than manually settings up
@@ -483,12 +483,25 @@ End Sub
 'Clear the current stack.  An optional stack size can be passed; if it is not passed, it will default to INIT_STACK_SIZE
 Public Sub resetStack(Optional ByVal newStackSize As Long = INIT_STACK_SIZE)
     
+    On Error GoTo FailsafeReset
+    
     'Failsafe bounds check
     If newStackSize <= 0 Then newStackSize = INIT_STACK_SIZE
     
-    'Reset the array
+    'Reset the array (but only if necessary!)
+    If m_NumOfStrings <> 0 Then
+    
+        ReDim m_Strings(0 To newStackSize - 1) As String
+        m_NumOfStrings = 0
+        
+    Else
+        If UBound(m_Strings) <> newStackSize - 1 Then ReDim m_Strings(0 To newStackSize - 1) As String
+    End If
+    
+    Exit Sub
+    
+FailsafeReset:
     ReDim m_Strings(0 To newStackSize - 1) As String
-    m_NumOfStrings = 0
     
 End Sub
 
