@@ -35,7 +35,7 @@ Public Function isZLibAvailable() As Boolean
     
 End Function
 
-'Initialize zLib.  Do not call this until you have verified zLib's existence via isZLibAvailable(), above.
+'Initialize zLib.  Do not call this until you have verified zLib's existence (typically via isZLibAvailable(), above)
 Public Function initializeZLib() As Boolean
     
     'Manually load the DLL from the "g_PluginPath" folder (should be App.Path\Data\Plugins)

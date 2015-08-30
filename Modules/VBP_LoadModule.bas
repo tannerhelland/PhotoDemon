@@ -283,7 +283,8 @@ Public Sub LoadTheProgram()
     
     LoadMessage "Loading plugins..."
     
-    LoadPlugins
+    Plugin_Management.LoadAllPlugins
+    
     
     'If ExifTool was enabled successfully, ask it to double-check that its tag database has been created
     ' successfully at some point in the past.  If it hasn't, generate a new copy now.
@@ -313,7 +314,13 @@ Public Sub LoadTheProgram()
     #End If
     
     LoadMessage "Loading import/export libraries..."
-        
+    
+    'The FreeImage.dll plugin provides most of PD's advanced image format support, but we can also fall back on GDI+.
+    ' Prior to generating a list of supported formats, notify the image format class of GDI+ availability
+    ' (which was determined earlier in this function, prior to loading the splash screen).
+    g_ImageFormats.GDIPlusEnabled = g_GDIPlusAvailable
+    
+    'Generate a list of currently supported input/output formats, which may vary based on plugin version and availability
     g_ImageFormats.generateInputFormats
     g_ImageFormats.generateOutputFormats
     
@@ -2770,142 +2777,6 @@ Public Sub DrawAccelerators()
     FormMain.MnuLayerNew(3).Caption = FormMain.MnuLayerNew(3).Caption & vbTab & g_Language.TranslateMessage("Ctrl") & "+" & g_Language.TranslateMessage("Shift") & "+V"
     
     'NOTE: Drawing of MRU shortcuts is handled in the MRU module
-    
-End Sub
-
-'This subroutine handles the detection of the three core plugins strongly recommended for an optimal PhotoDemon
-' experience: zLib, EZTwain32, and FreeImage.  For convenience' sake, it also checks for GDI+ availability.
-Public Sub LoadPlugins()
-    
-    'Plugin files are located in the \Data\Plugins subdirectory
-    g_PluginPath = g_UserPreferences.getAppPath & "Plugins\"
-    
-    'Make sure the plugin path exists
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
-    If Not cFile.FolderExist(g_PluginPath) Then MkDir g_PluginPath
-        
-    'Check for image scanning
-    'First, make sure we have our dll file
-    If isEZTwainAvailable Then
-                
-        'If we do find the DLL, check to see if EZTwain has been forcibly disabled by the user.
-        If g_UserPreferences.GetPref_Boolean("Plugins", "Force EZTwain Disable", False) Then
-            g_ScanEnabled = False
-        Else
-            g_ScanEnabled = True
-        End If
-        
-    Else
-        
-        'If we can't find the DLL, hide the menu options and internally disable scanning
-        '(perhaps overkill, but it acts as a safeguard to prevent bad DLL-based crashes)
-        g_ScanEnabled = False
-        
-    End If
-    
-        'Additionally related to EZTwain - enable/disable the various scanner options contigent on EZTwain's enabling
-        FormMain.MnuScanImage.Visible = g_ScanEnabled
-        FormMain.MnuSelectScanner.Visible = g_ScanEnabled
-        FormMain.MnuImportSepBar1.Visible = g_ScanEnabled
-    
-    'Check for zLib compression capabilities
-    If Plugin_zLib_Interface.isZLibAvailable() Then
-    
-        'Check to see if zLib has been forcibly disabled.
-        If g_UserPreferences.GetPref_Boolean("Plugins", "Force ZLib Disable", False) Then
-            g_ZLibEnabled = False
-        Else
-            g_ZLibEnabled = Plugin_zLib_Interface.initializeZLib()
-        End If
-        
-    Else
-        g_ZLibEnabled = False
-    End If
-    
-    'Check for FreeImage file interface
-    If isFreeImageAvailable Then
-        
-        'Check to see if FreeImage has been forcibly disabled
-        If g_UserPreferences.GetPref_Boolean("Plugins", "Force FreeImage Disable", False) Then
-            g_ImageFormats.FreeImageEnabled = False
-        Else
-            g_ImageFormats.FreeImageEnabled = True
-            
-            'Because FreeImage is used so frequently throughout PhotoDemon, we only load it once - now - rather than having each
-            ' individual function load it.
-            g_FreeImageHandle = LoadLibrary(g_PluginPath & "FreeImage.dll")
-            
-            'Also new to v6.4 is better support for FreeImage errors.  A callback function is now used to track and report
-            ' any internal FreeImage errors.
-            #If DEBUGMODE = 1 Then
-                Outside_FreeImageV3.FreeImage_InitErrorHandler
-            #End If
-            
-        End If
-        
-    Else
-        g_ImageFormats.FreeImageEnabled = False
-    End If
-    
-        'Additionally related to FreeImage - enable/disable the arbitrary rotation option contingent on FreeImage's enabling
-        FormMain.MnuRotate(3).Visible = g_ImageFormats.FreeImageEnabled
-    
-    'Check for the PNGQuant interface
-    If isPngQuantAvailable Then
-        
-        'Check to see if PNGQuant has been forcibly disabled
-        If g_UserPreferences.GetPref_Boolean("Plugins", "Force PNGQuant Disable", False) Then
-            g_ImageFormats.pngQuantEnabled = False
-        Else
-            g_ImageFormats.pngQuantEnabled = True
-        End If
-        
-    Else
-        g_ImageFormats.pngQuantEnabled = False
-    End If
-    
-    'Check for ExifTool metadata interface
-    
-    'Before starting ExifTool, make sure any previous PhotoDemon sessions terminated safely.  If they did not, look for still-running
-    ' ExifTool instances, and terminate them before continuing.
-    If Not peekLastShutdownClean Then
-    
-        Message "Previous PhotoDemon session terminated unexpectedly.  Performing plugin clean-up..."
-        Plugin_ExifTool_Interface.killStrandedExifToolInstances
-        
-    End If
-    
-    'Continue with ExifTool initialization like normal...
-    If isExifToolAvailable Then
-        
-        'Check to see if ExifTool has been forcibly disabled
-        If g_UserPreferences.GetPref_Boolean("Plugins", "Force ExifTool Disable", False) Then
-            g_ExifToolEnabled = False
-        Else
-            
-            'Attempt to start ExifTool.  Because we interact with it asynchronously, we do not need to wait for an image to be loaded
-            ' before executing it.
-            If startExifTool() Then
-                g_ExifToolEnabled = True
-            Else
-                g_ExifToolEnabled = False
-            End If
-            
-        End If
-        
-    Else
-        g_ExifToolEnabled = False
-    End If
-    
-    'Finally, check GDI+ availability
-    If g_GDIPlusAvailable Then
-        g_ImageFormats.GDIPlusEnabled = True
-    Else
-        g_ImageFormats.GDIPlusEnabled = False
-    End If
-    
     
 End Sub
 

@@ -410,17 +410,18 @@ Public Property Let Value(ByVal newValue As Double)
         
         controlVal = newValue
                 
-        'While running, perform bounds-checking.  I disable this in the IDE to improve performance a bit.
+        'While running, perform bounds-checking.  (It's less important in the designer, as the assumption is that the
+        ' developer will momentarily bring everything into order.)
         If g_IsProgramRunning Then
                 
             'To prevent RTEs, perform an additional bounds check.  Don't assign the value if it's invalid.
             If controlVal < controlMin Then
-                Debug.Print "Control value forcibly changed to bring it in-bounds (too low)"
+                'Debug.Print "Control value forcibly changed to bring it in-bounds (too low)"
                 controlVal = controlMin
             End If
             
             If controlVal > controlMax Then
-                Debug.Print "Control value forcibly changed to bring it in-bounds (too high)"
+                'Debug.Print "Control value forcibly changed to bring it in-bounds (too high)"
                 controlVal = controlMax
             End If
             

@@ -458,7 +458,7 @@ Private Sub getMotionBlurredDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, By
     Else
     
         'FreeImage code:
-        Plugin_FreeImage_Expanded_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, -mbAngle, False, False
+        Plugin_FreeImage_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, -mbAngle, False, False
         
     End If
     
@@ -484,7 +484,7 @@ Private Sub getMotionBlurredDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, By
         Else
         
             'FreeImage code:
-            Plugin_FreeImage_Expanded_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, mbAngle, False, False
+            Plugin_FreeImage_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, mbAngle, False, False
             
         End If
         

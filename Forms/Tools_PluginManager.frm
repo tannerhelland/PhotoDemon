@@ -1924,7 +1924,7 @@ Private Sub CmdOK_Click()
     
     'If the user has changed any plugin enable/disable settings, a number of things must be refreshed program-wide
     If (pEnabled(0) <> g_ImageFormats.FreeImageEnabled) Or (pEnabled(1) <> g_ZLibEnabled) Or (pEnabled(2) <> g_ScanEnabled) Or (pEnabled(3) <> g_ImageFormats.pngQuantEnabled) Or (pEnabled(4) <> g_ExifToolEnabled) Then
-        LoadPlugins
+        Plugin_Management.LoadAllPlugins
         applyAllMenuIcons
         resetMenuIcons
         g_ImageFormats.generateInputFormats
@@ -1967,7 +1967,7 @@ Private Sub cmdReset_Click()
     g_UserPreferences.SetPref_Boolean "Plugins", "Force ExifTool Disable", False
     
     'Reload the plugins (from a system standpoint)
-    LoadPlugins
+    Plugin_Management.LoadAllPlugins
     
     'Reload the dialog
     LoadAllPluginSettings
