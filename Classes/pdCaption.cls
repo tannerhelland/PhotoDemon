@@ -60,6 +60,9 @@ Private m_ContainerWidth As Single
 'This class will auto-fit the current caption to the available container area.  If we've established
 Private m_FontSizeVerified As Boolean
 
+'Current caption color
+Private m_CaptionColor As Long
+
 'Get the current ENGLISH caption.
 Public Function getCaptionEn() As String
     getCaptionEn = m_CaptionEn
@@ -117,6 +120,12 @@ Public Function setCaption(ByVal newCaption As String) As Boolean
     End If
     
 End Function
+
+'Assign a new caption color.  Remember that color changes do not require rebuilding the font.  Also, font color changes are persistent
+' (by design), so they will not be overridden except by subsequent setCaptionColor calls.
+Public Sub setCaptionColor(ByVal newColor As Long)
+    m_CaptionColor = newColor
+End Sub
 
 Public Function getFontSize() As Single
     getFontSize = m_FontSizeCaption
@@ -195,14 +204,39 @@ Public Function getCaptionHeight() As Single
 End Function
 
 'When all font and caption settings are ready, use this to actually render the caption onto a target DC
-Public Sub drawCaption(ByVal dstDC As Long, Optional ByVal dstX As Long = 0, Optional ByVal dstY As Long = 0)
+Public Sub drawCaption(ByVal dstDC As Long, Optional ByVal dstX As Long = 0, Optional ByVal dstY As Long = 0, Optional ByVal customColor As Long = -1)
     
     'Make sure the current font object reflects all active settings
     If Not m_FontObjectClean Then rebuildFont
     If Not m_FontSizeVerified Then verifyFontSize
     
+    If customColor <> -1 Then
+        m_TextRenderer.setFontColor customColor
+    Else
+        m_TextRenderer.setFontColor m_CaptionColor
+    End If
+    
     m_TextRenderer.attachToDC dstDC
     m_TextRenderer.fastRenderText dstX, dstY, m_CaptionTranslated
+    m_TextRenderer.releaseFromDC
+    
+End Sub
+
+'Same as drawCaption, but centered on an arbitrary rect
+Friend Sub drawCaptionCentered(ByVal dstDC As Long, ByRef dstRect As RECT, Optional ByVal customColor As Long = -1)
+    
+    'Make sure the current font object reflects all active settings
+    If Not m_FontObjectClean Then rebuildFont
+    If Not m_FontSizeVerified Then verifyFontSize
+    
+    If customColor <> -1 Then
+        m_TextRenderer.setFontColor customColor
+    Else
+        m_TextRenderer.setFontColor m_CaptionColor
+    End If
+    
+    m_TextRenderer.attachToDC dstDC
+    m_TextRenderer.drawCenteredTextToRect m_CaptionTranslated, dstRect, True
     m_TextRenderer.releaseFromDC
     
 End Sub
@@ -235,12 +269,7 @@ Private Sub rebuildFont()
     'Next, set font properties that may change at run-time
     If g_IsProgramRunning Then m_TextRenderer.setFontFace g_InterfaceFont
     m_TextRenderer.setFontSize m_FontSizeCaption
-    
-    If g_IsProgramRunning Then
-        m_TextRenderer.setFontColor g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
-    Else
-        m_TextRenderer.setFontColor RGB(96, 96, 96)
-    End If
+    m_TextRenderer.setFontColor m_CaptionColor
     
     'Create the new font
     m_TextRenderer.createFontObject
@@ -325,9 +354,9 @@ Public Sub updateAgainstCurrentTheme()
     If m_FontObjectClean And Not (m_TextRenderer Is Nothing) Then
     
         If g_IsProgramRunning Then
-            m_TextRenderer.setFontColor g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
+            m_CaptionColor = g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
         Else
-            m_TextRenderer.setFontColor RGB(96, 96, 96)
+            m_CaptionColor = RGB(96, 96, 96)
         End If
         
     End If

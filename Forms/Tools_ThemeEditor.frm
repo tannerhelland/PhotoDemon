@@ -24,6 +24,17 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   707
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdButton cmdTest 
+      Height          =   615
+      Index           =   0
+      Left            =   240
+      TabIndex        =   8
+      Top             =   4320
+      Width           =   2055
+      _ExtentX        =   3625
+      _ExtentY        =   1085
+      Caption         =   "toggle visibility"
+   End
    Begin PhotoDemon.pdLabel lblExplanation 
       Height          =   855
       Left            =   120
@@ -35,86 +46,14 @@ Begin VB.Form FormThemeEditor
       FontSize        =   12
       Layout          =   3
    End
-   Begin VB.CommandButton cmdTextBoxTesting 
-      Caption         =   "add new drop-down entries"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   615
-      Index           =   4
-      Left            =   240
-      TabIndex        =   13
-      Top             =   5760
-      Width           =   2055
-   End
-   Begin VB.CommandButton cmdTextBoxTesting 
-      Caption         =   "delete drop-down entries"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   615
-      Index           =   5
-      Left            =   2400
-      TabIndex        =   12
-      Top             =   5760
-      Width           =   2055
-   End
    Begin PhotoDemon.pdComboBox pdComboBox1 
       Height          =   375
       Left            =   4800
-      TabIndex        =   6
+      TabIndex        =   2
       Top             =   6000
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   635
-   End
-   Begin VB.CommandButton cmdTextBoxTesting 
-      Caption         =   "toggle multiline"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   615
-      Index           =   3
-      Left            =   2400
-      TabIndex        =   5
-      Top             =   5040
-      Width           =   2055
-   End
-   Begin VB.CommandButton cmdTextBoxTesting 
-      Caption         =   "append random chars"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   615
-      Index           =   2
-      Left            =   240
-      TabIndex        =   4
-      Top             =   5040
-      Width           =   2055
    End
    Begin PhotoDemon.pdLabel pdLabelVerify 
       Height          =   1695
@@ -143,42 +82,6 @@ Begin VB.Form FormThemeEditor
       TabIndex        =   0
       Top             =   6480
       Width           =   4215
-   End
-   Begin VB.CommandButton cmdTextBoxTesting 
-      Caption         =   "toggle enablement"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   615
-      Index           =   1
-      Left            =   2400
-      TabIndex        =   3
-      Top             =   4320
-      Width           =   2055
-   End
-   Begin VB.CommandButton cmdTextBoxTesting 
-      Caption         =   "toggle visibility"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   615
-      Index           =   0
-      Left            =   240
-      TabIndex        =   2
-      Top             =   4320
-      Width           =   2055
    End
    Begin PhotoDemon.pdLabel pdLabelTitle 
       Height          =   285
@@ -230,7 +133,7 @@ Begin VB.Form FormThemeEditor
       Height          =   315
       Index           =   0
       Left            =   240
-      TabIndex        =   7
+      TabIndex        =   3
       Top             =   2640
       Width           =   9975
       _ExtentX        =   17595
@@ -240,7 +143,7 @@ Begin VB.Form FormThemeEditor
       Height          =   315
       Index           =   1
       Left            =   240
-      TabIndex        =   8
+      TabIndex        =   4
       Top             =   3000
       Width           =   9975
       _ExtentX        =   17595
@@ -250,7 +153,7 @@ Begin VB.Form FormThemeEditor
       Height          =   315
       Index           =   2
       Left            =   240
-      TabIndex        =   9
+      TabIndex        =   5
       Top             =   3360
       Width           =   9975
       _ExtentX        =   17595
@@ -261,7 +164,7 @@ Begin VB.Form FormThemeEditor
       Height          =   375
       Index           =   0
       Left            =   4800
-      TabIndex        =   10
+      TabIndex        =   6
       Top             =   6480
       Width           =   5655
       _ExtentX        =   9975
@@ -271,12 +174,67 @@ Begin VB.Form FormThemeEditor
       Height          =   375
       Index           =   1
       Left            =   4800
-      TabIndex        =   11
+      TabIndex        =   7
       Top             =   6960
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   635
       Enabled         =   0   'False
+   End
+   Begin PhotoDemon.pdButton cmdTest 
+      Height          =   615
+      Index           =   1
+      Left            =   2400
+      TabIndex        =   9
+      Top             =   4320
+      Width           =   2055
+      _ExtentX        =   3625
+      _ExtentY        =   1085
+      Caption         =   "toggle enablement"
+   End
+   Begin PhotoDemon.pdButton cmdTest 
+      Height          =   615
+      Index           =   2
+      Left            =   240
+      TabIndex        =   10
+      Top             =   5040
+      Width           =   2055
+      _ExtentX        =   3625
+      _ExtentY        =   1085
+      Caption         =   "append random chars"
+   End
+   Begin PhotoDemon.pdButton cmdTest 
+      Height          =   615
+      Index           =   3
+      Left            =   2400
+      TabIndex        =   11
+      Top             =   5040
+      Width           =   2055
+      _ExtentX        =   3625
+      _ExtentY        =   1085
+      Caption         =   "toggle multiline"
+   End
+   Begin PhotoDemon.pdButton cmdTest 
+      Height          =   615
+      Index           =   4
+      Left            =   240
+      TabIndex        =   12
+      Top             =   5760
+      Width           =   2055
+      _ExtentX        =   3625
+      _ExtentY        =   1085
+      Caption         =   "add drop-down entries"
+   End
+   Begin PhotoDemon.pdButton cmdTest 
+      Height          =   615
+      Index           =   5
+      Left            =   2400
+      TabIndex        =   13
+      Top             =   5760
+      Width           =   2055
+      _ExtentX        =   3625
+      _ExtentY        =   1085
+      Caption         =   "delete drop-down entries"
    End
 End
 Attribute VB_Name = "FormThemeEditor"
@@ -286,11 +244,11 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-Private Sub cmdTextBoxFake_GotFocus()
-    Debug.Print "Focus set to TabStop item " & cmdTextBoxFake.TabIndex
+Private Sub cmdTest_GotFocusAPI(Index As Integer)
+    Debug.Print "Focus set to TabStop item " & cmdTest(Index).TabIndex
 End Sub
 
-Private Sub cmdTextBoxTesting_Click(Index As Integer)
+Private Sub cmdTest_Click(Index As Integer)
     
     Select Case Index
         
@@ -330,10 +288,6 @@ Private Sub cmdTextBoxTesting_Click(Index As Integer)
         
     End Select
     
-End Sub
-
-Private Sub cmdTextBoxTesting_GotFocus(Index As Integer)
-    Debug.Print "Focus set to TabStop item " & cmdTextBoxTesting(Index).TabIndex
 End Sub
 
 Private Sub Form_Activate()
