@@ -151,7 +151,7 @@ Begin VB.Form dialog_GradientEditor
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
-         Index           =   7
+         Index           =   5
          Left            =   120
          Top             =   3360
          Width           =   12135
@@ -162,7 +162,7 @@ Begin VB.Form dialog_GradientEditor
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
-         Index           =   8
+         Index           =   6
          Left            =   360
          Top             =   3780
          Width           =   7740
@@ -208,7 +208,7 @@ Begin VB.Form dialog_GradientEditor
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
-         Index           =   10
+         Index           =   7
          Left            =   120
          Top             =   4800
          Width           =   12135
@@ -953,8 +953,6 @@ Private Sub syncUIToActiveNode()
             
                 lblTitle(0).Caption = g_Language.TranslateMessage("node settings:")
                 lblTitle(4).Visible = True
-                lblTitle(5).Visible = True
-                lblTitle(6).Visible = True
                 
                 csNode.Visible = True
                 sltNodeOpacity.Visible = True
@@ -974,8 +972,6 @@ Private Sub syncUIToActiveNode()
             'Hide all relevant controls
             lblTitle(0).Caption = g_Language.TranslateMessage("please select a node")
             lblTitle(4).Visible = False
-            lblTitle(5).Visible = False
-            lblTitle(6).Visible = False
             
             csNode.Visible = False
             sltNodeOpacity.Visible = False
