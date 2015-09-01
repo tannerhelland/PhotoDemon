@@ -126,25 +126,23 @@ Public Sub printViaWindowsPhotoPrinter()
 
     Message "Preparing image for printing..."
     
-    'Create a temporary copy of the currently active image
-    Dim tmpImage As pdImage
-    Set tmpImage = New pdImage
+    'Create a temporary copy of the currently active image, composited against a white background
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    pdImages(g_CurrentImage).getCompositedImage tmpDIB, False
+    If tmpDIB.getDIBColorDepth <> 24 Then tmpDIB.convertTo24bpp
     
-    pdImages(g_CurrentImage).getCompositedImage tmpImage.getActiveDIB
-    tmpImage.updateSize
-    
-    'Mark it as internal-use-only, so that it does not attempt to update the MRU, among other things
-    tmpImage.forInternalUseOnly = True
-    
-    'Mark it as TIFF format (good for printing)
-    tmpImage.currentFileFormat = FIF_TIFF
-    
+    'Windows itself handles the heavy lifting for printing.  We just write a temp file that contains the image data.
     Dim tmpFilename As String
-    tmpFilename = g_UserPreferences.GetTempPath & "PhotoDemon_print.tif"
+    tmpFilename = g_UserPreferences.GetTempPath & "PhotoDemon_print.png"
     
-    'Write out the TIFF to a temporary file.  Note that we request a color depth of 24bpp by passing the desired color depth
-    ' + 16 as a parameter.
-    PhotoDemon_SaveImage tmpImage, tmpFilename, , , "0", 24 + 16, True, True
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Preparing to print: " & tmpFilename
+    #End If
+    
+    'Write the temporary DIB out to a temporary PNG file, then free it
+    Saving.QuickSaveDIBAsPNG tmpFilename, tmpDIB
+    Set tmpDIB = Nothing
     
     'Store the print state, so we can perform clean-up as necessary at shutdown time
     m_userPrintedThisSession = True
