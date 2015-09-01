@@ -393,7 +393,7 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
                 If srcIsMeantAsLayer Then
                     Layer_Handler.loadImageAsNewLayer False, sFile(0), , True
                 Else
-                    LoadFileAsNewImage sFile, False, , getFilename(tmpDownloadFile)
+                    LoadFileAsNewImage sFile, False, , GetFilename(tmpDownloadFile)
                 End If
                 
                 'Delete the temporary file
@@ -505,6 +505,9 @@ Public Function loadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
     Dim sFile() As String
     Dim tmpString As String
     
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
     'Verify that the object being dragged is some sort of file or file list
     If Data.GetFormat(vbCFFiles) Then
         
@@ -515,10 +518,7 @@ Public Function loadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
         
         Dim countFiles As Long
         countFiles = 0
-        
-        Dim cFile As pdFSO
-        Set cFile = New pdFSO
-        
+                
         For Each oleFilename In Data.Files
             tmpString = oleFilename
             If (Len(tmpString) <> 0) And cFile.FileExist(tmpString) Then
@@ -615,7 +615,7 @@ Public Function loadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
                 Else
                     ReDim sFile(0) As String
                     sFile(0) = tmpDownloadFile
-                    LoadFileAsNewImage sFile, False, , getFilename(tmpDownloadFile)
+                    LoadFileAsNewImage sFile, False, , GetFilename(tmpDownloadFile)
                 End If
                 
                 'Delete the temporary file
