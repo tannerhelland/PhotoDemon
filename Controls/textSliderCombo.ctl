@@ -25,8 +25,8 @@ Begin VB.UserControl sliderTextCombo
       TabIndex        =   1
       Top             =   45
       Width           =   960
-      _ExtentX        =   1693
-      _ExtentY        =   741
+      _extentx        =   1693
+      _extenty        =   741
    End
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
