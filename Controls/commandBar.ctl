@@ -21,11 +21,21 @@ Begin VB.UserControl commandBar
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   637
    ToolboxBitmap   =   "commandBar.ctx":0000
+   Begin PhotoDemon.pdButton cmdOK 
+      Height          =   510
+      Left            =   6600
+      TabIndex        =   0
+      Top             =   120
+      Width           =   1365
+      _ExtentX        =   2408
+      _ExtentY        =   900
+      Caption         =   "&OK"
+   End
    Begin PhotoDemon.pdButtonToolbox cmdAction 
       Height          =   570
       Index           =   0
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   90
       Width           =   630
       _ExtentX        =   1111
@@ -35,33 +45,17 @@ Begin VB.UserControl commandBar
    Begin PhotoDemon.pdComboBox cboPreset 
       Height          =   345
       Left            =   1560
-      TabIndex        =   2
+      TabIndex        =   4
       Top             =   195
       Width           =   3135
       _ExtentX        =   5530
       _ExtentY        =   609
    End
-   Begin VB.CommandButton cmdCancel 
-      Caption         =   "&Cancel"
-      Height          =   510
-      Left            =   8070
-      TabIndex        =   1
-      Top             =   135
-      Width           =   1365
-   End
-   Begin VB.CommandButton cmdOK 
-      Caption         =   "&OK"
-      Height          =   510
-      Left            =   6600
-      TabIndex        =   0
-      Top             =   135
-      Width           =   1365
-   End
    Begin PhotoDemon.pdButtonToolbox cmdAction 
       Height          =   570
       Index           =   1
       Left            =   810
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   90
       Width           =   630
       _ExtentX        =   1111
@@ -78,6 +72,16 @@ Begin VB.UserControl commandBar
       _ExtentX        =   1111
       _ExtentY        =   1005
       AutoToggle      =   -1  'True
+   End
+   Begin PhotoDemon.pdButton cmdCancel 
+      Height          =   510
+      Left            =   8070
+      TabIndex        =   1
+      Top             =   120
+      Width           =   1365
+      _ExtentX        =   2408
+      _ExtentY        =   900
+      Caption         =   "&Cancel"
    End
 End
 Attribute VB_Name = "commandBar"
@@ -496,20 +500,17 @@ End Sub
 'When the font is changed, all controls must manually have their fonts set to match
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
     Set UserControl.Font = mFont
-    Set CmdOK.Font = mFont
-    Set CmdCancel.Font = mFont
-    cboPreset.fontSize = mFont.Size
+    cboPreset.FontSize = mFont.Size
 End Sub
 
-'Backcolor is used to control the color of the base user control; nothing else is affected by it
+'Backcolor is used to control the color of the base user control; nothing else is affected by it.
+' Note that - by design - the back color is hardcoded.  Still TODO is integrating it with theming.
 Public Property Get BackColor() As OLE_COLOR
-    'BackColor = UserControl.BackColor
     BackColor = RGB(220, 220, 225)
 End Property
 
 Public Property Let BackColor(ByVal newColor As OLE_COLOR)
     
-    'UserControl.BackColor = newColor
     UserControl.BackColor = RGB(220, 220, 225)
     PropertyChanged "BackColor"
     
@@ -518,6 +519,9 @@ Public Property Let BackColor(ByVal newColor As OLE_COLOR)
     For i = cmdAction.lBound To cmdAction.UBound
         cmdAction(i).BackColor = UserControl.BackColor
     Next i
+    
+    CmdOK.BackColor = RGB(235, 235, 240)
+    CmdCancel.BackColor = RGB(235, 235, 240)
     
 End Property
 
@@ -696,12 +700,6 @@ Private Sub UserControl_Initialize()
     'Initialize a preset handler
     Set m_Presets = New pdToolPreset
     
-    'Apply the hand cursor to all command buttons
-    If g_IsProgramRunning Then
-        setHandCursorToHwnd CmdOK.hWnd
-        setHandCursorToHwnd CmdCancel.hWnd
-    End If
-
     'When running, we can assign images and tooltips to the image-only command buttons
     If g_IsProgramRunning Then
         
@@ -793,25 +791,14 @@ Private Sub UserControl_Show()
     ' (which allows for linebreaks and theming).
     If g_IsProgramRunning Then
         
-        Set m_Tooltip = New pdToolTip
-        With m_Tooltip
-            
-            .setTooltip CmdOK.hWnd, UserControl.hWnd, "Apply this action to the current image."
-            .setTooltip CmdCancel.hWnd, UserControl.hWnd, "Exit this tool.  No changes will be made to the image."
-            
-            .updateAgainstCurrentTheme
-            
-        End With
+        CmdOK.assignTooltip "Apply this action to the current image.", "OK"
+        CmdCancel.assignTooltip "Exit this tool.  No changes will be made to the image.", "Cancel"
         
         cmdAction(0).assignTooltip "Reset all settings to their default values.", "Reset"
         cmdAction(1).assignTooltip "Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.", "Randomize"
         cmdAction(2).assignTooltip "Save the current settings as a new preset.", "Save preset"
         cboPreset.assignTooltip "Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right."
-        
-        'Translate all control captions
-        CmdOK.Caption = g_Language.TranslateMessage(CmdOK.Caption)
-        CmdCancel.Caption = g_Language.TranslateMessage(CmdCancel.Caption)
-        
+                
         'Prep a preset file location.  In most cases, this is just the name of the parent form...
         parentToolName = Replace$(UserControl.Parent.Name, "Form", "", , , vbTextCompare)
         
