@@ -1015,7 +1015,7 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
                         
         'Picture boxes and text boxes can have tooltips.  Translate those too.
         If (TypeOf eControl Is PictureBox) Or (TypeOf eControl Is TextBox) Then
-            If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
+            If (Len(Trim$(eControl.ToolTipText)) <> 0) Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
         End If
         
         'Menus are a special case.  Some PhotoDemon menus have custom accelerators (keyboard shortcuts) that are added at run-time.
@@ -1039,21 +1039,21 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
             If eControl.ListCount > 0 Then
             
                 For i = 0 To eControl.ListCount - 1
-                    If (Trim(eControl.List(i)) <> "") And (Not IsNumeric(eControl.List(i))) Then eControl.List(i) = TranslateMessage(eControl.List(i))
+                    If (Len(Trim$(eControl.List(i))) <> 0) And (Not IsNumeric(eControl.List(i))) Then eControl.List(i) = TranslateMessage(eControl.List(i))
                 Next i
                 
             End If
             
             'Translate the tooltip as well
-            If (Trim(eControl.ToolTipText) <> "") Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
+            If (Len(Trim$(eControl.ToolTipText)) <> 0) Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
             
         End If
         
-        'PD's custom-built controls self-manage translations.  Simply ask them to update against the current theme, and they'll take
-        ' care of the rest.
-        If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is buttonStripVertical) Or (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is pdHyperlink) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is smartOptionButton) Then
-            eControl.updateAgainstCurrentTheme
-        End If
+        'PD's custom-built controls self-manage translations.  Historically, we asked them to update against the current theme here, but because
+        ' the only place this function is called is within the makeFormPretty function (which handles master theming/translation requests
+        ' on a per-dialog basis), it's redundant to request a second translation update!
+        '
+        'As such, PD's custom controls no longer require special attention in this function.
         
         Dim curFontSize As Long
         
@@ -1064,11 +1064,11 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
             If (eControl.Left + eControl.Width > eControl.Container.ScaleWidth) And eControl.AutoSize Then
             
                 'Try shrinking the font size until an acceptable width is found
-                curFontSize = eControl.fontSize
+                curFontSize = eControl.FontSize
                 Do While ((eControl.Left + eControl.Width) > eControl.Container.ScaleWidth) And (curFontSize >= 8)
             
                     curFontSize = curFontSize - 1
-                    eControl.fontSize = curFontSize
+                    eControl.FontSize = curFontSize
                     eControl.Refresh
             
                 Loop
