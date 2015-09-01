@@ -135,8 +135,25 @@ Attribute Caption.VB_UserMemId = -518
 End Property
 
 Public Property Let Caption(ByRef newCaption As String)
+    
     If m_Caption.setCaption(newCaption) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then updateControlLayout
     PropertyChanged "Caption"
+    
+    'Access keys must be handled manually.
+    Dim ampPos As Long
+    ampPos = InStr(1, newCaption, "&", vbBinaryCompare)
+    
+    If (ampPos > 0) And (ampPos < Len(newCaption)) Then
+    
+        'Get the character immediately following the ampersand, and dynamically assign it
+        Dim accessKeyChar As String
+        accessKeyChar = Mid$(newCaption, ampPos + 1, 1)
+        UserControl.AccessKeys = accessKeyChar
+    
+    Else
+        UserControl.AccessKeys = ""
+    End If
+    
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
@@ -337,6 +354,10 @@ Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, By
     
 End Sub
 
+Private Sub UserControl_AccessKeyPress(KeyAscii As Integer)
+    RaiseEvent Click
+End Sub
+
 Private Sub UserControl_Hide()
     m_ControlIsVisible = False
 End Sub
@@ -500,6 +521,9 @@ End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub updateAgainstCurrentTheme()
+    
+    'Make sure captions and tooltips are valid
+    m_Caption.updateAgainstCurrentTheme
     
     'Redraw the control, which will also cause a resync against any theme changes
     updateControlLayout
