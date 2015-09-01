@@ -179,6 +179,12 @@ Private Sub Class_Initialize()
     m_FontObjectClean = False
     m_FontSizeVerified = False
     
+    If g_IsProgramRunning And Not (g_Themer Is Nothing) Then
+        m_CaptionColor = g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
+    Else
+        m_CaptionColor = RGB(96, 96, 96)
+    End If
+    
 End Sub
 
 'For automatic font-fitting to work, we have to know our parent container's width.  The parent needs to supply this value
