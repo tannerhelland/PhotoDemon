@@ -220,7 +220,7 @@ End Sub
 Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
         
     'When space is pressed, raise a click event.
-    If (vkCode = VK_SPACE) Then
+    If (vkCode = VK_SPACE) Or (vkCode = VK_RETURN) Then
 
         If m_FocusRectActive And Me.Enabled Then
             m_ButtonStateDown = True
@@ -235,7 +235,7 @@ End Sub
 Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
 
     'When space is released, redraw the button to match
-    If (vkCode = VK_SPACE) Then
+    If (vkCode = VK_SPACE) Or (vkCode = VK_RETURN) Then
 
         If Me.Enabled Then
             m_ButtonStateDown = False
@@ -561,7 +561,7 @@ Private Sub redrawBackBuffer()
         Else
         
             'Is the mouse inside the UC?
-            If m_MouseInsideUC Then
+            If m_MouseInsideUC Or m_FocusRectActive Then
                 btnColorFill = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
                 btnColorBorder = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
                 textColor = g_Themer.getThemeColor(PDTC_TEXT_TITLE)
@@ -590,7 +590,7 @@ Private Sub redrawBackBuffer()
     
     'A border is always drawn around the control; its size varies by hover state.  (This is standard Win 10 behavior.)
     Dim borderWidth As Single
-    If m_MouseInsideUC Then borderWidth = 3 Else borderWidth = 1
+    If m_MouseInsideUC Or m_FocusRectActive Then borderWidth = 3 Else borderWidth = 1
     GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, 0, 0, m_BackBuffer.getDIBWidth - 1, m_BackBuffer.getDIBHeight - 1, btnColorBorder, 255, borderWidth
     
     'Paint the image, if any
