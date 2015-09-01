@@ -237,10 +237,18 @@ End Sub
 
 'This function draws horizontally and vertically centered text within a specified rect, and it does it without modifying any of the current
 ' font settings (including alignment).  It is designed for one-off renderings of centered text.
-Friend Sub drawCenteredTextToRect(ByVal srcString As String, ByRef dstRect As RECT)
+Friend Sub drawCenteredTextToRect(ByVal srcString As String, ByRef dstRect As RECT, Optional ByVal centerVertically As Boolean = False)
+    
+    Dim dtFlags As Long
+    dtFlags = DT_CENTER
+    If centerVertically Then
+        dtFlags = dtFlags Or DT_VCENTER Or DT_SINGLELINE
+    Else
+        dtFlags = dtFlags Or DT_WORDBREAK
+    End If
     
     'Rendering this style of text is pretty damn easy
-    DrawText curDC, StrPtr(srcString), Len(srcString), dstRect, DT_CENTER Or DT_WORDBREAK
+    DrawText curDC, StrPtr(srcString), Len(srcString), dstRect, dtFlags
     
 End Sub
 

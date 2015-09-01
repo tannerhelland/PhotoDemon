@@ -25,8 +25,8 @@ Begin VB.UserControl sliderTextCombo
       TabIndex        =   1
       Top             =   45
       Width           =   960
-      _extentx        =   1693
-      _extenty        =   741
+      _ExtentX        =   1693
+      _ExtentY        =   741
    End
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
@@ -821,8 +821,8 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     'Store all associated properties
     With PropBag
         .WriteProperty "Caption", m_Caption.getCaptionEn, ""
-        .WriteProperty "FontSizeTUD", m_FontSizeTUD, 10
         .WriteProperty "FontSizeCaption", m_Caption.getFontSize, 12
+        .WriteProperty "FontSizeTUD", m_FontSizeTUD, 10
         .WriteProperty "Min", controlMin, 0
         .WriteProperty "Max", controlMax, 10
         .WriteProperty "SigDigits", significantDigits, 0
