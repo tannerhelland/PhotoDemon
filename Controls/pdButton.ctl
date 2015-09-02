@@ -205,15 +205,20 @@ End Sub
 
 'When the control loses focus, erase any focus rects it may have active
 Private Sub cFocusDetector_LostFocusReliable()
+    makeLostFocusUIChanges
+    RaiseEvent LostFocusAPI
+End Sub
+
+Private Sub makeLostFocusUIChanges()
     
     'If a focus rect has been drawn, remove it now
-    If m_FocusRectActive Then
+    If m_FocusRectActive Or m_ButtonStateDown Or m_MouseInsideUC Then
         m_FocusRectActive = False
+        m_ButtonStateDown = False
+        m_MouseInsideUC = False
         redrawBackBuffer
     End If
     
-    RaiseEvent LostFocusAPI
-
 End Sub
 
 'A few key events are also handled
@@ -420,6 +425,10 @@ Public Sub notifyFocusLost()
         redrawBackBuffer
     End If
 
+End Sub
+
+Private Sub UserControl_LostFocus()
+    makeLostFocusUIChanges
 End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
