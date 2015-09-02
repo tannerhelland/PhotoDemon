@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.16</langversion>
+<langversion>6.6.18</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -1667,7 +1667,7 @@
 <translation>Nama pratetap yang dikehendaki</translation>
 </phrase>
 
-<!-- Dialog_EditPreset.frm contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Dialog_EditPreset.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Dialog_EditPreset.frm-->
 
@@ -9642,6 +9642,56 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
+<original>use the system color profile</original>
+<translation>menggunakan profil warna sistem</translation>
+</phrase>
+
+<phrase>
+<original>automatically validate all incoming alpha channels</original>
+<translation>secara Otomatis mengesahkan semua saluran alpha masuk</translation>
+</phrase>
+
+<phrase>
+<original>use one or more custom color profiles</original>
+<translation>menggunakan satu atau lebih profil warna adat</translation>
+</phrase>
+
+<phrase>
+<original>color profile for selected monitor</original>
+<translation>profil warna untuk monitor dipilih</translation>
+</phrase>
+
+<phrase>
+<original>available monitors</original>
+<translation>monitor boleh didapati</translation>
+</phrase>
+
+<phrase>
+<original>when rendering images to the screen</original>
+<translation>apabila Gambar yang ke Layar</translation>
+</phrase>
+
+<phrase>
+<original>color management</original>
+<translation>Manajemen warna</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard size</original>
+<translation>Ukuran Transparan papan main dam</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard colors</original>
+<translation>warna Transparan papan main dam</translation>
+</phrase>
+
+<phrase>
+<original>transparency management</original>
+<translation>Manajemen Transparan</translation>
+</phrase>
+
+<phrase>
 <original>please select a file type</original>
 <translation>Tolong Pilih Tipe Berkas</translation>
 </phrase>
@@ -9754,11 +9804,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <phrase>
 <original>when an image is first loaded, set its viewport zoom to</original>
 <translation>apabila gambar semula dimuatkan, set perbesar viewport untuk</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>Manajemen warna</translation>
 </phrase>
 
 <phrase>
@@ -9919,51 +9964,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <phrase>
 <original>canvas appearance</original>
 <translation>penampilan kanvas</translation>
-</phrase>
-
-<phrase>
-<original>use the system color profile</original>
-<translation>menggunakan profil warna sistem</translation>
-</phrase>
-
-<phrase>
-<original>automatically validate all incoming alpha channels</original>
-<translation>secara Otomatis mengesahkan semua saluran alpha masuk</translation>
-</phrase>
-
-<phrase>
-<original>use one or more custom color profiles</original>
-<translation>menggunakan satu atau lebih profil warna adat</translation>
-</phrase>
-
-<phrase>
-<original>color profile for selected monitor</original>
-<translation>profil warna untuk monitor dipilih</translation>
-</phrase>
-
-<phrase>
-<original>available monitors</original>
-<translation>monitor boleh didapati</translation>
-</phrase>
-
-<phrase>
-<original>when rendering images to the screen</original>
-<translation>apabila Gambar yang ke Layar</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard size</original>
-<translation>Ukuran Transparan papan main dam</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard colors</original>
-<translation>warna Transparan papan main dam</translation>
-</phrase>
-
-<phrase>
-<original>transparency management</original>
-<translation>Manajemen Transparan</translation>
 </phrase>
 
 <phrase>
@@ -10793,52 +10793,6 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <!-- Tools_PluginManager.frm contains 81 phrases. 31 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for Tools_ThemeEditor.frm (FormThemeEditor) -->
-
-<phrase>
-<original>MANUAL FIX REQUIRED FOR lblExplanation IN FormThemeEditor</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Unicode text box for testing</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>testing options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Other Unicode controls for testing output</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>1 - added at Form_Load</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>2 - added at Form_Load</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>3 - added at Form_Load</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>4 - added at Form_Load, also ListIndex</original>
-<translation></translation>
-</phrase>
-
-<!-- Tools_ThemeEditor.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
-
-<!-- END text for Tools_ThemeEditor.frm-->
 
 <!-- BEGIN text for VBP_AutosaveHandler.bas -->
 
@@ -12020,11 +11974,6 @@ Untuk mengaktifkan dukungan untuk kompresi file PDI, klik Bantuan> Memeriksa pem
 </phrase>
 
 <phrase>
-<original>Previous PhotoDemon session terminated unexpectedly.  Performing plugin clean-up</original>
-<translation>Sesi PhotoDemon sebelumnya dihentikan tiba-tiba. Pertunjukan Plugin bersih.</translation>
-</phrase>
-
-<phrase>
 <original>Duplicating current image</original>
 <translation>Duplikasi gambar ini</translation>
 </phrase>
@@ -12034,7 +11983,7 @@ Untuk mengaktifkan dukungan untuk kompresi file PDI, klik Bantuan> Memeriksa pem
 <translation>Duplikasi Gambar Berhasil.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 83 phrases. 31 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 82 phrases. 31 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -12237,6 +12186,12 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 <!-- VBP_FreeImage_Expanded.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for VBP_FreeImage_Expanded.bas-->
+
+<!-- BEGIN text for Plugin_Management.bas -->
+
+<!-- Plugin_Management.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_Management.bas-->
 
 <!-- BEGIN text for VBP_pngnqInterface.bas -->
 
@@ -13144,6 +13099,12 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for OutsideDevelopment_Monitors.cls-->
 
+<!-- BEGIN text for pdCaption.cls -->
+
+<!-- pdCaption.cls contains 0 phrases. -->
+
+<!-- END text for pdCaption.cls-->
+
 <!-- BEGIN text for pdCompositor.cls -->
 
 <!-- pdCompositor.cls contains 0 phrases. -->
@@ -13764,6 +13725,11 @@ Please masukkan nilai berangka.</translation>
 </phrase>
 
 <phrase>
+<original>OK</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Exit this tool.  No changes will be made to the image.</original>
 <translation>Keluar dari alat ini. Sebarang perubahan akan dibuat kepada imej.</translation>
 </phrase>
@@ -13803,9 +13769,15 @@ Please masukkan nilai berangka.</translation>
 <translation>Sebelum ini disimpan pratetap boleh dipilih di sini. Anda boleh menyimpan tetapan semasa sebagai pratetap baru dengan mengklik butang Simpan Pratetap di sebelah kanan.</translation>
 </phrase>
 
-<!-- commandBar.ctl contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- commandBar.ctl contains 17 phrases. 4 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for commandBar.ctl-->
+
+<!-- BEGIN text for commandBarMini.ctl -->
+
+<!-- commandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<!-- END text for commandBarMini.ctl-->
 
 <!-- BEGIN text for fxPreview.ctl -->
 
@@ -13833,6 +13805,12 @@ Please masukkan nilai berangka.</translation>
 <!-- gradientSelector.ctl contains 0 phrases. -->
 
 <!-- END text for gradientSelector.ctl-->
+
+<!-- BEGIN text for pdButton.ctl -->
+
+<!-- pdButton.ctl contains 0 phrases. -->
+
+<!-- END text for pdButton.ctl-->
 
 <!-- BEGIN text for pdButtonToolbox.ctl -->
 
@@ -14138,10 +14116,10 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2442</phrasecount>
+<phrasecount>2434</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4223 phrases. -->
-<!-- 1781 are duplicates, so only 2442 unique phrases have been written to file. -->
-<!-- These 2442 phrases contain approximately 13306 total words. -->
+<!-- As of this build, PhotoDemon contains 4217 phrases. -->
+<!-- 1783 are duplicates, so only 2434 unique phrases have been written to file. -->
+<!-- These 2434 phrases contain approximately 13268 total words. -->
 
 </pdData>

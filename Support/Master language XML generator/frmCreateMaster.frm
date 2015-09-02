@@ -1316,7 +1316,7 @@ Private Sub processFile(ByVal srcFile As String)
             
         'TEMPORARILY: I am disabling the Theme Editor, as it only contains debug text at present.
         ' When PD has an actual theme editor, the form *will* need to be translated.
-        Case "VBP_FormThemeEditor.frm"
+        Case "Tools_ThemeEditor.frm"
             Exit Sub
     
     End Select
