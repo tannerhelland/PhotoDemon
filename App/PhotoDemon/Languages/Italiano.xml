@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.74</langversion>
+<langversion>6.7.76</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -1667,7 +1667,7 @@
 <translation>Nome dell'impostazione predefinita richiesto</translation>
 </phrase>
 
-<!-- Dialog_EditPreset.frm contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Dialog_EditPreset.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Dialog_EditPreset.frm-->
 
@@ -9637,6 +9637,56 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 </phrase>
 
 <phrase>
+<original>use the system color profile</original>
+<translation>utilizza il profilo del colore di sistema</translation>
+</phrase>
+
+<phrase>
+<original>automatically validate all incoming alpha channels</original>
+<translation>Convalida automaticamente tutti i canali alfa entranti</translation>
+</phrase>
+
+<phrase>
+<original>use one or more custom color profiles</original>
+<translation>utilizza uno o più profili di colore personalizzati</translation>
+</phrase>
+
+<phrase>
+<original>color profile for selected monitor</original>
+<translation>profilo del colore per il monitor selezionato</translation>
+</phrase>
+
+<phrase>
+<original>available monitors</original>
+<translation>monitor disponibili</translation>
+</phrase>
+
+<phrase>
+<original>when rendering images to the screen</original>
+<translation>durante la resa delle immagini sullo schermo</translation>
+</phrase>
+
+<phrase>
+<original>color management</original>
+<translation>gestione del colore</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard size</original>
+<translation>dimensione della scacchiera per la trasparenza</translation>
+</phrase>
+
+<phrase>
+<original>transparency checkerboard colors</original>
+<translation>dimensione della scacchiera per i colori</translation>
+</phrase>
+
+<phrase>
+<original>transparency management</original>
+<translation>gestione della trasparenza</translation>
+</phrase>
+
+<phrase>
 <original>please select a file type</original>
 <translation>per favore seleziona un tipo di file</translation>
 </phrase>
@@ -9749,11 +9799,6 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <phrase>
 <original>when an image is first loaded, set its viewport zoom to</original>
 <translation>quando l'immagine viene caricata la prima volta, imposta il suo zoom di visualizzazione a</translation>
-</phrase>
-
-<phrase>
-<original>color management</original>
-<translation>gestione del colore</translation>
 </phrase>
 
 <phrase>
@@ -9914,51 +9959,6 @@ Per continuare, si prega di scaricare una nuova copia di PhotoDemon da photodemo
 <phrase>
 <original>canvas appearance</original>
 <translation>aspetto della tela</translation>
-</phrase>
-
-<phrase>
-<original>use the system color profile</original>
-<translation>utilizza il profilo del colore di sistema</translation>
-</phrase>
-
-<phrase>
-<original>automatically validate all incoming alpha channels</original>
-<translation>Convalida automaticamente tutti i canali alfa entranti</translation>
-</phrase>
-
-<phrase>
-<original>use one or more custom color profiles</original>
-<translation>utilizza uno o più profili di colore personalizzati</translation>
-</phrase>
-
-<phrase>
-<original>color profile for selected monitor</original>
-<translation>profilo del colore per il monitor selezionato</translation>
-</phrase>
-
-<phrase>
-<original>available monitors</original>
-<translation>monitor disponibili</translation>
-</phrase>
-
-<phrase>
-<original>when rendering images to the screen</original>
-<translation>durante la resa delle immagini sullo schermo</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard size</original>
-<translation>dimensione della scacchiera per la trasparenza</translation>
-</phrase>
-
-<phrase>
-<original>transparency checkerboard colors</original>
-<translation>dimensione della scacchiera per i colori</translation>
-</phrase>
-
-<phrase>
-<original>transparency management</original>
-<translation>gestione della trasparenza</translation>
 </phrase>
 
 <phrase>
@@ -10788,52 +10788,6 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 <!-- Tools_PluginManager.frm contains 81 phrases. 31 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
-
-<!-- BEGIN text for Tools_ThemeEditor.frm (FormThemeEditor) -->
-
-<phrase>
-<original>MANUAL FIX REQUIRED FOR lblExplanation IN FormThemeEditor</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Unicode text box for testing</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>testing options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Other Unicode controls for testing output</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>1 - added at Form_Load</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>2 - added at Form_Load</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>3 - added at Form_Load</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>4 - added at Form_Load, also ListIndex</original>
-<translation></translation>
-</phrase>
-
-<!-- Tools_ThemeEditor.frm contains 9 phrases.  One was a duplicate of an existing phrase, so only 8 new phrases were written to file. -->
-
-<!-- END text for Tools_ThemeEditor.frm-->
 
 <!-- BEGIN text for VBP_AutosaveHandler.bas -->
 
@@ -12013,11 +11967,6 @@ Per abilitare il supporto per i file PDI compressi, fare clic su Aiuto > Control
 </phrase>
 
 <phrase>
-<original>Previous PhotoDemon session terminated unexpectedly.  Performing plugin clean-up</original>
-<translation>La precedente sessione di PhotoDemon è terminata in modo imprevisto.  Esecuzione della pulizia dei plugin</translation>
-</phrase>
-
-<phrase>
 <original>Duplicating current image</original>
 <translation>Duplicazione dell'immagine corrente</translation>
 </phrase>
@@ -12027,7 +11976,7 @@ Per abilitare il supporto per i file PDI compressi, fare clic su Aiuto > Control
 <translation>Duplicazione dell'immagine completa.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 83 phrases. 31 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 82 phrases. 31 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -12230,6 +12179,12 @@ Nella versione 6.0, i file macro di PhotoDemon sono stati riprogettati per suppo
 <!-- VBP_FreeImage_Expanded.bas contains 1 phrase.  The phrase was unique, so 1 new phrase was written to file. -->
 
 <!-- END text for VBP_FreeImage_Expanded.bas-->
+
+<!-- BEGIN text for Plugin_Management.bas -->
+
+<!-- Plugin_Management.bas contains 0 phrases. -->
+
+<!-- END text for Plugin_Management.bas-->
 
 <!-- BEGIN text for VBP_pngnqInterface.bas -->
 
@@ -13136,6 +13091,12 @@ Per favore inserisci un valore numerico.</translation>
 
 <!-- END text for OutsideDevelopment_Monitors.cls-->
 
+<!-- BEGIN text for pdCaption.cls -->
+
+<!-- pdCaption.cls contains 0 phrases. -->
+
+<!-- END text for pdCaption.cls-->
+
 <!-- BEGIN text for pdCompositor.cls -->
 
 <!-- pdCompositor.cls contains 0 phrases. -->
@@ -13756,6 +13717,11 @@ Per favore inserisci un valore numerico.</translation>
 </phrase>
 
 <phrase>
+<original>OK</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Exit this tool.  No changes will be made to the image.</original>
 <translation>Esci da questo strumento.  Nessun cambiamento sarà fatto all'immagine.</translation>
 </phrase>
@@ -13795,9 +13761,15 @@ Per favore inserisci un valore numerico.</translation>
 <translation>Le preimpostazioni precedentemente salvate possono essere selezionate qui.  È possibile salvare le impostazioni correnti come un nuovo settaggio facendo clic sul pulsante Salva Preimpostazioni sulla destra.</translation>
 </phrase>
 
-<!-- commandBar.ctl contains 14 phrases. 2 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- commandBar.ctl contains 17 phrases. 4 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for commandBar.ctl-->
+
+<!-- BEGIN text for commandBarMini.ctl -->
+
+<!-- commandBarMini.ctl contains 3 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<!-- END text for commandBarMini.ctl-->
 
 <!-- BEGIN text for fxPreview.ctl -->
 
@@ -13825,6 +13797,12 @@ Per favore inserisci un valore numerico.</translation>
 <!-- gradientSelector.ctl contains 0 phrases. -->
 
 <!-- END text for gradientSelector.ctl-->
+
+<!-- BEGIN text for pdButton.ctl -->
+
+<!-- pdButton.ctl contains 0 phrases. -->
+
+<!-- END text for pdButton.ctl-->
 
 <!-- BEGIN text for pdButtonToolbox.ctl -->
 
@@ -14130,10 +14108,10 @@ o il menù File > Apri e File > Importa.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2442</phrasecount>
+<phrasecount>2434</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4223 phrases. -->
-<!-- 1781 are duplicates, so only 2442 unique phrases have been written to file. -->
-<!-- These 2442 phrases contain approximately 13306 total words. -->
+<!-- As of this build, PhotoDemon contains 4217 phrases. -->
+<!-- 1783 are duplicates, so only 2434 unique phrases have been written to file. -->
+<!-- These 2434 phrases contain approximately 13268 total words. -->
 
 </pdData>
