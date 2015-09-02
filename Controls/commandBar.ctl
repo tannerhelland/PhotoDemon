@@ -93,8 +93,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Tool Dialog Command Bar custom control
 'Copyright 2013-2015 by Tanner Helland
 'Created: 14/August/13
-'Last updated: 08/March/15
-'Last update: total refactoring of all preset-related code
+'Last updated: 01/September/15
+'Last update: change OK/Cancel buttons to new pdButton instances, freeing us of any stock VB controls on the command bar!
 '
 'For the first decade of its life, PhotoDemon relied on a simple OK and CANCEL button at the bottom of each tool dialog.
 ' These two buttons were dutifully copy+pasted on each new tool, but beyond that they received little attention.
@@ -169,16 +169,6 @@ Public Event ReadCustomPresetData()
 ' the Form title by default).  This separates the presets for each tool on that form.  For example, on the Median
 ' dialog, I append the name of the current tool to the default name (Median_<name>, e.g. Median_Dilate).
 Private userSuppliedToolName As String
-
-'Used to render images onto the command buttons at run-time (doesn't work in the IDE, as a manifest is required)
-Private cImgCtl As clsControlImage
-
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Private m_Tooltip As pdToolTip
-
-'Font handling for user controls requires some extra work; see below for details
-Private WithEvents mFont As StdFont
-Attribute mFont.VB_VarHelpID = -1
 
 'Results of extra user validations will be stored here
 Private userValidationFailed As Boolean
@@ -297,23 +287,6 @@ End Sub
 'An hWnd is needed for external tooltip handling
 Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
-End Property
-
-'Font handling is a bit specialized for user controls; see http://msdn.microsoft.com/en-us/library/aa261313%28v=vs.60%29.aspx
-Public Property Get Font() As StdFont
-    Set Font = mFont
-End Property
-
-Public Property Set Font(mNewFont As StdFont)
-    
-    With mFont
-        .Bold = mNewFont.Bold
-        .Italic = mNewFont.Italic
-        .Name = mNewFont.Name
-        .Size = mNewFont.Size
-    End With
-    PropertyChanged "Font"
-    
 End Property
 
 'When a preset is selected from the drop-down, load it.  Note that we change the combo box .ListIndex when adding a new preset;
@@ -497,12 +470,6 @@ Private Sub cmdAction_Click(Index As Integer)
     
 End Sub
 
-'When the font is changed, all controls must manually have their fonts set to match
-Private Sub mFont_FontChanged(ByVal PropertyName As String)
-    Set UserControl.Font = mFont
-    cboPreset.FontSize = mFont.Size
-End Sub
-
 'Backcolor is used to control the color of the base user control; nothing else is affected by it.
 ' Note that - by design - the back color is hardcoded.  Still TODO is integrating it with theming.
 Public Property Get BackColor() As OLE_COLOR
@@ -520,8 +487,8 @@ Public Property Let BackColor(ByVal newColor As OLE_COLOR)
         cmdAction(i).BackColor = UserControl.BackColor
     Next i
     
-    CmdOK.BackColor = RGB(235, 235, 240)
-    CmdCancel.BackColor = RGB(235, 235, 240)
+    cmdOK.BackColor = RGB(235, 235, 240)
+    cmdCancel.BackColor = RGB(235, 235, 240)
     
 End Property
 
@@ -710,11 +677,7 @@ Private Sub UserControl_Initialize()
     End If
     
     UserControl.BackColor = BackColor
-    
-    'Prepare a font object for use
-    Set mFont = New StdFont
-    Set UserControl.Font = mFont
-    
+        
     'Validations succeed by default
     userValidationFailed = False
     
@@ -730,8 +693,6 @@ End Sub
 
 Private Sub UserControl_InitProperties()
     
-    Set mFont = UserControl.Font
-    mFont_FontChanged ("")
     BackColor = &HEEEEEE
     dontAutoLoadLastPreset = False
     dontAutoUnloadParent = False
@@ -770,8 +731,8 @@ Private Sub updateControlLayout()
         UserControl.Width = UserControl.Parent.ScaleWidth * TwipsPerPixelXFix
         
         'Right-align the Cancel and OK buttons
-        CmdCancel.Left = UserControl.Parent.ScaleWidth - CmdCancel.Width - fixDPI(8)
-        CmdOK.Left = CmdCancel.Left - CmdOK.Width - fixDPI(8)
+        cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - fixDPI(8)
+        cmdOK.Left = cmdCancel.Left - cmdOK.Width - fixDPI(8)
         
     End If
     
@@ -791,8 +752,8 @@ Private Sub UserControl_Show()
     ' (which allows for linebreaks and theming).
     If g_IsProgramRunning Then
         
-        CmdOK.assignTooltip "Apply this action to the current image.", "OK"
-        CmdCancel.assignTooltip "Exit this tool.  No changes will be made to the image.", "Cancel"
+        cmdOK.assignTooltip "Apply this action to the current image.", "OK"
+        cmdCancel.assignTooltip "Exit this tool.  No changes will be made to the image.", "Cancel"
         
         cmdAction(0).assignTooltip "Reset all settings to their default values.", "Reset"
         cmdAction(1).assignTooltip "Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.", "Randomize"
@@ -840,11 +801,7 @@ Private Sub UserControl_Show()
         End If
         
     End If
-    
-    'For now, I'm going to set a standard font size of 10.  May revisit later.
-    mFont.Size = 10
-    mFont_FontChanged ""
-    
+        
     'At run-time, give the OK button focus by default.  (Note that using the .Default property to do this will
     ' BREAK THINGS.  .Default overrides catching the Enter key anywhere else in the form, so we cannot do things
     ' like save a preset via Enter keypress, because the .Default control will always eat the Enter keypress.)
@@ -852,7 +809,7 @@ Private Sub UserControl_Show()
     'Additional note: some forms may chose to explicitly set focus away from the OK button.  If that happens, the line below
     ' will throw a critical error.  To avoid that, simply ignore any errors that arise from resetting focus.
     On Error GoTo somethingStoleFocus
-    If g_IsProgramRunning Then CmdOK.SetFocus
+    If g_IsProgramRunning Then cmdOK.SetFocus
 
 somethingStoleFocus:
     
@@ -867,7 +824,6 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     
     'Store all associated properties
     With PropBag
-        .WriteProperty "Font", mFont, "Tahoma"
         .WriteProperty "BackColor", BackColor, &HEEEEEE
         .WriteProperty "AutoloadLastPreset", suspendLastUsedAutoLoad, False
         .WriteProperty "dontAutoUnloadParent", m_dontAutoUnloadParent, False
