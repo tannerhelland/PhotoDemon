@@ -24,43 +24,17 @@ Begin VB.Form dialog_AddPreset
    ScaleWidth      =   449
    ShowInTaskbar   =   0   'False
    StartUpPosition =   1  'CenterOwner
-   Begin VB.CommandButton cmdAnswer 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   510
-      Index           =   0
-      Left            =   3780
-      TabIndex        =   2
-      Top             =   1320
-      Width           =   1365
-   End
-   Begin VB.CommandButton cmdAnswer 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   510
-      Index           =   1
-      Left            =   5250
+   Begin PhotoDemon.commandBarMini cmdBarMini 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
       TabIndex        =   1
-      Top             =   1320
-      Width           =   1365
+      Top             =   1200
+      Width           =   6735
+      _ExtentX        =   11880
+      _ExtentY        =   1323
+      BackColor       =   14802140
+      dontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.pdTextBox txtName 
       Height          =   375
@@ -92,8 +66,8 @@ Attribute VB_Exposed = False
 'Preset Editor Dialog
 'Copyright 2014-2015 by Tanner Helland
 'Created: 06/March/15
-'Last updated: 06/March/15
-'Last update: migrate old "enter name via combo box" system to this dialog
+'Last updated: 02/September/15
+'Last update: convert to the new mini-command-bar UC
 '
 'PD supports last-used and custom user-entered presets for pretty much every tool in the program.  This was a massive
 ' undertaking, and it still has a lot of papercuts that drive me nuts (e.g. not being able to delete past presets,
@@ -149,65 +123,64 @@ Public Sub showDialog(ByRef srcPresetManager As pdToolPreset, ByRef parentForm A
     
 End Sub
 
-Private Sub cmdAnswer_Click(Index As Integer)
+Private Sub cmdBarMini_CancelClick()
+    userAnswer = vbCancel
+End Sub
+
+Private Sub cmdBarMini_OKClick()
     
-    Select Case Index
-    
-        Case 0
+    'Make sure a valid name was entered.
+    If Len(Trim$(txtName.Text)) <> 0 Then
         
-            'Make sure a valid name was entered.
-            If Len(Trim$(txtName.Text)) <> 0 Then
-                
-                'A valid name was entered.  See if this name already exists in the preset manager.
-                If m_Presets.doesPresetExist(Trim$(txtName.Text)) Then
-                
-                    'This name already exists.  Ask the user if an overwrite is okay.
-                    Dim msgReturn As VbMsgBoxResult
-                    msgReturn = pdMsgBox("A preset with this name already exists.  Do you want to overwrite it?", vbYesNoCancel + vbApplicationModal + vbInformation, "Overwrite existing preset")
-                    
-                    'Based on the user's answer to the confirmation message box, continue or exit
-                    Select Case msgReturn
-
-                        'If the user selects YES, continue on like normal
-                        Case vbYes
-                            userAnswer = vbOK
-
-                        'If the user selects NO, let them enter a new name
-                        Case vbNo
-                            txtName.Text = g_Language.TranslateMessage("(enter name here)")
-                            txtName.SetFocus
-                            txtName.selectAll
-                            Exit Sub
-
-                        'If the user selects CANCEL, exit the dialog entirely
-                        Case vbCancel
-                            userAnswer = vbCancel
-                        
-                    End Select
-                    
-                'This preset does not exist, so no special handling is required
-                Else
-                    userAnswer = vbOK
-                End If
-                
-            Else
-                pdMsgBox "Please enter a name for this preset.", vbInformation + vbOKOnly + vbApplicationModal, "Preset name required"
-                txtName.Text = g_Language.TranslateMessage("(enter name here)")
-                txtName.SetFocus
-                txtName.selectAll
-                Exit Sub
-            End If
+        'A valid name was entered.  See if this name already exists in the preset manager.
+        If m_Presets.doesPresetExist(Trim$(txtName.Text)) Then
+        
+            'This name already exists.  Ask the user if an overwrite is okay.
+            Dim msgReturn As VbMsgBoxResult
+            msgReturn = pdMsgBox("A preset with this name already exists.  Do you want to overwrite it?", vbYesNoCancel + vbApplicationModal + vbInformation, "Overwrite existing preset")
             
-        Case 1
-            userAnswer = vbCancel
+            'Based on the user's answer to the confirmation message box, continue or exit
+            Select Case msgReturn
+
+                'If the user selects YES, continue on like normal
+                Case vbYes
+                    userAnswer = vbOK
+
+                'If the user selects NO, let them enter a new name
+                Case vbNo
+                    txtName.Text = g_Language.TranslateMessage("(enter name here)")
+                    txtName.SetFocus
+                    txtName.selectAll
+                    cmdBarMini.doNotUnloadForm
+                    Exit Sub
+
+                'If the user selects CANCEL, exit the dialog entirely
+                Case vbCancel
+                    userAnswer = vbCancel
+                
+            End Select
+            
+        'This preset does not exist, so no special handling is required
+        Else
+            userAnswer = vbOK
+        End If
         
-    End Select
+    Else
+        
+        pdMsgBox "Please enter a name for this preset.", vbInformation + vbOKOnly + vbApplicationModal, "Preset name required"
+        
+        txtName.Text = g_Language.TranslateMessage("(enter name here)")
+        txtName.SetFocus
+        txtName.selectAll
+        
+        cmdBarMini.doNotUnloadForm
+        Exit Sub
+        
+    End If
     
     'Store the preset name, if any, before exiting
     presetName = Trim$(txtName.Text)
-    
-    Me.Hide
-    
+        
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
