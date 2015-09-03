@@ -54,8 +54,11 @@ Private m_TextRenderer As pdFont
 'To optimize font handling, we only recreate the font when absolutely necessary.
 Private m_FontObjectClean As Boolean
 
-'Width of our parent container.  This is used to calculate automatic font sizing.
-Private m_ContainerWidth As Single
+'Width and height of our parent container.  This is used to calculate automatic font sizing.
+Private m_ContainerWidth As Single, m_ContainerHeight As Single
+
+'Some controls may allow wordwrap when resizing to fit a target rect
+Private m_WordWrapAllowed As Boolean
 
 'This class will auto-fit the current caption to the available container area.  If we've established
 Private m_FontSizeVerified As Boolean
@@ -121,6 +124,17 @@ Public Function setCaption(ByVal newCaption As String) As Boolean
     
 End Function
 
+'Simplified wrapper for checking if a caption is active
+Public Function isCaptionActive() As Boolean
+    
+    If (Len(m_CaptionEn) <> 0) And (m_FontSizeCaption <> 0) Then
+        isCaptionActive = True
+    Else
+        isCaptionActive = False
+    End If
+    
+End Function
+
 'Assign a new caption color.  Remember that color changes do not require rebuilding the font.  Also, font color changes are persistent
 ' (by design), so they will not be overridden except by subsequent setCaptionColor calls.
 Public Sub setCaptionColor(ByVal newColor As Long)
@@ -148,16 +162,6 @@ Public Function setFontSize(ByVal newSize As Single) As Boolean
     
 End Function
 
-Public Function isCaptionActive() As Boolean
-    
-    If (Len(m_CaptionEn) <> 0) And (m_FontSizeCaption <> 0) Then
-        isCaptionActive = True
-    Else
-        isCaptionActive = False
-    End If
-    
-End Function
-
 'Whenever relevant, the owner of this class can call this function to see if a redraw is needed.  The redraw flags will be
 ' reset whenever a successful draw request occurs.
 Public Function isRedrawNeeded() As Boolean
@@ -168,6 +172,14 @@ Public Function isRedrawNeeded() As Boolean
     End If
 End Function
 
+'Wordwrap can now be optionally enabled
+Public Sub setWordWrapSupport(ByVal newSupportValue As Boolean)
+    If m_WordWrapAllowed <> newSupportValue Then
+        m_WordWrapAllowed = newSupportValue
+        m_FontSizeVerified = False
+    End If
+End Sub
+
 Private Sub Class_Initialize()
     
     'By default, we assume our parent control does not have an active caption.
@@ -176,6 +188,9 @@ Private Sub Class_Initialize()
     m_FontSizeCaption = 0
     
     m_ContainerWidth = 0
+    m_ContainerHeight = 0
+    m_WordWrapAllowed = False
+    
     m_FontObjectClean = False
     m_FontSizeVerified = False
     
@@ -189,23 +204,29 @@ End Sub
 
 'For automatic font-fitting to work, we have to know our parent container's width.  The parent needs to supply this value
 ' 1) prior to requesting any draw or measurement actions, and 2) whenever the control dimensions change.
-Public Sub setControlWidth(ByVal newWidth As Single)
+Public Sub setControlSize(ByVal newWidth As Single, ByVal newHeight As Single)
     
-    If m_ContainerWidth <> newWidth Then
+    If (m_ContainerWidth <> newWidth) Or (m_ContainerHeight <> newHeight) Then
         m_ContainerWidth = newWidth
+        m_ContainerHeight = newHeight
         m_FontSizeVerified = False
     End If
     
 End Sub
 
 'Returns the height of the current caption, in pixels.  No padding is applied.
+' Note that this return varies depending on the presence of wordwrapping.  Wordwrap will (obviously) affect the return.
 Public Function getCaptionHeight() As Single
     
     'Make sure the current font object reflects all active settings
     If Not m_FontObjectClean Then rebuildFont
     If Not m_FontSizeVerified Then verifyFontSize
-        
-    getCaptionHeight = m_TextRenderer.getHeightOfString(m_CaptionTranslated)
+    
+    If m_WordWrapAllowed Then
+        getCaptionHeight = m_TextRenderer.getHeightOfWordwrapString(m_CaptionTranslated, m_ContainerWidth)
+    Else
+        getCaptionHeight = m_TextRenderer.getHeightOfString(m_CaptionTranslated)
+    End If
     
 End Function
 
@@ -223,7 +244,13 @@ Public Sub drawCaption(ByVal dstDC As Long, Optional ByVal dstX As Long = 0, Opt
     End If
     
     m_TextRenderer.attachToDC dstDC
-    m_TextRenderer.fastRenderText dstX, dstY, m_CaptionTranslated
+    
+    If m_WordWrapAllowed Then
+        m_TextRenderer.fastRenderMultilineText dstX, dstY, m_CaptionTranslated
+    Else
+        m_TextRenderer.fastRenderText dstX, dstY, m_CaptionTranslated
+    End If
+    
     m_TextRenderer.releaseFromDC
     
 End Sub
@@ -242,7 +269,37 @@ Friend Sub drawCaptionCentered(ByVal dstDC As Long, ByRef dstRect As RECT, Optio
     End If
     
     m_TextRenderer.attachToDC dstDC
-    m_TextRenderer.drawCenteredTextToRect m_CaptionTranslated, dstRect, True
+    
+    If m_WordWrapAllowed Then
+        
+        'See if the string, as-is, fits within the target area
+        Dim strWidth As Long
+        strWidth = m_TextRenderer.getWidthOfString(m_CaptionTranslated)
+        
+        If strWidth < (dstRect.Right - dstRect.Left) Then
+            m_TextRenderer.drawCenteredTextToRect m_CaptionTranslated, dstRect, True
+        Else
+        
+            'Find the height of the string as it currently exists
+            Dim strHeight As Long
+            strHeight = m_TextRenderer.getHeightOfWordwrapString(m_CaptionTranslated, dstRect.Right - dstRect.Left)
+            
+            'Recalculate the rect top so that the text is centered
+            Dim newRect As RECT
+            newRect.Left = dstRect.Left
+            newRect.Bottom = dstRect.Bottom
+            newRect.Right = dstRect.Right
+            newRect.Top = dstRect.Top + (CSng(CSng(dstRect.Bottom - dstRect.Top) / 2) - CSng(strHeight / 2))
+            
+            Const DT_CENTER = &H1, DT_WORDBREAK = &H10, DT_NOCLIP = &H100
+            m_TextRenderer.DrawTextWrapper StrPtr(m_CaptionTranslated), Len(m_CaptionTranslated), newRect, DT_WORDBREAK Or DT_NOCLIP Or DT_CENTER
+            
+        End If
+        
+    Else
+        m_TextRenderer.drawCenteredTextToRect m_CaptionTranslated, dstRect, True
+    End If
+    
     m_TextRenderer.releaseFromDC
     
 End Sub
@@ -281,7 +338,7 @@ Private Sub rebuildFont()
     m_TextRenderer.createFontObject
     
     'Because the font is newly created, we don't know if we need to shrink the text to fit the container.
-    ' Verify the font size immediately if a container width has already been supplied
+    ' Verify the font size immediately if a container width has already been supplied.
     If m_ContainerWidth > 0 Then verifyFontSize
     
 End Sub
@@ -298,9 +355,15 @@ Private Sub verifyFontSize()
     
     'If the current caption + font size will overflow control boundaries, resize the font automatically
     If m_ContainerWidth > 0 Then
-    
+        
         Dim newFontSize As Single
-        newFontSize = m_TextRenderer.getMaxFontSizeToFitStringWidth(m_CaptionTranslated, m_ContainerWidth, m_FontSizeCaption)
+        
+        'There are two ways to verify font size, and they differ depending on whether the caller wants us to enable wordwrapping.
+        If m_WordWrapAllowed Then
+            newFontSize = m_TextRenderer.getMaxFontSizeToFitWordWrap(m_CaptionTranslated, m_ContainerWidth, m_ContainerHeight, m_FontSizeCaption)
+        Else
+            newFontSize = m_TextRenderer.getMaxFontSizeToFitStringWidth(m_CaptionTranslated, m_ContainerWidth, m_FontSizeCaption)
+        End If
         
         With m_TextRenderer
             If .getFontSize <> newFontSize Then
