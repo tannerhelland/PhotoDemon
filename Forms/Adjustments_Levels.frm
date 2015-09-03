@@ -24,51 +24,26 @@ Begin VB.Form FormLevels
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   858
    ShowInTaskbar   =   0   'False
-   Begin VB.CommandButton cmdAutoLevels 
-      Caption         =   "set levels automatically"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+   Begin PhotoDemon.pdButton cmdAutoLevels 
       Height          =   600
       Left            =   120
-      TabIndex        =   17
+      TabIndex        =   19
       Top             =   6000
-      Width           =   5640
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   873
+      Caption         =   "set levels automatically"
    End
-   Begin PhotoDemon.jcbutton cmdColorSelect 
+   Begin PhotoDemon.pdButtonToolbox cmdColorSelect 
       Height          =   375
       Index           =   0
       Left            =   7740
-      TabIndex        =   15
+      TabIndex        =   17
       Top             =   3135
       Width           =   375
       _ExtentX        =   661
       _ExtentY        =   661
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   ""
-      Mode            =   1
-      Value           =   -1  'True
-      HandPointer     =   -1  'True
-      PictureNormal   =   "Adjustments_Levels.frx":0000
-      CaptionEffects  =   0
-      ToolTip         =   "When this button is active, you can set the shadow input level color by right-clicking a color in the preview window."
-      ColorScheme     =   3
+      StickyToggle    =   -1  'True
    End
    Begin PhotoDemon.colorSelector csShadow 
       Height          =   375
@@ -158,15 +133,7 @@ Begin VB.Form FormLevels
       Width           =   12870
       _ExtentX        =   22701
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -237,51 +204,25 @@ Begin VB.Form FormLevels
       _ExtentX        =   873
       _ExtentY        =   661
    End
-   Begin PhotoDemon.jcbutton cmdColorSelect 
-      Height          =   375
-      Index           =   1
-      Left            =   10530
-      TabIndex        =   16
-      Top             =   3135
-      Width           =   375
-      _ExtentX        =   661
-      _ExtentY        =   661
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   ""
-      Mode            =   1
-      HandPointer     =   -1  'True
-      PictureNormal   =   "Adjustments_Levels.frx":0852
-      CaptionEffects  =   0
-      ToolTip         =   "When this button is active, you can set the highlight input level color by right-clicking a color in the preview window."
-      ColorScheme     =   3
-   End
    Begin PhotoDemon.buttonStrip btsChannel 
       Height          =   600
       Left            =   6030
-      TabIndex        =   18
+      TabIndex        =   15
       Top             =   6000
       Width           =   6675
       _ExtentX        =   11774
       _ExtentY        =   1058
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+   End
+   Begin PhotoDemon.pdButtonToolbox cmdColorSelect 
+      Height          =   375
+      Index           =   1
+      Left            =   10530
+      TabIndex        =   18
+      Top             =   3135
+      Width           =   375
+      _ExtentX        =   661
+      _ExtentY        =   661
+      StickyToggle    =   -1  'True
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -300,7 +241,7 @@ Begin VB.Form FormLevels
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   19
+      TabIndex        =   16
       Top             =   5640
       Width           =   810
    End
@@ -425,9 +366,6 @@ Private m_ActiveArrow As Long
 ' max/min bounds.
 Private m_DisableMaxMinLimits As Boolean
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
-
 'When a new channel is selected, refresh all text box values to match the new channel's stored values
 Private Sub btsChannel_Click(ByVal buttonIndex As Long)
 
@@ -435,7 +373,7 @@ Private Sub btsChannel_Click(ByVal buttonIndex As Long)
     
     'Draw the relevant histogram onto the histogram box
     If Not hDIB(m_curChannel) Is Nothing Then
-        BitBlt picHistogram.hDC, 1, 0, hDIB(m_curChannel).getDIBWidth, hDIB(m_curChannel).getDIBHeight, hDIB(m_curChannel).getDIBDC, 0, 0, vbSrcCopy
+        BitBlt picHistogram.hDC, 0, 0, hDIB(m_curChannel).getDIBWidth, hDIB(m_curChannel).getDIBHeight, hDIB(m_curChannel).getDIBDC, 0, 0, vbSrcCopy
     End If
     picHistogram.Picture = picHistogram.Image
     
@@ -501,10 +439,10 @@ Public Function getIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     Dim r As Long, g As Long, b As Long, l As Long
     
     'Maximum and minimum values, which will be detected by our initial histogram run
-    Dim rMax As Byte, gMax As Byte, bMax As Byte, lMax As Byte
-    Dim rMin As Byte, gMin As Byte, bMin As Byte, lMin As Byte
-    rMax = 0: gMax = 0: bMax = 0: lMax = 0
-    rMin = 255: gMin = 255: bMin = 255: lMin = 255
+    Dim RMax As Byte, gMax As Byte, bMax As Byte, lMax As Byte
+    Dim RMin As Byte, gMin As Byte, bMin As Byte, lMin As Byte
+    RMax = 0: gMax = 0: bMax = 0: lMax = 0
+    RMin = 255: gMin = 255: bMin = 255: lMin = 255
     
     'Calculate a percentage to ignore at either end.  Photoshop defaults to 0.5%, but the actual value might need to vary on
     ' a per-image basis... hard to know what the best approach is.
@@ -559,7 +497,7 @@ Public Function getIdealLevelParamString(ByRef srcDIB As pdDIB) As String
             r = r + 1
             rTally = rTally + rCount(r)
         Else
-            rMin = r
+            RMin = r
             foundYet = True
         End If
     Loop While foundYet = False
@@ -611,7 +549,7 @@ Public Function getIdealLevelParamString(ByRef srcDIB As pdDIB) As String
             r = r - 1
             rTally = rTally + rCount(r)
         Else
-            rMax = r
+            RMax = r
             foundYet = True
         End If
     Loop While foundYet = False
@@ -664,12 +602,12 @@ Public Function getIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     ' between per-channel corrections and net luminance corrections.  This roughly maintains the existing color spread of the image,
     ' while removing any obviously bad results, and producing a consistently well-exposed final image.  It also serves to balance out
     ' color temperature in an elegant way, without subjecting photos to the standard over-cooled look of other auto-level tools.
-    rMin = rMin \ 2
+    RMin = RMin \ 2
     gMin = gMin \ 2
     bMin = bMin \ 2
     lMin = lMin \ 2
     
-    rMax = rMax + ((255 - rMax) \ 2)
+    RMax = RMax + ((255 - RMax) \ 2)
     gMax = gMax + ((255 - gMax) \ 2)
     bMax = bMax + ((255 - bMax) \ 2)
     lMax = lMax + ((255 - lMax) \ 2)
@@ -680,7 +618,7 @@ Public Function getIdealLevelParamString(ByRef srcDIB As pdDIB) As String
     Erase ImageData
     
     'Return our assembled data in param-string compatible format
-    getIdealLevelParamString = buildParams(rMin, 0.5, rMax, 0, 255, gMin, 0.5, gMax, 0, 255, bMin, 0.5, bMax, 0, 255, lMin, 0.5, lMax, 0, 255)
+    getIdealLevelParamString = buildParams(RMin, 0.5, RMax, 0, 255, gMin, 0.5, gMax, 0, 255, bMin, 0.5, bMax, 0, 255, lMin, 0.5, lMax, 0, 255)
 
 End Function
 
@@ -1119,7 +1057,7 @@ Private Sub Form_Activate()
     m_DisableMaxMinLimits = False
     
     'Draw the default histogram onto the histogram box
-    BitBlt picHistogram.hDC, 1, 0, hDIB(m_curChannel).getDIBWidth, hDIB(m_curChannel).getDIBHeight, hDIB(m_curChannel).getDIBDC, 0, 0, vbSrcCopy
+    BitBlt picHistogram.hDC, 0, 0, hDIB(m_curChannel).getDIBWidth, hDIB(m_curChannel).getDIBHeight, hDIB(m_curChannel).getDIBDC, 0, 0, vbSrcCopy
     picHistogram.Picture = picHistogram.Image
         
     'Load the arrow slider images from the resource file
@@ -1159,25 +1097,33 @@ Private Sub prepHistogramOverlays()
     Dim hLookupX() As Double
     Dim hColor As Long
     
+    Dim tmpPath As pdGraphicsPath, tmpPathLog As pdGraphicsPath
+    Dim histogramShape() As POINTFLOAT, histogramShapeLog() As POINTFLOAT
+    
+    Dim tmpPen As Long, tmpBrush As Long
+    
     'Initialize the background histogram image DIBs
     Dim i As Long, j As Long
     
-    For i = 0 To 3
+    'Build a look-up table of x-positions for the histogram data
+    ReDim hLookupX(0 To 255) As Double
+    Dim tmpWidth As Long, tmpHeight As Long
+    tmpWidth = picHistogram.ScaleWidth
+    tmpHeight = picHistogram.ScaleHeight
     
+    For j = 0 To 255
+        hLookupX(j) = (CSng(j + 1) / 257) * CSng(tmpWidth)
+    Next j
+    
+    For i = 0 To 3
+        
         'Initialize this channel's DIB
         Set hDIB(i) = New pdDIB
         Set hLogDIB(i) = New pdDIB
-        hDIB(i).createBlank picHistogram.ScaleWidth - 2, picHistogram.ScaleHeight
+        hDIB(i).createBlank tmpWidth, tmpHeight, 24, vbWhite
         hLogDIB(i).createFromExistingDIB hDIB(i)
         
-        yMax = 0.9 * hDIB(i).getDIBHeight
-        
-        'Build a look-up table of x-positions for the histogram data
-        ReDim hLookupX(0 To 255) As Double
-        
-        For j = 0 To 255
-            hLookupX(j) = (CDbl(j) / 255) * hDIB(i).getDIBWidth
-        Next j
+        yMax = 0.9 * tmpHeight
         
         'The color of the histogram changes for each channel
         Select Case i
@@ -1200,19 +1146,58 @@ Private Sub prepHistogramOverlays()
         
         
         End Select
+                
+        'New strategy!  Use the awesome pdGraphicsPath class to construct a matching polygon for each histogram.
+        ' Then, stroke and fill the polygon in one fell swoop (much faster).
+        ReDim histogramShape(0 To 260) As POINTFLOAT
+        ReDim histogramShapeLog(0 To 260) As POINTFLOAT
         
-        'Render the histogram data to each DIB (one for regular, one for logarithmic)
-        For j = 1 To 255
-            GDIPlusDrawLineToDC hDIB(i).getDIBDC, hLookupX(j - 1), hDIB(i).getDIBHeight - (hData(i, j - 1) / hMax(i)) * yMax, hLookupX(j), hDIB(i).getDIBHeight - (hData(i, j) / hMax(i)) * yMax, hColor, 255
-            GDIPlusDrawLineToDC hLogDIB(i).getDIBDC, hLookupX(j - 1), hDIB(i).getDIBHeight - (hDataLog(i, j - 1) / hMaxLog(i)) * yMax, hLookupX(j), hDIB(i).getDIBHeight - (hDataLog(i, j) / hMaxLog(i)) * yMax, hColor, 255
-        Next j
-        
-        'Beneath each line, add an even lighter "filled" version of the line
         For j = 0 To 255
-            GDIPlusDrawLineToDC hDIB(i).getDIBDC, hLookupX(j), hDIB(i).getDIBHeight - (hData(i, j) / hMax(i)) * yMax - 1, hLookupX(j), hDIB(i).getDIBHeight, hColor, 128
-            GDIPlusDrawLineToDC hLogDIB(i).getDIBDC, hLookupX(j), hDIB(i).getDIBHeight - (hDataLog(i, j) / hMaxLog(i)) * yMax - 1, hLookupX(j), hDIB(i).getDIBHeight, hColor, 128
+            histogramShape(j).x = hLookupX(j)
+            histogramShape(j).y = tmpHeight - (hData(i, j) / hMax(i)) * yMax
+            
+            histogramShapeLog(j).x = hLookupX(j)
+            histogramShapeLog(j).y = tmpHeight - (hDataLog(i, j) / hMaxLog(i)) * yMax
         Next j
-    
+        
+        'Complete each shape by tracing the outline of the DIB
+        histogramShape(256).x = tmpWidth + 1
+        histogramShape(256).y = tmpHeight
+        histogramShape(257).x = tmpWidth
+        histogramShape(257).y = tmpHeight + 1
+        
+        histogramShape(258).x = 0
+        histogramShape(258).y = tmpHeight
+        histogramShape(259).x = -1
+        histogramShape(259).y = tmpHeight + 1
+        
+        For j = 256 To 259
+            histogramShapeLog(j).x = histogramShape(j).x
+            histogramShapeLog(j).y = histogramShape(j).y
+        Next j
+        
+        'Populate shape objects using those point lists
+        Set tmpPath = New pdGraphicsPath
+        tmpPath.addPolygon 260, VarPtr(histogramShape(0)), True, True
+        
+        Set tmpPathLog = New pdGraphicsPath
+        tmpPathLog.addPolygon 260, VarPtr(histogramShapeLog(0)), True, True
+        
+        'Prep pens and brushes in the current color
+        tmpPen = GDI_Plus.getGDIPlusPenHandle(hColor, 255, 1, LineCapRound, LineJoinRound)
+        tmpBrush = GDI_Plus.getGDIPlusSolidBrushHandle(hColor, 128)
+        
+        'Render the paths to their target DIBs
+        tmpPath.fillPathToDIB_BareBrush tmpBrush, hDIB(i)
+        tmpPath.strokePathToDIB_BarePen tmpPen, hDIB(i)
+        
+        tmpPathLog.fillPathToDIB_BareBrush tmpBrush, hLogDIB(i)
+        tmpPathLog.strokePathToDIB_BarePen tmpPen, hLogDIB(i)
+        
+        'Free our pen and brush resources
+        GDI_Plus.releaseGDIPlusPen tmpPen
+        GDI_Plus.releaseGDIPlusBrush tmpBrush
+        
     Next i
 
 End Sub
@@ -1239,9 +1224,15 @@ Private Sub Form_Load()
     cMouseEventsIn.addInputTracker picInputArrows.hWnd, True, True, , True
     cMouseEventsOut.addInputTracker picOutputArrows.hWnd, True, True, , True
     
+    'Add button images
+    cmdColorSelect(0).AssignImage "EYE_DROPPER_GENERIC"
+    cmdColorSelect(1).AssignImage "EYE_DROPPER_GENERIC"
+    cmdColorSelect(0).assignTooltip "When this button is active, you can set the shadow input level color by right-clicking a color in the preview window."
+    cmdColorSelect(1).assignTooltip "When this button is active, you can set the highlight input level color by right-clicking a color in the preview window."
+    cmdColorSelect(0).Value = True
+    
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    makeFormPretty Me
 
 End Sub
 
