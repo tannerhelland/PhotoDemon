@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.76</langversion>
+<langversion>6.7.77</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -1587,16 +1587,6 @@
 </phrase>
 
 <phrase>
-<original>&OK</original>
-<translation>OK</translation>
-</phrase>
-
-<phrase>
-<original>&Cancel</original>
-<translation>Avbryt</translation>
-</phrase>
-
-<phrase>
 <original>recent colors</original>
 <translation>senaste färger</translation>
 </phrase>
@@ -1626,7 +1616,7 @@
 <translation>Klicka på den här knappen för att aktivera färg fånga från var som helst på skärmen.</translation>
 </phrase>
 
-<!-- Dialog_ColorSelector.frm contains 14 phrases. 5 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Dialog_ColorSelector.frm contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Dialog_ColorSelector.frm-->
 
@@ -1713,7 +1703,7 @@
 <translation>Väntar på att användaren att ange färgdjup</translation>
 </phrase>
 
-<!-- Dialog_ExportColorDepth.frm contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Dialog_ExportColorDepth.frm contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
 
 <!-- END text for Dialog_ExportColorDepth.frm-->
 
@@ -1801,18 +1791,18 @@
 <!-- BEGIN text for Dialog_GenericRemember.frm (dialog_GenericMemory) -->
 
 <phrase>
-<original>Cancel</original>
+<original>&Yes</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>No</original>
+<original>&No</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Yes</original>
-<translation></translation>
+<original>&Cancel</original>
+<translation>Avbryt</translation>
 </phrase>
 
 <!-- Dialog_GenericRemember.frm contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
@@ -1959,13 +1949,13 @@
 </phrase>
 
 <phrase>
-<original>Do not display this warning again</original>
-<translation>Visa inte den här varningen igen</translation>
+<original>I understand the risks of running PhotoDemon in the IDE</original>
+<translation>Jag förstår riskerna med att köra PhotoDemon i IDE</translation>
 </phrase>
 
 <phrase>
-<original>I understand the risks of running PhotoDemon in the IDE</original>
-<translation>Jag förstår riskerna med att köra PhotoDemon i IDE</translation>
+<original>Do not display this warning again</original>
+<translation>Visa inte den här varningen igen</translation>
 </phrase>
 
 <phrase>
@@ -5296,6 +5286,11 @@ By standard kommer öppenheten att delas i mitten, eller så kan du ange en anpa
 </phrase>
 
 <phrase>
+<original>&OK</original>
+<translation>OK</translation>
+</phrase>
+
+<phrase>
 <original>Copyright</original>
 <translation>Copyright</translation>
 </phrase>
@@ -5418,7 +5413,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation>Väntar på användarinmatning</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 29 phrases. 5 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 29 phrases. 4 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
 
@@ -5430,11 +5425,6 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 </phrase>
 
 <phrase>
-<original>Load only the first page</original>
-<translation>Fyll bara på första sidan</translation>
-</phrase>
-
-<phrase>
 <original>Load each page as its own image</original>
 <translation>Fyll på varje sida som en egen bild</translation>
 </phrase>
@@ -5442,6 +5432,11 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <phrase>
 <original>always apply this action to multi-image files</original>
 <translation>alltid tillämpa denna åtgärd på flera bildfiler</translation>
+</phrase>
+
+<phrase>
+<original>Load only the first page</original>
+<translation>Fyll bara på första sidan</translation>
 </phrase>
 
 <phrase>
@@ -5514,7 +5509,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation>Detta alternativ kommer endast att ladda en sida från TIFF-filen.</translation>
 </phrase>
 
-<!-- File_Import_Multipage.frm contains 35 phrases. 17 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- File_Import_Multipage.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for File_Import_Multipage.frm-->
 
@@ -13730,6 +13725,11 @@ Please ange ett numeriskt värde.</translation>
 </phrase>
 
 <phrase>
+<original>Cancel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Reset all settings to their default values.</original>
 <translation>Återställ alla inställningar till standardvärden.</translation>
 </phrase>
@@ -13764,7 +13764,7 @@ Please ange ett numeriskt värde.</translation>
 <translation>Tidigare sparade förinställningar kan väljas här. Du kan spara de aktuella inställningarna som en ny förinställning genom att klicka på knappen Spara förinställning till höger.</translation>
 </phrase>
 
-<!-- commandBar.ctl contains 17 phrases. 4 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- commandBar.ctl contains 17 phrases. 3 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for commandBar.ctl-->
 
@@ -14113,8 +14113,8 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrasecount>2434</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4217 phrases. -->
-<!-- 1783 are duplicates, so only 2434 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4201 phrases. -->
+<!-- 1767 are duplicates, so only 2434 unique phrases have been written to file. -->
 <!-- These 2434 phrases contain approximately 13268 total words. -->
 
 </pdData>

@@ -25,52 +25,25 @@ Begin VB.Form dialog_IDEWarning
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   603
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.smartCheckBox chkRepeat 
-      Height          =   300
-      Left            =   1140
-      TabIndex        =   5
-      Top             =   5520
-      Width           =   6675
-      _ExtentX        =   11774
-      _ExtentY        =   582
-      Caption         =   "Do not display this warning again"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-   End
-   Begin PhotoDemon.jcbutton cmdOK 
-      Default         =   -1  'True
-      Height          =   735
+   Begin PhotoDemon.pdButton cmdOK 
+      Height          =   750
       Left            =   1125
       TabIndex        =   0
       Top             =   4560
       Width           =   6690
       _ExtentX        =   11800
-      _ExtentY        =   1296
-      ButtonStyle     =   13
-      ShowFocusRect   =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _ExtentY        =   1323
       Caption         =   "I understand the risks of running PhotoDemon in the IDE"
-      HandPointer     =   -1  'True
-      PictureNormal   =   "Dialog_IDEWarning.frx":0000
-      PictureAlign    =   0
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      TooltipType     =   1
+   End
+   Begin PhotoDemon.smartCheckBox chkRepeat 
+      Height          =   300
+      Left            =   1140
+      TabIndex        =   1
+      Top             =   5520
+      Width           =   6675
+      _ExtentX        =   11774
+      _ExtentY        =   582
+      Caption         =   "Do not display this warning again"
    End
    Begin VB.Label lblWarning 
       BackStyle       =   0  'Transparent
@@ -88,7 +61,7 @@ Begin VB.Form dialog_IDEWarning
       Height          =   885
       Index           =   3
       Left            =   360
-      TabIndex        =   4
+      TabIndex        =   5
       Top             =   3240
       Width           =   8175
       WordWrap        =   -1  'True
@@ -109,7 +82,7 @@ Begin VB.Form dialog_IDEWarning
       Height          =   765
       Index           =   2
       Left            =   360
-      TabIndex        =   3
+      TabIndex        =   4
       Top             =   2400
       Width           =   8385
       WordWrap        =   -1  'True
@@ -130,7 +103,7 @@ Begin VB.Form dialog_IDEWarning
       Height          =   1245
       Index           =   1
       Left            =   360
-      TabIndex        =   2
+      TabIndex        =   3
       Top             =   1080
       Width           =   8385
       WordWrap        =   -1  'True
@@ -151,7 +124,7 @@ Begin VB.Form dialog_IDEWarning
       Height          =   525
       Index           =   0
       Left            =   1005
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   390
       Width           =   7695
       WordWrap        =   -1  'True
@@ -182,9 +155,6 @@ Option Explicit
 'The user input from the dialog
 Private userAnswer As VbMsgBoxResult
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
-
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
 End Property
@@ -202,24 +172,22 @@ Public Sub showDialog()
     lblWarning(2).Caption = g_Language.TranslateMessage("Additionally, like all other photo editors, PhotoDemon relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.")
     lblWarning(3).Caption = g_Language.TranslateMessage("If you insist on running PhotoDemon in the IDE, please do not submit bugs regarding IDE crashes or freezes.  PhotoDemon's developers can only address issues and bugs that affect the compiled .exe.")
     
+    cmdOK.AssignImage "LRGACCEPT"
+    
     'Provide a default answer of "first image only" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbOK
 
     'Apply any custom styles to the form
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    makeFormPretty Me
 
     'Display the form
     showPDDialog vbModal, Me, True
 
 End Sub
 
-'OK button
 Private Sub CmdOK_Click()
-
     If CBool(chkRepeat.Value) Then g_UserPreferences.SetPref_Boolean "Core", "Display IDE Warning", False
     Me.Hide
-
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)

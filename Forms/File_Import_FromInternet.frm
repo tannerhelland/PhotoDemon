@@ -3,7 +3,7 @@ Begin VB.Form FormInternetImport
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Download Image"
-   ClientHeight    =   2340
+   ClientHeight    =   2685
    ClientLeft      =   45
    ClientTop       =   315
    ClientWidth     =   10050
@@ -19,37 +19,30 @@ Begin VB.Form FormInternetImport
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   156
+   ScaleHeight     =   179
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   670
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.commandBarMini cmdBarMini 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   3
+      Top             =   1935
+      Width           =   10050
+      _ExtentX        =   17727
+      _ExtentY        =   1323
+      BackColor       =   14802140
+   End
    Begin PhotoDemon.pdTextBox txtURL 
       Height          =   315
       Left            =   240
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   840
       Width           =   9615
       _ExtentX        =   16960
       _ExtentY        =   556
       Text            =   "http://"
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   7080
-      TabIndex        =   0
-      Top             =   1710
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   8550
-      TabIndex        =   1
-      Top             =   1710
-      Width           =   1365
    End
    Begin VB.Label lblCopyrightWarning 
       Appearance      =   0  'Flat
@@ -59,16 +52,9 @@ Begin VB.Form FormInternetImport
       ForeColor       =   &H00808080&
       Height          =   615
       Left            =   240
-      TabIndex        =   3
-      Top             =   1725
-      Width           =   6735
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   4
-      Top             =   1560
-      Width           =   10095
+      TabIndex        =   1
+      Top             =   1320
+      Width           =   9615
    End
    Begin VB.Label lblDownloadPath 
       AutoSize        =   -1  'True
@@ -86,7 +72,7 @@ Begin VB.Form FormInternetImport
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   360
       Width           =   6000
    End
@@ -351,15 +337,8 @@ Public Function downloadURLToTempFile(ByVal URL As String) As String
 
 End Function
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Message "Internet import canceled."
-    Unload Me
-End Sub
+Private Sub cmdBarMini_OKClick()
 
-'OK Button
-Private Sub CmdOK_Click()
-    
     'Check to make sure the user followed directions
     Dim fullURL As String
     fullURL = txtURL
@@ -378,7 +357,10 @@ Private Sub CmdOK_Click()
     downloadSuccessful = ImportImageFromInternet(fullURL)
     
     'If the download failed, show the user this form (so they can try again).  Otherwise, unload this form.
-    If downloadSuccessful = False Then Me.Visible = True Else Unload Me
+    If Not downloadSuccessful Then
+        Me.Visible = True
+        cmdBarMini.doNotUnloadForm
+    End If
     
 End Sub
 

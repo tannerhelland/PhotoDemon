@@ -23,6 +23,16 @@ Begin VB.Form FormCanvasSize
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   647
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdButton cmdAnchor 
+      Height          =   570
+      Index           =   0
+      Left            =   840
+      TabIndex        =   5
+      Top             =   3720
+      Width           =   750
+      _ExtentX        =   1323
+      _ExtentY        =   1005
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -32,94 +42,13 @@ Begin VB.Form FormCanvasSize
       Width           =   9705
       _ExtentX        =   17119
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
       AutoloadLastPreset=   -1  'True
-   End
-   Begin VB.CommandButton cmdAnchor 
-      Height          =   570
-      Index           =   8
-      Left            =   2040
-      TabIndex        =   11
-      Top             =   4920
-      Width           =   570
-   End
-   Begin VB.CommandButton cmdAnchor 
-      Height          =   570
-      Index           =   7
-      Left            =   1440
-      TabIndex        =   10
-      Top             =   4920
-      Width           =   570
-   End
-   Begin VB.CommandButton cmdAnchor 
-      Height          =   570
-      Index           =   6
-      Left            =   840
-      TabIndex        =   9
-      Top             =   4920
-      Width           =   570
-   End
-   Begin VB.CommandButton cmdAnchor 
-      Height          =   570
-      Index           =   5
-      Left            =   2040
-      TabIndex        =   8
-      Top             =   4320
-      Width           =   570
-   End
-   Begin VB.CommandButton cmdAnchor 
-      Height          =   570
-      Index           =   4
-      Left            =   1440
-      TabIndex        =   7
-      Top             =   4320
-      Width           =   570
-   End
-   Begin VB.CommandButton cmdAnchor 
-      Height          =   570
-      Index           =   3
-      Left            =   840
-      TabIndex        =   6
-      Top             =   4320
-      Width           =   570
-   End
-   Begin VB.CommandButton cmdAnchor 
-      Height          =   570
-      Index           =   2
-      Left            =   2040
-      TabIndex        =   5
-      Top             =   3720
-      Width           =   570
-   End
-   Begin VB.CommandButton cmdAnchor 
-      Height          =   570
-      Index           =   1
-      Left            =   1440
-      TabIndex        =   4
-      Top             =   3720
-      Width           =   570
-   End
-   Begin VB.CommandButton cmdAnchor 
-      Height          =   570
-      Index           =   0
-      Left            =   840
-      TabIndex        =   3
-      Top             =   3720
-      Width           =   570
    End
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   495
       Left            =   840
-      TabIndex        =   12
+      TabIndex        =   3
       Top             =   6120
       Width           =   7935
       _ExtentX        =   10398
@@ -128,7 +57,7 @@ Begin VB.Form FormCanvasSize
    Begin PhotoDemon.smartResize ucResize 
       Height          =   2850
       Left            =   360
-      TabIndex        =   13
+      TabIndex        =   4
       Top             =   360
       Width           =   8775
       _ExtentX        =   15478
@@ -142,6 +71,86 @@ Begin VB.Form FormCanvasSize
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+   End
+   Begin PhotoDemon.pdButton cmdAnchor 
+      Height          =   570
+      Index           =   1
+      Left            =   1680
+      TabIndex        =   6
+      Top             =   3720
+      Width           =   750
+      _ExtentX        =   1323
+      _ExtentY        =   1005
+   End
+   Begin PhotoDemon.pdButton cmdAnchor 
+      Height          =   570
+      Index           =   2
+      Left            =   2520
+      TabIndex        =   7
+      Top             =   3720
+      Width           =   750
+      _ExtentX        =   1323
+      _ExtentY        =   1005
+   End
+   Begin PhotoDemon.pdButton cmdAnchor 
+      Height          =   570
+      Index           =   3
+      Left            =   840
+      TabIndex        =   8
+      Top             =   4320
+      Width           =   750
+      _ExtentX        =   1323
+      _ExtentY        =   1005
+   End
+   Begin PhotoDemon.pdButton cmdAnchor 
+      Height          =   570
+      Index           =   4
+      Left            =   1680
+      TabIndex        =   9
+      Top             =   4320
+      Width           =   750
+      _ExtentX        =   1323
+      _ExtentY        =   1005
+   End
+   Begin PhotoDemon.pdButton cmdAnchor 
+      Height          =   570
+      Index           =   5
+      Left            =   2520
+      TabIndex        =   10
+      Top             =   4320
+      Width           =   750
+      _ExtentX        =   1323
+      _ExtentY        =   1005
+   End
+   Begin PhotoDemon.pdButton cmdAnchor 
+      Height          =   570
+      Index           =   6
+      Left            =   840
+      TabIndex        =   11
+      Top             =   4920
+      Width           =   750
+      _ExtentX        =   1323
+      _ExtentY        =   1005
+   End
+   Begin PhotoDemon.pdButton cmdAnchor 
+      Height          =   570
+      Index           =   7
+      Left            =   1680
+      TabIndex        =   12
+      Top             =   4920
+      Width           =   750
+      _ExtentX        =   1323
+      _ExtentY        =   1005
+   End
+   Begin PhotoDemon.pdButton cmdAnchor 
+      Height          =   570
+      Index           =   8
+      Left            =   2520
+      TabIndex        =   13
+      Top             =   4920
+      Width           =   750
+      _ExtentX        =   1323
+      _ExtentY        =   1005
    End
    Begin VB.Label lblAnchor 
       Appearance      =   0  'Flat
@@ -214,15 +223,11 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Used to render images onto the tool buttons at run-time
-' NOTE: TOOLBOX IMAGES WILL NOT APPEAR IN THE IDE.  YOU MUST COMPILE FIRST.
-Private cImgCtl As clsControlImage
-
 'Current anchor position; used to render the anchor selection command buttons, among other things
-Dim m_CurrentAnchor As Long
+Private m_CurrentAnchor As Long
 
 'We must also track which arrows are drawn where on the command button array
-Dim arrowLocations() As String
+Private arrowLocations() As String
 
 Private Sub fillArrowLocations(ByRef aLocations() As String)
 
@@ -256,52 +261,22 @@ Private Sub updateAnchorButtons()
     
     Dim i As Long
     
-    'If the buttons already have images, remove them first
-    If Not cImgCtl Is Nothing Then
-        For i = 0 To 8
-            If Len(arrowLocations(i)) <> 0 Then cImgCtl.RemoveImage cmdAnchor(i).hWnd
-        Next i
-        Set cImgCtl = Nothing
-    End If
-    
     'Build an array that contains the arrow to appear in each location.
     ReDim arrowLocations(0 To 8) As String
     fillArrowLocations arrowLocations
     
-    If g_IsVistaOrLater And g_IsThemingEnabled And g_IsProgramCompiled Then
-    
-        'Next, extract relevant icons from the resource file, and render them onto the buttons at run-time.
-        ' (NOTE: because the icons require manifest theming, they will not appear in the IDE.)
-        Set cImgCtl = New clsControlImage
-        If g_IsProgramCompiled Then
-            
-            For i = 0 To 8
-                If Len(arrowLocations(i)) <> 0 Then
-                    With cImgCtl
-                        .LoadImageFromStream cmdAnchor(i).hWnd, LoadResData(arrowLocations(i), "CUSTOM"), fixDPI(16), fixDPI(16)
-                        .SetMargins cmdAnchor(i).hWnd, 0
-                        .Align(cmdAnchor(i).hWnd) = Icon_Center
-                    End With
-                    cmdAnchor(i).Refresh
-                    DoEvents
-                End If
-            Next i
-            
+    'Next, extract relevant icons from the resource file, and render them onto the buttons at run-time.
+    For i = 0 To 8
+        If Len(arrowLocations(i)) <> 0 Then
+            cmdAnchor(i).AssignImage arrowLocations(i)
+        Else
+            cmdAnchor(i).AssignImage "", Nothing
         End If
-        
-    Else
-        For i = 0 To 8
-            If arrowLocations(i) = "IMGMEDIUM" Then
-                cmdAnchor(i).Caption = "*"
-            Else
-                cmdAnchor(i).Caption = ""
-            End If
-        Next i
-    End If
-
+    Next i
+    
 End Sub
 
-Private Sub cmdAnchor_MouseUp(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub cmdAnchor_Click(Index As Integer)
     m_CurrentAnchor = Index
     updateAnchorButtons
 End Sub

@@ -5,7 +5,7 @@ Begin VB.Form FormHistogram
    BackColor       =   &H80000005&
    BorderStyle     =   5  'Sizable ToolWindow
    Caption         =   " Histogram"
-   ClientHeight    =   9120
+   ClientHeight    =   9045
    ClientLeft      =   120
    ClientTop       =   360
    ClientWidth     =   10590
@@ -21,14 +21,24 @@ Begin VB.Form FormHistogram
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   608
+   ScaleHeight     =   603
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   706
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdButton cmdOK 
+      Height          =   510
+      Left            =   7320
+      TabIndex        =   25
+      Top             =   8400
+      Width           =   3135
+      _ExtentX        =   7011
+      _ExtentY        =   873
+      Caption         =   "Exit histogram"
+   End
    Begin PhotoDemon.smartCheckBox chkLog 
       Height          =   330
       Left            =   7320
-      TabIndex        =   24
+      TabIndex        =   22
       Top             =   6000
       Width           =   2985
       _ExtentX        =   5265
@@ -38,7 +48,7 @@ Begin VB.Form FormHistogram
    Begin PhotoDemon.smartCheckBox chkSmooth 
       Height          =   330
       Left            =   7320
-      TabIndex        =   23
+      TabIndex        =   21
       Top             =   5040
       Width           =   2985
       _ExtentX        =   5265
@@ -49,21 +59,12 @@ Begin VB.Form FormHistogram
       Height          =   330
       Index           =   0
       Left            =   4680
-      TabIndex        =   19
+      TabIndex        =   17
       Top             =   5040
       Width           =   2115
       _ExtentX        =   3731
       _ExtentY        =   582
       Caption         =   "red"
-   End
-   Begin VB.CommandButton cmdOK 
-      Caption         =   "Close Histogram"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   8280
-      TabIndex        =   0
-      Top             =   8520
-      Width           =   2085
    End
    Begin VB.PictureBox picH 
       Appearance      =   0  'Flat
@@ -85,7 +86,7 @@ Begin VB.Form FormHistogram
       ScaleHeight     =   267
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   687
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   10335
    End
@@ -108,7 +109,7 @@ Begin VB.Form FormHistogram
       ScaleHeight     =   15
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   687
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   4200
       Width           =   10335
    End
@@ -116,7 +117,7 @@ Begin VB.Form FormHistogram
       Height          =   330
       Index           =   1
       Left            =   4680
-      TabIndex        =   20
+      TabIndex        =   18
       Top             =   5520
       Width           =   2115
       _ExtentX        =   3731
@@ -127,7 +128,7 @@ Begin VB.Form FormHistogram
       Height          =   330
       Index           =   2
       Left            =   4680
-      TabIndex        =   21
+      TabIndex        =   19
       Top             =   6000
       Width           =   2115
       _ExtentX        =   3731
@@ -138,7 +139,7 @@ Begin VB.Form FormHistogram
       Height          =   330
       Index           =   3
       Left            =   4680
-      TabIndex        =   22
+      TabIndex        =   20
       Top             =   6480
       Width           =   2115
       _ExtentX        =   3731
@@ -148,7 +149,7 @@ Begin VB.Form FormHistogram
    Begin PhotoDemon.smartCheckBox chkFillCurve 
       Height          =   330
       Left            =   7320
-      TabIndex        =   25
+      TabIndex        =   23
       Top             =   5520
       Width           =   2985
       _ExtentX        =   5265
@@ -173,7 +174,7 @@ Begin VB.Form FormHistogram
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   4320
-      TabIndex        =   26
+      TabIndex        =   24
       Top             =   4680
       Width           =   1650
    End
@@ -194,7 +195,7 @@ Begin VB.Form FormHistogram
       Height          =   285
       Index           =   0
       Left            =   240
-      TabIndex        =   18
+      TabIndex        =   16
       Top             =   4680
       Width           =   885
    End
@@ -216,7 +217,7 @@ Begin VB.Form FormHistogram
       ForeColor       =   &H00808080&
       Height          =   210
       Left            =   480
-      TabIndex        =   16
+      TabIndex        =   15
       Top             =   7800
       Width           =   5805
    End
@@ -238,7 +239,7 @@ Begin VB.Form FormHistogram
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6960
-      TabIndex        =   15
+      TabIndex        =   14
       Top             =   4680
       Width           =   1875
    End
@@ -261,7 +262,7 @@ Begin VB.Form FormHistogram
       Height          =   240
       Index           =   0
       Left            =   1080
-      TabIndex        =   14
+      TabIndex        =   13
       Top             =   5880
       Width           =   390
    End
@@ -283,7 +284,7 @@ Begin VB.Form FormHistogram
       ForeColor       =   &H00404040&
       Height          =   240
       Left            =   480
-      TabIndex        =   13
+      TabIndex        =   12
       Top             =   5520
       Width           =   1440
    End
@@ -306,7 +307,7 @@ Begin VB.Form FormHistogram
       Height          =   240
       Index           =   1
       Left            =   1080
-      TabIndex        =   12
+      TabIndex        =   11
       Top             =   6240
       Width           =   285
    End
@@ -329,7 +330,7 @@ Begin VB.Form FormHistogram
       Height          =   240
       Index           =   1
       Left            =   480
-      TabIndex        =   11
+      TabIndex        =   10
       Top             =   6240
       Width           =   360
    End
@@ -352,7 +353,7 @@ Begin VB.Form FormHistogram
       Height          =   240
       Index           =   0
       Left            =   480
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   5880
       Width           =   465
    End
@@ -374,7 +375,7 @@ Begin VB.Form FormHistogram
       ForeColor       =   &H00404040&
       Height          =   240
       Left            =   480
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   5160
       Width           =   990
    End
@@ -397,7 +398,7 @@ Begin VB.Form FormHistogram
       Height          =   240
       Index           =   2
       Left            =   480
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   6600
       Width           =   570
    End
@@ -420,7 +421,7 @@ Begin VB.Form FormHistogram
       Height          =   240
       Index           =   2
       Left            =   1200
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   6600
       Width           =   495
    End
@@ -443,7 +444,7 @@ Begin VB.Form FormHistogram
       Height          =   240
       Index           =   3
       Left            =   480
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   6960
       Width           =   435
    End
@@ -466,7 +467,7 @@ Begin VB.Form FormHistogram
       Height          =   240
       Index           =   3
       Left            =   1200
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   6960
       Width           =   360
    End
@@ -489,7 +490,7 @@ Begin VB.Form FormHistogram
       Height          =   240
       Index           =   4
       Left            =   480
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   7320
       Width           =   945
    End
@@ -512,16 +513,9 @@ Begin VB.Form FormHistogram
       Height          =   240
       Index           =   4
       Left            =   1680
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   7320
       Width           =   870
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   17
-      Top             =   8400
-      Width           =   11895
    End
 End
 Attribute VB_Name = "FormHistogram"
@@ -582,13 +576,10 @@ Private maxChannel As Byte          'This identifies the channel with the highes
 'Modified cubic spline variables:
 Private nPoints As Integer
 Private iX() As Double
-Private iY() As Double
+Private iy() As Double
 Private p() As Double
 Private u() As Double
 Private results() As Long   'Stores the y-values for each x-value in the final spline
-
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Private m_Tooltip As clsToolTip
 
 'To improve histogram render performance, we cache a number of translated strings; this saves us having to re-translate them
 ' every time the histogram is redrawn.
@@ -623,9 +614,8 @@ End Sub
 'Just to be safe, regenerate the histogram whenever the form receives focus
 Private Sub Form_Activate()
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply visual themes and translations
+    makeFormPretty Me
     
     'Cache the translation for several dynamic strings; this is more efficient than retranslating them over and over
     strTotalPixels = g_Language.TranslateMessage("total pixels") & ": "
@@ -821,8 +811,7 @@ Private Sub Form_Resize()
 
     picH.Width = Me.ScaleWidth - picH.Left - fixDPI(8)
     picGradient.Width = Me.ScaleWidth - picGradient.Left - fixDPI(8)
-    lblBackground.Width = Abs(lblBackground.Left) + Me.ScaleWidth
-    CmdOK.Left = Me.ScaleWidth - CmdOK.Width - fixDPI(8)
+    cmdOK.Left = Me.ScaleWidth - cmdOK.Width - fixDPI(8)
     
     'Now draw a little gradient below the histogram window, to help orient the user
     DrawHistogramGradient picGradient, RGB(0, 0, 0), RGB(255, 255, 255)
@@ -912,7 +901,7 @@ Private Sub drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal tHeig
     'Create an array consisting of 256 points, where each point corresponds to a histogram value
     nPoints = 256
     ReDim iX(nPoints) As Double
-    ReDim iY(nPoints) As Double
+    ReDim iy(nPoints) As Double
     ReDim p(nPoints) As Double
     ReDim u(nPoints) As Double
     
@@ -925,9 +914,9 @@ Private Sub drawCubicSplineHistogram(ByVal histogramChannel As Long, ByVal tHeig
         iX(i) = (i - 1) * (histWidth / 255)
         
         If logMode Then
-            iY(i) = tHeight - (hDataLog(histogramChannel, i - 1) / hMaxLog) * tHeight
+            iy(i) = tHeight - (hDataLog(histogramChannel, i - 1) / hMaxLog) * tHeight
         Else
-            iY(i) = tHeight - (hData(histogramChannel, i - 1) / hMax) * tHeight
+            iy(i) = tHeight - (hData(histogramChannel, i - 1) / hMax) * tHeight
         End If
         
     Next i
@@ -986,7 +975,7 @@ Private Function getCurvePoint(ByRef i As Long, ByVal v As Double) As Double
     Dim t As Double
     'derived curve equation (which uses p's and u's for coefficients)
     t = (v - iX(i)) / u(i)
-    getCurvePoint = t * iY(i + 1) + (1 - t) * iY(i) + u(i) * u(i) * (f(t) * p(i + 1) + f(1 - t) * p(i)) / 6#
+    getCurvePoint = t * iy(i + 1) + (1 - t) * iy(i) + u(i) * u(i) * (f(t) * p(i + 1) + f(1 - t) * p(i)) / 6#
     
 End Function
 
@@ -1019,7 +1008,7 @@ Private Sub SetPandU()
         u(i) = iX(i + 1) - iX(i)
     Next
     For i = 2 To nPoints - 1
-        w(i) = 6# * ((iY(i + 1) - iY(i)) / u(i) - (iY(i) - iY(i - 1)) / u(i - 1))
+        w(i) = 6# * ((iy(i + 1) - iy(i)) / u(i) - (iy(i) - iy(i - 1)) / u(i - 1))
     Next
     For i = 2 To nPoints - 2
         w(i + 1) = w(i + 1) - w(i) * u(i) / d(i)
@@ -1118,9 +1107,9 @@ Public Sub StretchHistogram()
     Dim r As Long, g As Long, b As Long
     
     'Max and min values
-    Dim rMax As Long, gMax As Long, bMax As Long
-    Dim rMin As Long, gMin As Long, bMin As Long
-    rMin = 255
+    Dim RMax As Long, gMax As Long, bMax As Long
+    Dim RMin As Long, gMin As Long, bMin As Long
+    RMin = 255
     gMin = 255
     bMin = 255
         
@@ -1134,8 +1123,8 @@ Public Sub StretchHistogram()
         g = ImageData(QuickVal + 1, y)
         b = ImageData(QuickVal, y)
         
-        If r < rMin Then rMin = r
-        If r > rMax Then rMax = r
+        If r < RMin Then RMin = r
+        If r > RMax Then RMax = r
         If g < gMin Then gMin = g
         If g > gMax Then gMax = g
         If b < bMin Then bMin = b
@@ -1147,7 +1136,7 @@ Public Sub StretchHistogram()
     Message "Stretching histogram..."
     Dim rDif As Long, gDif As Long, bDif As Long
     
-    rDif = rMax - rMin
+    rDif = RMax - RMin
     gDif = gMax - gMin
     bDif = bMax - bMin
     
@@ -1156,7 +1145,7 @@ Public Sub StretchHistogram()
     
     For x = 0 To 255
         If rDif <> 0 Then
-            r = 255 * ((x - rMin) / rDif)
+            r = 255 * ((x - RMin) / rDif)
             If r < 0 Then r = 0
             If r > 255 Then r = 255
             rLookup(x) = r

@@ -25,80 +25,59 @@ Begin VB.Form dialog_GenericMemory
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   479
    ShowInTaskbar   =   0   'False
-   Begin VB.CommandButton cmdAnswer 
-      Caption         =   "Cancel"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   735
-      Index           =   2
-      Left            =   240
-      TabIndex        =   3
-      Top             =   3240
-      Width           =   6780
-   End
-   Begin VB.CommandButton cmdAnswer 
-      Caption         =   "No"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   735
-      Index           =   1
-      Left            =   240
-      TabIndex        =   0
-      Top             =   2400
-      Width           =   6780
-   End
-   Begin VB.CommandButton cmdAnswer 
-      Caption         =   "Yes"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+   Begin PhotoDemon.pdButton cmdAnswer 
       Height          =   735
       Index           =   0
       Left            =   240
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   1560
       Width           =   6780
+      _extentx        =   11959
+      _extenty        =   1085
+      caption         =   "&Yes"
    End
    Begin PhotoDemon.smartCheckBox chkRemember 
       Height          =   330
       Left            =   240
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   4200
       Width           =   6735
-      _ExtentX        =   11880
-      _ExtentY        =   582
-      Caption         =   " "
+      _extentx        =   11880
+      _extenty        =   582
+      caption         =   " "
    End
    Begin PhotoDemon.pdLabel lblExplanation 
       Height          =   1290
       Left            =   960
       Top             =   150
       Width           =   6015
-      _ExtentX        =   10610
-      _ExtentY        =   2275
-      Caption         =   ""
-      ForeColor       =   2105376
-      Layout          =   1
+      _extentx        =   10610
+      _extenty        =   2275
+      caption         =   ""
+      forecolor       =   2105376
+      layout          =   1
+   End
+   Begin PhotoDemon.pdButton cmdAnswer 
+      Height          =   735
+      Index           =   1
+      Left            =   240
+      TabIndex        =   2
+      Top             =   2400
+      Width           =   6780
+      _extentx        =   11959
+      _extenty        =   1296
+      caption         =   "&No"
+   End
+   Begin PhotoDemon.pdButton cmdAnswer 
+      Height          =   735
+      Index           =   2
+      Left            =   240
+      TabIndex        =   3
+      Top             =   3240
+      Width           =   6780
+      _extentx        =   11959
+      _extenty        =   1296
+      caption         =   "&Cancel"
    End
 End
 Attribute VB_Name = "dialog_GenericMemory"
@@ -232,6 +211,14 @@ Private Sub Form_Activate()
     ' some mechanism other than clicking a button (e.g. the corner x).
     userAnswer = vbCancel
 
+End Sub
+
+Private Sub Form_Load()
+    
+    'Prep button icons at load-time
+    cmdAnswer(0).AssignImage "LRGACCEPT"
+    cmdAnswer(1).AssignImage "LRGCANCEL"
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)

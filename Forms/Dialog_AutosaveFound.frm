@@ -25,6 +25,16 @@ Begin VB.Form dialog_AutosaveWarning
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   611
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdButton cmdOK 
+      Height          =   735
+      Left            =   2280
+      TabIndex        =   5
+      Top             =   6060
+      Width           =   3300
+      _ExtentX        =   5821
+      _ExtentY        =   1296
+      Caption         =   "Restore selected images"
+   End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
       AutoRedraw      =   -1  'True
@@ -44,7 +54,7 @@ Begin VB.Form dialog_AutosaveWarning
       ScaleHeight     =   225
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   330
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   2430
       Width           =   4980
    End
@@ -63,64 +73,19 @@ Begin VB.Form dialog_AutosaveWarning
       Left            =   240
       Sorted          =   -1  'True
       Style           =   1  'Checkbox
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   2430
       Width           =   3615
    End
-   Begin PhotoDemon.jcbutton cmdOK 
-      Height          =   735
-      Left            =   2280
-      TabIndex        =   0
-      Top             =   6060
-      Width           =   3300
-      _ExtentX        =   5821
-      _ExtentY        =   1296
-      ButtonStyle     =   13
-      ShowFocusRect   =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Caption         =   "Restore selected images  "
-      HandPointer     =   -1  'True
-      PictureNormal   =   "Dialog_AutosaveFound.frx":0000
-      PictureAlign    =   0
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      TooltipType     =   1
-   End
-   Begin PhotoDemon.jcbutton cmdCancel 
-      Default         =   -1  'True
+   Begin PhotoDemon.pdButton cmdCancel 
       Height          =   735
       Left            =   5640
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   6060
       Width           =   3300
       _ExtentX        =   5821
       _ExtentY        =   1296
-      ButtonStyle     =   13
-      ShowFocusRect   =   -1  'True
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Caption         =   "Discard all images  "
-      HandPointer     =   -1  'True
-      PictureNormal   =   "Dialog_AutosaveFound.frx":1052
-      PictureAlign    =   0
-      DisabledPictureMode=   1
-      CaptionEffects  =   0
-      TooltipType     =   1
+      Caption         =   "Discard all images"
    End
    Begin VB.Line Line1 
       BorderColor     =   &H8000000D&
@@ -146,7 +111,7 @@ Begin VB.Form dialog_AutosaveWarning
       Height          =   285
       Index           =   0
       Left            =   240
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   2040
       Width           =   2490
    End
@@ -166,7 +131,7 @@ Begin VB.Form dialog_AutosaveWarning
       Height          =   645
       Index           =   1
       Left            =   240
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   990
       Width           =   8745
       WordWrap        =   -1  'True
@@ -188,7 +153,7 @@ Begin VB.Form dialog_AutosaveWarning
       Height          =   525
       Index           =   0
       Left            =   1005
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   330
       Width           =   8055
       WordWrap        =   -1  'True
@@ -222,7 +187,7 @@ Option Explicit
 Private userAnswer As VbMsgBoxResult
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 'Collection of Autosave XML entries found
 Private m_numOfXMLFound As Long
@@ -249,7 +214,7 @@ Friend Sub fillArrayWithSaveResults(ByRef dstArray() As AutosaveXML)
         numOfEntriesBeingSaved = 0
         For i = 0 To lstAutosaves.ListCount - 1
             If lstAutosaves.Selected(i) Then
-                dstArray(numOfEntriesBeingSaved) = m_XmlEntries(lstAutosaves.ItemData(i))
+                dstArray(numOfEntriesBeingSaved) = m_XmlEntries(lstAutosaves.itemData(i))
                 numOfEntriesBeingSaved = numOfEntriesBeingSaved + 1
             End If
         Next i
@@ -273,13 +238,17 @@ Public Sub showDialog()
     
     'Display a brief explanation of the dialog at the top of the window
     lblWarning(1).Caption = g_Language.TranslateMessage("A previous PhotoDemon session terminated unexpectedly.  Would you like to automatically recover the following autosaved images?")
-        
+    
     'Provide a default answer of "do not restore" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbNo
-
+    
+    'Load command button images
+    CmdOK.AssignImage "LRGACCEPT"
+    CmdCancel.AssignImage "LRGCANCEL"
+    
     'Apply any custom styles to the form
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
 
     'Populate the AutoSave entry list box
     displayAutosaveEntries
@@ -349,8 +318,8 @@ Private Sub updatePreview(ByVal srcImagePath As String)
         picPreview.Picture = LoadPicture("")
         Dim strToPrint As String
         strToPrint = g_Language.TranslateMessage("Preview not available")
-        picPreview.CurrentX = (picPreview.ScaleWidth - picPreview.TextWidth(strToPrint)) \ 2
-        picPreview.CurrentY = (picPreview.ScaleHeight - picPreview.TextHeight(strToPrint)) \ 2
+        picPreview.CurrentX = (picPreview.ScaleWidth - picPreview.textWidth(strToPrint)) \ 2
+        picPreview.CurrentY = (picPreview.ScaleHeight - picPreview.textHeight(strToPrint)) \ 2
         picPreview.Print strToPrint
     End If
     
@@ -374,7 +343,7 @@ Private Function displayAutosaveEntries() As Boolean
     Dim i As Long
     For i = 0 To m_numOfXMLFound - 1
         lstAutosaves.AddItem m_XmlEntries(i).friendlyName
-        lstAutosaves.ItemData(lstAutosaves.newIndex) = i
+        lstAutosaves.itemData(lstAutosaves.newIndex) = i
         lstAutosaves.Selected(lstAutosaves.newIndex) = True
     Next i
     
@@ -390,7 +359,7 @@ Private Sub lstAutosaves_Click()
     ' it means "autosave preview".  The confusing extension also provides a bit of obfuscation about the file's
     ' true contents (PNG data), which never hurts when sticking stuff in the temp folder.
     Dim previewPath As String
-    previewPath = m_XmlEntries(lstAutosaves.ItemData(lstAutosaves.ListIndex)).xmlPath & ".asp"
+    previewPath = m_XmlEntries(lstAutosaves.itemData(lstAutosaves.ListIndex)).xmlPath & ".asp"
     
     updatePreview previewPath
     

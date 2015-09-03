@@ -533,7 +533,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "BackColor", m_BackColor, vbWhite
         .WriteProperty "Caption", m_Caption.getCaptionEn, ""
-        .WriteProperty "FontSizeCaption", m_Caption.getFontSize, 10
+        .WriteProperty "FontSize", m_Caption.getFontSize, 10
     End With
     
 End Sub

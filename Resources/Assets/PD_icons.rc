@@ -423,7 +423,8 @@ ARROWDOWN    CUSTOM  MOVEABLE        LOADONCALL      arrow_down_32x32.png
 PLUS         CUSTOM  MOVEABLE        LOADONCALL      plus_32.png
 ARROWRIGHT   CUSTOM  MOVEABLE        LOADONCALL      arrow_right_32.png
 ARROWLEFT    CUSTOM  MOVEABLE        LOADONCALL      arrow_left_32.png
-LRGCANCEL    CUSTOM  MOVEABLE        LOADONCALL      cross_32.png
+LRGCANCEL    CUSTOM  MOVEABLE        LOADONCALL      cross_red_32.png
+LRGACCEPT    CUSTOM  MOVEABLE        LOADONCALL      check_green_32.png
 LRGDELAY     CUSTOM  MOVEABLE        LOADONCALL      calendar_blue_32.png
 LRGUPDATE    CUSTOM  MOVEABLE        LOADONCALL      software_update_32.png
 CLIPBOARDCPY CUSTOM  MOVEABLE        LOADONCALL      clipboard_export_32.png
@@ -465,7 +466,7 @@ PRNT_MLTIMGS CUSTOM  MOVEABLE        LOADONCALL      print_preview_multiple_imag
 PRNT_MLTPGS  CUSTOM  MOVEABLE        LOADONCALL      print_preview_multiple_pages.png
 
 //Etched icon for "load an image" screen
-IMAGE_ETCH_256 CUSTOM  MOVEABLE        LOADONCALL      image_etched_256.png
+IMAGE_ETCH_256 CUSTOM  MOVEABLE      LOADONCALL      image_etched_256.png
 
 //Control arrows used on either side of the hue box in the color selection dialog
 CLR_ARROW_L  CUSTOM  MOVEABLE        LOADONCALL      control_arrow_left.png
@@ -499,5 +500,7 @@ PREF_SAVING      CUSTOM  MOVEABLE       LOADONCALL      pref_floppy.png
 
 //Color selector 
 CS_FROM_SCREEN   CUSTOM  MOVEABLE       LOADONCALL      color_selector_from_screen.png
+EYE_DROPPER_GENERIC CUSTOM MOVEABLE     LOADONCALL      eye_dropper_24.png
+
 //Sample image for rendering sample effects
 //SAMPLEIMAGE  CUSTOM  MOVEABLE        LOADONCALL      reference_flower.jpg
