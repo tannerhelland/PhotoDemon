@@ -25,8 +25,8 @@ Begin VB.UserControl sliderTextCombo
       TabIndex        =   1
       Top             =   45
       Width           =   960
-      _extentx        =   1693
-      _extenty        =   741
+      _ExtentX        =   1693
+      _ExtentY        =   741
    End
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
@@ -724,6 +724,7 @@ Private Sub UserControl_Initialize()
     
     'Prep the caption object
     Set m_Caption = New pdCaption
+    m_Caption.setWordWrapSupport False
         
 End Sub
 
@@ -863,7 +864,8 @@ Private Sub updateControlLayout()
     If m_Caption.isCaptionActive Then
         
         'Notify the caption renderer of our width.  It will auto-fit its font to match.
-        m_Caption.setControlWidth UserControl.ScaleWidth
+        ' (Because this control doesn't support wordwrap, container height is irrelevant; pass 0)
+        m_Caption.setControlSize UserControl.ScaleWidth, 0
         
         'We now have all the information necessary to calculate caption positioning (and by extension, slider and
         ' text up/down positioning, too!)

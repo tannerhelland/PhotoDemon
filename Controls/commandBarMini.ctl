@@ -111,8 +111,8 @@ Public Property Let BackColor(ByVal newColor As OLE_COLOR)
     PropertyChanged "BackColor"
     
     'Update all button backgrounds to match
-    CmdOK.BackColor = RGB(235, 235, 240)
-    CmdCancel.BackColor = RGB(235, 235, 240)
+    cmdOK.BackColor = RGB(235, 235, 240)
+    cmdCancel.BackColor = RGB(235, 235, 240)
     
 End Property
 
@@ -198,8 +198,8 @@ Private Sub updateControlLayout()
         UserControl.Width = UserControl.Parent.ScaleWidth * TwipsPerPixelXFix
         
         'Right-align the Cancel and OK buttons
-        CmdCancel.Left = UserControl.Parent.ScaleWidth - CmdCancel.Width - fixDPI(8)
-        CmdOK.Left = CmdCancel.Left - CmdOK.Width - fixDPI(8)
+        cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - fixDPI(8)
+        cmdOK.Left = cmdCancel.Left - cmdOK.Width - fixDPI(8)
         
     End If
     
@@ -219,7 +219,7 @@ Private Sub UserControl_Show()
     'Additional note: some forms may chose to explicitly set focus away from the OK button.  If that happens, the line below
     ' will throw a critical error.  To avoid that, simply ignore any errors that arise from resetting focus.
     On Error GoTo somethingStoleFocus
-    If g_IsProgramRunning Then CmdOK.SetFocus
+    If g_IsProgramRunning Then cmdOK.SetFocus
 
 somethingStoleFocus:
     

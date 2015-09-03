@@ -749,3 +749,69 @@ Public Function getMaxFontSizeToFitStringWidth(ByVal srcString As String, ByVal 
     End If
     
 End Function
+
+'Given a desired width and height (in pixels) and a source string, search for the largest font size that allows said string to fit within
+' that rect.  Word-wrapping will be used.
+'
+'RETURNS: largest font size that fits the string into the desired width.  (7 is the smallest size this function will return, FYI.)
+Public Function getMaxFontSizeToFitWordWrap(ByVal srcString As String, ByVal desiredWidth As Long, ByVal desiredHeight As Long, Optional ByVal startingFontSize As Long = 10) As Single
+    
+    'Start by determining a targetDC.  A fake DC will be used, as necessary.
+    Dim targetDC As Long, backupDC As Long
+    backupDC = curDC
+    
+    If curDC = 0 Then
+        targetDC = m_TemporaryDC
+    Else
+        targetDC = curDC
+    End If
+    
+    'Make a backup of the current font size, if any
+    Dim backupFontSize As Single
+    backupFontSize = m_origFontSize
+    
+    'Create the font anew, using the default string size we were passed
+    releaseFromDC
+    m_origFontSize = startingFontSize
+    setFontSize m_origFontSize
+    createFontObject
+    attachToDC targetDC
+    
+    'Measure the font relative to the current control size
+    Dim stringHeight As Long
+    stringHeight = getHeightOfWordwrapString(srcString, desiredWidth)
+    
+    'If the string does not fit within the control size, shrink the font accordingly.
+    Do While (stringHeight > desiredHeight) And (m_origFontSize >= 7)
+        
+        'Shrink the font size
+        m_origFontSize = m_origFontSize - 0.5
+        
+        'Recreate the font
+        releaseFromDC
+        setFontSize m_origFontSize
+        createFontObject
+        attachToDC targetDC
+        
+        'Measure the new size
+        stringHeight = getHeightOfWordwrapString(srcString, desiredWidth)
+        
+    Loop
+    
+    'By this point, m_origFontSize represents the valid size.  Return it.
+    getMaxFontSizeToFitWordWrap = m_origFontSize
+    
+    'Before exiting, restore any parameters we changed
+    releaseFromDC
+    
+    If m_origFontSize <> backupFontSize Then
+        setFontSize backupFontSize
+        createFontObject
+    End If
+    
+    If backupDC <> 0 Then
+        curDC = backupDC
+        attachToDC curDC
+    End If
+    
+End Function

@@ -324,25 +324,34 @@ End Sub
 Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef srcDIB As pdDIB, Optional ByVal scalePixelsWhenDisabled As Long = 0, Optional ByVal customGlowWhenHovered As Long = 0)
     
     'Load the requested resource DIB, as necessary
-    If Len(resName) <> 0 Then loadResourceToDIB resName, srcDIB
-        
-    'Start by making a copy of the source DIB
-    Set btImage = New pdDIB
-    btImage.createFromExistingDIB srcDIB
-        
-    'Next, create a grayscale copy of the image for the disabled state
-    Set btImageDisabled = New pdDIB
-    btImageDisabled.createFromExistingDIB btImage
-    GrayscaleDIB btImageDisabled, True
-    If scalePixelsWhenDisabled <> 0 Then ScaleDIBRGBValues btImageDisabled, scalePixelsWhenDisabled, True
+    If (Len(resName) <> 0) Or Not (srcDIB Is Nothing) Then
     
-    'Finally, create a "glowy" hovered version of the DIB for hover state
-    Set btImageHover = New pdDIB
-    btImageHover.createFromExistingDIB btImage
-    If customGlowWhenHovered = 0 Then
-        ScaleDIBRGBValues btImageHover, UC_HOVER_BRIGHTNESS, True
+        If Len(resName) <> 0 Then loadResourceToDIB resName, srcDIB
+        
+        'Start by making a copy of the source DIB
+        Set btImage = New pdDIB
+        btImage.createFromExistingDIB srcDIB
+            
+        'Next, create a grayscale copy of the image for the disabled state
+        Set btImageDisabled = New pdDIB
+        btImageDisabled.createFromExistingDIB btImage
+        GrayscaleDIB btImageDisabled, True
+        If scalePixelsWhenDisabled <> 0 Then ScaleDIBRGBValues btImageDisabled, scalePixelsWhenDisabled, True
+        
+        'Finally, create a "glowy" hovered version of the DIB for hover state
+        Set btImageHover = New pdDIB
+        btImageHover.createFromExistingDIB btImage
+        If customGlowWhenHovered = 0 Then
+            ScaleDIBRGBValues btImageHover, UC_HOVER_BRIGHTNESS, True
+        Else
+            ScaleDIBRGBValues btImageHover, customGlowWhenHovered, True
+        End If
+    
+    'If no DIB is provided, remove any existing images
     Else
-        ScaleDIBRGBValues btImageHover, customGlowWhenHovered, True
+        Set btImage = Nothing
+        Set btImageDisabled = Nothing
+        Set btImageHover = Nothing
     End If
     
     'Request a control size update, which will also calculate a centered position for the new image
@@ -401,6 +410,7 @@ Private Sub UserControl_Initialize()
     
     'Prep the caption object
     Set m_Caption = New pdCaption
+    m_Caption.setWordWrapSupport True
     
     'Update the control size parameters at least once
     updateControlLayout
@@ -494,7 +504,7 @@ Private Sub updateControlLayout()
         End If
         
         'Notify the caption renderer of this new caption position, which it will use to automatically adjust its font, as necessary
-        m_Caption.setControlWidth m_CaptionRect.Right - m_CaptionRect.Left
+        m_Caption.setControlSize m_CaptionRect.Right - m_CaptionRect.Left, m_CaptionRect.Bottom - m_CaptionRect.Top
     
     'If there's no caption, center the button image on the control
     Else
@@ -570,15 +580,23 @@ Private Sub redrawBackBuffer()
         Else
         
             'Is the mouse inside the UC?
-            If m_MouseInsideUC Or m_FocusRectActive Then
+            If m_MouseInsideUC Then
                 btnColorFill = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
                 btnColorBorder = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
                 textColor = g_Themer.getThemeColor(PDTC_TEXT_TITLE)
             
             'The mouse is not inside the UC
             Else
+                
+                'If focus was received via keyboard, change the border to reflect it
+                If m_FocusRectActive Then
+                    btnColorBorder = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+                Else
+                    btnColorBorder = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
+                End If
+                
+                'Text and fill color is identical regardless of focus
                 btnColorFill = m_BackColor
-                btnColorBorder = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
                 textColor = g_Themer.getThemeColor(PDTC_TEXT_TITLE)
             
             End If
