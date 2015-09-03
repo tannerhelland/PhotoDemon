@@ -30,11 +30,10 @@ Begin VB.Form FormResizeContentAware
       TabIndex        =   0
       Top             =   4215
       Width           =   9705
-      _extentx        =   17119
-      _extenty        =   1323
-      font            =   "Image_ContentAwareResize.frx":0000
-      backcolor       =   14802140
-      autoloadlastpreset=   -1
+      _ExtentX        =   17119
+      _ExtentY        =   1323
+      BackColor       =   14802140
+      AutoloadLastPreset=   -1  'True
    End
    Begin PhotoDemon.smartResize ucResize 
       Height          =   2850
@@ -42,9 +41,17 @@ Begin VB.Form FormResizeContentAware
       TabIndex        =   1
       Top             =   360
       Width           =   8775
-      _extentx        =   15478
-      _extenty        =   5027
-      font            =   "Image_ContentAwareResize.frx":0028
+      _ExtentX        =   15478
+      _ExtentY        =   5027
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   11.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
    End
    Begin VB.Label lblFlatten 
       Alignment       =   2  'Center

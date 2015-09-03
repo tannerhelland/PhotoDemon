@@ -16,6 +16,7 @@ Begin VB.Form FormPluginManager
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   Icon            =   "Tools_PluginManager.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -23,50 +24,26 @@ Begin VB.Form FormPluginManager
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   721
    ShowInTaskbar   =   0   'False
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   7860
-      TabIndex        =   0
-      Top             =   6510
-      Width           =   1365
+   Begin PhotoDemon.commandBarMini cmdBarMini 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   81
+      Top             =   6375
+      Width           =   10815
+      _ExtentX        =   19076
+      _ExtentY        =   1323
+      BackColor       =   14802140
    End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   9330
-      TabIndex        =   1
-      Top             =   6510
-      Width           =   1365
-   End
-   Begin VB.CommandButton cmdReset 
-      Caption         =   "&Reset all plugin options"
-      Height          =   495
+   Begin PhotoDemon.pdButton cmdReset 
+      Height          =   615
       Left            =   120
-      TabIndex        =   65
-      ToolTipText     =   "Use this to reset all plugin-related options to their default state.  This action cannot be undone."
-      Top             =   6480
+      TabIndex        =   80
+      Top             =   5640
       Width           =   2775
+      _ExtentX        =   4895
+      _ExtentY        =   1085
+      Caption         =   "Reset all plugin options"
    End
    Begin VB.ListBox lstPlugins 
       BeginProperty Font 
@@ -79,10 +56,10 @@ Begin VB.Form FormPluginManager
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H00404040&
-      Height          =   5940
+      Height          =   5220
       IntegralHeight  =   0   'False
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   240
       Width           =   2775
    End
@@ -97,7 +74,7 @@ Begin VB.Form FormPluginManager
       ScaleHeight     =   393
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   513
-      TabIndex        =   3
+      TabIndex        =   1
       Top             =   240
       Width           =   7695
       Begin VB.Label lblDisable 
@@ -118,9 +95,9 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   4
          Left            =   6015
-         MouseIcon       =   "Tools_PluginManager.frx":0000
+         MouseIcon       =   "Tools_PluginManager.frx":000C
          MousePointer    =   99  'Custom
-         TabIndex        =   82
+         TabIndex        =   78
          Top             =   4125
          Width           =   1350
       End
@@ -141,7 +118,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   1260
-         TabIndex        =   81
+         TabIndex        =   77
          Top             =   4440
          Width           =   3255
       End
@@ -163,7 +140,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   480
-         TabIndex        =   80
+         TabIndex        =   76
          Top             =   4440
          Width           =   675
       End
@@ -184,7 +161,7 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   4
          Left            =   240
-         TabIndex        =   79
+         TabIndex        =   75
          Top             =   4080
          Width           =   870
       End
@@ -205,7 +182,7 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   0
          Left            =   120
-         TabIndex        =   21
+         TabIndex        =   19
          Top             =   15
          Width           =   2265
       End
@@ -225,7 +202,7 @@ Begin VB.Form FormPluginManager
          ForeColor       =   &H0000B909&
          Height          =   285
          Left            =   2460
-         TabIndex        =   20
+         TabIndex        =   18
          Top             =   15
          Width           =   690
       End
@@ -246,7 +223,7 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   3
          Left            =   240
-         TabIndex        =   19
+         TabIndex        =   17
          Top             =   3240
          Width           =   1110
       End
@@ -267,7 +244,7 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   1
          Left            =   240
-         TabIndex        =   18
+         TabIndex        =   16
          Top             =   1560
          Width           =   420
       End
@@ -288,7 +265,7 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   2
          Left            =   240
-         TabIndex        =   17
+         TabIndex        =   15
          Top             =   2400
          Width           =   915
       End
@@ -309,7 +286,7 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   0
          Left            =   240
-         TabIndex        =   16
+         TabIndex        =   14
          Top             =   720
          Width           =   1125
       End
@@ -331,7 +308,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   480
-         TabIndex        =   15
+         TabIndex        =   13
          Top             =   1080
          Width           =   675
       End
@@ -352,7 +329,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   1260
-         TabIndex        =   14
+         TabIndex        =   12
          Top             =   1080
          Width           =   3255
       End
@@ -374,7 +351,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   480
-         TabIndex        =   13
+         TabIndex        =   11
          Top             =   1920
          Width           =   675
       End
@@ -395,7 +372,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   1260
-         TabIndex        =   12
+         TabIndex        =   10
          Top             =   1920
          Width           =   3255
       End
@@ -417,7 +394,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   480
-         TabIndex        =   11
+         TabIndex        =   9
          Top             =   2760
          Width           =   675
       End
@@ -438,7 +415,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   1260
-         TabIndex        =   10
+         TabIndex        =   8
          Top             =   2760
          Width           =   3255
       End
@@ -460,7 +437,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   480
-         TabIndex        =   9
+         TabIndex        =   7
          Top             =   3600
          Width           =   675
       End
@@ -481,7 +458,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   1260
-         TabIndex        =   8
+         TabIndex        =   6
          Top             =   3600
          Width           =   3255
       End
@@ -503,9 +480,9 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   0
          Left            =   5760
-         MouseIcon       =   "Tools_PluginManager.frx":0152
+         MouseIcon       =   "Tools_PluginManager.frx":015E
          MousePointer    =   99  'Custom
-         TabIndex        =   7
+         TabIndex        =   5
          Top             =   765
          Width           =   1605
       End
@@ -527,9 +504,9 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   1
          Left            =   6360
-         MouseIcon       =   "Tools_PluginManager.frx":02A4
+         MouseIcon       =   "Tools_PluginManager.frx":02B0
          MousePointer    =   99  'Custom
-         TabIndex        =   6
+         TabIndex        =   4
          Top             =   1605
          Width           =   1005
       End
@@ -551,9 +528,9 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   2
          Left            =   5955
-         MouseIcon       =   "Tools_PluginManager.frx":03F6
+         MouseIcon       =   "Tools_PluginManager.frx":0402
          MousePointer    =   99  'Custom
-         TabIndex        =   5
+         TabIndex        =   3
          Top             =   2445
          Width           =   1410
       End
@@ -575,9 +552,9 @@ Begin VB.Form FormPluginManager
          Height          =   240
          Index           =   3
          Left            =   5835
-         MouseIcon       =   "Tools_PluginManager.frx":0548
+         MouseIcon       =   "Tools_PluginManager.frx":0554
          MousePointer    =   99  'Custom
-         TabIndex        =   4
+         TabIndex        =   2
          Top             =   3285
          Width           =   1530
       End
@@ -593,13 +570,13 @@ Begin VB.Form FormPluginManager
       ScaleHeight     =   393
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   513
-      TabIndex        =   52
+      TabIndex        =   50
       Top             =   240
       Width           =   7695
       Begin PhotoDemon.smartCheckBox chkPNGQuantIE6 
          Height          =   330
          Left            =   480
-         TabIndex        =   68
+         TabIndex        =   64
          Top             =   2970
          Width           =   7050
          _ExtentX        =   12435
@@ -609,7 +586,7 @@ Begin VB.Form FormPluginManager
       Begin PhotoDemon.smartCheckBox chkPNGQuantDither 
          Height          =   330
          Left            =   480
-         TabIndex        =   67
+         TabIndex        =   63
          Top             =   2520
          Width           =   7050
          _ExtentX        =   12435
@@ -619,7 +596,7 @@ Begin VB.Form FormPluginManager
       Begin PhotoDemon.sliderTextCombo sltPNGQuantSpeed 
          Height          =   675
          Left            =   480
-         TabIndex        =   83
+         TabIndex        =   79
          Top             =   3720
          Width           =   7095
          _ExtentX        =   12515
@@ -651,7 +628,7 @@ Begin VB.Form FormPluginManager
          Height          =   195
          Index           =   1
          Left            =   5280
-         TabIndex        =   64
+         TabIndex        =   62
          Top             =   4560
          Width           =   1155
       End
@@ -672,7 +649,7 @@ Begin VB.Form FormPluginManager
          Height          =   195
          Index           =   0
          Left            =   960
-         TabIndex        =   63
+         TabIndex        =   61
          Top             =   4560
          Width           =   1245
       End
@@ -693,7 +670,7 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   5
          Left            =   120
-         TabIndex        =   62
+         TabIndex        =   60
          Top             =   2160
          Width           =   1995
       End
@@ -714,9 +691,9 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   3060
-         MouseIcon       =   "Tools_PluginManager.frx":069A
+         MouseIcon       =   "Tools_PluginManager.frx":06A6
          MousePointer    =   99  'Custom
-         TabIndex        =   61
+         TabIndex        =   59
          Top             =   1560
          Width           =   1110
       End
@@ -737,7 +714,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   480
-         TabIndex        =   60
+         TabIndex        =   58
          Top             =   1560
          Width           =   1800
       End
@@ -758,9 +735,9 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   3060
-         MouseIcon       =   "Tools_PluginManager.frx":07EC
+         MouseIcon       =   "Tools_PluginManager.frx":07F8
          MousePointer    =   99  'Custom
-         TabIndex        =   59
+         TabIndex        =   57
          Top             =   1080
          Width           =   2040
       End
@@ -781,7 +758,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   480
-         TabIndex        =   58
+         TabIndex        =   56
          Top             =   1080
          Width           =   2205
       End
@@ -803,7 +780,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   13
          Left            =   3960
-         TabIndex        =   57
+         TabIndex        =   55
          Top             =   600
          Width           =   1395
       End
@@ -824,7 +801,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   2400
-         TabIndex        =   56
+         TabIndex        =   54
          Top             =   600
          Width           =   960
       End
@@ -845,7 +822,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   5520
-         TabIndex        =   55
+         TabIndex        =   53
          Top             =   600
          Width           =   960
       End
@@ -867,7 +844,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   12
          Left            =   480
-         TabIndex        =   54
+         TabIndex        =   52
          Top             =   600
          Width           =   1740
       End
@@ -888,7 +865,7 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   4
          Left            =   120
-         TabIndex        =   53
+         TabIndex        =   51
          Top             =   15
          Width           =   3150
       End
@@ -904,7 +881,7 @@ Begin VB.Form FormPluginManager
       ScaleHeight     =   393
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   513
-      TabIndex        =   69
+      TabIndex        =   65
       Top             =   240
       Width           =   7695
       Begin VB.Label lblLicenseLink 
@@ -924,9 +901,9 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   2640
-         MouseIcon       =   "Tools_PluginManager.frx":093E
+         MouseIcon       =   "Tools_PluginManager.frx":094A
          MousePointer    =   99  'Custom
-         TabIndex        =   78
+         TabIndex        =   74
          Top             =   1560
          Width           =   2325
       End
@@ -947,7 +924,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   480
-         TabIndex        =   77
+         TabIndex        =   73
          Top             =   1560
          Width           =   1545
       End
@@ -968,9 +945,9 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   2640
-         MouseIcon       =   "Tools_PluginManager.frx":0A90
+         MouseIcon       =   "Tools_PluginManager.frx":0A9C
          MousePointer    =   99  'Custom
-         TabIndex        =   76
+         TabIndex        =   72
          Top             =   1080
          Width           =   4575
       End
@@ -991,7 +968,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   480
-         TabIndex        =   75
+         TabIndex        =   71
          Top             =   1080
          Width           =   1950
       End
@@ -1013,7 +990,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   3
          Left            =   3960
-         TabIndex        =   74
+         TabIndex        =   70
          Top             =   600
          Width           =   1395
       End
@@ -1034,7 +1011,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   2400
-         TabIndex        =   73
+         TabIndex        =   69
          Top             =   600
          Width           =   960
       End
@@ -1055,7 +1032,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   4
          Left            =   5520
-         TabIndex        =   72
+         TabIndex        =   68
          Top             =   600
          Width           =   960
       End
@@ -1077,7 +1054,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   480
-         TabIndex        =   71
+         TabIndex        =   67
          Top             =   600
          Width           =   1740
       End
@@ -1098,7 +1075,7 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   6
          Left            =   120
-         TabIndex        =   70
+         TabIndex        =   66
          Top             =   15
          Width           =   2910
       End
@@ -1114,7 +1091,7 @@ Begin VB.Form FormPluginManager
       ScaleHeight     =   393
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   513
-      TabIndex        =   42
+      TabIndex        =   40
       Top             =   240
       Width           =   7695
       Begin VB.Label lblTitle 
@@ -1134,7 +1111,7 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   3
          Left            =   120
-         TabIndex        =   51
+         TabIndex        =   49
          Top             =   15
          Width           =   2955
       End
@@ -1156,7 +1133,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   11
          Left            =   480
-         TabIndex        =   50
+         TabIndex        =   48
          Top             =   600
          Width           =   1740
       End
@@ -1177,7 +1154,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   5520
-         TabIndex        =   49
+         TabIndex        =   47
          Top             =   600
          Width           =   960
       End
@@ -1198,7 +1175,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   2400
-         TabIndex        =   48
+         TabIndex        =   46
          Top             =   600
          Width           =   960
       End
@@ -1220,7 +1197,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   10
          Left            =   3960
-         TabIndex        =   47
+         TabIndex        =   45
          Top             =   600
          Width           =   1395
       End
@@ -1241,7 +1218,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   480
-         TabIndex        =   46
+         TabIndex        =   44
          Top             =   1080
          Width           =   1995
       End
@@ -1262,9 +1239,9 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   2640
-         MouseIcon       =   "Tools_PluginManager.frx":0BE2
+         MouseIcon       =   "Tools_PluginManager.frx":0BEE
          MousePointer    =   99  'Custom
-         TabIndex        =   45
+         TabIndex        =   43
          Top             =   1080
          Width           =   3780
       End
@@ -1285,7 +1262,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   480
-         TabIndex        =   44
+         TabIndex        =   42
          Top             =   1560
          Width           =   1590
       End
@@ -1306,9 +1283,9 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   2
          Left            =   2640
-         MouseIcon       =   "Tools_PluginManager.frx":0D34
+         MouseIcon       =   "Tools_PluginManager.frx":0D40
          MousePointer    =   99  'Custom
-         TabIndex        =   43
+         TabIndex        =   41
          Top             =   1560
          Width           =   1305
       End
@@ -1324,7 +1301,7 @@ Begin VB.Form FormPluginManager
       ScaleHeight     =   393
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   513
-      TabIndex        =   22
+      TabIndex        =   20
       Top             =   240
       Width           =   7695
       Begin VB.Label lblLicenseLink 
@@ -1345,9 +1322,9 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   2280
-         MouseIcon       =   "Tools_PluginManager.frx":0E86
+         MouseIcon       =   "Tools_PluginManager.frx":0E92
          MousePointer    =   99  'Custom
-         TabIndex        =   31
+         TabIndex        =   29
          Top             =   1560
          Width           =   1065
       End
@@ -1368,7 +1345,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   480
-         TabIndex        =   30
+         TabIndex        =   28
          Top             =   1560
          Width           =   1140
       End
@@ -1390,9 +1367,9 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   2280
-         MouseIcon       =   "Tools_PluginManager.frx":0FD8
+         MouseIcon       =   "Tools_PluginManager.frx":0FE4
          MousePointer    =   99  'Custom
-         TabIndex        =   29
+         TabIndex        =   27
          Top             =   1080
          Width           =   1935
       End
@@ -1413,7 +1390,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   480
-         TabIndex        =   28
+         TabIndex        =   26
          Top             =   1080
          Width           =   1545
       End
@@ -1435,7 +1412,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   6
          Left            =   3960
-         TabIndex        =   27
+         TabIndex        =   25
          Top             =   600
          Width           =   1395
       End
@@ -1457,7 +1434,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   2400
-         TabIndex        =   26
+         TabIndex        =   24
          Top             =   600
          Width           =   960
       End
@@ -1479,7 +1456,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   5520
-         TabIndex        =   25
+         TabIndex        =   23
          Top             =   600
          Width           =   960
       End
@@ -1501,7 +1478,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   7
          Left            =   480
-         TabIndex        =   24
+         TabIndex        =   22
          Top             =   600
          Width           =   1740
       End
@@ -1522,7 +1499,7 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   2
          Left            =   120
-         TabIndex        =   23
+         TabIndex        =   21
          Top             =   15
          Width           =   2460
       End
@@ -1538,7 +1515,7 @@ Begin VB.Form FormPluginManager
       ScaleHeight     =   393
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   513
-      TabIndex        =   32
+      TabIndex        =   30
       Top             =   240
       Width           =   7695
       Begin VB.Label lblTitle 
@@ -1558,7 +1535,7 @@ Begin VB.Form FormPluginManager
          Height          =   285
          Index           =   1
          Left            =   120
-         TabIndex        =   41
+         TabIndex        =   39
          Top             =   15
          Width           =   3165
       End
@@ -1580,7 +1557,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   480
-         TabIndex        =   40
+         TabIndex        =   38
          Top             =   600
          Width           =   1740
       End
@@ -1601,7 +1578,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   5520
-         TabIndex        =   39
+         TabIndex        =   37
          Top             =   600
          Width           =   960
       End
@@ -1622,7 +1599,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   2400
-         TabIndex        =   38
+         TabIndex        =   36
          Top             =   600
          Width           =   960
       End
@@ -1644,7 +1621,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   1
          Left            =   3960
-         TabIndex        =   37
+         TabIndex        =   35
          Top             =   600
          Width           =   1395
       End
@@ -1665,7 +1642,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   480
-         TabIndex        =   36
+         TabIndex        =   34
          Top             =   1080
          Width           =   2265
       End
@@ -1686,9 +1663,9 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   2880
-         MouseIcon       =   "Tools_PluginManager.frx":112A
+         MouseIcon       =   "Tools_PluginManager.frx":1136
          MousePointer    =   99  'Custom
-         TabIndex        =   35
+         TabIndex        =   33
          Top             =   1080
          Width           =   3330
       End
@@ -1709,7 +1686,7 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   480
-         TabIndex        =   34
+         TabIndex        =   32
          Top             =   1560
          Width           =   1860
       End
@@ -1730,19 +1707,12 @@ Begin VB.Form FormPluginManager
          Height          =   270
          Index           =   0
          Left            =   2880
-         MouseIcon       =   "Tools_PluginManager.frx":127C
+         MouseIcon       =   "Tools_PluginManager.frx":1288
          MousePointer    =   99  'Custom
-         TabIndex        =   33
+         TabIndex        =   31
          Top             =   1560
          Width           =   3150
       End
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   66
-      Top             =   6360
-      Width           =   10815
    End
 End
 Attribute VB_Name = "FormPluginManager"
@@ -1847,8 +1817,7 @@ Private Sub CollectVersionInfo(ByVal FullFileName As String, ByVal strIndex As L
 
 End Sub
 
-'CANCEL button
-Private Sub CmdCancel_Click()
+Private Sub cmdBarMini_CancelClick()
     
     'Restore the original values for enabled or disabled plugins
     g_ImageFormats.FreeImageEnabled = pEnabled(0)
@@ -1857,12 +1826,9 @@ Private Sub CmdCancel_Click()
     g_ImageFormats.pngQuantEnabled = pEnabled(3)
     g_ExifToolEnabled = pEnabled(4)
     
-    Unload Me
-    
 End Sub
 
-'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdBarMini_OKClick()
     
     Message "Saving plugin options..."
     
@@ -1935,8 +1901,6 @@ Private Sub CmdOK_Click()
     g_UserPreferences.endBatchPreferenceMode
     
     Message "Plugin options saved."
-    
-    Unload Me
     
 End Sub
 

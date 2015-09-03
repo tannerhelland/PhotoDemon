@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.80</langversion>
+<langversion>6.7.81</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -689,6 +689,11 @@
 </phrase>
 
 <phrase>
+<original>Exit histogram</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>use logarithmic values</original>
 <translation>utilizar valores logarítmicos</translation>
 </phrase>
@@ -696,11 +701,6 @@
 <phrase>
 <original>use smooth lines</original>
 <translation>utilizar líneas suaves</translation>
-</phrase>
-
-<phrase>
-<original>Close Histogram</original>
-<translation>Cerrar Histograma</translation>
 </phrase>
 
 <phrase>
@@ -826,16 +826,6 @@
 </phrase>
 
 <phrase>
-<original>When this button is active, you can set the shadow input level color by right-clicking a color in the preview window.</original>
-<translation>Cuando este botón está activo, puede definir el color de nivel de entrada de la sombra, haga clic en un color en la ventana de vista previa.</translation>
-</phrase>
-
-<phrase>
-<original>When this button is active, you can set the highlight input level color by right-clicking a color in the preview window.</original>
-<translation>Cuando este botón está activo, puede definir el color de nivel de entrada resaltado, haga clic en un color en la ventana de vista previa.</translation>
-</phrase>
-
-<phrase>
 <original>output levels</original>
 <translation>niveles de salida</translation>
 </phrase>
@@ -848,6 +838,16 @@
 <phrase>
 <original>Levels</original>
 <translation>Niveles</translation>
+</phrase>
+
+<phrase>
+<original>When this button is active, you can set the shadow input level color by right-clicking a color in the preview window.</original>
+<translation>Cuando este botón está activo, puede definir el color de nivel de entrada de la sombra, haga clic en un color en la ventana de vista previa.</translation>
+</phrase>
+
+<phrase>
+<original>When this button is active, you can set the highlight input level color by right-clicking a color in the preview window.</original>
+<translation>Cuando este botón está activo, puede definir el color de nivel de entrada resaltado, haga clic en un color en la ventana de vista previa.</translation>
 </phrase>
 
 <phrase>
@@ -2182,8 +2182,13 @@
 </phrase>
 
 <phrase>
-<original>Cancel, and return to editing</original>
-<translation>Cancelar y volver a la edición</translation>
+<original>Save the image before closing it</original>
+<translation>Guarda la imagen antes de cerrarlo</translation>
+</phrase>
+
+<phrase>
+<original>Repeat this action for all unsaved images (X in total)</original>
+<translation>Repita esta acción para todas las imágenes que no haya guardado (X en total)</translation>
 </phrase>
 
 <phrase>
@@ -2192,13 +2197,8 @@
 </phrase>
 
 <phrase>
-<original>Save the image before closing it</original>
-<translation>Guarda la imagen antes de cerrarlo</translation>
-</phrase>
-
-<phrase>
-<original>Repeat this action for all unsaved images (X in total)</original>
-<translation>Repita esta acción para todas las imágenes que no haya guardado (X en total)</translation>
+<original>Cancel, and return to editing</original>
+<translation>Cancelar y volver a la edición</translation>
 </phrase>
 
 <phrase>
@@ -2240,7 +2240,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>Repita esta acción para todas las imágenes que no haya guardado ( %1 en total)</translation>
 </phrase>
 
-<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Dialog_UnsavedChanges.frm contains 16 phrases. 4 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Dialog_UnsavedChanges.frm-->
 
@@ -4372,28 +4372,43 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 </phrase>
 
 <phrase>
-<original>Add selected image(s) to batch list</original>
-<translation>Añadir imagen (s) seleccionado en la lista de lotes</translation>
+<original>Select macro</original>
+<translation>Seleccione una macro</translation>
 </phrase>
 
 <phrase>
-<original>Select all</original>
-<translation>Seleccione todos</translation>
+<original>custom actions from a saved macro file</original>
+<translation>acciones personalizadas de un archivo de macro guardada</translation>
 </phrase>
 
 <phrase>
-<original>Select none</original>
-<translation>no seleccionar nada</translation>
+<original>resize images</original>
+<translation>cambiar el tamaño de las imágenes</translation>
 </phrase>
 
 <phrase>
-<original>Add images using "Open Image" dialog</original>
-<translation>Añadir imágenes utilizando diálogo "Abrir imagen"</translation>
+<original>do not apply photo editing actions</original>
+<translation>no se aplican las acciones de edición de fotos</translation>
 </phrase>
 
 <phrase>
-<original>Load list</original>
-<translation>Cargar lista</translation>
+<original>apply one or more photo editing actions</original>
+<translation>aplicar una o más acciones de edición de fotos</translation>
+</phrase>
+
+<phrase>
+<original>fix exposure and lighting problems</original>
+<translation>fijar la exposición y de iluminación problemas</translation>
+</phrase>
+
+<phrase>
+<original>if you only want to rename images or change image formats, use this option</original>
+<translation>si sólo desea cambiar el nombre de las imágenes o cambiar los formatos de imagen, utilice esta opción</translation>
+</phrase>
+
+<phrase>
+<original>resize image by</original>
+<translation>cambiar el tamaño de imagen</translation>
 </phrase>
 
 <phrase>
@@ -4402,13 +4417,38 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 </phrase>
 
 <phrase>
-<original>Remove selected image(s)</original>
-<translation>Retire la imagen seleccionada (s)</translation>
+<original>Load list</original>
+<translation>Cargar lista</translation>
 </phrase>
 
 <phrase>
 <original>Remove all images</original>
 <translation>Eliminar todas las imágenes</translation>
+</phrase>
+
+<phrase>
+<original>Remove selected image(s)</original>
+<translation>Retire la imagen seleccionada (s)</translation>
+</phrase>
+
+<phrase>
+<original>Add images using "Open Image" dialog</original>
+<translation>Añadir imágenes utilizando diálogo "Abrir imagen"</translation>
+</phrase>
+
+<phrase>
+<original>Add selected image(s) to batch list</original>
+<translation>Añadir imagen (s) seleccionado en la lista de lotes</translation>
+</phrase>
+
+<phrase>
+<original>Select none</original>
+<translation>no seleccionar nada</translation>
+</phrase>
+
+<phrase>
+<original>Select all</original>
+<translation>Seleccione todos</translation>
 </phrase>
 
 <phrase>
@@ -4442,6 +4482,11 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 </phrase>
 
 <phrase>
+<original>Select destination folder</original>
+<translation>Seleccione una carpeta de destino</translation>
+</phrase>
+
+<phrase>
 <original>lowercase</original>
 <translation>minúsculas</translation>
 </phrase>
@@ -4449,11 +4494,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <phrase>
 <original>add a prefix to each filename</original>
 <translation>agregar un prefijo a cada nombre de archivo</translation>
-</phrase>
-
-<phrase>
-<original>Select destination folder</original>
-<translation>Seleccione una carpeta de destino</translation>
 </phrase>
 
 <phrase>
@@ -4654,46 +4694,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <phrase>
 <original>maximum compression</original>
 <translation>compresión máxima</translation>
-</phrase>
-
-<phrase>
-<original>Select macro</original>
-<translation>Seleccione una macro</translation>
-</phrase>
-
-<phrase>
-<original>custom actions from a saved macro file</original>
-<translation>acciones personalizadas de un archivo de macro guardada</translation>
-</phrase>
-
-<phrase>
-<original>resize images</original>
-<translation>cambiar el tamaño de las imágenes</translation>
-</phrase>
-
-<phrase>
-<original>do not apply photo editing actions</original>
-<translation>no se aplican las acciones de edición de fotos</translation>
-</phrase>
-
-<phrase>
-<original>apply one or more photo editing actions</original>
-<translation>aplicar una o más acciones de edición de fotos</translation>
-</phrase>
-
-<phrase>
-<original>fix exposure and lighting problems</original>
-<translation>fijar la exposición y de iluminación problemas</translation>
-</phrase>
-
-<phrase>
-<original>if you only want to rename images or change image formats, use this option</original>
-<translation>si sólo desea cambiar el nombre de las imágenes o cambiar los formatos de imagen, utilice esta opción</translation>
-</phrase>
-
-<phrase>
-<original>resize image by</original>
-<translation>cambiar el tamaño de imagen</translation>
 </phrase>
 
 <phrase>
@@ -5286,11 +5286,6 @@ By defecto, la transparencia se divide por la mitad, o se puede especificar un v
 </phrase>
 
 <phrase>
-<original>&OK</original>
-<translation>&OK</translation>
-</phrase>
-
-<phrase>
 <original>Copyright</original>
 <translation>derechos de autor</translation>
 </phrase>
@@ -5389,11 +5384,6 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
-<original>Internet import canceled.</original>
-<translation>Importación Internet cancelado.</translation>
-</phrase>
-
-<phrase>
 <original>This URL is not valid.  Please make sure the URL begins with "http://" or "ftp://".</original>
 <translation>Esta URL no es válida. Por favor, asegúrese de que la URL comienza con "http://" o "ftp://".</translation>
 </phrase>
@@ -5413,7 +5403,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>A la espera de la entrada del usuario</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 29 phrases. 4 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 26 phrases. 3 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
 
@@ -5521,6 +5511,11 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 </phrase>
 
 <phrase>
+<original>&OK</original>
+<translation>&OK</translation>
+</phrase>
+
+<phrase>
 <original>minimize PhotoDemon prior to capture</original>
 <translation>minimizar PhotoDemon antes de la captura</translation>
 </phrase>
@@ -5570,7 +5565,7 @@ I disculpas por este inconveniente, pero lamentablemente no hay nada %2 puede ha
 <translation>Por favor, seleccione otro.</translation>
 </phrase>
 
-<!-- File_Import_ScreenCapture.frm contains 17 phrases. 6 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- File_Import_ScreenCapture.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Import_ScreenCapture.frm-->
 
@@ -9210,61 +9205,6 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 <!-- BEGIN text for Tools_LanguageEditor.frm (FormLanguageEditor) -->
 
 <phrase>
-<original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
-<translation>por ejemplo "1.0.0". Por favor use el formato Major.Minor.Revision.</translation>
-</phrase>
-
-<phrase>
-<original>e.g. "complete", "unfinished", etc.  Any descriptive text is acceptable.</original>
-<translation>por ejemplo "completar", "inacabado", etc Cualquier texto descriptivo es aceptable.</translation>
-</phrase>
-
-<phrase>
-<original>e.g. "English" or "English (US)".  This text will be displayed in PhotoDemon's Language menu.</original>
-<translation>por ejemplo "Inglés" o "Inglés (EE.UU.)". Este texto se muestra en el menú Idioma del PhotoDemon.</translation>
-</phrase>
-
-<phrase>
-<original>e.g. "US" for "United States".  Please use the official 2-character ISO 3166-1 format.</original>
-<translation>por ejemplo "EE.UU." por "Estados Unidos". Utilice el formato oficial de 2 caracteres ISO 3166-1.</translation>
-</phrase>
-
-<phrase>
-<original>e.g. "en" for "English".  Please use the official 2-character ISO 639-1 format.</original>
-<translation>por ejemplo "en" para "Inglés". Utilice el formato oficial de 2 caracteres ISO 639-1.</translation>
-</phrase>
-
-<phrase>
-<original>author name(s)</original>
-<translation>el nombre del autor (s)</translation>
-</phrase>
-
-<phrase>
-<original>translation status</original>
-<translation>estado de la traducción</translation>
-</phrase>
-
-<phrase>
-<original>translation version</original>
-<translation>versión traducida</translation>
-</phrase>
-
-<phrase>
-<original>language name</original>
-<translation>nombre del idioma</translation>
-</phrase>
-
-<phrase>
-<original>country ID</original>
-<translation>ID del país</translation>
-</phrase>
-
-<phrase>
-<original>language ID</original>
-<translation>identificador de idioma</translation>
-</phrase>
-
-<phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>Iniciar traducción automática de todas las frases que faltan</translation>
 </phrase>
@@ -9322,6 +9262,61 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 <phrase>
 <original>language files currently available</original>
 <translation>archivos de idioma disponibles actualmente</translation>
+</phrase>
+
+<phrase>
+<original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
+<translation>por ejemplo "1.0.0". Por favor use el formato Major.Minor.Revision.</translation>
+</phrase>
+
+<phrase>
+<original>e.g. "complete", "unfinished", etc.  Any descriptive text is acceptable.</original>
+<translation>por ejemplo "completar", "inacabado", etc Cualquier texto descriptivo es aceptable.</translation>
+</phrase>
+
+<phrase>
+<original>e.g. "English" or "English (US)".  This text will be displayed in PhotoDemon's Language menu.</original>
+<translation>por ejemplo "Inglés" o "Inglés (EE.UU.)". Este texto se muestra en el menú Idioma del PhotoDemon.</translation>
+</phrase>
+
+<phrase>
+<original>e.g. "US" for "United States".  Please use the official 2-character ISO 3166-1 format.</original>
+<translation>por ejemplo "EE.UU." por "Estados Unidos". Utilice el formato oficial de 2 caracteres ISO 3166-1.</translation>
+</phrase>
+
+<phrase>
+<original>e.g. "en" for "English".  Please use the official 2-character ISO 639-1 format.</original>
+<translation>por ejemplo "en" para "Inglés". Utilice el formato oficial de 2 caracteres ISO 639-1.</translation>
+</phrase>
+
+<phrase>
+<original>author name(s)</original>
+<translation>el nombre del autor (s)</translation>
+</phrase>
+
+<phrase>
+<original>translation status</original>
+<translation>estado de la traducción</translation>
+</phrase>
+
+<phrase>
+<original>translation version</original>
+<translation>versión traducida</translation>
+</phrase>
+
+<phrase>
+<original>language name</original>
+<translation>nombre del idioma</translation>
+</phrase>
+
+<phrase>
+<original>country ID</original>
+<translation>ID del país</translation>
+</phrase>
+
+<phrase>
+<original>language ID</original>
+<translation>identificador de idioma</translation>
 </phrase>
 
 <phrase>
@@ -14111,10 +14106,10 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2434</phrasecount>
+<phrasecount>2433</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4201 phrases. -->
-<!-- 1767 are duplicates, so only 2434 unique phrases have been written to file. -->
-<!-- These 2434 phrases contain approximately 13268 total words. -->
+<!-- As of this build, PhotoDemon contains 4194 phrases. -->
+<!-- 1761 are duplicates, so only 2433 unique phrases have been written to file. -->
+<!-- These 2433 phrases contain approximately 13265 total words. -->
 
 </pdData>

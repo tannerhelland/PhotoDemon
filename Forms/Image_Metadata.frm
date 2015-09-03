@@ -24,6 +24,27 @@ Begin VB.Form FormMetadata
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   801
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.commandBarMini cmdBarMini 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   13
+      Top             =   7095
+      Width           =   12015
+      _extentx        =   21193
+      _extenty        =   1323
+      backcolor       =   14802140
+   End
+   Begin PhotoDemon.pdButton cmdTechnicalReport 
+      Height          =   735
+      Left            =   7440
+      TabIndex        =   12
+      Top             =   4380
+      Width           =   4410
+      _extentx        =   7779
+      _extenty        =   1296
+      caption         =   "Generate full metadata report (HTML)..."
+   End
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
@@ -34,35 +55,18 @@ Begin VB.Form FormMetadata
       ScaleHeight     =   341
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   17
-      TabIndex        =   15
+      TabIndex        =   11
       Top             =   1740
       Width           =   255
-   End
-   Begin VB.CommandButton cmdTechnicalReport 
-      Caption         =   "Generate full metadata report (HTML)..."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   735
-      Left            =   7440
-      TabIndex        =   12
-      Top             =   4380
-      Width           =   4410
    End
    Begin PhotoDemon.buttonStrip btsGroup 
       Height          =   615
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   540
       Width           =   11730
-      _ExtentX        =   20690
-      _ExtentY        =   1085
+      _extentx        =   20690
+      _extenty        =   1085
    End
    Begin VB.PictureBox picBuffer 
       Appearance      =   0  'Flat
@@ -74,65 +78,29 @@ Begin VB.Form FormMetadata
       ScaleHeight     =   339
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   431
-      TabIndex        =   3
+      TabIndex        =   0
       Top             =   1740
       Width           =   6495
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   10500
-      TabIndex        =   1
-      Top             =   7230
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   9000
-      TabIndex        =   0
-      Top             =   7230
-      Width           =   1365
    End
    Begin PhotoDemon.buttonStrip btsTechnical 
       Height          =   495
       Index           =   0
       Left            =   7440
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   2160
       Width           =   4410
-      _ExtentX        =   20690
-      _ExtentY        =   1085
+      _extentx        =   20690
+      _extenty        =   1085
    End
    Begin PhotoDemon.buttonStrip btsTechnical 
       Height          =   495
       Index           =   1
       Left            =   7440
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   3240
       Width           =   4410
-      _ExtentX        =   6720
-      _ExtentY        =   873
+      _extentx        =   6720
+      _extenty        =   873
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -151,7 +119,7 @@ Begin VB.Form FormMetadata
       Height          =   270
       Index           =   5
       Left            =   7440
-      TabIndex        =   14
+      TabIndex        =   10
       Top             =   3960
       Width           =   945
    End
@@ -162,7 +130,7 @@ Begin VB.Form FormMetadata
       ForeColor       =   &H80000008&
       Height          =   735
       Left            =   7320
-      TabIndex        =   13
+      TabIndex        =   9
       Top             =   6120
       Width           =   4575
       WordWrap        =   -1  'True
@@ -191,7 +159,7 @@ Begin VB.Form FormMetadata
       Height          =   285
       Index           =   4
       Left            =   7320
-      TabIndex        =   11
+      TabIndex        =   8
       Top             =   1320
       Width           =   1830
    End
@@ -212,7 +180,7 @@ Begin VB.Form FormMetadata
       Height          =   270
       Index           =   3
       Left            =   7440
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   2820
       Width           =   1005
    End
@@ -233,7 +201,7 @@ Begin VB.Form FormMetadata
       Height          =   270
       Index           =   2
       Left            =   7440
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   1740
       Width           =   1050
    End
@@ -254,7 +222,7 @@ Begin VB.Form FormMetadata
       Height          =   285
       Index           =   1
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   1320
       Width           =   2130
    End
@@ -275,16 +243,9 @@ Begin VB.Form FormMetadata
       Height          =   285
       Index           =   0
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   120
       Width           =   3225
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   2
-      Top             =   7080
-      Width           =   12255
    End
 End
 Attribute VB_Name = "FormMetadata"
@@ -389,16 +350,6 @@ End Sub
 
 Private Sub btsTechnical_Click(Index As Integer, ByVal buttonIndex As Long)
     redrawMetadataList
-End Sub
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-    Unload Me
 End Sub
 
 Private Sub cmdTechnicalReport_Click()

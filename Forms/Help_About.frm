@@ -45,7 +45,7 @@ Begin VB.Form FormAbout
       _extentx        =   1296
       _extenty        =   661
       backcolor       =   0
-      autotoggle      =   -1
+      autotoggle      =   -1  'True
    End
    Begin VB.PictureBox picBuffer 
       Appearance      =   0  'Flat
@@ -78,7 +78,7 @@ Begin VB.Form FormAbout
       _extentx        =   1296
       _extenty        =   661
       backcolor       =   0
-      autotoggle      =   -1
+      autotoggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdSpeed 
       Height          =   510
@@ -90,7 +90,7 @@ Begin VB.Form FormAbout
       _extentx        =   1296
       _extenty        =   661
       backcolor       =   0
-      stickytoggle    =   -1
+      stickytoggle    =   -1  'True
    End
 End
 Attribute VB_Name = "FormAbout"
@@ -129,9 +129,6 @@ Private scrollOffset As Double
 
 'Height of each credit content block
 Private Const BLOCKHEIGHT As Long = 54
-
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Private m_Tooltip As clsToolTip
 
 Private backDIB As pdDIB
 Private bufferDIB As pdDIB
@@ -343,7 +340,6 @@ Private Sub Form_Load()
     GenerateThankyou "Helmut Kuerbiss"
     GenerateThankyou "Jason Bullen", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=11488&lngWId=1", True
     GenerateThankyou "Jerry Huxtable", "http://www.jhlabs.com/ie/index.html", True
-    GenerateThankyou "Juned Chhipa", "http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=71482&lngWId=1", True
     GenerateThankyou "Kroc Camen", "http://camendesign.com", True
     GenerateThankyou "LaVolpe", "http://www.vbforums.com/showthread.php?t=606736", True
     GenerateThankyou "Leandro Ascierto", "http://leandroascierto.com/blog/clsmenuimage/", True
@@ -393,9 +389,8 @@ Private Sub Form_Load()
     GenerateThankyou ""
     GenerateThankyou g_Language.TranslateMessage("Thank you for using PhotoDemon"), "http://photodemon.org", True
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    makeFormPretty Me
     
     'Initialize the background DIB (this allows for faster blitting than a picture box)
     ' Note that this DIB is dynamically resized; this solves issues with high-DPI screens

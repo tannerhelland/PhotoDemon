@@ -25,28 +25,22 @@ Begin VB.Form FormSelectionDialogs
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   444
    ShowInTaskbar   =   0   'False
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      Height          =   495
-      Left            =   5190
+   Begin PhotoDemon.commandBarMini cmdBarMini 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
       TabIndex        =   1
-      Top             =   2040
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      Height          =   495
-      Left            =   3720
-      TabIndex        =   0
-      Top             =   2040
-      Width           =   1365
+      Top             =   1890
+      Width           =   6660
+      _ExtentX        =   11748
+      _ExtentY        =   1323
+      BackColor       =   14802140
+      dontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltSelValue 
       Height          =   405
       Left            =   360
-      TabIndex        =   3
+      TabIndex        =   0
       Top             =   480
       Width           =   5895
       _ExtentX        =   10186
@@ -54,13 +48,6 @@ Begin VB.Form FormSelectionDialogs
       Min             =   1
       Max             =   500
       Value           =   1
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   -5400
-      TabIndex        =   2
-      Top             =   1890
-      Width           =   12135
    End
 End
 Attribute VB_Name = "FormSelectionDialogs"
@@ -151,21 +138,20 @@ Public Sub showDialog(ByVal typeOfDialog As SelectionDialogType)
 
 End Sub
 
-'Update the dialog's return value based on the pressed command button
-Private Sub CmdCancel_Click()
+Private Sub cmdBarMini_CancelClick()
     userAnswer = vbCancel
     userValue = 0
     Me.Hide
 End Sub
 
-Private Sub CmdOK_Click()
-    
+Private Sub cmdBarMini_OKClick()
     If sltSelValue.IsValid Then
         userAnswer = vbOK
         userValue = sltSelValue.Value
         Me.Hide
+    Else
+        cmdBarMini.doNotUnloadForm
     End If
-    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
