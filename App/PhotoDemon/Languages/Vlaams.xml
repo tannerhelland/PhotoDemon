@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.77</langversion>
+<langversion>6.7.78</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -689,6 +689,11 @@
 </phrase>
 
 <phrase>
+<original>Exit histogram</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>use logarithmic values</original>
 <translation>gebruik logaritmische waarden</translation>
 </phrase>
@@ -696,11 +701,6 @@
 <phrase>
 <original>use smooth lines</original>
 <translation>gebruik vloeiende lijnen</translation>
-</phrase>
-
-<phrase>
-<original>Close Histogram</original>
-<translation>Sluit Histogram</translation>
 </phrase>
 
 <phrase>
@@ -826,16 +826,6 @@
 </phrase>
 
 <phrase>
-<original>When this button is active, you can set the shadow input level color by right-clicking a color in the preview window.</original>
-<translation>Wanneer deze knop actief is, kan u de schaduwingangsniveaukleur instellen door met de rechtermuisknop te klikken op een kleur in het voorbeeldvenster.</translation>
-</phrase>
-
-<phrase>
-<original>When this button is active, you can set the highlight input level color by right-clicking a color in the preview window.</original>
-<translation>Wanneer deze knop actief is, kan je de glanspuntingangsniveaukleur instellen door met de rechtermuisknop te klikken op een kleur in het voorbeeldvenster.</translation>
-</phrase>
-
-<phrase>
 <original>output levels</original>
 <translation>uitgangsniveaus</translation>
 </phrase>
@@ -848,6 +838,16 @@
 <phrase>
 <original>Levels</original>
 <translation>Niveaus</translation>
+</phrase>
+
+<phrase>
+<original>When this button is active, you can set the shadow input level color by right-clicking a color in the preview window.</original>
+<translation>Wanneer deze knop actief is, kan u de schaduwingangsniveaukleur instellen door met de rechtermuisknop te klikken op een kleur in het voorbeeldvenster.</translation>
+</phrase>
+
+<phrase>
+<original>When this button is active, you can set the highlight input level color by right-clicking a color in the preview window.</original>
+<translation>Wanneer deze knop actief is, kan je de glanspuntingangsniveaukleur instellen door met de rechtermuisknop te klikken op een kleur in het voorbeeldvenster.</translation>
 </phrase>
 
 <phrase>
@@ -2182,8 +2182,13 @@
 </phrase>
 
 <phrase>
-<original>Cancel, and return to editing</original>
-<translation>Annuleren en terugkeren naar bewerken</translation>
+<original>Save the image before closing it</original>
+<translation>Sla de afbeelding op voordat u ze sluit</translation>
+</phrase>
+
+<phrase>
+<original>Repeat this action for all unsaved images (X in total)</original>
+<translation>Herhaal deze actie voor alle niet-opgeslagen afbeeldingen (X in totaal)</translation>
 </phrase>
 
 <phrase>
@@ -2192,13 +2197,8 @@
 </phrase>
 
 <phrase>
-<original>Save the image before closing it</original>
-<translation>Sla de afbeelding op voordat u ze sluit</translation>
-</phrase>
-
-<phrase>
-<original>Repeat this action for all unsaved images (X in total)</original>
-<translation>Herhaal deze actie voor alle niet-opgeslagen afbeeldingen (X in totaal)</translation>
+<original>Cancel, and return to editing</original>
+<translation>Annuleren en terugkeren naar bewerken</translation>
 </phrase>
 
 <phrase>
@@ -2240,7 +2240,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Herhaal deze actie voor alle niet-opgeslagen afbeeldingen (%1 in totaal)</translation>
 </phrase>
 
-<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Dialog_UnsavedChanges.frm contains 16 phrases. 4 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Dialog_UnsavedChanges.frm-->
 
@@ -4372,28 +4372,43 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 </phrase>
 
 <phrase>
-<original>Add selected image(s) to batch list</original>
-<translation>Voeg geselecteerd(e) bestand(en) toe aan de batchlijst</translation>
+<original>Select macro</original>
+<translation>Selecteer macro</translation>
 </phrase>
 
 <phrase>
-<original>Select all</original>
-<translation>Selecteer alles</translation>
+<original>custom actions from a saved macro file</original>
+<translation>aangepaste acties uit een opgeslagen macro bestand</translation>
 </phrase>
 
 <phrase>
-<original>Select none</original>
-<translation>Selecteer niets</translation>
+<original>resize images</original>
+<translation>herschalen afbeeldingen</translation>
 </phrase>
 
 <phrase>
-<original>Add images using "Open Image" dialog</original>
-<translation>Voeg afbeeldingen toe met gebruik van "Open Image" dialoog</translation>
+<original>do not apply photo editing actions</original>
+<translation>pas bewerkingsacties op fotos niet toe</translation>
 </phrase>
 
 <phrase>
-<original>Load list</original>
-<translation>Laad lijst</translation>
+<original>apply one or more photo editing actions</original>
+<translation>een of meer foto bewerkingsacties toepassen</translation>
+</phrase>
+
+<phrase>
+<original>fix exposure and lighting problems</original>
+<translation>repareer belichting en belichtingsproblemen</translation>
+</phrase>
+
+<phrase>
+<original>if you only want to rename images or change image formats, use this option</original>
+<translation>wanneer je enkel een afbeelding wilt hernoemen of afbeeldingsformaten wilt wijzigen, gebruik dan deze optie</translation>
+</phrase>
+
+<phrase>
+<original>resize image by</original>
+<translation>herschalen afbeelding door</translation>
 </phrase>
 
 <phrase>
@@ -4402,13 +4417,38 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 </phrase>
 
 <phrase>
-<original>Remove selected image(s)</original>
-<translation>Verwijder geselecteerd(e) afbeelding(en)</translation>
+<original>Load list</original>
+<translation>Laad lijst</translation>
 </phrase>
 
 <phrase>
 <original>Remove all images</original>
 <translation>Verwijder alle afbeeldingen</translation>
+</phrase>
+
+<phrase>
+<original>Remove selected image(s)</original>
+<translation>Verwijder geselecteerd(e) afbeelding(en)</translation>
+</phrase>
+
+<phrase>
+<original>Add images using "Open Image" dialog</original>
+<translation>Voeg afbeeldingen toe met gebruik van "Open Image" dialoog</translation>
+</phrase>
+
+<phrase>
+<original>Add selected image(s) to batch list</original>
+<translation>Voeg geselecteerd(e) bestand(en) toe aan de batchlijst</translation>
+</phrase>
+
+<phrase>
+<original>Select none</original>
+<translation>Selecteer niets</translation>
+</phrase>
+
+<phrase>
+<original>Select all</original>
+<translation>Selecteer alles</translation>
 </phrase>
 
 <phrase>
@@ -4442,6 +4482,11 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 </phrase>
 
 <phrase>
+<original>Select destination folder</original>
+<translation>Selecteer doelmap</translation>
+</phrase>
+
+<phrase>
 <original>lowercase</original>
 <translation>kleine letters</translation>
 </phrase>
@@ -4449,11 +4494,6 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <phrase>
 <original>add a prefix to each filename</original>
 <translation>voeg een voorvoegsel toe aan elke bestandsnaam</translation>
-</phrase>
-
-<phrase>
-<original>Select destination folder</original>
-<translation>Selecteer doelmap</translation>
 </phrase>
 
 <phrase>
@@ -4654,46 +4694,6 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <phrase>
 <original>maximum compression</original>
 <translation>maximale compressie</translation>
-</phrase>
-
-<phrase>
-<original>Select macro</original>
-<translation>Selecteer macro</translation>
-</phrase>
-
-<phrase>
-<original>custom actions from a saved macro file</original>
-<translation>aangepaste acties uit een opgeslagen macro bestand</translation>
-</phrase>
-
-<phrase>
-<original>resize images</original>
-<translation>herschalen afbeeldingen</translation>
-</phrase>
-
-<phrase>
-<original>do not apply photo editing actions</original>
-<translation>pas bewerkingsacties op fotos niet toe</translation>
-</phrase>
-
-<phrase>
-<original>apply one or more photo editing actions</original>
-<translation>een of meer foto bewerkingsacties toepassen</translation>
-</phrase>
-
-<phrase>
-<original>fix exposure and lighting problems</original>
-<translation>repareer belichting en belichtingsproblemen</translation>
-</phrase>
-
-<phrase>
-<original>if you only want to rename images or change image formats, use this option</original>
-<translation>wanneer je enkel een afbeelding wilt hernoemen of afbeeldingsformaten wilt wijzigen, gebruik dan deze optie</translation>
-</phrase>
-
-<phrase>
-<original>resize image by</original>
-<translation>herschalen afbeelding door</translation>
 </phrase>
 
 <phrase>
@@ -5286,11 +5286,6 @@ Standaard, transparantie zal worden verdeeld in het midden, of je kan een aangep
 </phrase>
 
 <phrase>
-<original>&OK</original>
-<translation>&OK</translation>
-</phrase>
-
-<phrase>
 <original>Copyright</original>
 <translation>Auteursrecht</translation>
 </phrase>
@@ -5389,11 +5384,6 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 </phrase>
 
 <phrase>
-<original>Internet import canceled.</original>
-<translation>Internet import geannuleerd.</translation>
-</phrase>
-
-<phrase>
 <original>This URL is not valid.  Please make sure the URL begins with "http://" or "ftp://".</original>
 <translation>Deze URL is niet geldig. Zorg ervoor dat de URL begint met "http://" of "ftp://".</translation>
 </phrase>
@@ -5413,7 +5403,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <translation>Wachten op invoer van de gebruiker</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 29 phrases. 4 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 26 phrases. 3 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
 
@@ -5521,6 +5511,11 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 </phrase>
 
 <phrase>
+<original>&OK</original>
+<translation>&OK</translation>
+</phrase>
+
+<phrase>
 <original>minimize PhotoDemon prior to capture</original>
 <translation>PhotoDemon minimaliseren voorafgaand aan vastlegging</translation>
 </phrase>
@@ -5570,7 +5565,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 <translation>Selecteer een ander.</translation>
 </phrase>
 
-<!-- File_Import_ScreenCapture.frm contains 17 phrases. 6 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- File_Import_ScreenCapture.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Import_ScreenCapture.frm-->
 
@@ -9210,61 +9205,6 @@ Nota: enkele kleine programmateksten kunnen niet live worden  bijgewerkt. Een de
 <!-- BEGIN text for Tools_LanguageEditor.frm (FormLanguageEditor) -->
 
 <phrase>
-<original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
-<translation>bv. "1.0.0" . Gebruik aub Major.Minor.Revision formaat.</translation>
-</phrase>
-
-<phrase>
-<original>e.g. "complete", "unfinished", etc.  Any descriptive text is acceptable.</original>
-<translation>bv. "complete", "unfinished", enz. Elke omschrijvende tekst is aanvaardbaar.</translation>
-</phrase>
-
-<phrase>
-<original>e.g. "English" or "English (US)".  This text will be displayed in PhotoDemon's Language menu.</original>
-<translation>e.g. "Vlaams" or "Vlaams (BE)". Deze tekst wordt weergegeven in het PhotoDemon Taal menu.</translation>
-</phrase>
-
-<phrase>
-<original>e.g. "US" for "United States".  Please use the official 2-character ISO 3166-1 format.</original>
-<translation>vb. "BE" voor "België". Gebruik aub het 2-karakterer ISO 3166-1 formaat.</translation>
-</phrase>
-
-<phrase>
-<original>e.g. "en" for "English".  Please use the official 2-character ISO 639-1 format.</original>
-<translation>vb. "nl" voor "Nederlands". Gebruik aub het 2-karakterer ISO 639-1 formaat.</translation>
-</phrase>
-
-<phrase>
-<original>author name(s)</original>
-<translation>auteur naam(en)</translation>
-</phrase>
-
-<phrase>
-<original>translation status</original>
-<translation>vertalingsstatus</translation>
-</phrase>
-
-<phrase>
-<original>translation version</original>
-<translation>vertalingsversie</translation>
-</phrase>
-
-<phrase>
-<original>language name</original>
-<translation>taalnaam</translation>
-</phrase>
-
-<phrase>
-<original>country ID</original>
-<translation>land ID</translation>
-</phrase>
-
-<phrase>
-<original>language ID</original>
-<translation>taal ID</translation>
-</phrase>
-
-<phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>Initiëren automatische vertaling van alle ontbrekende zinnen</translation>
 </phrase>
@@ -9322,6 +9262,61 @@ Nota: enkele kleine programmateksten kunnen niet live worden  bijgewerkt. Een de
 <phrase>
 <original>language files currently available</original>
 <translation>beschikbare taalbestanden</translation>
+</phrase>
+
+<phrase>
+<original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
+<translation>bv. "1.0.0" . Gebruik aub Major.Minor.Revision formaat.</translation>
+</phrase>
+
+<phrase>
+<original>e.g. "complete", "unfinished", etc.  Any descriptive text is acceptable.</original>
+<translation>bv. "complete", "unfinished", enz. Elke omschrijvende tekst is aanvaardbaar.</translation>
+</phrase>
+
+<phrase>
+<original>e.g. "English" or "English (US)".  This text will be displayed in PhotoDemon's Language menu.</original>
+<translation>e.g. "Vlaams" or "Vlaams (BE)". Deze tekst wordt weergegeven in het PhotoDemon Taal menu.</translation>
+</phrase>
+
+<phrase>
+<original>e.g. "US" for "United States".  Please use the official 2-character ISO 3166-1 format.</original>
+<translation>vb. "BE" voor "België". Gebruik aub het 2-karakterer ISO 3166-1 formaat.</translation>
+</phrase>
+
+<phrase>
+<original>e.g. "en" for "English".  Please use the official 2-character ISO 639-1 format.</original>
+<translation>vb. "nl" voor "Nederlands". Gebruik aub het 2-karakterer ISO 639-1 formaat.</translation>
+</phrase>
+
+<phrase>
+<original>author name(s)</original>
+<translation>auteur naam(en)</translation>
+</phrase>
+
+<phrase>
+<original>translation status</original>
+<translation>vertalingsstatus</translation>
+</phrase>
+
+<phrase>
+<original>translation version</original>
+<translation>vertalingsversie</translation>
+</phrase>
+
+<phrase>
+<original>language name</original>
+<translation>taalnaam</translation>
+</phrase>
+
+<phrase>
+<original>country ID</original>
+<translation>land ID</translation>
+</phrase>
+
+<phrase>
+<original>language ID</original>
+<translation>taal ID</translation>
 </phrase>
 
 <phrase>
@@ -14110,10 +14105,10 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2434</phrasecount>
+<phrasecount>2433</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4201 phrases. -->
-<!-- 1767 are duplicates, so only 2434 unique phrases have been written to file. -->
-<!-- These 2434 phrases contain approximately 13268 total words. -->
+<!-- As of this build, PhotoDemon contains 4194 phrases. -->
+<!-- 1761 are duplicates, so only 2433 unique phrases have been written to file. -->
+<!-- These 2433 phrases contain approximately 13265 total words. -->
 
 </pdData>

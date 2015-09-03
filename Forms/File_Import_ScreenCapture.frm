@@ -25,41 +25,16 @@ Begin VB.Form FormScreenCapture
    ScaleWidth      =   873
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   10140
+   Begin PhotoDemon.commandBarMini cmdBarMini 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
       TabIndex        =   8
-      Top             =   6390
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   11610
-      TabIndex        =   7
-      Top             =   6390
-      Width           =   1365
+      Top             =   6255
+      Width           =   13095
+      _ExtentX        =   23098
+      _ExtentY        =   1323
+      BackColor       =   14802140
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
@@ -152,16 +127,9 @@ Begin VB.Form FormScreenCapture
       Height          =   285
       Index           =   1
       Left            =   6120
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   180
       Width           =   825
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   -120
-      TabIndex        =   9
-      Top             =   6240
-      Width           =   13815
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -207,9 +175,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 'APIs for listing currently open applications (windows)
 Private Declare Function EnumWindows Lib "user32" (ByVal lpEnumFunc As Long, ByVal lParam As Long) As Long
 
@@ -221,11 +186,7 @@ Private Sub chkMinimize_Click()
     updatePreview
 End Sub
 
-Private Sub CmdCancel_Click()
-    Unload Me
-End Sub
-
-Private Sub CmdOK_Click()
+Private Sub cmdBarMini_OKClick()
     
     If optSource(0) Then
         Me.Visible = False
@@ -243,8 +204,6 @@ Private Sub CmdOK_Click()
         
     End If
     
-    Unload Me
-    
 End Sub
 
 Private Sub Form_Load()
@@ -253,9 +212,8 @@ Private Sub Form_Load()
     ' http://vb.mvps.org/articles/ap199902.pdf
     fillListWithOpenApplications lstWindows
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    makeFormPretty Me
     
     'Wait just a moment before continuing, to give the corresponding menu time to animate away (otherwise it may
     ' get caught in the capture preview)

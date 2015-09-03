@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.77</langversion>
+<langversion>6.7.78</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -689,6 +689,11 @@
 </phrase>
 
 <phrase>
+<original>Exit histogram</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>use logarithmic values</original>
 <translation>använda logaritmiska värden</translation>
 </phrase>
@@ -696,11 +701,6 @@
 <phrase>
 <original>use smooth lines</original>
 <translation>Använd mjuka linjer</translation>
-</phrase>
-
-<phrase>
-<original>Close Histogram</original>
-<translation>Stäng Histogram</translation>
 </phrase>
 
 <phrase>
@@ -826,16 +826,6 @@
 </phrase>
 
 <phrase>
-<original>When this button is active, you can set the shadow input level color by right-clicking a color in the preview window.</original>
-<translation>När denna knapp är aktiv kan du ställa skuggan ingångsnivå färg genom att högerklicka på en färg i förhandsgranskningsfönstret.</translation>
-</phrase>
-
-<phrase>
-<original>When this button is active, you can set the highlight input level color by right-clicking a color in the preview window.</original>
-<translation>När denna knapp är aktiv kan du ställa markören ingångsnivå färg genom att högerklicka på en färg i förhandsgranskningsfönstret.</translation>
-</phrase>
-
-<phrase>
 <original>output levels</original>
 <translation>utgångsnivåer...</translation>
 </phrase>
@@ -848,6 +838,16 @@
 <phrase>
 <original>Levels</original>
 <translation>Nivåer</translation>
+</phrase>
+
+<phrase>
+<original>When this button is active, you can set the shadow input level color by right-clicking a color in the preview window.</original>
+<translation>När denna knapp är aktiv kan du ställa skuggan ingångsnivå färg genom att högerklicka på en färg i förhandsgranskningsfönstret.</translation>
+</phrase>
+
+<phrase>
+<original>When this button is active, you can set the highlight input level color by right-clicking a color in the preview window.</original>
+<translation>När denna knapp är aktiv kan du ställa markören ingångsnivå färg genom att högerklicka på en färg i förhandsgranskningsfönstret.</translation>
 </phrase>
 
 <phrase>
@@ -2182,8 +2182,13 @@
 </phrase>
 
 <phrase>
-<original>Cancel, and return to editing</original>
-<translation>Avbryt och återgå till redigering</translation>
+<original>Save the image before closing it</original>
+<translation>Spara bilden innan du stänger den</translation>
+</phrase>
+
+<phrase>
+<original>Repeat this action for all unsaved images (X in total)</original>
+<translation>Upprepa åtgärden för alla ofrälsta bilder (X totalt)</translation>
 </phrase>
 
 <phrase>
@@ -2192,13 +2197,8 @@
 </phrase>
 
 <phrase>
-<original>Save the image before closing it</original>
-<translation>Spara bilden innan du stänger den</translation>
-</phrase>
-
-<phrase>
-<original>Repeat this action for all unsaved images (X in total)</original>
-<translation>Upprepa åtgärden för alla ofrälsta bilder (X totalt)</translation>
+<original>Cancel, and return to editing</original>
+<translation>Avbryt och återgå till redigering</translation>
 </phrase>
 
 <phrase>
@@ -2240,7 +2240,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <translation>Upprepa åtgärden för alla ofrälsta bilder ( %1 totalt)...</translation>
 </phrase>
 
-<!-- Dialog_UnsavedChanges.frm contains 20 phrases. 8 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Dialog_UnsavedChanges.frm contains 16 phrases. 4 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for Dialog_UnsavedChanges.frm-->
 
@@ -4372,28 +4372,43 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
-<original>Add selected image(s) to batch list</original>
-<translation>Lägg vald bild (er) till satslistan</translation>
+<original>Select macro</original>
+<translation>Välj makro</translation>
 </phrase>
 
 <phrase>
-<original>Select all</original>
-<translation>Markera alla</translation>
+<original>custom actions from a saved macro file</original>
+<translation>anpassade åtgärder från en sparad makrofil</translation>
 </phrase>
 
 <phrase>
-<original>Select none</original>
-<translation>Välj ingen</translation>
+<original>resize images</original>
+<translation>ändra storlek på bilder</translation>
 </phrase>
 
 <phrase>
-<original>Add images using "Open Image" dialog</original>
-<translation>Lägg till bilder med hjälp av "Öppna bild" dialogrutan</translation>
+<original>do not apply photo editing actions</original>
+<translation>gäller inte fotoredigeringsåtgärder</translation>
 </phrase>
 
 <phrase>
-<original>Load list</original>
-<translation>Ladda lista</translation>
+<original>apply one or more photo editing actions</original>
+<translation>tillämpa en eller flera fotoredigeringsåtgärder</translation>
+</phrase>
+
+<phrase>
+<original>fix exposure and lighting problems</original>
+<translation>fixa exponering och ljusproblem</translation>
+</phrase>
+
+<phrase>
+<original>if you only want to rename images or change image formats, use this option</original>
+<translation>om du bara vill ändra namn på bilder eller ändra bildformat, använda det här alternativet</translation>
+</phrase>
+
+<phrase>
+<original>resize image by</original>
+<translation>ändra storlek på bilden genom</translation>
 </phrase>
 
 <phrase>
@@ -4402,13 +4417,38 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
-<original>Remove selected image(s)</original>
-<translation>Ta bort vald bild (er)</translation>
+<original>Load list</original>
+<translation>Ladda lista</translation>
 </phrase>
 
 <phrase>
 <original>Remove all images</original>
 <translation>Ta bort alla bilder</translation>
+</phrase>
+
+<phrase>
+<original>Remove selected image(s)</original>
+<translation>Ta bort vald bild (er)</translation>
+</phrase>
+
+<phrase>
+<original>Add images using "Open Image" dialog</original>
+<translation>Lägg till bilder med hjälp av "Öppna bild" dialogrutan</translation>
+</phrase>
+
+<phrase>
+<original>Add selected image(s) to batch list</original>
+<translation>Lägg vald bild (er) till satslistan</translation>
+</phrase>
+
+<phrase>
+<original>Select none</original>
+<translation>Välj ingen</translation>
+</phrase>
+
+<phrase>
+<original>Select all</original>
+<translation>Markera alla</translation>
 </phrase>
 
 <phrase>
@@ -4442,6 +4482,11 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
+<original>Select destination folder</original>
+<translation>Välj målmapp</translation>
+</phrase>
+
+<phrase>
 <original>lowercase</original>
 <translation>gemener</translation>
 </phrase>
@@ -4449,11 +4494,6 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <phrase>
 <original>add a prefix to each filename</original>
 <translation>lägga till ett prefix till varje filnamn</translation>
-</phrase>
-
-<phrase>
-<original>Select destination folder</original>
-<translation>Välj målmapp</translation>
 </phrase>
 
 <phrase>
@@ -4654,46 +4694,6 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <phrase>
 <original>maximum compression</original>
 <translation>maximal kompression</translation>
-</phrase>
-
-<phrase>
-<original>Select macro</original>
-<translation>Välj makro</translation>
-</phrase>
-
-<phrase>
-<original>custom actions from a saved macro file</original>
-<translation>anpassade åtgärder från en sparad makrofil</translation>
-</phrase>
-
-<phrase>
-<original>resize images</original>
-<translation>ändra storlek på bilder</translation>
-</phrase>
-
-<phrase>
-<original>do not apply photo editing actions</original>
-<translation>gäller inte fotoredigeringsåtgärder</translation>
-</phrase>
-
-<phrase>
-<original>apply one or more photo editing actions</original>
-<translation>tillämpa en eller flera fotoredigeringsåtgärder</translation>
-</phrase>
-
-<phrase>
-<original>fix exposure and lighting problems</original>
-<translation>fixa exponering och ljusproblem</translation>
-</phrase>
-
-<phrase>
-<original>if you only want to rename images or change image formats, use this option</original>
-<translation>om du bara vill ändra namn på bilder eller ändra bildformat, använda det här alternativet</translation>
-</phrase>
-
-<phrase>
-<original>resize image by</original>
-<translation>ändra storlek på bilden genom</translation>
 </phrase>
 
 <phrase>
@@ -5286,11 +5286,6 @@ By standard kommer öppenheten att delas i mitten, eller så kan du ange en anpa
 </phrase>
 
 <phrase>
-<original>&OK</original>
-<translation>OK</translation>
-</phrase>
-
-<phrase>
 <original>Copyright</original>
 <translation>Copyright</translation>
 </phrase>
@@ -5389,11 +5384,6 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 </phrase>
 
 <phrase>
-<original>Internet import canceled.</original>
-<translation>Internet import avbryts.</translation>
-</phrase>
-
-<phrase>
 <original>This URL is not valid.  Please make sure the URL begins with "http://" or "ftp://".</original>
 <translation>Denna URL är inte giltig. Se till att webbadressen börjar med "http://" eller "ftp://".</translation>
 </phrase>
@@ -5413,7 +5403,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation>Väntar på användarinmatning</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 29 phrases. 4 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 26 phrases. 3 were duplicates of existing phrases, so only 23 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
 
@@ -5521,6 +5511,11 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 </phrase>
 
 <phrase>
+<original>&OK</original>
+<translation>OK</translation>
+</phrase>
+
+<phrase>
 <original>minimize PhotoDemon prior to capture</original>
 <translation>minimera PhotoDemon före fånga</translation>
 </phrase>
@@ -5570,7 +5565,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation>Välj ett annat.</translation>
 </phrase>
 
-<!-- File_Import_ScreenCapture.frm contains 17 phrases. 6 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+<!-- File_Import_ScreenCapture.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
 
 <!-- END text for File_Import_ScreenCapture.frm-->
 
@@ -9210,61 +9205,6 @@ Note förändrats framgångsrikt: några mindre program kan inte vara levande up
 <!-- BEGIN text for Tools_LanguageEditor.frm (FormLanguageEditor) -->
 
 <phrase>
-<original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
-<translation>t ex "1.0.0". Vänligen använd Major.Minor.Revision format.</translation>
-</phrase>
-
-<phrase>
-<original>e.g. "complete", "unfinished", etc.  Any descriptive text is acceptable.</original>
-<translation>t ex "fylla", "ofärdiga", etc. Varje beskrivande text är acceptabelt.</translation>
-</phrase>
-
-<phrase>
-<original>e.g. "English" or "English (US)".  This text will be displayed in PhotoDemon's Language menu.</original>
-<translation>t ex "English" eller "English (US)". Denna text kommer att visas i PhotoDemon s språkmeny.</translation>
-</phrase>
-
-<phrase>
-<original>e.g. "US" for "United States".  Please use the official 2-character ISO 3166-1 format.</original>
-<translation>t ex "USA" för "United States". Använd den officiella 2-tecken enligt ISO 3166-1 format.</translation>
-</phrase>
-
-<phrase>
-<original>e.g. "en" for "English".  Please use the official 2-character ISO 639-1 format.</original>
-<translation>t ex "sv" för "engelska". Använd den officiella 2-tecken ISO 639-1 format.</translation>
-</phrase>
-
-<phrase>
-<original>author name(s)</original>
-<translation>författarens namn (s)</translation>
-</phrase>
-
-<phrase>
-<original>translation status</original>
-<translation>översättning status</translation>
-</phrase>
-
-<phrase>
-<original>translation version</original>
-<translation>översättning version</translation>
-</phrase>
-
-<phrase>
-<original>language name</original>
-<translation>språk namn</translation>
-</phrase>
-
-<phrase>
-<original>country ID</original>
-<translation>land ID</translation>
-</phrase>
-
-<phrase>
-<original>language ID</original>
-<translation>språk-ID</translation>
-</phrase>
-
-<phrase>
 <original>Initiate auto-translation of all missing phrases</original>
 <translation>Initiera automatisk översättning av alla saknade fraser</translation>
 </phrase>
@@ -9322,6 +9262,61 @@ Note förändrats framgångsrikt: några mindre program kan inte vara levande up
 <phrase>
 <original>language files currently available</original>
 <translation>språkfiler tillgängliga</translation>
+</phrase>
+
+<phrase>
+<original>e.g. "1.0.0".  Please use Major.Minor.Revision format.</original>
+<translation>t ex "1.0.0". Vänligen använd Major.Minor.Revision format.</translation>
+</phrase>
+
+<phrase>
+<original>e.g. "complete", "unfinished", etc.  Any descriptive text is acceptable.</original>
+<translation>t ex "fylla", "ofärdiga", etc. Varje beskrivande text är acceptabelt.</translation>
+</phrase>
+
+<phrase>
+<original>e.g. "English" or "English (US)".  This text will be displayed in PhotoDemon's Language menu.</original>
+<translation>t ex "English" eller "English (US)". Denna text kommer att visas i PhotoDemon s språkmeny.</translation>
+</phrase>
+
+<phrase>
+<original>e.g. "US" for "United States".  Please use the official 2-character ISO 3166-1 format.</original>
+<translation>t ex "USA" för "United States". Använd den officiella 2-tecken enligt ISO 3166-1 format.</translation>
+</phrase>
+
+<phrase>
+<original>e.g. "en" for "English".  Please use the official 2-character ISO 639-1 format.</original>
+<translation>t ex "sv" för "engelska". Använd den officiella 2-tecken ISO 639-1 format.</translation>
+</phrase>
+
+<phrase>
+<original>author name(s)</original>
+<translation>författarens namn (s)</translation>
+</phrase>
+
+<phrase>
+<original>translation status</original>
+<translation>översättning status</translation>
+</phrase>
+
+<phrase>
+<original>translation version</original>
+<translation>översättning version</translation>
+</phrase>
+
+<phrase>
+<original>language name</original>
+<translation>språk namn</translation>
+</phrase>
+
+<phrase>
+<original>country ID</original>
+<translation>land ID</translation>
+</phrase>
+
+<phrase>
+<original>language ID</original>
+<translation>språk-ID</translation>
 </phrase>
 
 <phrase>
@@ -14111,10 +14106,10 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2434</phrasecount>
+<phrasecount>2433</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4201 phrases. -->
-<!-- 1767 are duplicates, so only 2434 unique phrases have been written to file. -->
-<!-- These 2434 phrases contain approximately 13268 total words. -->
+<!-- As of this build, PhotoDemon contains 4194 phrases. -->
+<!-- 1761 are duplicates, so only 2433 unique phrases have been written to file. -->
+<!-- These 2433 phrases contain approximately 13265 total words. -->
 
 </pdData>
