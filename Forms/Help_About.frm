@@ -25,17 +25,27 @@ Begin VB.Form FormAbout
    ScaleWidth      =   779
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdButton cmdOK 
+      Height          =   495
+      Left            =   9840
+      TabIndex        =   4
+      Top             =   8280
+      Width           =   1695
+      _extentx        =   2990
+      _extenty        =   873
+      caption         =   "&OK"
+   End
    Begin PhotoDemon.pdButtonToolbox cmdSpeed 
       Height          =   510
       Index           =   0
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   8280
       Width           =   510
-      _ExtentX        =   1296
-      _ExtentY        =   661
-      BackColor       =   0
-      AutoToggle      =   -1  'True
+      _extentx        =   1296
+      _extenty        =   661
+      backcolor       =   0
+      autotoggle      =   -1
    End
    Begin VB.PictureBox picBuffer 
       Appearance      =   0  'Flat
@@ -48,7 +58,7 @@ Begin VB.Form FormAbout
       ScaleHeight     =   369
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   697
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   600
       Width           =   10455
    End
@@ -58,47 +68,29 @@ Begin VB.Form FormAbout
       Left            =   2520
       Top             =   8280
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   10095
-      TabIndex        =   0
-      Top             =   8280
-      Width           =   1365
-   End
    Begin PhotoDemon.pdButtonToolbox cmdSpeed 
       Height          =   510
       Index           =   1
       Left            =   720
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   8280
       Width           =   510
-      _ExtentX        =   1296
-      _ExtentY        =   661
-      BackColor       =   0
-      AutoToggle      =   -1  'True
+      _extentx        =   1296
+      _extenty        =   661
+      backcolor       =   0
+      autotoggle      =   -1
    End
    Begin PhotoDemon.pdButtonToolbox cmdSpeed 
       Height          =   510
       Index           =   2
       Left            =   1320
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   8280
       Width           =   510
-      _ExtentX        =   1296
-      _ExtentY        =   661
-      BackColor       =   0
-      StickyToggle    =   -1  'True
+      _extentx        =   1296
+      _extenty        =   661
+      backcolor       =   0
+      stickytoggle    =   -1
    End
 End
 Attribute VB_Name = "FormAbout"

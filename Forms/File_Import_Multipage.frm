@@ -25,60 +25,37 @@ Begin VB.Form dialog_MultiImage
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   370
    ShowInTaskbar   =   0   'False
-   Begin VB.CommandButton cmdAnswer 
-      Caption         =   "Load only the first page"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   735
-      Index           =   1
-      Left            =   240
-      TabIndex        =   3
-      Top             =   2100
-      Width           =   5100
-   End
-   Begin VB.CommandButton cmdAnswer 
-      Caption         =   "Load each page as its own image"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+   Begin PhotoDemon.pdButton cmdAnswer 
       Height          =   735
       Index           =   0
       Left            =   240
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   1320
       Width           =   5100
+      _extentx        =   8996
+      _extenty        =   1296
+      caption         =   "Load each page as its own image"
    End
    Begin PhotoDemon.smartCheckBox chkRepeat 
       Height          =   300
       Left            =   240
-      TabIndex        =   1
+      TabIndex        =   2
       Top             =   3120
       Width           =   5055
-      _ExtentX        =   8916
-      _ExtentY        =   582
-      Caption         =   "always apply this action to multi-image files"
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      _extentx        =   8916
+      _extenty        =   582
+      caption         =   "always apply this action to multi-image files"
+   End
+   Begin PhotoDemon.pdButton cmdAnswer 
+      Height          =   735
+      Index           =   1
+      Left            =   240
+      TabIndex        =   1
+      Top             =   2100
+      Width           =   5100
+      _extentx        =   8996
+      _extenty        =   1296
+      caption         =   "Load only the first page"
    End
    Begin VB.Label lblWarning 
       BackStyle       =   0  'Transparent
@@ -95,7 +72,7 @@ Begin VB.Form dialog_MultiImage
       ForeColor       =   &H00202020&
       Height          =   765
       Left            =   960
-      TabIndex        =   0
+      TabIndex        =   3
       Top             =   270
       Width           =   4335
       WordWrap        =   -1  'True
@@ -133,33 +110,17 @@ Private userAnswer As VbMsgBoxResult
 'We want to temporarily suspend an hourglass cursor if necessary
 Private restoreCursor As Boolean
 
-'Used to render images onto the command buttons
-Private cImgCtl As clsControlImage
-
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
-
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
 End Property
 
 'The ShowDialog routine presents the user with the form.  FormID MUST BE SET in advance of calling this.
 Public Sub showDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
-
+    
     'Extract relevant icons from the resource file, and render them onto the buttons at run-time.
-    ' (NOTE: because the icons require manifest theming, they will not appear in the IDE.)
-    Set cImgCtl = New clsControlImage
-    With cImgCtl
-        .LoadImageFromStream cmdAnswer(0).hWnd, LoadResData("LRGIMGMULTI", "CUSTOM"), fixDPI(32), fixDPI(32)
-        .LoadImageFromStream cmdAnswer(1).hWnd, LoadResData("LRGIMGSMALL", "CUSTOM"), fixDPI(32), fixDPI(32)
-        
-        Dim i As Long
-        For i = 0 To 1
-            .SetMargins cmdAnswer(i).hWnd, 10
-            .Align(cmdAnswer(i).hWnd) = Icon_Left
-        Next i
-    End With
-
+    cmdAnswer(0).AssignImage "LRGIMGMULTI"
+    cmdAnswer(1).AssignImage "LRGIMGSMALL"
+    
     If Screen.MousePointer = vbHourglass Then
         restoreCursor = True
         Screen.MousePointer = vbNormal
@@ -180,28 +141,27 @@ Public Sub showDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
     Dim FileExtension As String
     FileExtension = GetExtension(srcFilename)
     If UCase(FileExtension) = "GIF" Then
-        lblWarning.Caption = g_Language.TranslateMessage("%1 is an animated GIF file (%2 frames total).  How would you like to proceed?", getFilename(srcFilename), numOfImages)
-        cmdAnswer(0).Caption = g_Language.TranslateMessage("Load each frame as a separate image")
-        cmdAnswer(0).ToolTipText = g_Language.TranslateMessage("This option will load every frame in the animated GIF file as an individual image.")
-        cmdAnswer(1).Caption = g_Language.TranslateMessage("Load only the first frame")
-        cmdAnswer(1).ToolTipText = g_Language.TranslateMessage("This option will only load a single frame from the animated GIF file, effectively treating at as a non-animated GIF file.")
+        lblWarning.Caption = g_Language.TranslateMessage("%1 is an animated GIF file (%2 frames total).  How would you like to proceed?", GetFilename(srcFilename), numOfImages)
+        cmdAnswer(0).Caption = "Load each frame as a separate image"
+        cmdAnswer(0).assignTooltip "This option will load every frame in the animated GIF file as an individual image."
+        cmdAnswer(1).Caption = "Load only the first frame"
+        cmdAnswer(1).assignTooltip "This option will only load a single frame from the animated GIF file, effectively treating at as a non-animated GIF file."
     ElseIf UCase(FileExtension) = "ICO" Then
-        lblWarning.Caption = g_Language.TranslateMessage("%1 contains multiple icons (%2 in total).  How would you like to proceed?", getFilename(srcFilename), numOfImages)
-        cmdAnswer(0).Caption = g_Language.TranslateMessage("Load each icon as a separate image")
-        cmdAnswer(0).ToolTipText = g_Language.TranslateMessage("This option will load every icon in the ICO file as an individual image.")
-        cmdAnswer(1).Caption = g_Language.TranslateMessage("Load only the first icon")
-        cmdAnswer(1).ToolTipText = g_Language.TranslateMessage("This option will only load a single icon from the ICO file.")
+        lblWarning.Caption = g_Language.TranslateMessage("%1 contains multiple icons (%2 in total).  How would you like to proceed?", GetFilename(srcFilename), numOfImages)
+        cmdAnswer(0).Caption = "Load each icon as a separate image"
+        cmdAnswer(0).assignTooltip "This option will load every icon in the ICO file as an individual image."
+        cmdAnswer(1).Caption = "Load only the first icon"
+        cmdAnswer(1).assignTooltip "This option will only load a single icon from the ICO file."
     Else
-        lblWarning.Caption = g_Language.TranslateMessage("%1 contains multiple pages (%2 in total).  How would you like to proceed?", getFilename(srcFilename), numOfImages)
-        cmdAnswer(0).Caption = g_Language.TranslateMessage("Load each page as a separate image")
-        cmdAnswer(0).ToolTipText = g_Language.TranslateMessage("This option will load every page in the TIFF file as an individual image.")
-        cmdAnswer(1).Caption = g_Language.TranslateMessage("Load only the first page")
-        cmdAnswer(1).ToolTipText = g_Language.TranslateMessage("This option will only load a single page from the TIFF file.")
+        lblWarning.Caption = g_Language.TranslateMessage("%1 contains multiple pages (%2 in total).  How would you like to proceed?", GetFilename(srcFilename), numOfImages)
+        cmdAnswer(0).Caption = "Load each page as a separate image"
+        cmdAnswer(0).assignTooltip "This option will load every page in the TIFF file as an individual image."
+        cmdAnswer(1).Caption = "Load only the first page"
+        cmdAnswer(1).assignTooltip "This option will only load a single page from the TIFF file."
     End If
-
+    
     'Apply any custom styles to the form
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    makeFormPretty Me
 
     'Display the form
     showPDDialog vbModal, Me, True

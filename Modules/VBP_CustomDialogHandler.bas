@@ -309,8 +309,8 @@ End Function
 ' so it will be forced to an XML-safe equivalent.  As such, do not do something stupid like having two IDs that are so similar,
 ' their XML-safe variants become identical.
 '
-'Prompt text, "yes button" text, "no button" text, "cancel button" text, and icon choice must be provided.  The bottom
-' "Remember my decision" text is universal and cannot be changed by the caller.
+'Prompt text, "yes button" text, "no button" text, "cancel button" text, and icon (message box style) must be passed.
+' The bottom "Remember my decision" text is universal and cannot be changed by the caller.
 '
 'If the user has previously ticked the "remember my decision" box, this function should still be called, but it will simply
 ' retrieve the previous choice and silently return it.

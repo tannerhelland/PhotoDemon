@@ -25,26 +25,36 @@ Begin VB.Form dialog_ColorSelector
    ScaleWidth      =   769
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
+   Begin PhotoDemon.commandBarMini cmdBarMini 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   36
+      Top             =   5295
+      Width           =   11535
+      _extentx        =   20346
+      _extenty        =   1323
+   End
    Begin PhotoDemon.pdButtonToolbox cmdCapture 
       Height          =   600
       Left            =   10320
-      TabIndex        =   38
+      TabIndex        =   35
       Top             =   3720
       Visible         =   0   'False
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   1058
-      AutoToggle      =   -1  'True
+      _extentx        =   1931
+      _extenty        =   1058
+      autotoggle      =   -1  'True
    End
    Begin PhotoDemon.pdTextBox txtHex 
       Height          =   315
       Left            =   6480
-      TabIndex        =   37
+      TabIndex        =   34
       Top             =   3735
       Width           =   1455
-      _ExtentX        =   2566
-      _ExtentY        =   556
-      Text            =   "abcdef"
+      _extentx        =   2566
+      _extenty        =   556
+      text            =   "abcdef"
    End
    Begin VB.PictureBox picRecColor 
       Appearance      =   0  'Flat
@@ -57,7 +67,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   36
+      TabIndex        =   33
       Top             =   4560
       Width           =   495
    End
@@ -72,7 +82,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   35
+      TabIndex        =   32
       Top             =   4560
       Width           =   495
    End
@@ -87,7 +97,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   34
+      TabIndex        =   31
       Top             =   4560
       Width           =   495
    End
@@ -102,7 +112,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   33
+      TabIndex        =   30
       Top             =   4560
       Width           =   495
    End
@@ -117,7 +127,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   32
+      TabIndex        =   29
       Top             =   4560
       Width           =   495
    End
@@ -132,7 +142,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   31
+      TabIndex        =   28
       Top             =   4560
       Width           =   495
    End
@@ -147,7 +157,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   30
+      TabIndex        =   27
       Top             =   4560
       Width           =   495
    End
@@ -162,7 +172,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   29
+      TabIndex        =   26
       Top             =   4560
       Width           =   495
    End
@@ -177,7 +187,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   247
-      TabIndex        =   25
+      TabIndex        =   22
       Top             =   1320
       Width           =   3735
    End
@@ -192,7 +202,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   247
-      TabIndex        =   23
+      TabIndex        =   20
       Top             =   720
       Width           =   3735
    End
@@ -207,7 +217,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   247
-      TabIndex        =   21
+      TabIndex        =   18
       Top             =   120
       Width           =   3735
    End
@@ -222,7 +232,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   247
-      TabIndex        =   20
+      TabIndex        =   17
       Top             =   3120
       Width           =   3735
    End
@@ -237,7 +247,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   247
-      TabIndex        =   18
+      TabIndex        =   15
       Top             =   2520
       Width           =   3735
    End
@@ -252,7 +262,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   23
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   247
-      TabIndex        =   16
+      TabIndex        =   13
       Top             =   1920
       Width           =   3735
    End
@@ -266,7 +276,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   247
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   4560
       Width           =   3735
    End
@@ -280,45 +290,9 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   247
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   4080
       Width           =   3735
-   End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   8520
-      TabIndex        =   3
-      Top             =   5430
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   9990
-      TabIndex        =   2
-      Top             =   5430
-      Width           =   1365
    End
    Begin VB.PictureBox picHue 
       Appearance      =   0  'Flat
@@ -352,67 +326,67 @@ Begin VB.Form dialog_ColorSelector
       Height          =   345
       Index           =   0
       Left            =   10320
-      TabIndex        =   15
+      TabIndex        =   12
       Top             =   1905
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   255
+      _extentx        =   1931
+      _extenty        =   714
+      max             =   255
    End
    Begin PhotoDemon.textUpDown tudRGB 
       Height          =   345
       Index           =   1
       Left            =   10320
-      TabIndex        =   17
+      TabIndex        =   14
       Top             =   2505
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   255
+      _extentx        =   1931
+      _extenty        =   714
+      max             =   255
    End
    Begin PhotoDemon.textUpDown tudRGB 
       Height          =   345
       Index           =   2
       Left            =   10320
-      TabIndex        =   19
+      TabIndex        =   16
       Top             =   3105
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   255
+      _extentx        =   1931
+      _extenty        =   714
+      max             =   255
    End
    Begin PhotoDemon.textUpDown tudHSV 
       Height          =   345
       Index           =   0
       Left            =   10320
-      TabIndex        =   22
+      TabIndex        =   19
       Top             =   105
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   359
+      _extentx        =   1931
+      _extenty        =   714
+      max             =   359
    End
    Begin PhotoDemon.textUpDown tudHSV 
       Height          =   345
       Index           =   1
       Left            =   10320
-      TabIndex        =   24
+      TabIndex        =   21
       Top             =   705
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   100
+      _extentx        =   1931
+      _extenty        =   714
+      max             =   100
    End
    Begin PhotoDemon.textUpDown tudHSV 
       Height          =   345
       Index           =   2
       Left            =   10320
-      TabIndex        =   26
+      TabIndex        =   23
       Top             =   1305
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   100
+      _extentx        =   1931
+      _extenty        =   714
+      max             =   100
    End
    Begin VB.Label lblColor 
       Alignment       =   1  'Right Justify
@@ -433,7 +407,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   600
       Index           =   9
       Left            =   5085
-      TabIndex        =   28
+      TabIndex        =   25
       Top             =   4680
       Width           =   1305
       WordWrap        =   -1  'True
@@ -458,7 +432,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   240
       Index           =   8
       Left            =   5310
-      TabIndex        =   27
+      TabIndex        =   24
       Top             =   3765
       Width           =   1110
    End
@@ -482,7 +456,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   240
       Index           =   7
       Left            =   5970
-      TabIndex        =   14
+      TabIndex        =   11
       Top             =   3180
       Width           =   435
    End
@@ -506,7 +480,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   240
       Index           =   6
       Left            =   5835
-      TabIndex        =   13
+      TabIndex        =   10
       Top             =   2580
       Width           =   570
    End
@@ -530,7 +504,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   240
       Index           =   5
       Left            =   6045
-      TabIndex        =   12
+      TabIndex        =   9
       Top             =   1980
       Width           =   360
    End
@@ -554,7 +528,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   240
       Index           =   4
       Left            =   5880
-      TabIndex        =   11
+      TabIndex        =   8
       Top             =   1380
       Width           =   525
    End
@@ -578,7 +552,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   240
       Index           =   3
       Left            =   5475
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   780
       Width           =   930
    End
@@ -602,7 +576,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   240
       Index           =   2
       Left            =   6015
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   180
       Width           =   390
    End
@@ -626,7 +600,7 @@ Begin VB.Form dialog_ColorSelector
       Height          =   285
       Index           =   1
       Left            =   270
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   4650
       Width           =   885
    End
@@ -650,16 +624,9 @@ Begin VB.Form dialog_ColorSelector
       Height          =   285
       Index           =   0
       Left            =   315
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   4170
       Width           =   840
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   4
-      Top             =   5280
-      Width           =   11535
    End
 End
 Attribute VB_Name = "dialog_ColorSelector"
@@ -801,14 +768,6 @@ Public Property Get newColor() As Long
     newColor = newUserColor
 End Property
 
-'CANCEL button
-Private Sub CmdCancel_Click()
-    
-    userAnswer = vbCancel
-    Me.Hide
-    
-End Sub
-
 'During screen capture, this sub is used to update the current color under the mouse cursor.  Note that such rapid
 ' redraws will be a bit slow in the IDE - compile for better results.
 Private Sub updateHoveredColor()
@@ -894,18 +853,14 @@ Private Sub toggleCaptureMode(ByVal toActivate As Boolean)
 
 End Sub
 
-'Capture color button
-Private Sub cmdCapture_Click()
+Private Sub cmdBarMini_CancelClick()
     
-    'If it isn't already active, start mouse capture mode
-    If (Not screenCaptureActive) Then
-        toggleCaptureMode True
-    End If
+    userAnswer = vbCancel
+    Me.Hide
     
 End Sub
 
-'OK button
-Private Sub CmdOK_Click()
+Private Sub cmdBarMini_OKClick()
     
     'Store the newUserColor value (which the dialog handler will use to return the selected color)
     newUserColor = RGB(curRed, curGreen, curBlue)
@@ -915,6 +870,16 @@ Private Sub CmdOK_Click()
     
     userAnswer = vbOK
     Me.Hide
+    
+End Sub
+
+'Capture color button
+Private Sub cmdCapture_Click()
+    
+    'If it isn't already active, start mouse capture mode
+    If (Not screenCaptureActive) Then
+        toggleCaptureMode True
+    End If
     
 End Sub
 

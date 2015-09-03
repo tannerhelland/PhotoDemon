@@ -23,60 +23,36 @@ Begin VB.Form dialog_ExportColorDepth
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   429
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.commandBarMini cmdBarMini 
+      Align           =   2  'Align Bottom
+      Height          =   750
+      Left            =   0
+      TabIndex        =   6
+      Top             =   3750
+      Width           =   6435
+      _ExtentX        =   11351
+      _ExtentY        =   1323
+      BackColor       =   14802140
+      dontAutoUnloadParent=   -1  'True
+   End
    Begin PhotoDemon.smartOptionButton optColorDepth 
       CausesValidation=   0   'False
       Height          =   375
       Index           =   0
       Left            =   600
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   960
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   582
       Caption         =   "1 bpp (monochrome)"
    End
-   Begin VB.CommandButton CmdOK 
-      Caption         =   "&OK"
-      Default         =   -1  'True
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   3480
-      TabIndex        =   0
-      Top             =   3870
-      Width           =   1365
-   End
-   Begin VB.CommandButton CmdCancel 
-      Cancel          =   -1  'True
-      Caption         =   "&Cancel"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   495
-      Left            =   4950
-      TabIndex        =   1
-      Top             =   3870
-      Width           =   1365
-   End
    Begin PhotoDemon.smartOptionButton optColorDepth 
       CausesValidation=   0   'False
       Height          =   375
       Index           =   1
       Left            =   600
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   1440
       Width           =   5655
       _ExtentX        =   9975
@@ -88,7 +64,7 @@ Begin VB.Form dialog_ExportColorDepth
       Height          =   375
       Index           =   2
       Left            =   600
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   1920
       Width           =   5655
       _ExtentX        =   9975
@@ -100,7 +76,7 @@ Begin VB.Form dialog_ExportColorDepth
       Height          =   375
       Index           =   3
       Left            =   600
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   2400
       Width           =   5655
       _ExtentX        =   9975
@@ -112,19 +88,12 @@ Begin VB.Form dialog_ExportColorDepth
       Height          =   375
       Index           =   4
       Left            =   600
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   2880
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   582
       Caption         =   "32 bpp (16 million colors + full transparency)"
-   End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   -600
-      TabIndex        =   3
-      Top             =   3720
-      Width           =   7095
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -143,7 +112,7 @@ Begin VB.Form dialog_ExportColorDepth
       Height          =   285
       Index           =   0
       Left            =   360
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   240
       Width           =   3840
    End
@@ -192,35 +161,6 @@ End Property
 Public Property Let imageFormat(ByVal imageFormat As Long)
     outputFormat = imageFormat
 End Property
-
-'CANCEL button
-Private Sub CmdCancel_Click()
-    
-    If restoreCursor Then Screen.MousePointer = vbHourglass
-    
-    userAnswer = vbCancel
-    Me.Hide
-    
-End Sub
-
-'OK button
-Private Sub CmdOK_Click()
-        
-    'Restore a busy cursor if necessary
-    If restoreCursor Then Screen.MousePointer = vbHourglass
-        
-    'Save the selected color depth to the corresponding global variable (so other functions can access it
-    ' after this form is unloaded)
-    If optColorDepth(0).Value = True Then g_ColorDepth = 1
-    If optColorDepth(1).Value = True Then g_ColorDepth = 4
-    If optColorDepth(2).Value = True Then g_ColorDepth = 8
-    If optColorDepth(3).Value = True Then g_ColorDepth = 24
-    If optColorDepth(4).Value = True Then g_ColorDepth = 32
-     
-    userAnswer = vbOK
-    Me.Hide
-    
-End Sub
 
 'The ShowDialog routine presents the user with this form.
 Public Sub showDialog()
@@ -286,6 +226,33 @@ Public Sub showDialog()
     
     'Display the dialog
     showPDDialog vbModal, Me, True
+
+End Sub
+
+Private Sub cmdBarMini_CancelClick()
+    
+    If restoreCursor Then Screen.MousePointer = vbHourglass
+    
+    userAnswer = vbCancel
+    Me.Hide
+    
+End Sub
+
+Private Sub cmdBarMini_OKClick()
+
+    'Restore a busy cursor if necessary
+    If restoreCursor Then Screen.MousePointer = vbHourglass
+        
+    'Save the selected color depth to the corresponding global variable (so other functions can access it
+    ' after this form is unloaded)
+    If optColorDepth(0).Value = True Then g_ColorDepth = 1
+    If optColorDepth(1).Value = True Then g_ColorDepth = 4
+    If optColorDepth(2).Value = True Then g_ColorDepth = 8
+    If optColorDepth(3).Value = True Then g_ColorDepth = 24
+    If optColorDepth(4).Value = True Then g_ColorDepth = 32
+     
+    userAnswer = vbOK
+    Me.Hide
 
 End Sub
 

@@ -25,32 +25,16 @@ Begin VB.Form dialog_UnsavedChanges
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   624
    ShowInTaskbar   =   0   'False
-   Begin VB.CommandButton cmdAnswer 
-      Caption         =   "Cancel, and return to editing"
-      Height          =   735
-      Index           =   2
-      Left            =   3960
-      TabIndex        =   2
-      Top             =   2865
-      Width           =   5100
-   End
-   Begin VB.CommandButton cmdAnswer 
-      Caption         =   "Do not save the image (discard all changes)"
-      Height          =   735
-      Index           =   1
-      Left            =   3960
-      TabIndex        =   1
-      Top             =   2055
-      Width           =   5100
-   End
-   Begin VB.CommandButton cmdAnswer 
-      Caption         =   "Save the image before closing it"
+   Begin PhotoDemon.pdButton cmdAnswer 
       Height          =   735
       Index           =   0
       Left            =   3960
       TabIndex        =   0
       Top             =   1260
       Width           =   5100
+      _ExtentX        =   8996
+      _ExtentY        =   1296
+      Caption         =   "Save the image before closing it"
    End
    Begin PhotoDemon.smartCheckBox chkRepeat 
       Height          =   330
@@ -85,6 +69,28 @@ Begin VB.Form dialog_UnsavedChanges
       TabIndex        =   5
       Top             =   120
       Width           =   3495
+   End
+   Begin PhotoDemon.pdButton cmdAnswer 
+      Height          =   735
+      Index           =   1
+      Left            =   3960
+      TabIndex        =   1
+      Top             =   2070
+      Width           =   5100
+      _ExtentX        =   8996
+      _ExtentY        =   1296
+      Caption         =   "Do not save the image (discard all changes)"
+   End
+   Begin PhotoDemon.pdButton cmdAnswer 
+      Height          =   735
+      Index           =   2
+      Left            =   3960
+      TabIndex        =   2
+      Top             =   2880
+      Width           =   5100
+      _ExtentX        =   8996
+      _ExtentY        =   1296
+      Caption         =   "Cancel, and return to editing"
    End
    Begin VB.Line lineBottom 
       BorderColor     =   &H8000000D&
@@ -143,12 +149,6 @@ Private imageBeingClosed As Long
 'The user input from the dialog
 Private userAnswer As VbMsgBoxResult
 
-'Used to render images onto the save/don't save buttons
-Private cImgCtl As clsControlImage
-
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
 End Property
@@ -163,18 +163,19 @@ Public Sub showDialog(ByRef ownerForm As Form)
     Dim i As Long
     
     'Extract relevant icons from the resource file, and render them onto the buttons at run-time.
-    ' (NOTE: because the icons require manifest theming, they will not appear in the IDE.)
-    Set cImgCtl = New clsControlImage
-    With cImgCtl
-        .LoadImageFromStream cmdAnswer(0).hWnd, LoadResData("LRGSAVE", "CUSTOM"), fixDPI(32), fixDPI(32)
-        .LoadImageFromStream cmdAnswer(1).hWnd, LoadResData("LRGDONTSAVE", "CUSTOM"), fixDPI(32), fixDPI(32)
-        .LoadImageFromStream cmdAnswer(2).hWnd, LoadResData("LRGUNDO", "CUSTOM"), fixDPI(32), fixDPI(32)
+    cmdAnswer(0).AssignImage "LRGSAVE"
+    cmdAnswer(1).AssignImage "LRGDONTSAVE"
+    cmdAnswer(2).AssignImage "LRGUNDO"
         
-        For i = 0 To 2
-            .SetMargins cmdAnswer(i).hWnd, 10
-            .Align(cmdAnswer(i).hWnd) = Icon_Left
-        Next i
-    End With
+    'If the image has been saved before, update the tooltip text on the "Save" button accordingly
+    If Len(pdImages(imageBeingClosed).locationOnDisk) <> 0 Then
+        cmdAnswer(0).assignTooltip "NOTE: if you click 'Save', PhotoDemon will save this image using its current file name." & vbCrLf & vbCrLf & "If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item."
+    Else
+        cmdAnswer(0).assignTooltip "Because this image has not been saved before, you will be prompted to provide a file name for it."
+    End If
+    
+    cmdAnswer(1).assignTooltip "If you do not save this image, any changes you have made will be permanently lost."
+    cmdAnswer(2).assignTooltip "Canceling will return you to the main PhotoDemon window."
     
     'Automatically draw a warning icon using the system icon set
     Dim iconY As Long
@@ -187,31 +188,7 @@ Public Sub showDialog(ByRef ownerForm As Form)
         
     'Adjust the save message to match this image's name
     lblWarning.Caption = g_Language.TranslateMessage("%1 has unsaved changes.  What would you like to do?", pdImages(imageBeingClosed).originalFileNameAndExtension)
-
-    'Use a custom tooltip class to allow for multiline tooltips
-    Set m_Tooltip = New clsToolTip
-    With m_Tooltip
     
-        .Create Me
-        .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-        
-        For i = 0 To cmdAnswer.Count - 1
-            .AddTool cmdAnswer(i)
-        Next i
-    
-        'If the image has been saved before, update the tooltip text on the "Save" button accordingly
-        If Len(pdImages(imageBeingClosed).locationOnDisk) <> 0 Then
-            .ToolText(cmdAnswer(0)) = g_Language.TranslateMessage("NOTE: if you click 'Save', PhotoDemon will save this image using its current file name." & vbCrLf & vbCrLf & "If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.")
-        Else
-            .ToolText(cmdAnswer(0)) = g_Language.TranslateMessage("Because this image has not been saved before, you will be prompted to provide a file name for it.")
-        End If
-        
-        'Update the other tooltip buttons as well
-        .ToolText(cmdAnswer(1)) = g_Language.TranslateMessage("If you do not save this image, any changes you have made will be permanently lost.")
-        .ToolText(cmdAnswer(2)) = g_Language.TranslateMessage("Canceling will return you to the main PhotoDemon window.")
-        
-    End With
-
     'Make some measurements of the form size.  We need these if we choose to display the check box at the bottom of the form
     Dim vDifference As Long
     Me.ScaleMode = vbTwips
@@ -247,8 +224,8 @@ Public Sub showDialog(ByRef ownerForm As Form)
     End If
     
     'Apply any custom styles to the form
-    makeFormPretty Me, m_Tooltip, True
-
+    makeFormPretty Me
+        
     'Display the form
     showPDDialog vbModal, Me, True
 

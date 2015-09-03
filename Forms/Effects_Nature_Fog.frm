@@ -24,22 +24,15 @@ Begin VB.Form FormFog
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
-   Begin VB.CommandButton cmdRandomize 
-      Caption         =   "Randomize cloud base"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   615
+   Begin PhotoDemon.pdButton cmdRandomize 
+      Height          =   600
       Left            =   6600
-      TabIndex        =   5
+      TabIndex        =   6
       Top             =   4920
       Width           =   4575
+      _ExtentX        =   8070
+      _ExtentY        =   1058
+      Caption         =   "Randomize cloud base"
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -50,15 +43,6 @@ Begin VB.Form FormFog
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltScale 
@@ -119,7 +103,7 @@ Begin VB.Form FormFog
    Begin PhotoDemon.sliderTextCombo sltDensity 
       Height          =   720
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   2760
       Width           =   5895
       _ExtentX        =   10398
@@ -163,9 +147,6 @@ Option Explicit
 
 'This variable stores random z-location in the perlin noise generator (which allows for a unique effect each time the form is loaded)
 Dim m_zOffset As Double
-
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
 
 Private Sub cmbEdges_Click()
     updatePreview
@@ -377,9 +358,8 @@ End Sub
 
 Private Sub Form_Activate()
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply visual themes and translations
+    makeFormPretty Me
     
     'Create the preview
     cmdBar.markPreviewStatus True

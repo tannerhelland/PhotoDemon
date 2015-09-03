@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.76</langversion>
+<langversion>6.7.77</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -1587,16 +1587,6 @@
 </phrase>
 
 <phrase>
-<original>&OK</original>
-<translation>OK</translation>
-</phrase>
-
-<phrase>
-<original>&Cancel</original>
-<translation>Abbrechen</translation>
-</phrase>
-
-<phrase>
 <original>recent colors</original>
 <translation>letzte Farben</translation>
 </phrase>
@@ -1626,7 +1616,7 @@
 <translation>Klicken Sie auf diese Schaltfläche, um eine Farbe von irgendwo auf dem Bildschirm zu erfassen.</translation>
 </phrase>
 
-<!-- Dialog_ColorSelector.frm contains 14 phrases. 5 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Dialog_ColorSelector.frm contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Dialog_ColorSelector.frm-->
 
@@ -1713,7 +1703,7 @@
 <translation>Warten auf Benutzereingabe: Festlegung der Farbtiefe</translation>
 </phrase>
 
-<!-- Dialog_ExportColorDepth.frm contains 10 phrases. 2 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Dialog_ExportColorDepth.frm contains 8 phrases.  All 8 were unique, so 8 new phrases were written to file. -->
 
 <!-- END text for Dialog_ExportColorDepth.frm-->
 
@@ -1801,18 +1791,18 @@
 <!-- BEGIN text for Dialog_GenericRemember.frm (dialog_GenericMemory) -->
 
 <phrase>
-<original>Cancel</original>
+<original>&Yes</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>No</original>
+<original>&No</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>Yes</original>
-<translation></translation>
+<original>&Cancel</original>
+<translation>Abbrechen</translation>
 </phrase>
 
 <!-- Dialog_GenericRemember.frm contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
@@ -1959,13 +1949,13 @@
 </phrase>
 
 <phrase>
-<original>Do not display this warning again</original>
-<translation>Diese Warnmeldung bitte nicht mehr anzeigen</translation>
+<original>I understand the risks of running PhotoDemon in the IDE</original>
+<translation>Ich verstehe die Risiken beim Betreiben von PhotoDemon in der IDE</translation>
 </phrase>
 
 <phrase>
-<original>I understand the risks of running PhotoDemon in the IDE</original>
-<translation>Ich verstehe die Risiken beim Betreiben von PhotoDemon in der IDE</translation>
+<original>Do not display this warning again</original>
+<translation>Diese Warnmeldung bitte nicht mehr anzeigen</translation>
 </phrase>
 
 <phrase>
@@ -5296,6 +5286,11 @@ In der Standardeinstellung wird Transparenz in der Mitte geteilt, oder Sie geben
 </phrase>
 
 <phrase>
+<original>&OK</original>
+<translation>OK</translation>
+</phrase>
+
+<phrase>
 <original>Copyright</original>
 <translation>Copyright</translation>
 </phrase>
@@ -5418,7 +5413,7 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <translation>Ich warte auf Benutzereingaben</translation>
 </phrase>
 
-<!-- File_Import_FromInternet.frm contains 29 phrases. 5 were duplicates of existing phrases, so only 24 new phrases were written to file. -->
+<!-- File_Import_FromInternet.frm contains 29 phrases. 4 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
 
 <!-- END text for File_Import_FromInternet.frm-->
 
@@ -5430,11 +5425,6 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 </phrase>
 
 <phrase>
-<original>Load only the first page</original>
-<translation>Nur die erste Seite laden</translation>
-</phrase>
-
-<phrase>
 <original>Load each page as its own image</original>
 <translation>Jede Seite als eigenes Bild laden</translation>
 </phrase>
@@ -5442,6 +5432,11 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <phrase>
 <original>always apply this action to multi-image files</original>
 <translation>Meine Auswahl für Dateien mit mehreren Bildern (auch in Zukunft)</translation>
+</phrase>
+
+<phrase>
+<original>Load only the first page</original>
+<translation>Nur die erste Seite laden</translation>
 </phrase>
 
 <phrase>
@@ -5514,7 +5509,7 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <translation>Bei dieser Einstellung wird nur eine einzige Seite der TIFF-Datei geladen.</translation>
 </phrase>
 
-<!-- File_Import_Multipage.frm contains 35 phrases. 17 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- File_Import_Multipage.frm contains 23 phrases. 5 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for File_Import_Multipage.frm-->
 
@@ -13728,6 +13723,11 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 </phrase>
 
 <phrase>
+<original>Cancel</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Reset all settings to their default values.</original>
 <translation>Alle Einstellungen auf Standardwerte zurücksetzen.</translation>
 </phrase>
@@ -13762,7 +13762,7 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 <translation>Gespeicherte Voreinstellungen können hier ausgewählt werden. Sie können die aktuellen Einstellungen als neue Voreinstellung speichern; dazu klicken Sie auf die Schaltfläche "Voreinstellung speichern" auf der rechten Seite.</translation>
 </phrase>
 
-<!-- commandBar.ctl contains 17 phrases. 4 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- commandBar.ctl contains 17 phrases. 3 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
 
 <!-- END text for commandBar.ctl-->
 
@@ -14111,8 +14111,8 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 
 <phrasecount>2434</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4217 phrases. -->
-<!-- 1783 are duplicates, so only 2434 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4201 phrases. -->
+<!-- 1767 are duplicates, so only 2434 unique phrases have been written to file. -->
 <!-- These 2434 phrases contain approximately 13268 total words. -->
 
 </pdData>
