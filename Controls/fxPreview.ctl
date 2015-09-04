@@ -21,33 +21,15 @@ Begin VB.UserControl fxPreviewCtl
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   384
    ToolboxBitmap   =   "fxPreview.ctx":0000
-   Begin PhotoDemon.jcbutton cmdFit 
-      Height          =   450
-      Left            =   5160
-      TabIndex        =   2
+   Begin PhotoDemon.buttonStrip btsZoom 
+      Height          =   495
+      Left            =   2985
+      TabIndex        =   1
       Top             =   5160
-      Width           =   450
-      _ExtentX        =   794
-      _ExtentY        =   794
-      ButtonStyle     =   7
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      BackColor       =   -2147483643
-      Caption         =   ""
-      Mode            =   1
-      Value           =   -1  'True
-      HandPointer     =   -1  'True
-      PictureNormal   =   "fxPreview.ctx":0312
-      PictureEffectOnDown=   0
-      CaptionEffects  =   0
-      ColorScheme     =   3
+      Width           =   2775
+      _extentx        =   4895
+      _extenty        =   873
+      fontsize        =   8
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
@@ -60,7 +42,7 @@ Begin VB.UserControl fxPreviewCtl
       ScaleHeight     =   338
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   382
-      TabIndex        =   0
+      TabIndex        =   2
       TabStop         =   0   'False
       Top             =   0
       Width           =   5760
@@ -81,27 +63,15 @@ Begin VB.UserControl fxPreviewCtl
          Width           =   1455
       End
    End
-   Begin VB.Label lblBeforeToggle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "show original image"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   -1  'True
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00C07031&
-      Height          =   210
-      Left            =   120
-      MouseIcon       =   "fxPreview.ctx":1064
-      MousePointer    =   99  'Custom
-      TabIndex        =   1
-      Top             =   5280
-      Width           =   1590
+   Begin PhotoDemon.buttonStrip btsState 
+      Height          =   495
+      Left            =   0
+      TabIndex        =   0
+      Top             =   5160
+      Width           =   2775
+      _extentx        =   4895
+      _extenty        =   873
+      fontsize        =   8
    End
 End
 Attribute VB_Name = "fxPreviewCtl"
@@ -168,7 +138,7 @@ Private m_HasOriginal As Boolean, m_HasFX As Boolean
 Private originalImage As pdDIB, fxImage As pdDIB
 
 'The control's current state: whether it is showing the original image or the fx preview
-Private curImageState As Boolean
+Private m_ShowOriginalInstead As Boolean
 
 'GetPixel is used to retrieve colors from the image
 Private Declare Function GetPixel Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long) As Long
@@ -195,20 +165,6 @@ Public Function getUniqueID() As Double
     getUniqueID = m_UniqueID
 End Function
 
-Private Sub cmdFit_Click()
-    
-    'Note that we no longer have a valid copy of the original image data, so prepImageData must supply us with a new one
-    m_HasOriginal = False
-    m_HasFX = False
-    
-    'Change our unique ID value, so the preview engine knows to recreate the base preview DIB
-    m_UniqueID = m_UniqueID - 0.1
-    
-    'Raise a viewport change event so the containing form can redraw itself accordingly
-    RaiseEvent ViewportChanged
-    
-End Sub
-
 'If we don't expose an hWnd, any embedded jcButton controls will throw errors
 Public Property Get offsetX() As Long
     If m_HScrollAllowed Then
@@ -227,12 +183,10 @@ Public Property Get offsetY() As Long
     End If
 End Property
 
-'If we don't expose an hWnd, any embedded jcButton controls will throw errors
 Public Property Get viewportFitFullImage() As Boolean
-    viewportFitFullImage = CBool(cmdFit.Value)
+    viewportFitFullImage = CBool(btsZoom.ListIndex = 1)
 End Property
 
-'If we don't expose an hWnd, any embedded jcButton controls will throw errors
 Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
@@ -308,19 +262,12 @@ Public Sub setFXImage(ByRef srcDIB As pdDIB)
         
     'If the user was previously examining the original image, and color selection is not allowed, be helpful and
     ' automatically restore the previewed image.
-    If (Not isColorSelectionAllowed) Then
-        fxImage.renderToPictureBox picPreview
-        lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " (alt+t) "
-        curImageState = True
-    'If color selection is allowed, the user may want to select more colors - so leave it on "original" mode if it
-    ' is already there.
+    If m_ShowOriginalInstead Then
+        originalImage.renderToPictureBox picPreview
     Else
-        If curImageState Then
-            fxImage.renderToPictureBox picPreview
-            lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " (alt+t) "
-        End If
+        fxImage.renderToPictureBox picPreview
     End If
-
+    
 End Sub
 
 'Has this preview control had an original version of the image set?
@@ -341,6 +288,37 @@ End Function
 Public Function getPreviewHeight() As Long
     getPreviewHeight = picPreview.ScaleHeight
 End Function
+
+Private Sub btsState_Click(ByVal buttonIndex As Long)
+    
+    m_ShowOriginalInstead = CBool(buttonIndex = 0)
+    
+    'Update the image to match the new caption
+    If m_ShowOriginalInstead Then
+        If m_HasOriginal Then originalImage.renderToPictureBox picPreview
+    Else
+        If m_HasFX Then
+            fxImage.renderToPictureBox picPreview
+        Else
+            If m_HasOriginal Then originalImage.renderToPictureBox picPreview
+        End If
+    End If
+    
+End Sub
+
+Private Sub btsZoom_Click(ByVal buttonIndex As Long)
+    
+    'Note that we no longer have a valid copy of the original image data, so prepImageData must supply us with a new one
+    m_HasOriginal = False
+    m_HasFX = False
+    
+    'Change our unique ID value, so the preview engine knows to recreate the base preview DIB
+    m_UniqueID = m_UniqueID - 0.1
+    
+    'Raise a viewport change event so the containing form can redraw itself accordingly
+    RaiseEvent ViewportChanged
+    
+End Sub
 
 Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
@@ -394,12 +372,14 @@ Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVa
 
     'If this preview control instance allows the user to select a color, display the original image upon mouse entrance
     If viewportFitFullImage Then
+    
         If AllowColorSelection Then
             cMouseEvents.setPNGCursor "C_PIPETTE", 0, 0
             If (Not originalImage Is Nothing) Then originalImage.renderToPictureBox picPreview
         Else
             cMouseEvents.setSystemCursor IDC_ARROW
         End If
+        
     Else
         cMouseEvents.setSystemCursor IDC_HAND
     End If
@@ -414,11 +394,12 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
         
         cMouseEvents.setSystemCursor IDC_HAND
         
-        If curImageState Then
-            If (Not fxImage Is Nothing) Then fxImage.renderToPictureBox picPreview
-        Else
+        If m_ShowOriginalInstead Then
             If (Not originalImage Is Nothing) Then originalImage.renderToPictureBox picPreview
+        Else
+            If (Not fxImage Is Nothing) Then fxImage.renderToPictureBox picPreview
         End If
+        
     Else
         cMouseEvents.setSystemCursor IDC_ARROW
     End If
@@ -507,33 +488,6 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
 
 End Sub
 
-'Toggle between the preview image and the original image if the user clicks this label
-Private Sub lblBeforeToggle_Click()
-    
-    'Before doing anything else, change the label caption
-    If curImageState Then
-        lblBeforeToggle.Caption = g_Language.TranslateMessage("show effect preview") & " (alt+t) "
-    Else
-        lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " (alt+t) "
-    End If
-    lblBeforeToggle.Refresh
-    
-    curImageState = Not curImageState
-    
-    'Update the image to match the new caption
-    If Not curImageState Then
-        If m_HasOriginal Then originalImage.renderToPictureBox picPreview
-    Else
-        
-        If m_HasFX Then
-            fxImage.renderToPictureBox picPreview
-        Else
-            If m_HasOriginal Then originalImage.renderToPictureBox picPreview
-        End If
-    End If
-    
-End Sub
-
 'X and Y offsets for the image preview are generated dynamically by the user's mouse movements.  As multiple functions
 ' need to validate those offsets to make sure they don't result in an offset outside the image, these standardized
 ' validation functions were created.
@@ -554,10 +508,9 @@ End Function
 Private Sub picPreview_Paint()
 
     'Update the image to match the before/after label state
-    If Not curImageState Then
+    If m_ShowOriginalInstead Then
         If m_HasOriginal Then originalImage.renderToPictureBox picPreview
     Else
-        
         If m_HasFX Then
             fxImage.renderToPictureBox picPreview
         Else
@@ -569,7 +522,7 @@ End Sub
 
 'When the control's access key is pressed (alt+t) , toggle the original/current image
 Private Sub UserControl_AccessKeyPress(KeyAscii As Integer)
-    lblBeforeToggle_Click
+    btsState.ListIndex = 1 - btsState.ListIndex
 End Sub
 
 Private Sub UserControl_AmbientChanged(PropertyName As String)
@@ -591,13 +544,19 @@ Private Sub UserControl_Initialize()
         Set cMouseEvents = New pdInputMouse
         cMouseEvents.addInputTracker picPreview.hWnd, True, True, , True
         cMouseEvents.setSystemCursor IDC_ARROW
-        
-        'Give the toggle image text the same font as the rest of the project.
-        lblBeforeToggle.FontName = g_InterfaceFont
-        
+                
     End If
     
-    curImageState = True
+    'Prep the various buttonstrips
+    btsState.AddItem "before", 0
+    btsState.AddItem "after", 1
+    btsState.ListIndex = 1
+    
+    btsZoom.AddItem "1:1", 0
+    btsZoom.AddItem "fit", 1
+    btsZoom.ListIndex = 1
+    
+    m_ShowOriginalInstead = False
     curColor = 0
             
 End Sub
@@ -638,15 +597,6 @@ Private Sub UserControl_Resize()
 End Sub
 
 Private Sub UserControl_Show()
-    
-    'Translate the user control text in the compiled EXE
-    If g_IsProgramRunning Then
-        lblBeforeToggle.Caption = g_Language.TranslateMessage("show original image") & " (alt+t) "
-    Else
-        lblBeforeToggle.Caption = "show original image (alt+t) "
-    End If
-        
-    'setArrowCursorToHwnd UserControl.hWnd
     
     'Generate a unique ID for this session
     m_UniqueID = Timer
@@ -709,20 +659,15 @@ Private Sub redrawControl()
     picPreview.Width = UserControl.ScaleWidth
     
     'Adjust the preview picture box's height to be just above the "show original image" link
-    lblBeforeToggle.Top = UserControl.ScaleHeight - fixDPI(24)
-    picPreview.Height = lblBeforeToggle.Top - (UserControl.ScaleHeight - (lblBeforeToggle.Height + lblBeforeToggle.Top))
+    btsState.Top = UserControl.ScaleHeight - btsState.Height
+    btsZoom.Top = btsState.Top
+    picPreview.Height = (btsState.Top - picPreview.Top) - fixDPI(4)
     
     'Align the fit/100% toggle button
-    'cmdFit.Left = UserControl.ScaleWidth - cmdFit.Width
-    'cmdFit.Top = picPreview.Height + ((UserControl.ScaleHeight - (picPreview.Height + cmdFit.Height)) / 2)
-    cmdFit.Height = UserControl.ScaleHeight - picPreview.Height - (fixDPI(2) * 2)
-    cmdFit.Width = cmdFit.Height
-    cmdFit.Top = picPreview.Height + fixDPI(2)
-    cmdFit.Left = UserControl.ScaleWidth - cmdFit.Width '- fixDPI(2)
-    cmdFit.forceButtonRedraw
+    btsZoom.Left = UserControl.ScaleWidth - btsZoom.Width
     
     'If zoom/pan is not allowed, hide that button entirely
-    If disableZoomPanAbility Then cmdFit.Visible = False Else cmdFit.Visible = True
+    btsZoom.Visible = Not disableZoomPanAbility
         
 End Sub
 
