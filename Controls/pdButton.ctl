@@ -469,8 +469,12 @@ End Sub
 Private Sub updateControlLayout()
     
     'Reset the back buffer
-    Set m_BackBuffer = New pdDIB
-    m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackColor
+    If m_BackBuffer Is Nothing Then Set m_BackBuffer = New pdDIB
+    If (m_BackBuffer.getDIBWidth <> UserControl.ScaleWidth) Or (m_BackBuffer.getDIBHeight <> UserControl.ScaleHeight) Then
+        m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackColor
+    Else
+        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackColor
+    End If
     
     'Next, we need to determine the positioning of the caption and/or image.  Both (or neither) of these may be missing, so handling
     ' can get a little complicated.
