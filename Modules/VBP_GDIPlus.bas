@@ -368,7 +368,7 @@ Private Declare Function GdiplusShutdown Lib "gdiplus" (ByVal Token As Long) As 
 
 'Load image from file, process said file, etc.
 Private Declare Function GdipLoadImageFromFile Lib "gdiplus" (ByVal FileName As Long, ByRef gpImage As Long) As Long
-Private Declare Function GdipLoadImageFromFileICM Lib "gdiplus" (ByVal srcFileName As String, ByRef gpImage As Long) As Long
+Private Declare Function GdipLoadImageFromFileICM Lib "gdiplus" (ByVal srcFilename As String, ByRef gpImage As Long) As Long
 Private Declare Function GdipGetImageFlags Lib "gdiplus" (ByVal gpBitmap As Long, ByRef gpFlags As Long) As Long
 Private Declare Function GdipCloneBitmapAreaI Lib "gdiplus" (ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal iPixelFormat As Long, ByVal srcBitmap As Long, ByRef dstBitmap As Long) As GDIPlusStatus
 Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal lStride As Long, ByVal ePixelFormat As Long, ByRef Scan0 As Any, ByRef pBitmap As Long) As Long
@@ -1146,7 +1146,7 @@ Public Function GDIPlusStrokePathToDC(ByVal dstDC As Long, ByVal numOfPoints As 
 End Function
 
 'Use GDI+ to render a hollow rectangle, with optional color, opacity, and antialiasing
-Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectRight As Single, ByVal rectBottom As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLineCap As LineCap = 0, Optional ByVal hqOffsets As Boolean = False) As Boolean
+Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectRight As Single, ByVal rectBottom As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLineCap As LineCap = 0, Optional ByVal hqOffsets As Boolean = False, Optional ByVal useInsetMode As Boolean = False) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
@@ -1158,8 +1158,9 @@ Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft A
     Dim iPen As Long
     GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
     
-    'If a custom line cap was specified, apply it now
+    'Apply any other custom settings now
     If customLineCap > 0 Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
+    If useInsetMode Then GdipSetPenMode iPen, PenAlignmentInset Else GdipSetPenMode iPen, PenAlignmentCenter
     
     'Render the rectangle
     GdipDrawRectangle iGraphics, iPen, rectLeft, rectTop, rectRight - rectLeft, rectBottom - rectTop
@@ -1439,14 +1440,14 @@ Public Sub GDIPlusConvertDIB24to32(ByRef dstDIB As pdDIB)
 End Sub
 
 'Use GDI+ to load an image file.  Pretty bare-bones, but should be sufficient for any supported image type.
-Public Function GDIPlusLoadPicture(ByVal srcFileName As String, ByRef dstDIB As pdDIB) As Boolean
+Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As pdDIB) As Boolean
 
     'Used to hold the return values of various GDI+ calls
     Dim GDIPlusReturn As Long
       
     'Use GDI+ to load the image
     Dim hImage As Long
-    GDIPlusReturn = GdipLoadImageFromFile(StrPtr(srcFileName), hImage)
+    GDIPlusReturn = GdipLoadImageFromFile(StrPtr(srcFilename), hImage)
     
     If (GDIPlusReturn <> [OK]) Then
         GdipDisposeImage hImage

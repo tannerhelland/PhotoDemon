@@ -32,25 +32,17 @@ Begin VB.Form FormEmbossEngrave
       Width           =   12015
       _ExtentX        =   21193
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.colorSelector colorPicker 
-      Height          =   615
-      Left            =   6180
+      Height          =   1095
+      Left            =   6000
       TabIndex        =   2
-      Top             =   4200
-      Width           =   5550
-      _ExtentX        =   9790
-      _ExtentY        =   1085
+      Top             =   3840
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1931
+      Caption         =   "base color"
       curColor        =   16744576
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -66,7 +58,7 @@ Begin VB.Form FormEmbossEngrave
    Begin PhotoDemon.sliderTextCombo sltDistance 
       Height          =   720
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   1920
       Width           =   5895
       _ExtentX        =   10398
@@ -79,7 +71,7 @@ Begin VB.Form FormEmbossEngrave
    Begin PhotoDemon.sliderTextCombo sltAngle 
       Height          =   720
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   960
       Width           =   5895
       _ExtentX        =   10398
@@ -92,7 +84,7 @@ Begin VB.Form FormEmbossEngrave
    Begin PhotoDemon.sliderTextCombo sltDepth 
       Height          =   720
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   2880
       Width           =   5895
       _ExtentX        =   10398
@@ -101,27 +93,6 @@ Begin VB.Form FormEmbossEngrave
       Min             =   0.1
       SigDigits       =   2
       Value           =   1
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "base color"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      TabIndex        =   3
-      Top             =   3840
-      Width           =   1080
    End
 End
 Attribute VB_Name = "FormEmbossEngrave"
