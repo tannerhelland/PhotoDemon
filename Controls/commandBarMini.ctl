@@ -129,7 +129,7 @@ Private Sub CmdCancel_Click()
     End If
         
     'Hide the parent form from view
-    UserControl.Parent.Hide
+    If UserControl.Parent.Visible Then UserControl.Parent.Hide
         
     'When everything is done, unload our parent form (unless the override property is set, as it is by default)
     If Not m_dontAutoUnloadParent Then Unload UserControl.Parent
@@ -149,7 +149,7 @@ Private Sub CmdOK_Click()
     End If
     
     'Hide the parent form from view
-    UserControl.Parent.Hide
+    If UserControl.Parent.Visible Then UserControl.Parent.Hide
         
     'When everything is done, unload our parent form (unless the override property is set, as it is by default)
     If Not m_dontAutoUnloadParent Then Unload UserControl.Parent
