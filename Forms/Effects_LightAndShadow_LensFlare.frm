@@ -32,15 +32,6 @@ Begin VB.Form FormLensFlare
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -51,6 +42,7 @@ Begin VB.Form FormLensFlare
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
+      DisableZoomPan  =   -1  'True
       PointSelection  =   -1  'True
    End
    Begin PhotoDemon.buttonStrip btsOptions 

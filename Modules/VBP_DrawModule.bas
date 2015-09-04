@@ -130,7 +130,7 @@ Public Sub drawSaturationBox_HSV(ByRef dstPic As PictureBox, Optional ByVal dstH
 
 End Sub
 
-'Basic wrapper to line-drawing via the API
+'Basic wrapper to line-drawing via GDI
 Public Sub drawLineToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
 
     'Create a pen with the specified color
@@ -151,15 +151,42 @@ Public Sub drawLineToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Lo
 
 End Sub
 
+'Basic wrappers for rect-filling and rect-tracing via GDI
+Public Sub fillRectToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
+
+    'Create a brush with the specified color
+    Dim tmpBrush As Long
+    tmpBrush = CreateSolidBrush(crColor)
+    
+    'Select the brush into the target DC
+    Dim oldObject As Long
+    oldObject = SelectObject(targetDC, tmpBrush)
+    
+    'Fill the rect
+    Rectangle targetDC, x1, y1, x2, y2
+    
+    'Remove the brush and delete it
+    SelectObject targetDC, oldObject
+    DeleteObject tmpBrush
+
+End Sub
+
+Public Sub outlineRectToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long, ByVal crColor As Long)
+    drawLineToDC targetDC, x1, y1, x2, y1, crColor
+    drawLineToDC targetDC, x2, y1, x2, y2, crColor
+    drawLineToDC targetDC, x2, y2, x1, y2, crColor
+    drawLineToDC targetDC, x1, y2, x1, y1, crColor
+End Sub
+
 'Simplified pure-VB function for rendering text to an object.
 Public Sub drawTextOnObject(ByRef dstObject As Object, ByVal sText As String, ByVal xPos As Long, ByVal yPos As Long, Optional ByVal newFontSize As Long = 12, Optional ByVal newFontColor As Long = 0, Optional ByVal makeFontBold As Boolean = False, Optional ByVal makeFontItalic As Boolean = False)
 
     dstObject.CurrentX = xPos
     dstObject.CurrentY = yPos
-    dstObject.fontSize = newFontSize
+    dstObject.FontSize = newFontSize
     dstObject.ForeColor = newFontColor
-    dstObject.fontBold = makeFontBold
-    dstObject.fontItalic = makeFontItalic
+    dstObject.FontBold = makeFontBold
+    dstObject.FontItalic = makeFontItalic
     dstObject.Print sText
 
 End Sub

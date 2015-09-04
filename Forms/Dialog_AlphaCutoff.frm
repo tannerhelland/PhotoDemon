@@ -25,32 +25,24 @@ Begin VB.Form dialog_AlphaCutoff
    ScaleWidth      =   777
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.colorSelector csComposite 
-      Height          =   495
-      Left            =   5040
-      TabIndex        =   7
-      Top             =   3900
-      Width           =   6255
-      _ExtentX        =   11033
-      _ExtentY        =   873
+      Height          =   915
+      Left            =   4920
+      TabIndex        =   1
+      Top             =   3420
+      Width           =   6615
+      _ExtentX        =   11668
+      _ExtentY        =   1614
+      Caption         =   "background color for compositing"
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   5910
       Width           =   11655
       _ExtentX        =   20558
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
       dontAutoUnloadParent=   -1  'True
    End
@@ -82,86 +74,43 @@ Begin VB.Form dialog_AlphaCutoff
       Top             =   1200
       Width           =   4500
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "background color for compositing"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
+   Begin PhotoDemon.pdLabel lblGuide 
+      Height          =   240
       Index           =   1
-      Left            =   4920
-      TabIndex        =   5
-      Top             =   3480
-      Width           =   3585
-   End
-   Begin VB.Label Label1 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
+      Left            =   7680
+      Top             =   2940
+      Width           =   2670
+      _ExtentX        =   4710
+      _ExtentY        =   503
+      Alignment       =   1
       Caption         =   "maximum transparency "
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   8640
-      TabIndex        =   4
-      Top             =   2940
-      Width           =   1710
+      FontItalic      =   -1  'True
+      FontSize        =   8
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblAfter 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
+   Begin PhotoDemon.pdLabel lblGuide 
+      Height          =   240
+      Index           =   0
+      Left            =   5040
+      Top             =   2940
+      Width           =   2535
+      _ExtentX        =   0
+      _ExtentY        =   503
       Caption         =   "no transparency "
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   5400
-      TabIndex        =   3
-      Top             =   2940
-      Width           =   1230
+      FontItalic      =   -1  'True
+      FontSize        =   8
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblWarning 
-      BackStyle       =   0  'Transparent
-      Caption         =   "This image has a complex alpha channel.  Before it can be saved as a paletted image (8bpp), the alpha channel must be simplified."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00202020&
+   Begin PhotoDemon.pdLabel lblWarning 
       Height          =   765
       Left            =   975
-      TabIndex        =   1
       Top             =   270
       Width           =   10440
-      WordWrap        =   -1  'True
+      _ExtentX        =   0
+      _ExtentY        =   503
+      Caption         =   "This image has a complex alpha channel.  Before it can be saved as a paletted image (8bpp), the alpha channel must be simplified."
+      ForeColor       =   2105376
+      Layout          =   1
    End
 End
 Attribute VB_Name = "dialog_AlphaCutoff"
@@ -312,3 +261,4 @@ End Sub
 Private Sub sltThreshold_Change()
     If sltThreshold.IsValid(False) Then updatePreview
 End Sub
+
