@@ -1153,7 +1153,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 'Note that a MouseUp event is raised either way, and if a Click event is also being raised,
                 ' we warn the user in the MouseUp event.  This way, they can choose to abandon MouseUp
                 ' processing if the _Click event is implemented.
-                If m_MouseMoveCount < 2 Then
+                If m_MouseMoveCount < 3 Then
                     
                     RaiseEvent MouseUpCustom(retMouseButton, retShiftConstants, mouseXInt, mouseYInt, True)
                     RaiseEvent ClickCustom(retMouseButton, retShiftConstants, mouseXInt, mouseYInt)
