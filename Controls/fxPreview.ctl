@@ -173,7 +173,7 @@ Public Function getUniqueID() As Double
     getUniqueID = m_UniqueID
 End Function
 
-'If we don't expose an hWnd, any embedded jcButton controls will throw errors
+'OffsetX/Y are used when the preview is in 1:1 mode, and the user is allowed to scroll around the underlying image
 Public Property Get offsetX() As Long
     If m_HScrollAllowed Then
         offsetX = validateXOffset(hsOffsetX.Value + m_OffsetX)
@@ -182,7 +182,6 @@ Public Property Get offsetX() As Long
     End If
 End Property
 
-'If we don't expose an hWnd, any embedded jcButton controls will throw errors
 Public Property Get offsetY() As Long
     If m_VScrollAllowed Then
         offsetY = validateYOffset(vsOffsetY.Value + m_OffsetY)
@@ -312,21 +311,44 @@ Private Sub syncPreviewImage()
         If srcHeight > 0 Then srcAspect = srcWidth / srcHeight Else srcAspect = 1
         If dstHeight > 0 Then dstAspect = dstWidth / dstHeight Else dstAspect = 1
             
-        Dim dWidth As Long, dHeight As Long, previewX As Long, previewY As Long
-        convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, dWidth, dHeight
-        
-        If srcAspect > dstAspect Then
-            previewY = CLng((dstHeight - dHeight) / 2)
-            previewX = 0
+        Dim finalWidth As Long, finalHeight As Long
+        If (dstWidth <= srcWidth) Or (dstHeight <= srcHeight) Or Me.viewportFitFullImage Then
+            convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, finalWidth, finalHeight
         Else
-            previewX = CLng((dstWidth - dWidth) / 2)
-            previewY = 0
+            finalWidth = srcWidth
+            finalHeight = srcHeight
+        End If
+        
+        'Images smaller than the target area in one (or more) dimensions need to be centered in the target area
+        Dim previewX As Long, previewY As Long
+        If srcAspect > dstAspect Then
+            previewY = CLng((dstHeight - finalHeight) / 2)
+            
+            If finalWidth = dstWidth Then
+                previewX = 0
+            Else
+                previewX = CLng((dstWidth - finalWidth) / 2)
+            End If
+        Else
+            previewX = CLng((dstWidth - finalWidth) / 2)
+            
+            If finalHeight = dstHeight Then
+                previewY = 0
+            Else
+                previewY = CLng((dstHeight - finalHeight) / 2)
+            End If
         End If
         
         'We now have a set of source and destination coordinates, allowing us to perform a StretchBlt-style copy
         GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, picPreview.BackColor
-        GDI_Plus.GDIPlusFillDIBRect_Pattern m_BackBuffer, previewX, previewY, dWidth, dHeight, g_CheckerboardPattern
-        GDI_Plus.GDIPlus_StretchBlt m_BackBuffer, previewX, previewY, dWidth, dHeight, srcDIB, 0, 0, srcWidth, srcHeight
+        GDI_Plus.GDIPlusFillDIBRect_Pattern m_BackBuffer, previewX, previewY, finalWidth, finalHeight, g_CheckerboardPattern
+        
+        'Enable high-quality stretching, but only if the image is equal to or larger than the preview area
+        If (srcWidth < dstWidth) And (srcHeight < dstHeight) Then
+            GDI_Plus.GDIPlus_StretchBlt m_BackBuffer, previewX, previewY, finalWidth, finalHeight, srcDIB, 0, 0, srcWidth, srcHeight, , InterpolationModeNearestNeighbor
+        Else
+            GDI_Plus.GDIPlus_StretchBlt m_BackBuffer, previewX, previewY, finalWidth, finalHeight, srcDIB, 0, 0, srcWidth, srcHeight, , InterpolationModeBicubic
+        End If
         
         'Paint the results!  (Note that we request an immediate redraw, rather than waiting for WM_PAINT to fire.)
         If g_IsProgramRunning Then cPainter.requestRepaint True

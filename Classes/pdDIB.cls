@@ -510,7 +510,7 @@ Public Function createFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
                     
                 '32bpp data requires special attention, because StretchBlt won't halftone alpha data.
                 Else
-                
+                    
                     'Instead of halftoning, switch between interpolation and nearest-neighbor
                     If useHalftoning Then
                         GDIPlusResizeDIB Me, 0, 0, newWidth, newHeight, srcDIB, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, InterpolationModeHighQualityBicubic
@@ -1487,23 +1487,32 @@ Public Sub compositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
         'Ignore fully opaque pixels. (This makes the routine much faster.)
         If checkAlpha <> 255 Then
             
-            'Use that alpha value to blend the current colors with the newly requested color
-            If m_IsAlphaPremultiplied Then
-            
-                iData(QuickX + 3, y) = 255
-                iData(QuickX + 2, y) = iData(QuickX + 2, y) + rLookup(checkAlpha)
-                iData(QuickX + 1, y) = iData(QuickX + 1, y) + gLookUp(checkAlpha)
-                iData(QuickX, y) = iData(QuickX, y) + bLookup(checkAlpha)
-                
+            'Handle fully transparent pixels specially (this also improves performance)
+            If checkAlpha = 0 Then
+                iData(QuickX + 2, y) = newR
+                iData(QuickX + 1, y) = newG
+                iData(QuickX, y) = newB
             Else
             
-                'Convert the alpha value to a floating-point variable
-                tmpAlpha = checkAlpha / 255
-            
                 'Use that alpha value to blend the current colors with the newly requested color
-                iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), newR, tmpAlpha)
-                iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), newG, tmpAlpha)
-                iData(QuickX, y) = Blend2Colors(iData(QuickX, y), newB, tmpAlpha)
+                If m_IsAlphaPremultiplied Then
+                
+                    iData(QuickX + 3, y) = 255
+                    iData(QuickX + 2, y) = iData(QuickX + 2, y) + rLookup(checkAlpha)
+                    iData(QuickX + 1, y) = iData(QuickX + 1, y) + gLookUp(checkAlpha)
+                    iData(QuickX, y) = iData(QuickX, y) + bLookup(checkAlpha)
+                    
+                Else
+                
+                    'Convert the alpha value to a floating-point variable
+                    tmpAlpha = checkAlpha / 255
+                
+                    'Use that alpha value to blend the current colors with the newly requested color
+                    iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), newR, tmpAlpha)
+                    iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), newG, tmpAlpha)
+                    iData(QuickX, y) = Blend2Colors(iData(QuickX, y), newB, tmpAlpha)
+                    
+                End If
                 
             End If
             
