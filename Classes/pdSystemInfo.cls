@@ -516,7 +516,7 @@ Public Function isOSWin7OrLater() As Boolean
     tOSVI.dwOSVersionInfoSize = Len(tOSVI)
     GetVersionEx tOSVI
     
-    isOSWin7OrLater = ((tOSVI.dwMajorVersion >= 6) And (tOSVI.dwMinorVersion >= 1))
+    isOSWin7OrLater = (tOSVI.dwMajorVersion > 6) Or ((tOSVI.dwMajorVersion = 6) And (tOSVI.dwMinorVersion >= 1))
 
 End Function
 
@@ -527,7 +527,7 @@ Public Function isOSWin8OrLater() As Boolean
     tOSVI.dwOSVersionInfoSize = Len(tOSVI)
     GetVersionEx tOSVI
     
-    isOSWin8OrLater = ((tOSVI.dwMajorVersion >= 6) And (tOSVI.dwMinorVersion >= 2))
+    isOSWin8OrLater = (tOSVI.dwMajorVersion > 6) Or ((tOSVI.dwMajorVersion = 6) And (tOSVI.dwMinorVersion >= 2))
 
 End Function
 
@@ -538,7 +538,7 @@ Public Function isOSWin81OrLater() As Boolean
     tOSVI.dwOSVersionInfoSize = Len(tOSVI)
     GetVersionEx tOSVI
     
-    isOSWin81OrLater = ((tOSVI.dwMajorVersion >= 6) And (tOSVI.dwMinorVersion >= 3))
+    isOSWin81OrLater = (tOSVI.dwMajorVersion > 6) Or ((tOSVI.dwMajorVersion = 6) And (tOSVI.dwMinorVersion >= 3))
 
 End Function
 
@@ -551,7 +551,7 @@ Public Function isOSWin10OrLater() As Boolean
     tOSVI.dwOSVersionInfoSize = Len(tOSVI)
     GetVersionEx tOSVI
     
-    isOSWin10OrLater = ((tOSVI.dwMajorVersion >= 6) And (tOSVI.dwMinorVersion >= 4))
+    isOSWin10OrLater = (tOSVI.dwMajorVersion > 6) Or ((tOSVI.dwMajorVersion = 6) And (tOSVI.dwMinorVersion >= 4))
 
 End Function
 
@@ -566,7 +566,10 @@ Public Function getOSVersionAsString() As String
     Dim osName As String
     
     Select Case tOSVI.dwMajorVersion
-    
+        
+        Case 10
+            osName = "Windows 10"
+        
         Case 6
             
             Select Case tOSVI.dwMinorVersion
@@ -601,11 +604,17 @@ Public Function getOSVersionAsString() As String
                     Else
                         osName = "Windows Server 2008"
                     End If
+                    
+                Case Else
+                    osName = "(Unknown 6.x variant)"
             
             End Select
         
         Case 5
             osName = "Windows XP"
+            
+        Case Else
+            osName = "(Unknown OS?)"
     
     End Select
     
@@ -629,10 +638,10 @@ Public Function getOSVersionAsString() As String
     End Select
     
     Dim buildString As String
-    buildString = TrimNull(tOSVI.szCSDVersion)
+    buildString = Trim$(TrimNull(tOSVI.szCSDVersion))
     
     With tOSVI
-        getOSVersionAsString = osName & " " & IIf(Len(buildString) <> 0, buildString, "") & osBitness & "(" & .dwMajorVersion & "." & .dwMinorVersion & "." & .dwBuildNumber & ")"
+        getOSVersionAsString = osName & IIf(Len(buildString) <> 0, " " & buildString, "") & osBitness & "(" & .dwMajorVersion & "." & .dwMinorVersion & "." & .dwBuildNumber & ")"
     End With
 
 End Function
