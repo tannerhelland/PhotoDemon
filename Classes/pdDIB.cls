@@ -465,7 +465,7 @@ Public Function createFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
                 'Copy the image data without modification
                 BitBlt m_dibDC, 0, 0, m_dibWidth, m_dibHeight, srcDIB.getDIBDC, 0, 0, vbSrcCopy
                 
-                'Reset alpha premultiplication to match
+                'Reset our alpha premultiplication flag to match
                 m_IsAlphaPremultiplied = srcDIB.getAlphaPremultiplication
                 
                 createFromExistingDIB = True
@@ -479,7 +479,7 @@ Public Function createFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
                     'Copy the image data without modification
                     BitBlt m_dibDC, 0, 0, m_dibWidth, m_dibHeight, srcDIB.getDIBDC, 0, 0, vbSrcCopy
                     
-                    'Reset alpha premultiplication to match
+                    'Reset our alpha premultiplication flag to match
                     m_IsAlphaPremultiplied = srcDIB.getAlphaPremultiplication
                     
                     createFromExistingDIB = True
@@ -696,22 +696,22 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
             If createBlank(tmpBitmap.Width, tmpBitmap.Height, tmpBitmap.BitsPerPixel) Then
             
                 'Create a new DC
-                Dim tmpDC As Long
-                tmpDC = CreateCompatibleDC(0)
+                Dim TmpDC As Long
+                TmpDC = CreateCompatibleDC(0)
                 
                 'If successful, select the object into that DC
-                If tmpDC <> 0 Then
+                If TmpDC <> 0 Then
                 
                     'Temporary holder for the object selection
                     Dim oldBitmap As Long
-                    oldBitmap = SelectObject(tmpDC, srcPicture.Handle)
+                    oldBitmap = SelectObject(TmpDC, srcPicture.Handle)
                     
                     'Use BitBlt to copy the pixel data to this DIB
-                    BitBlt m_dibDC, 0, 0, m_dibWidth, m_dibHeight, tmpDC, 0, 0, vbSrcCopy
+                    BitBlt m_dibDC, 0, 0, m_dibWidth, m_dibHeight, TmpDC, 0, 0, vbSrcCopy
                     
                     'Now that we have the pixel data, erase all temporary objects
-                    SelectObject tmpDC, oldBitmap
-                    DeleteDC tmpDC
+                    SelectObject TmpDC, oldBitmap
+                    DeleteDC TmpDC
                     
                     'Finally, if the copied image contains an alpha channel (icons, PNGs, etc), it will be set against a
                     ' black background. We typically want the background to be white, so perform a composite if requested.
@@ -915,7 +915,7 @@ Private Sub Class_Terminate()
 End Sub
 
 'Draw this DIB to a picture box. The image will be automatically resized and centered.
-Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
+Public Sub renderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal colorManagementMatters As Boolean = True)
 
     'Erase any existing picture
     If dstPicture.AutoRedraw Then dstPicture.Picture = LoadPicture("")
@@ -944,39 +944,64 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox)
         previewY = 0
     End If
     
-    'Create a temporary DIB to house the stretched image.  This is required for proper GDI-based color management.
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    tmpDIB.createBlank dWidth, dHeight, 24
-    
-    'For 24bpp images, simply copy over the current image data
-    If m_dibColorDepth = 24 Then
-    
-        'If the target area is smaller than the DIB, request halftoning
-        If (dstPicture.ScaleWidth < m_dibWidth) Or (dstPicture.ScaleHeight < m_dibHeight) Then
-            SetStretchBltMode tmpDIB.getDIBDC, STRETCHBLT_HALFTONE
+    'We now branch according to active color management.  This is a hackish fix designed to work around some current
+    ' performance issues with WCS; I'm working on an LittleCMS-based fix for the 7.0 release.
+    If colorManagementMatters Then
+        
+        'Create a temporary DIB to house the stretched image.  This is required for proper GDI-based color management.
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.createBlank dWidth, dHeight, 24
+        
+        'For 24bpp images, simply copy over the current image data
+        If m_dibColorDepth = 24 Then
+        
+            'If the target area is smaller than the DIB, request halftoning
+            If (dstPicture.ScaleWidth < m_dibWidth) Or (dstPicture.ScaleHeight < m_dibHeight) Then
+                SetStretchBltMode tmpDIB.getDIBDC, STRETCHBLT_HALFTONE
+            Else
+                SetStretchBltMode tmpDIB.getDIBDC, STRETCHBLT_COLORONCOLOR
+            End If
+            
+            StretchBlt tmpDIB.getDIBDC, 0, 0, dWidth, dHeight, m_dibDC, 0, 0, m_dibWidth, m_dibHeight, vbSrcCopy
+        
+        'For 32bpp images, we must first apply a background checkerboard pattern, then alpha-blend the resized
+        ' image onto it.
         Else
-            SetStretchBltMode tmpDIB.getDIBDC, STRETCHBLT_COLORONCOLOR
+            GDI_Plus.GDIPlusFillDIBRect_Pattern tmpDIB, 0, 0, dWidth, dHeight, g_CheckerboardPattern
+            GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, dWidth, dHeight, Me, 0, 0, m_dibWidth, m_dibHeight
         End If
         
-        StretchBlt tmpDIB.getDIBDC, 0, 0, dWidth, dHeight, m_dibDC, 0, 0, m_dibWidth, m_dibHeight, vbSrcCopy
-    
-    'For 32bpp images, we must first apply a background checkerboard pattern, then alpha-blend the resized
-    ' image onto it.
+        'Activate color management for the destination picture box
+        assignDefaultColorProfileToObject dstPicture.hWnd, dstPicture.hDC
+        turnOnColorManagementForDC dstPicture.hDC
+        
+        'Render the image to the picture box
+        BitBlt dstPicture.hDC, previewX, previewY, dWidth, dHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+        
     Else
-        GDI_Plus.GDIPlusFillDIBRect_Pattern tmpDIB, 0, 0, dWidth, dHeight, g_CheckerboardPattern
-        GDI_Plus.GDIPlus_StretchBlt tmpDIB, 0, 0, dWidth, dHeight, Me, 0, 0, m_dibWidth, m_dibHeight
+        
+        'For 24bpp images, simply copy over the current image data
+        If m_dibColorDepth = 24 Then
+        
+            'If the target area is smaller than the DIB, request halftoning
+            If (dstPicture.ScaleWidth < m_dibWidth) Or (dstPicture.ScaleHeight < m_dibHeight) Then
+                SetStretchBltMode dstPicture.hDC, STRETCHBLT_HALFTONE
+            Else
+                SetStretchBltMode dstPicture.hDC, STRETCHBLT_COLORONCOLOR
+            End If
+            
+            StretchBlt dstPicture.hDC, previewX, previewY, dWidth, dHeight, m_dibDC, 0, 0, m_dibWidth, m_dibHeight, vbSrcCopy
+        
+        'For 32bpp images, we must first apply a background checkerboard pattern, then alpha-blend the resized
+        ' image onto it.
+        Else
+            GDI_Plus.GDIPlusFillDIBRect_Pattern Nothing, previewX, previewY, dWidth, dHeight, g_CheckerboardPattern, dstPicture.hDC
+            GDI_Plus.GDIPlus_StretchBlt Nothing, previewX, previewY, dWidth, dHeight, Me, 0, 0, m_dibWidth, m_dibHeight, , , dstPicture.hDC
+        End If
+        
     End If
-    
-    'Activate color management for the destination picture box
-    assignDefaultColorProfileToObject dstPicture.hWnd, dstPicture.hDC
-    turnOnColorManagementForDC dstPicture.hDC
-    
-    'Render the image to the picture box
-    BitBlt dstPicture.hDC, previewX, previewY, dWidth, dHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
-    
-    Set tmpDIB = Nothing
-    
+        
     If dstPicture.AutoRedraw Then
         dstPicture.Picture = dstPicture.Image
         dstPicture.Refresh
@@ -987,7 +1012,7 @@ End Sub
 'Load a DIB's header and image information from file.  If the file is compressed, it will automatically be decompressed.
 ' Optionally, if the DIB data is embedded inside another file, that handle can be passed to the this function, and it will attempt to
 ' load DIB data from the current file pointer location.  (In this case, just supply a blank filename.)
-Public Function createFromFile(ByRef srcFileName As String, Optional ByVal useEmbeddedLocation As Boolean = False, Optional ByVal hFile As Long = 0) As Boolean
+Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEmbeddedLocation As Boolean = False, Optional ByVal hFile As Long = 0) As Boolean
     
     'pdFSO is used so we can support Unicode paths
     Dim cFile As pdFSO
@@ -996,10 +1021,10 @@ Public Function createFromFile(ByRef srcFileName As String, Optional ByVal useEm
     'If this is not an embedded file, create and open it now
     If Not useEmbeddedLocation Then
         
-        If Not cFile.CreateFileHandle(srcFileName, hFile, True, False, OptimizeSequentialAccess) Then
+        If Not cFile.CreateFileHandle(srcFilename, hFile, True, False, OptimizeSequentialAccess) Then
             
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  pdDIB.createFromFile failed to generate a handle for " & srcFileName & ".  Load abandoned."
+                pdDebug.LogAction "WARNING!  pdDIB.createFromFile failed to generate a handle for " & srcFilename & ".  Load abandoned."
             #End If
             
             createFromFile = False
@@ -1561,7 +1586,8 @@ Public Sub setAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
     
     'If alpha premultiplication already matches the requested state, exit now
     If m_IsAlphaPremultiplied = applyPremultiplication Then
-        Debug.Print "WARNING! Alpha premultiplication = " & applyPremultiplication & " is pointless, as image is already in that state.  (" & m_dibWidth & "x" & m_dibHeight & "x" & m_dibColorDepth & ")"
+        Debug.Print "WARNING! Alpha premultiplication = " & applyPremultiplication & " is pointless, as image is already in that state.  (" & m_dibWidth & "x" & m_dibHeight & "x" & m_dibColorDepth & ")  Abandoning request."
+        Exit Sub
     End If
     
     'Prepare a SAFEARRAY, which allows us to access the DIB data directly
