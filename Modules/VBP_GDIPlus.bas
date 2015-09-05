@@ -1323,11 +1323,17 @@ Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, By
 End Function
 
 'Given a source DIB, fill it with the alpha checkerboard pattern.  32bpp images can then be alpha blended onto it.
-Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal bltWidth As Single, ByVal bltHeight As Single, ByRef srcDIB As pdDIB) As Boolean
+Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal bltWidth As Single, ByVal bltHeight As Single, ByRef srcDIB As pdDIB, Optional ByVal useThisDCInstead As Long = 0) As Boolean
     
     'Create a GDI+ copy of the image and request AA
     Dim iGraphics As Long
-    GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+    
+    If useThisDCInstead <> 0 Then
+        GdipCreateFromHDC useThisDCInstead, iGraphics
+    Else
+        GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+    End If
+    
     GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias
     GdipSetCompositingQuality iGraphics, CompositingQualityHighSpeed
     GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighQuality
@@ -2331,7 +2337,7 @@ End Function
 ' 1) support fractional source/dest/width/height
 ' 2) apply variable opacity
 ' 3) control stretch mode directly inside the call
-Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByRef srcDIB As pdDIB, ByVal x2 As Single, ByVal y2 As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal newAlpha As Single = 1#, Optional ByVal interpolationType As InterpolationMode = InterpolationModeHighQualityBicubic)
+Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByRef srcDIB As pdDIB, ByVal x2 As Single, ByVal y2 As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal newAlpha As Single = 1#, Optional ByVal interpolationType As InterpolationMode = InterpolationModeHighQualityBicubic, Optional ByVal useThisDestinationDCInstead As Long = 0)
 
     'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
     ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
@@ -2341,7 +2347,12 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
     
     'Create a GDI+ graphics object that points to the destination DIB's DC
     Dim iGraphics As Long, tBitmap As Long
-    GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+    If useThisDestinationDCInstead <> 0 Then
+        GdipCreateFromHDC useThisDestinationDCInstead, iGraphics
+    Else
+        GdipCreateFromHDC dstDIB.getDIBDC, iGraphics
+    End If
+        
     
     'Next, we need a copy of the source image (in GDI+ Bitmap format) to use as our source image reference.
     ' 32bpp and 24bpp are handled separately, to ensure alpha preservation for 32bpp images.
@@ -2380,7 +2391,7 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
         If newAlpha <> 1 Then m_AttributesMatrix(3, 3) = 1
         
         'Update premultiplication status in the target
-        dstDIB.setInitialAlphaPremultiplicationState srcDIB.getAlphaPremultiplication
+        If Not (dstDIB Is Nothing) Then dstDIB.setInitialAlphaPremultiplicationState srcDIB.getAlphaPremultiplication
         
     End If
     

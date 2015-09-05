@@ -406,7 +406,12 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                     hOffset = previewTarget.offsetX
                     vOffset = previewTarget.offsetY
                     
-                    workingDIB.createBlank newWidth, newHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
+                    If workingDIB.getDIBWidth <> newWidth Or workingDIB.getDIBHeight <> newHeight Then
+                        workingDIB.createBlank newWidth, newHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
+                    Else
+                        workingDIB.resetDIB
+                    End If
+                    
                     BitBlt workingDIB.getDIBDC, 0, 0, dstWidth, dstHeight, tmpDIB.getDIBDC, hOffset, vOffset, vbSrcCopy
                 
                 End If
@@ -430,9 +435,14 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                     hOffset = previewTarget.offsetX
                     vOffset = previewTarget.offsetY
                     
-                    workingDIB.createBlank newWidth, newHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
+                    If workingDIB.getDIBWidth <> newWidth Or workingDIB.getDIBHeight <> newHeight Then
+                        workingDIB.createBlank newWidth, newHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
+                    Else
+                        workingDIB.resetDIB
+                    End If
+                    
                     BitBlt workingDIB.getDIBDC, 0, 0, dstWidth, dstHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBDC, hOffset, vOffset, vbSrcCopy
-                    workingDIB.setAlphaPremultiplication pdImages(g_CurrentImage).getActiveDIB().getAlphaPremultiplication
+                    workingDIB.setInitialAlphaPremultiplicationState pdImages(g_CurrentImage).getActiveDIB().getAlphaPremultiplication
                     
                 End If
                 

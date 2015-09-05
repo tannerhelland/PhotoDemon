@@ -27,13 +27,12 @@ Begin VB.UserControl fxPreviewCtl
       TabIndex        =   1
       Top             =   5160
       Width           =   2775
-      _extentx        =   4895
-      _extenty        =   873
-      fontsize        =   8
+      _ExtentX        =   4895
+      _ExtentY        =   873
+      FontSize        =   8
    End
    Begin VB.PictureBox picPreview 
       Appearance      =   0  'Flat
-      AutoRedraw      =   -1  'True
       BackColor       =   &H00808080&
       ClipControls    =   0   'False
       ForeColor       =   &H80000008&
@@ -69,9 +68,9 @@ Begin VB.UserControl fxPreviewCtl
       TabIndex        =   0
       Top             =   5160
       Width           =   2775
-      _extentx        =   4895
-      _extenty        =   873
-      fontsize        =   8
+      _ExtentX        =   4895
+      _ExtentY        =   873
+      FontSize        =   8
    End
 End
 Attribute VB_Name = "fxPreviewCtl"
@@ -83,9 +82,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Effect Preview custom control
 'Copyright 2013-2015 by Tanner Helland
 'Created: 10/January/13
-'Last updated: 10/March/14
-'Last update: implement a custom ID system, which the FastDrawing module can use to avoid unnecessary preview
-'             DIB regenerations.
+'Last updated: 05/September/15
+'Last update: overhaul drawing internals; the new version should be much faster, particularly in 1:1 zoom mode
 '
 'For the first decade of its life, PhotoDemon relied on simple picture boxes for rendering its effect previews.
 ' This worked well enough when there were only a handful of tools available, but as the complexity of the program
@@ -128,6 +126,10 @@ Public Event ColorSelected()
 Private isColorSelectionAllowed As Boolean, curColor As Long
 Private colorJustClicked As Long
 
+'Flicker-free window painter for the preview area
+Private WithEvents cPainter As pdWindowPainter
+Attribute cPainter.VB_VarHelpID = -1
+
 'Because some tools believe they are always operating on a full image (e.g. perspective transform), it may be necessary
 ' to disable zoom toggle on those controls
 Private disableZoomPanAbility As Boolean
@@ -135,7 +137,13 @@ Private disableZoomPanAbility As Boolean
 'Has this control been given a copy of the original image?
 Private m_HasOriginal As Boolean, m_HasFX As Boolean
 
+'Copies of the "before" and "after" effects.  We store these internally so the user can switch between them without
+' needing to invoke the underlying effect (which may be time-consuming).
 Private originalImage As pdDIB, fxImage As pdDIB
+
+'As of PD 7.0, this control now manages its own backbuffer.  This complicates the control a bit, but it gives us more
+' fine-tuned control over performance, and it will allow us to provide more preview-related features in the future.
+Private m_BackBuffer As pdDIB
 
 'The control's current state: whether it is showing the original image or the fx preview
 Private m_ShowOriginalInstead As Boolean
@@ -239,11 +247,9 @@ Public Sub setOriginalImage(ByRef srcDIB As pdDIB)
     
     'Make a copy of the DIB passed in
     If (originalImage Is Nothing) Then Set originalImage = New pdDIB
-    
-    originalImage.eraseDIB
     originalImage.createFromExistingDIB srcDIB
     
-    If originalImage.getDIBColorDepth = 32 Then originalImage.setAlphaPremultiplication True
+    If (originalImage.getDIBColorDepth = 32) And (Not originalImage.getAlphaPremultiplication) Then originalImage.setAlphaPremultiplication True
     
 End Sub
 
@@ -256,18 +262,79 @@ Public Sub setFXImage(ByRef srcDIB As pdDIB)
     
     'Make a copy of the DIB passed in
     If (fxImage Is Nothing) Then Set fxImage = New pdDIB
-    
-    fxImage.eraseDIB
     fxImage.createFromExistingDIB srcDIB
-        
+    
+    'Redraw the on-screen image (as necessary)
+    syncPreviewImage
+    
+End Sub
+
+'Render the currently active image to the preview window.  This bares some similarity to the pdDIB.renderToPictureBox function,
+' but is optimized for the unique concerns of this control.
+Private Sub syncPreviewImage()
+    
+    'Because the source of rendering may change, we use a temporary reference
+    Dim srcDIB As pdDIB
+    
     'If the user was previously examining the original image, and color selection is not allowed, be helpful and
     ' automatically restore the previewed image.
     If m_ShowOriginalInstead Then
-        originalImage.renderToPictureBox picPreview
+        If m_HasOriginal Then
+            Set srcDIB = originalImage
+        Else
+            Set srcDIB = fxImage
+        End If
     Else
-        fxImage.renderToPictureBox picPreview
+        If m_HasFX Then
+            Set srcDIB = fxImage
+        Else
+            Set srcDIB = originalImage
+        End If
     End If
     
+    'If we have nothing to render, exit now
+    If Not srcDIB Is Nothing Then
+        
+        'srcDIB points at either the original or effect image.  We don't care which, as we render them identically.
+        
+        'Start by calculating a target buffer region.  If the preview control is set to "fit" mode, we want to center
+        ' it in the preview area.
+        Dim dstWidth As Double, dstHeight As Double
+        dstWidth = m_BackBuffer.getDIBWidth
+        dstHeight = m_BackBuffer.getDIBHeight
+        
+        Dim srcWidth As Double, srcHeight As Double
+        srcWidth = srcDIB.getDIBWidth
+        srcHeight = srcDIB.getDIBHeight
+        
+        'Calculate the aspect ratio of this DIB and the target picture box
+        Dim srcAspect As Double, dstAspect As Double
+        If srcHeight > 0 Then srcAspect = srcWidth / srcHeight Else srcAspect = 1
+        If dstHeight > 0 Then dstAspect = dstWidth / dstHeight Else dstAspect = 1
+            
+        Dim dWidth As Long, dHeight As Long, previewX As Long, previewY As Long
+        convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, dWidth, dHeight
+        
+        If srcAspect > dstAspect Then
+            previewY = CLng((dstHeight - dHeight) / 2)
+            previewX = 0
+        Else
+            previewX = CLng((dstWidth - dWidth) / 2)
+            previewY = 0
+        End If
+        
+        'We now have a set of source and destination coordinates, allowing us to perform a StretchBlt-style copy
+        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, picPreview.BackColor
+        GDI_Plus.GDIPlusFillDIBRect_Pattern m_BackBuffer, previewX, previewY, dWidth, dHeight, g_CheckerboardPattern
+        GDI_Plus.GDIPlus_StretchBlt m_BackBuffer, previewX, previewY, dWidth, dHeight, srcDIB, 0, 0, srcWidth, srcHeight
+        
+        'Paint the results!  (Note that we request an immediate redraw, rather than waiting for WM_PAINT to fire.)
+        If g_IsProgramRunning Then cPainter.requestRepaint True
+        
+        Set srcDIB = Nothing
+        
+    End If
+
 End Sub
 
 'Has this preview control had an original version of the image set?
@@ -290,20 +357,8 @@ Public Function getPreviewHeight() As Long
 End Function
 
 Private Sub btsState_Click(ByVal buttonIndex As Long)
-    
     m_ShowOriginalInstead = CBool(buttonIndex = 0)
-    
-    'Update the image to match the new caption
-    If m_ShowOriginalInstead Then
-        If m_HasOriginal Then originalImage.renderToPictureBox picPreview
-    Else
-        If m_HasFX Then
-            fxImage.renderToPictureBox picPreview
-        Else
-            If m_HasOriginal Then originalImage.renderToPictureBox picPreview
-        End If
-    End If
-    
+    syncPreviewImage
 End Sub
 
 Private Sub btsZoom_Click(ByVal buttonIndex As Long)
@@ -433,6 +488,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         Else
             If Not isColorSelectionAllowed Then cMouseEvents.setSystemCursor IDC_HAND
         End If
+        
     Else
         'setArrowCursor picPreview
     End If
@@ -503,21 +559,18 @@ Private Function validateYOffset(ByVal currentOffset As Long) As Long
     validateYOffset = currentOffset
 End Function
 
-'I haven't made up my mind on whether to use AutoRedraw or not; just to be safe, I've added handling code to the _Paint
-' event so that AutoRedraw can be turned off without trouble.
-Private Sub picPreview_Paint()
+'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
+' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
+Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
 
-    'Update the image to match the before/after label state
-    If m_ShowOriginalInstead Then
-        If m_HasOriginal Then originalImage.renderToPictureBox picPreview
-    Else
-        If m_HasFX Then
-            fxImage.renderToPictureBox picPreview
-        Else
-            If m_HasOriginal Then originalImage.renderToPictureBox picPreview
-        End If
-    End If
+    'Flip the relevant chunk of the buffer to the screen
+    BitBlt picPreview.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
+    
+End Sub
 
+Private Sub picPreview_Resize()
+    If (m_BackBuffer Is Nothing) Then Set m_BackBuffer = New pdDIB
+    If (m_BackBuffer.getDIBWidth <> picPreview.ScaleWidth) Or (m_BackBuffer.getDIBHeight <> picPreview.ScaleHeight) Then m_BackBuffer.createBlank picPreview.ScaleWidth, picPreview.ScaleHeight, 24, picPreview.BackColor
 End Sub
 
 'When the control's access key is pressed (alt+t) , toggle the original/current image
@@ -540,10 +593,14 @@ Private Sub UserControl_Initialize()
     ' compiling and design process causes no shortage of odd issues and errors otherwise
     If g_IsProgramRunning Then
         
-        'Set up a mouse events handler.  (NOTE: this handler subclasses, which may cause instability in the IDE.)
+        'Set up a mouse events handler
         Set cMouseEvents = New pdInputMouse
         cMouseEvents.addInputTracker picPreview.hWnd, True, True, , True
         cMouseEvents.setSystemCursor IDC_ARROW
+        
+        'Also start a flicker-free window painter
+        Set cPainter = New pdWindowPainter
+        cPainter.startPainter picPreview.hWnd
                 
     End If
     
@@ -639,6 +696,10 @@ Private Sub UserControl_Show()
             vsOffsetY.Max = 1
             m_VScrollAllowed = False
         End If
+        
+        'Enable color management
+        assignDefaultColorProfileToObject picPreview.hWnd, picPreview.hDC
+        turnOnColorManagementForDC picPreview.hDC
     
     End If
     

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Flicker-Free Window Painter class
 'Copyright 2014-2015 by Tanner Helland
 'Created: 20/October/14  (but built from many parts existing earlier)
-'Last updated: 20/October/14
-'Last update: abstract flicker-free painting bits into this class, so I don't have to keep copying the code into new UCs
+'Last updated: 05/September/15
+'Last update: add option for "raise immediate draw event" in .requestRepaint()
 '
 'Now that PD provides so many of its own user-controls, we have to do a lot of manual window painting.  Supporting the
 ' full spectrum of Windows versions (particularly XP), theme settings (including accessibility themes), window settings
@@ -103,14 +103,24 @@ End Sub
 'If a control experiences an event that requires a repaint, e.g. a Click that changes the control's appearance, it can
 ' manually request a repaint from this function.  Note that - by design - this event will invalidate the entire window,
 ' as it's assumed that a manually requested paint affects the entire client area of the window.
-Public Sub requestRepaint()
+Public Sub requestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = False)
     
     If (m_hWnd <> 0) Then
-    
-        'Invalidate the client rect, which will automatically trigger the addition of a WM_PAINT message to the window queue.
+        
+        'Retrieve the full client rect of the target window
         Dim tmpRect As RECT
         GetClientRect m_hWnd, tmpRect
-        InvalidateRect m_hWnd, tmpRect, 0
+        
+        'If desired, the caller can ask us to immediately raise a paint event.  This is helpful when needing an immediate redraw,
+        ' without waiting for WM_PAINT to fire, but you obviously need to be aware of the performance implications involved.
+        If raiseImmediateDrawEvent Then
+            RaiseEvent PaintWindow(tmpRect.Left, tmpRect.Top, tmpRect.Right - tmpRect.Left, tmpRect.Bottom - tmpRect.Top)
+        
+        'Invalidate the client rect, which will automatically trigger the addition of a WM_PAINT message to the window queue.
+        ' This way, the window can redraw at the leisure of the system.
+        Else
+            InvalidateRect m_hWnd, tmpRect, 0
+        End If
         
     End If
     
