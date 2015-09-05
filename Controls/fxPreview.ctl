@@ -716,20 +716,32 @@ End Sub
 'After a resize or paint request, update the layout of our control
 Private Sub redrawControl()
     
-    'Always make the preview picture box the width of the user control (at present)
-    picPreview.Width = UserControl.ScaleWidth
-    
-    'Adjust the preview picture box's height to be just above the "show original image" link
-    btsState.Top = UserControl.ScaleHeight - btsState.Height
-    btsZoom.Top = btsState.Top
-    picPreview.Height = (btsState.Top - picPreview.Top) - fixDPI(4)
-    
-    'Align the fit/100% toggle button
-    btsZoom.Left = UserControl.ScaleWidth - btsZoom.Width
+    'The primary object in this control is the preview picture box.  Everything else is positioned relative to it.
+    Dim newPicWidth As Long, newPicHeight As Long
+    newPicWidth = UserControl.ScaleWidth
+    newPicHeight = UserControl.ScaleHeight - (btsState.Height + fixDPI(4))
+    picPreview.Move 0, 0, newPicWidth, newPicHeight
     
     'If zoom/pan is not allowed, hide that button entirely
     btsZoom.Visible = Not disableZoomPanAbility
+    
+    'Adjust the button strips to appear just below the preview window
+    Dim newButtonTop As Long, newButtonWidth As Long
+    newButtonTop = UserControl.ScaleHeight - btsState.Height
+    
+    'If zoom/pan is still visible, split the horizontal difference between that button strip, and the before/after strip.
+    If btsZoom.Visible Then
+        newButtonWidth = (newPicWidth \ 2) - fixDPI(8)
+        btsZoom.Move UserControl.ScaleWidth - newButtonWidth, newButtonTop, newButtonWidth, btsState.Height
         
+    'If zoom/pan is NOT visible, let the before/after button have the entire horizontal space
+    Else
+        newButtonWidth = newPicWidth
+    End If
+    
+    'Move the before/after toggle into place
+    btsState.Move 0, newButtonTop, newButtonWidth, btsState.Height
+                
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
