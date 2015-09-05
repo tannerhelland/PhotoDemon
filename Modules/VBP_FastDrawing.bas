@@ -336,19 +336,22 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                 srcWidth = previewTarget.getPreviewWidth
                 srcHeight = previewTarget.getPreviewHeight
                 
-                'If the preview area is larger than the image itself, just retrieve the full image.
+                'If a selection is active, and the selected area is smaller than the preview window, constrain the source area
+                ' to the selection boundaries.
                 If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.isLockedIn Then
                 
                     If (pdImages(g_CurrentImage).mainSelection.boundWidth < srcWidth) Then
                         srcWidth = pdImages(g_CurrentImage).mainSelection.boundWidth
+                        If (pdImages(g_CurrentImage).mainSelection.boundHeight < srcHeight) Then srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
                     ElseIf (pdImages(g_CurrentImage).mainSelection.boundHeight < srcHeight) Then
                         srcHeight = pdImages(g_CurrentImage).mainSelection.boundHeight
                     End If
                     
                 Else
-                
+                    
                     If pdImages(g_CurrentImage).getActiveDIB().getDIBWidth < srcWidth Then
                         srcWidth = pdImages(g_CurrentImage).getActiveDIB().getDIBWidth
+                        If pdImages(g_CurrentImage).getActiveDIB().getDIBHeight < srcHeight Then srcHeight = pdImages(g_CurrentImage).getActiveDIB().getDIBHeight
                     ElseIf pdImages(g_CurrentImage).getActiveDIB().getDIBHeight < srcHeight Then
                         srcHeight = pdImages(g_CurrentImage).getActiveDIB().getDIBHeight
                     End If
@@ -426,7 +429,7 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                 
                 'The user is using "fit full image on-screen" mode for this preview.  Retrieve a tiny version of the image
                 If previewTarget.viewportFitFullImage Then
-                    workingDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB(), newWidth, newHeight
+                    workingDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB(), newWidth, newHeight, True
                     
                 'The user is operating at 100% zoom.  Retrieve a subsection of the image, but do not scale it.
                 Else
