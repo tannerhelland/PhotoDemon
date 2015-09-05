@@ -1032,7 +1032,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
         End If
     End If
     
-    SetProgBarVal 0
+    If Not suppressMessages Then SetProgBarVal 0
     
     'Next we will create shadow, midtone, and highlight lookup tables.  These will simplify the process of identifying luminance regions
     ' in the base image.
@@ -1097,7 +1097,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     
     'With shadow, midtone, and highlight ranges now established, we can start applying the user's changes.
     
-    SetProgBarVal 1
+    If Not suppressMessages Then SetProgBarVal 1
     
     'First, if the shadow and highlight regions have different radius values, we need to make a backup copy of the current DIB.
     Dim backupDIB As pdDIB
@@ -1118,7 +1118,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
         
     'Unfortunately, the next step of the operation requires manual pixel-by-pixel blending.  Prep all required loop objects now.
     
-    SetProgBarVal 2
+    If Not suppressMessages Then SetProgBarVal 2
     
     'Create local arrays and point them at the source DIB and blurred DIB
     Dim srcImageData() As Byte, blurImageData() As Byte
@@ -1225,7 +1225,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
     CopyMemory ByVal VarPtrArray(blurImageData), 0&, 4
     
-    SetProgBarVal 3
+    If Not suppressMessages Then SetProgBarVal 3
     
     'Next, it's time to operate on highlights.  The steps involved are pretty much identical to shadows, but we obviously
     ' use the highlight lookup table to determine valid correction candidates.
@@ -1243,7 +1243,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
             
         End If
         
-        SetProgBarVal 4
+        If Not suppressMessages Then SetProgBarVal 4
         
         'Once again, point arrays at both the source and blur DIBs
         prepSafeArray srcSA, srcDIB
@@ -1327,7 +1327,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     
     End If
     
-    SetProgBarVal 5
+    If Not suppressMessages Then SetProgBarVal 5
     
     'We are now done with the blur DIB, so let's free it regardless of what comes next
     Set blurDIB = Nothing
@@ -1409,7 +1409,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
         
     End If
     
-    SetProgBarVal 6
+    If Not suppressMessages Then SetProgBarVal 6
     
     If cancelCurrentAction Then AdjustDIBShadowHighlight = 0 Else AdjustDIBShadowHighlight = 1
     
