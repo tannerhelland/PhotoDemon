@@ -29,13 +29,21 @@ Private Declare Function IIDFromString Lib "ole32" (ByVal lpsz As String, lpiid 
 Private Declare Function CoCreateInstance Lib "ole32" (rclsid As Guid, ByVal pUnkOuter As Long, ByVal dwClsContext As Long, riid As Guid, ppv As Any) As Long
 
 Private Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-Private Declare Function PutMem2 Lib "msvbvm60" (ByVal pWORDDst As Long, ByVal NewValue As Long) As Long
-Private Declare Function PutMem4 Lib "msvbvm60" (ByVal pDWORDDst As Long, ByVal NewValue As Long) As Long
+Private Declare Function PutMem2 Lib "msvbvm60" (ByVal pWORDDst As Long, ByVal newValue As Long) As Long
+Private Declare Function PutMem4 Lib "msvbvm60" (ByVal pDWORDDst As Long, ByVal newValue As Long) As Long
 Private Declare Function GetMem4 Lib "msvbvm60" (ByVal pDWORDSrc As Long, ByVal pDWORDDst As Long) As Long
 Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
 Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
-
 Private Const GMEM_FIXED As Long = &H0
+
+'Edit by Tanner: GlobalAlloc/Free don't work with DEP, so I've rewritten that code to use VirtualAlloc/Free instead.
+Private Declare Function VirtualAlloc Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal flAllocationType As Long, ByVal flProtect As Long) As Long
+Private Declare Function VirtualFree Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
+Private Const PAGE_EXECUTE_READWRITE As Long = &H40&
+Private Const MEM_COMMIT As Long = &H1000&
+Private Const MEM_RESERVE As Long = &H2000&
+Private Const MEM_RELEASE As Long = &H8000&
+
 Private Const asmPUSH_imm32 As Byte = &H68
 Private Const asmRET_imm16 As Byte = &HC2
 Private Const asmCALL_rel32 As Byte = &HE8
@@ -88,19 +96,28 @@ Private objHandle As Long
 'If this module is enabled, this will be set to TRUE
 Private win7FeaturesAllowed As Boolean
 
-
 'Request an OLE interface from within VB.  I apologize for a lack of comments in this function, but I did not write it.
 ' For additional details, please see the original project, available here: http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=72856&lngWId=1
 Private Function CallInterface(ByVal pInterface As Long, ByVal Member As Long, ByVal ParamsCount As Long, Optional ByVal p1 As Long = 0, Optional ByVal p2 As Long = 0, Optional ByVal p3 As Long = 0, Optional ByVal p4 As Long = 0, Optional ByVal p5 As Long = 0, Optional ByVal p6 As Long = 0, Optional ByVal p7 As Long = 0, Optional ByVal p8 As Long = 0, Optional ByVal p9 As Long = 0, Optional ByVal p10 As Long = 0) As Long
-  
+        
     Dim i As Long, t As Long
     Dim hGlobal As Long, hGlobalOffset As Long
     
     If ParamsCount < 0 Then Err.Raise 5
     If pInterface = 0 Then Err.Raise 5
     
-    hGlobal = GlobalAlloc(GMEM_FIXED, 5 * ParamsCount + 5 + 5 + 3 + 1)
-    If hGlobal = 0 Then Err.Raise 7
+    'Rewritten by Tanner: VirtualAlloc is required to not make DEP angry
+    'hGlobal = GlobalAlloc(GMEM_FIXED, 5 * ParamsCount + 5 + 5 + 3 + 1)
+    'If hGlobal = 0 Then Err.Raise 7
+    'hGlobalOffset = hGlobal
+    
+    hGlobal = VirtualAlloc(0&, 5 * ParamsCount + 5 + 5 + 3 + 1, MEM_COMMIT Or MEM_RESERVE, PAGE_EXECUTE_READWRITE)
+    If hGlobal = 0 Then
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  OS_Win7_8_Features.CallInterface() failed to allocate virtual memory.  Exiting prematurely."
+        #End If
+        Exit Function
+    End If
     hGlobalOffset = hGlobal
     
     If ParamsCount > 0 Then
@@ -131,7 +148,13 @@ Private Function CallInterface(ByVal pInterface As Long, ByVal Member As Long, B
     
     CallInterface = CallWindowProc(hGlobal, 0, 0, 0, 0)
     
-    GlobalFree hGlobal
+    'Edit by Tanner: match VirtualAlloc(), above
+    'GlobalFree hGlobal
+    If VirtualFree(hGlobal, 0&, MEM_RELEASE) = 0 Then
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  OS_Win7_8_Features.CallInterface() failed to release virtual memory @" & hGlobal & ".  Please investigate."
+        #End If
+    End If
   
 End Function
 
@@ -158,17 +181,23 @@ End Function
 ' we use for Win7-specific features.
 Public Sub prepWin7Features()
 
-    'Note that Win 7 features are allowed
-    win7FeaturesAllowed = False 'True
+    'To disable this functionality (e.g during testing), change this line to FALSE.  It will prevent any further execution of Win7-specific features.
+    win7FeaturesAllowed = True
     
-    'Dim CLSID As Guid, InterfaceGuid As Guid
-    'Call CLSIDFromString(StrConv(CLSID_TaskbarList, vbUnicode), CLSID)
-    'Call IIDFromString(StrConv(IID_ITaskbarList3, vbUnicode), InterfaceGuid)
-    'Call CoCreateInstance(CLSID, 0, 1, InterfaceGuid, objHandle)
+    If win7FeaturesAllowed Then
+        Dim CLSID As Guid, InterfaceGuid As Guid
+        Call CLSIDFromString(StrConv(CLSID_TaskbarList, vbUnicode), CLSID)
+        Call IIDFromString(StrConv(IID_ITaskbarList3, vbUnicode), InterfaceGuid)
+        Call CoCreateInstance(CLSID, 0, 1, InterfaceGuid, objHandle)
+    End If
     
 End Sub
 
 'Make sure to release the interface when we are done with it!
 Public Sub releaseWin7Features()
-    'If win7FeaturesAllowed Then CallInterface objHandle, unk_Release, 0
+    
+    If win7FeaturesAllowed Then
+        If objHandle <> 0 Then CallInterface objHandle, unk_Release, 0
+    End If
+    
 End Sub
