@@ -212,6 +212,9 @@ Private Sub Form_Activate()
         
     End Select
     
+    'Warn about flattening if the entire image is being content-aware-resized
+    lblFlatten.Visible = CBool(m_ResizeTarget = PD_AT_WHOLEIMAGE)
+    
     ucResize.lockAspectRatio = False
 
 End Sub
@@ -272,6 +275,7 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB
+    If tmpDIB.getAlphaPremultiplication Then tmpDIB.setAlphaPremultiplication False
     
     'In past versions of the software, we could assume the passed measurements were always in pixels,
     ' but that is no longer the case!  Using the supplied "unit of measurement", convert the passed
@@ -281,7 +285,10 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     
     'Pass the temporary DIB to the master seam carve function
     If SeamCarveDIB(tmpDIB, iWidth, iHeight) Then
-    
+        
+        'Premultiply alpha
+        If Not tmpDIB.getAlphaPremultiplication Then tmpDIB.setAlphaPremultiplication True
+        
         'Copy the newly resized DIB back into its parent image
         pdImages(g_CurrentImage).getActiveLayer.layerDIB.createFromExistingDIB tmpDIB
         Set tmpDIB = Nothing
