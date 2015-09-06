@@ -32,15 +32,6 @@ Begin VB.Form FormMetal
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
@@ -80,66 +71,26 @@ Begin VB.Form FormMetal
       NotchValueCustom=   4
    End
    Begin PhotoDemon.colorSelector csHighlight 
-      Height          =   615
-      Left            =   6120
+      Height          =   975
+      Left            =   6000
       TabIndex        =   4
-      Top             =   3120
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   1085
+      Top             =   2760
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1720
+      Caption         =   "highlight color"
       curColor        =   14737632
    End
    Begin PhotoDemon.colorSelector csShadow 
-      Height          =   615
-      Left            =   6120
-      TabIndex        =   7
-      Top             =   4320
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   1085
-      curColor        =   4210752
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "shadow color"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   3
-      Left            =   6000
-      TabIndex        =   6
-      Top             =   3960
-      Width           =   1410
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "highlight color"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
+      Height          =   975
       Left            =   6000
       TabIndex        =   5
-      Top             =   2760
-      Width           =   1530
+      Top             =   3960
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1720
+      Caption         =   "shadow color"
+      curColor        =   4210752
    End
 End
 Attribute VB_Name = "FormMetal"

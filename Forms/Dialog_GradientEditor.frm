@@ -103,13 +103,14 @@ Begin VB.Form dialog_GradientEditor
          NotchValueCustom=   100
       End
       Begin PhotoDemon.colorSelector csNode 
-         Height          =   495
+         Height          =   855
          Left            =   360
          TabIndex        =   5
-         Top             =   2580
+         Top             =   2220
          Width           =   3750
          _ExtentX        =   6615
-         _ExtentY        =   873
+         _ExtentY        =   1508
+         Caption         =   "color"
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
@@ -120,17 +121,6 @@ Begin VB.Form dialog_GradientEditor
          _ExtentX        =   16536
          _ExtentY        =   556
          Caption         =   "current node settings"
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   315
-         Index           =   4
-         Left            =   360
-         Top             =   2220
-         Width           =   3900
-         _ExtentX        =   16536
-         _ExtentY        =   556
-         Caption         =   "color"
          FontSize        =   12
       End
       Begin PhotoDemon.sliderTextCombo sltNodePosition 
@@ -151,7 +141,7 @@ Begin VB.Form dialog_GradientEditor
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
-         Index           =   5
+         Index           =   4
          Left            =   120
          Top             =   3360
          Width           =   12135
@@ -162,7 +152,7 @@ Begin VB.Form dialog_GradientEditor
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
-         Index           =   6
+         Index           =   5
          Left            =   360
          Top             =   3780
          Width           =   7740
@@ -208,7 +198,7 @@ Begin VB.Form dialog_GradientEditor
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
-         Index           =   7
+         Index           =   6
          Left            =   120
          Top             =   4800
          Width           =   12135
@@ -251,15 +241,6 @@ Begin VB.Form dialog_GradientEditor
       Width           =   12660
       _ExtentX        =   22331
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
       AutoloadLastPreset=   -1  'True
       dontAutoUnloadParent=   -1  'True
@@ -949,15 +930,11 @@ Private Sub syncUIToActiveNode()
         If (m_CurPoint >= 0) And (m_CurPoint < m_NumOfGradientPoints) Then
             
             'Show all relevant controls
-            If Not lblTitle(4).Visible Then
-            
+            If Not csNode.Visible Then
                 lblTitle(0).Caption = g_Language.TranslateMessage("node settings:")
-                lblTitle(4).Visible = True
-                
                 csNode.Visible = True
                 sltNodeOpacity.Visible = True
                 sltNodePosition.Visible = True
-                
             End If
             
             'Sync all UI elements to the current node's settings
@@ -971,8 +948,6 @@ Private Sub syncUIToActiveNode()
         
             'Hide all relevant controls
             lblTitle(0).Caption = g_Language.TranslateMessage("please select a node")
-            lblTitle(4).Visible = False
-            
             csNode.Visible = False
             sltNodeOpacity.Visible = False
             sltNodePosition.Visible = False

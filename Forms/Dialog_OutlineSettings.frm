@@ -35,13 +35,14 @@ Begin VB.Form dialog_OutlineSettings
       _ExtentY        =   688
    End
    Begin PhotoDemon.colorSelector csOutline 
-      Height          =   855
+      Height          =   1215
       Left            =   120
       TabIndex        =   4
-      Top             =   4860
+      Top             =   4440
       Width           =   6015
       _ExtentX        =   10610
-      _ExtentY        =   1508
+      _ExtentY        =   2143
+      Caption         =   "outline color and opacity"
    End
    Begin VB.PictureBox picPenPreview 
       Appearance      =   0  'Flat
@@ -66,15 +67,6 @@ Begin VB.Form dialog_OutlineSettings
       Width           =   12660
       _ExtentX        =   22331
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
       AutoloadLastPreset=   -1  'True
       dontAutoUnloadParent=   -1  'True
@@ -126,17 +118,6 @@ Begin VB.Form dialog_OutlineSettings
       NotchPosition   =   2
       NotchValueCustom=   100
    End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   315
-      Index           =   2
-      Left            =   120
-      Top             =   4440
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   556
-      Caption         =   "outline color and opacity"
-      FontSize        =   12
-   End
    Begin PhotoDemon.sliderTextCombo sltOutlineWidth 
       CausesValidation=   0   'False
       Height          =   720
@@ -156,7 +137,7 @@ Begin VB.Form dialog_OutlineSettings
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   315
-      Index           =   4
+      Index           =   2
       Left            =   6480
       Top             =   5400
       Width           =   5655
@@ -167,7 +148,7 @@ Begin VB.Form dialog_OutlineSettings
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   315
-      Index           =   5
+      Index           =   3
       Left            =   6480
       Top             =   4440
       Width           =   5655

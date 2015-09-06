@@ -28,30 +28,21 @@ Begin VB.Form FormSplitTone
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   5730
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
-      Height          =   5625
+      Height          =   5505
       Left            =   120
       TabIndex        =   0
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
-      _ExtentY        =   9922
+      _ExtentY        =   9710
    End
    Begin PhotoDemon.sliderTextCombo sltBalance 
       Height          =   720
@@ -68,29 +59,31 @@ Begin VB.Form FormSplitTone
       GradientColorMiddle=   16777215
    End
    Begin PhotoDemon.colorSelector cpHighlight 
-      Height          =   615
-      Left            =   6240
-      TabIndex        =   5
-      Top             =   1080
-      Width           =   5535
-      _ExtentX        =   9763
-      _ExtentY        =   1085
+      Height          =   975
+      Left            =   6000
+      TabIndex        =   3
+      Top             =   720
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1720
+      Caption         =   "highlight color"
       curColor        =   16744192
    End
    Begin PhotoDemon.colorSelector cpShadow 
-      Height          =   615
-      Left            =   6240
-      TabIndex        =   6
-      Top             =   3480
-      Width           =   5535
-      _ExtentX        =   9763
-      _ExtentY        =   1085
+      Height          =   975
+      Left            =   6000
+      TabIndex        =   4
+      Top             =   3120
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1720
+      Caption         =   "shadow color"
       curColor        =   32767
    End
    Begin PhotoDemon.sliderTextCombo sltStrength 
       Height          =   720
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   4440
       Width           =   5895
       _ExtentX        =   10398
@@ -100,46 +93,6 @@ Begin VB.Form FormSplitTone
       Value           =   50
       NotchPosition   =   2
       NotchValueCustom=   100
-   End
-   Begin VB.Label lblShadow 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "shadow color"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   3
-      Top             =   3060
-      Width           =   1410
-   End
-   Begin VB.Label lblHue 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "highlight color"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   690
-      Width           =   1530
    End
 End
 Attribute VB_Name = "FormSplitTone"

@@ -25,73 +25,59 @@ Begin VB.Form FormUpdateNotify
    ScaleWidth      =   613
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
+   Begin PhotoDemon.pdButton cmdUpdate 
+      Height          =   750
+      Index           =   0
+      Left            =   120
+      TabIndex        =   1
+      Top             =   1440
+      Width           =   4455
+      _ExtentX        =   7858
+      _ExtentY        =   1323
+      Caption         =   "Restart PhotoDemon"
+   End
    Begin PhotoDemon.smartCheckBox chkNotify 
       Height          =   330
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   0
       Top             =   2370
       Width           =   9015
-      _extentx        =   15901
-      _extenty        =   582
-      caption         =   "in the future, do not notify me of updates"
-      value           =   0
+      _ExtentX        =   15901
+      _ExtentY        =   582
+      Caption         =   "in the future, do not notify me of updates"
+      Value           =   0
    End
    Begin PhotoDemon.pdHyperlink lblReleaseAnnouncement 
       Height          =   270
       Left            =   840
       Top             =   930
       Width           =   8130
-      _extentx        =   14340
-      _extenty        =   503
-      alignment       =   2
-      caption         =   "(text populated at run-time)"
-      fontsize        =   11
-   End
-   Begin VB.CommandButton cmdUpdate 
-      Caption         =   "Keep working"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   735
-      Index           =   1
-      Left            =   4680
-      TabIndex        =   1
-      Top             =   1500
-      Width           =   4455
-   End
-   Begin VB.CommandButton cmdUpdate 
-      Caption         =   "Restart PhotoDemon"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   735
-      Index           =   0
-      Left            =   120
-      TabIndex        =   0
-      Top             =   1500
-      Width           =   4455
+      _ExtentX        =   14340
+      _ExtentY        =   503
+      Alignment       =   2
+      Caption         =   "(text populated at run-time)"
+      FontSize        =   11
    End
    Begin PhotoDemon.pdLabel lblUpdate 
       Height          =   735
       Left            =   960
       Top             =   120
       Width           =   7980
-      _extentx        =   14076
-      _extenty        =   1296
-      fontsize        =   11
-      layout          =   1
+      _ExtentX        =   14076
+      _ExtentY        =   1296
+      FontSize        =   11
+      Layout          =   1
+   End
+   Begin PhotoDemon.pdButton cmdUpdate 
+      Height          =   750
+      Index           =   1
+      Left            =   4680
+      TabIndex        =   2
+      Top             =   1440
+      Width           =   4455
+      _ExtentX        =   7858
+      _ExtentY        =   1323
+      Caption         =   "Keep working"
    End
 End
 Attribute VB_Name = "FormUpdateNotify"
@@ -99,9 +85,23 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-Option Explicit
+'***************************************************************************
+'Update Notification form
+'Copyright 2014-2015 by Tanner Helland
+'Created: 03/March/14
+'Last updated: 06/September/15
+'Last update: convert buttons to pdButton
+'
+'This dialog's a simple one: when an update is available, it will notify the user and give them the choice to
+' immediately restart+apply, or continue working.  Not much to it!
+'
+'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
+' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
+'
+'***************************************************************************
 
-Private m_Tooltip As pdToolTip
+
+Option Explicit
 
 Private Sub cmdUpdate_Click(Index As Integer)
     
@@ -141,10 +141,7 @@ Private Sub Form_Load()
     Else
         chkNotify.Value = vbChecked
     End If
-    
-    'Theme the dialog
-    makeFormPretty Me
-    
+        
     'Set the release announcement URL
     Dim raURL As String
     raURL = Software_Updater.getReleaseAnnouncementURL
@@ -170,10 +167,11 @@ Private Sub Form_Load()
     lblUpdate.Caption = "A new version of PhotoDemon is available.  Restart the program to complete the update process."
     
     'Add a few tooltips
-    Set m_Tooltip = New pdToolTip
+    cmdUpdate(0).assignTooltip "Restart now to access to the latest version of the program.", "Apply update now"
+    cmdUpdate(1).assignTooltip "If you're in the middle of something, feel free to keep working.  The update process will automatically complete whenever you next use the program.", "Apply update later"
     
-    m_Tooltip.setTooltip cmdUpdate(0).hWnd, Me.hWnd, "Restart now to access to the latest version of the program.", "Apply update now"
-    m_Tooltip.setTooltip cmdUpdate(1).hWnd, Me.hWnd, "If you're in the middle of something, feel free to keep working.  The update process will automatically complete whenever you next use the program.", "Apply update later"
+    'Theme the dialog
+    makeFormPretty Me
     
     'Position the form at the bottom-right corner of the main program window.
     Me.Move (FormMain.Left + FormMain.Width) - (Me.Width + 90), (FormMain.Top + FormMain.Height) - (Me.Height + 90)

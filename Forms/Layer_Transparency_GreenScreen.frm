@@ -32,15 +32,6 @@ Begin VB.Form FormTransparency_FromColor
       Width           =   11820
       _ExtentX        =   20849
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -56,7 +47,7 @@ Begin VB.Form FormTransparency_FromColor
    Begin PhotoDemon.sliderTextCombo sltErase 
       Height          =   720
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   2640
       Width           =   5685
       _ExtentX        =   10028
@@ -68,7 +59,7 @@ Begin VB.Form FormTransparency_FromColor
    Begin PhotoDemon.sliderTextCombo sltBlend 
       Height          =   720
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   3600
       Width           =   5685
       _ExtentX        =   10028
@@ -78,35 +69,15 @@ Begin VB.Form FormTransparency_FromColor
       Value           =   15
    End
    Begin PhotoDemon.colorSelector colorPicker 
-      Height          =   615
-      Left            =   6240
-      TabIndex        =   5
-      Top             =   1800
-      Width           =   5295
-      _ExtentX        =   9340
-      _ExtentY        =   1085
-      curColor        =   49152
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "color to erase (right-click preview to select)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
+      Height          =   1095
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   4
       Top             =   1320
-      Width           =   4575
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   1931
+      Caption         =   "color to erase (right-click preview to select)"
+      curColor        =   49152
    End
 End
 Attribute VB_Name = "FormTransparency_FromColor"

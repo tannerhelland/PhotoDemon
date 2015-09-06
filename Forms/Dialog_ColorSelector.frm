@@ -32,8 +32,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   36
       Top             =   5295
       Width           =   11535
-      _extentx        =   20346
-      _extenty        =   1323
+      _ExtentX        =   20346
+      _ExtentY        =   1323
+      BackColor       =   14802140
    End
    Begin PhotoDemon.pdButtonToolbox cmdCapture 
       Height          =   600
@@ -42,9 +43,9 @@ Begin VB.Form dialog_ColorSelector
       Top             =   3720
       Visible         =   0   'False
       Width           =   1095
-      _extentx        =   1931
-      _extenty        =   1058
-      autotoggle      =   -1  'True
+      _ExtentX        =   1931
+      _ExtentY        =   1058
+      AutoToggle      =   -1  'True
    End
    Begin PhotoDemon.pdTextBox txtHex 
       Height          =   315
@@ -52,9 +53,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   34
       Top             =   3735
       Width           =   1455
-      _extentx        =   2566
-      _extenty        =   556
-      text            =   "abcdef"
+      _ExtentX        =   2566
+      _ExtentY        =   556
+      Text            =   "abcdef"
    End
    Begin VB.PictureBox picRecColor 
       Appearance      =   0  'Flat
@@ -329,9 +330,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   12
       Top             =   1905
       Width           =   1095
-      _extentx        =   1931
-      _extenty        =   714
-      max             =   255
+      _ExtentX        =   1931
+      _ExtentY        =   714
+      Max             =   255
    End
    Begin PhotoDemon.textUpDown tudRGB 
       Height          =   345
@@ -340,9 +341,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   14
       Top             =   2505
       Width           =   1095
-      _extentx        =   1931
-      _extenty        =   714
-      max             =   255
+      _ExtentX        =   1931
+      _ExtentY        =   714
+      Max             =   255
    End
    Begin PhotoDemon.textUpDown tudRGB 
       Height          =   345
@@ -351,9 +352,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   16
       Top             =   3105
       Width           =   1095
-      _extentx        =   1931
-      _extenty        =   714
-      max             =   255
+      _ExtentX        =   1931
+      _ExtentY        =   714
+      Max             =   255
    End
    Begin PhotoDemon.textUpDown tudHSV 
       Height          =   345
@@ -362,9 +363,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   19
       Top             =   105
       Width           =   1095
-      _extentx        =   1931
-      _extenty        =   714
-      max             =   359
+      _ExtentX        =   1931
+      _ExtentY        =   714
+      Max             =   359
    End
    Begin PhotoDemon.textUpDown tudHSV 
       Height          =   345
@@ -373,9 +374,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   21
       Top             =   705
       Width           =   1095
-      _extentx        =   1931
-      _extenty        =   714
-      max             =   100
+      _ExtentX        =   1931
+      _ExtentY        =   714
+      Max             =   100
    End
    Begin PhotoDemon.textUpDown tudHSV 
       Height          =   345
@@ -384,9 +385,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   23
       Top             =   1305
       Width           =   1095
-      _extentx        =   1931
-      _extenty        =   714
-      max             =   100
+      _ExtentX        =   1931
+      _ExtentY        =   714
+      Max             =   100
    End
    Begin VB.Label lblColor 
       Alignment       =   1  'Right Justify
@@ -752,7 +753,7 @@ Private Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByV
 Private Declare Function SetCapture Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function ReleaseCapture Lib "user32" () As Long
 Private Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
-Private Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Long, ByVal dx As Long, ByVal dy As Long, ByVal cButtons As Long, ByVal dwExtraInfo As Long)
+Private Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Long, ByVal dX As Long, ByVal dY As Long, ByVal cButtons As Long, ByVal dwExtraInfo As Long)
 
 'pdInputMouse makes it easier to deal with a custom hand cursor for the many picture boxes on the form
 Private WithEvents cMouse As pdInputMouse

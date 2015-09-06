@@ -32,15 +32,7 @@ Begin VB.Form FormConvert24bpp
       Width           =   11820
       _ExtentX        =   20849
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
+      BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -53,33 +45,14 @@ Begin VB.Form FormConvert24bpp
       ColorSelection  =   -1  'True
    End
    Begin PhotoDemon.colorSelector colorPicker 
-      Height          =   735
-      Left            =   6240
-      TabIndex        =   3
-      Top             =   2640
-      Width           =   5295
-      _ExtentX        =   9340
-      _ExtentY        =   1296
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "background color:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
+      Height          =   1215
       Left            =   6000
       TabIndex        =   2
       Top             =   2160
-      Width           =   1935
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   2143
+      Caption         =   "background color:"
    End
 End
 Attribute VB_Name = "FormConvert24bpp"
@@ -107,7 +80,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_ToolTip As clsToolTip
+Dim m_Tooltip As clsToolTip
 
 Private Sub cmdBar_OKClick()
     Process "Remove alpha channel", , buildParams(colorPicker.Color), UNDO_LAYER
@@ -124,8 +97,8 @@ End Sub
 Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
-    Set m_ToolTip = New clsToolTip
-    makeFormPretty Me, m_ToolTip
+    Set m_Tooltip = New clsToolTip
+    makeFormPretty Me, m_Tooltip
     
     'Render a preview of the emboss/engrave effect
     updatePreview

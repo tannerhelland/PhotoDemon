@@ -24,13 +24,13 @@ Begin VB.Form FormChannelMixer
    ScaleWidth      =   810
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.fxPreviewCtl fxPreview 
-      Height          =   5625
+      Height          =   6735
       Left            =   120
       TabIndex        =   1
-      Top             =   480
+      Top             =   120
       Width           =   5625
       _ExtentX        =   9922
-      _ExtentY        =   9922
+      _ExtentY        =   11880
    End
    Begin PhotoDemon.sliderTextCombo sltRed 
       Height          =   720
@@ -116,15 +116,6 @@ Begin VB.Form FormChannelMixer
       Width           =   12150
       _ExtentX        =   21431
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.buttonStrip btsChannel 
