@@ -48,15 +48,6 @@ Begin VB.Form dialog_FillSettings
       Width           =   12270
       _ExtentX        =   21643
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
       AutoloadLastPreset=   -1  'True
       dontAutoUnloadParent=   -1  'True
@@ -126,80 +117,6 @@ Begin VB.Form dialog_FillSettings
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   4935
-      Index           =   0
-      Left            =   120
-      ScaleHeight     =   329
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   385
-      TabIndex        =   3
-      Top             =   2400
-      Width           =   5775
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   315
-         Index           =   2
-         Left            =   0
-         Top             =   0
-         Width           =   9375
-         _ExtentX        =   16536
-         _ExtentY        =   556
-         Caption         =   "solid fill settings"
-         FontSize        =   12
-      End
-      Begin PhotoDemon.colorSelector csFillColor 
-         Height          =   840
-         Left            =   0
-         TabIndex        =   7
-         Top             =   960
-         Width           =   5655
-         _ExtentX        =   9975
-         _ExtentY        =   1482
-         curColor        =   0
-      End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   285
-         Index           =   6
-         Left            =   0
-         Top             =   540
-         Width           =   5685
-         _ExtentX        =   10028
-         _ExtentY        =   503
-         Caption         =   "color"
-         FontSize        =   12
-         ForeColor       =   0
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4815
-      Index           =   3
-      Left            =   120
-      ScaleHeight     =   321
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   385
-      TabIndex        =   6
-      Top             =   2400
-      Width           =   5775
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   315
-         Index           =   5
-         Left            =   0
-         Top             =   0
-         Width           =   9375
-         _ExtentX        =   16536
-         _ExtentY        =   556
-         Caption         =   "texture fill settings"
-         FontSize        =   12
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4935
       Index           =   2
       Left            =   120
       ScaleHeight     =   329
@@ -210,11 +127,11 @@ Begin VB.Form dialog_FillSettings
       Width           =   5775
       Begin PhotoDemon.gradientSelector gsPrimary 
          Height          =   1335
-         Left            =   0
+         Left            =   120
          TabIndex        =   14
          Top             =   1080
-         Width           =   5775
-         _ExtentX        =   10186
+         Width           =   5655
+         _ExtentX        =   9975
          _ExtentY        =   2355
       End
       Begin PhotoDemon.pdLabel lblTitle 
@@ -228,9 +145,9 @@ Begin VB.Form dialog_FillSettings
          Caption         =   "gradient fill settings"
          FontSize        =   12
       End
-      Begin PhotoDemon.pdLabel lblText 
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   0
+         Index           =   8
          Left            =   0
          Top             =   600
          Width           =   5565
@@ -260,8 +177,8 @@ Begin VB.Form dialog_FillSettings
          Left            =   120
          TabIndex        =   13
          Top             =   960
-         Width           =   5415
-         _ExtentX        =   9551
+         Width           =   5535
+         _ExtentX        =   9763
          _ExtentY        =   794
       End
       Begin PhotoDemon.pdLabel lblTitle 
@@ -275,9 +192,9 @@ Begin VB.Form dialog_FillSettings
          Caption         =   "pattern fill settings"
          FontSize        =   12
       End
-      Begin PhotoDemon.pdLabel lblText 
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   14
+         Index           =   7
          Left            =   0
          Top             =   525
          Width           =   5565
@@ -288,49 +205,27 @@ Begin VB.Form dialog_FillSettings
          ForeColor       =   0
       End
       Begin PhotoDemon.colorSelector csPattern 
-         Height          =   495
+         Height          =   855
          Index           =   0
-         Left            =   120
-         TabIndex        =   9
-         Top             =   1920
-         Width           =   5535
-         _ExtentX        =   9763
-         _ExtentY        =   873
-      End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   285
-         Index           =   11
          Left            =   0
+         TabIndex        =   9
          Top             =   1560
-         Width           =   5685
-         _ExtentX        =   10028
-         _ExtentY        =   503
+         Width           =   5655
+         _ExtentX        =   9975
+         _ExtentY        =   1508
          Caption         =   "pattern color and opacity"
-         FontSize        =   12
-         ForeColor       =   0
       End
       Begin PhotoDemon.colorSelector csPattern 
-         Height          =   495
+         Height          =   855
          Index           =   1
-         Left            =   120
-         TabIndex        =   10
-         Top             =   3480
-         Width           =   5535
-         _ExtentX        =   9763
-         _ExtentY        =   873
-         curColor        =   0
-      End
-      Begin PhotoDemon.pdLabel lblText 
-         Height          =   285
-         Index           =   13
          Left            =   0
+         TabIndex        =   10
          Top             =   3120
-         Width           =   5685
-         _ExtentX        =   10028
-         _ExtentY        =   503
+         Width           =   5655
+         _ExtentX        =   9975
+         _ExtentY        =   1508
          Caption         =   "background color and opacity"
-         FontSize        =   12
-         ForeColor       =   0
+         curColor        =   0
       End
       Begin PhotoDemon.sliderTextCombo sltPatternOpacity 
          CausesValidation=   0   'False
@@ -361,6 +256,69 @@ Begin VB.Form dialog_FillSettings
          Value           =   100
          NotchPosition   =   2
          NotchValueCustom=   100
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4935
+      Index           =   0
+      Left            =   120
+      ScaleHeight     =   329
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   385
+      TabIndex        =   3
+      Top             =   2400
+      Width           =   5775
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   2
+         Left            =   0
+         Top             =   0
+         Width           =   9375
+         _ExtentX        =   16536
+         _ExtentY        =   556
+         Caption         =   "solid fill settings"
+         FontSize        =   12
+      End
+      Begin PhotoDemon.colorSelector csFillColor 
+         Height          =   1560
+         Left            =   0
+         TabIndex        =   7
+         Top             =   600
+         Width           =   5655
+         _ExtentX        =   9975
+         _ExtentY        =   2752
+         Caption         =   "color"
+         curColor        =   0
+      End
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4815
+      Index           =   3
+      Left            =   120
+      ScaleHeight     =   321
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   385
+      TabIndex        =   6
+      Top             =   2400
+      Width           =   5775
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   315
+         Index           =   5
+         Left            =   0
+         Top             =   0
+         Width           =   9375
+         _ExtentX        =   16536
+         _ExtentY        =   556
+         Caption         =   "texture fill settings"
+         FontSize        =   12
       End
    End
 End

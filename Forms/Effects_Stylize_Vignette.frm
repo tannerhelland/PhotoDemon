@@ -47,15 +47,6 @@ Begin VB.Form FormVignette
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.smartOptionButton optShape 
@@ -134,13 +125,14 @@ Begin VB.Form FormVignette
       Value           =   80
    End
    Begin PhotoDemon.colorSelector colorPicker 
-      Height          =   495
-      Left            =   6120
+      Height          =   930
+      Left            =   6000
       TabIndex        =   8
-      Top             =   4350
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   873
+      Top             =   3900
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1640
+      Caption         =   "color"
       curColor        =   0
    End
    Begin PhotoDemon.sliderTextCombo sltYCenter 
@@ -156,27 +148,6 @@ Begin VB.Form FormVignette
       Value           =   0.5
       NotchPosition   =   2
       NotchValueCustom=   0.5
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "color"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      TabIndex        =   13
-      Top             =   3960
-      Width           =   525
    End
    Begin VB.Label lblExplanation 
       BackStyle       =   0  'Transparent

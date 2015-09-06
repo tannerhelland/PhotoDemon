@@ -97,58 +97,29 @@ Begin VB.Form FormSunshine
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.colorSelector cpShine 
-      Height          =   615
-      Left            =   6120
+      Height          =   975
+      Left            =   6000
       TabIndex        =   8
-      Top             =   3915
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   1085
+      Top             =   3555
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1720
+      Caption         =   "color"
       curColor        =   8978431
    End
    Begin PhotoDemon.sliderTextCombo sltVariance 
       Height          =   720
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   4800
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
       Caption         =   "color variance"
       Max             =   100
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "color"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
-      Left            =   6000
-      TabIndex        =   9
-      Top             =   3555
-      Width           =   525
    End
    Begin VB.Label lblExplanation 
       BackStyle       =   0  'Transparent

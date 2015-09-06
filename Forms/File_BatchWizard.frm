@@ -3535,7 +3535,7 @@ Private Sub prepareForBatchConversion()
     Screen.MousePointer = vbDefault
     
     'Change the "Cancel" button to "Exit"
-    CmdCancel.Caption = g_Language.TranslateMessage("Exit")
+    cmdCancel.Caption = g_Language.TranslateMessage("Exit")
     
     'Max out the progess bar and display a success message
     sysProgBar.Value = sysProgBar.Max
@@ -3573,7 +3573,7 @@ MacroCanceled:
     batchConvertMessage cancelMsg
     
     'Change the "Cancel" button to "Exit"
-    CmdCancel.Caption = g_Language.TranslateMessage("Exit")
+    cmdCancel.Caption = g_Language.TranslateMessage("Exit")
     
     m_ImageListSaved = True
     

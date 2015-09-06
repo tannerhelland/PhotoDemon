@@ -21,12 +21,12 @@ Begin VB.UserControl sliderTextCombo
    ToolboxBitmap   =   "textSliderCombo.ctx":0000
    Begin PhotoDemon.textUpDown tudPrimary 
       Height          =   345
-      Left            =   5040
+      Left            =   4800
       TabIndex        =   1
       Top             =   45
-      Width           =   960
-      _ExtentX        =   1693
-      _ExtentY        =   741
+      Width           =   1080
+      _ExtentX        =   1905
+      _ExtentY        =   609
    End
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
@@ -38,10 +38,10 @@ Begin VB.UserControl sliderTextCombo
       Left            =   60
       ScaleHeight     =   24
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   321
+      ScaleWidth      =   313
       TabIndex        =   0
       Top             =   60
-      Width           =   4815
+      Width           =   4695
    End
 End
 Attribute VB_Name = "sliderTextCombo"
