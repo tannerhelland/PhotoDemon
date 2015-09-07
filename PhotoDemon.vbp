@@ -312,7 +312,7 @@ Description="PhotoDemon Photo Editor"
 CompatibleMode="0"
 MajorVer=6
 MinorVer=7
-RevisionVer=436
+RevisionVer=437
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionComments="Copyright 2000-2015 Tanner Helland -  photodemon.org"
@@ -337,6 +337,9 @@ Retained=0
 ThreadPerObject=0
 MaxNumberOfThreads=1
 DebugStartupOption=0
+
+[VBCompiler]
+LinkSwitches="/LARGEADDRESSAWARE"
 
 [MS Transaction Server]
 AutoRefresh=1
