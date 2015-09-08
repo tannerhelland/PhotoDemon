@@ -295,9 +295,8 @@ Attribute VB_Exposed = False
 'Image Levels
 'Copyright 2006-2015 by Tanner Helland
 'Created: 22/July/06
-'Last updated: 19/September/14
-'Last update: further improvements to the interface, including increasing whitespace, fixing small layout annoyances,
-'              adding a channel button strip, and (hopefully) bringing the whole thing into line with the Curves dialog
+'Last updated: 07/September/15
+'Last update: overhaul the underlying histogram UI code, using a new centralized histogram renderer
 '
 'This tool allows the user to adjust image levels.  Its behavior is based off Photoshop's Levels tool, and identical
 ' values entered into both programs should yield an identical image.
@@ -320,16 +319,8 @@ Private Const MAXGAMMA As Double = 1.8460498941512
 Private Const MIDGAMMA As Double = 0.68377223398334
 Private Const ROOT10 As Double = 3.16227766
 
-'These five arrays will hold histogram data for the current image.  They are filled when the form is activated, and
-' not modified again unless the form is unloaded and reopened.
-Private hData() As Double
-Private hDataLog() As Double
-Private hMax() As Double
-Private hMaxLog() As Double
-Private hMaxPosition() As Byte
-
-'An image of the current image histogram is drawn once each for regular and logarithmic, then stored to these DIBs.
-Private hDIB(0 To 3) As pdDIB, hLogDIB(0 To 3) As pdDIB
+'An image of the current image histogram is generated for each channel, then displayed as requested
+Private hDIB() As pdDIB
 
 'Copies of the "slider arrows" used to display and control input/output level manipulation
 Private m_Arrows(0 To 2) As pdDIB
@@ -372,12 +363,13 @@ Private Sub btsChannel_Click(ByVal buttonIndex As Long)
     m_curChannel = buttonIndex
     
     'Draw the relevant histogram onto the histogram box
-    If Not hDIB(m_curChannel) Is Nothing Then
-        BitBlt picHistogram.hDC, 0, 0, hDIB(m_curChannel).getDIBWidth, hDIB(m_curChannel).getDIBHeight, hDIB(m_curChannel).getDIBDC, 0, 0, vbSrcCopy
-    End If
+    On Error GoTo ignoreChannelRender
+    picHistogram.Picture = LoadPicture("")
+    If Not hDIB(m_curChannel) Is Nothing Then hDIB(m_curChannel).alphaBlendToDC picHistogram.hDC
     picHistogram.Picture = picHistogram.Image
     
     'Update the text boxes to match the values for the selected channel
+ignoreChannelRender:
     updateTextBoxes
     
     'Update the preview.  (The preview itself doesn't actually need to be redrawn, but that function is responsible for
@@ -1057,7 +1049,8 @@ Private Sub Form_Activate()
     m_DisableMaxMinLimits = False
     
     'Draw the default histogram onto the histogram box
-    BitBlt picHistogram.hDC, 0, 0, hDIB(m_curChannel).getDIBWidth, hDIB(m_curChannel).getDIBHeight, hDIB(m_curChannel).getDIBDC, 0, 0, vbSrcCopy
+    picHistogram.Picture = LoadPicture("")
+    If Not hDIB(m_curChannel) Is Nothing Then hDIB(m_curChannel).alphaBlendToDC picHistogram.hDC
     picHistogram.Picture = picHistogram.Image
         
     'Load the arrow slider images from the resource file
@@ -1089,117 +1082,21 @@ Private Sub Form_Activate()
 End Sub
 
 Private Sub prepHistogramOverlays()
-
+    
+    'Even though we don't need log-based versions of the histogram data, the master function requires arrays for both.
+    ' (TODO: fix this!  Most functions need one or the other; not both.)
+    Dim hData() As Double
+    Dim hDataLog() As Double
+    Dim hMax() As Double
+    Dim hMaxLog() As Double
+    Dim hMaxPosition() As Byte
+    
     'Gather histogram data for the current layer
-    fillHistogramArrays hData, hDataLog, hMax, hMaxLog, hMaxPosition
-
-    Dim yMax As Double
-    Dim hLookupX() As Double
-    Dim hColor As Long
+    Histogram_Analysis.fillHistogramArrays hData, hDataLog, hMax, hMaxLog, hMaxPosition
     
-    Dim tmpPath As pdGraphicsPath, tmpPathLog As pdGraphicsPath
-    Dim histogramShape() As POINTFLOAT, histogramShapeLog() As POINTFLOAT
+    'Use that data to generate DIBs for the histogram data
+    Histogram_Analysis.generateHistogramImages hData, hMax, hDIB, picHistogram.ScaleWidth, picHistogram.ScaleHeight
     
-    Dim tmpPen As Long, tmpBrush As Long
-    
-    'Initialize the background histogram image DIBs
-    Dim i As Long, j As Long
-    
-    'Build a look-up table of x-positions for the histogram data
-    ReDim hLookupX(0 To 255) As Double
-    Dim tmpWidth As Long, tmpHeight As Long
-    tmpWidth = picHistogram.ScaleWidth
-    tmpHeight = picHistogram.ScaleHeight
-    
-    For j = 0 To 255
-        hLookupX(j) = (CSng(j + 1) / 257) * CSng(tmpWidth)
-    Next j
-    
-    For i = 0 To 3
-        
-        'Initialize this channel's DIB
-        Set hDIB(i) = New pdDIB
-        Set hLogDIB(i) = New pdDIB
-        hDIB(i).createBlank tmpWidth, tmpHeight, 24, vbWhite
-        hLogDIB(i).createFromExistingDIB hDIB(i)
-        
-        yMax = 0.9 * tmpHeight
-        
-        'The color of the histogram changes for each channel
-        Select Case i
-        
-            'Red
-            Case 0
-                hColor = RGB(255, 60, 80)
-            
-            'Green
-            Case 1
-                hColor = RGB(60, 210, 80)
-            
-            'Blue
-            Case 2
-                hColor = RGB(60, 100, 255)
-            
-            'Luminance
-            Case 3
-                hColor = RGB(192, 192, 192)
-        
-        
-        End Select
-                
-        'New strategy!  Use the awesome pdGraphicsPath class to construct a matching polygon for each histogram.
-        ' Then, stroke and fill the polygon in one fell swoop (much faster).
-        ReDim histogramShape(0 To 260) As POINTFLOAT
-        ReDim histogramShapeLog(0 To 260) As POINTFLOAT
-        
-        For j = 0 To 255
-            histogramShape(j).x = hLookupX(j)
-            histogramShape(j).y = tmpHeight - (hData(i, j) / hMax(i)) * yMax
-            
-            histogramShapeLog(j).x = hLookupX(j)
-            histogramShapeLog(j).y = tmpHeight - (hDataLog(i, j) / hMaxLog(i)) * yMax
-        Next j
-        
-        'Complete each shape by tracing the outline of the DIB
-        histogramShape(256).x = tmpWidth + 1
-        histogramShape(256).y = tmpHeight
-        histogramShape(257).x = tmpWidth
-        histogramShape(257).y = tmpHeight + 1
-        
-        histogramShape(258).x = 0
-        histogramShape(258).y = tmpHeight
-        histogramShape(259).x = -1
-        histogramShape(259).y = tmpHeight + 1
-        
-        For j = 256 To 259
-            histogramShapeLog(j).x = histogramShape(j).x
-            histogramShapeLog(j).y = histogramShape(j).y
-        Next j
-        
-        'Populate shape objects using those point lists
-        Set tmpPath = New pdGraphicsPath
-        tmpPath.addPolygon 260, VarPtr(histogramShape(0)), True, True
-        
-        Set tmpPathLog = New pdGraphicsPath
-        tmpPathLog.addPolygon 260, VarPtr(histogramShapeLog(0)), True, True
-        
-        'Prep pens and brushes in the current color
-        tmpPen = GDI_Plus.getGDIPlusPenHandle(hColor, 255, 1, LineCapRound, LineJoinRound)
-        tmpBrush = GDI_Plus.getGDIPlusSolidBrushHandle(hColor, 128)
-        
-        'Render the paths to their target DIBs
-        tmpPath.fillPathToDIB_BareBrush tmpBrush, hDIB(i)
-        tmpPath.strokePathToDIB_BarePen tmpPen, hDIB(i)
-        
-        tmpPathLog.fillPathToDIB_BareBrush tmpBrush, hLogDIB(i)
-        tmpPathLog.strokePathToDIB_BarePen tmpPen, hLogDIB(i)
-        
-        'Free our pen and brush resources
-        GDI_Plus.releaseGDIPlusPen tmpPen
-        GDI_Plus.releaseGDIPlusBrush tmpBrush
-        
-    Next i
-
 End Sub
 
 Private Sub Form_Load()

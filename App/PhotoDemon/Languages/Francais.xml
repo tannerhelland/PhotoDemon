@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.78</langversion>
+<langversion>6.7.79</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -474,13 +474,13 @@
 </phrase>
 
 <phrase>
-<original>new color</original>
-<translation>couleur nouvelle</translation>
+<original>color to replace (right-click preview to select)</original>
+<translation>couleur à remplacer (clic droit pour sélectionner l)</translation>
 </phrase>
 
 <phrase>
-<original>color to replace (right-click preview to select)</original>
-<translation>couleur à remplacer (clic droit pour sélectionner l)</translation>
+<original>new color</original>
+<translation>couleur nouvelle</translation>
 </phrase>
 
 <phrase>
@@ -1402,8 +1402,8 @@
 </phrase>
 
 <phrase>
-<original>toning strength</original>
-<translation>force de virage</translation>
+<original>highlight color</original>
+<translation>couleur d'accompagnement </translation>
 </phrase>
 
 <phrase>
@@ -1412,8 +1412,8 @@
 </phrase>
 
 <phrase>
-<original>highlight color</original>
-<translation>couleur d'accompagnement </translation>
+<original>toning strength</original>
+<translation>force de virage</translation>
 </phrase>
 
 <phrase>
@@ -1490,13 +1490,13 @@
 </phrase>
 
 <phrase>
-<original>transparency cut-off</original>
-<translation>culture de la transparence</translation>
+<original>background color for compositing</original>
+<translation>couleur de fond pour le compositing</translation>
 </phrase>
 
 <phrase>
-<original>background color for compositing</original>
-<translation>couleur de fond pour le compositing</translation>
+<original>transparency cut-off</original>
+<translation>culture de la transparence</translation>
 </phrase>
 
 <phrase>
@@ -1735,21 +1735,6 @@
 </phrase>
 
 <phrase>
-<original>solid fill settings</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color</original>
-<translation>couleur</translation>
-</phrase>
-
-<phrase>
-<original>texture fill settings</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>gradient fill settings</original>
 <translation></translation>
 </phrase>
@@ -1776,6 +1761,21 @@
 
 <phrase>
 <original>background color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>solid fill settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color</original>
+<translation>couleur</translation>
+</phrase>
+
+<phrase>
+<original>texture fill settings</original>
 <translation></translation>
 </phrase>
 
@@ -1990,12 +1990,12 @@
 </phrase>
 
 <phrase>
-<original>outline style</original>
+<original>outline color and opacity</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>outline color and opacity</original>
+<original>outline style</original>
 <translation></translation>
 </phrase>
 
@@ -2252,6 +2252,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>Restart PhotoDemon</original>
+<translation>Redémarrer PhotoDemon</translation>
+</phrase>
+
+<phrase>
 <original>in the future, do not notify me of updates</original>
 <translation>à l'avenir, ne me notifier des mises à jour pas</translation>
 </phrase>
@@ -2264,11 +2269,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>Keep working</original>
 <translation>Continuez à travailler</translation>
-</phrase>
-
-<phrase>
-<original>Restart PhotoDemon</original>
-<translation>Redémarrer PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -5511,11 +5511,6 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 </phrase>
 
 <phrase>
-<original>&OK</original>
-<translation>&OK</translation>
-</phrase>
-
-<phrase>
 <original>minimize PhotoDemon prior to capture</original>
 <translation>minimiser PhotoDemon avant de capturer</translation>
 </phrase>
@@ -5565,7 +5560,7 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 <translation>S'il vous plaît sélectionner un autre.</translation>
 </phrase>
 
-<!-- File_Import_ScreenCapture.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- File_Import_ScreenCapture.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for File_Import_ScreenCapture.frm-->
 
@@ -6004,6 +5999,11 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 </phrase>
 
 <phrase>
+<original>&OK</original>
+<translation>&OK</translation>
+</phrase>
+
+<phrase>
 <original>Decrease speed</original>
 <translation>Réduire la vitesse</translation>
 </phrase>
@@ -6068,7 +6068,7 @@ Je m'excuse sincèrement pour ce désagrément, mais malheureusement, il n'y a r
 <translation>Merci d'utiliser PhotoDemon</translation>
 </phrase>
 
-<!-- Help_About.frm contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Help_About.frm contains 25 phrases. 10 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -6276,7 +6276,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>(encodage inconnue)</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 20 phrases. 7 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -8232,7 +8232,7 @@ Note: mineur texte de programme ne peut pas être mise à jour en direct. Ce tex
 <translation>rayon aiguiser </translation>
 </phrase>
 
-<!-- Select_GenericModification.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Select_GenericModification.frm contains 21 phrases. 15 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Select_GenericModification.frm-->
 
@@ -9623,8 +9623,113 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 </phrase>
 
 <phrase>
-<original>Reset all options</original>
-<translation>Réinitialiser toutes les options</translation>
+<original>Click here to reset all options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>hardware acceleration report</original>
+<translation>rapport de l'accélération matérielle</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>utilisation de la mémoire sera affichée ici</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>diagnostics de mémoire</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>emplacement des fichiers temporaires</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(disclaimer peuplée au moment de l'exécution)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>mise à jour des fichiers de langue indépendamment</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>Vérifier automatiquement les mises à jour</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>mise à jour les plugins indépendamment</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>permettre des mises à jour de ces pistes</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>options de mise à jour</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>informez-moi lorsqu'une mise à jour est prête</translation>
+</phrase>
+
+<phrase>
+<original>use high-resolution input tracking</original>
+<translation>utiliser le suivi d'entrée à haute résolution</translation>
+</phrase>
+
+<phrase>
+<original>mouse and pen input</original>
+<translation>Contribution de la souris et stylet</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent file entries</original>
+<translation>nombre maximum d'entrées de fichiers récents</translation>
+</phrase>
+
+<phrase>
+<original>recent files list</original>
+<translation>liste des fichiers récemment ouverts</translation>
+</phrase>
+
+<phrase>
+<original>recently used file shortcuts should be</original>
+<translation>raccourcis de fichiers récemment utilisés doivent être</translation>
+</phrase>
+
+<phrase>
+<original>captions</original>
+<translation>légendes</translation>
+</phrase>
+
+<phrase>
+<original>image window titles should be</original>
+<translation>titre de la fenêtre d'image doit être</translation>
+</phrase>
+
+<phrase>
+<original>image canvas background</original>
+<translation>toile de fond l'image</translation>
+</phrase>
+
+<phrase>
+<original>canvas appearance</original>
+<translation>aspect toile</translation>
 </phrase>
 
 <phrase>
@@ -9848,123 +9953,8 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 </phrase>
 
 <phrase>
-<original>Click to open a browse-for-folder dialog</original>
-<translation>Cliquez pour ouvrir un dialogue de parcourir-pour-dossier</translation>
-</phrase>
-
-<phrase>
-<original>hardware acceleration report</original>
-<translation>rapport de l'accélération matérielle</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>utilisation de la mémoire sera affichée ici</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>diagnostics de mémoire</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>emplacement des fichiers temporaires</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(disclaimer peuplée au moment de l'exécution)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>mise à jour des fichiers de langue indépendamment</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>Vérifier automatiquement les mises à jour</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>mise à jour les plugins indépendamment</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>permettre des mises à jour de ces pistes</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>options de mise à jour</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>informez-moi lorsqu'une mise à jour est prête</translation>
-</phrase>
-
-<phrase>
-<original>use high-resolution input tracking</original>
-<translation>utiliser le suivi d'entrée à haute résolution</translation>
-</phrase>
-
-<phrase>
-<original>mouse and pen input</original>
-<translation>Contribution de la souris et stylet</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>nombre maximum d'entrées de fichiers récents</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>liste des fichiers récemment ouverts</translation>
-</phrase>
-
-<phrase>
-<original>recently used file shortcuts should be</original>
-<translation>raccourcis de fichiers récemment utilisés doivent être</translation>
-</phrase>
-
-<phrase>
-<original>captions</original>
-<translation>légendes</translation>
-</phrase>
-
-<phrase>
-<original>image window titles should be</original>
-<translation>titre de la fenêtre d'image doit être</translation>
-</phrase>
-
-<phrase>
-<original>image canvas background</original>
-<translation>toile de fond l'image</translation>
-</phrase>
-
-<phrase>
-<original>canvas appearance</original>
-<translation>aspect toile</translation>
-</phrase>
-
-<phrase>
 <original>(none)</original>
 <translation>(aucun)</translation>
-</phrase>
-
-<phrase>
-<original>ICC Profiles</original>
-<translation>Profils ICC</translation>
-</phrase>
-
-<phrase>
-<original>Please select a color profile</original>
-<translation>S'il vous plaît sélectionner un profil de couleur</translation>
 </phrase>
 
 <phrase>
@@ -9975,6 +9965,16 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 <phrase>
 <original>Preferences updated.</original>
 <translation>Préférences mis à jour.</translation>
+</phrase>
+
+<phrase>
+<original>ICC Profiles</original>
+<translation>Profils ICC</translation>
+</phrase>
+
+<phrase>
+<original>Please select a color profile</original>
+<translation>S'il vous plaît sélectionner un profil de couleur</translation>
 </phrase>
 
 <phrase>
@@ -10520,7 +10520,7 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 <translation>ATTENTION: ce dossier est invalide (accès interdit). S'il vous plaît fournir un dossier valide. Si aucun nouveau dossier est fourni, PhotoDemon va utiliser l'emplacement par défaut du système temp.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 247 phrases. 68 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 245 phrases. 66 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -10532,13 +10532,8 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 </phrase>
 
 <phrase>
-<original>&Reset all plugin options</original>
-<translation>&Réinitialiser toutes les options du plugin</translation>
-</phrase>
-
-<phrase>
-<original>Use this to reset all plugin-related options to their default state.  This action cannot be undone.</original>
-<translation>Utilisez cette option pour toutes les options plug-in liés à leurs valeurs par défaut. Cette action ne peut pas être annulée.</translation>
+<original>Reset all plugin options</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10776,7 +10771,7 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 <translation>non présent</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 81 phrases. 31 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
 
@@ -13772,21 +13767,26 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <!-- BEGIN text for fxPreview.ctl -->
 
 <phrase>
-<original>show original image</original>
-<translation>Affichage de l'image d'origine</translation>
+<original>before</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>show effect preview</original>
-<translation>Affichage Exemple de l'impact</translation>
+<original>after</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>show original image (alt+t)</original>
-<translation>montrer l'image originale (alt+t)</translation>
+<original>1:1</original>
+<translation></translation>
 </phrase>
 
-<!-- fxPreview.ctl contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>fit</original>
+<translation></translation>
+</phrase>
+
+<!-- fxPreview.ctl contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <!-- END text for fxPreview.ctl-->
 
@@ -14108,8 +14108,8 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 
 <phrasecount>2433</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4194 phrases. -->
-<!-- 1761 are duplicates, so only 2433 unique phrases have been written to file. -->
-<!-- These 2433 phrases contain approximately 13265 total words. -->
+<!-- As of this build, PhotoDemon contains 4175 phrases. -->
+<!-- 1742 are duplicates, so only 2433 unique phrases have been written to file. -->
+<!-- These 2433 phrases contain approximately 13241 total words. -->
 
 </pdData>

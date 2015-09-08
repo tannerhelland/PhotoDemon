@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.20</langversion>
+<langversion>6.6.21</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -474,13 +474,13 @@
 </phrase>
 
 <phrase>
-<original>new color</original>
-<translation>warna baru</translation>
+<original>color to replace (right-click preview to select)</original>
+<translation>warna untuk menggantikan (klik kanan untuk memilih preview)</translation>
 </phrase>
 
 <phrase>
-<original>color to replace (right-click preview to select)</original>
-<translation>warna untuk menggantikan (klik kanan untuk memilih preview)</translation>
+<original>new color</original>
+<translation>warna baru</translation>
 </phrase>
 
 <phrase>
@@ -1402,8 +1402,8 @@
 </phrase>
 
 <phrase>
-<original>toning strength</original>
-<translation>kekuatan toning</translation>
+<original>highlight color</original>
+<translation>kemuncak warna</translation>
 </phrase>
 
 <phrase>
@@ -1412,8 +1412,8 @@
 </phrase>
 
 <phrase>
-<original>highlight color</original>
-<translation>kemuncak warna</translation>
+<original>toning strength</original>
+<translation>kekuatan toning</translation>
 </phrase>
 
 <phrase>
@@ -1490,13 +1490,13 @@
 </phrase>
 
 <phrase>
-<original>transparency cut-off</original>
-<translation>ketelusan potong</translation>
+<original>background color for compositing</original>
+<translation>warna latar belakang untuk penulisan</translation>
 </phrase>
 
 <phrase>
-<original>background color for compositing</original>
-<translation>warna latar belakang untuk penulisan</translation>
+<original>transparency cut-off</original>
+<translation>ketelusan potong</translation>
 </phrase>
 
 <phrase>
@@ -1735,21 +1735,6 @@
 </phrase>
 
 <phrase>
-<original>solid fill settings</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color</original>
-<translation>warna</translation>
-</phrase>
-
-<phrase>
-<original>texture fill settings</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>gradient fill settings</original>
 <translation></translation>
 </phrase>
@@ -1776,6 +1761,21 @@
 
 <phrase>
 <original>background color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>solid fill settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color</original>
+<translation>warna</translation>
+</phrase>
+
+<phrase>
+<original>texture fill settings</original>
 <translation></translation>
 </phrase>
 
@@ -1990,12 +1990,12 @@
 </phrase>
 
 <phrase>
-<original>outline style</original>
+<original>outline color and opacity</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>outline color and opacity</original>
+<original>outline style</original>
 <translation></translation>
 </phrase>
 
@@ -2252,6 +2252,11 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
+<original>Restart PhotoDemon</original>
+<translation>Mulakan semula PhotoDemon</translation>
+</phrase>
+
+<phrase>
 <original>in the future, do not notify me of updates</original>
 <translation>pada masa akan datang, tidak memberitahu saya tentang maklumat terbaru</translation>
 </phrase>
@@ -2264,11 +2269,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <phrase>
 <original>Keep working</original>
 <translation>terus bekerja</translation>
-</phrase>
-
-<phrase>
-<original>Restart PhotoDemon</original>
-<translation>Mulakan semula PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -5516,11 +5516,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>&OK</original>
-<translation>Oke</translation>
-</phrase>
-
-<phrase>
 <original>minimize PhotoDemon prior to capture</original>
 <translation>mengurangkan PhotoDemon sebelum menangkap</translation>
 </phrase>
@@ -5570,7 +5565,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>Sila pilih yang lain.</translation>
 </phrase>
 
-<!-- File_Import_ScreenCapture.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- File_Import_ScreenCapture.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for File_Import_ScreenCapture.frm-->
 
@@ -6009,6 +6004,11 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
+<original>&OK</original>
+<translation>Oke</translation>
+</phrase>
+
+<phrase>
 <original>Decrease speed</original>
 <translation>Kecepatan Penurunan</translation>
 </phrase>
@@ -6073,7 +6073,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>Terimakasih Telah Menggunakan PhotoDemon</translation>
 </phrase>
 
-<!-- Help_About.frm contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Help_About.frm contains 25 phrases. 10 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -6281,7 +6281,7 @@ Dukung Di Perbolehkan untuk ciri ini, Tolong Salin Berkas FreeImage.dll ke Dalam
 <translation>(pengekodan tidak diketahui)</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 20 phrases. 7 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -8237,7 +8237,7 @@ Catatan: beberapa teks Program kecil tidak bisa hidup-update. Teks tersebut akan
 <translation>mengasah jejari</translation>
 </phrase>
 
-<!-- Select_GenericModification.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Select_GenericModification.frm contains 21 phrases. 15 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Select_GenericModification.frm-->
 
@@ -9627,8 +9627,113 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>Reset all options</original>
-<translation>Tetapkan semula semua pilihan</translation>
+<original>Click here to reset all options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>hardware acceleration report</original>
+<translation>perkakasan laporan percepatan</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>penggunaan memori akan dipaparkan di sini</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>diagnostik memori</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>lokasi berkas sementara</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(Sangkalan Populasi di jangka waktu)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>Perbarui Bahasa Berkas secara bebas</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>secara Otomatis Mengecek Pembaruan</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>Perbarui Plugin secara bebas</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>membolehkan Memperbarui pada trek ini</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>Pilihan Perbarui</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>memberitahu saya apabila Perbarui bersedia</translation>
+</phrase>
+
+<phrase>
+<original>use high-resolution input tracking</original>
+<translation>menggunakan input resolusi tinggi</translation>
+</phrase>
+
+<phrase>
+<original>mouse and pen input</original>
+<translation>Mouse dan input pen</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent file entries</original>
+<translation>Bilangan maksimum penyertaan Berkas baru-baru ini</translation>
+</phrase>
+
+<phrase>
+<original>recent files list</original>
+<translation>Daftar Berkas baru-baru ini</translation>
+</phrase>
+
+<phrase>
+<original>recently used file shortcuts should be</original>
+<translation>Jalan Pintas Berks baru-baru ini yang harus di gunakan</translation>
+</phrase>
+
+<phrase>
+<original>captions</original>
+<translation>Tulisan</translation>
+</phrase>
+
+<phrase>
+<original>image window titles should be</original>
+<translation>Judul Jendela Gambar harus</translation>
+</phrase>
+
+<phrase>
+<original>image canvas background</original>
+<translation>latar belakang kanvas Gambar</translation>
+</phrase>
+
+<phrase>
+<original>canvas appearance</original>
+<translation>penampilan kanvas</translation>
 </phrase>
 
 <phrase>
@@ -9852,123 +9957,8 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>Click to open a browse-for-folder dialog</original>
-<translation>Klik untuk membuka dialog browse untuk folder</translation>
-</phrase>
-
-<phrase>
-<original>hardware acceleration report</original>
-<translation>perkakasan laporan percepatan</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>penggunaan memori akan dipaparkan di sini</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>diagnostik memori</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>lokasi berkas sementara</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(Sangkalan Populasi di jangka waktu)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>Perbarui Bahasa Berkas secara bebas</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>secara Otomatis Mengecek Pembaruan</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>Perbarui Plugin secara bebas</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>membolehkan Memperbarui pada trek ini</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>Pilihan Perbarui</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>memberitahu saya apabila Perbarui bersedia</translation>
-</phrase>
-
-<phrase>
-<original>use high-resolution input tracking</original>
-<translation>menggunakan input resolusi tinggi</translation>
-</phrase>
-
-<phrase>
-<original>mouse and pen input</original>
-<translation>Mouse dan input pen</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>Bilangan maksimum penyertaan Berkas baru-baru ini</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>Daftar Berkas baru-baru ini</translation>
-</phrase>
-
-<phrase>
-<original>recently used file shortcuts should be</original>
-<translation>Jalan Pintas Berks baru-baru ini yang harus di gunakan</translation>
-</phrase>
-
-<phrase>
-<original>captions</original>
-<translation>Tulisan</translation>
-</phrase>
-
-<phrase>
-<original>image window titles should be</original>
-<translation>Judul Jendela Gambar harus</translation>
-</phrase>
-
-<phrase>
-<original>image canvas background</original>
-<translation>latar belakang kanvas Gambar</translation>
-</phrase>
-
-<phrase>
-<original>canvas appearance</original>
-<translation>penampilan kanvas</translation>
-</phrase>
-
-<phrase>
 <original>(none)</original>
 <translation>(Tiada)</translation>
-</phrase>
-
-<phrase>
-<original>ICC Profiles</original>
-<translation>Profil ICC</translation>
-</phrase>
-
-<phrase>
-<original>Please select a color profile</original>
-<translation>tolong pilih profil warna</translation>
 </phrase>
 
 <phrase>
@@ -9979,6 +9969,16 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 <phrase>
 <original>Preferences updated.</original>
 <translation>Keutamaan perbarui.</translation>
+</phrase>
+
+<phrase>
+<original>ICC Profiles</original>
+<translation>Profil ICC</translation>
+</phrase>
+
+<phrase>
+<original>Please select a color profile</original>
+<translation>tolong pilih profil warna</translation>
 </phrase>
 
 <phrase>
@@ -10524,7 +10524,7 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <translation>Bahaya: folder ini adalah tidak sah (akses dilarang). Tolong berikan folder yang sah. Jika tiada folder baru disediakan, PhotoDemon akan menggunakan lokasi temp default sistem.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 247 phrases. 68 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 245 phrases. 66 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -10536,13 +10536,8 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 </phrase>
 
 <phrase>
-<original>&Reset all plugin options</original>
-<translation>Menetapkan semula semua pilihan plugin</translation>
-</phrase>
-
-<phrase>
-<original>Use this to reset all plugin-related options to their default state.  This action cannot be undone.</original>
-<translation>Gunakan ini untuk menetapkan semula semua pilihan-plugin yang berkaitan dengan keadaan lalai mereka. Tindakan ini tidak boleh dibuat asal.</translation>
+<original>Reset all plugin options</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10780,7 +10775,7 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 <translation>hilang</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 81 phrases. 31 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
 
@@ -13777,21 +13772,26 @@ Please masukkan nilai berangka.</translation>
 <!-- BEGIN text for fxPreview.ctl -->
 
 <phrase>
-<original>show original image</original>
-<translation>menunjukkan imej asal</translation>
+<original>before</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>show effect preview</original>
-<translation>menunjukkan kesan pratonton</translation>
+<original>after</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>show original image (alt+t)</original>
-<translation>menunjukkan imej asal (alt t)</translation>
+<original>1:1</original>
+<translation></translation>
 </phrase>
 
-<!-- fxPreview.ctl contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>fit</original>
+<translation></translation>
+</phrase>
+
+<!-- fxPreview.ctl contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <!-- END text for fxPreview.ctl-->
 
@@ -14113,8 +14113,8 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 
 <phrasecount>2433</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4194 phrases. -->
-<!-- 1761 are duplicates, so only 2433 unique phrases have been written to file. -->
-<!-- These 2433 phrases contain approximately 13265 total words. -->
+<!-- As of this build, PhotoDemon contains 4175 phrases. -->
+<!-- 1742 are duplicates, so only 2433 unique phrases have been written to file. -->
+<!-- These 2433 phrases contain approximately 13241 total words. -->
 
 </pdData>
