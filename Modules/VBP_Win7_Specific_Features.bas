@@ -182,7 +182,7 @@ End Function
 Public Sub prepWin7Features()
 
     'To disable this functionality (e.g during testing), change this line to FALSE.  It will prevent any further execution of Win7-specific features.
-    win7FeaturesAllowed = True
+    win7FeaturesAllowed = False
     
     If win7FeaturesAllowed Then
         Dim CLSID As Guid, InterfaceGuid As Guid
