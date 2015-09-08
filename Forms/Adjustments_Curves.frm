@@ -33,15 +33,6 @@ Begin VB.Form FormCurves
       Width           =   13095
       _ExtentX        =   23098
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -277,9 +268,8 @@ Attribute VB_Exposed = False
 'Image Curves Adjustment Dialog
 'Copyright 2008-2015 by Tanner Helland
 'Created: sometime 2008
-'Last updated: 16/January/15
-'Last update: switch from gamma-based correction to a pure transfer map.  This makes the tool behave slightly different
-'              from PhotoShop's Curves tool, but it simplifies the code and IMO produces a more visually pleasing result.
+'Last updated: 07/September/15
+'Last update: unify the histogram UI renderer with the Levels dialog, which greatly simplifies the dialog loading code
 '
 'Standard luminosity adjustment via curves.  This dialog is based heavily on similar tools in other photo editors, but
 ' with a few neat options of its own.  The curve rendering area has received a great deal of attention; small touches
@@ -349,14 +339,11 @@ Private hMaxLog() As Double
 Private hMaxPosition() As Byte
 
 'An image of the current image histogram is drawn once each for regular and logarithmic, then stored to these DIBs.
-Private hDIB(0 To 3) As pdDIB, hLogDIB(0 To 3) As pdDIB
+Private hDIB() As pdDIB, hLogDIB() As pdDIB
 
 'The current mouse coordinates are rendered to this DIB, which is then overlaid atop the curve box
 Private mouseCoordFont As pdFont
 Private mouseCoordDIB As pdDIB
-
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
 
 'When the active channel is changed, redraw the curve display
 Private Sub btsChannel_Click(ByVal buttonIndex As Long)
@@ -713,71 +700,14 @@ Private Sub Form_Activate()
     isMouseDown = False
     
     'Fill the histogram arrays
-    fillHistogramArrays hData, hDataLog, hMax, hMaxLog, hMaxPosition
+    Histogram_Analysis.fillHistogramArrays hData, hDataLog, hMax, hMaxLog, hMaxPosition
     
-    Dim yMax As Double
-    Dim hLookupX() As Double
-    Dim hColor As Long
-    
-    'Initialize the background histogram image DIBs
-    Dim i As Long, j As Long
-    
-    For i = 0 To 3
-    
-        'Initialize this channel's DIB
-        Set hDIB(i) = New pdDIB
-        Set hLogDIB(i) = New pdDIB
-        hDIB(i).createBlank picDraw.ScaleWidth - (previewBorder * 2) - 1, picDraw.ScaleHeight - (previewBorder * 2) - 1
-        hLogDIB(i).createFromExistingDIB hDIB(i)
-        
-        yMax = 0.9 * hDIB(i).getDIBHeight
-        
-        'Build a look-up table of x-positions for the histogram data
-        ReDim hLookupX(0 To 255) As Double
-        
-        For j = 0 To 255
-            hLookupX(j) = (CDbl(j) / 255) * hDIB(i).getDIBWidth
-        Next j
-        
-        'The color of the histogram changes for each channel
-        Select Case i
-        
-            'Red
-            Case 0
-                hColor = RGB(255, 60, 80)
-            
-            'Green
-            Case 1
-                hColor = RGB(60, 210, 80)
-            
-            'Blue
-            Case 2
-                hColor = RGB(60, 100, 255)
-            
-            'Luminance
-            Case 3
-                hColor = RGB(192, 192, 192)
-        
-        
-        End Select
-        
-        'Render the histogram data to each DIB (one for regular, one for logarithmic)
-        For j = 1 To 255
-            GDIPlusDrawLineToDC hDIB(i).getDIBDC, hLookupX(j - 1), hDIB(i).getDIBHeight - (hData(i, j - 1) / hMax(i)) * yMax, hLookupX(j), hDIB(i).getDIBHeight - (hData(i, j) / hMax(i)) * yMax, hColor, 255
-            GDIPlusDrawLineToDC hLogDIB(i).getDIBDC, hLookupX(j - 1), hDIB(i).getDIBHeight - (hDataLog(i, j - 1) / hMaxLog(i)) * yMax, hLookupX(j), hDIB(i).getDIBHeight - (hDataLog(i, j) / hMaxLog(i)) * yMax, hColor, 255
-        Next j
-        
-        'Beneath each line, add an even lighter "filled" version of the line
-        For j = 0 To 255
-            GDIPlusDrawLineToDC hDIB(i).getDIBDC, hLookupX(j), hDIB(i).getDIBHeight - (hData(i, j) / hMax(i)) * yMax - 1, hLookupX(j), hDIB(i).getDIBHeight, hColor, 128
-            GDIPlusDrawLineToDC hLogDIB(i).getDIBDC, hLookupX(j), hDIB(i).getDIBHeight - (hDataLog(i, j) / hMaxLog(i)) * yMax - 1, hLookupX(j), hDIB(i).getDIBHeight, hColor, 128
-        Next j
-    
-    Next i
+    'Generate matching overlay images
+    Histogram_Analysis.generateHistogramImages hData, hMax, hDIB, picDraw.ScaleWidth - (previewBorder * 2) - 1, picDraw.ScaleHeight - (previewBorder * 2) - 1
+    Histogram_Analysis.generateHistogramImages hDataLog, hMaxLog, hLogDIB, picDraw.ScaleWidth - (previewBorder * 2) - 1, picDraw.ScaleHeight - (previewBorder * 2) - 1
         
     'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    makeFormPretty Me
     
     cmdBar.markPreviewStatus True
     updatePreview
@@ -911,6 +841,8 @@ Private Sub redrawPreviewBox()
     picDraw.Picture = LoadPicture("")
     
     'Start by copying the proper histogram image into the picture box
+    On Error GoTo skipHistogramRender
+    
     Select Case btsHistogram.ListIndex
     
         'No histogram
@@ -918,16 +850,17 @@ Private Sub redrawPreviewBox()
         
         'Normal histogram
         Case 1
-            BitBlt picDraw.hDC, previewBorder + 1, previewBorder + 1, hDIB(m_curChannel).getDIBWidth, hDIB(m_curChannel).getDIBHeight, hDIB(m_curChannel).getDIBDC, 0, 0, vbSrcCopy
-        
+            hDIB(m_curChannel).alphaBlendToDC picDraw.hDC, , previewBorder + 1, previewBorder + 1
+            
         'Logarithmic histogram
         Case 2
-            BitBlt picDraw.hDC, previewBorder + 1, previewBorder + 1, hDIB(m_curChannel).getDIBWidth, hDIB(m_curChannel).getDIBHeight, hLogDIB(m_curChannel).getDIBDC, 0, 0, vbSrcCopy
+            hLogDIB(m_curChannel).alphaBlendToDC picDraw.hDC, , previewBorder + 1, previewBorder + 1
         
     End Select
     
     'Next, draw a grid that separates the image into 16 segments; this helps orient the user, and it also provides a
     ' border for the drawing area (important since that area sits well within the picture box itself).
+skipHistogramRender:
     picDraw.DrawWidth = 1
     picDraw.ForeColor = RGB(172, 172, 172)
     
@@ -1022,8 +955,20 @@ Private Sub redrawPreviewBox()
         coordStringHeight = mouseCoordFont.getHeightOfWordwrapString(coordString, coordStringWidth + 1)
         
         'Create a new DIB at the size of the string (with a slight bit of padding on all sides)
-        mouseCoordDIB.createBlank coordStringWidth + fixDPI(8), coordStringHeight + fixDPI(5), 24, RGB(255, 255, 255)
+        Dim coordBoxWidth As Long, coordBoxHeight As Long
+        coordBoxWidth = coordStringWidth + fixDPI(8)
+        coordBoxHeight = coordStringHeight + fixDPI(5)
         
+        If mouseCoordDIB Is Nothing Then
+            mouseCoordDIB.createBlank coordBoxWidth, coordBoxHeight, 24, RGB(255, 255, 255)
+        Else
+            If (mouseCoordDIB.getDIBWidth <> coordBoxWidth) Or (mouseCoordDIB.getDIBHeight <> coordBoxHeight) Then
+                mouseCoordDIB.createBlank coordBoxWidth, coordBoxHeight, 24, RGB(255, 255, 255)
+            Else
+                mouseCoordDIB.resetDIB 255
+            End If
+        End If
+                
         'Render the coordinate string onto the temporary DIB
         mouseCoordFont.attachToDC mouseCoordDIB.getDIBDC
         mouseCoordFont.fastRenderMultilineText fixDPI(4), fixDPI(2), coordString

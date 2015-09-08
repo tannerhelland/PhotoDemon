@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.78</langversion>
+<langversion>6.7.79</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -474,13 +474,13 @@
 </phrase>
 
 <phrase>
-<original>new color</original>
-<translation>ny färg</translation>
+<original>color to replace (right-click preview to select)</original>
+<translation>färg för att ersätta (högerklicka på förhandsvisningen för att välja)</translation>
 </phrase>
 
 <phrase>
-<original>color to replace (right-click preview to select)</original>
-<translation>färg för att ersätta (högerklicka på förhandsvisningen för att välja)</translation>
+<original>new color</original>
+<translation>ny färg</translation>
 </phrase>
 
 <phrase>
@@ -1402,8 +1402,8 @@
 </phrase>
 
 <phrase>
-<original>toning strength</original>
-<translation>toning styrka</translation>
+<original>highlight color</original>
+<translation>markeringsfärg</translation>
 </phrase>
 
 <phrase>
@@ -1412,8 +1412,8 @@
 </phrase>
 
 <phrase>
-<original>highlight color</original>
-<translation>markeringsfärg</translation>
+<original>toning strength</original>
+<translation>toning styrka</translation>
 </phrase>
 
 <phrase>
@@ -1490,13 +1490,13 @@
 </phrase>
 
 <phrase>
-<original>transparency cut-off</original>
-<translation>öppenhet cut-off</translation>
+<original>background color for compositing</original>
+<translation>bakgrundsfärg för compositing</translation>
 </phrase>
 
 <phrase>
-<original>background color for compositing</original>
-<translation>bakgrundsfärg för compositing</translation>
+<original>transparency cut-off</original>
+<translation>öppenhet cut-off</translation>
 </phrase>
 
 <phrase>
@@ -1735,21 +1735,6 @@
 </phrase>
 
 <phrase>
-<original>solid fill settings</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color</original>
-<translation>färg</translation>
-</phrase>
-
-<phrase>
-<original>texture fill settings</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>gradient fill settings</original>
 <translation></translation>
 </phrase>
@@ -1776,6 +1761,21 @@
 
 <phrase>
 <original>background color and opacity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>solid fill settings</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color</original>
+<translation>färg</translation>
+</phrase>
+
+<phrase>
+<original>texture fill settings</original>
 <translation></translation>
 </phrase>
 
@@ -1990,12 +1990,12 @@
 </phrase>
 
 <phrase>
-<original>outline style</original>
+<original>outline color and opacity</original>
 <translation></translation>
 </phrase>
 
 <phrase>
-<original>outline color and opacity</original>
+<original>outline style</original>
 <translation></translation>
 </phrase>
 
@@ -2252,6 +2252,11 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
+<original>Restart PhotoDemon</original>
+<translation>omstart PhotoDemon</translation>
+</phrase>
+
+<phrase>
 <original>in the future, do not notify me of updates</original>
 <translation>i framtiden, inte meddela mig om uppdateringar</translation>
 </phrase>
@@ -2264,11 +2269,6 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <phrase>
 <original>Keep working</original>
 <translation>Fortsätt arbeta</translation>
-</phrase>
-
-<phrase>
-<original>Restart PhotoDemon</original>
-<translation>omstart PhotoDemon</translation>
 </phrase>
 
 <phrase>
@@ -5511,11 +5511,6 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 </phrase>
 
 <phrase>
-<original>&OK</original>
-<translation>OK</translation>
-</phrase>
-
-<phrase>
 <original>minimize PhotoDemon prior to capture</original>
 <translation>minimera PhotoDemon före fånga</translation>
 </phrase>
@@ -5565,7 +5560,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation>Välj ett annat.</translation>
 </phrase>
 
-<!-- File_Import_ScreenCapture.frm contains 17 phrases. 5 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- File_Import_ScreenCapture.frm contains 15 phrases. 4 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for File_Import_ScreenCapture.frm-->
 
@@ -6004,6 +5999,11 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 </phrase>
 
 <phrase>
+<original>&OK</original>
+<translation>OK</translation>
+</phrase>
+
+<phrase>
 <original>Decrease speed</original>
 <translation>Minska hastigheten</translation>
 </phrase>
@@ -6068,7 +6068,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation>Tack för att du använder PhotoDemon</translation>
 </phrase>
 
-<!-- Help_About.frm contains 25 phrases. 11 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+<!-- Help_About.frm contains 25 phrases. 10 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for Help_About.frm-->
 
@@ -6276,7 +6276,7 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 <translation>(kodning ålder)</translation>
 </phrase>
 
-<!-- Image_Metadata.frm contains 22 phrases. 9 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
+<!-- Image_Metadata.frm contains 20 phrases. 7 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Image_Metadata.frm-->
 
@@ -8232,7 +8232,7 @@ Note förändrats framgångsrikt: några mindre program kan inte vara levande up
 <translation>vässa radie</translation>
 </phrase>
 
-<!-- Select_GenericModification.frm contains 23 phrases. 17 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Select_GenericModification.frm contains 21 phrases. 15 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Select_GenericModification.frm-->
 
@@ -9622,8 +9622,113 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 </phrase>
 
 <phrase>
-<original>Reset all options</original>
-<translation>Återställ alla alternativ</translation>
+<original>Click here to reset all options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>hardware acceleration report</original>
+<translation>hårdvaruacceleration rapport</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>minnesanvändning kommer att visas här</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>minnesdiagnostik</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>temporär fil plats</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(disclaimer befolkat vid run-time)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>uppdateringsspråk filer självständigt</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>automatiskt söka efter uppdateringar</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>uppdateringsinsticks oberoende</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>tillåter uppdateringar från dessa spår</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>uppdateringsalternativ</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>meddela mig när en uppdatering är klar</translation>
+</phrase>
+
+<phrase>
+<original>use high-resolution input tracking</original>
+<translation>Använd högupplösta ingång spårning</translation>
+</phrase>
+
+<phrase>
+<original>mouse and pen input</original>
+<translation>mus och penninmatning</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent file entries</original>
+<translation>maximala antalet poster fil senare</translation>
+</phrase>
+
+<phrase>
+<original>recent files list</original>
+<translation>lista filer nyligen</translation>
+</phrase>
+
+<phrase>
+<original>recently used file shortcuts should be</original>
+<translation>nyligen använda genvägar fil bör vara</translation>
+</phrase>
+
+<phrase>
+<original>captions</original>
+<translation>texter</translation>
+</phrase>
+
+<phrase>
+<original>image window titles should be</original>
+<translation>bildfönstertitlar bör vara</translation>
+</phrase>
+
+<phrase>
+<original>image canvas background</original>
+<translation>image kanfasbakgrund</translation>
+</phrase>
+
+<phrase>
+<original>canvas appearance</original>
+<translation>duk utseende</translation>
 </phrase>
 
 <phrase>
@@ -9847,123 +9952,8 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 </phrase>
 
 <phrase>
-<original>Click to open a browse-for-folder dialog</original>
-<translation>Klicka för att öppna ett bläddrings för-mappen dialog</translation>
-</phrase>
-
-<phrase>
-<original>hardware acceleration report</original>
-<translation>hårdvaruacceleration rapport</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>minnesanvändning kommer att visas här</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>minnesdiagnostik</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>temporär fil plats</translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(disclaimer befolkat vid run-time)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>uppdateringsspråk filer självständigt</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>automatiskt söka efter uppdateringar</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>uppdateringsinsticks oberoende</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>tillåter uppdateringar från dessa spår</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>uppdateringsalternativ</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>meddela mig när en uppdatering är klar</translation>
-</phrase>
-
-<phrase>
-<original>use high-resolution input tracking</original>
-<translation>Använd högupplösta ingång spårning</translation>
-</phrase>
-
-<phrase>
-<original>mouse and pen input</original>
-<translation>mus och penninmatning</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>maximala antalet poster fil senare</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>lista filer nyligen</translation>
-</phrase>
-
-<phrase>
-<original>recently used file shortcuts should be</original>
-<translation>nyligen använda genvägar fil bör vara</translation>
-</phrase>
-
-<phrase>
-<original>captions</original>
-<translation>texter</translation>
-</phrase>
-
-<phrase>
-<original>image window titles should be</original>
-<translation>bildfönstertitlar bör vara</translation>
-</phrase>
-
-<phrase>
-<original>image canvas background</original>
-<translation>image kanfasbakgrund</translation>
-</phrase>
-
-<phrase>
-<original>canvas appearance</original>
-<translation>duk utseende</translation>
-</phrase>
-
-<phrase>
 <original>(none)</original>
 <translation>(ingen)</translation>
-</phrase>
-
-<phrase>
-<original>ICC Profiles</original>
-<translation>ICC-profiler</translation>
-</phrase>
-
-<phrase>
-<original>Please select a color profile</original>
-<translation>Välj en färgprofil</translation>
 </phrase>
 
 <phrase>
@@ -9974,6 +9964,16 @@ To fortsätter, vänligen ladda ner en fräsch kopia av PhotoDemon från photode
 <phrase>
 <original>Preferences updated.</original>
 <translation>Inställningar uppdateras.</translation>
+</phrase>
+
+<phrase>
+<original>ICC Profiles</original>
+<translation>ICC-profiler</translation>
+</phrase>
+
+<phrase>
+<original>Please select a color profile</original>
+<translation>Välj en färgprofil</translation>
 </phrase>
 
 <phrase>
@@ -10519,7 +10519,7 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <translation>VARNING: denna mapp är ogiltigt (tillträde förbjudet). Ange en giltig mapp. Om ingen ny mapp lämnas kommer PhotoDemon använda systemets standard temp plats.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 247 phrases. 68 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 245 phrases. 66 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -10531,13 +10531,8 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
-<original>&Reset all plugin options</original>
-<translation>Återställ alla plugin alternativ</translation>
-</phrase>
-
-<phrase>
-<original>Use this to reset all plugin-related options to their default state.  This action cannot be undone.</original>
-<translation>Använd detta för att återställa alla plugin-relaterade alternativ till sitt ursprungsläge. Denna åtgärd kan inte ångras.</translation>
+<original>Reset all plugin options</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -10775,7 +10770,7 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <translation>saknas</translation>
 </phrase>
 
-<!-- Tools_PluginManager.frm contains 81 phrases. 31 were duplicates of existing phrases, so only 50 new phrases were written to file. -->
+<!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
 
@@ -13772,21 +13767,26 @@ Please ange ett numeriskt värde.</translation>
 <!-- BEGIN text for fxPreview.ctl -->
 
 <phrase>
-<original>show original image</original>
-<translation>visar originalbilden</translation>
+<original>before</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>show effect preview</original>
-<translation>visar effekten förhandsvisning</translation>
+<original>after</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>show original image (alt+t)</original>
-<translation>visa originalbilden (alt t)</translation>
+<original>1:1</original>
+<translation></translation>
 </phrase>
 
-<!-- fxPreview.ctl contains 12 phrases. 9 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>fit</original>
+<translation></translation>
+</phrase>
+
+<!-- fxPreview.ctl contains 4 phrases.  All 4 were unique, so 4 new phrases were written to file. -->
 
 <!-- END text for fxPreview.ctl-->
 
@@ -14108,8 +14108,8 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 
 <phrasecount>2433</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4194 phrases. -->
-<!-- 1761 are duplicates, so only 2433 unique phrases have been written to file. -->
-<!-- These 2433 phrases contain approximately 13265 total words. -->
+<!-- As of this build, PhotoDemon contains 4175 phrases. -->
+<!-- 1742 are duplicates, so only 2433 unique phrases have been written to file. -->
+<!-- These 2433 phrases contain approximately 13241 total words. -->
 
 </pdData>

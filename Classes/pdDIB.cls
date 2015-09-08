@@ -874,15 +874,15 @@ Public Sub eraseDIB()
     
 End Sub
 
-'Maintain the DIB's dimensions, but reset all bytes to 0.  This is done using FillMemory for maximum performance.
-Public Sub resetDIB()
+'Maintain the DIB's dimensions, but reset all bytes to some value (typically 0).  FillMemory is used for maximum performance.
+Public Sub resetDIB(Optional ByVal fillValue As Byte = 0)
 
     'Retrieve a pointer to the DIB array and the array's current size
     Dim tmpDIBPointer As Long, tmpDibSize As Long
     retrieveDIBPointerAndSize tmpDIBPointer, tmpDibSize
     
     'Erase everything
-    FillMemory tmpDIBPointer, tmpDibSize, 0
+    FillMemory tmpDIBPointer, tmpDibSize, fillValue
     
 End Sub
 
@@ -1698,18 +1698,20 @@ Public Sub alphaBlendToDC(ByVal dstDC As Long, Optional ByVal customAlpha As Lon
     Dim bfParams As Long
     
     If m_dibColorDepth = 32 Then
+        
         'Use the image's current alpha channel, and blend it with the supplied customAlpha value
         bfParams = customAlpha * &H10000 Or &H1000000
+        
+        'Also, raise a warning if premultiplication is not set
+        If Not m_IsAlphaPremultiplied Then
+            Debug.Print "WARNING!  Premultiplied alpha state is unmarked, but the AlphaBlend API is being called (via alphaBlendToDC)!"
+        End If
+    
     Else
         'Ignore alpha channel, and only use the supplied customAlpha value
         bfParams = (customAlpha * &H10000)
     End If
-    
-    'Raise a warning if premultiplication is not set
-    If Not m_IsAlphaPremultiplied Then
-        Debug.Print "WARNING!  Premultiplied alpha state is unmarked, but the AlphaBlend API is being called (via alphaBlendToDC)!"
-    End If
-    
+        
     AlphaBlend dstDC, dstX, dstY, IIf(newWidth = 0, m_dibWidth, newWidth), IIf(newHeight = 0, m_dibHeight, newHeight), m_dibDC, 0, 0, m_dibWidth, m_dibHeight, bfParams
     
 End Sub
