@@ -2524,6 +2524,7 @@ Public Function releaseGDIPlus()
     Set m_TransformDIB = Nothing
 
     GdiplusShutdown g_GDIPlusToken
+    g_ImageFormats.GDIPlusEnabled = False
     
 End Function
 

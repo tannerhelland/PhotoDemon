@@ -168,7 +168,7 @@ End Property
 
 'Erase current Buffer contents and reset all internals.
 Public Sub CloseBuf()
-    Erase Buffer
+    ReDim Buffer(0)
     mOpen = False
     mPosition = 0
     mSize = 0
@@ -207,12 +207,17 @@ Public Sub OpenBuf(Optional ByVal startingBufferSize As Long = 0)
     If mOpen Then
         Err.Raise &H8004C302, TypeName(Me), "Already open"
     Else
+        
         mOpen = True
         If startingBufferSize <= 0 Then
             ReDim Buffer(0 To mChunkSize - 1) As Byte
         Else
             ReDim Buffer(0 To startingBufferSize - 1) As Byte
         End If
+        
+        'Added by tanner: reset the buffer pointer when creating it anew
+        mPosition = 0
+        
     End If
     
 End Sub
@@ -329,29 +334,30 @@ Public Sub ShrinkBuf()
 End Sub
 
 Public Sub WriteBytes(ByRef Bytes() As Byte, Optional ByVal Length As Long = -1)
-    'Copy provided bytes into Buffer at current Position, extending
-    'Size as required, updating Position to next byte offset.
+    
+    'Copy provided bytes into Buffer at current Position, extending Size as required, and updating Position to next byte offset.
     Dim LBoundOfBytes As Long
     Dim WriteCountMinus1 As Long
     Dim WriteCount As Long
     Dim NeedAtLeastUBound As Long
     Dim UBoundOfBuffer As Long
     
-    'If not open, first call here auto-opens.
-    If Not mOpen Then OpenBuf
-    
-    LBoundOfBytes = LBound(Bytes)
-    
     'Change by Tanner: If the user has specified a Length value, use that instead of the array's upper bound.
     If Length >= 0 Then
-        WriteCountMinus1 = LBoundOfBytes + Length - 1
+        LBoundOfBytes = 0
+        WriteCountMinus1 = Length - 1
     Else
+        LBoundOfBytes = LBound(Bytes)
         WriteCountMinus1 = UBound(Bytes) - LBoundOfBytes
     End If
     
-    'Original code follows...
-    
+    'Figure out how many bytes we'll actually be writing
     WriteCount = WriteCountMinus1 + 1
+    
+    'If not open, first call here auto-opens
+    If Not mOpen Then OpenBuf WriteCount
+    
+    'Original code follows...
     NeedAtLeastUBound = mPosition + WriteCount
     UBoundOfBuffer = UBound(Buffer)
     

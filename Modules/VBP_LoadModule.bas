@@ -890,6 +890,8 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 
                 targetImage.originalFileFormat = FIF_PDI
                 targetImage.currentFileFormat = FIF_PDI
+                targetImage.originalColorDepth = 32
+                targetImage.notifyImageChanged UNDO_EVERYTHING
                 mustCountColors = False
                 
                 decoderUsed = PDIDE_INTERNAL
@@ -1029,8 +1031,13 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                     
         End Select
         
-        DoEvents
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Format-specific parsing complete.  Running a few failsafe checks on the new pdImage object..."
+        #End If
         
+        'Because ExifTool is sending us data in the background, we periodically yield for metadata piping.
+        If targetImage.originalFileFormat <> FIF_PDI Then DoEvents
+                
         '*************************************************************************************************************************************
         ' Run a few checks to confirm that the image data was loaded successfully
         '*************************************************************************************************************************************
@@ -1058,7 +1065,8 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
 
         End If
         
-        DoEvents
+        'Because ExifTool is sending us data in the background, we periodically yield for metadata piping.
+        If targetImage.originalFileFormat <> FIF_PDI Then DoEvents
         
         'If debug mode is active, post some helpful debugging information
         #If DEBUGMODE = 1 Then
@@ -1359,7 +1367,8 @@ PDI_Load_Continuation:
         
         End If
         
-        DoEvents
+        'Because ExifTool is sending us data in the background, we periodically yield for metadata piping.
+        If targetImage.originalFileFormat <> FIF_PDI Then DoEvents
         
         
         '*************************************************************************************************************************************
@@ -1400,7 +1409,8 @@ PDI_Load_Continuation:
             'Reflow any image-window-specific display elements on the actual image form (status bar, rulers, etc)
             FormMain.mainCanvas(0).fixChromeLayout
             
-            DoEvents
+            'Because ExifTool is sending us data in the background, we periodically yield for metadata piping.
+            If targetImage.originalFileFormat <> FIF_PDI Then DoEvents
             
         End If
         
@@ -1643,7 +1653,7 @@ PreloadMoreImages:
     
     #If DEBUGMODE = 1 Then
         'The line below can be uncommented to report image load times.
-        'Message "Image loaded in %1 seconds", Format$((Timer - startTime), "0.000")
+        pdDebug.LogAction "Image loaded in %1 seconds", Format$((Timer - startTime), "0.000")
     #End If
         
 End Sub
@@ -1809,6 +1819,10 @@ End Function
 ' which we do not want to Undo/Redo).  This parameter is passed to the pdImage initializer, and it tells it to ignore certain settings.
 Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdDIB, ByRef dstImage As pdImage, Optional ByVal sourceIsUndoFile As Boolean = False) As Boolean
     
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "PDI file identified.  Starting pdPackage decompression..."
+    #End If
+    
     On Error GoTo LoadPDIFail
     
     'First things first: create a pdPackage instance.  It will handle all the messy business of extracting individual data bits
@@ -1821,12 +1835,20 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
     ' Note that this step will also validate the incoming file.
     If pdiReader.readPackageFromFile(PDIPath, PD_IMAGE_IDENTIFIER) Then
     
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "pdPackage successfully read and initialized.  Starting package parsing..."
+        #End If
+    
         'First things first: extract the pdImage header, which will be in Node 0.  (We could double-check this by searching
         ' for the node entry by name, but since there is no variation, it's faster to access it directly.)
         Dim retBytes() As Byte, retString As String
         
         If pdiReader.getNodeDataByIndex(0, True, retBytes, sourceIsUndoFile) Then
-        
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Initial PDI node retrieved.  Initializing corresponding pdImage object..."
+            #End If
+            
             'Copy the received bytes into a string
             If pdiReader.getPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
                 retString = Space$((UBound(retBytes) + 1) \ 2)
@@ -1843,6 +1865,10 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
             Err.Raise PDP_GENERIC_ERROR, , "PDI Node could not be read; data invalid or checksums did not match."
         End If
         
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "pdImage created successfully.  Moving on to individual layers..."
+        #End If
+        
         'With the main pdImage now assembled, the next task is to populate all layers with two pieces of information:
         ' 1) The layer header, which contains stuff like layer name, opacity, blend mode, etc
         ' 2) Layer-specific information, which varies by layer type.  For DIBs, this will be a raw stream of bytes
@@ -1851,6 +1877,10 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
         
         Dim i As Long
         For i = 0 To dstImage.getNumOfLayers - 1
+        
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Retrieving layer header " & i & "..."
+            #End If
         
             'First, retrieve the layer's header
             If pdiReader.getNodeDataByIndex(i + 1, True, retBytes, sourceIsUndoFile) Then
@@ -1883,6 +1913,10 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
             'Image (raster) layers
             If dstImage.getLayerByIndex(i).isLayerRaster Then
                 
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Raster layer identified.  Retrieving pixel bits..."
+                #End If
+                
                 'We are going to load the node data directly into the DIB, completely bypassing the need for a temporary array.
                 Dim tmpDIBPointer As Long, tmpDIBLength As Long
                 dstImage.getLayerByIndex(i).layerDIB.retrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
@@ -1891,6 +1925,10 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
             
             'Text and other vector layers
             ElseIf dstImage.getLayerByIndex(i).isLayerVector Then
+                
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Vector layer identified.  Retrieving pixel bits..."
+                #End If
                 
                 If pdiReader.getNodeDataByIndex(i + 1, False, retBytes, sourceIsUndoFile) Then
                 
@@ -1925,8 +1963,16 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
         
         Next i
         
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "All layers loaded.  Looking for remaining non-essential PDI data..."
+        #End If
+        
         'Finally, check to see if the PDI image has a metadata entry.  If it does, load that data now.
         If pdiReader.getNodeDataByName("pdMetadata_Raw", True, retBytes, sourceIsUndoFile) Then
+        
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Raw metadata chunk found.  Retrieving now..."
+            #End If
         
             'Copy the received bytes into a string
             If pdiReader.getPDPackageVersion >= PDPACKAGE_UNICODE_FRIENDLY_VERSION Then
@@ -1947,9 +1993,14 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
         
         End If
         
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "PDI parsing complete.  Returning control to main image loader..."
+        #End If
+        
         'Funny quirk: this function has no use for the dstDIB parameter, but if that DIB returns a width/height of zero,
         ' the upstream load function will think the load process failed.  Because of that, we must initialize the DIB to *something*.
-        dstDIB.createBlank 4, 4
+        If dstDIB Is Nothing Then Set dstDIB = New pdDIB
+        dstDIB.createBlank 16, 16, 32, 0
         
         'That's all there is to it!  Mark the load as successful and carry on.
         LoadPhotoDemonImage = True
@@ -1965,7 +2016,11 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
     Exit Function
     
 LoadPDIFail:
-
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  LoadPDIFail error routine reached.  Checking for known error states..."
+    #End If
+    
     'Before falling back to a generic error message, check for a couple known problem states.
     
     'Case 1: zLib is required for this file, but the user doesn't have the zLib plugin

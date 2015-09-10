@@ -133,7 +133,7 @@ LICENSE.txt
 ##############
 ## Added for PhotoDemon compatibility testing
 ##  I keep one or more renamed PhotoDemon exe files, 
-##  basically older builds to to before and after
+##  basically older builds to do before and after
 ##  testing, in the output directory.
 ##############
 PhotoDemon-*.exe

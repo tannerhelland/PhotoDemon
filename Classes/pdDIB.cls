@@ -882,7 +882,7 @@ Public Sub resetDIB(Optional ByVal fillValue As Byte = 0)
     retrieveDIBPointerAndSize tmpDIBPointer, tmpDibSize
     
     'Erase everything
-    FillMemory tmpDIBPointer, tmpDibSize, fillValue
+    If (tmpDIBPointer > 0) And (tmpDibSize > 0) Then FillMemory tmpDIBPointer, tmpDibSize, fillValue
     
 End Sub
 
@@ -1024,7 +1024,7 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
         If Not cFile.CreateFileHandle(srcFilename, hFile, True, False, OptimizeSequentialAccess) Then
             
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  pdDIB.createFromFile failed to generate a handle for " & srcFilename & ".  Load abandoned."
+                If Not pdDebug Is Nothing Then pdDebug.LogAction "WARNING!  pdDIB.createFromFile failed to generate a handle for " & srcFilename & ".  Load abandoned."
             #End If
             
             createFromFile = False
@@ -1156,7 +1156,7 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
         
     Else
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdDIB.createFromFile failed to create a new DIB using the stored file settings.  Load abandoned."
+            If Not pdDebug Is Nothing Then pdDebug.LogAction "WARNING!  pdDIB.createFromFile failed to create a new DIB using the stored file settings.  Load abandoned."
         #End If
         createFromFile = False
     End If
@@ -1175,7 +1175,7 @@ Public Function writeToFile(ByRef dstFilename As String, Optional ByVal toCompre
     If (Me.getDIBWidth <= 0) Or (Me.getDIBHeight <= 0) Then
         
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdDIB.writeToFile was called on an empty DIB.  Fix this!"
+            If Not pdDebug Is Nothing Then pdDebug.LogAction "WARNING!  pdDIB.writeToFile was called on an empty DIB.  Fix this!"
         #End If
         
         writeToFile = False
@@ -1197,7 +1197,7 @@ Public Function writeToFile(ByRef dstFilename As String, Optional ByVal toCompre
         If Not cFile.CreateFileHandle(dstFilename, hFile, True, True, OptimizeSequentialAccess) Then
         
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  pdDIB.writeToFile failed to create a file handle for " & dstFilename & ".  Write abandoned."
+                If Not pdDebug Is Nothing Then pdDebug.LogAction "WARNING!  pdDIB.writeToFile failed to create a file handle for " & dstFilename & ".  Write abandoned."
             #End If
             
             writeToFile = False
@@ -1265,7 +1265,7 @@ Public Function writeToFile(ByRef dstFilename As String, Optional ByVal toCompre
         Else
             
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  pdDIB.writeToFile requested zLib compression, but zLib is missing or disabled.  Data will not be compressed!"
+                If Not pdDebug Is Nothing Then pdDebug.LogAction "WARNING!  pdDIB.writeToFile requested zLib compression, but zLib is missing or disabled.  Data will not be compressed!"
             #End If
             
             toCompress = False
@@ -1369,12 +1369,12 @@ Public Sub writeToBitmapFile(ByRef dstFilename As String)
         cFile.CloseFileHandle hFile
 
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "pdDIB.writeToBitmapFile successfully wrote " & dstFilename & "."
+            If Not pdDebug Is Nothing Then pdDebug.LogAction "pdDIB.writeToBitmapFile successfully wrote " & dstFilename & "."
         #End If
 
     Else
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  pdDIB.writeToBitmapFile failed to create a valid file handle for " & dstFilename & ".  Write abandoned."
+            If Not pdDebug Is Nothing Then pdDebug.LogAction "WARNING!  pdDIB.writeToBitmapFile failed to create a valid file handle for " & dstFilename & ".  Write abandoned."
         #End If
     End If
         

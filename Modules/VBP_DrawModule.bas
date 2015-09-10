@@ -864,5 +864,5 @@ Public Function getTemporaryDC() As Long
 End Function
 
 Public Sub freeTemporaryDC(ByVal srcDC As Long)
-    DeleteDC srcDC
+    If srcDC <> 0 Then DeleteDC srcDC
 End Sub

@@ -206,7 +206,7 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
         Me.LogAction "(End of pre-initialization data)"
         
         'We don't need the backup messages any more, so we are free to release them into the ether
-        Erase backupMessages
+        ReDim backupMessages(0) As String
         numBackupMessages = 0
         
     End If
@@ -392,7 +392,7 @@ Private Sub Class_Initialize()
 
 End Sub
 
-Private Sub Class_Terminate()
+Public Sub TerminateDebugger()
 
     'If logging is active, post a final message
     If m_debuggerActive Then
@@ -401,7 +401,13 @@ Private Sub Class_Terminate()
         Open m_logPath For Append As #m_FileHandle
             Print #m_FileHandle, "-- END SESSION REPORT --"
         Close #m_FileHandle
+        
+        m_debuggerActive = False
     
     End If
-    
+
+End Sub
+
+Private Sub Class_Terminate()
+    TerminateDebugger
 End Sub

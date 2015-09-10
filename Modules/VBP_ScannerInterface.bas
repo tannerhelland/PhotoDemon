@@ -48,13 +48,17 @@ Public Function getEZTwainVersion() As String
 
     hLib_Scanner = LoadLibrary(g_PluginPath & "eztw32.dll")
     
-    Dim ezVer As Long
-    ezVer = TWAIN_EasyVersion
+    If hLib_Scanner <> 0 Then
     
-    FreeLibrary hLib_Scanner
-    
-    'The TWAIN version is the version number * 100.  Modify the return string accordingly
-    getEZTwainVersion = (ezVer \ 100) & "." & (ezVer Mod 100) & ".0.0"
+        Dim ezVer As Long
+        ezVer = TWAIN_EasyVersion
+        
+        FreeLibrary hLib_Scanner
+        
+        'The TWAIN version is the version number * 100.  Modify the return string accordingly
+        getEZTwainVersion = (ezVer \ 100) & "." & (ezVer Mod 100) & ".0.0"
+        
+    End If
 
 End Function
 
@@ -63,9 +67,12 @@ Public Function EnableScanner() As Boolean
 
     hLib_Scanner = LoadLibrary(g_PluginPath & "eztw32.dll")
     
-    If TWAIN_IsAvailable() = 0 Then EnableScanner = False Else EnableScanner = True
-    
-    FreeLibrary hLib_Scanner
+    If hLib_Scanner <> 0 Then
+        If TWAIN_IsAvailable() = 0 Then EnableScanner = False Else EnableScanner = True
+        FreeLibrary hLib_Scanner
+    Else
+        EnableScanner = False
+    End If
     
 End Function
 

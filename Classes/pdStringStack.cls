@@ -501,6 +501,7 @@ Public Sub resetStack(Optional ByVal newStackSize As Long = INIT_STACK_SIZE)
     Exit Sub
     
 FailsafeReset:
+    If newStackSize <= 0 Then newStackSize = INIT_STACK_SIZE
     ReDim m_Strings(0 To newStackSize - 1) As String
     
 End Sub
