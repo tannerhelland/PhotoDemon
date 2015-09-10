@@ -77,15 +77,6 @@ Begin VB.Form FormBoxBlur
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin VB.Label lblIDEWarning 
@@ -151,7 +142,7 @@ Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional 
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    prepImageData dstSA, toPreview, dstPic, , , True
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent blurred pixel values from spreading across the image as we go.)
@@ -175,7 +166,7 @@ Public Sub BoxBlurFilter(ByVal hRadius As Long, ByVal vRadius As Long, Optional 
     Set srcDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
+    finalizeImageData toPreview, dstPic, True
 
 End Sub
 
