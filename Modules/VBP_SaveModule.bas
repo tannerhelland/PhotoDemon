@@ -732,6 +732,10 @@ Public Function SavePhotoDemonImage(ByRef srcPDImage As pdImage, ByVal PDIPath A
     
     On Error GoTo SavePDIError
     
+    'Perform a few failsafe checks
+    If srcPDImage Is Nothing Then Exit Function
+    If Len(PDIPath) = 0 Then Exit Function
+    
     Dim sFileType As String
     sFileType = "PDI"
     
@@ -837,6 +841,11 @@ End Function
 Public Function SavePhotoDemonLayer(ByRef srcLayer As pdLayer, ByVal PDIPath As String, Optional ByVal suppressMessages As Boolean = False, Optional ByVal compressHeaders As Boolean = True, Optional ByVal compressLayers As Boolean = True, Optional ByVal embedChecksums As Boolean = True, Optional ByVal writeHeaderOnlyFile As Boolean = False, Optional ByVal compressionLevel As Long = -1) As Boolean
     
     On Error GoTo SavePDLayerError
+    
+    'Perform a few failsafe checks
+    If srcLayer Is Nothing Then Exit Function
+    If srcLayer.layerDIB Is Nothing Then Exit Function
+    If Len(PDIPath) = 0 Then Exit Function
     
     Dim sFileType As String
     sFileType = "PDI"

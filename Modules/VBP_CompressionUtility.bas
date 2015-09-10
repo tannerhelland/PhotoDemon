@@ -46,7 +46,8 @@ End Function
 
 'When PD closes, make sure to release our open zLib handle!
 Public Sub releaseZLib()
-    FreeLibrary m_ZLibHandle
+    If m_ZLibHandle <> 0 Then FreeLibrary m_ZLibHandle
+    g_ZLibEnabled = False
 End Sub
 
 'Return the current zLib version

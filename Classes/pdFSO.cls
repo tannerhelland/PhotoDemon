@@ -261,21 +261,21 @@ End Function
 ' to calling this function, it will still return TRUE.)
 '
 'A FALSE return indicates the file still exists.  The debug window will contain additional debug data.
-Public Function KillFile(ByVal srcFileName As String, Optional ByVal attemptToKillEvenIfNotFound As Boolean = False) As Boolean
+Public Function KillFile(ByVal srcFilename As String, Optional ByVal attemptToKillEvenIfNotFound As Boolean = False) As Boolean
     
     'If the file doesn't exist, return TRUE in advance.
     ' (Note that the user can override this behavior, and attempt a kill regardless of FileExists's return value)
-    If FileExist(srcFileName) Or attemptToKillEvenIfNotFound Then
+    If FileExist(srcFilename) Or attemptToKillEvenIfNotFound Then
     
         Dim APIReturn As Long
-        APIReturn = DeleteFileW(StrPtr(srcFileName))
+        APIReturn = DeleteFileW(StrPtr(srcFilename))
         
         If APIReturn <> 0 Then
             KillFile = True
         Else
             KillFile = False
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING! KillFile was unable to kill " & srcFileName & " due to WAPI error " & Err.LastDllError
+                pdDebug.LogAction "WARNING! KillFile was unable to kill " & srcFilename & " due to WAPI error " & Err.LastDllError
             #End If
         End If
         
@@ -286,27 +286,27 @@ Public Function KillFile(ByVal srcFileName As String, Optional ByVal attemptToKi
 End Function
 
 'Copy a given file.  Returns TRUE if successful; false otherwise.  The debug window will contain additional failure information.
-Public Function CopyFile(ByVal srcFileName As String, ByVal dstFilename As String) As Boolean
+Public Function CopyFile(ByVal srcFilename As String, ByVal dstFilename As String) As Boolean
 
     'If the source file doesn't exist, fail in advance
-    If FileExist(srcFileName) Then
+    If FileExist(srcFilename) Then
     
         Dim copyResult As Long
-        copyResult = CopyFileW(StrPtr(srcFileName), StrPtr(dstFilename), 0)
+        copyResult = CopyFileW(StrPtr(srcFilename), StrPtr(dstFilename), 0)
         
         If copyResult <> 0 Then
             CopyFile = True
         Else
             CopyFile = False
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING! CopyFile was unable to copy " & srcFileName & " due to WAPI error " & Err.LastDllError
+                pdDebug.LogAction "WARNING! CopyFile was unable to copy " & srcFilename & " due to WAPI error " & Err.LastDllError
             #End If
         End If
     
     Else
     
         CopyFile = False
-        Debug.Print "WARNING! CopyFile failed because the source file (" & srcFileName & ") doesn't exist."
+        Debug.Print "WARNING! CopyFile failed because the source file (" & srcFilename & ") doesn't exist."
     
     End If
 
@@ -1215,7 +1215,7 @@ Private Function StringsEqual(ByRef srcString1 As String, ByRef srcString2 As St
 End Function
 
 'Given a potential filename, scan and replace any invalid characters with a character of the caller's choosing
-Public Function MakeValidWindowsFilename(ByVal srcFileName As String, Optional ByVal replacementChar As String = "_") As String
+Public Function MakeValidWindowsFilename(ByVal srcFilename As String, Optional ByVal replacementChar As String = "_") As String
     
     Dim strInvalidChars As String
     strInvalidChars = "\/*?""<>|:"
@@ -1228,11 +1228,11 @@ Public Function MakeValidWindowsFilename(ByVal srcFileName As String, Optional B
         testChar = Mid$(strInvalidChars, i, 1)
     
         'If this invalid character exists in the target string, replace it with whatever the user specified
-        If InStr(1, srcFileName, testChar, vbBinaryCompare) Then srcFileName = Replace$(srcFileName, testChar, replacementChar)
+        If InStr(1, srcFilename, testChar, vbBinaryCompare) Then srcFilename = Replace$(srcFilename, testChar, replacementChar)
         
     Next i
     
-    MakeValidWindowsFilename = srcFileName
+    MakeValidWindowsFilename = srcFilename
 
 End Function
 

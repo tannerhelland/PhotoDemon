@@ -1718,7 +1718,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
                 Debug.Print "Successfully patched " & getFilenameWithoutExtension(savedToThisFile) & ".xml."
                 
             Else
-                Debug.Print "Patching of " & getFilename(savedToThisFile) & " was unsuccessful."
+                Debug.Print "Patching of " & GetFilename(savedToThisFile) & " was unsuccessful."
             End If
         Else
             Debug.Print "WARNING! A language file download was interrupted.  Further patches will be postponed until next session."
@@ -2356,7 +2356,10 @@ Private Sub shellPipeMain_DataArrival(ByVal CharsTotal As Long)
     newMetadataReceived receivedData
     
     'DEBUG ONLY!
-    'Debug.Print "Received " & LenB(receivedData) & " bytes of new data from ExifTool."
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Asynchronously received " & LenB(receivedData) & " bytes of new data from ExifTool."
+    #End If
     'Debug.Print receivedData
     
 End Sub
@@ -3053,18 +3056,8 @@ Private Sub Form_Unload(Cancel As Integer)
     
     Me.asyncDownloader.Reset
     
-    'Release GDIPlus (if applicable)
-    If g_ImageFormats.GDIPlusEnabled Then
-        
-        releaseGDIPlus
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "GDI+ released"
-        #End If
-    
-    End If
-    
-    'Release ExifTool (if available)
+    'Most core plugins are released as a final step, but ExifTool only matters when images are loaded, and we know
+    ' no images are loaded by this point.  Because it also takes a moment to shut down, trigger it first.
     If g_ExifToolEnabled Then
         
         terminateExifTool
@@ -3074,29 +3067,7 @@ Private Sub Form_Unload(Cancel As Integer)
         #End If
         
     End If
-    
-    'Release FreeImage (if available)
-    If Not (g_FreeImageHandle = 0) Then
-    
-        FreeLibrary g_FreeImageHandle
-    
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "FreeImage released"
-        #End If
         
-    End If
-    
-    'Release zLib (if available)
-    If g_ZLibEnabled Then
-    
-        Plugin_zLib_Interface.releaseZLib
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "zLib released"
-        #End If
-    
-    End If
-    
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Removing printer temp files"
     #End If
@@ -3210,17 +3181,56 @@ Private Sub Form_Unload(Cancel As Integer)
     g_UserPreferences.SetPref_String "Core", "LastRunVersion", App.Major & "." & App.Minor & "." & App.Revision
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Final step: writing out new autosave checksum"
+        pdDebug.LogAction "Final step: writing out new autosave checksum..."
     #End If
         
-    'The very last thing we do before terminating is notify the Autosave handler that everything shut down correctly
+    'All core PD functions appear to have terminated correctly, so notify the Autosave handler that this session was clean.
     Autosave_Handler.purgeOldAutosaveData
     Autosave_Handler.notifyCleanShutdown
     
+    'With PD effectively gone, we can release the few plugins that remain.
+    
+    'Release FreeImage (if available)
+    If g_FreeImageHandle <> 0 Then
+    
+        FreeLibrary g_FreeImageHandle
+        g_ImageFormats.FreeImageEnabled = False
+    
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "FreeImage released"
+        #End If
+        
+    End If
+    
+    'Release zLib (if available)
+    If g_ZLibEnabled Then
+    
+        Plugin_zLib_Interface.releaseZLib
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "zLib released"
+        #End If
+    
+    End If
+    
+    'Release GDIPlus (if applicable)
+    If g_ImageFormats.GDIPlusEnabled Then
+        
+        releaseGDIPlus
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "GDI+ released"
+        #End If
+    
+    End If
+    
+    g_IsProgramRunning = False
+    
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Shutdown appears to be clean.  pdDebug will now be terminated."
-        Set pdDebug = Nothing
+        pdDebug.LogAction "Shutdown appears to be clean.  Turning final control over to modMain.finalShutdown()..."
     #End If
+    
+    modMain.finalShutdown
     
     'If a restart is allowed, the last thing we do before exiting is shell a new PhotoDemon instance
     'If g_UserWantsRestart Then Software_Updater.initiateRestart

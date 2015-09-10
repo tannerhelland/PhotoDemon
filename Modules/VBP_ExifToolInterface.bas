@@ -389,7 +389,7 @@ Public Function getExifToolVersion() As String
         Dim outputString As String
         If ShellExecuteCapture(exifPath, "exiftool.exe -ver", outputString) Then
         
-            'The output string will be a simple version number, e.g. "X.YY", and it will be terminated by a vbCrLf character.
+            'The output string will be a simple version number, e.g. "XX.YY", and it will be terminated by a vbCrLf character.
             ' Remove vbCrLf now.
             outputString = Trim$(outputString)
             If InStr(outputString, vbCrLf) <> 0 Then outputString = Replace(outputString, vbCrLf, "")
@@ -812,6 +812,9 @@ Public Sub terminateExifTool()
         
         'Close our own pipe handles and exit
         FormMain.shellPipeMain.FinishChild
+        
+        'As a failsafe, mark the plugin as no longer available
+        g_ExifToolEnabled = False
         
     End If
 

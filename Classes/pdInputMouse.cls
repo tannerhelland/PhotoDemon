@@ -565,7 +565,6 @@ Private Sub Class_Terminate()
     'Release all subclassing and hooking
     cSubclass.shk_TerminateHooks
     cSubclass.ssc_Terminate
-    Set cSubclass = Nothing
     
 End Sub
 

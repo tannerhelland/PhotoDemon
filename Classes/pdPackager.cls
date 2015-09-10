@@ -205,6 +205,7 @@ Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByVal dstPo
 Private Declare Function compress Lib "zlibwapi.dll" (ByRef dstBuffer As Any, ByRef dstLen As Any, ByRef srcBuffer As Any, ByVal srcLen As Long) As Long
 Private Declare Function compress2 Lib "zlibwapi.dll" (ByRef dstBuffer As Any, ByRef dstLen As Any, ByRef srcBuffer As Any, ByVal srcLen As Long, ByVal cmpLevel As Long) As Long
 Private Declare Function uncompress Lib "zlibwapi.dll" (ByRef dstBuffer As Any, ByRef dstLen As Any, ByRef srcBuffer As Any, ByVal srcLen As Long) As Long
+Private Declare Function uncompress_safe Lib "zlibwapi.dll" Alias "uncompress" (ByVal dstBufferPointer As Long, ByVal dstLenPointer As Long, ByVal srcBufferPointer As Long, ByVal srcLenNotAPointer As Long) As Long
 Private Declare Function adler32 Lib "zlibwapi.dll" (ByVal adlerStart As Long, ByRef srcBuffer As Any, ByVal srcLength As Long) As Long
 Private Declare Function crc32 Lib "zlibwapi.dll" (ByVal crcStart As Long, ByRef srcBuffer As Any, ByVal srcLength As Long) As Long
 Private Declare Function zlibVersion Lib "zlibwapi.dll" () As Long
@@ -520,7 +521,7 @@ Public Function autoAddNodeFromFile(ByVal pathToFile As String, Optional ByVal O
             If filenameIncludesRelativePath Then
                 autoAddNodeFromFile = addNodeDataFromString(nodeIndex, True, storeUsingThisRelativePathAndFilename, False)
             Else
-                autoAddNodeFromFile = addNodeDataFromString(nodeIndex, True, m_File.getFilename(pathToFile), False)
+                autoAddNodeFromFile = addNodeDataFromString(nodeIndex, True, m_File.GetFilename(pathToFile), False)
             End If
             
             'Write the file contents out to the second node
@@ -580,7 +581,7 @@ Public Function autoAddNodesFromFolder(ByRef srcFolder As String, Optional ByVal
     Set filesToAdd = New pdStringStack
     
     'Retrieve all files in the specified folder
-    If m_File.retrieveAllFiles(srcFolder, filesToAdd, recurseSubfolders, False, onlyAllowTheseExtensions, doNotAllowTheseExtensions) Then
+    If m_File.RetrieveAllFiles(srcFolder, filesToAdd, recurseSubfolders, False, onlyAllowTheseExtensions, doNotAllowTheseExtensions) Then
         
         Dim nodeAdditionSuccess As Boolean
         nodeAdditionSuccess = True
@@ -729,7 +730,7 @@ Public Function writePackageToFile(ByVal dstFilename As String, Optional ByVal s
         
         'Trim the data buffer, and update the size of the data chunk using the exact size of the final buffer.
         m_DataBuffer.ShrinkBuf
-        .DataChunkSize = m_DataBuffer.Size
+        .DataChunkSize = m_DataBuffer.Size + 1
         
     End With
     
@@ -814,7 +815,7 @@ Private Function copyPtrToArray(ByVal srcPointer As Long, ByVal srcSize As Long,
         'Start by preparing the destination array to receive the zLib-compressed data.  The zLib creators recommend a buffer 1% larger than
         ' the input buffer, plus 12 extra bytes for a header.  This is the "worst possible scenario" for zLib compression (e.g. if the
         ' input buffer is 100% uncompressable.)
-        dstSize = srcSize + (srcSize * 0.01) + 12
+        dstSize = srcSize + (CDbl(srcSize) * 0.01) + 12
         ReDim dstArray(0 To dstSize - 1) As Byte
         
         'Request compression from zLib.
@@ -876,6 +877,7 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
     On Error GoTo StopPackageFileRead
     
     Dim rawBuffer() As Byte, tmpCompressionBuffer() As Byte
+    Dim tmpLength As Long
     Dim zLibResult As Long
     
     'Before doing anything else, make sure the file exists
@@ -937,7 +939,11 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                 m_File.ReadDataFromFile hFile, VarPtr(rawBuffer(0)), m_FileHeader.DirectoryChunkSize
                 
             Else
-            
+                
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Second-pass compression was applied.  Decompressing node directory now..."
+                #End If
+                
                 'Second-pass compression was applied.  Make sure zLib is available.  (If it isn't, the user is screwed.)
                 If m_ZLibAvailable Then
                 
@@ -949,10 +955,16 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     m_File.ReadDataFromFile hFile, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizeCompressed
                     
                     'Use zLib to decompress the data
-                    zLibResult = uncompress(rawBuffer(0), m_FileHeader.DirectoryChunkSize, tmpCompressionBuffer(0), m_FileHeader.DirectoryChunkSizeCompressed)
+                    tmpLength = m_FileHeader.DirectoryChunkSize
+                    zLibResult = uncompress_safe(VarPtr(rawBuffer(0)), VarPtr(tmpLength), VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DirectoryChunkSizeCompressed)
+                    
+                    'Make sure the decompression size is what we expected
+                    If tmpLength <> m_FileHeader.DirectoryChunkSize Then
+                        raiseInternalMessage "WARNING!  Decompressed directory chunk size shows possible CRC error (" & CStr(tmpLength) & " vs " & CStr(m_FileHeader.DirectoryChunkSize) & ")"
+                    End If
                     
                     'Free the temporary compression buffer
-                    Erase tmpCompressionBuffer
+                    'Erase tmpCompressionBuffer
                     
                     If zLibResult <> 0 Then
                         
@@ -983,7 +995,11 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                 m_File.ReadDataFromFile hFile, VarPtr(rawBuffer(0)), m_FileHeader.DataChunkSize
                 
             Else
-            
+                
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Second-pass compression was applied.  Decompressing node data now..."
+                #End If
+                
                 'Second-pass compression was applied.  Make sure zLib is available.  (If it isn't, the user is screwed.)
                 If m_ZLibAvailable Then
                 
@@ -995,10 +1011,16 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
                     m_File.ReadDataFromFile hFile, VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DataChunkSizeCompressed
                     
                     'Use zLib to decompress the data
-                    zLibResult = uncompress(rawBuffer(0), m_FileHeader.DataChunkSize, tmpCompressionBuffer(0), m_FileHeader.DataChunkSizeCompressed)
+                    tmpLength = m_FileHeader.DataChunkSize
+                    zLibResult = uncompress_safe(VarPtr(rawBuffer(0)), VarPtr(tmpLength), VarPtr(tmpCompressionBuffer(0)), m_FileHeader.DataChunkSizeCompressed)
+                    
+                    'Make sure the decompression size is what we expected
+                    If tmpLength <> m_FileHeader.DataChunkSize Then
+                        raiseInternalMessage "WARNING!  Decompressed directory chunk size shows possible CRC error (" & CStr(tmpLength) & " vs " & CStr(m_FileHeader.DataChunkSize) & ")"
+                    End If
                     
                     'Free our temporary buffer
-                    Erase tmpCompressionBuffer
+                    'Erase tmpCompressionBuffer
                     
                     If zLibResult <> 0 Then
                         
@@ -1018,13 +1040,16 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
             
             'Pass the data chunk to the m_DataBuffer class (which we'll use for further parsing).
             Set m_DataBuffer = New clsBasicBuffer
-            m_DataBuffer.OpenBuf
-            m_DataBuffer.WriteBytes rawBuffer
+            m_DataBuffer.WriteBytes rawBuffer, UBound(rawBuffer) + 1
+            m_DataBuffer.Position = 0
             
         End If
         
         'Close the handle when finished, obviously!
         If hFile <> 0 Then m_File.CloseFileHandle hFile
+        
+        'File load complete!
+        readPackageFromFile = True
         
     Else
         readPackageFromFile = False
@@ -1033,8 +1058,6 @@ Public Function readPackageFromFile(ByVal srcFilename As String, Optional ByVal 
         #End If
     End If
     
-    'File load complete!  If we didn't already break to StopPackageFileRead, assume success.
-    readPackageFromFile = True
     Exit Function
     
 StopPackageFileRead:
@@ -1277,7 +1300,7 @@ Public Function autoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
                 
                     'The user wants us to ignore the relative path and just write the damn file - easy enough!
                     If ignoreRelativePathIfPresent Then
-                        fullDestinationPath = dstPath & m_File.getFilename(srcFilename)
+                        fullDestinationPath = dstPath & m_File.GetFilename(srcFilename)
                     
                     'Relative path(s) must be preserved.
                     Else
@@ -1295,7 +1318,7 @@ Public Function autoExtractSingleFile(ByVal dstPath As String, ByVal srcFilename
                         If m_File.CreateFolder(dstPathComplete, True) Then
                         
                             'The full target path exists.  Append the original filename to it, then proceed with the extraction
-                            fullDestinationPath = m_File.EnforcePathSlash(dstPathComplete) & m_File.getFilename(srcFilename)
+                            fullDestinationPath = m_File.EnforcePathSlash(dstPathComplete) & m_File.GetFilename(srcFilename)
                         
                         'The path could not be constructed.  Set the full destination path to a blank string, which will cause the function
                         ' to terminate prematurely.
@@ -1431,7 +1454,7 @@ Public Function autoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                         
                         'If the caller wants relative paths ignored, extract just the filename from the original path, and append it to the destination path.
                         If ignoreRelativePaths Then
-                            fullDestinationPath = dstPath & m_File.getFilename(strFilename)
+                            fullDestinationPath = dstPath & m_File.GetFilename(strFilename)
                         
                         'The caller wants to make use of relative paths.
                         Else
@@ -1458,7 +1481,7 @@ Public Function autoExtractAllFiles(ByVal dstPath As String, Optional ByVal Opti
                                     If m_File.CreateFolder(dstPathComplete, True) Then
                                     
                                         'The full target path exists.  Append the original filename to it, then proceed with the extraction
-                                        fullDestinationPath = m_File.EnforcePathSlash(dstPathComplete) & m_File.getFilename(strFilename)
+                                        fullDestinationPath = m_File.EnforcePathSlash(dstPathComplete) & m_File.GetFilename(strFilename)
                                         
                                     'The path could not be constructed.  Set the full destination path to a blank string, which will cause the function
                                     ' to terminate prematurely.
@@ -1672,7 +1695,7 @@ Public Function getNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
             
             'Use zLib to decompress the data
             Dim zLibResult As Long
-            zLibResult = uncompress(dstArray(0), dataOriginalSize, ByVal m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize)
+            zLibResult = uncompress_safe(VarPtr(dstArray(0)), VarPtr(dataOriginalSize), m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize)
             
             If zLibResult <> 0 Then
                 
@@ -1721,11 +1744,13 @@ Public Function getNodeDataByIndex(ByVal nodeIndex As Long, ByVal useHeaderBuffe
             getNodeDataByIndex = False
             Exit Function
         Else
-            If useHeaderBuffer Then
-                Debug.Print "Checksum successfully verified for node #" & nodeIndex & " (header)."
-            Else
-                Debug.Print "Checksum successfully verified for node #" & nodeIndex & " (data)."
-            End If
+            #If DEBUGMODE = 1 Then
+                If useHeaderBuffer Then
+                    pdDebug.LogAction "Checksum successfully verified for node #" & nodeIndex & " (header)."
+                Else
+                    pdDebug.LogAction "Checksum successfully verified for node #" & nodeIndex & " (data)."
+                End If
+            #End If
         End If
         
     End If
@@ -1776,7 +1801,7 @@ Public Function getNodeDataByIndex_UnsafeDstPointer(ByVal nodeIndex As Long, ByV
             
             'Use zLib to decompress the data directly into the pointer we've been given
             Dim zLibResult As Long
-            zLibResult = uncompress(ByVal dstPointer, dataOriginalSize, ByVal m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize)
+            zLibResult = uncompress_safe(dstPointer, VarPtr(dataOriginalSize), m_DataBuffer.ReadBytes_PointerOnly(dataPackedSize), dataPackedSize)
             
             If zLibResult <> 0 Then
                 
@@ -1852,7 +1877,8 @@ Public Function init_ZLib(ByVal pathToZLibDLL As String, Optional ByVal leaveIni
 
     If leaveInitToCaller Then
         m_ZLibAvailable = callerInitiationSuccess
-    
+        m_ZLibToken = 0
+        
     'The caller wants us to handle zLib initialization.  Attempt to load the zLib library path we were passed.
     Else
     
@@ -2026,11 +2052,13 @@ End Sub
 Private Sub Class_Terminate()
 
     'If we loaded zLib, free it now
-    If m_ZLibToken > 0 Then FreeLibrary m_ZLibToken
+    If m_ZLibToken <> 0 Then FreeLibrary m_ZLibToken
     
     'Release our data stream buffer
-    If Not (m_DataBuffer Is Nothing) Then m_DataBuffer.CloseBuf
-    Set m_DataBuffer = Nothing
+    If Not (m_DataBuffer Is Nothing) Then
+        m_DataBuffer.CloseBuf
+        Set m_DataBuffer = Nothing
+    End If
     
     'Release our pdFSO instance
     Set m_File = Nothing
