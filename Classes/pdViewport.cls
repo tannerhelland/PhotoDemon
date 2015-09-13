@@ -35,42 +35,63 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'These values track the size and position of the image, as seen from the viewport.  These values are...
-' - SET by the Viewport_Engine.Stage1_InitializeBuffer function
-' - READ by the Viewport_Engine.Stage2_CompositeAllLayers and Viewport_Engine.Stage4_CompositeCanvas functions
-Public targetWidth As Double
-Public targetHeight As Double
-Public targetTop As Long
-Public targetLeft As Long
+'As of version 7.0, the first stage of the viewport pipeline uses RectF structs to store the calculated
+' coordinate regions.  See the Viewport_Engine module for more details on how these structs are used.
+Private ImageRect_CanvasCoords As RECTF
+Private ImageRect_TranslatedCanvasCoords As RECTF
+Private CanvasRect_ImageCoords As RECTF
+Private CanvasRect_ActualPixels As RECTF
 
-'These additional offsets are added to all viewport calculations.  The offsets will be > 0 if:
-' - the image window status bar is visible
-' - rulers are active
-Private verticalOffset As Long
-Private horizontalOffset As Long
+'The area of the canvas covered by the image is stored here.  Note that a separate boolean is also stored,
+' on the off chance that the canvas and image do not currently intersect.
+Private doCanvasAndImageIntersect As Boolean
+Private CanvasImageIntersect As RECTF
 
-'The vertical and horizontal offsets can be further broken down into specific sides/directions
-Private topOffset As Long
-Private bottomOffset As Long
-
-'Get/set the horizontal and vertical offset values
-Public Function getVerticalOffset() As Long
-    getVerticalOffset = topOffset + bottomOffset
-End Function
-
-'Get/set specific directional offsets
-Public Function getTopOffset() As Long
-    getTopOffset = topOffset
-End Function
-
-Public Sub setTopOffset(ByVal newOffset As Long)
-    topOffset = newOffset
+Friend Sub setIntersectState(ByRef NewState As Boolean)
+    doCanvasAndImageIntersect = NewState
 End Sub
 
-Public Function getBottomOffset() As Long
-    getBottomOffset = bottomOffset
+Friend Sub setIntersectRect(ByRef srcRectF As RECTF)
+    CanvasImageIntersect = srcRectF
+End Sub
+
+Friend Sub setImageRectCanvasCoords(ByRef srcRectF As RECTF)
+    ImageRect_CanvasCoords = srcRectF
+End Sub
+
+Friend Sub setImageRectTranslated(ByRef srcRectF As RECTF)
+    ImageRect_TranslatedCanvasCoords = srcRectF
+End Sub
+
+Friend Sub setCanvasRectImageCoords(ByRef srcRectF As RECTF)
+    CanvasRect_ImageCoords = srcRectF
+End Sub
+
+Friend Sub setCanvasRectActualPixels(ByRef srcRectF As RECTF)
+    CanvasRect_ActualPixels = srcRectF
+End Sub
+
+Friend Function getIntersectState() As Boolean
+    getIntersectState = doCanvasAndImageIntersect
 End Function
 
-Public Sub setBottomOffset(ByVal newOffset As Long)
-    bottomOffset = newOffset
+Friend Sub getIntersectRect(ByRef dstRectF As RECTF)
+    dstRectF = CanvasImageIntersect
 End Sub
+
+Friend Sub getImageRectCanvasCoords(ByRef dstRectF As RECTF)
+    dstRectF = ImageRect_CanvasCoords
+End Sub
+
+Friend Sub getImageRectTranslated(ByRef dstRectF As RECTF)
+    dstRectF = ImageRect_TranslatedCanvasCoords
+End Sub
+
+Friend Sub getCanvasRectImageCoords(ByRef dstRectF As RECTF)
+    dstRectF = CanvasRect_ImageCoords
+End Sub
+
+Friend Sub getCanvasRectActualPixels(ByRef dstRectF As RECTF)
+    dstRectF = CanvasRect_ActualPixels
+End Sub
+

@@ -9,12 +9,14 @@ Attribute VB_Name = "Viewport_Engine"
 'Module for handling the image viewport.  The render pipeline works as follows:
 ' - Viewport_Engine.Stage1_InitializeBuffer: for recalculating all viewport variables and controls (done only when the zoom value is changed,
 '                                             or the user switches to a different image or loads a new picture)
-' - Viewport_Engine.Stage2_CompositeAllLayers: reassemble the layered image, with all non-destructive changes taken into account
-' - Viewport_Engine.Stage3_ExtractRelevantRegion: copy the relevant portion of the image out of the composite and into its own buffer
-' - Viewport_Engine.Stage4_CompositeCanvas: blend the image and any canvas UI elements together
-' - Viewport_Engine.Stage5_FlipBufferAndDrawUI: render the finalized image+canvas, and overlay any final UI elements (transform nodes, etc)
+' - Viewport_Engine.Stage2_CompositeAllLayers: (re)assemble the layered image, with all non-destructive changes taken into account
+' - Viewport_Engine.Stage3_ExtractRelevantRegion: copy the relevant portion of the image out of the composite and into its own buffer.  This stage
+'                                                 is skipped for the accelerated version of the pipeline.
+' - Viewport_Engine.Stage4_CompositeCanvas: blend the image and any canvas UI elements together.  At present, this includes shadow underlay and
+'                                           selection highlight/lightboxing, if active.
+' - Viewport_Engine.Stage5_FlipBufferAndDrawUI: render the finalized image+canvas, and overlay any interactive UI elements (transform nodes, etc)
 '
-'PhotoDemon is intelligent about calling the lowest routine in the pipeline, which helps it render the viewport quickly
+'PhotoDemon tries to be intelligent about calling the lowest routine in the pipeline, so it can render the viewport quickly
 ' regardless of zoom or scroll values.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
@@ -28,30 +30,20 @@ Option Explicit
 ' viewport pipeline has been deliberately created as an "out of order" pipeline.  Different user interations can trigger execution
 ' of the pipeline at different stages, which is crucial for maximizing viewport performance.
 
-'As such, it is important that pipeline functions are *very cautious* about whether they read or actually modify these values.
-' INTERACT WITH CAUTION.
-
-'Width and height values of the image AFTER zoom has been applied.  (For example, if the image is 100x100
-' and the zoom value is 200%, m_ImageWidthZoomed and m_ImageHeightZoomed will be 200.)
-Private m_ImageWidthZoomed As Double, m_ImageHeightZoomed As Double
-
-'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient
-Private srcWidth As Double, srcHeight As Double
+'As such, pipeline functions must be *very cautious* about modifying these values.  CONSIDER YOURSELF WARNED.
 
 'The ZoomVal value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")
 Private m_ZoomRatio As Double
 
-'These variables are the offset, as determined by the scroll bar values
-Private srcX As Long, srcY As Long
-
-'frontBuffer holds the final composited image, including any overlays (like selections)
+'frontBuffer holds the final composited image, including any non-interactive overlays (like selection highlight/lightbox effects)
 Private frontBuffer As pdDIB
 
 'cornerFix holds a small gray box that is copied over the corner between the horizontal and vertical scrollbars, if they exist
 Private cornerFix As pdDIB
 
 'The current chunk of the image visible in the viewport.  Note that these values are in *IMAGE COORDINATES*, and they are not
-' worthwhile until the pipeline has been executed at least once (and made it to at least stage 3, if you're curious).
+' worthwhile until the pipeline has been executed at least once (and made it to at least stage 3, if you're curious).  We cache these values
+' in a GDI+friendly RECTF struct, and callers can request it via getCopyOfSourceImageRect() if they need to perform their own coordinate math.
 Private m_SrcImageRect As RECTF
 
 'To avoid re-applying certain settings, we cache the target viewport's DC between calls.
@@ -78,6 +70,8 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
     If g_OpenImageCount = 0 Then
         FormMain.mainCanvas(0).clearCanvas
         Exit Sub
+    Else
+        FormMain.mainCanvas(0).setScrollVisibility PD_BOTH, True
     End If
 
     'Make sure the canvas is valid
@@ -94,11 +88,10 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
         turnOnColorManagementForDC m_TargetDC
     End If
     
-    'Finally, flip the front buffer to the screen
-    BitBlt m_TargetDC, 0, srcImage.imgViewport.getTopOffset, frontBuffer.getDIBWidth, frontBuffer.getDIBHeight, frontBuffer.getDIBDC, 0, 0, vbSrcCopy
+    'Flip the front buffer to the screen
+    BitBlt m_TargetDC, 0, 0, frontBuffer.getDIBWidth, frontBuffer.getDIBHeight, frontBuffer.getDIBDC, 0, 0, vbSrcCopy
     
-    
-    'Finally, we can do some tool-specific rendering directly onto the form.
+    'Lastly, do any tool-specific rendering directly onto the form.
     Select Case g_CurrentTool
     
         'The nav tool provides two render options at present: draw layer borders, and draw layer transform nodes
@@ -121,7 +114,12 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
             
             'Next, check to see if a selection is active and transformable.  If it is, draw nodes around the selected area.
             If srcImage.selectionActive Then
-                srcImage.mainSelection.renderTransformNodes srcImage, dstCanvas, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop
+                
+                'Retrieve a copy of the current image's intersection rect, which controls boundaries for any selection overlays
+                Dim intRect As RECTF
+                srcImage.imgViewport.getIntersectRect intRect
+                srcImage.mainSelection.renderTransformNodes srcImage, dstCanvas, intRect.Left, intRect.Top
+                
             End If
             
         'Text tools currently draw layer boundaries at all times; I'm working on this (TODO!)
@@ -175,79 +173,64 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     Else
         BitBlt frontBuffer.getDIBDC, 0, 0, srcImage.canvasBuffer.getDIBWidth, srcImage.canvasBuffer.getDIBHeight, srcImage.canvasBuffer.getDIBDC, 0, 0, vbSrcCopy
     End If
-        
+    
+    'Retrieve a copy of the intersected viewport rect, which determines where we place the shadow beneath the image.
+    Dim viewportIntersectRect As RECTF
+    srcImage.imgViewport.getIntersectRect viewportIntersectRect
     
     'If the user's performance preferences allow for interface decorations, render them next
     If g_InterfacePerformance <> PD_PERF_FASTEST Then
     
-        'We'll handle this in two steps; first, render the horizontal shadows
-        If Not dstCanvas.getScrollVisibility(PD_VERTICAL) Then
-            
-            'Make sure the image isn't snugly fit inside the viewport; if it is, rendering drop shadows is a waste of time
-            If srcImage.imgViewport.targetTop <> 0 Then
-                'Top edge
-                StretchBlt frontBuffer.getDIBDC, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop - PD_CANVASSHADOWSIZE, srcImage.imgViewport.targetWidth, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(0), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
-                'Bottom edge
-                StretchBlt frontBuffer.getDIBDC, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight, srcImage.imgViewport.targetWidth, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(1), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
-            End If
+        'Check each edge in turn, and mark whether or not it's visible on the viewport
+        Dim vTopShadow As Boolean, vBottomShadow As Boolean, vRightShadow As Boolean, vLeftShadow As Boolean
         
+        If srcImage.imgViewport.getIntersectState Then
+            vTopShadow = CBool(viewportIntersectRect.Top > 0)
+            vBottomShadow = CBool(viewportIntersectRect.Top + viewportIntersectRect.Height < srcImage.canvasBuffer.getDIBHeight)
+            vLeftShadow = CBool(viewportIntersectRect.Left > 0)
+            vRightShadow = CBool(viewportIntersectRect.Left + viewportIntersectRect.Width < srcImage.canvasBuffer.getDIBWidth)
         End If
         
-        'Second, the vertical shadows
-        If Not dstCanvas.getScrollVisibility(PD_HORIZONTAL) Then
-                    
-            'Make sure the image isn't snugly fit inside the viewport; if it is, this is a waste of time
-            If srcImage.imgViewport.targetLeft <> 0 Then
-                'Left edge
-                StretchBlt frontBuffer.getDIBDC, srcImage.imgViewport.targetLeft - PD_CANVASSHADOWSIZE, srcImage.imgViewport.targetTop, PD_CANVASSHADOWSIZE, srcImage.imgViewport.targetHeight, g_CanvasShadow.getShadowDC(2), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
-                'Right edge
-                StretchBlt frontBuffer.getDIBDC, srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetTop, PD_CANVASSHADOWSIZE, srcImage.imgViewport.targetHeight, g_CanvasShadow.getShadowDC(3), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
-            End If
+        If vTopShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left, viewportIntersectRect.Top - PD_CANVASSHADOWSIZE, viewportIntersectRect.Width, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(0), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
+        If vBottomShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left, viewportIntersectRect.Top + viewportIntersectRect.Height, viewportIntersectRect.Width, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(1), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
+        If vLeftShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left - PD_CANVASSHADOWSIZE, viewportIntersectRect.Top, PD_CANVASSHADOWSIZE, viewportIntersectRect.Height, g_CanvasShadow.getShadowDC(2), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
+        If vRightShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left + viewportIntersectRect.Width, viewportIntersectRect.Top, PD_CANVASSHADOWSIZE, viewportIntersectRect.Height, g_CanvasShadow.getShadowDC(3), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
         
-        End If
+        'Finally, the corners, which I've commented as they're a little confusing
         
-        'Finally, the corners, which are only drawn if both scroll bars are invisible
-        If (Not dstCanvas.getScrollVisibility(PD_HORIZONTAL)) And (Not dstCanvas.getScrollVisibility(PD_VERTICAL)) Then
-        
-            'NW corner
-            StretchBlt frontBuffer.getDIBDC, srcImage.imgViewport.targetLeft - PD_CANVASSHADOWSIZE, srcImage.imgViewport.targetTop - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(4), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
-            'NE corner
-            StretchBlt frontBuffer.getDIBDC, srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetTop - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(5), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
-            'SW corner
-            StretchBlt frontBuffer.getDIBDC, srcImage.imgViewport.targetLeft - PD_CANVASSHADOWSIZE, srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(6), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
-            'SE corner
-            StretchBlt frontBuffer.getDIBDC, srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(7), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
-        
-        End If
+        'NW corner
+        If vTopShadow And vLeftShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left - PD_CANVASSHADOWSIZE, viewportIntersectRect.Top - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(4), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
+        'NE corner
+        If vTopShadow And vRightShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left + viewportIntersectRect.Width, viewportIntersectRect.Top - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(5), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
+        'SW corner
+        If vBottomShadow And vLeftShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left - PD_CANVASSHADOWSIZE, viewportIntersectRect.Top + viewportIntersectRect.Height, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(6), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
+        'SE corner
+        If vBottomShadow And vRightShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left + viewportIntersectRect.Width, viewportIntersectRect.Top + viewportIntersectRect.Height, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(7), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
     
     End If
     
-    'If both scrollbars are active, copy a gray square over the small space between them
-    If dstCanvas.getScrollVisibility(PD_HORIZONTAL) And dstCanvas.getScrollVisibility(PD_VERTICAL) Then
-        
-        'Only initialize the corner fix image once
-        If cornerFix Is Nothing Then
-            Set cornerFix = New pdDIB
-            cornerFix.createBlank dstCanvas.getScrollWidth(PD_VERTICAL), dstCanvas.getScrollHeight(PD_HORIZONTAL), 24, vbButtonFace
-        End If
-        
-        'Draw the square over any exposed parts of the image in the bottom-right of the image, between the scroll bars
-        BitBlt dstCanvas.hDC, dstCanvas.getScrollLeft(PD_VERTICAL), dstCanvas.getScrollTop(PD_HORIZONTAL), cornerFix.getDIBWidth, cornerFix.getDIBHeight, cornerFix.getDIBDC, 0, 0, vbSrcCopy
-        
+    'Because both scrollbars are likely active, we need to copy a gray square over the small space between them
+    
+    'Only initialize the corner fix image once
+    If cornerFix Is Nothing Then
+        Set cornerFix = New pdDIB
+        'cornerFix.createBlank dstCanvas.getScrollWidth(PD_VERTICAL), dstCanvas.getScrollHeight(PD_HORIZONTAL), 24, vbButtonFace
     End If
+    
+    'Draw the square over any exposed parts of the image in the bottom-right of the image, between the scroll bars
+    'BitBlt dstCanvas.hDC, dstCanvas.getScrollLeft(PD_VERTICAL), dstCanvas.getScrollTop(PD_HORIZONTAL), cornerFix.getDIBWidth, cornerFix.getDIBHeight, cornerFix.getDIBDC, 0, 0, vbSrcCopy
     
     'Check to see if a selection is active.
     If srcImage.selectionActive Then
     
         'If it is, composite the selection against the front buffer
-        srcImage.mainSelection.renderCustom frontBuffer, srcImage, dstCanvas, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, toolpanel_Selections.cboSelRender.ListIndex, toolpanel_Selections.csSelectionHighlight.Color
+        srcImage.mainSelection.renderCustom frontBuffer, srcImage, dstCanvas, viewportIntersectRect.Left, viewportIntersectRect.Top, viewportIntersectRect.Width, viewportIntersectRect.Height, toolpanel_Selections.cboSelRender.ListIndex, toolpanel_Selections.csSelectionHighlight.Color
     
     End If
         
     'Pass the completed front buffer to the final stage of the pipeline, which will flip everything to the screen and render any
     ' remaining UI elements!
     Stage5_FlipBufferAndDrawUI srcImage, dstCanvas, curPOI
-    
     
 End Sub
 
@@ -262,126 +245,139 @@ End Sub
 ' may need to be regenerated from scratch after zoom changes.
 Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByVal pipelineOriginatedAtStageOne As Boolean = False, Optional curPOI As Long = -1)
 
-    '(Temporary switch while working on new viewport engine)
-    If g_ViewportPerformance = PD_PERF_BESTQUALITY Then
-        
-        'Stage 2 of the pipeline (Stage2_CompositeAllLayers) prepared srcImage.compositeBuffer for us.  In this stage,
-        ' we will be parsing out the portion of the compositeBuffer required by the current viewport.  As part of this process,
-        ' zoom and scroll parameters are calculated, so we know where to pull data from the master image.
-        
-        'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient.
-        ' Because rounding errors may occur with certain image sizes, we apply a special check when zoom = 100.
-        If srcImage.currentZoomValue = g_Zoom.getZoom100Index Then
-            srcWidth = srcImage.imgViewport.targetWidth
-            srcHeight = srcImage.imgViewport.targetHeight
-        Else
-            srcWidth = srcImage.imgViewport.targetWidth / m_ZoomRatio
-            srcHeight = srcImage.imgViewport.targetHeight / m_ZoomRatio
-        End If
-            
-        'These variables are the offset into the source image, as determined by the scroll bar's values.  PD supports partial
-        ' compositing of a given region of the image.  This allows for excellent performance when the image is larger than the
-        ' available screen real-estate (as we don't waste time compositing invisible regions).
-        If dstCanvas.getScrollVisibility(PD_HORIZONTAL) Then srcX = dstCanvas.getScrollValue(PD_HORIZONTAL) Else srcX = 0
-        If dstCanvas.getScrollVisibility(PD_VERTICAL) Then srcY = dstCanvas.getScrollValue(PD_VERTICAL) Else srcY = 0
-        
-        'Before rendering the image, apply a checkerboard pattern to the viewport region of the source image's back buffer.
-        ' TODO: cache g_CheckerboardPattern persistently, in GDI+ format, so we don't have to recreate it on every draw.
-        With srcImage.imgViewport
-            GDI_Plus.GDIPlusFillDIBRect_Pattern srcImage.canvasBuffer, .targetLeft, .targetTop, .targetWidth, .targetHeight, g_CheckerboardPattern
-        End With
-        
-        'As a failsafe, perform a GDI+ check.  PD probably won't work at all without GDI+, so I could look at dropping this check
-        ' in the future... but for now, we leave it, just in case.
-        If g_GDIPlusAvailable Then
-            
-            'We can now use PD's amazing rect-specific compositor to retrieve only the relevant section of the current viewport.
-            ' Note that we request our own interpolation mode, and we determine this based on the user's viewport performance preference.
-            ' (TODO: consider exposing bilinear interpolation as an option, which is blurrier, but doesn't suffer from the defects of
-            '        GDI+'s preprocessing, which screws up subpixel positioning.)
-            
-            'When we've been asked to maximize performance, use nearest neighbor for all zoom modes
-            If g_ViewportPerformance = PD_PERF_FASTEST Then
-                GDI_Plus.GDIPlus_StretchBlt srcImage.canvasBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcImage.compositeBuffer, srcX, srcY, srcWidth, srcHeight, 1, InterpolationModeNearestNeighbor
-                
-            'Otherwise, switch dynamically between high-quality and low-quality interpolation depending on the current zoom.
-            ' Note that the compositor will perform some additional checks, and if the image is zoomed-in, it will switch to nearest-neighbor
-            ' automatically (regardless of what method we request).
-            Else
-                GDI_Plus.GDIPlus_StretchBlt srcImage.canvasBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcImage.compositeBuffer, srcX, srcY, srcWidth, srcHeight, 1, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor)
-            End If
-                    
-        'This is an emergency fallback, only.  PD won't work without GDI+, so rendering the viewport is pointless.
-        Else
-            Message "WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)"
-        End If
-    
-    Else
-        
-        'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared srcImage.BackBuffer for us.  Stage 2 does nothing for this
-        ' particular pipeline branch.  The goal of this stage (3) is two-fold:
-        ' 1) Fill the viewport area of the canvas with a checkerboard pattern
-        ' 2) Render the fully composited image atop the checkerboard pattern
-        
-        'Note that the imgCompositor object will handle most of this stage for us, as it performs the actual compositing.
-        
-        'These variables represent the source width - e.g. the size of the viewable picture box, divided by the zoom coefficient.
-        ' Because rounding errors may occur with certain image sizes, we apply a special check when zoom = 100.
-        If srcImage.currentZoomValue = g_Zoom.getZoom100Index Then
-            srcWidth = srcImage.imgViewport.targetWidth
-            srcHeight = srcImage.imgViewport.targetHeight
-        Else
-            srcWidth = srcImage.imgViewport.targetWidth / m_ZoomRatio
-            srcHeight = srcImage.imgViewport.targetHeight / m_ZoomRatio
-        End If
-            
-        'These variables are the offset into the source image, as determined by the scroll bar's values.  PD supports partial
-        ' compositing of a given region of the image.  This allows for excellent performance when the image is larger than the
-        ' available screen real-estate (as we don't waste time compositing invisible regions).
-        If dstCanvas.getScrollVisibility(PD_HORIZONTAL) Then srcX = dstCanvas.getScrollValue(PD_HORIZONTAL) Else srcX = 0
-        If dstCanvas.getScrollVisibility(PD_VERTICAL) Then srcY = dstCanvas.getScrollValue(PD_VERTICAL) Else srcY = 0
-        
-        'Before rendering the image, apply a checkerboard pattern to the viewport region of the source image's back buffer.
-        ' TODO: cache g_CheckerboardPattern persistently, in GDI+ format, so we don't have to recreate it on every draw.
-        With srcImage.imgViewport
-            GDI_Plus.GDIPlusFillDIBRect_Pattern srcImage.canvasBuffer, .targetLeft, .targetTop, .targetWidth, .targetHeight, g_CheckerboardPattern
-        End With
-        
-        'As a failsafe, perform a GDI+ check.  PD probably won't work at all without GDI+, so I could look at dropping this check
-        ' in the future... but for now, we leave it, just in case.
-        If g_GDIPlusAvailable Then
-            
-            'We can now use PD's amazing rect-specific compositor to retrieve only the relevant section of the current viewport.
-            ' Note that we request our own interpolation mode, and we determine this based on the user's viewport performance preference.
-            ' (TODO: consider exposing bilinear interpolation as an option, which is blurrier, but doesn't suffer from the defects of
-            '        GDI+'s preprocessing, which screws up subpixel positioning.)
-            
-            'When we've been asked to maximize performance, use nearest neighbor for all zoom modes
-            If g_ViewportPerformance = PD_PERF_FASTEST Then
-                srcImage.getCompositedRect srcImage.canvasBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, InterpolationModeNearestNeighbor, pipelineOriginatedAtStageOne
-                
-            'Otherwise, switch dynamically between high-quality and low-quality interpolation depending on the current zoom.
-            ' Note that the compositor will perform some additional checks, and if the image is zoomed-in, it will switch to nearest-neighbor
-            ' automatically (regardless of what method we request).
-            Else
-                srcImage.getCompositedRect srcImage.canvasBuffer, srcImage.imgViewport.targetLeft, srcImage.imgViewport.targetTop, srcImage.imgViewport.targetWidth, srcImage.imgViewport.targetHeight, srcX, srcY, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor), pipelineOriginatedAtStageOne
-            End If
-                    
-        'This is an emergency fallback, only.  PD won't work without GDI+, so rendering the viewport is pointless.
-        Else
-            Message "WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)"
-        End If
-        
-    End If
-    
-    'Cache the relevant section of the image, in case outside functions require it
-    With m_SrcImageRect
-        .Left = srcX
-        .Top = srcY
-        .Width = srcWidth
-        .Height = srcHeight
+    'Regardless of the pipeline branch we follow, we need local copies of the relevant region rects calculated by stage 1 of the pipeline.
+    Dim ImageRect_CanvasCoords As RECTF, CanvasRect_ImageCoords As RECTF, CanvasRect_ActualPixels As RECTF
+    With srcImage.imgViewport
+        .getCanvasRectActualPixels CanvasRect_ActualPixels
+        .getCanvasRectImageCoords CanvasRect_ImageCoords
+        .getImageRectCanvasCoords ImageRect_CanvasCoords
     End With
     
+    'We also need to wipe the back buffer
+    GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, srcImage.canvasBuffer.getDIBWidth, srcImage.canvasBuffer.getDIBHeight, g_CanvasBackground, 255, CompositingModeSourceCopy
+    
+    'Stage 1 of the pipeline (Stage1_InitializeBuffer) prepared srcImage.BackBuffer for us.  If the user's preferences are "BEST QUALITY",
+    ' Stage 2 composited a full-sized version of the image.  The goal of this stage (3) is two-fold:
+    ' 1) Fill the viewport area of the canvas with a checkerboard pattern
+    ' 2) Render the fully composited image atop the checkerboard pattern
+    
+    'If the user is not using "BEST QUALITY", the imgCompositor class will be used to dynamically render only the portion of the image
+    ' relevant for the current viewport.
+    
+    'The first thing we need to do is find the intersection rect between two things: the source image, and the canvas rect,
+    ' in both the image and canvas coordinate spaces.  These are used to construct a StretchBlt-like set of (x, y) and
+    ' (width, height) pairs, which the compositor uses to snip out a portion of the composited image.
+    
+    'Because the original function doesn't deal with scroll bar values at all, let's calculate the offsets the scroll bars apply.
+    Dim xScroll_Canvas As Single, xScroll_Image As Single, yScroll_Canvas As Single, yScroll_Image As Single
+    
+    'Scroll bar values always represent pixel measurements *in the image coordinate space*.
+    xScroll_Image = dstCanvas.getScrollValue(PD_HORIZONTAL)
+    yScroll_Image = dstCanvas.getScrollValue(PD_VERTICAL)
+    
+    'Next, let's calculate these *in the canvas coordinate space* (e.g. with zoom applied)
+    If m_ZoomRatio = 0 Then m_ZoomRatio = g_Zoom.getZoomValue(srcImage.currentZoomValue)
+    xScroll_Canvas = xScroll_Image * m_ZoomRatio
+    yScroll_Canvas = yScroll_Image * m_ZoomRatio
+    
+    'Translate the image rect (ImageRect_CanvasCoords) by the scroll bar values (which can be zero; that's fine).
+    ' Remember that ImageRect_CanvasCoords gives us the pixel values of where the image appears on the canvas,
+    ' when the scroll bars are at (0, 0).
+    Dim translatedImageRect As RECTF
+    With translatedImageRect
+        .Left = ImageRect_CanvasCoords.Left - xScroll_Canvas
+        .Top = ImageRect_CanvasCoords.Top - yScroll_Canvas
+        .Width = ImageRect_CanvasCoords.Width
+        .Height = ImageRect_CanvasCoords.Height
+    End With
+    
+    'This translated rect allows us to shortcut a lot of coordinate math, so cache a copy inside the source image.
+    srcImage.imgViewport.setImageRectTranslated translatedImageRect
+    
+    'We now know where the full image lies, with zoom applied, relative to the canvas coordinate space.  Think of the canvas as
+    ' a tiny window, and the image as a huge poster behind the window.  What we're going to do now is find the intersect rect
+    ' between the window rect (which is easy - just the size of the canvas itself) and the image rect we've now calculated.
+    Dim viewportRect As RECTF
+    srcImage.imgViewport.setIntersectState GDI_Plus.IntersectRectF(viewportRect, CanvasRect_ActualPixels, translatedImageRect)
+    
+    If srcImage.imgViewport.getIntersectState Then
+        
+        'The intersection between the canvas and image is now stored in viewportRect.  Cool!  This is the destination rect of
+        ' our viewport StretchBlt function.
+        srcImage.imgViewport.setIntersectRect viewportRect
+        
+        'What we need to do now is reverse-map that rect back onto the image itself.  How do we do this?
+        ' Well, we need two key pieces of information:
+        ' 1) What's the relationship between (0, 0) on the canvas and (0, 0) on the image.  This value has already been determined
+        '    for us, courtesy of the (Left, Top) values of ImageRect_CanvasCoords.
+        ' 2) What is the scale between width/height on the canvas and width/height on the image?  This value is simply the
+        '    zoom ratio, e.g. a zoom of 200% means that width/height measurements are twice as long on the canvas!
+        
+        'Start by mapping the (Top, Left) of this rect back onto the image.
+        Dim srcLeft As Double, srcTop As Double
+        Drawing.convertCanvasCoordsToImageCoords dstCanvas, srcImage, viewportRect.Left, viewportRect.Top, srcLeft, srcTop, False
+        
+        'Width and height are easy - just the width/height of the viewport, divided by the current zoom!
+        Dim srcWidth As Double, srcHeight As Double
+        srcWidth = viewportRect.Width / m_ZoomRatio
+        srcHeight = viewportRect.Height / m_ZoomRatio
+        
+        'We have now mapped the relevant viewport rect back into source coordinates, giving us everything we need for our render.
+        
+        'Before rendering the image, apply a checkerboard pattern to the viewport region of the source image's back buffer.
+        ' TODO: cache g_CheckerboardPattern persistently, in GDI+ format, so we don't have to recreate it on every draw.
+        With viewportRect
+            GDI_Plus.GDIPlusFillDIBRect_Pattern srcImage.canvasBuffer, .Left, .Top, .Width, .Height, g_CheckerboardPattern
+        End With
+        
+        'As a failsafe, perform a GDI+ check.  PD probably won't work at all without GDI+, so I could look at dropping this check
+        ' in the future... but for now, we leave it, just in case.
+        If g_GDIPlusAvailable Then
+            
+            'PD provides two options for rendering the viewport.  One composites the full image in the background, and just snips
+            ' out the relevant bit of the finished image.  The other does not maintain a composited image copy, but instead returns
+            ' a composited rect whenever it's requested.  Branch down either path now.
+            If g_ViewportPerformance = PD_PERF_BESTQUALITY Then
+                GDI_Plus.GDIPlus_StretchBlt srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcImage.compositeBuffer, srcLeft, srcTop, srcWidth, srcHeight, 1, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor)
+            
+            Else
+                
+                'We can now use PD's amazing rect-specific compositor to retrieve only the relevant section of the current viewport.
+                ' Note that we request our own interpolation mode, and we determine this based on the user's viewport performance preference.
+                ' (TODO: consider exposing bilinear interpolation as an option, which is blurrier, but doesn't suffer from the defects of
+                '        GDI+'s preprocessing, which screws up subpixel positioning.)
+                
+                'When we've been asked to maximize performance, use nearest neighbor for all zoom modes
+                If g_ViewportPerformance = PD_PERF_FASTEST Then
+                    srcImage.getCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, InterpolationModeNearestNeighbor, pipelineOriginatedAtStageOne
+                    
+                'Otherwise, switch dynamically between high-quality and low-quality interpolation depending on the current zoom.
+                ' Note that the compositor will perform some additional checks, and if the image is zoomed-in, it will switch to nearest-neighbor
+                ' automatically (regardless of what method we request).
+                Else
+                    srcImage.getCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor), pipelineOriginatedAtStageOne
+                End If
+                
+            End If
+                    
+        'This is an emergency fallback, only.  PD won't work without GDI+, so rendering the viewport is pointless.
+        Else
+            Message "WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)"
+        End If
+        
+        'Cache the relevant section of the image, in case outside functions require it
+        With m_SrcImageRect
+            .Left = srcLeft
+            .Top = srcTop
+            .Width = srcWidth
+            .Height = srcHeight
+        End With
+        
+    'The canvas and image do not overlap.  That's okay!  It means we don't have to do any compositing.  Exit now.
+    Else
+    
+    End If
+        
     'Pass control to the next stage of the pipeline.
     Stage4_CompositeCanvas srcImage, dstCanvas, curPOI
 
@@ -396,7 +392,7 @@ End Sub
 ' require Stage3_ExtractRelevantRegion, as the image has already been assembled.
 '
 'The most common use-case for this function is changes made to individual layers, including non-destructive layer changes that
-' require a recomposite of the image, but not a full recreation calculation of the viewport and canvas buffers.
+' require a recomposite of the image, but not a full re-calculation of canvas measurements and the like.
 '
 'The optional pipelineOriginatedAtStageOne parameter lets this function know if a full pipeline purge is required.  Some caches
 ' may need to be regenerated from scratch after zoom changes.
@@ -456,8 +452,7 @@ End Sub
     '1) an image is first loaded
     '2) the viewport's zoom value is changed
     '3) the main PhotoDemon window is resized
-    '4) toolbars are hidden or shown (similar to resizing, this changes available viewport area)
-    '5) edits that modify an image's size (resizing, rotating, etc - basically anything that changes the size of the back buffer)
+    '4) edits that modify an image's size (resizing, rotating, etc - basically anything that changes the size of the back buffer)
 
 'Because the full rendering pipeline must be executed when this function is called, it is considered highly expensive, even though
 ' the math it performs is relatively quick.  To help cut down on overuse of this function (e.g. sloppy pipeline requests), an optional
@@ -470,7 +465,7 @@ End Sub
 ' over a specific pixel, will pass targetX and targetY parameters to the function.  If present, Stage1_InitializeBuffer will automatically
 ' set the scroll bar values after its calculations are complete, in a way that preserves the on-screen position of the passed
 ' coordinate.  (Note that it does this as closely as it can, but some zoom changes make this impossible, such as zooming out to a
-' point where scroll bars are no longer visible).
+' point that scroll bars cannot reach).
 
 'As an important follow-up note, two sets of target coordinates must be passed for this capability to work: one set of coordinates
 ' in *canvas space*, and one set in *image space*.  Both are required, because Stage1_InitializeBuffer doesn't keep track of past zoom values.
@@ -494,14 +489,13 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     'First, and most obvious, is to exit now if the public g_AllowViewportRendering parameter has been forcibly disabled.
     ' (Detailed explanation: this routine is automatically triggered by the main window's resize notifications.  When new images
     '  are loaded, the image tabstrip will likely appear, which in turn changes the available viewport space, just like a resize
-    '  event.  To prevent  this behavior from triggering multiple Stage1_InitializeBuffer requests, g_AllowViewportRendering is
-    '  utilized.)
+    '  event.  To prevent this behavior from triggering multiple Stage1_InitializeBuffer requests, g_AllowViewportRendering exists.)
     If Not g_AllowViewportRendering Then Exit Sub
     
     'Second, exit if the destination canvas has not been initialized yet; this can happen during program initialization.
     If dstCanvas Is Nothing Then Exit Sub
     
-    'Third, exit if no images have been loaded.  The canvas will take care of rendering a blank viewport.
+    'Third, exit if no images have been loaded.  The canvas will take care of rendering a blank placeholder viewport.
     If g_OpenImageCount = 0 Then
         FormMain.mainCanvas(0).clearCanvas
         Exit Sub
@@ -517,15 +511,30 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     If Not srcImage.IsActive Then Exit Sub
     
     
-    'If we made it all the way here, the viewport pipeline needs to be executed.
+    'If we made it all the way here, the full viewport pipeline needs to be executed.
     
+    'The fundamental problem this first pipeline stage must solve is: how much screen real-estate do we have to work with, and how
+    ' will we fit the image into that real-estate.
     
-    'We will be referencing the source pdImage object many times.  To improve performance, cache its ID value
+    'Potentially problematic is future feature additions, like rulers, which may interfere with our available viewport real-estate (e.g. rulers).
+    ' To try and preempt changes from such such features, you'll notice various calls into the main pdCanvas object.  The idea is to have pdCanvas
+    ' calculate the positioning of such features, so only minimal changes are required here.
+    
+    'Finally, an important clarification is use of the terms "viewport" and "canvas".
+    
+    ' Viewport = the area of the screen dedicated to *just the image*
+    ' Canvas = the area of the screen dedicated to *the full canvas*, including any surrounding dead space (relevant when zoomed out,
+    '           or scrolled past the edge of the image)
+    
+    'Sometimes the viewport and canvas rects will be identical.  Sometimes they will not.  If the canvas rect is larger than
+    ' the viewport rect, the viewport rect will automatically be centered within the viewport area.
+    
+    'We will be referencing the source pdImage object many times.  To improve performance, cache its unique ID value
     Dim curImageIndex As Long
     curImageIndex = srcImage.imageID
     
-    'Because this routine is time-consuming, I carefully track its usage to try and minimize how frequently it's called.
-    ' Feel free to comment out this line if you don't find it helpful.
+    'Because a full pipeline execution is time-consuming, I carefully track hits to this initial function to try and minimize how frequently
+    ' it's called.  Feel free to comment out this line if you don't find such updates helpful.
     Debug.Print "Preparing viewport: " & reasonForRedraw & " | (" & curImageIndex & ") "
     
     'This crucial value is the mathematical ratio of the current zoom value: 1 for 100%, 0.5 for 50%, 2 for 200%, etc.
@@ -533,292 +542,167 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     ' by PD's zoom handler.
     m_ZoomRatio = g_Zoom.getZoomValue(srcImage.currentZoomValue)
     
-    'The fundamental problem this first pipeline stage must solve is: how much screen real-estate do we have to work with, and how
-    ' must we fit the image into that real-state.  It quickly becomes complicated because some decisions we make will actually
-    ' change the available real-estate (e.g. enabling a vertical scrollbar reduces horizontal real-estate, requiring a re-calculation
-    ' of any horizontal data up to that point).
+    'Next, we're going to calculate a bunch of rects in various coordinate spaces.  Because PD 7.0 added the ability to scroll past the
+    ' edge of the image (at any zoom), these rects are crucial for figuring out the overlap between the zoomed image, and the available
+    ' canvas area.
+    '
+    'In almost all cases, the width/height of the rect is calculated first, and the top/left comes later.
     
-    'Also problematic is the potential of future feature additions, like rulers, that also interfere with our available screen
-    ' real-estate.  To try and preempt the changes required by such features, you'll notice various "offsets" used prior to
-    ' calculating image positioning.  These may not do anything at present, so don't worry if they go unused.
+    'First is the image, translated to the canvas coordinate space (e.g. multiplied by zoom).
+    Dim ImageRect_CanvasCoords As RECTF
+    With ImageRect_CanvasCoords
+        .Width = (srcImage.Width * m_ZoomRatio)
+        .Height = (srcImage.Height * m_ZoomRatio)
+    End With
     
-    'Another important clarification is use of the terms "viewport" and "canvas".
+    'Before we can position the image rect, we need to know the size of the canvas.  pdCanvas is responsible for determining this, as it must
+    ' account for the positioning of scroll bars, a status bar, rulers, and whatever else the user has enabled.
+    Dim CanvasRect_ActualPixels As RECTF
+    With CanvasRect_ActualPixels
+        .Left = 0
+        .Top = 0
+        .Width = dstCanvas.getCanvasWidth()
+        .Height = dstCanvas.getCanvasHeight()
+    End With
     
-    ' Viewport = the area of the screen dedicated to just the image
-    ' Canvas = the area of the screen dedicated to the canvas, and any surrounding dead space (relevant when zoomed out)
+    'While here, we want to calculate a second rect for the canvas: its size, in image coordinates.
+    Dim CanvasRect_ImageCoords As RECTF
+    With CanvasRect_ImageCoords
+        .Left = 0
+        .Top = 0
+        .Width = CanvasRect_ActualPixels.Width / m_ZoomRatio
+        .Height = CanvasRect_ActualPixels.Height / m_ZoomRatio
+    End With
     
-    'Sometimes these two rectangles will be identical.  Sometimes they will not.  If the canvas rect is larger than
-    ' the viewport rect, the viewport rect will automatically be moved so that it is centered within the viewport area.
-    ' (This behavior will need to be modified in the future, to allow for scrolling past canvas edges.)
+    'We now want to center the zoomed image relative to the canvas space.  The top-left of the centered image gives us a baseline for all
+    ' scroll bar behavior, if the image is smaller than the available canvas space.
+    With ImageRect_CanvasCoords
+        .Left = (CanvasRect_ActualPixels.Width / 2) - (.Width / 2)
+        .Top = (CanvasRect_ActualPixels.Height / 2) - (.Height / 2)
+    End With
     
-    'Calculate the width and height of a full-size viewport based on the current zoom value
-    m_ImageWidthZoomed = (srcImage.Width * m_ZoomRatio)
-    m_ImageHeightZoomed = (srcImage.Height * m_ZoomRatio)
+    'imageRect_CanvasCoords now contains a RECTF of the image, with zoom applied, centered over the canvas.  The (.Top, .Left) coordinate pair
+    ' of this rect represents the (0, 0) position of the image, when the scrollbars are (0, 0).  As such, if they lie outside the canvas rect,
+    ' we want to reset them to (0, 0) position (so that (0, 0) in actual pixels represents pixel (0, 0) of the image, if the image is larger
+    ' than the canvas).
+    With ImageRect_CanvasCoords
+        If .Left < 0 Then .Left = 0
+        If .Top < 0 Then .Top = 0
+    End With
     
-    'Calculate the vertical offset of the viewport.  While not relevant at present, it will someday be necessary to allow
-    ' for rulers.
-    Dim verticalOffset As Long
-    verticalOffset = srcImage.imgViewport.getVerticalOffset
+    'Pre-7.0, scroll bars were only displayed if absolutely necessary.  With the addition of paint tools, this is longer practical, so we now
+    ' assume that scroll bars are always visible and enabled, regardless of zoom or image size.
     
-    'Grab the canvas dimensions; note that these are just thin wrappers to the .ScaleWidth and .ScaleHeight properties
-    ' of the control.
-    Dim canvasWidth As Long, canvasHeight As Long
-    canvasWidth = dstCanvas.getCanvasWidth
-    canvasHeight = dstCanvas.getCanvasHeight - verticalOffset
+    'As such, we must always calculate maximum scroll bar values, regardless of the image or canvas's size.
     
-    'These variables will reflect whether or not scroll bars are enabled; this is used rather than the .Enabled property so we
-    ' can defer rendering the scroll bars until the last possible instant (rather than turning them on-and-off mid-subroutine).
-    Dim hScrollEnabled As Boolean, vScrollEnabled As Boolean
-    hScrollEnabled = False
-    vScrollEnabled = False
+    'The scroll bars always represent a single-pixel increment, which makes our life somewhat easier.  We basically want to allow the user
+    ' to scroll long enough that they can create a "mostly empty" canvas.  How many pixels are required for this depends on the size of
+    ' the image, relative to the canvas.
     
-    'Step 1: compare zoomed image width to canvas width.  If the zoomed image width is larger, we need to enable a horizontal
-    ' scroll bar.  Also, because fractional zoom values are allowed, Int() is used to clamp.
-    If Int(m_ImageWidthZoomed) > canvasWidth Then hScrollEnabled = True
+    'Start by using the easiest measurement, and the one used by old versions of PD: the difference between the image's size (zoomed),
+    ' and the canvas.
+    Dim hScrollMin As Long, hScrollMax As Long, vScrollMin As Long, vScrollMax As Long
+    hScrollMax = ImageRect_CanvasCoords.Width - CanvasRect_ActualPixels.Width
+    vScrollMax = ImageRect_CanvasCoords.Height - CanvasRect_ActualPixels.Height
     
-    'Step 2: repeat Step 1, but in the vertical direction.  Note that we must subtract the horizontal scroll bar's height, if
-    ' it was enabled by step 1.
-    If (Int(m_ImageHeightZoomed) > canvasHeight) Then
-        vScrollEnabled = True
+    'If hScrollMax or vScrollMax are negative, it means the canvas is larger (in that dimension) than the zoomed image.  This gives us an
+    ' easy branching place for calculating actual scroll bar values.
+    hScrollMax = CanvasRect_ImageCoords.Width / 2
+    hScrollMin = -1 * hScrollMax
+    If hScrollMax > 0 Then hScrollMax = hScrollMax + ImageRect_CanvasCoords.Width
+    
+    vScrollMax = CanvasRect_ImageCoords.Height / 2
+    vScrollMin = -1 * vScrollMax
+    If vScrollMax > 0 Then vScrollMax = vScrollMax + ImageRect_CanvasCoords.Height
+    
+    'We now have scroll bar max/min values.  Forward them to the destination pdCanvas object.
+    With dstCanvas
+        .setRedrawSuspension True
+        .setScrollMin PD_HORIZONTAL, hScrollMin
+        .setScrollMax PD_HORIZONTAL, hScrollMax
+        .setScrollMin PD_VERTICAL, vScrollMin
+        .setScrollMax PD_VERTICAL, vScrollMax
+        .setRedrawSuspension False
+    End With
+    
+    'As a convenience to the user, we also make each scroll bar's LargeChange parameter proportional to the scroll bar's maximum value.
+    If (hScrollMax > 15) And (g_Zoom.getZoomValue(srcImage.currentZoomValue) <= 1) Then
+        dstCanvas.setScrollLargeChange PD_HORIZONTAL, hScrollMax \ 16
     Else
-        If hScrollEnabled And (Int(m_ImageHeightZoomed) > (canvasHeight - dstCanvas.getScrollHeight(PD_HORIZONTAL))) Then
-            vScrollEnabled = True
-        End If
-    End If
-        
-    'Step 3: one last check on horizontal viewport width; if the vertical scrollbar was enabled by step 2, the horizontal
-    ' viewport width has changed.
-    If vScrollEnabled And (Not hScrollEnabled) Then
-        If (Int(m_ImageWidthZoomed) > (canvasWidth - dstCanvas.getScrollWidth(PD_VERTICAL))) Then hScrollEnabled = True
-    End If
-    
-    'We now know which scroll bars need to be enabled, which allows us to finalize the viewport's position and size.
-    ' (Remember that the viewport's position must be changed if either dimension is smaller than the canvas area, as we
-    '  need to center it inside the canvas.)
-    Dim viewportLeft As Double, viewportTop As Double
-    Dim viewportWidth As Double, viewportHeight As Double
-    
-    'These nested If statements basically cover the case of neither or one or both scroll bars being active.
-    If hScrollEnabled Then
-        viewportLeft = 0
-        If Not vScrollEnabled Then
-            viewportWidth = canvasWidth
-        Else
-            viewportWidth = canvasWidth - dstCanvas.getScrollWidth(PD_VERTICAL)
-        End If
-    Else
-        viewportWidth = m_ImageWidthZoomed
-        If Not vScrollEnabled Then
-            viewportLeft = (canvasWidth - m_ImageWidthZoomed) / 2
-        Else
-            viewportLeft = ((canvasWidth - dstCanvas.getScrollWidth(PD_VERTICAL)) - m_ImageWidthZoomed) / 2
-        End If
-    End If
-    
-    If vScrollEnabled Then
-        viewportTop = 0
-        If Not hScrollEnabled Then
-            viewportHeight = canvasHeight
-        Else
-            viewportHeight = canvasHeight - dstCanvas.getScrollHeight(PD_HORIZONTAL)
-        End If
-    Else
-        viewportHeight = m_ImageHeightZoomed
-        If Not hScrollEnabled Then
-            viewportTop = (canvasHeight - m_ImageHeightZoomed) / 2
-        Else
-            viewportTop = ((canvasHeight - dstCanvas.getScrollHeight(PD_HORIZONTAL)) - m_ImageHeightZoomed) / 2
-        End If
+        dstCanvas.setScrollLargeChange PD_HORIZONTAL, 1
     End If
     
-    'Now we know a whole bunch of things:
-    ' 1) which scrollbars, if any, are enabled
-    ' 2) the position of the viewport (image portion of the canvas)
-    ' 3) the size of the viewport.
-    
-    'From these three things, we can now calculate scroll bar maximum values, if necessary.
-    
-    'First, however, let's cover the case of "no scroll bars are enabled."  When that happens, this function's work is
-    ' already complete, so we can advance to the next stage of the pipeline!
-    If (Not hScrollEnabled) And (Not vScrollEnabled) Then
-    
-        'Reset the scroll bar values to zero; this allows future pipeline stages to shortcut some calculations
-        dstCanvas.setRedrawSuspension True
-        dstCanvas.setScrollValue PD_BOTH, 0
-        dstCanvas.setRedrawSuspension False
-    
-        'If the scroll bars are currently visible, hide 'em.  Note that the canvas itself will determine whether the
-        ' primary canvas area needs to be moved as a result of this.
-        dstCanvas.setScrollVisibility PD_BOTH, False
-        
-        'Resize the back buffer and store the relevant painting information into the passed pdImages() object.
-        ' (TODO: roll the canvas color over to the central themer.)
-        If (srcImage.canvasBuffer.getDIBWidth <> canvasWidth) Or (srcImage.canvasBuffer.getDIBHeight <> canvasHeight) Then
-            srcImage.canvasBuffer.createBlank canvasWidth, canvasHeight, 24, g_CanvasBackground, 255
-        Else
-            GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, canvasWidth, canvasHeight, g_CanvasBackground, 255, CompositingModeSourceCopy
-        End If
-        
-        srcImage.imgViewport.targetLeft = viewportLeft
-        srcImage.imgViewport.targetTop = viewportTop
-        srcImage.imgViewport.targetWidth = viewportWidth
-        srcImage.imgViewport.targetHeight = viewportHeight
-        
-        'Pass control to the next stage of the pipeline
-        Viewport_Engine.Stage2_CompositeAllLayers srcImage, dstCanvas, True
-        
-    
-    'This Else() bracket covers the case of one or both viewport scroll bars being enabled.  Inside this block, we will calculate
-    ' the scrollbar's maximum values, and if zoom-to-position is used, we will also calculate the scrollbar's values.
+    If (vScrollMax > 15) And (g_Zoom.getZoomValue(srcImage.currentZoomValue) <= 1) Then
+        dstCanvas.setScrollLargeChange PD_VERTICAL, vScrollMax \ 16
     Else
+        dstCanvas.setScrollLargeChange PD_VERTICAL, 1
+    End If
     
-        Dim newScrollMax As Long
-        Dim newXCanvas As Double, newYCanvas As Double, canvasXDiff As Double, canvasYDiff As Double
+    'If the calling function supplied a targetX value, we will use that to calculate the theoretical scroll bar value that
+    ' maintains the position of that pixel on the screen.
+    
+    '(Note: I call the value "theoretical", because it may lie outside the range of the scroll bar.  If this happens, PD's
+    '  custom scroll bar class will automatically bring the value in-bounds.)
+    
+    Dim newXCanvas As Double, newYCanvas As Double, canvasXDiff As Double, canvasYDiff As Double
+    
+    If oldXCanvas <> 0 Then
         
-        'We are now going to set a bunch of scroll bar properties, all at once.  These changes may cause the scroll bars
-        ' to initiate a pipeline request - to prevent that, we forcibly disable screen refreshes in advance.
         dstCanvas.setRedrawSuspension True
         
-        'Horizontal scroll bar is processed first.
-        If hScrollEnabled Then
-            
-            'If zoomed out, set the scroll bar range to the number of not-visible pixels.  This will result in sub-pixel scrolling
-            ' if the scrollbar is clicked-and-held.
-            If m_ZoomRatio <= 1 Then
-                newScrollMax = srcImage.Width - Int(viewportWidth * g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue) + 0.5)
-                
-            'If zoomed-out, we must divide by the zoom factor (instead of multiplying by it).  This allows us to scroll by integer
-            ' pixel values, which is more convenient, especially at massive zoom levels.
-            Else
-                newScrollMax = srcImage.Width - Int(viewportWidth / g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue) + 0.5)
-                
-            End If
-            
-            'Set the new maximum value
-            dstCanvas.setScrollMax PD_HORIZONTAL, newScrollMax
-            
-            'If the calling function supplied a targetX value, we will use that to calculate the theoretical scroll bar value that
-            ' maintains the position of that pixel on the screen.
-            ' (Note: I call the value "theoretical", because it may lie outside the range of the scroll bar.  If this happens, PD's
-            '  custom scroll bar class will automatically bring the value in-bounds.)
-            If oldXCanvas <> 0 Then
-                
-                'From the supplied coordinates, we know that image coordinate targetXImage was originally located at position
-                ' oldXCanvas.  Our goal is to make targetXImage *remain* at oldXCanvas position, while accounting for
-                ' any changes made to zoom (and thus to scroll bar max/min values).
-                
-                'Start by converting targetXCanvas to the current canvas space.  This will give us a value NewCanvasX, that describes
-                ' where that coordinate lies on the *new* canvas.
-                dstCanvas.setScrollValue PD_HORIZONTAL, 0
-                Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), targetXImage, targetYImage, newXCanvas, newYCanvas, False
-                
-                'Use the difference between newCanvasX and oldCanvasX to determine a new scroll bar value.
-                canvasXDiff = newXCanvas - oldXCanvas
-                
-                'Modify the scrollbar by canvasXDiff amount, while accounting for zoom (as different zoom levels cause scroll bar
-                ' notches to represent varying amounts of pixels)
-                dstCanvas.setScrollValue PD_HORIZONTAL, canvasXDiff / g_Zoom.getZoomValue(srcImage.currentZoomValue)
-                
-            End If
-                            
-            'As a convenience to the user, make the scroll bar's LargeChange parameter proportional to the scroll bar's new
-            ' maximum value.
-            If (dstCanvas.getScrollMax(PD_HORIZONTAL) > 15) And (g_Zoom.getZoomValue(srcImage.currentZoomValue) <= 1) Then
-                dstCanvas.setScrollLargeChange PD_HORIZONTAL, dstCanvas.getScrollMax(PD_HORIZONTAL) \ 16
-            Else
-                dstCanvas.setScrollLargeChange PD_HORIZONTAL, 1
-            End If
-            
-        End If
+        'From the supplied coordinates, we know that image coordinate targetXImage was originally located at position oldXCanvas.
+        ' Our goal is to make targetXImage *remain* at oldXCanvas position, while accounting for any changes made to zoom (and thus
+        ' to scroll bar max/min values).
         
-        'Now repeat all of the above steps, but for the vertical scroll bar.
-        If vScrollEnabled Then
-            
-            If m_ZoomRatio <= 1 Then
-                newScrollMax = srcImage.Height - Int(viewportHeight * g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue) + 0.5)
-            Else
-                newScrollMax = srcImage.Height - Int(viewportHeight / g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue) + 0.5)
-            End If
-            
-            dstCanvas.setScrollMax PD_VERTICAL, newScrollMax
-            
-            If oldYCanvas <> 0 Then
-                
-                dstCanvas.setScrollValue PD_VERTICAL, 0
-                
-                Drawing.convertImageCoordsToCanvasCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), targetXImage, targetYImage, newXCanvas, newYCanvas, False
-                canvasYDiff = newYCanvas - oldYCanvas
-                dstCanvas.setScrollValue PD_VERTICAL, canvasYDiff / g_Zoom.getZoomValue(srcImage.currentZoomValue)
-                
-            End If
-            
-            If (dstCanvas.getScrollMax(PD_VERTICAL) > 15) And (g_Zoom.getZoomValue(srcImage.currentZoomValue) <= 1) Then
-                dstCanvas.setScrollLargeChange PD_VERTICAL, dstCanvas.getScrollMax(PD_VERTICAL) \ 16
-            Else
-                dstCanvas.setScrollLargeChange PD_VERTICAL, 1
-            End If
-            
-        End If
+        'Start by converting targetXCanvas to the current canvas space.  This will give us a value NewCanvasX, that describes
+        ' where that coordinate lies on the *new* canvas.
+        dstCanvas.setScrollValue PD_HORIZONTAL, 0
+        Drawing.convertImageCoordsToCanvasCoords dstCanvas, srcImage, targetXImage, targetYImage, newXCanvas, newYCanvas, False
         
+        'Use the difference between newCanvasX and oldCanvasX to determine a new scroll bar value.
+        canvasXDiff = newXCanvas - oldXCanvas
         
-        'At this point, scroll bar max values are now properly set.
+        'Modify the scrollbar by canvasXDiff amount, while accounting for zoom (as different zoom levels cause scroll bar
+        ' notches to represent varying amounts of pixels)
+        dstCanvas.setScrollValue PD_HORIZONTAL, canvasXDiff / g_Zoom.getZoomValue(srcImage.currentZoomValue)
         
-        
-        'It is now time to display the scroll bars, if they aren't displayed already.  As part of this step, we may also need
-        ' to *hide* the scroll bars if they were previously visible, but aren't now.
-        If hScrollEnabled Then
-            dstCanvas.moveScrollBar PD_HORIZONTAL, 0, canvasHeight - dstCanvas.getScrollHeight(PD_HORIZONTAL), viewportWidth, dstCanvas.getScrollHeight(PD_HORIZONTAL)
-            dstCanvas.setScrollVisibility PD_HORIZONTAL, True
-        Else
-            
-            'If the scroll bar is being hidden, set its value to 0.  This allows subsequent pipeline stages to skip some steps.
-            dstCanvas.setScrollValue PD_HORIZONTAL, 0
-            dstCanvas.setScrollVisibility PD_HORIZONTAL, False
-            
-        End If
-        
-        'Repeat the above steps for the vertical scroll bar
-        If vScrollEnabled Then
-            dstCanvas.moveScrollBar PD_VERTICAL, canvasWidth - dstCanvas.getScrollWidth(PD_VERTICAL), srcImage.imgViewport.getTopOffset, dstCanvas.getScrollWidth(PD_VERTICAL), viewportHeight
-            dstCanvas.setScrollVisibility PD_VERTICAL, True
-        Else
-            dstCanvas.setScrollValue PD_VERTICAL, 0
-            dstCanvas.setScrollVisibility PD_VERTICAL, False
-        End If
-        
-        
-        'With all major UI elements now positioned and updated, we can re-enable automatic viewport pipeline requests
         dstCanvas.setRedrawSuspension False
-        
-        'This pipeline stage is pretty much complete.  All that's left to do is intializing this pdImage's back buffer to its new size,
-        ' and caching all relevant viewport measurements (as subsequent stages need them).
-        
-        'Prepare the back buffer.  Note that we can shrink it slightly if scroll bars are active.
-        Dim finalCanvasWidth As Long, finalCanvasHeight As Long
-        If vScrollEnabled Then finalCanvasWidth = canvasWidth - dstCanvas.getScrollWidth(PD_VERTICAL) Else finalCanvasWidth = canvasWidth
-        If hScrollEnabled Then finalCanvasHeight = canvasHeight - dstCanvas.getScrollHeight(PD_HORIZONTAL) Else finalCanvasHeight = canvasHeight
-        
-        'Testing shows no measurable difference between a 32-bit or 24-bit canvas buffer.  I am going to try 24-bit for now,
-        ' but you can easily swap in the other if desired.  (TODO:  32-bit screws up selection rendering, because it always assumes
-        ' a 24-bit target for performance reasons.  Should revisit!)
-        If (srcImage.canvasBuffer.getDIBWidth <> finalCanvasWidth) Or (srcImage.canvasBuffer.getDIBHeight <> finalCanvasHeight) Then
-            srcImage.canvasBuffer.createBlank finalCanvasWidth, finalCanvasHeight, 24, g_CanvasBackground, 255
-        Else
-            GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, finalCanvasWidth, finalCanvasHeight, g_CanvasBackground, 255, CompositingModeSourceCopy
-        End If
-        
-        'Cache our viewport position and measurements inside the source object.  Future pipeline stages need these values.
-        srcImage.imgViewport.targetLeft = viewportLeft
-        srcImage.imgViewport.targetTop = viewportTop
-        srcImage.imgViewport.targetWidth = viewportWidth
-        srcImage.imgViewport.targetHeight = viewportHeight
-            
-        'Pass control to the next pipeline stage.
-        Stage2_CompositeAllLayers srcImage, dstCanvas, True
         
     End If
     
+    'Repeat the above steps for the Y-coordinate as well
+    If oldYCanvas <> 0 Then
+                
+        dstCanvas.setRedrawSuspension True
+        dstCanvas.setScrollValue PD_VERTICAL, 0
+        
+        Drawing.convertImageCoordsToCanvasCoords dstCanvas, srcImage, targetXImage, targetYImage, newXCanvas, newYCanvas, False
+        canvasYDiff = newYCanvas - oldYCanvas
+        dstCanvas.setScrollValue PD_VERTICAL, canvasYDiff / g_Zoom.getZoomValue(srcImage.currentZoomValue)
+        dstCanvas.setRedrawSuspension False
+        
+    End If
     
+    'With all scroll bar data assembled, we have enough information to create the back buffer.
+    ' (TODO: roll the canvas color over to the central themer.)
+    ' (TODO: creating the back buffer as 32-bit screws up selection rendering, because the current selection engine always assumes
+    '         a 24-bit target.  Look at fixing this!)
+    If (srcImage.canvasBuffer.getDIBWidth <> CanvasRect_ActualPixels.Width) Or (srcImage.canvasBuffer.getDIBHeight <> CanvasRect_ActualPixels.Height) Then
+        srcImage.canvasBuffer.createBlank CanvasRect_ActualPixels.Width, CanvasRect_ActualPixels.Height, 24, g_CanvasBackground, 255
+    Else
+        GDI_Plus.GDIPlusFillDIBRect srcImage.canvasBuffer, 0, 0, CanvasRect_ActualPixels.Width, CanvasRect_ActualPixels.Height, g_CanvasBackground, 255, CompositingModeSourceCopy
+    End If
+    
+    'Because subsequent stages of the pipeline may need all the data we've assembled, store a copy of all relevant rects
+    ' inside the source pdImage object.
+    With srcImage.imgViewport
+        .setCanvasRectActualPixels CanvasRect_ActualPixels
+        .setCanvasRectImageCoords CanvasRect_ImageCoords
+        .setImageRectCanvasCoords ImageRect_CanvasCoords
+    End With
+    
+    'With our work here complete, we can pass control to the next pipeline stage.
+    Stage2_CompositeAllLayers srcImage, dstCanvas, True
     
     'This stage of the pipeline has completed successfully!
     Exit Sub
@@ -838,7 +722,7 @@ ViewportPipeline_Stage1_Error:
             
         'Anything else.  (Never encountered; failsafe only.)
         Case Else
-            Message "Viewport rendering paused due to unexpected error (#%1)", Err
+            Message "Viewport rendering paused due to unexpected error (#%1)", Err.Number
             
     End Select
 

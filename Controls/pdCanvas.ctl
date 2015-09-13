@@ -67,7 +67,6 @@ Begin VB.UserControl pdCanvas
       ScaleWidth      =   17
       TabIndex        =   3
       Top             =   480
-      Visible         =   0   'False
       Width           =   255
    End
    Begin VB.PictureBox picScrollH 
@@ -81,7 +80,6 @@ Begin VB.UserControl pdCanvas
       ScaleWidth      =   361
       TabIndex        =   2
       Top             =   5880
-      Visible         =   0   'False
       Width           =   5415
    End
    Begin VB.PictureBox picStatusBar 
@@ -452,53 +450,12 @@ Public Sub clearCanvas()
     
         picCanvas.Picture = LoadPicture("")
         picCanvas.Refresh
+        
+        'Show scrollbars if they aren't already
+        setScrollVisibility PD_HORIZONTAL, True
+        setScrollVisibility PD_VERTICAL, True
     
     End If
-    
-End Sub
-
-'Get/Set scroll bar visibility
-Public Function getScrollVisibility(ByVal barType As PD_ORIENTATION) As Boolean
-
-    If barType = PD_HORIZONTAL Then
-        getScrollVisibility = picScrollH.Visible
-    Else
-        getScrollVisibility = picScrollV.Visible
-    End If
-
-End Function
-
-Public Sub setScrollVisibility(ByVal barType As PD_ORIENTATION, ByVal newVisibility As Boolean)
-    
-    'If the scroll bar status wasn't actually changed, we can avoid a forced screen refresh
-    Dim changesMade As Boolean
-    changesMade = False
-    
-    Select Case barType
-    
-        Case PD_HORIZONTAL
-            If newVisibility <> picScrollH.Visible Then
-                picScrollH.Visible = newVisibility
-                changesMade = True
-            End If
-        
-        Case PD_VERTICAL
-            If newVisibility <> picScrollV.Visible Then
-                picScrollV.Visible = newVisibility
-                changesMade = True
-            End If
-        
-        Case PD_BOTH
-            If (newVisibility <> picScrollH.Visible) Or (newVisibility <> picScrollV.Visible) Then
-                picScrollH.Visible = newVisibility
-                picScrollV.Visible = newVisibility
-                changesMade = True
-            End If
-    
-    End Select
-    
-    'When scroll bar visibility is changed, we must move the main canvas picture box to match
-    If changesMade Then alignCanvasPictureBox
     
 End Sub
 
@@ -572,60 +529,6 @@ Public Sub setScrollMin(ByVal barType As PD_ORIENTATION, ByVal newMin As Long)
     
 End Sub
 
-'Get scroll bar size.  Note that scroll bar size cannot be set by external functions; it is automatically set to the system default
-' upon user control initialization.
-Public Function getScrollWidth(ByVal barType As PD_ORIENTATION) As Long
-
-    If barType = PD_HORIZONTAL Then
-        getScrollWidth = picScrollH.Width
-    Else
-        getScrollWidth = picScrollV.Width
-    End If
-
-End Function
-
-Public Function getScrollHeight(ByVal barType As PD_ORIENTATION) As Long
-
-    If barType = PD_HORIZONTAL Then
-        getScrollHeight = picScrollH.Height
-    Else
-        getScrollHeight = picScrollV.Height
-    End If
-
-End Function
-
-'Get scroll bar position (left, top).
-Public Function getScrollLeft(ByVal barType As PD_ORIENTATION) As Long
-
-    If barType = PD_HORIZONTAL Then
-        getScrollLeft = picScrollH.Left
-    Else
-        getScrollLeft = picScrollV.Left
-    End If
-
-End Function
-
-Public Function getScrollTop(ByVal barType As PD_ORIENTATION) As Long
-
-    If barType = PD_HORIZONTAL Then
-        getScrollTop = picScrollH.Top
-    Else
-        getScrollTop = picScrollV.Top
-    End If
-
-End Function
-
-'Move a scroll bar to a new position
-Public Sub moveScrollBar(ByVal barType As PD_ORIENTATION, ByVal newX As Long, ByVal newY As Long, ByVal newWidth As Long, ByVal newHeight As Long)
-
-    If barType = PD_HORIZONTAL Then
-        picScrollH.Move newX, newY, newWidth, newHeight
-    Else
-        picScrollV.Move newX, newY, newWidth, newHeight
-    End If
-
-End Sub
-
 'Set scroll bar LargeChange value
 Public Sub setScrollLargeChange(ByVal barType As PD_ORIENTATION, ByVal newLargeChange As Long)
         
@@ -635,6 +538,42 @@ Public Sub setScrollLargeChange(ByVal barType As PD_ORIENTATION, ByVal newLargeC
         VScroll.LargeChange = newLargeChange
     End If
         
+End Sub
+
+'Set scrollbar visibility.  Note that visibility is only toggled as necessary, so this function is preferable to
+' calling .Visible properties directly.
+Public Sub setScrollVisibility(ByVal barType As PD_ORIENTATION, ByVal newVisibility As Boolean)
+    
+    'If the scroll bar status wasn't actually changed, we can avoid a forced screen refresh
+    Dim changesMade As Boolean
+    changesMade = False
+    
+    Select Case barType
+    
+        Case PD_HORIZONTAL
+            If newVisibility <> picScrollH.Visible Then
+                picScrollH.Visible = newVisibility
+                changesMade = True
+            End If
+        
+        Case PD_VERTICAL
+            If newVisibility <> picScrollV.Visible Then
+                picScrollV.Visible = newVisibility
+                changesMade = True
+            End If
+        
+        Case PD_BOTH
+            If (newVisibility <> picScrollH.Visible) Or (newVisibility <> picScrollV.Visible) Then
+                picScrollH.Visible = newVisibility
+                picScrollV.Visible = newVisibility
+                changesMade = True
+            End If
+    
+    End Select
+    
+    'When scroll bar visibility is changed, we must move the main canvas picture box to match
+    If changesMade Then alignCanvasPictureBox
+    
 End Sub
 
 Public Sub displayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize As Boolean = False)
@@ -719,12 +658,25 @@ Public Sub requestBufferSync()
     picCanvas.Refresh
 End Sub
 
+'getMaxAvailableCanvasWidth/Height returns the largest width/height the canvas picture box can theoretically possess.  Note that it doesn't
+' include the size of canvas scrollbars; that's because the viewport pipeline (Viewport_Engine) is responsible for determining whether
+' scrollbars are needed, and sizing the picture box accordingly.  But before it can do that, it needs to know how much space it has to
+' work with.  (In the future, these values could be modified to account for the presence of rulers, among other things.)
+Public Function getMaxAvailableCanvasWidth() As Long
+    getMaxAvailableCanvasWidth = UserControl.ScaleWidth
+End Function
+
+Public Function getMaxAvailableCanvasHeight() As Long
+    getMaxAvailableCanvasHeight = UserControl.ScaleHeight - Me.getStatusBarHeight()
+End Function
+
+'Return the current width/height of the canvas picture box
 Public Function getCanvasWidth() As Long
-    getCanvasWidth = UserControl.ScaleWidth
+    getCanvasWidth = picCanvas.ScaleWidth
 End Function
 
 Public Function getCanvasHeight() As Long
-    getCanvasHeight = UserControl.ScaleHeight
+    getCanvasHeight = picCanvas.ScaleHeight
 End Function
 
 Public Function getStatusBarHeight() As Long
@@ -2124,17 +2076,41 @@ End Sub
 
 Public Sub alignCanvasPictureBox()
     
-    Dim hOffsetRight As Long, vOffsetBottom As Long
+    'As of version 7.0, scroll bars are always visible.  This matches the behavior of paint-centric software like Krita,
+    ' and makes it much easier to enable scrolling past the edge of an image (without resorting to stupid click-hold
+    ' scroll behavior like GIMP).
+    Dim hScrollTop As Long, hScrollLeft As Long, vScrollTop As Long, vScrollLeft As Long
+    hScrollLeft = 0
+    hScrollTop = UserControl.ScaleHeight - (Me.getStatusBarHeight + picScrollH.Height)
     
-    'Calculate vertical offsets
-    If picScrollH.Visible Then vOffsetBottom = picScrollH.Height Else vOffsetBottom = 0
-    vOffsetBottom = vOffsetBottom + picStatusBar.Height
+    vScrollLeft = UserControl.ScaleWidth - picScrollV.ScaleWidth
+    vScrollTop = 0
     
-    'Calculate horizontal offsets
-    If picScrollV.Visible Then hOffsetRight = picScrollV.Width Else hOffsetRight = 0
+    'With scroll bar positions calculated, calculate width/height values for the main canvas picture box
+    Dim picTop As Long, picLeft As Long, picWidth As Long, picHeight As Long
+    picTop = 0
+    picLeft = 0
+    picWidth = vScrollLeft - picLeft
+    picHeight = hScrollTop - picTop
     
-    'Move the canvas picture box into position
-    MoveWindow picCanvas.hWnd, 0, 0, UserControl.ScaleWidth - hOffsetRight, UserControl.ScaleHeight - vOffsetBottom, 1
+    'Failsafe for the IDE
+    'If picWidth < 1 Then picWidth = 1
+    'If picHeight < 1 Then picHeight = 1
+    
+    'Move the picture box into position first
+    If (picCanvas.Left <> picLeft) Or (picCanvas.Top <> picTop) Or (picCanvas.Width <> picWidth) Or (picCanvas.Height <> picHeight) Then
+        picCanvas.Move picLeft, picTop, picWidth, picHeight
+        'MoveWindow picCanvas.hWnd, picTop, picLeft, picWidth, picHeight, 1
+    End If
+    
+    '...Followed by the scrollbars
+    If (picScrollH.Left <> hScrollLeft) Or (picScrollH.Top <> hScrollTop) Or (picScrollH.Width <> picWidth) Then
+        picScrollH.Move hScrollLeft, hScrollTop, picWidth
+    End If
+    
+    If (picScrollV.Left <> vScrollLeft) Or (picScrollV.Top <> vScrollTop) Or (picScrollV.Height <> picHeight) Then
+        picScrollV.Move vScrollLeft, vScrollTop, picScrollV.Width, picHeight
+    End If
     
 End Sub
 

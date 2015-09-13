@@ -124,57 +124,35 @@ Public Sub panImageCanvas(ByVal initX As Long, ByVal initY As Long, ByVal curX A
 
     'Prevent the canvas from redrawing itself until our pan operation is complete.  (This prevents juddery movement.)
     srcCanvas.setRedrawSuspension True
-
-    'If the canvas in question has a horizontal scrollbar, process it
-    If srcCanvas.getScrollVisibility(PD_HORIZONTAL) Then
     
-        'Calculate a new scroll value
-        Dim hOffset As Long
-        hOffset = (initX - curX)
-        
-        'When zoomed-in, sub-pixel scrolling is not allowed.  Compensate for that now
-        If g_Zoom.getZoomValue(srcImage.currentZoomValue) > 1 Then
-            hOffset = hOffset / g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue)
-        End If
-        
-        'Factor in the initial scroll bar value
-        hOffset = m_InitHScroll + hOffset
-        
-        'If that value lies within the bounds of the scroll bar, apply it
-        If (hOffset < srcCanvas.getScrollMin(PD_HORIZONTAL)) Then
-            srcCanvas.setScrollValue PD_HORIZONTAL, srcCanvas.getScrollMin(PD_HORIZONTAL)
-        ElseIf (hOffset > srcCanvas.getScrollMax(PD_HORIZONTAL)) Then
-            srcCanvas.setScrollValue PD_HORIZONTAL, srcCanvas.getScrollMax(PD_HORIZONTAL)
-        Else
-            srcCanvas.setScrollValue PD_HORIZONTAL, hOffset
-        End If
+    'Sub-pixel panning is now allowed (because we're awesome like that)
+    Dim zoomRatio As Double
+    zoomRatio = g_Zoom.getZoomValue(srcImage.currentZoomValue)
     
+    'Calculate new scroll values
+    Dim hOffset As Long, vOffset As Long
+    hOffset = (initX - curX) / zoomRatio
+    vOffset = (initY - curY) / zoomRatio
+        
+    'Factor in the initial scroll bar values
+    hOffset = m_InitHScroll + hOffset
+    vOffset = m_InitVScroll + vOffset
+        
+    'If these values lie within the bounds of their respective scroll bar(s), apply 'em
+    If (hOffset < srcCanvas.getScrollMin(PD_HORIZONTAL)) Then
+        srcCanvas.setScrollValue PD_HORIZONTAL, srcCanvas.getScrollMin(PD_HORIZONTAL)
+    ElseIf (hOffset > srcCanvas.getScrollMax(PD_HORIZONTAL)) Then
+        srcCanvas.setScrollValue PD_HORIZONTAL, srcCanvas.getScrollMax(PD_HORIZONTAL)
+    Else
+        srcCanvas.setScrollValue PD_HORIZONTAL, hOffset
     End If
     
-    'If the canvas in question has a vertical scrollbar, process it
-    If srcCanvas.getScrollVisibility(PD_VERTICAL) Then
-    
-        'Calculate a new scroll value
-        Dim vOffset As Long
-        vOffset = (initY - curY)
-        
-        'When zoomed-in, sub-pixel scrolling is not allowed.  Compensate for that now
-        If g_Zoom.getZoomValue(srcImage.currentZoomValue) > 1 Then
-            vOffset = vOffset / g_Zoom.getZoomOffsetFactor(srcImage.currentZoomValue)
-        End If
-        
-        'Factor in the initial scroll bar value
-        vOffset = m_InitVScroll + vOffset
-        
-        'If that value lies within the bounds of the scroll bar, apply it
-        If (vOffset < srcCanvas.getScrollMin(PD_VERTICAL)) Then
-            srcCanvas.setScrollValue PD_VERTICAL, srcCanvas.getScrollMin(PD_VERTICAL)
-        ElseIf (vOffset > srcCanvas.getScrollMax(PD_VERTICAL)) Then
-            srcCanvas.setScrollValue PD_VERTICAL, srcCanvas.getScrollMax(PD_VERTICAL)
-        Else
-            srcCanvas.setScrollValue PD_VERTICAL, vOffset
-        End If
-    
+    If (vOffset < srcCanvas.getScrollMin(PD_VERTICAL)) Then
+        srcCanvas.setScrollValue PD_VERTICAL, srcCanvas.getScrollMin(PD_VERTICAL)
+    ElseIf (vOffset > srcCanvas.getScrollMax(PD_VERTICAL)) Then
+        srcCanvas.setScrollValue PD_VERTICAL, srcCanvas.getScrollMax(PD_VERTICAL)
+    Else
+        srcCanvas.setScrollValue PD_VERTICAL, vOffset
     End If
     
     'Reinstate canvas redraws

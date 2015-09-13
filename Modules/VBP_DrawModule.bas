@@ -499,14 +499,18 @@ Public Function convertCanvasCoordsToImageCoords(ByRef srcCanvas As pdCanvas, By
         'Get the current zoom value from the source image
         Dim zoomVal As Double
         zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
-                    
-        'Because the viewport is no longer assumed at position (0, 0) (due to the status bar and possibly
-        ' rulers), add any necessary offsets to the mouse coordinates before further calculations happen.
-        canvasY = canvasY - srcImage.imgViewport.getTopOffset
         
-        'Calculate image x and y positions, while taking into account zoom and scroll values
-        imgX = srcCanvas.getScrollValue(PD_HORIZONTAL) + Int((canvasX - srcImage.imgViewport.targetLeft) / zoomVal)
-        imgY = srcCanvas.getScrollValue(PD_VERTICAL) + Int((canvasY - srcImage.imgViewport.targetTop) / zoomVal)
+        'Get a copy of the translated image rect, in canvas coordinates.  If the canvas is a window, and the zoomed
+        ' image is a poster sliding around behind it, the translate image rect contains the poster coordinates,
+        ' relative to the window.  What's great about this rect is that it's already accounted for scroll bars,
+        ' so we can ignore their value(s) here.
+        Dim translatedImageRect As RECTF
+        srcImage.imgViewport.getImageRectTranslated translatedImageRect
+        
+        'Translating the canvas coordinate pair back to the image is now easy.  Subtract the top/left offset,
+        ' then divide by zoom - that's all there is to it!
+        imgX = (canvasX - translatedImageRect.Left) / zoomVal
+        imgY = (canvasY - translatedImageRect.Top) / zoomVal
         
         'If the caller wants the coordinates bound-checked, apply it now
         If forceInBounds Then
@@ -527,26 +531,38 @@ End Function
 'Given an (x,y) pair on the current image, convert the value to coordinates on the current viewport canvas.
 Public Sub convertImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef srcImage As pdImage, ByVal imgX As Double, ByVal imgY As Double, ByRef canvasX As Double, ByRef canvasY As Double, Optional ByVal forceInBounds As Boolean = False)
 
-    If srcImage.imgViewport Is Nothing Then Exit Sub
+    If Not (srcImage.imgViewport Is Nothing) Then
     
-    'Get the current zoom value from the source image
-    Dim zoomVal As Double
-    zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
-    
-    'Calculate canvas x and y positions, while taking into account zoom and scroll values
-    canvasX = (imgX - srcCanvas.getScrollValue(PD_HORIZONTAL)) * zoomVal + srcImage.imgViewport.targetLeft
-    canvasY = (imgY - srcCanvas.getScrollValue(PD_VERTICAL)) * zoomVal + srcImage.imgViewport.targetTop
-    
-    'Because the viewport is no longer assumed at position (0, 0) (due to the status bar and possibly
-    ' rulers), add any necessary offsets to the mouse coordinates before further calculations happen.
-    canvasY = canvasY + srcImage.imgViewport.getTopOffset
-    
-    'If the caller wants the coordinates bound-checked, apply it now
-    If forceInBounds Then
-        If canvasX < srcImage.imgViewport.targetLeft Then canvasX = srcImage.imgViewport.targetLeft
-        If canvasY < srcImage.imgViewport.targetTop Then canvasY = srcImage.imgViewport.targetTop
-        If canvasX >= srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth Then canvasX = srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth - 1
-        If canvasY >= srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight Then canvasY = srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight - 1
+        'Get the current zoom value from the source image
+        Dim zoomVal As Double
+        zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
+            
+        'Get a copy of the translated image rect, in canvas coordinates.  If the canvas is a window, and the zoomed
+        ' image is a poster sliding around behind it, the translate image rect contains the poster coordinates,
+        ' relative to the window.  What's great about this rect is that it's already accounted for scroll bars,
+        ' so we can ignore their value(s) here.
+        Dim translatedImageRect As RECTF
+        srcImage.imgViewport.getImageRectTranslated translatedImageRect
+        
+        'Translating the canvas coordinate pair back to the image is now easy.  Add the top/left offset,
+        ' then multiply by zoom - that's all there is to it!
+        canvasX = (imgX * zoomVal) + translatedImageRect.Left
+        canvasY = (imgY * zoomVal) + translatedImageRect.Top
+        
+        'If the caller wants the coordinates bound-checked, apply it now
+        If forceInBounds Then
+        
+            'Get a copy of the current viewport intersection rect, which determines bounds of this function
+            Dim vIntersectRect As RECTF
+            srcImage.imgViewport.getIntersectRect vIntersectRect
+            
+            If canvasX < vIntersectRect.Left Then canvasX = vIntersectRect.Left
+            If canvasY < vIntersectRect.Top Then canvasY = vIntersectRect.Top
+            If canvasX >= vIntersectRect.Left + vIntersectRect.Width Then canvasX = vIntersectRect.Left + vIntersectRect.Width - 1
+            If canvasY >= vIntersectRect.Top + vIntersectRect.Height Then canvasY = vIntersectRect.Top + vIntersectRect.Height - 1
+            
+        End If
+        
     End If
     
 End Sub
@@ -614,27 +630,36 @@ Public Sub convertListOfImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, B
     Dim zoomVal As Double
     zoomVal = g_Zoom.getZoomValue(srcImage.currentZoomValue)
     
+    'Get a copy of the translated image rect, in canvas coordinates.  If the canvas is a window, and the zoomed
+    ' image is a poster sliding around behind it, the translate image rect contains the poster coordinates,
+    ' relative to the window.  What's great about this rect is that it's already accounted for scroll bars,
+    ' so we can ignore their value(s) here.
+    Dim translatedImageRect As RECTF
+    srcImage.imgViewport.getImageRectTranslated translatedImageRect
+    
+    'If the caller wants the coordinates bound-checked, we also need to grab a copy of the viewport
+    ' intersection rect, which controls boundaries
+    Dim vIntersectRect As RECTF
+    If forceInBounds Then srcImage.imgViewport.getIntersectRect vIntersectRect
+    
     Dim canvasX As Double, canvasY As Double
     
     'Iterate through each point in turn; note that bounds are automatically detected, and there is not currently a way to override
     ' this behavior.
     Dim i As Long
     For i = LBound(listOfPoints) To UBound(listOfPoints)
-    
-        'Calculate canvas x and y positions, while taking into account zoom and scroll values
-        canvasX = (listOfPoints(i).x - srcCanvas.getScrollValue(PD_HORIZONTAL)) * zoomVal + srcImage.imgViewport.targetLeft
-        canvasY = (listOfPoints(i).y - srcCanvas.getScrollValue(PD_VERTICAL)) * zoomVal + srcImage.imgViewport.targetTop
         
-        'Because the viewport is no longer assumed at position (0, 0) (due to the status bar and possibly
-        ' rulers), add any necessary offsets to the mouse coordinates before further calculations happen.
-        canvasY = canvasY + srcImage.imgViewport.getTopOffset
+        'Translating the canvas coordinate pair back to the image is now easy.  Add the top/left offset,
+        ' then multiply by zoom - that's all there is to it!
+        canvasX = (listOfPoints(i).x * zoomVal) + translatedImageRect.Left
+        canvasY = (listOfPoints(i).y * zoomVal) + translatedImageRect.Top
         
         'If the caller wants the coordinates bound-checked, apply it now
         If forceInBounds Then
-            If canvasX < srcImage.imgViewport.targetLeft Then canvasX = srcImage.imgViewport.targetLeft
-            If canvasY < srcImage.imgViewport.targetTop Then canvasY = srcImage.imgViewport.targetTop
-            If canvasX >= srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth Then canvasX = srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth - 1
-            If canvasY >= srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight Then canvasY = srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight - 1
+            If canvasX < vIntersectRect.Left Then canvasX = vIntersectRect.Left
+            If canvasY < vIntersectRect.Top Then canvasY = vIntersectRect.Top
+            If canvasX >= vIntersectRect.Left + vIntersectRect.Width Then canvasX = vIntersectRect.Left + vIntersectRect.Width - 1
+            If canvasY >= vIntersectRect.Top + vIntersectRect.Height Then canvasY = vIntersectRect.Top + vIntersectRect.Height - 1
         End If
         
         'Store the updated coordinate pair

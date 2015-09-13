@@ -144,14 +144,17 @@ Public Function isMouseOverImage(ByVal x1 As Long, ByVal y1 As Long, ByRef srcIm
         isMouseOverImage = False
         Exit Function
     End If
-
-    If (x1 >= srcImage.imgViewport.targetLeft) And (x1 <= srcImage.imgViewport.targetLeft + srcImage.imgViewport.targetWidth) Then
-        If (y1 >= srcImage.imgViewport.targetTop) And (y1 <= srcImage.imgViewport.targetTop + srcImage.imgViewport.targetHeight) Then
-            isMouseOverImage = True
-            Exit Function
-        Else
-            isMouseOverImage = False
-        End If
+    
+    'Make sure the image is currently visible in the viewport
+    If srcImage.imgViewport.getIntersectState Then
+        
+        'Remember: the imgViewport's intersection rect contains the intersection of the canvas and the image.
+        ' If the target point lies inside this, it's over the image!
+        Dim intRect As RECTF
+        srcImage.imgViewport.getIntersectRect intRect
+        isMouseOverImage = Math_Functions.isPointInRectF(x1, y1, intRect)
+        
+    Else
         isMouseOverImage = False
     End If
 
