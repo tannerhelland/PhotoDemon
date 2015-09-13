@@ -378,10 +378,10 @@ Public Sub loadTheseAutosaveFiles(ByRef fullXMLList() As AutosaveXML)
             pdImages(g_CurrentImage).setSaveState False, pdSE_AnySave
             
             'Reset all save dialog flags (as they should be re-displayed after autosave recovery)
-            pdImages(g_CurrentImage).imgStorage.Item("hasSeenJPEGPrompt") = False
-            pdImages(g_CurrentImage).imgStorage.Item("hasSeenJP2Prompt") = False
-            pdImages(g_CurrentImage).imgStorage.Item("hasSeenWebPPrompt") = False
-            pdImages(g_CurrentImage).imgStorage.Item("hasSeenJXRPrompt") = False
+            pdImages(g_CurrentImage).imgStorage.AddEntry "hasSeenJPEGPrompt", False
+            pdImages(g_CurrentImage).imgStorage.AddEntry "hasSeenJP2Prompt", False
+            pdImages(g_CurrentImage).imgStorage.AddEntry "hasSeenWebPPrompt", False
+            pdImages(g_CurrentImage).imgStorage.AddEntry "hasSeenJXRPrompt", False
             
             'It is now time to artificially reconstruct the image's Undo/Redo stack, using the data from the autosave file.
             ' The Undo engine itself handles this step.

@@ -217,19 +217,19 @@ Public Function MenuSave(ByVal imageID As Long) As Boolean
         ' If it is, the user needs to be prompted at least once for those settings.
         
         'JPEG
-        If (pdImages(imageID).currentFileFormat = FIF_JPEG) And (Not pdImages(imageID).imgStorage.Item("hasSeenJPEGPrompt")) Then
+        If (pdImages(imageID).currentFileFormat = FIF_JPEG) And (Not pdImages(imageID).imgStorage.getEntry_Boolean("hasSeenJPEGPrompt")) Then
             MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
         
         'JPEG-2000
-        ElseIf (pdImages(imageID).currentFileFormat = FIF_JP2) And (Not pdImages(imageID).imgStorage.Item("hasSeenJP2Prompt")) Then
+        ElseIf (pdImages(imageID).currentFileFormat = FIF_JP2) And (Not pdImages(imageID).imgStorage.getEntry_Boolean("hasSeenJP2Prompt")) Then
             MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
             
         'WebP
-        ElseIf (pdImages(imageID).currentFileFormat = FIF_WEBP) And (Not pdImages(imageID).imgStorage.Item("hasSeenWebPPrompt")) Then
+        ElseIf (pdImages(imageID).currentFileFormat = FIF_WEBP) And (Not pdImages(imageID).imgStorage.getEntry_Boolean("hasSeenWebPPrompt")) Then
             MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
         
         'JXR
-        ElseIf (pdImages(imageID).currentFileFormat = FIF_WEBP) And (Not pdImages(imageID).imgStorage.Item("hasSeenJXRPrompt")) Then
+        ElseIf (pdImages(imageID).currentFileFormat = FIF_WEBP) And (Not pdImages(imageID).imgStorage.getEntry_Boolean("hasSeenJXRPrompt")) Then
             MenuSave = PhotoDemon_SaveImage(pdImages(imageID), dstFilename, imageID, True)
         
         'All other formats
@@ -548,7 +548,7 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
 
     'Now that the image's window has been fully sized and moved around, use Viewport_Engine.Stage1_InitializeBuffer to set up any scrollbars and a back-buffer
     g_AllowViewportRendering = True
-    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "CreateNewImage"
+    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
     
     'Reflow any image-window-specific display elements on the actual image form (status bar, rulers, etc)
     FormMain.mainCanvas(0).fixChromeLayout

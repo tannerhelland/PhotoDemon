@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image class
 'Copyright 2006-2015 by Tanner Helland
 'Created: sometime 2006
-'Last updated: 11/June/14
-'Last update: start migrating public variables into the imgStorage scripting dictionary
+'Last updated: 13/September/15
+'Last update: convert imgStorage to pdDictionary, so we can drop the run-time scrrun.dll requirement
 '
 'The pdImage class is used to store information on each image loaded by the user.  As such, one instance of this class
 ' exists for each loaded image.  These instances are stored in the public pdImages() array.
@@ -92,7 +92,7 @@ Option Explicit
     
     'Any random data relevant to the image can be stored in this Dictionary object.  It replaces the wide array of specific
     ' public variables we previously used.
-    Public imgStorage As Dictionary
+    Public imgStorage As pdDictionary
         
     'Has this image been saved?  Access this variable via the getSaveState and setSaveState functions.
     Private hasBeenSavedPDI As Boolean, hasBeenSavedFlat As Boolean
@@ -590,7 +590,7 @@ Public Function writeExternalData(ByRef dstFilename As String, Optional ByVal fi
     xmlEngine.writeTag "curLayer", m_curLayer
     
     'Next comes conditional data, which may not exist in the scripting dictionary.  If it's available, we'll write it out.
-    If imgStorage.Exists("pngBackgroundColor") Then xmlEngine.writeTag "pngBackgroundColor", imgStorage.Item("pngBackgroundColor")
+    If imgStorage.doesKeyExist("pngBackgroundColor") Then xmlEngine.writeTag "pngBackgroundColor", imgStorage.getEntry_Long("pngBackgroundColor")
     
     xmlEngine.writeBlankLine
     
@@ -673,7 +673,7 @@ Public Function readExternalData(ByRef srcFilename As String, Optional ByVal fil
             
             'Dictionary tags are conditional, and may not exist in the PDI file.  Check for their existence, and load them
             ' only as necessary.
-            If xmlEngine.doesTagExist("pngBackgroundColor") Then imgStorage.Add "pngBackgroundColor", xmlEngine.getUniqueTag_Long("pngBackgroundColor")
+            If xmlEngine.doesTagExist("pngBackgroundColor") Then imgStorage.AddEntry "pngBackgroundColor", xmlEngine.getUniqueTag_Long("pngBackgroundColor")
             
         End If
         
@@ -941,17 +941,16 @@ Private Sub Class_Initialize()
     forInternalUseOnly = False
     
     'Initialize the public storage dictionary
-    Set imgStorage = New Dictionary
-    imgStorage.compareMode = TextCompare
+    Set imgStorage = New pdDictionary
     
     'Add initial key/value pairs to the dictionary.  Doing this here saves us from having to check key existence in subsequent functions.
     
         'Lossless filetypes always present an export dialog at least once.  Beyond that point, any use of the Save command will
         ' re-save the file using previous settings.  Save As will still trigger a new dialog, however.
-        imgStorage.Add "hasSeenJPEGPrompt", False
-        imgStorage.Add "hasSeenJP2Prompt", False
-        imgStorage.Add "hasSeenWebPPrompt", False
-        imgStorage.Add "hasSeenJXRPrompt", False
+        imgStorage.AddEntry "hasSeenJPEGPrompt", False
+        imgStorage.AddEntry "hasSeenJP2Prompt", False
+        imgStorage.AddEntry "hasSeenWebPPrompt", False
+        imgStorage.AddEntry "hasSeenJXRPrompt", False
         
     'Initialize the composite and canvas buffers
     Set compositeBuffer = New pdDIB
