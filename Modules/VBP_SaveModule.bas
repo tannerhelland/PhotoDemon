@@ -238,7 +238,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 
                 'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
                 If gotSettings = vbOK Then
-                    srcPDImage.imgStorage.Item("hasSeenJPEGPrompt") = True
+                    srcPDImage.imgStorage.AddEntry "hasSeenJPEGPrompt", True
                     PhotoDemon_SaveImage = True
                 Else
                     PhotoDemon_SaveImage = False
@@ -369,7 +369,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 
                 'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
                 If gotJP2Settings = vbOK Then
-                    srcPDImage.imgStorage.Item("hasSeenJP2Prompt") = True
+                    srcPDImage.imgStorage.AddEntry "hasSeenJP2Prompt", True
                     PhotoDemon_SaveImage = True
                 Else
                 
@@ -427,7 +427,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 
                 'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
                 If gotWebPSettings = vbOK Then
-                    srcPDImage.imgStorage.Item("hasSeenWebPPrompt") = True
+                    srcPDImage.imgStorage.AddEntry "hasSeenWebPPrompt", True
                     PhotoDemon_SaveImage = True
                 Else
                 
@@ -460,7 +460,7 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
                 
                 'If the dialog was canceled, note it.  Otherwise, remember that the user has seen the JPEG save screen at least once.
                 If gotJXRSettings = vbOK Then
-                    srcPDImage.imgStorage.Item("hasSeenJXRPrompt") = True
+                    srcPDImage.imgStorage.AddEntry "hasSeenJXRPrompt", True
                     PhotoDemon_SaveImage = True
                 Else
                 
@@ -1194,12 +1194,12 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     If fi_DIB <> 0 Then
     
         'Embed a background color if available, and the user has requested it.
-        If pngPreserveBKGD And srcPDImage.imgStorage.Exists("pngBackgroundColor") Then
+        If pngPreserveBKGD And srcPDImage.imgStorage.doesKeyExist("pngBackgroundColor") Then
             
             Dim rQuad As RGBQUAD
-            rQuad.Red = ExtractR(srcPDImage.imgStorage.Item("pngBackgroundColor"))
-            rQuad.Green = ExtractG(srcPDImage.imgStorage.Item("pngBackgroundColor"))
-            rQuad.Blue = ExtractB(srcPDImage.imgStorage.Item("pngBackgroundColor"))
+            rQuad.Red = ExtractR(srcPDImage.imgStorage.getEntry_Long("pngBackgroundColor"))
+            rQuad.Green = ExtractG(srcPDImage.imgStorage.getEntry_Long("pngBackgroundColor"))
+            rQuad.Blue = ExtractB(srcPDImage.imgStorage.getEntry_Long("pngBackgroundColor"))
             FreeImage_SetBackgroundColor fi_DIB, rQuad
         
         End If

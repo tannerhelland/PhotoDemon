@@ -390,7 +390,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
             
             'Add a note to the target image that tone-mapping was forcibly applied to the incoming data
             If Not (targetImage Is Nothing) Then
-                targetImage.imgStorage.Add "Tone-mapping", True
+                targetImage.imgStorage.AddEntry "Tone-mapping", True
             End If
             
             'Immediately unload the original image copy (which is probably enormous, on account of its bit-depth)

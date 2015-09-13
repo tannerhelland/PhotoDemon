@@ -971,7 +971,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                         
                         'Finally, copy the background color (if any) from the DIB
                         If (targetImage.originalFileFormat = FIF_PNG) And (targetDIB.getBackgroundColor <> -1) Then
-                            targetImage.imgStorage.Add "pngBackgroundColor", targetDIB.getBackgroundColor
+                            targetImage.imgStorage.AddEntry "pngBackgroundColor", targetDIB.getBackgroundColor
                         End If
                         
                     End If
@@ -1124,7 +1124,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             
             'Note that we now need to see if the ICC profile has already been applied.  For CMYK images, the ICC profile will be applied by
             ' the image load function.  If we don't do this, we'll be left with a 32bpp image that contains CMYK data instead of RGBA!
-            If targetDIB.ICCProfile.hasICCData And (Not targetDIB.ICCProfile.hasProfileBeenApplied) And (Not targetImage.imgStorage.Exists("Tone-mapping")) Then
+            If targetDIB.ICCProfile.hasICCData And (Not targetDIB.ICCProfile.hasProfileBeenApplied) And (Not targetImage.imgStorage.doesKeyExist("Tone-mapping")) Then
                 
                 '32bpp images must be un-premultiplied before the transformation
                 If targetDIB.getDIBColorDepth = 32 Then targetDIB.setAlphaPremultiplication
@@ -1401,7 +1401,7 @@ PDI_Load_Continuation:
         
             'Now that the image's window has been fully sized and moved around, use Viewport_Engine.Stage1_InitializeBuffer to set up any scrollbars and a back-buffer
             g_AllowViewportRendering = True
-            Viewport_Engine.Stage1_InitializeBuffer targetImage, FormMain.mainCanvas(0), "LoadFileAsNewImage"
+            Viewport_Engine.Stage1_InitializeBuffer targetImage, FormMain.mainCanvas(0), VSR_ResetToZero
                                     
             'Add this file to the MRU list (unless specifically told not to)
             If ToUpdateMRU And (pageNumber = 0) And (MacroStatus <> MacroBATCH) Then g_RecentFiles.MRU_AddNewFile sFile(thisImage), targetImage
@@ -1501,7 +1501,7 @@ PDI_Load_Continuation:
                     End If
                     
                     'Redraw the main viewport
-                    Viewport_Engine.Stage1_InitializeBuffer targetImage, FormMain.mainCanvas(0)
+                    Viewport_Engine.Stage1_InitializeBuffer targetImage, FormMain.mainCanvas(0), VSR_ResetToZero
                 
                 'If the load was unsuccessful, delete the blank layer we created
                 Else
@@ -2600,7 +2600,7 @@ Public Sub LoadUndo(ByVal undoFile As String, ByVal undoTypeOfFile As Long, ByVa
     If pdImages(g_CurrentImage).selectionActive Then pdImages(g_CurrentImage).mainSelection.requestNewMask
         
     'Render the image to the screen, if requested
-    If Not suspendRedraw Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "LoadUndo"
+    If Not suspendRedraw Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 
