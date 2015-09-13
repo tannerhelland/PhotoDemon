@@ -67,7 +67,7 @@ Public Function getZoomValue(ByVal zoomIndex As Long) As Double
             'Retrieve the current viewport's width and height
             Dim viewportWidth As Double, viewportHeight As Double
             viewportWidth = FormMain.mainCanvas(0).getCanvasWidth
-            viewportHeight = FormMain.mainCanvas(0).getCanvasHeight - pdImages(g_CurrentImage).imgViewport.getVerticalOffset
+            viewportHeight = FormMain.mainCanvas(0).getCanvasHeight
             
             'Calculate a width and height ratio in advance
             Dim horizontalRatio As Double, verticalRatio As Double
@@ -82,7 +82,7 @@ Public Function getZoomValue(ByVal zoomIndex As Long) As Double
                     'Check to see if the calculated zoom value will require a vertical scroll bar (since we are only fitting width).
                     ' If it will, we must subtract the scroll bar's width from our calculation.
                     If imgHeight * horizontalRatio > viewportHeight Then
-                        getZoomValue = (viewportWidth - FormMain.mainCanvas(0).getScrollWidth(PD_VERTICAL)) / imgWidth
+                        getZoomValue = viewportWidth / imgWidth
                     Else
                         getZoomValue = horizontalRatio
                     End If
@@ -93,7 +93,7 @@ Public Function getZoomValue(ByVal zoomIndex As Long) As Double
                     'Check to see if the calculated zoom value will require a horizontal scroll bar (since we are only fitting height).
                     ' If it will, we must subtract the scroll bar's height from our calculation.
                     If imgWidth * verticalRatio > viewportWidth Then
-                        getZoomValue = (viewportHeight - FormMain.mainCanvas(0).getScrollHeight(PD_HORIZONTAL)) / imgHeight
+                        getZoomValue = viewportHeight / imgHeight
                     Else
                         getZoomValue = verticalRatio
                     End If

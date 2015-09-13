@@ -44,9 +44,6 @@ Public Sub CreateNewPDImage(Optional ByVal forInternalUse As Boolean = False)
     
     'If this image wasn't loaded by the user (e.g. it's an internal PhotoDemon process), mark is as such
     pdImages(g_NumOfImagesLoaded).forInternalUseOnly = forInternalUse
-        
-    'Note the initial vertical offset of the viewport.  (This accounts for the current state of the status bar, rulers, etc.)
-    pdImages(g_NumOfImagesLoaded).imgViewport.setBottomOffset FormMain.mainCanvas(0).getStatusBarHeight
     
     'Set a default zoom of 100% (note: this is likely to change, assuming the user has auto-zoom enabled)
     pdImages(g_NumOfImagesLoaded).currentZoomValue = g_Zoom.getZoom100Index
