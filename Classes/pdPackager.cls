@@ -1613,21 +1613,27 @@ Public Function getNodeDataByID(ByVal targetNodeID As Long, ByVal useHeaderBuffe
     Dim i As Long, nodeIndex As Long
     nodeIndex = -1
     
-    For i = 0 To UBound(m_NodeDirectory)
+    If m_NumOfNodes > 0 Then
     
-        If targetNodeID = m_NodeDirectory(i).NodeID Then
+        For i = 0 To UBound(m_NodeDirectory)
         
-            'This node is the one!
-            nodeIndex = i
-            Exit For
+            If targetNodeID = m_NodeDirectory(i).NodeID Then
+            
+                'This node is the one!
+                nodeIndex = i
+                Exit For
+            
+            End If
         
+        Next i
+        
+        'If a matching node was found, use getNodeDataByIndex() to retrieve its data
+        If nodeIndex >= 0 Then
+            getNodeDataByID = getNodeDataByIndex(nodeIndex, useHeaderBuffer, dstArray(), disableChecksumValidation)
+        Else
+            getNodeDataByID = False
         End If
-    
-    Next i
-    
-    'If a matching node was found, use getNodeDataByIndex() to retrieve its data
-    If nodeIndex >= 0 Then
-        getNodeDataByID = getNodeDataByIndex(nodeIndex, useHeaderBuffer, dstArray(), disableChecksumValidation)
+        
     Else
         getNodeDataByID = False
     End If
@@ -1640,25 +1646,31 @@ Public Function getNodeDataByID_UnsafeDstPointer(ByVal targetNodeID As Long, ByV
     Dim i As Long, nodeIndex As Long
     nodeIndex = -1
     
-    For i = 0 To UBound(m_NodeDirectory)
+    If m_NumOfNodes > 0 Then
     
-        If targetNodeID = m_NodeDirectory(i).NodeID Then
+        For i = 0 To UBound(m_NodeDirectory)
         
-            'This node is the one!
-            nodeIndex = i
-            Exit For
+            If targetNodeID = m_NodeDirectory(i).NodeID Then
+            
+                'This node is the one!
+                nodeIndex = i
+                Exit For
+            
+            End If
         
+        Next i
+        
+        'If a matching node was found, use getNodeDataByIndex() to retrieve its data
+        If nodeIndex >= 0 Then
+            getNodeDataByID_UnsafeDstPointer = getNodeDataByIndex_UnsafeDstPointer(nodeIndex, useHeaderBuffer, dstPointer, disableChecksumValidation)
+        Else
+            getNodeDataByID_UnsafeDstPointer = False
         End If
-    
-    Next i
-    
-    'If a matching node was found, use getNodeDataByIndex() to retrieve its data
-    If nodeIndex >= 0 Then
-        getNodeDataByID_UnsafeDstPointer = getNodeDataByIndex_UnsafeDstPointer(nodeIndex, useHeaderBuffer, dstPointer, disableChecksumValidation)
+        
     Else
         getNodeDataByID_UnsafeDstPointer = False
     End If
-
+        
 End Function
 
 'getNodeHeaderByName and getNodeHeaderByID both wrap this function, getNodeHeaderByIndex.  (Those functions are simply used
