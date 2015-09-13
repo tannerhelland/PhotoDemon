@@ -15,18 +15,21 @@ Attribute VB_Exposed = False
 'Image Viewport Support Class
 'Copyright 2001-2015 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 05/December/13
-'Last update: started migrating certain viewport functions and tracking code into this standalone class.  The long-term
-'              goal is to move all viewport functionality into this class, and to abstract out the rendering
-'              destination code.  This would allow the program to create arbitrary viewport renderers for any
-'              target object or DC, which would greatly increase flexibility over the current fixed system.
+'Last updated: 13/September/15
+'Last update: overhaul the class completely as part of prepping for paint tools
 '
 'While many viewport actions and operations are universal regardless of image, some elements are image-specific -
 ' for example, the positioning of the image on the canvas, which is contingent on the image's size, the current zoom,
-' and the size of the viewport.
+' and the size of the viewport/canvas.
 '
-'Rather than keep these tracking variables floating around loose inside the parent pdImage object, they are now stored
-' here.  Eventually, zoom and other viewport factors will be moved to this class as well.
+'Rather than let these tracking variables float around inside the parent pdImage object, they are now stored
+' inside this dedicated viewport class.  Eventually, zoom and other viewport-related factors should probably be
+' moved here as well.
+'
+'This class was completely overhauled prior to the 7.0 release, as part of prepping for paint tools.  It now stores
+' a lot more viewport-specific data, which greatly simplifies tasks like coordinate space conversions in other
+' functions.  Almost everything in this class is created by the Viewport_Engine module, so look there for details
+' on how various structs are calculated and filled.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -46,13 +49,29 @@ Private CanvasRect_ActualPixels As RECTF
 ' on the off chance that the canvas and image do not currently intersect.
 Private doCanvasAndImageIntersect As Boolean
 Private CanvasImageIntersect As RECTF
+Private SrcImageIntersect As RECTF
+
+'Current scroll bar values.  These are saved/restored when the active image changes.
+Private hScrollValue As Long, vScrollValue As Long
+
+Public Sub setHScrollValue(ByVal newValue As Long)
+    hScrollValue = newValue
+End Sub
+
+Public Sub setVScrollValue(ByVal newValue As Long)
+    vScrollValue = newValue
+End Sub
 
 Friend Sub setIntersectState(ByRef NewState As Boolean)
     doCanvasAndImageIntersect = NewState
 End Sub
 
-Friend Sub setIntersectRect(ByRef srcRectF As RECTF)
+Friend Sub setIntersectRectCanvas(ByRef srcRectF As RECTF)
     CanvasImageIntersect = srcRectF
+End Sub
+
+Friend Sub setIntersectRectImage(ByRef srcRectF As RECTF)
+    SrcImageIntersect = srcRectF
 End Sub
 
 Friend Sub setImageRectCanvasCoords(ByRef srcRectF As RECTF)
@@ -71,12 +90,24 @@ Friend Sub setCanvasRectActualPixels(ByRef srcRectF As RECTF)
     CanvasRect_ActualPixels = srcRectF
 End Sub
 
+Public Function getHScrollValue() As Long
+    getHScrollValue = hScrollValue
+End Function
+
+Public Function getVScrollValue() As Long
+    getVScrollValue = vScrollValue
+End Function
+
 Friend Function getIntersectState() As Boolean
     getIntersectState = doCanvasAndImageIntersect
 End Function
 
-Friend Sub getIntersectRect(ByRef dstRectF As RECTF)
+Friend Sub getIntersectRectCanvas(ByRef dstRectF As RECTF)
     dstRectF = CanvasImageIntersect
+End Sub
+
+Friend Sub getIntersectRectImage(ByRef dstRectF As RECTF)
+    dstRectF = SrcImageIntersect
 End Sub
 
 Friend Sub getImageRectCanvasCoords(ByRef dstRectF As RECTF)

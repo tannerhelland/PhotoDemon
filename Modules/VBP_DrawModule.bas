@@ -554,7 +554,7 @@ Public Sub convertImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, ByRef s
         
             'Get a copy of the current viewport intersection rect, which determines bounds of this function
             Dim vIntersectRect As RECTF
-            srcImage.imgViewport.getIntersectRect vIntersectRect
+            srcImage.imgViewport.getIntersectRectCanvas vIntersectRect
             
             If canvasX < vIntersectRect.Left Then canvasX = vIntersectRect.Left
             If canvasY < vIntersectRect.Top Then canvasY = vIntersectRect.Top
@@ -640,7 +640,7 @@ Public Sub convertListOfImageCoordsToCanvasCoords(ByRef srcCanvas As pdCanvas, B
     'If the caller wants the coordinates bound-checked, we also need to grab a copy of the viewport
     ' intersection rect, which controls boundaries
     Dim vIntersectRect As RECTF
-    If forceInBounds Then srcImage.imgViewport.getIntersectRect vIntersectRect
+    If forceInBounds Then srcImage.imgViewport.getIntersectRectCanvas vIntersectRect
     
     Dim canvasX As Double, canvasY As Double
     

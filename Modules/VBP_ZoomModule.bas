@@ -3,8 +3,8 @@ Attribute VB_Name = "Viewport_Engine"
 'Viewport Handler - builds and draws the image viewport and associated scroll bars
 'Copyright 2001-2015 by Tanner Helland
 'Created: 4/15/01
-'Last updated: 10/April/15
-'Last update: extend pipeline by an additional stage, to prep for paint tools
+'Last updated: 13/September/15
+'Last update: completely overhaul the viewport pipeline to prep for paint tools!
 '
 'Module for handling the image viewport.  The render pipeline works as follows:
 ' - Viewport_Engine.Stage1_InitializeBuffer: for recalculating all viewport variables and controls (done only when the zoom value is changed,
@@ -26,13 +26,28 @@ Attribute VB_Name = "Viewport_Engine"
 
 Option Explicit
 
-'Some viewport pipeline calculations are stored at module-level.  This is more efficient than passing them as parameters, because PD's
-' viewport pipeline has been deliberately created as an "out of order" pipeline.  Different user interations can trigger execution
-' of the pipeline at different stages, which is crucial for maximizing viewport performance.
+'Due to the complexity of viewport rendering, some viewport pipeline calculations are stored at module-level, while others are
+' stored inside the source pdImage or destination pdCanvas used for a given rendering.  The module-level variables in particular are
+' used to improve efficiency over passing objects as parameters, because PD's viewport pipeline is as an "out of order" pipeline.
+' Different user interations trigger execution of the pipeline at different stages, which is crucial for maximizing viewport performance.
+'
+'As such, pipeline functions must be *very cautious* about modifying module-level values, or viewport-related values stored within
+' source pdImage or destination pdCanvas objects.  CONSIDER YOURSELF WARNED.
 
-'As such, pipeline functions must be *very cautious* about modifying these values.  CONSIDER YOURSELF WARNED.
+'If external functions require special scroll bar treatment in the initial pipeline stage, they must pass one of these enums
+' as the first entry in the associated ParamArray().
+Public Enum PD_VIEWPORT_SPECIAL_REQUEST
+    VSR_ResetToZero = 0
+    VSR_ResetToCustom = 1
+    VSR_PreservePointPosition = 2
+End Enum
 
-'The ZoomVal value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")
+#If False Then
+    Private Const VSR_ResetToZero = 0, VSR_ResetToCustom = 1, VSR_PreservePointPosition = 2
+#End If
+
+'The ZoomVal value is the actual coefficient for the current zoom value.  (For example, 0.50 for "50% zoom")  Multiple pipeline stages
+' use this, so it's cached by the first pipeline staged and simply reused after that.
 Private m_ZoomRatio As Double
 
 'frontBuffer holds the final composited image, including any non-interactive overlays (like selection highlight/lightbox effects)
@@ -41,18 +56,8 @@ Private frontBuffer As pdDIB
 'cornerFix holds a small gray box that is copied over the corner between the horizontal and vertical scrollbars, if they exist
 Private cornerFix As pdDIB
 
-'The current chunk of the image visible in the viewport.  Note that these values are in *IMAGE COORDINATES*, and they are not
-' worthwhile until the pipeline has been executed at least once (and made it to at least stage 3, if you're curious).  We cache these values
-' in a GDI+friendly RECTF struct, and callers can request it via getCopyOfSourceImageRect() if they need to perform their own coordinate math.
-Private m_SrcImageRect As RECTF
-
 'To avoid re-applying certain settings, we cache the target viewport's DC between calls.
 Private m_TargetDC As Long
-
-'If an outside function wants a copy of the viewport's current image coverage, they can call this function.
-Public Sub getCopyOfSourceImageRect(ByRef dstRect As RECTF)
-    dstRect = m_SrcImageRect
-End Sub
 
 'Stage5_FlipBufferAndDrawUI is the final stage of the viewport pipeline.  It will flip the composited canvas image to the
 ' destination pdCanvas object, and apply any final UI elements as well - control nodes, custom cursors, etc.  This step is
@@ -117,7 +122,7 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
                 
                 'Retrieve a copy of the current image's intersection rect, which controls boundaries for any selection overlays
                 Dim intRect As RECTF
-                srcImage.imgViewport.getIntersectRect intRect
+                srcImage.imgViewport.getIntersectRectCanvas intRect
                 srcImage.mainSelection.renderTransformNodes srcImage, dstCanvas, intRect.Left, intRect.Top
                 
             End If
@@ -176,7 +181,7 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     
     'Retrieve a copy of the intersected viewport rect, which determines where we place the shadow beneath the image.
     Dim viewportIntersectRect As RECTF
-    srcImage.imgViewport.getIntersectRect viewportIntersectRect
+    srcImage.imgViewport.getIntersectRectCanvas viewportIntersectRect
     
     'If the user's performance preferences allow for interface decorations, render them next
     If g_InterfacePerformance <> PD_PERF_FASTEST Then
@@ -304,7 +309,7 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
         
         'The intersection between the canvas and image is now stored in viewportRect.  Cool!  This is the destination rect of
         ' our viewport StretchBlt function.
-        srcImage.imgViewport.setIntersectRect viewportRect
+        srcImage.imgViewport.setIntersectRectCanvas viewportRect
         
         'What we need to do now is reverse-map that rect back onto the image itself.  How do we do this?
         ' Well, we need two key pieces of information:
@@ -365,13 +370,15 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
             Message "WARNING!  GDI+ could not be found.  (PhotoDemon requires GDI+ for proper program operation.)"
         End If
         
-        'Cache the relevant section of the image, in case outside functions require it
-        With m_SrcImageRect
+        'Cache the relevant section of the image, in case outside functions require it.
+        Dim tmpSrcImageRect As RECTF
+        With tmpSrcImageRect
             .Left = srcLeft
             .Top = srcTop
             .Width = srcWidth
             .Height = srcHeight
         End With
+        srcImage.imgViewport.setIntersectRectImage tmpSrcImageRect
         
     'The canvas and image do not overlap.  That's okay!  It means we don't have to do any compositing.  Exit now.
     Else
@@ -442,27 +449,29 @@ End Sub
 
 'Per its name, Stage1_InitializeBuffer is responsible for preparing a bunch of math related to viewport rendering.  Its duties include:
     '1) Calculating all zoom-related math
-    '2) Determining whether scroll bars are required, and if they are, what their max/min values should be
+    '2) Determining max/min values of scroll bars
     '3) Canvas offsets, if the image is zoomed out far enough that dead space is present in the viewport.
+    '4) (optionally) Calculating new scroll bar values if the user requests it (e.g. for preserving cursor position during mousewheel-to-zoom)
     
-'This function is crucial, because all subsequent pipeline operations operate on the values determined by this function.
+'This function is crucial, because all subsequent pipeline operations operate on the rectangles determined by this function.
 
 'Because this function does no actual rendering - only preparation math - it only needs to be executed under specific conditions,
 ' namely when:
     '1) an image is first loaded
     '2) the viewport's zoom value is changed
     '3) the main PhotoDemon window is resized
-    '4) edits that modify an image's size (resizing, rotating, etc - basically anything that changes the size of the back buffer)
+    '4) edits that modify an image's size (resizing, rotating, etc - basically anything that changes the relationship between image size
+    '   and the canvas buffer(s))
 
 'Because the full rendering pipeline must be executed when this function is called, it is considered highly expensive, even though
-' the math it performs is relatively quick.  To help cut down on overuse of this function (e.g. sloppy pipeline requests), an optional
-' "reasonForRedraw" parameter is used.  This untranslated string, supplied by the caller, has proven helpful while optimizing.
-' Similarly, if you see a bunch of Stage1_InitializeBuffer requests happening back-to-back in the Debug window, you should investigate,
-' because such operations are likely hurting performance.
+' the math it performs is relatively quick.  The main issue raised by this function is that front and back buffers for the current canvas
+' likely need to be recreated (instead of just reused, as their size has likely changed), so whenever you need to call the viewport to
+' request a redraw, do your best to figure out how late in the pipeline you can call - performance will improve accordingly.
 
 'While this function is primarily concerned with the math required to handle zoom and scroll operations correctly, there are a few
-' additional parameters that are occasionally necessary.  "Zoom to Coordinate" behavior, used when the mousewheel is applied while
-' over a specific pixel, will pass targetX and targetY parameters to the function.  If present, Stage1_InitializeBuffer will automatically
+' additional parameters that are occasionally necessary, which is why a paramArray is used.  For details on these, please refer to the
+' "Zoom to Coordinate" behavior, used when the mousewheel is applied while
+' over a specific pixel, will pass additional targetX and targetY parameters to the function.  If present, Stage1_InitializeBuffer will automatically
 ' set the scroll bar values after its calculations are complete, in a way that preserves the on-screen position of the passed
 ' coordinate.  (Note that it does this as closely as it can, but some zoom changes make this impossible, such as zooming out to a
 ' point that scroll bars cannot reach).
@@ -478,7 +487,7 @@ End Sub
 ' 3) change the zoom value; this allows the zoom engine to reconstruct conditional values, like "fit to window"
 ' 4) re-enable automatic canvas redraws (this can happen now, or after step 5 - just don't forget to do it!)
 ' 5) request a manual redraw via Stage1_InitializeBuffer, and be sure supply the previously cached x/y values
-Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, Optional ByRef reasonForRedraw As String, Optional ByVal oldXCanvas As Long = 0, Optional ByVal oldYCanvas As Long = 0, Optional ByVal targetXImage As Double = 0, Optional ByVal targetYImage As Double = 0)
+Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As pdCanvas, ParamArray ExtraSettings() As Variant)
     
     
     On Error GoTo ViewportPipeline_Stage1_Error
@@ -529,13 +538,20 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     'Sometimes the viewport and canvas rects will be identical.  Sometimes they will not.  If the canvas rect is larger than
     ' the viewport rect, the viewport rect will automatically be centered within the viewport area.
     
-    'We will be referencing the source pdImage object many times.  To improve performance, cache its unique ID value
-    Dim curImageIndex As Long
-    curImageIndex = srcImage.imageID
+    'The caller can request special behavior via the ExtraSettings param array.  In most cases, we don't deal with these results until
+    ' the end of the function, but for the "preserve center point" request, we need to determine the current image+viewport center points
+    ' in advance (as we'll change them once we calculate all the new viewport rects).
+    '
+    'To that end, note any special requests now.
+    Dim specialRequestActive As Boolean, specialRequestID As PD_VIEWPORT_SPECIAL_REQUEST
+    If UBound(ExtraSettings) >= LBound(ExtraSettings) Then
+        specialRequestActive = True
+        specialRequestID = CLng(ExtraSettings(0))
+    End If
     
     'Because a full pipeline execution is time-consuming, I carefully track hits to this initial function to try and minimize how frequently
     ' it's called.  Feel free to comment out this line if you don't find such updates helpful.
-    Debug.Print "Preparing viewport: " & reasonForRedraw & " | (" & curImageIndex & ") "
+    ' Debug.Print "Preparing viewport: " & reasonForRedraw & " | (" & srcImage.imageID & ") "
     
     'This crucial value is the mathematical ratio of the current zoom value: 1 for 100%, 0.5 for 50%, 2 for 200%, etc.
     ' We can't generate this automatically, because specialty zoom values (like "fit to window") must be externally generated
@@ -593,11 +609,11 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     'Pre-7.0, scroll bars were only displayed if absolutely necessary.  With the addition of paint tools, this is longer practical, so we now
     ' assume that scroll bars are always visible and enabled, regardless of zoom or image size.
     
-    'As such, we must always calculate maximum scroll bar values, regardless of the image or canvas's size.
+    'As such, we always calculate max/min scroll bar limits, regardless of the image or canvas's size.
     
-    'The scroll bars always represent a single-pixel increment, which makes our life somewhat easier.  We basically want to allow the user
-    ' to scroll long enough that they can create a "mostly empty" canvas.  How many pixels are required for this depends on the size of
-    ' the image, relative to the canvas.
+    'The scroll bars always represent a single-pixel increment (in the image coordinate space), which makes our life somewhat easier.
+    ' We basically want to allow the user to scroll long enough that they can create a "mostly empty" canvas.  How many pixels are required
+    ' for this depends on the size of the image, relative to the canvas.
     
     'Start by using the easiest measurement, and the one used by old versions of PD: the difference between the image's size (zoomed),
     ' and the canvas.
@@ -605,15 +621,21 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     hScrollMax = ImageRect_CanvasCoords.Width - CanvasRect_ActualPixels.Width
     vScrollMax = ImageRect_CanvasCoords.Height - CanvasRect_ActualPixels.Height
     
-    'If hScrollMax or vScrollMax are negative, it means the canvas is larger (in that dimension) than the zoomed image.  This gives us an
-    ' easy branching place for calculating actual scroll bar values.
-    hScrollMax = CanvasRect_ImageCoords.Width / 2
-    hScrollMin = -1 * hScrollMax
-    If hScrollMax > 0 Then hScrollMax = hScrollMax + ImageRect_CanvasCoords.Width
+    'Because subpixel scrolling is only active when zoomed out, we must account for zoom when zoomed in (because scrolling occurs in
+    ' discrete image-space pixel measurements).
+    If m_ZoomRatio > 1 Then
+        hScrollMax = hScrollMax / m_ZoomRatio
+        vScrollMax = vScrollMax / m_ZoomRatio
+    End If
     
-    vScrollMax = CanvasRect_ImageCoords.Height / 2
-    vScrollMin = -1 * vScrollMax
-    If vScrollMax > 0 Then vScrollMax = vScrollMax + ImageRect_CanvasCoords.Height
+    'Minimum values are similarly easy; let the user scroll the image halfway off the screen
+    hScrollMin = -1 * (CanvasRect_ImageCoords.Width * 0.5)
+    vScrollMin = -1 * (CanvasRect_ImageCoords.Height * 0.5)
+    
+    'If hScrollMax or vScrollMax are negative, it means the canvas is larger (in that dimension) than the zoomed image.  When this happens,
+    ' rely solely on the "halfway off screen" scroll measurement.
+    If hScrollMax > 0 Then hScrollMax = hScrollMax - hScrollMin Else hScrollMax = -hScrollMin
+    If vScrollMax > 0 Then vScrollMax = vScrollMax - vScrollMin Else vScrollMax = -vScrollMin
     
     'We now have scroll bar max/min values.  Forward them to the destination pdCanvas object.
     With dstCanvas
@@ -638,50 +660,7 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
         dstCanvas.setScrollLargeChange PD_VERTICAL, 1
     End If
     
-    'If the calling function supplied a targetX value, we will use that to calculate the theoretical scroll bar value that
-    ' maintains the position of that pixel on the screen.
-    
-    '(Note: I call the value "theoretical", because it may lie outside the range of the scroll bar.  If this happens, PD's
-    '  custom scroll bar class will automatically bring the value in-bounds.)
-    
-    Dim newXCanvas As Double, newYCanvas As Double, canvasXDiff As Double, canvasYDiff As Double
-    
-    If oldXCanvas <> 0 Then
-        
-        dstCanvas.setRedrawSuspension True
-        
-        'From the supplied coordinates, we know that image coordinate targetXImage was originally located at position oldXCanvas.
-        ' Our goal is to make targetXImage *remain* at oldXCanvas position, while accounting for any changes made to zoom (and thus
-        ' to scroll bar max/min values).
-        
-        'Start by converting targetXCanvas to the current canvas space.  This will give us a value NewCanvasX, that describes
-        ' where that coordinate lies on the *new* canvas.
-        dstCanvas.setScrollValue PD_HORIZONTAL, 0
-        Drawing.convertImageCoordsToCanvasCoords dstCanvas, srcImage, targetXImage, targetYImage, newXCanvas, newYCanvas, False
-        
-        'Use the difference between newCanvasX and oldCanvasX to determine a new scroll bar value.
-        canvasXDiff = newXCanvas - oldXCanvas
-        
-        'Modify the scrollbar by canvasXDiff amount, while accounting for zoom (as different zoom levels cause scroll bar
-        ' notches to represent varying amounts of pixels)
-        dstCanvas.setScrollValue PD_HORIZONTAL, canvasXDiff / g_Zoom.getZoomValue(srcImage.currentZoomValue)
-        
-        dstCanvas.setRedrawSuspension False
-        
-    End If
-    
-    'Repeat the above steps for the Y-coordinate as well
-    If oldYCanvas <> 0 Then
-                
-        dstCanvas.setRedrawSuspension True
-        dstCanvas.setScrollValue PD_VERTICAL, 0
-        
-        Drawing.convertImageCoordsToCanvasCoords dstCanvas, srcImage, targetXImage, targetYImage, newXCanvas, newYCanvas, False
-        canvasYDiff = newYCanvas - oldYCanvas
-        dstCanvas.setScrollValue PD_VERTICAL, canvasYDiff / g_Zoom.getZoomValue(srcImage.currentZoomValue)
-        dstCanvas.setRedrawSuspension False
-        
-    End If
+    'Scroll bars are now prepped and ready!
     
     'With all scroll bar data assembled, we have enough information to create the back buffer.
     ' (TODO: roll the canvas color over to the central themer.)
@@ -700,6 +679,73 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
         .setCanvasRectImageCoords CanvasRect_ImageCoords
         .setImageRectCanvasCoords ImageRect_CanvasCoords
     End With
+    
+    'The final step of this pipeline is optional.  If the user wants us to calculate specific scroll bar values, they must pass
+    ' a special request enum via the function ParamArray().  At present, this class is capable of three different auto-calculations,
+    ' which correspond to the three enum values of PD_VIEWPORT_SPECIAL_REQUEST
+    ' VSR_ResetToZero: reset the scroll bar to (0, 0), which also centers the image when in "zoom-to-fit" mode
+    ' VSR_ResetToCustom: reset the scroll bar to two values supplied by the user (in (x, y) order)
+    ' VSR_AutoCenter: forcibly center the image, regardless of zoom
+    ' VSR_PreservePointPosition: given a point (typically the point under the mouse cursor), preserve its before-and-after position,
+    '                            even though zoom has changed!  This makes mousewheel scrolling way more intuitive.
+    
+    'Check for a param array now, and if none is found, skip straight to the next pipeline stage
+    If specialRequestActive Then
+        
+        'Regardless of what type of scroll bar setting we're applying, we need to disable automatic viewport redraws.
+        ' (Otherwise, changing the scroll bar value will trigger a viewport pipeline request, wreaking havoc)
+        dstCanvas.setRedrawSuspension True
+        
+        'The first extra setting defines the type of scroll bar handling request
+        Select Case specialRequestID
+        
+            Case VSR_ResetToZero
+                dstCanvas.setScrollValue PD_BOTH, 0
+                
+            Case VSR_ResetToCustom
+                dstCanvas.setScrollValue PD_HORIZONTAL, CLng(ExtraSettings(1))
+                dstCanvas.setScrollValue PD_VERTICAL, CLng(ExtraSettings(2))
+            
+            'If the user has a point they want us to preserve, they will have passed two sets of coordinates:
+            ' 1) The literal (x, y) of the mouse on the current canvas (e.g. the coordinates returned by a mouse event)
+            ' 2) The corresponding (x, y) of that mouse position *in the image coordinate space*
+            '
+            'Our goal is to make that same (x, y) point on the canvas correlate to the same (x, y) on the image, regardless of any
+            ' zoom/viewport/other changes we have just made in this function.
+            Case VSR_PreservePointPosition
+                
+                Dim oldXCanvas As Single, oldYCanvas As Single, targetXImage As Single, targetYImage As Single
+                oldXCanvas = CSng(ExtraSettings(1))
+                oldYCanvas = CSng(ExtraSettings(2))
+                targetXImage = CSng(ExtraSettings(3))
+                targetYImage = CSng(ExtraSettings(4))
+                
+                'From the supplied coordinates, we know that image coordinate targetXImage was originally located on the canvas
+                ' at position oldXCanvas.  Our goal is to make targetXImage *remain* at oldXCanvas position.
+                
+                'Start by converting targetX/Y/Image to the current canvas space.  This will give us NewCanvasX/Y values that describe
+                ' where the coordinates lie on the *new* canvas.
+                
+                '...then set a fake, "translated" image rect, that is correct for the case of h/v/scroll = 0.  (Normally stage 3 of the
+                ' pipeline creates a translated rect, but we have to provide one now because the canvas/image coordinate translation code
+                ' relies on that rect!)
+                srcImage.imgViewport.setImageRectTranslated ImageRect_CanvasCoords
+                
+                'With those values successfully set, we can now translate the target image coords into canvas coords, for the case of
+                ' h/v/scroll = 0.
+                Dim newXCanvas As Double, newYCanvas As Double
+                Drawing.convertImageCoordsToCanvasCoords dstCanvas, srcImage, targetXImage, targetYImage, newXCanvas, newYCanvas, False
+                
+                'Use the difference between newCanvasX and oldCanvasX (while accounting for zoom) to determine new scroll bar values.
+                dstCanvas.setScrollValue PD_HORIZONTAL, (newXCanvas - oldXCanvas) / g_Zoom.getZoomValue(srcImage.currentZoomValue)
+                dstCanvas.setScrollValue PD_VERTICAL, (newYCanvas - oldYCanvas) / g_Zoom.getZoomValue(srcImage.currentZoomValue)
+                
+        End Select
+        
+        'Restore scroll-bar-originating viewport redraw requests
+        dstCanvas.setRedrawSuspension False
+        
+    End If
     
     'With our work here complete, we can pass control to the next pipeline stage.
     Stage2_CompositeAllLayers srcImage, dstCanvas, True

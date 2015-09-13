@@ -1853,7 +1853,7 @@ Public Sub refreshAllCanvases()
     
     'Refresh any current windows
     If g_OpenImageCount > 0 Then
-        Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), mainCanvas(0), "Form_Resize(" & Me.ScaleWidth & "," & Me.ScaleHeight & ")"
+        Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), mainCanvas(0)
     End If
     
 End Sub
@@ -2669,7 +2669,7 @@ Private Sub Form_Load()
     'The debug window can optionally be displayed, but only in nightly builds
     #If DEBUGMODE = 1 Then
         If (PD_BUILD_QUALITY = PD_PRE_ALPHA) Or (PD_BUILD_QUALITY = PD_ALPHA) Then
-            g_WindowManager.registerChildForm toolbar_Debug, GENERIC_FLOATING_WINDOW, 4, DEBUG_TOOLBOX
+            'g_WindowManager.registerChildForm toolbar_Debug, GENERIC_FLOATING_WINDOW, 4, DEBUG_TOOLBOX
         End If
     #End If
     
@@ -2709,8 +2709,8 @@ Private Sub Form_Load()
     'The debug window is only shown in nightly builds, and even then, it's only shown if explicitly requested
     #If DEBUGMODE = 1 Then
         If (PD_BUILD_QUALITY = PD_PRE_ALPHA) Or (PD_BUILD_QUALITY = PD_ALPHA) Then
-            toolbar_Debug.Show vbModeless, Me
-            g_WindowManager.setWindowVisibility toolbar_Debug.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Debug Window", False)
+            'toolbar_Debug.Show vbModeless, Me
+            'g_WindowManager.setWindowVisibility toolbar_Debug.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Debug Window", False)
         End If
     #End If
     

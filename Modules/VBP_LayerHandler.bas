@@ -47,7 +47,7 @@ Public Sub addBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType 
     toolbar_Layers.forceRedraw True
     
     'Render the new image to screen (not technically necessary, but doesn't hurt)
-    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "New layer added"
+    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             
     'Synchronize the interface to the new image
     syncInterfaceToCurrentImage
@@ -240,7 +240,7 @@ Public Sub loadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal image
             End If
             
             'Render the new image to screen
-            Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "New layer added"
+            Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             
             'Synchronize the interface to the new image
             syncInterfaceToCurrentImage
@@ -373,7 +373,7 @@ Public Sub duplicateLayerByIndex(ByVal dLayerIndex As Long)
     toolbar_Layers.forceRedraw True
     
     'Render the new image to screen
-    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "New layer added"
+    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             
     'Synchronize the interface to the new image
     syncInterfaceToCurrentImage
@@ -1122,7 +1122,7 @@ Public Sub CropLayerToSelection(ByVal layerIndex As Long)
     End If
         
     'Update the viewport
-    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Crop layer to selection"
+    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
 End Sub
 

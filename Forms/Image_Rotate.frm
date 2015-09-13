@@ -33,15 +33,6 @@ Begin VB.Form FormRotate
       Width           =   12105
       _ExtentX        =   21352
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.smartOptionButton optRotate 
@@ -362,7 +353,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
             End If
             
             'Fit the new image on-screen and redraw its viewport
-            Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Image resize"
+            Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             
             Message "Rotation complete."
             SetProgBarVal 0

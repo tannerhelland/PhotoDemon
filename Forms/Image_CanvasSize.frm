@@ -446,7 +446,7 @@ Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal ancho
     ' appearance of any of the layers, we can leave it as-is!
     
     'Fit the new image on-screen and redraw its viewport
-    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Canvas resize"
+    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
     Message "Finished."
     

@@ -989,8 +989,17 @@ Private Sub CmbZoom_Click()
 
     'Only process zoom changes if an image has been loaded
     If isCanvasInteractionAllowed() Then
-    
-        'Store the current zoom value in this object (so the user can switch between images without losing zoom values)
+        
+        'Before updating the current image, we need to retrieve two sets of points: the current center point
+        ' of the canvas, in canvas coordinate space, and the current center point of the canvas *in image
+        ' coordinate space*.  When zoom is changed, we preserve the current center of the image relative to
+        ' the center of teh canvas, to make the zoom operation feel more natural.
+        Dim centerXCanvas As Double, centerYCanvas As Double, centerXImage As Double, centerYImage As Double
+        centerXCanvas = FormMain.mainCanvas(0).getCanvasWidth / 2
+        centerYCanvas = FormMain.mainCanvas(0).getCanvasHeight / 2
+        Drawing.convertCanvasCoordsToImageCoords FormMain.mainCanvas(0), pdImages(g_CurrentImage), centerXCanvas, centerYCanvas, centerXImage, centerYImage, False
+        
+        'With those coordinates safely cached, update the currently stored zoom value in the active pdImage object
         pdImages(g_CurrentImage).currentZoomValue = cmbZoom.ListIndex
         
         'Disable the zoom in/out buttons when they reach the end of the available zoom levels
@@ -1011,7 +1020,7 @@ Private Sub CmbZoom_Click()
         
         'Redraw the viewport (if allowed; some functions will prevent us from doing this, as they plan to request their own
         ' refresh after additional processing occurs)
-        If g_AllowViewportRendering Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "zoom changed by primary drop-down box"
+        If g_AllowViewportRendering Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_PreservePointPosition, centerXCanvas, centerYCanvas, centerXImage, centerYImage
         
     End If
 
@@ -1737,7 +1746,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                         
                         'Update the layer's size.  At present, we simply make it fill the current viewport.
                         Dim curImageRectF As RECTF
-                        Viewport_Engine.getCopyOfSourceImageRect curImageRectF
+                        pdImages(g_CurrentImage).imgViewport.getIntersectRectImage curImageRectF
                         
                         With pdImages(g_CurrentImage)
                             .getActiveLayer.setLayerOffsetX curImageRectF.Left
@@ -1950,7 +1959,7 @@ Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, B
     
     'Request a manual redraw from Viewport_Engine.Stage1_InitializeBuffer, while supplying our x/y coordinates so that it can preserve mouse position
     ' relative to the underlying image.
-    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "mousewheel zoom", x, y, imgX, imgY
+    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_PreservePointPosition, x, y, imgX, imgY
 
 End Sub
 
@@ -2049,6 +2058,11 @@ Private Sub UserControl_KeyUp(KeyCode As Integer, Shift As Integer)
 End Sub
 
 Private Sub HScroll_Scroll()
+    
+    'Regardless of viewport state, cache the current scroll bar value inside the current image
+    If Not pdImages(g_CurrentImage) Is Nothing Then
+        pdImages(g_CurrentImage).imgViewport.setHScrollValue HScroll.Value
+    End If
     
     If (Not m_SuspendRedraws) Then
         
@@ -2167,7 +2181,12 @@ CanvasShowError:
 End Sub
 
 Private Sub VScroll_Scroll()
-    
+        
+    'Regardless of viewport state, cache the current scroll bar value inside the current image
+    If Not pdImages(g_CurrentImage) Is Nothing Then
+        pdImages(g_CurrentImage).imgViewport.setVScrollValue VScroll.Value
+    End If
+        
     If (Not m_SuspendRedraws) Then
     
         'Request the scroll-specific viewport pipeline stage

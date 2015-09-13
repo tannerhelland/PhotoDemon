@@ -82,7 +82,7 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     g_AllowViewportRendering = True
         
     'Now fix scrollbars and everything
-    If Not suppressRendering Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "FitImageToViewport"
+    If Not suppressRendering Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
     
 End Sub
 
@@ -102,7 +102,7 @@ Public Sub FitOnScreen()
     g_AllowViewportRendering = True
         
     'Now fix scrollbars and everything
-    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "FitOnScreen"
+    Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
     
 End Sub
 
@@ -134,7 +134,7 @@ Public Function fullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
         If redrawScreen Then
         
             If g_OpenImageCount > 0 Then
-                Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "another image closed"
+                Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).imgViewport.getHScrollValue, pdImages(g_CurrentImage).imgViewport.getVScrollValue
             Else
                 FormMain.mainCanvas(0).clearCanvas
             End If
@@ -348,11 +348,17 @@ Public Sub activatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
         
         'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
         If Not pdImages(g_CurrentImage) Is Nothing Then
-        
+            
             If refreshScreen Then
             
-                Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), "Form received focus"
-        
+                Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToCustom, pdImages(g_CurrentImage).imgViewport.getHScrollValue, pdImages(g_CurrentImage).imgViewport.getVScrollValue
+                
+                'This is ugly, but I'm working on a fix.  We need to restore the original scroll bar values, which we should
+                ' really do by passing the values to the viewport in the previous step.  But I need to rework the whole
+                ' way that damn function accepts parameters, so in the meantime, force the new values now.
+                
+                'TODO: fix this!
+                
                 'Reflow any image-window-specific chrome (status bar, rulers, etc)
                 FormMain.mainCanvas(0).fixChromeLayout
             
