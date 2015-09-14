@@ -33,8 +33,9 @@ Public Sub CreateNewPDImage(Optional ByVal forInternalUse As Boolean = False)
     g_AllowViewportRendering = False
 
     'Increase the number of images we're tracking
-    g_NumOfImagesLoaded = g_NumOfImagesLoaded + 1
-    ReDim Preserve pdImages(0 To g_NumOfImagesLoaded) As pdImage
+    If g_NumOfImagesLoaded > UBound(pdImages) Then
+        ReDim Preserve pdImages(0 To g_NumOfImagesLoaded * 2 - 1) As pdImage
+    End If
     
     Set pdImages(g_NumOfImagesLoaded) = New pdImage
     
@@ -51,7 +52,8 @@ Public Sub CreateNewPDImage(Optional ByVal forInternalUse As Boolean = False)
     'Set this image as the current one
     g_CurrentImage = g_NumOfImagesLoaded
     
-    'Track how many windows we currently have open
+    'Track how many images we've loaded and/or currently have open
+    g_NumOfImagesLoaded = g_NumOfImagesLoaded + 1
     g_OpenImageCount = g_OpenImageCount + 1
         
     'Re-enable automatic viewport updates
@@ -148,7 +150,7 @@ Public Function fullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
     If g_OpenImageCount = 0 Then
         
         'Reset the main image array
-        ReDim pdImages(0) As pdImage
+        ReDim pdImages(0 To 3) As pdImage
         g_CurrentImage = 0
         
         'Unload the backbuffer of the primary canvas
