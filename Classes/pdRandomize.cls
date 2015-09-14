@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Random Number Generator
 'Copyright 2015-2015 by Tanner Helland
 'Created: 23/June/15 (but assembled from bits scattered throughout PD, many from years earlier)
-'Last updated: 23/June/15
-'Last update: initial build
+'Last updated: 14/September/15
+'Last update: fix potential integer overflow; thanks to GioRock for catching and reporting
 '
 'VB's internal randomize function is confusing and ill-conceived, especially when it comes to seeding it.  This class aims to
 ' make random number generation far more predictable (lol, ironic?) and convenient.
@@ -60,19 +60,19 @@ End Type
 'Intermediary calculation values for the Wichmann-Hill algorithm; thank you to
 ' http://www.vbforums.com/showthread.php?499661-Wichmann-Hill-Pseudo-Random-Number-Generator-an-alternative-for-VB-Rnd%28%29-function
 ' for notes on various VB implementations and their quirks.
-Private ix As Long, iy As Long, iz As Long
+Private iX As Long, iy As Long, iZ As Long
 Private m_WH_Float As Double
 
 'Helper functions for generating a new (predictable) seed from various inputs
 Public Sub setSeed_Int(ByVal newSeed As Long)
     m_Seed_Float = newSeed
-    m_Seed_Int = m_Seed_Float
+    m_Seed_Int = newSeed
     applySeed
 End Sub
 
 Public Sub setSeed_Float(ByVal newSeed As Double)
     m_Seed_Float = newSeed
-    m_Seed_Int = m_Seed_Float
+    m_Seed_Int = getSafeIntFromDouble(m_Seed_Float)
     applySeed
 End Sub
 
@@ -102,9 +102,17 @@ End Sub
 
 Public Sub setSeed_AutomaticAndRandom()
     m_Seed_Float = Timer * Now
-    m_Seed_Int = m_Seed_Float
+    m_Seed_Int = getSafeIntFromDouble(m_Seed_Float)
     applySeed
 End Sub
+
+'PD uses Doubles for maximum randomness, but some random number generation schemes use Integer inputs.  To safely generate a random
+' Int from a given Double value (which has a much larger range!), we use a custom Mod function (necessary because VB's built-in
+' Mod only works on Longs).
+Private Function getSafeIntFromDouble(ByVal srcDouble As Double) As Long
+    Const LONG_MAX_AS_DOUBLE As Double = LONG_MAX
+    getSafeIntFromDouble = srcDouble - (Int(srcDouble / LONG_MAX_AS_DOUBLE) * LONG_MAX_AS_DOUBLE)
+End Function
 
 'Return the current seed.  Note that this class always stores the seed as a Double, regardless of how it was originally supplied.
 Public Function getSeed() As Double
@@ -125,12 +133,12 @@ Private Sub applySeed()
     If m_Seed_WH_Int < 0 Then m_Seed_WH_Int = m_Seed_WH_Int And &H7FFFFFFF
     
     '...then we generate an initial set of offsets for the algorithm.
-    ix = (m_Seed_WH_Int Mod 30269)
+    iX = (m_Seed_WH_Int Mod 30269)
     iy = (m_Seed_WH_Int Mod 30307)
-    iz = (m_Seed_WH_Int Mod 30323)
-    If ix = 0 Then ix = 171
+    iZ = (m_Seed_WH_Int Mod 30323)
+    If iX = 0 Then iX = 171
     If iy = 0 Then iy = 172
-    If iz = 0 Then iz = 170
+    If iZ = 0 Then iZ = 170
     
 End Sub
 
@@ -170,12 +178,12 @@ End Function
 Public Function getRandomFloat_WH() As Double
     
     'Generate new offsets, using the previous offsets as our inputs
-    ix = (171 * ix) Mod 30269
+    iX = (171 * iX) Mod 30269
     iy = (172 * iy) Mod 30307
-    iz = (170 * iz) Mod 30323
+    iZ = (170 * iZ) Mod 30323
     
     'Generate a random float value...
-    m_WH_Float = CDbl(ix) / 30269# + CDbl(iy) / 30307# + CDbl(iz) / 30323#
+    m_WH_Float = CDbl(iX) / 30269# + CDbl(iy) / 30307# + CDbl(iZ) / 30323#
     
     '...then return the floating-point portion
     getRandomFloat_WH = m_WH_Float - Int(m_WH_Float)
