@@ -511,8 +511,14 @@ Public Function TrimNull(ByRef origString As String) As String
     nullPosition = InStr(origString, Chr$(0))
     
     'Remove null chars if present; otherwise, return a copy of the input string
-    If nullPosition <> 0 Then
-       TrimNull = Left$(origString, nullPosition - 1)
+    If (nullPosition <> 0) Then
+       
+        If nullPosition > 1 Then
+            TrimNull = Left$(origString, nullPosition - 1)
+        Else
+            TrimNull = ""
+        End If
+    
     Else
        TrimNull = origString
     End If

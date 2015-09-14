@@ -316,20 +316,26 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
         m_lastMemCheckEventNum = m_NumLoggedEvents
     
         'The caller wants a RAM update.  Generate one now.
-        Dim curMemUsage As Long, maxMemUsage As Long, deltaMem As Long
+        Dim curMemUsage As Double, maxMemUsage As Double, deltaMem As Double
         curMemUsage = cSysInfo.GetPhotoDemonMemoryUsage(False)
         maxMemUsage = cSysInfo.GetPhotoDemonMemoryUsage(True)
         deltaMem = curMemUsage - m_lastMemCheck
         
         'Format the strings into something more readable
-        Dim curMemUsageString As String, maxMemUsageString As String, deltaMemString As String
-        curMemUsageString = Format(CStr(curMemUsage), "###,###,###,###") & " K"
-        maxMemUsageString = Format(CStr(maxMemUsage), "###,###,###,###") & " K"
-        deltaMemString = Format(CStr(deltaMem), "###,###,###,###") & " K"
-        If deltaMem > 0 Then deltaMemString = "+" & deltaMemString
+        If curMemUsage <> 0 Then
         
-        'Ignore the supplied action string, and create our own
-        actionString = "CURRENT: " & curMemUsageString & " | DELTA: " & deltaMemString & " | SESSION MAX: " & maxMemUsageString
+            Dim curMemUsageString As String, maxMemUsageString As String, deltaMemString As String
+            curMemUsageString = Format(curMemUsage, "###,###,###,###") & " K"
+            maxMemUsageString = Format(maxMemUsage, "###,###,###,###") & " K"
+            deltaMemString = Format(deltaMem, "###,###,###,###") & " K"
+            If deltaMem > 0 Then deltaMemString = "+" & deltaMemString
+            
+            'Ignore the supplied action string, and create our own
+            actionString = "CURRENT: " & curMemUsageString & " | DELTA: " & deltaMemString & " | SESSION MAX: " & maxMemUsageString
+            
+        Else
+            actionString = "WARNING: PD was unable to measure its own memory usage.  Please investigate."
+        End If
         
         'Update the module-level last mem check value
         m_lastMemCheck = curMemUsage
