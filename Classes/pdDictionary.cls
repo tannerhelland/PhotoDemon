@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Dictionary Class
 'Copyright 2014-2015 by Tanner Helland
 'Created: 16/October/14
-'Last updated: 07/March/15
-'Last update: add support for removing dictionary items
+'Last updated: 14/September/15
+'Last update: minor bugfixes
 '
 'Per its name, this class provides a simple key/value approach to storing data.
 '
@@ -120,7 +120,7 @@ Public Function AddEntry(ByVal entryKey As String, ByVal entryData As Variant) A
         If (keyFound >= 0) Then
         
             m_DictEntries(keyFound).dItem = entryData
-            AddEntry = entryKey
+            AddEntry = keyFound
         
         'If the key does not exist in our collection, add it anew, resizing the dictionary as necessary
         Else
