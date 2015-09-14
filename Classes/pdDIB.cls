@@ -882,7 +882,7 @@ Public Sub resetDIB(Optional ByVal fillValue As Byte = 0)
     retrieveDIBPointerAndSize tmpDIBPointer, tmpDibSize
     
     'Erase everything
-    If (tmpDIBPointer > 0) And (tmpDibSize > 0) Then FillMemory tmpDIBPointer, tmpDibSize, fillValue
+    If (tmpDIBPointer <> 0) And (tmpDibSize > 0) Then FillMemory tmpDIBPointer, tmpDibSize, fillValue
     
 End Sub
 

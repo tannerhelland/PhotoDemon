@@ -504,7 +504,7 @@ Private Declare Function GdipSetPenMode Lib "gdiplus" (ByVal Pen As Long, ByVal 
 
 'Transforms
 Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal order As Long) As Long
-Private Declare Function GdipTranslateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal dX As Single, ByVal dY As Single, ByVal order As Long) As Long
+Private Declare Function GdipTranslateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal dx As Single, ByVal dy As Single, ByVal order As Long) As Long
 
 'Helpful GDI functions for moving image data between GDI and GDI+
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
@@ -1323,7 +1323,7 @@ Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, By
 End Function
 
 'Given a source DIB, fill it with the alpha checkerboard pattern.  32bpp images can then be alpha blended onto it.
-Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal bltWidth As Single, ByVal bltHeight As Single, ByRef srcDIB As pdDIB, Optional ByVal useThisDCInstead As Long = 0) As Boolean
+Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal bltWidth As Single, ByVal bltHeight As Single, ByRef srcDIB As pdDIB, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal fixBoundaryPainting As Boolean = False) As Boolean
     
     'Create a GDI+ copy of the image and request AA
     Dim iGraphics As Long
@@ -1336,12 +1336,44 @@ Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Si
     
     GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias
     GdipSetCompositingQuality iGraphics, CompositingQualityHighSpeed
-    GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighQuality
+    GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighSpeed
         
     'Create a texture fill brush from the source image
     Dim srcBitmap As Long, iBrush As Long
     getGdipBitmapHandleFromDIB srcBitmap, srcDIB
     GdipCreateTexture srcBitmap, WrapModeTile, iBrush
+    
+    'Because pattern fills are prone to boundary overflow when used with transparent overlays, the caller can
+    ' have us restrict painting to the interior integer region only.)
+    If fixBoundaryPainting Then
+        
+        'Debug.Print x1, y1, bltWidth, bltHeight
+        
+        Dim xDif As Single, yDif As Single
+        xDif = x1 - Int(x1)
+        yDif = y1 - Int(y1)
+        
+        If xDif > 0 Then
+            x1 = Int(x1) + 1
+            bltWidth = bltWidth - (1 + xDif)
+        Else
+            bltWidth = bltWidth - 0.5
+        End If
+        
+        If yDif > 0 Then
+            y1 = Int(y1) + 1
+            bltHeight = bltHeight - (1 + yDif)
+        Else
+            bltHeight = bltHeight - 0.5
+        End If
+        
+        xDif = bltWidth - Int(bltWidth)
+        yDif = bltHeight - Int(bltHeight)
+        
+        If xDif > 0 Then bltWidth = Int(bltWidth)
+        If yDif > 0 Then bltHeight = Int(bltHeight)
+        
+    End If
     
     'Apply the brush
     GdipFillRectangle iGraphics, iBrush, x1, y1, bltWidth, bltHeight
@@ -2337,7 +2369,7 @@ End Function
 ' 1) support fractional source/dest/width/height
 ' 2) apply variable opacity
 ' 3) control stretch mode directly inside the call
-Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByRef srcDIB As pdDIB, ByVal x2 As Single, ByVal y2 As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal newAlpha As Single = 1#, Optional ByVal interpolationType As InterpolationMode = InterpolationModeHighQualityBicubic, Optional ByVal useThisDestinationDCInstead As Long = 0)
+Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y1 As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByRef srcDIB As pdDIB, ByVal x2 As Single, ByVal y2 As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal newAlpha As Single = 1#, Optional ByVal interpolationType As InterpolationMode = InterpolationModeHighQualityBicubic, Optional ByVal useThisDestinationDCInstead As Long = 0, Optional ByVal disableEdgeFix As Boolean = False)
 
     'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
     ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
@@ -2371,7 +2403,7 @@ Public Sub GDIPlus_StretchBlt(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal y
         
         'To improve performance, explicitly request high-speed (aka linear) alpha compositing operation, and standard
         ' pixel offsets (on pixel borders, instead of center points)
-        GdipSetImageAttributesWrapMode imgAttributesHandle, WrapModeTileFlipXY, 0, 0
+        If Not disableEdgeFix Then GdipSetImageAttributesWrapMode imgAttributesHandle, WrapModeTileFlipXY, 0, 0
         GdipSetCompositingQuality iGraphics, CompositingQualityHighSpeed
         GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighSpeed
         

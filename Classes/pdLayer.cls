@@ -2335,6 +2335,7 @@ Public Function getViewportHash_Theoretical(ParamArray allParams() As Variant) A
         tmpHash = tmpHash Xor (.l_ResizeQuality * 620)
         tmpHash = tmpHash Xor (.l_Opacity * 65535)
         tmpHash = tmpHash Xor (.l_ShearX * 524287) Xor (.l_ShearY * 1048575)
+        tmpHash = tmpHash Xor (.l_BlendMode * 63)
     End With
     
     'Next, add any non-destructive FX parameters to the hash
