@@ -1127,7 +1127,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             If targetDIB.ICCProfile.hasICCData And (Not targetDIB.ICCProfile.hasProfileBeenApplied) And (Not targetImage.imgStorage.doesKeyExist("Tone-mapping")) Then
                 
                 '32bpp images must be un-premultiplied before the transformation
-                If targetDIB.getDIBColorDepth = 32 Then targetDIB.setAlphaPremultiplication
+                If targetDIB.getDIBColorDepth = 32 Then targetDIB.setAlphaPremultiplication False
                 
                 'Apply the ICC transform
                 targetDIB.ICCProfile.applyICCtoSelf targetDIB
@@ -1792,7 +1792,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
     If targetDIB.ICCProfile.hasICCData And (Not targetDIB.ICCProfile.hasProfileBeenApplied) Then
         
         '32bpp images must be un-premultiplied before the transformation
-        If targetDIB.getDIBColorDepth = 32 Then targetDIB.setAlphaPremultiplication
+        If targetDIB.getDIBColorDepth = 32 Then targetDIB.setAlphaPremultiplication False
         
         'Apply the ICC transform
         targetDIB.ICCProfile.applyICCtoSelf targetDIB

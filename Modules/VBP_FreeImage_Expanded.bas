@@ -696,8 +696,8 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     'Copy the bits from the FreeImage DIB to our DIB
     SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
     
-    'If the image is 32-bits, mark premultiplication accordingly
-    If fi_BPP = 32 Then dstDIB.setInitialAlphaPremultiplicationState True
+    'Regardless of bit-depth, the final PhotoDemon image will always be 32-bits
+    dstDIB.setInitialAlphaPremultiplicationState True
     
     'Debug.Print fi_hDIB, fi_multi_hDIB
     

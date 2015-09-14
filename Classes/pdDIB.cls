@@ -1722,16 +1722,18 @@ Public Sub alphaBlendToDCEx(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY 
     Dim bfParams As Long
     
     If m_dibColorDepth = 32 Then
+    
         'Use the image's current alpha channel, and blend it with the supplied customAlpha value
         bfParams = customAlpha * &H10000 Or &H1000000
+        
+        'Raise a warning if premultiplication is not set
+        If Not m_IsAlphaPremultiplied Then
+            Debug.Print "WARNING!  Premultiplied alpha state is unmarked, but the AlphaBlend API is being called (via alphaBlendToDCEx)!"
+        End If
+    
     Else
         'Ignore alpha channel, and only use the supplied customAlpha value
         bfParams = (customAlpha * &H10000)
-    End If
-    
-    'Raise a warning if premultiplication is not set
-    If Not m_IsAlphaPremultiplied Then
-        Debug.Print "WARNING!  Premultiplied alpha state is unmarked, but the AlphaBlend API is being called (via alphaBlendToDCEx)!"
     End If
     
     AlphaBlend dstDC, dstX, dstY, dstWidth, dstHeight, m_dibDC, srcX, srcY, srcWidth, srcHeight, bfParams
