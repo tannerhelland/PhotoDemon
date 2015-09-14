@@ -341,7 +341,7 @@ Private Sub syncPreviewImage()
         
         'We now have a set of source and destination coordinates, allowing us to perform a StretchBlt-style copy
         GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, picPreview.BackColor
-        GDI_Plus.GDIPlusFillDIBRect_Pattern m_BackBuffer, previewX, previewY, finalWidth, finalHeight, g_CheckerboardPattern
+        GDI_Plus.GDIPlusFillDIBRect_Pattern m_BackBuffer, previewX, previewY, finalWidth, finalHeight, g_CheckerboardPattern, , True
         
         'Enable high-quality stretching, but only if the image is equal to or larger than the preview area
         If (srcWidth < dstWidth) And (srcHeight < dstHeight) Then
