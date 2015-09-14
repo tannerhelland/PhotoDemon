@@ -183,36 +183,36 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     Dim viewportIntersectRect As RECTF
     srcImage.imgViewport.getIntersectRectCanvas viewportIntersectRect
     
-    'If the user's performance preferences allow for interface decorations, render them next
-    If g_InterfacePerformance <> PD_PERF_FASTEST Then
-    
-        'Check each edge in turn, and mark whether or not it's visible on the viewport
-        Dim vTopShadow As Boolean, vBottomShadow As Boolean, vRightShadow As Boolean, vLeftShadow As Boolean
-        
-        If srcImage.imgViewport.getIntersectState Then
-            vTopShadow = CBool(viewportIntersectRect.Top > 0)
-            vBottomShadow = CBool(viewportIntersectRect.Top + viewportIntersectRect.Height < srcImage.canvasBuffer.getDIBHeight)
-            vLeftShadow = CBool(viewportIntersectRect.Left > 0)
-            vRightShadow = CBool(viewportIntersectRect.Left + viewportIntersectRect.Width < srcImage.canvasBuffer.getDIBWidth)
-        End If
-        
-        If vTopShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left, viewportIntersectRect.Top - PD_CANVASSHADOWSIZE, viewportIntersectRect.Width, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(0), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
-        If vBottomShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left, viewportIntersectRect.Top + viewportIntersectRect.Height, viewportIntersectRect.Width, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(1), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
-        If vLeftShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left - PD_CANVASSHADOWSIZE, viewportIntersectRect.Top, PD_CANVASSHADOWSIZE, viewportIntersectRect.Height, g_CanvasShadow.getShadowDC(2), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
-        If vRightShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left + viewportIntersectRect.Width, viewportIntersectRect.Top, PD_CANVASSHADOWSIZE, viewportIntersectRect.Height, g_CanvasShadow.getShadowDC(3), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
-        
-        'Finally, the corners, which I've commented as they're a little confusing
-        
-        'NW corner
-        If vTopShadow And vLeftShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left - PD_CANVASSHADOWSIZE, viewportIntersectRect.Top - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(4), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
-        'NE corner
-        If vTopShadow And vRightShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left + viewportIntersectRect.Width, viewportIntersectRect.Top - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(5), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
-        'SW corner
-        If vBottomShadow And vLeftShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left - PD_CANVASSHADOWSIZE, viewportIntersectRect.Top + viewportIntersectRect.Height, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(6), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
-        'SE corner
-        If vBottomShadow And vRightShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left + viewportIntersectRect.Width, viewportIntersectRect.Top + viewportIntersectRect.Height, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(7), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
-    
-    End If
+'    'If the user's performance preferences allow for interface decorations, render them next
+'    If g_InterfacePerformance <> PD_PERF_FASTEST Then
+'
+'        'Check each edge in turn, and mark whether or not it's visible on the viewport
+'        Dim vTopShadow As Boolean, vBottomShadow As Boolean, vRightShadow As Boolean, vLeftShadow As Boolean
+'
+'        If srcImage.imgViewport.getIntersectState Then
+'            vTopShadow = CBool(viewportIntersectRect.Top > 0)
+'            vBottomShadow = CBool(viewportIntersectRect.Top + viewportIntersectRect.Height < srcImage.canvasBuffer.getDIBHeight)
+'            vLeftShadow = CBool(viewportIntersectRect.Left > 0)
+'            vRightShadow = CBool(viewportIntersectRect.Left + viewportIntersectRect.Width < srcImage.canvasBuffer.getDIBWidth)
+'        End If
+'
+'        If vTopShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left, viewportIntersectRect.Top - PD_CANVASSHADOWSIZE, viewportIntersectRect.Width, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(0), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
+'        If vBottomShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left, viewportIntersectRect.Top + viewportIntersectRect.Height, viewportIntersectRect.Width, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(1), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
+'        If vLeftShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left - PD_CANVASSHADOWSIZE, viewportIntersectRect.Top, PD_CANVASSHADOWSIZE, viewportIntersectRect.Height, g_CanvasShadow.getShadowDC(2), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
+'        If vRightShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left + viewportIntersectRect.Width, viewportIntersectRect.Top, PD_CANVASSHADOWSIZE, viewportIntersectRect.Height, g_CanvasShadow.getShadowDC(3), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
+'
+'        'Finally, the corners, which I've commented as they're a little confusing
+'
+'        'NW corner
+'        If vTopShadow And vLeftShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left - PD_CANVASSHADOWSIZE, viewportIntersectRect.Top - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(4), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
+'        'NE corner
+'        If vTopShadow And vRightShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left + viewportIntersectRect.Width, viewportIntersectRect.Top - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(5), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
+'        'SW corner
+'        If vBottomShadow And vLeftShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left - PD_CANVASSHADOWSIZE, viewportIntersectRect.Top + viewportIntersectRect.Height, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(6), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
+'        'SE corner
+'        If vBottomShadow And vRightShadow Then StretchBlt frontBuffer.getDIBDC, viewportIntersectRect.Left + viewportIntersectRect.Width, viewportIntersectRect.Top + viewportIntersectRect.Height, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(7), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
+'
+'    End If
     
     'Because both scrollbars are likely active, we need to copy a gray square over the small space between them
     
@@ -332,7 +332,7 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
         'Before rendering the image, apply a checkerboard pattern to the viewport region of the source image's back buffer.
         ' TODO: cache g_CheckerboardPattern persistently, in GDI+ format, so we don't have to recreate it on every draw.
         With viewportRect
-            GDI_Plus.GDIPlusFillDIBRect_Pattern srcImage.canvasBuffer, .Left, .Top, .Width, .Height, g_CheckerboardPattern
+            GDI_Plus.GDIPlusFillDIBRect_Pattern srcImage.canvasBuffer, .Left, .Top, .Width, .Height, g_CheckerboardPattern, , True
         End With
         
         'As a failsafe, perform a GDI+ check.  PD probably won't work at all without GDI+, so I could look at dropping this check

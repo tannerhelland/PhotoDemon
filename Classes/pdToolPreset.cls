@@ -241,6 +241,6 @@ End Sub
 
 Private Sub debugNote(ByVal debugMessage As String)
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "(pdToolPreset) " & debugMessage
+        If Len(debugMessage) <> 0 Then pdDebug.LogAction "(pdToolPreset debug note) : " & debugMessage
     #End If
 End Sub
