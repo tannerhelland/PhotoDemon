@@ -15,14 +15,11 @@ Attribute VB_Exposed = False
 'Generic "System Information" interface
 'Copyright 2012-2015 by Tanner Helland
 'Created: 27/November/12
-'Last updated: 23/June/15
-'Last update: started migrating functions from the unwieldy "OS Interactions" module into this reusable class
+'Last updated: 14/September/15
+'Last update: greatly simplify the way PD measures its own memory usage
 '
 'Sometimes, PhotoDemon needs to grab OS-specific data (e.g. the current OS version of Windows, available RAM , etc.)
 ' This module is designed to make such requests easier.
-'
-'Special thanks goes to Mike Raynder, who wrote the original version of the process-specific memory function.  You can
-' download a copy of Mike's original code from this link (good as of 27 Nov '12): http://www.xtremevbtalk.com/showthread.php?t=229758
 '
 'I am currently working on migrating random bits of code from other places in PD to this class, so please be patient and ignore
 ' duplicate code entries in the meantime.  :)
@@ -129,12 +126,28 @@ Private Const PROCESS_QUERY_INFORMATION = 1024
 Private Const PROCESS_VM_READ = 16
 Private Const MAX_PATH = 260
 
-Private Declare Function EnumProcesses Lib "psapi" (lpidProcess As Long, ByVal cb As Long, cbNeeded As Long) As Long
-Private Declare Function EnumProcessModules Lib "psapi" (ByVal hProcess As Long, lphModule As Long, ByVal cb As Long, lpcbNeeded As Long) As Long
 Private Declare Function OpenProcess Lib "kernel32" (ByVal dwDesiredAccessas As Long, ByVal bInheritHandle As Long, ByVal dwProcId As Long) As Long
-Private Declare Function GetModuleFileNameExA Lib "psapi" (ByVal hProcess As Long, ByVal hModule As Long, ByVal ModuleName As String, ByVal nSize As Long) As Long
 Private Declare Function GetProcessMemoryInfo Lib "psapi" (ByVal hProcess As Long, ppsmemCounters As PROCESS_MEMORY_COUNTERS, ByVal cb As Long) As Long
 Private Declare Function CloseHandle Lib "kernel32" (ByVal Handle As Long) As Long
+
+Private Const TH32CS_SNAPPROCESS As Long = 2&
+Private Const INVALID_HANDLE_VALUE As Long = -1
+Private Type PROCESSENTRY32
+    dwSize As Long
+    cntUsage As Long
+    th32ProcessID As Long
+    th32DefaultHeapID As Long
+    th32ModuleID As Long
+    cntThreads As Long
+    th32ParentProcessID As Long
+    pcPriClassBase As Long
+    dwFlags As Long
+    szExeFile As String * MAX_PATH
+End Type
+
+Private Declare Function CreateToolhelp32Snapshot Lib "kernel32" (ByVal lFlags As Long, ByVal lProcessID As Long) As Long
+Private Declare Function ProcessFirst Lib "kernel32" Alias "Process32First" (ByVal hSnapShot As Long, uProcess As PROCESSENTRY32) As Long
+Private Declare Function ProcessNext Lib "kernel32" Alias "Process32Next" (ByVal hSnapShot As Long, uProcess As PROCESSENTRY32) As Long
 
 'Device caps, or "device capabilities", which can be probed using the constants below
 Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As DeviceChecks) As Long
@@ -708,150 +721,78 @@ Public Function getRAMAvailableToPD() As String
     
 End Function
 
-'Function for returning PhotoDemon's current memory usage.  This is a modified version of code first published by Mike Raynder.
-' You can download a copy of Mike's original code from this link (good as of 27 Nov '12): http://www.xtremevbtalk.com/showthread.php?t=229758
-
-'---------------------------------------------------------------------------------------
-' Procedure : GetProcessMemory
-' DateTime  : 2 sep 2004
-' Author    : Mike Raynder
-' Purpose   : Will only work for NT
-'
-' Tanner's note: if False is passed, returns a process's working memory set, in kilobytes
-'                if True is passed, returns the highest memory count the program has hit
-'---------------------------------------------------------------------------------------
-
+'Function for returning PhotoDemon's current memory usage.  Note that this function may not return valid values
+' while inside the IDE.
 Public Function GetPhotoDemonMemoryUsage(Optional returnPeakValue As Boolean = False) As Long
-  
-    Dim lngLength As Long
-    Dim strProcessName As String
     
-    'Specifies the size, In bytes, of the lpidProcess array
-    Dim lngCBSize As Long
+    Dim hSnapShot As Long
+    Dim uProcess As PROCESSENTRY32
     
-    'Receives the number of bytes returned
-    Dim lngCBSizeReturned As Long
+    'Prep a process enumerator.  We're going to search the active process list, looking for PD.
+    hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0&)
+    If hSnapShot <> INVALID_HANDLE_VALUE Then
     
-    Dim lngNumElements As Long
-    Dim lngProcessIDs() As Long
-    Dim lngCBSize2 As Long
-    Dim lngModules(1 To 200) As Long
-    Dim lngReturn As Long
-    Dim strModuleName As String
-    Dim lngSize As Long
-    Dim lnghWndProcess As Long
-    Dim lngLoop As Long
-    Dim pmc As PROCESS_MEMORY_COUNTERS
-    Dim lRet As Long
-    Dim strProcName2 As String
-
-    On Error GoTo Memory_Measure_Error:
-
-    'EXEName was original passed into this function as a parameter.  There is no need to require that for use in PhotoDemon only.
-    Dim EXEName As String
-    If g_IsProgramCompiled Then EXEName = "photodemon.exe" Else EXEName = "vb6.exe"
-
-    EXEName = UCase$(Trim$(EXEName))
-    lngLength = Len(EXEName)
-    
-    lngCBSize = 8 ' Really needs To be 16, but Loop will increment prior to calling API
-    lngCBSizeReturned = 96
-
-    Do While lngCBSize <= lngCBSizeReturned
-    
-        'Increment Size
-        lngCBSize = lngCBSize * 2
-        
-        'Allocate Memory for Array
-        ReDim lngProcessIDs(lngCBSize / 4) As Long
-        
-        'Get Process ID's
-        lngReturn = EnumProcesses(lngProcessIDs(1), lngCBSize, lngCBSizeReturned)
-  
-    Loop
-
-    'Count number of processes returned
-    lngNumElements = lngCBSizeReturned / 4
-  
-    'Loop thru each process
-    For lngLoop = 1 To lngNumElements
-
-        'Get a handle to the Process and Open
-        lnghWndProcess = OpenProcess(PROCESS_QUERY_INFORMATION Or PROCESS_VM_READ, 0, lngProcessIDs(lngLoop))
-    
-        If lnghWndProcess <> 0 Then
-            'Get an array of the module handles for the specified process
-            lngReturn = EnumProcessModules(lnghWndProcess, lngModules(1), 200, lngCBSize2)
-
-            'If the Module Array is retrieved, Get the ModuleFileName
-            If lngReturn <> 0 Then
-
-                'Buffer with spaces first to allocate memory for byte array
-                strModuleName = Space(MAX_PATH)
-
-                'Must be set prior to calling API
-                lngSize = 500
-
-                'Get Process Name
-                lngReturn = GetModuleFileNameExA(lnghWndProcess, lngModules(1), strModuleName, lngSize)
-
-                'Remove trailing spaces
-                strProcessName = Left$(strModuleName, lngReturn)
-        
-                strProcName2 = GetExeName(strProcessName)
-
-                If strProcName2 = EXEName Then
-          
-                    'Get the Site of the Memory Structure
-                    pmc.cb = LenB(pmc)
-          
-                    lRet = GetProcessMemoryInfo(lnghWndProcess, pmc, pmc.cb)
-              
-                    If returnPeakValue Then
-                        GetPhotoDemonMemoryUsage = pmc.PeakWorkingSetSize / 1024
-                    Else
-                        GetPhotoDemonMemoryUsage = pmc.WorkingSetSize / 1024
+        'Attempt to enumerate the first entry in the list
+        uProcess.dwSize = Len(uProcess)
+        If ProcessFirst(hSnapShot, uProcess) <> 0 Then
+            
+            'The enumerator is working correctly.  Check each uProcess entry for PD's name.
+            Dim processName As String
+            If g_IsProgramCompiled Then processName = "photodemon.exe" Else processName = "vb6.exe"
+            
+            Dim testProcessName As String, procFound As Boolean
+            procFound = False
+            
+            Dim cUnicode As pdUnicode
+            Set cUnicode = New pdUnicode
+            
+            Do
+                testProcessName = cUnicode.TrimNull(uProcess.szExeFile)
+                
+                If Len(testProcessName) <> 0 Then
+                    If StrComp(LCase(testProcessName), processName, vbBinaryCompare) = 0 Then
+                        procFound = True
+                        Exit Do
                     End If
-
+                End If
+                
+            Loop While ProcessNext(hSnapShot, uProcess)
+            
+            'Close the enumerator when we're done
+            CloseHandle hSnapShot
+            
+            'If we found PD's process handle, use it to obtain a memory reading
+            If procFound Then
+                
+                'Open a handle to our process
+                Dim procHandle As Long
+                procHandle = OpenProcess(PROCESS_QUERY_INFORMATION Or PROCESS_VM_READ, 0&, uProcess.th32ProcessID)
+                
+                If procHandle <> 0 Then
+                    
+                    'Attempt to retrieve process memory information
+                    Dim procMemInfo As PROCESS_MEMORY_COUNTERS
+                    procMemInfo.cb = LenB(procMemInfo)
+                    
+                    If GetProcessMemoryInfo(procHandle, procMemInfo, procMemInfo.cb) <> 0 Then
+                        
+                        If returnPeakValue Then
+                            GetPhotoDemonMemoryUsage = procMemInfo.PeakWorkingSetSize / 1024
+                        Else
+                            GetPhotoDemonMemoryUsage = procMemInfo.WorkingSetSize / 1024
+                        End If
+                        
+                    End If
+                    
+                    'Release our process handle
+                    CloseHandle procHandle
+                    
                 End If
                 
             End If
             
         End If
     
-        'Close the handle to this process
-        lngReturn = CloseHandle(lnghWndProcess)
-        
-    Next lngLoop
-
-IsProcessRunning_Exit:
-
-    'Exit early to avoid error handler
-    Exit Function
-    
-Memory_Measure_Error:
-  
-    'I am not current interested in raising errors for this function, so simply resume if something goes wrong.
-    Resume Next
-  
-End Function
-
-'Used to extract the EXE name from a running process
-Private Function GetExeName(ByVal sPath As String) As String
-  
-    Dim lPos1 As Long
-    Dim lPos2 As Long
-      
-    On Error Resume Next
-      
-    lPos1 = InStr(1, sPath, Chr$(0))
-    lPos2 = InStrRev(sPath, "\")
-    
-    If lPos1 > 0 Then
-        GetExeName = UCase$(Mid$(sPath, lPos2 + 1, lPos1 - lPos2))
-    Else
-        GetExeName = UCase$(Mid$(sPath, lPos2 + 1))
     End If
-  
+    
 End Function
-
