@@ -807,6 +807,7 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         
         'Create a blank DIB at the dimensions of the union rect.
         tmpDIB.createBlank finalRect.Width, finalRect.Height, 32, 0
+        tmpDIB.setInitialAlphaPremultiplicationState True
         
         'We now need to do a couple of things.  Let's start by copying the bottom DIB into this new temporary DIB.
         xOffset = bottomRect.Left - finalRect.Left
@@ -906,6 +907,7 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
             
             With topLayer
                 tmpDIB.createBlank .getLayerWidth(True), .getLayerHeight(True), 32, 0
+                tmpDIB.setInitialAlphaPremultiplicationState True
                 GDIPlusResizeDIB tmpDIB, 0, 0, .getLayerWidth(True), .getLayerHeight(True), .layerDIB, 0, 0, .getLayerWidth(False), .getLayerHeight(False), .getLayerResizeQuality_GDIPlus
             End With
         
@@ -1237,8 +1239,16 @@ Friend Sub getCompositedRect(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, B
     If isRectZoomless Then
         m_dstDIB.alphaBlendToDCEx dstDIB.getDIBDC, dstX, dstY, dstWidth, dstHeight, 0, 0, dstWidth, dstHeight
     Else
-        m_dstDIB.alphaBlendToDCEx dstDIB.getDIBDC, Int(dstX), Int(dstY), dibWidthCalc, dibHeightCalc, 0, 0, dibWidthCalc, dibHeightCalc
-        'GDIPlus_StretchBlt dstDIB, Int(dstX), Int(dstY), dibWidthCalc, dibHeightCalc, m_dstDIB, 0, 0, dibWidthCalc, dibHeightCalc, 1, interpolationType
+        
+        Dim bltWidth As Single, bltHeight As Single
+        bltWidth = dstWidth + (dstX - Int(dstX))
+        bltHeight = dstHeight + (dstY - Int(dstY))
+        GDIPlus_StretchBlt dstDIB, Int(dstX), Int(dstY), bltWidth, bltHeight, m_dstDIB, 0, 0, bltWidth, bltHeight, 1, InterpolationModeNearestNeighbor, , True
+        
+        'While we might be able to get away with GDI's AlphaBlend here, it may cause bleeding on the trailing width/height edges,
+        ' which can cause the underlying checkerboard to show through.
+        'm_dstDIB.alphaBlendToDCEx dstDIB.getDIBDC, Int(dstX), Int(dstY), dibWidthCalc, dibHeightCalc, 0, 0, dibWidthCalc, dibHeightCalc
+        
     End If
     
     'The target DIB will always be premultiplied, by design
@@ -1868,17 +1878,17 @@ Private Sub fastLayerVibranceTemperatureTint(ByRef targetLayer As pdLayer, ByRef
     Dim amtVal As Double, avgVal As Double
     
     'Build a look-up table of grayscale values (faster than calculating it manually for each pixel)
-    Dim grayLookUp() As Long
-    ReDim grayLookUp(0 To 765) As Long
+    Dim grayLUT() As Long
+    ReDim grayLUT(0 To 765) As Long
     For x = 0 To 765
-        grayLookUp(x) = x \ 3
+        grayLUT(x) = x \ 3
     Next x
     
-    'To handle temperature and tint, we will also be preparing RGB lookup tables
-    Dim rLookup() As Byte, gLookup() As Byte, bLookup() As Byte
-    ReDim rLookup(0 To 255) As Byte
-    ReDim gLookup(0 To 255) As Byte
-    ReDim bLookup(0 To 255) As Byte
+    'To handle temperature and tint, we will also be preparing RGB LUT tables
+    Dim rLUT() As Byte, gLUT() As Byte, bLUT() As Byte
+    ReDim rLUT(0 To 255) As Byte
+    ReDim gLUT(0 To 255) As Byte
+    ReDim bLUT(0 To 255) As Byte
     
     'Populate the look-up table
     For x = 0 To 255
@@ -1926,9 +1936,9 @@ Private Sub fastLayerVibranceTemperatureTint(ByRef targetLayer As pdLayer, ByRef
         End If
         
         'Fill the look-up table
-        rLookup(x) = Round(r)
-        gLookup(x) = Round(g)
-        bLookup(x) = Round(b)
+        rLUT(x) = Round(r)
+        gLUT(x) = Round(g)
+        bLUT(x) = Round(b)
     
     Next x
         
@@ -1945,7 +1955,7 @@ Private Sub fastLayerVibranceTemperatureTint(ByRef targetLayer As pdLayer, ByRef
         If vibranceAdjustment <> 0 Then
         
             'Calculate the gray value using the look-up table
-            avgVal = grayLookUp(r + g + b)
+            avgVal = grayLUT(r + g + b)
             maxVal = Max3Int(r, g, b)
             
             'Get adjusted average
@@ -1967,9 +1977,9 @@ Private Sub fastLayerVibranceTemperatureTint(ByRef targetLayer As pdLayer, ByRef
         End If
             
         'Apply the new values
-        ImageData(QuickVal + 2, y) = rLookup(r)
-        ImageData(QuickVal + 1, y) = gLookup(g)
-        ImageData(QuickVal, y) = bLookup(b)
+        ImageData(QuickVal + 2, y) = rLUT(r)
+        ImageData(QuickVal + 1, y) = gLUT(g)
+        ImageData(QuickVal, y) = bLUT(b)
         
     Next y
     Next x

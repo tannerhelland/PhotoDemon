@@ -1347,31 +1347,11 @@ Public Function GDIPlusFillDIBRect_Pattern(ByRef dstDIB As pdDIB, ByVal x1 As Si
     ' have us restrict painting to the interior integer region only.)
     If fixBoundaryPainting Then
         
-        'Debug.Print x1, y1, bltWidth, bltHeight
-        
         Dim xDif As Single, yDif As Single
         xDif = x1 - Int(x1)
         yDif = y1 - Int(y1)
-        
-        If xDif > 0 Then
-            x1 = Int(x1) + 1
-            bltWidth = bltWidth - (1 + xDif)
-        Else
-            bltWidth = bltWidth - 0.5
-        End If
-        
-        If yDif > 0 Then
-            y1 = Int(y1) + 1
-            bltHeight = bltHeight - (1 + yDif)
-        Else
-            bltHeight = bltHeight - 0.5
-        End If
-        
-        xDif = bltWidth - Int(bltWidth)
-        yDif = bltHeight - Int(bltHeight)
-        
-        If xDif > 0 Then bltWidth = Int(bltWidth)
-        If yDif > 0 Then bltHeight = Int(bltHeight)
+        bltWidth = Int(bltWidth - xDif - 0.5)
+        bltHeight = Int(bltHeight - yDif - 0.5)
         
     End If
     
@@ -1469,6 +1449,10 @@ Public Sub GDIPlusConvertDIB24to32(ByRef dstDIB As pdDIB)
     
     'Paint the converted image to the destination
     GdipDrawImage iGraphics, dstBitmap, 0, 0
+    
+    'The target image will always have premultiplied alpha (not really relevant, as the source is 24-bpp, but this
+    ' lets us use various accelerated codepaths throughout the project).
+    dstDIB.setInitialAlphaPremultiplicationState True
     
     'Release our bitmap copies and GDI+ instances
     GdipDisposeImage srcBitmap
