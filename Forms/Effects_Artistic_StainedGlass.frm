@@ -3,7 +3,7 @@ Begin VB.Form FormStainedGlass
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   " Stained glass"
-   ClientHeight    =   6510
+   ClientHeight    =   6585
    ClientLeft      =   45
    ClientTop       =   285
    ClientWidth     =   12090
@@ -19,7 +19,7 @@ Begin VB.Form FormStainedGlass
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   434
+   ScaleHeight     =   439
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
@@ -67,19 +67,10 @@ Begin VB.Form FormStainedGlass
       Height          =   750
       Left            =   0
       TabIndex        =   0
-      Top             =   5760
+      Top             =   5835
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
