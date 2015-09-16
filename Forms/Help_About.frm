@@ -31,9 +31,9 @@ Begin VB.Form FormAbout
       TabIndex        =   4
       Top             =   8280
       Width           =   1695
-      _extentx        =   2990
-      _extenty        =   873
-      caption         =   "&OK"
+      _ExtentX        =   2990
+      _ExtentY        =   873
+      Caption         =   "&OK"
    End
    Begin PhotoDemon.pdButtonToolbox cmdSpeed 
       Height          =   510
@@ -42,10 +42,10 @@ Begin VB.Form FormAbout
       TabIndex        =   1
       Top             =   8280
       Width           =   510
-      _extentx        =   1296
-      _extenty        =   661
-      backcolor       =   0
-      autotoggle      =   -1  'True
+      _ExtentX        =   1296
+      _ExtentY        =   661
+      BackColor       =   0
+      AutoToggle      =   -1  'True
    End
    Begin VB.PictureBox picBuffer 
       Appearance      =   0  'Flat
@@ -75,10 +75,10 @@ Begin VB.Form FormAbout
       TabIndex        =   2
       Top             =   8280
       Width           =   510
-      _extentx        =   1296
-      _extenty        =   661
-      backcolor       =   0
-      autotoggle      =   -1  'True
+      _ExtentX        =   1296
+      _ExtentY        =   661
+      BackColor       =   0
+      AutoToggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdSpeed 
       Height          =   510
@@ -87,10 +87,10 @@ Begin VB.Form FormAbout
       TabIndex        =   3
       Top             =   8280
       Width           =   510
-      _extentx        =   1296
-      _extenty        =   661
-      backcolor       =   0
-      stickytoggle    =   -1  'True
+      _ExtentX        =   1296
+      _ExtentY        =   661
+      BackColor       =   0
+      StickyToggle    =   -1  'True
    End
 End
 Attribute VB_Name = "FormAbout"
@@ -345,7 +345,6 @@ Private Sub Form_Load()
     GenerateThankyou "Leandro Ascierto", "http://leandroascierto.com/blog/clsmenuimage/", True
     GenerateThankyou "Manuel Augusto Santos", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1", True
     GenerateThankyou "Mark James", "http://www.famfamfam.com/lab/icons/silk/", True
-    GenerateThankyou "Mike Raynder", "http://www.xtremevbtalk.com/showthread.php?t=229758", True
     GenerateThankyou "Mohammad Reza Karimi"
     GenerateThankyou "Olaf Schmidt", "http://www.vbrichclient.com/#/en/About/", True
     GenerateThankyou "Paul Bourke", "http://paulbourke.net/miscellaneous/", True

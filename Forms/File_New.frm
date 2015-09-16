@@ -34,15 +34,6 @@ Begin VB.Form FormNewImage
       Width           =   9630
       _ExtentX        =   16986
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.smartOptionButton optBackground 
@@ -229,7 +220,22 @@ Private Sub calculateDefaultSize()
     Else
     
         'Default to primary monitor size
-        ucResize.setInitialDimensions g_cMonitors.PrimaryMonitor.Width, g_cMonitors.PrimaryMonitor.Height, 96
+        Dim pDisplay As pdDisplay
+        Set pDisplay = g_Displays.PrimaryDisplay
+                
+        Dim pDisplayRect As RECTL
+        If Not pDisplay Is Nothing Then
+            pDisplay.getRect pDisplayRect
+        Else
+            With pDisplayRect
+                .Left = 0
+                .Top = 0
+                .Right = 1920
+                .Bottom = 1080
+            End With
+        End If
+        
+        ucResize.setInitialDimensions pDisplayRect.Right - pDisplayRect.Left, pDisplayRect.Bottom - pDisplayRect.Top, 96
         
     End If
 

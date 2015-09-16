@@ -1292,23 +1292,28 @@ End Sub
 'The first time PhotoDemon is run, this sub can be called to nicely center the window on the user's primary monitor.
 Public Sub setFirstRunMainWindowPosition()
 
-    'Start by retrieving the primary monitor's dimensions.  Note that this check relies on access to PD's g_cMonitors class.
-    Dim primaryMonitorIndex As Long
+    'Start by retrieving the primary monitor's dimensions.  Note that this check relies on access to PD's g_Displays class.
+    Dim PrimaryDisplay As pdDisplay
+    Set PrimaryDisplay = g_Displays.PrimaryDisplay
     
-    Dim i As Long
-    For i = 1 To g_cMonitors.Monitors.Count
-        If g_cMonitors.Monitors(i).isPrimary Then
-            primaryMonitorIndex = i
-            Exit For
-        End If
-    Next i
+    Dim pWorkingRect As RECTL
+    If Not (PrimaryDisplay Is Nothing) Then
+        PrimaryDisplay.getWorkingRect pWorkingRect
+    Else
+        With pWorkingRect
+            .Left = 0
+            .Top = 0
+            .Right = Screen.Width / TwipsPerPixelXFix
+            .Bottom = Screen.Height / TwipsPerPixelYFix
+        End With
+    End If
     
     Dim primaryMonitorRect As winRect
-    With g_cMonitors.Monitors(primaryMonitorIndex)
-        primaryMonitorRect.x1 = .WorkLeft
-        primaryMonitorRect.x2 = .WorkRight
-        primaryMonitorRect.y1 = .WorkTop
-        primaryMonitorRect.y2 = .WorkBottom
+    With pWorkingRect
+        primaryMonitorRect.x1 = .Left
+        primaryMonitorRect.x2 = .Right
+        primaryMonitorRect.y1 = .Top
+        primaryMonitorRect.y2 = .Bottom
     End With
     
     'Using the primary monitor's dimensions, construct a new rect that fills most of (but not all) the user's screen
@@ -1401,29 +1406,29 @@ Public Function restoreWindowLocation(ByVal windowIndex As Long, ByVal preferred
             'Make sure the location values will result in an on-screen form.  If they will not (for example, if the user detached a
             ' secondary monitor on which PhotoDemon was being used), change the values to ensure this window appears on-screen.
             
-            'Note that this check relies on access to PD's g_cMonitors class, which returns the full virtual desktop dimensions, and
+            'Note that this check relies on access to PD's g_Displays class, which returns the full virtual desktop dimensions, and
             ' not just the primary monitor's (as VB's Screen object does).
             Dim winWidth As Long, winHeight As Long
             winWidth = .lastPosition.x2 - .lastPosition.x1
             winHeight = .lastPosition.y2 - .lastPosition.y1
             
-            If (.lastPosition.x1 + winWidth) < g_cMonitors.DesktopLeft Then
-                .lastPosition.x1 = g_cMonitors.DesktopLeft
+            If (.lastPosition.x1 + winWidth) < g_Displays.getDesktopLeft Then
+                .lastPosition.x1 = g_Displays.getDesktopLeft
                 .lastPosition.x2 = .lastPosition.x1 + winWidth
             End If
             
-            If .lastPosition.x1 > (g_cMonitors.DesktopLeft + g_cMonitors.DesktopWidth) Then
-                .lastPosition.x1 = (g_cMonitors.DesktopWidth - winWidth)
+            If .lastPosition.x1 > (g_Displays.getDesktopLeft + g_Displays.getDesktopWidth) Then
+                .lastPosition.x1 = (g_Displays.getDesktopWidth - winWidth)
                 .lastPosition.x2 = .lastPosition.x1 + winWidth
             End If
             
-            If .lastPosition.y1 < g_cMonitors.DesktopTop Then
-                .lastPosition.y1 = g_cMonitors.DesktopTop
+            If .lastPosition.y1 < g_Displays.getDesktopTop Then
+                .lastPosition.y1 = g_Displays.getDesktopTop
                 .lastPosition.y2 = .lastPosition.y1 + winHeight
             End If
             
-            If .lastPosition.y1 > g_cMonitors.DesktopHeight Then
-                .lastPosition.y1 = (g_cMonitors.DesktopHeight - winHeight)
+            If .lastPosition.y1 > g_Displays.getDesktopHeight Then
+                .lastPosition.y1 = (g_Displays.getDesktopHeight - winHeight)
                 .lastPosition.y2 = .lastPosition.y1 + winHeight
             End If
             

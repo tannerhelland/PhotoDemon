@@ -1593,7 +1593,7 @@ Private Sub moveDropDownIntoPosition(ByRef editRect As RECTL, ByRef listRect As 
     finalReportedHeight = m_DropDownCalculatedHeight
     
     'If the drop down is gonna extend past the bottom edge of the screen, display it above the edit box (instead of below).
-    If editRect.Bottom + m_DropDownCalculatedHeight > g_cMonitors.DesktopHeight Then
+    If editRect.Bottom + m_DropDownCalculatedHeight > g_Displays.getDesktopHeight Then
         listRect.Top = editRect.Top - m_DropDownCalculatedHeight + 1
         
         'Perform a second check; if the box *still* extends past the edge of the screen, we have no choice but to shrink it
@@ -1601,7 +1601,7 @@ Private Sub moveDropDownIntoPosition(ByRef editRect As RECTL, ByRef listRect As 
         If listRect.Top < 0 Then
         
             'Find the greater available area, up or down, and use that as our extension dimension.
-            If Abs(listRect.Top) < Abs(g_cMonitors.DesktopHeight - (editRect.Bottom + m_DropDownCalculatedHeight)) Then
+            If Abs(listRect.Top) < Abs(g_Displays.getDesktopHeight - (editRect.Bottom + m_DropDownCalculatedHeight)) Then
                 
                 'Top is larger; use it
                 listRect.Top = 0
@@ -1611,7 +1611,7 @@ Private Sub moveDropDownIntoPosition(ByRef editRect As RECTL, ByRef listRect As 
             
                 'Bottom is larger; use it
                 listRect.Top = editRect.Bottom
-                finalReportedHeight = g_cMonitors.DesktopHeight - listRect.Top
+                finalReportedHeight = g_Displays.getDesktopHeight - listRect.Top
             
             End If
         
@@ -1623,8 +1623,8 @@ Private Sub moveDropDownIntoPosition(ByRef editRect As RECTL, ByRef listRect As 
     
     'Repeat the above steps, but for the right edge of the screen.  Note that this is much simpler, as we simply need to "bump"
     ' the list over.
-    If editRect.Left + m_DropDownCalculatedWidth > g_cMonitors.DesktopWidth Then
-        listRect.Left = g_cMonitors.DesktopWidth - m_DropDownCalculatedWidth
+    If editRect.Left + m_DropDownCalculatedWidth > g_Displays.getDesktopWidth Then
+        listRect.Left = g_Displays.getDesktopWidth - m_DropDownCalculatedWidth
     End If
     
     'Complete the rect by using our calculated left/right values, and width/height values

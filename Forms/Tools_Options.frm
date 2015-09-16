@@ -1649,7 +1649,7 @@ Private Sub cboMonitors_Click()
 
     'Start by retrieving the HMONITOR value for the selected monitor
     Dim hMonitor As Long
-    hMonitor = g_cMonitors.Monitors(cboMonitors.ListIndex + 1).Handle
+    If Not (g_Displays.Displays(cboMonitors.ListIndex) Is Nothing) Then hMonitor = g_Displays.Displays(cboMonitors.ListIndex).getHandle
     
     'Use that to retrieve a stored color profile (if any)
     Dim profilePath As String
@@ -1989,7 +1989,7 @@ Private Sub cmdColorProfilePath_Click()
         txtColorProfilePath = sFile
         
         Dim hMonitor As Long
-        hMonitor = g_cMonitors.Monitors(cboMonitors.ListIndex + 1).Handle
+        If Not g_Displays.Displays(cboMonitors.ListIndex) Is Nothing Then hMonitor = g_Displays.Displays(cboMonitors.ListIndex).getHandle
         g_UserPreferences.SetPref_String "Transparency", "MonitorProfile_" & hMonitor, TrimNull(sFile)
         
         'If the "user custom color profiles" option button isn't selected, mark it now
@@ -2354,33 +2354,38 @@ Private Sub LoadAllPreferences()
             
             Dim monitorEntry As String
             
-            For i = 1 To g_cMonitors.Monitors.Count
-                monitorEntry = ""
+            If g_Displays.getDisplayCount > 0 Then
                 
-                'Explicitly label the primary monitor
-                If g_cMonitors.Monitors(i).isPrimary Then
-                    monitorEntry = PrimaryMonitor
-                    primaryIndex = i - 1
-                Else
-                    monitorEntry = secondaryMonitor
-                End If
+                For i = 0 To g_Displays.getDisplayCount - 1
                 
-                'Add the monitor's physical size
-                monitorEntry = monitorEntry & g_cMonitors.Monitors(i).getMonitorSizeAsString
+                    monitorEntry = ""
+                    
+                    'Explicitly label the primary monitor
+                    If g_Displays.Displays(i).isPrimary Then
+                        monitorEntry = PrimaryMonitor
+                        primaryIndex = i
+                    Else
+                        monitorEntry = secondaryMonitor
+                    End If
+                    
+                    'Add the monitor's physical size
+                    monitorEntry = monitorEntry & g_Displays.Displays(i).getMonitorSizeAsString
+                    
+                    'Add the monitor's name
+                    monitorEntry = monitorEntry & " " & g_Displays.Displays(i).getBestMonitorName
+                    
+                    'Add the monitor's native resolution
+                    monitorEntry = monitorEntry & " (" & g_Displays.Displays(i).getMonitorResolutionAsString & ")"
+                                    
+                    'Display this monitor in the list
+                    cboMonitors.AddItem monitorEntry, i
+                    
+                Next i
                 
-                'Add the monitor's name
-                monitorEntry = monitorEntry & " " & g_cMonitors.Monitors(i).getBestMonitorName
-                
-                'Add the monitor's native resolution
-                monitorEntry = monitorEntry & " (" & g_cMonitors.Monitors(i).getMonitorResolutionAsString & ")"
-                
-                'Add the monitor's description (typically the video card driving the monitor)
-                'monitorEntry = monitorEntry & " (" & g_cMonitors.Monitors(i).Description & ")"
-                
-                'Display this monitor in the list
-                cboMonitors.AddItem monitorEntry, i - 1
-                
-            Next i
+            Else
+                primaryIndex = 0
+                cboMonitors.AddItem "Unknown monitor", 0
+            End If
             
             'Display the primary monitor by default; this will also trigger a load of the matching
             ' custom profile, if one exists.

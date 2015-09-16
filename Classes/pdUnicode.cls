@@ -49,6 +49,7 @@ Private Declare Function CryptStringToBinary Lib "Crypt32" Alias "CryptStringToB
 Private Declare Function GetCommandLineW Lib "kernel32" () As Long
 Private Declare Function lstrcpynW Lib "kernel32" (ByVal lpString1 As Long, ByVal lpString2 As Long, ByVal iMaxLength As Long) As Long
 Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
+Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
 
 'LCMapString functions provide support for changing Unicode string case (including CJK support like simplified <-> traditional Chinese characters).
 ' Note that two variants are provided - one for XP, and another for Vista+.  MSDN explicitly states that Vista+ applications should use the newer function.
@@ -78,6 +79,22 @@ Private Const LOCALE_SYSTEM_DEFAULT As Long = &H800&
 
 'Sometimes we need to retrieve system info, as a lot of Unicode APIs vary by OS version
 Private cSysInfo As pdSystemInfo
+
+'Given an arbitrary pointer (often to a VB array, but it doesn't matter) and a length IN BYTES, copy that chunk
+' of bytes to a VB string.  The bytes must already be in DBCS format.
+Public Function ConvertDBCSPointerToVBString(ByVal srcPointer As Long, ByVal lengthInBytes As Long, Optional ByVal trimNullChars As Boolean = True) As String
+    
+    Dim tmpString As String
+    tmpString = String$(lengthInBytes / 2, 0)
+    CopyMemoryStrict StrPtr(tmpString), srcPointer, lengthInBytes
+    
+    If trimNullChars Then
+        ConvertDBCSPointerToVBString = Me.TrimNull(tmpString)
+    Else
+        ConvertDBCSPointerToVBString = tmpString
+    End If
+    
+End Function
 
 'Given a VB string, fill a byte array with matching UTF-8 data.  Returns TRUE if successful; FALSE otherwise
 Public Function StringToUTF8Bytes(ByRef srcString As String, ByRef dstUtf8() As Byte) As Boolean
@@ -262,7 +279,7 @@ End Function
 '
 'RETURNS: TRUE if successful; FALSE otherwise.  Note that TRUE may not guarantee a correct string, especially if the incoming data
 ' is garbage, or if the format is unsupported or of some unknown ANSI codepage.
-Public Function convertUnknownBytesToString(ByRef srcBytes() As Byte, ByRef dstString As String, Optional ByVal forceWindowsLineEndings As Boolean = True) As Boolean
+Public Function ConvertUnknownBytesToString(ByRef srcBytes() As Byte, ByRef dstString As String, Optional ByVal forceWindowsLineEndings As Boolean = True) As Boolean
     
     On Error GoTo StringConversionFailed
     
@@ -346,14 +363,14 @@ Public Function convertUnknownBytesToString(ByRef srcBytes() As Byte, ByRef dstS
     
     End If
     
-    convertUnknownBytesToString = True
+    ConvertUnknownBytesToString = True
     
     Exit Function
     
 StringConversionFailed:
 
     Debug.Print "WARNING!  pdUnicode.convertUnknownBytesToString() failed with error " & Err.Number & ".  String conversion abandoned."
-    convertUnknownBytesToString = False
+    ConvertUnknownBytesToString = False
 
 End Function
 

@@ -110,8 +110,9 @@ Public g_IsThemingEnabled As Boolean
 Public g_UseFancyFonts As Boolean
 Public g_InterfaceFont As String
 
-'This g_cMonitors object contains data on all monitors on this system.  It is used to handle multiple monitor situations.
-Public g_cMonitors As clsMonitors
+'This g_Displays object contains data on all display devices on this system.  It includes a ton of code to assist the program
+' with managing multiple monitors and other display-related issues.
+Public g_Displays As pdDisplays
 
 'If the user attempts to close the program while multiple unsaved images are present, these values allow us to count
 ' a) how many unsaved images are present
