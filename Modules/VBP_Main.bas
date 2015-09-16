@@ -99,7 +99,7 @@ Public Sub finalShutdown()
     Set g_RecentFiles = Nothing
     Set g_RecentMacros = Nothing
     Set g_Themer = Nothing
-    Set g_cMonitors = Nothing
+    Set g_Displays = Nothing
     Set g_CheckerboardPattern = Nothing
     Set g_Zoom = Nothing
     Set g_CanvasShadow = Nothing

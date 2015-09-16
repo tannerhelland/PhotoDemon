@@ -221,8 +221,8 @@ Public Sub LoadTheProgram()
     
     LoadMessage "Analyzing current monitor setup..."
     
-    Set g_cMonitors = New clsMonitors
-    g_cMonitors.Refresh
+    Set g_Displays = New pdDisplays
+    g_Displays.RefreshDisplays
     
     'While here, also cache the current color management settings in use by the system
     cacheCurrentSystemColorProfile
@@ -238,14 +238,16 @@ Public Sub LoadTheProgram()
     #End If
     
     'Determine the program's previous on-screen location.  We need that to determine where to display the splash screen.
-    Dim wRect As RECT
-    wRect.Left = g_UserPreferences.GetPref_Long("Core", "Last Window Left", 1)
-    wRect.Top = g_UserPreferences.GetPref_Long("Core", "Last Window Top", 1)
-    wRect.Right = wRect.Left + g_UserPreferences.GetPref_Long("Core", "Last Window Width", 1)
-    wRect.Bottom = wRect.Top + g_UserPreferences.GetPref_Long("Core", "Last Window Height", 1)
+    Dim wRect As RECTL
+    With wRect
+        .Left = g_UserPreferences.GetPref_Long("Core", "Last Window Left", 1)
+        .Top = g_UserPreferences.GetPref_Long("Core", "Last Window Top", 1)
+        .Right = .Left + g_UserPreferences.GetPref_Long("Core", "Last Window Width", 1)
+        .Bottom = .Top + g_UserPreferences.GetPref_Long("Core", "Last Window Height", 1)
+    End With
     
     'Center the splash screen on whichever monitor the user previously used.
-    g_cMonitors.CenterFormOnMonitor FormSplash, , wRect.Left, wRect.Right, wRect.Top, wRect.Bottom
+    g_Displays.CenterFormViaReferenceRect FormSplash, wRect
     
     'If Segoe UI is available, we prefer to use it instead of Tahoma.  On XP this is not guaranteed, however, so we have to check.
     Dim tmpFontCheck As pdFont

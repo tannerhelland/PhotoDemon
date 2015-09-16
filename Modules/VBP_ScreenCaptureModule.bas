@@ -107,7 +107,7 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
     Dim cFile As pdFSO
     Set cFile = New pdFSO
     
-    sTitle = cFile.makeValidWindowsFilename(sTitle)
+    sTitle = cFile.MakeValidWindowsFilename(sTitle)
     
     Dim sTitlePlusDate As String
     sTitlePlusDate = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
@@ -124,15 +124,15 @@ End Sub
 'Use this function to return a copy of the current desktop in DIB format
 Public Sub getDesktopAsDIB(ByRef dstDIB As pdDIB)
 
-    'Use the g_cMonitors object to detect VIRTUAL screen size.  This will capture all monitors on a multimonitor arrangement,
+    'Use the g_Displays object to detect VIRTUAL screen size.  This will capture all monitors on a multimonitor arrangement,
     ' not just the primary one.
     Dim screenLeft As Long, screenTop As Long
     Dim screenWidth As Long, screenHeight As Long
     
-    screenLeft = g_cMonitors.DesktopLeft
-    screenTop = g_cMonitors.DesktopTop
-    screenWidth = g_cMonitors.DesktopWidth
-    screenHeight = g_cMonitors.DesktopHeight
+    screenLeft = g_Displays.getDesktopLeft
+    screenTop = g_Displays.getDesktopTop
+    screenWidth = g_Displays.getDesktopWidth
+    screenHeight = g_Displays.getDesktopHeight
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Preparing to capture screen using rect (" & screenLeft & ", " & screenTop & ")x(" & screenWidth & ", " & screenHeight & ")"
@@ -156,15 +156,15 @@ End Sub
 ' IMPORTANT NOTE: the source rect should be in *desktop coordinates*, which may not be zero-based on a multimonitor system.
 Public Sub getPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RECTL)
 
-    'Use the g_cMonitors object to detect VIRTUAL screen size.  This will capture all monitors on a multimonitor arrangement,
+    'Use the g_Displays object to detect VIRTUAL screen size.  This will capture all monitors on a multimonitor arrangement,
     ' not just the primary one.
     Dim screenLeft As Long, screenTop As Long
     Dim screenWidth As Long, screenHeight As Long
     
-    screenLeft = g_cMonitors.DesktopLeft
-    screenTop = g_cMonitors.DesktopTop
-    screenWidth = g_cMonitors.DesktopWidth
-    screenHeight = g_cMonitors.DesktopHeight
+    screenLeft = g_Displays.getDesktopLeft
+    screenTop = g_Displays.getDesktopTop
+    screenWidth = g_Displays.getDesktopWidth
+    screenHeight = g_Displays.getDesktopHeight
     
     'Retrieve an hWnd and DC for the screen
     Dim screenHwnd As Long, desktopDC As Long

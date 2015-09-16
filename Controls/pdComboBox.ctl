@@ -1883,7 +1883,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 finalReportedHeight = m_DropDownCalculatedHeight
                 
                 'If the combo box is gonna extend past the edge of the screen, display it above the edit box (instead of below).
-                If editRect.Bottom + m_DropDownCalculatedHeight > g_cMonitors.DesktopHeight Then
+                If editRect.Bottom + m_DropDownCalculatedHeight > g_Displays.getDesktopHeight Then
                     listRect.Top = editRect.Top - m_DropDownCalculatedHeight + 1
                     
                     'Perform a second check; if the box *still* extends past the edge of the screen, we have no choice but to shrink it
@@ -1891,7 +1891,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     If listRect.Top < 0 Then
                     
                         'Find the greater available area, up or down, and use that as our extension dimension.
-                        If Abs(listRect.Top) < Abs(g_cMonitors.DesktopHeight - (editRect.Bottom + m_DropDownCalculatedHeight)) Then
+                        If Abs(listRect.Top) < Abs(g_Displays.getDesktopHeight - (editRect.Bottom + m_DropDownCalculatedHeight)) Then
                             
                             'Top is larger; use it
                             listRect.Top = 0
@@ -1901,7 +1901,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         
                             'Bottom is larger; use it
                             listRect.Top = editRect.Bottom
-                            finalReportedHeight = g_cMonitors.DesktopHeight - listRect.Top
+                            finalReportedHeight = g_Displays.getDesktopHeight - listRect.Top
                             
                         End If
                     
