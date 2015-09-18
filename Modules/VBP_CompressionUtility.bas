@@ -21,6 +21,8 @@ Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (hpvDest As 
 Private Declare Function compress Lib "zlibwapi.dll" (Dest As Any, destLen As Any, src As Any, ByVal srcLen As Long) As Long
 Private Declare Function uncompress Lib "zlibwapi.dll" (Dest As Any, destLen As Any, src As Any, ByVal srcLen As Long) As Long
 Private Declare Function zlibVersion Lib "zlibwapi.dll" () As Long
+Private Declare Function lstrcpy Lib "kernel32" Alias "lstrcpyA" (ByVal lpBuffer As String, ByVal lpString As Long) As Long
+Private Declare Function lstrlen Lib "kernel32" Alias "lstrlenA" (ByVal lpString As Long) As Long
 
 'A single zLib handle is maintained for the life of a PD instance; see initializeZLib and releaseZLib, below.
 Private m_ZLibHandle As Long
@@ -51,18 +53,26 @@ Public Sub releaseZLib()
 End Sub
 
 'Return the current zLib version
-Public Function getZLibVersion() As Long
+Public Function getZLibVersion() As String
 
     If Not g_ZLibEnabled Then
         getZLibVersion = -1
         Exit Function
     End If
     
-    'Check the version
-    Dim zLibVer As Long
-    zLibVer = zlibVersion()
+    'Get a pointer to the version string
+    Dim ptrZLibVer As Long
+    ptrZLibVer = zlibVersion()
     
-    getZLibVersion = zLibVer
+    'Convert the char * to a VB string
+    Dim strLength As Long, tmpString As String
+    strLength = lstrlen(ptrZLibVer)
+    tmpString = Space$(strLength)
+    If lstrcpy(tmpString, ptrZLibVer) <> 0 Then
+        getZLibVersion = tmpString
+    Else
+        getZLibVersion = ""
+    End If
 
 End Function
 
