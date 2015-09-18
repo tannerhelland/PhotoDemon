@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.83</langversion>
+<langversion>6.7.84</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -1260,11 +1260,6 @@ Wenn Sie gepackte PDI-Dateien verwenden wollen, wählen Sie 'Hilfe > Nach Update
 </phrase>
 
 <phrase>
-<original>(IDE NOT RECOMMENDED - PLEASE COMPILE)</original>
-<translation>(IDE NICHT EMPFOHLEN - BITTE KOMPILIEREN)</translation>
-</phrase>
-
-<phrase>
 <original>Shift</original>
 <translation>Umsch</translation>
 </phrase>
@@ -1284,7 +1279,7 @@ Wenn Sie gepackte PDI-Dateien verwenden wollen, wählen Sie 'Hilfe > Nach Update
 <translation>Bild wurde dupliziert.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 82 phrases. 30 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 80 phrases. 29 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -6388,12 +6383,7 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 <translation>HDR-'Karte' des Bildes wird erzeugt</translation>
 </phrase>
 
-<phrase>
-<original>WARNING! This tool is very slow when used inside the IDE. Please compile for best results.</original>
-<translation>WARNUNG! Dieses Werkzeug ist sehr langsam, wenn es in der IDE verwendet wird. Für beste Ergebnisse bitte kompilieren.</translation>
-</phrase>
-
-<!-- Adjustments_Photo_HDR.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Adjustments_Photo_HDR.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Photo_HDR.frm-->
 
@@ -7748,7 +7738,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Graphit</translation>
 </phrase>
 
-<!-- Effects_Artistic_ColoredPencil.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Artistic_ColoredPencil.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ColoredPencil.frm-->
 
@@ -7868,7 +7858,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Verfahren der modernen Kunst</translation>
 </phrase>
 
-<!-- Effects_Artistic_ModernArt.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Artistic_ModernArt.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Artistic_ModernArt.frm-->
 
@@ -7889,7 +7879,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Bild mit Ölfarben übermalen</translation>
 </phrase>
 
-<!-- Effects_Artistic_OilPainting.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Artistic_OilPainting.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_OilPainting.frm-->
 
@@ -8048,7 +8038,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Quadratische Unschärfe auf das Bild anwenden</translation>
 </phrase>
 
-<!-- Effects_Blur_BoxBlur.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Blur_BoxBlur.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_BoxBlur.frm-->
 
@@ -8089,7 +8079,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Zusammenführen von Luminanz und Chroma in das endgültige Bild</translation>
 </phrase>
 
-<!-- Effects_Blur_ChromaBlur.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Blur_ChromaBlur.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_ChromaBlur.frm-->
 
@@ -8100,7 +8090,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Gaußsche Unschärfe anwenden</translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 10 phrases. 9 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Blur_GaussianBlur.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -8116,7 +8106,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Kuwahara-Glättung läuft ...</translation>
 </phrase>
 
-<!-- Effects_Blur_Kuwahara.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Blur_Kuwahara.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_Kuwahara.frm-->
 
@@ -8137,7 +8127,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Bewegungsunschärfe verwenden</translation>
 </phrase>
 
-<!-- Effects_Blur_MotionBlur.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Blur_MotionBlur.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_MotionBlur.frm-->
 
@@ -8148,7 +8138,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Radial-Unschärfe verwenden</translation>
 </phrase>
 
-<!-- Effects_Blur_RadialBlur.frm contains 10 phrases. 9 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Blur_RadialBlur.frm-->
 
@@ -8645,7 +8635,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Bildkontur wird untersucht</translation>
 </phrase>
 
-<!-- Effects_Edge_TraceContour.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Edge_TraceContour.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_TraceContour.frm-->
 
@@ -8911,7 +8901,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Medianfilter</translation>
 </phrase>
 
-<!-- Effects_Noise_MedianSmoothing.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Noise_MedianSmoothing.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_MedianSmoothing.frm-->
 
@@ -9104,7 +9094,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Unscharf maskieren (Schritt %1 von %2)</translation>
 </phrase>
 
-<!-- Effects_Sharpen_UnsharpMask.frm contains 13 phrases. 11 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Sharpen_UnsharpMask.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Sharpen_UnsharpMask.frm-->
 
@@ -14125,10 +14115,10 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2436</phrasecount>
+<phrasecount>2434</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4183 phrases. -->
-<!-- 1747 are duplicates, so only 2436 unique phrases have been written to file. -->
-<!-- These 2436 phrases contain approximately 13255 total words. -->
+<!-- As of this build, PhotoDemon contains 4155 phrases. -->
+<!-- 1721 are duplicates, so only 2434 unique phrases have been written to file. -->
+<!-- These 2434 phrases contain approximately 13234 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.83</langversion>
+<langversion>6.7.84</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -1260,11 +1260,6 @@ Om ondersteuning voor gecomprimeerde PDI-bestanden in te schakelen, klikt u op H
 </phrase>
 
 <phrase>
-<original>(IDE NOT RECOMMENDED - PLEASE COMPILE)</original>
-<translation>(IDE AFGERADEN - COMPILEREN AUB)</translation>
-</phrase>
-
-<phrase>
 <original>Shift</original>
 <translation>Shift</translation>
 </phrase>
@@ -1284,7 +1279,7 @@ Om ondersteuning voor gecomprimeerde PDI-bestanden in te schakelen, klikt u op H
 <translation>Duplicatie afbeelding klaar.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 82 phrases. 30 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 80 phrases. 29 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -6389,12 +6384,7 @@ Nota: enkele kleine programmateksten kunnen niet live worden  bijgewerkt. Een de
 <translation>Genereren van HDR map voor afbeelding</translation>
 </phrase>
 
-<phrase>
-<original>WARNING! This tool is very slow when used inside the IDE. Please compile for best results.</original>
-<translation>WAARSCHUWING! Dit gereedschap is zeer langzaam bij gebruik in de IDE. Gelieve te compileren voor de beste resultaten.</translation>
-</phrase>
-
-<!-- Adjustments_Photo_HDR.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Adjustments_Photo_HDR.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Photo_HDR.frm-->
 
@@ -7749,7 +7739,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Grafiet</translation>
 </phrase>
 
-<!-- Effects_Artistic_ColoredPencil.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Artistic_ColoredPencil.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ColoredPencil.frm-->
 
@@ -7869,7 +7859,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Toepassen moderne kunst technieken</translation>
 </phrase>
 
-<!-- Effects_Artistic_ModernArt.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Artistic_ModernArt.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Artistic_ModernArt.frm-->
 
@@ -7890,7 +7880,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Herschilderen afbeelding met oliën</translation>
 </phrase>
 
-<!-- Effects_Artistic_OilPainting.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Artistic_OilPainting.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_OilPainting.frm-->
 
@@ -8049,7 +8039,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Toepassen van vierkant vervagen op de afbeelding</translation>
 </phrase>
 
-<!-- Effects_Blur_BoxBlur.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Blur_BoxBlur.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_BoxBlur.frm-->
 
@@ -8090,7 +8080,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Samenvoegen van luminantie en chroma in uiteindelijke afbeelding</translation>
 </phrase>
 
-<!-- Effects_Blur_ChromaBlur.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Blur_ChromaBlur.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_ChromaBlur.frm-->
 
@@ -8101,7 +8091,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Toepassen Gaussiaans vervagen</translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 10 phrases. 9 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Blur_GaussianBlur.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -8117,7 +8107,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Toepassen van Kuwahara vergladding</translation>
 </phrase>
 
-<!-- Effects_Blur_Kuwahara.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Blur_Kuwahara.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_Kuwahara.frm-->
 
@@ -8138,7 +8128,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Toepassen bewegingsvervaging</translation>
 </phrase>
 
-<!-- Effects_Blur_MotionBlur.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Blur_MotionBlur.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_MotionBlur.frm-->
 
@@ -8149,7 +8139,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Toepassen radiale vervaging</translation>
 </phrase>
 
-<!-- Effects_Blur_RadialBlur.frm contains 10 phrases. 9 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Blur_RadialBlur.frm-->
 
@@ -8646,7 +8636,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Zoeken omtrek afbeelding</translation>
 </phrase>
 
-<!-- Effects_Edge_TraceContour.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Edge_TraceContour.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_TraceContour.frm-->
 
@@ -8912,7 +8902,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Mediaanfilter</translation>
 </phrase>
 
-<!-- Effects_Noise_MedianSmoothing.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Noise_MedianSmoothing.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_MedianSmoothing.frm-->
 
@@ -9105,7 +9095,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Toepassen onscherptemasker (stap %1 van %2)</translation>
 </phrase>
 
-<!-- Effects_Sharpen_UnsharpMask.frm contains 13 phrases. 11 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Sharpen_UnsharpMask.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Sharpen_UnsharpMask.frm-->
 
@@ -14126,10 +14116,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2436</phrasecount>
+<phrasecount>2434</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4183 phrases. -->
-<!-- 1747 are duplicates, so only 2436 unique phrases have been written to file. -->
-<!-- These 2436 phrases contain approximately 13255 total words. -->
+<!-- As of this build, PhotoDemon contains 4155 phrases. -->
+<!-- 1721 are duplicates, so only 2434 unique phrases have been written to file. -->
+<!-- These 2434 phrases contain approximately 13234 total words. -->
 
 </pdData>

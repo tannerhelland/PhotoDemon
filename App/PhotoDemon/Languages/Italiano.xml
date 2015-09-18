@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.83</langversion>
+<langversion>6.7.84</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -1258,11 +1258,6 @@ Per abilitare il supporto per i file PDI compressi, fare clic su Aiuto > Control
 </phrase>
 
 <phrase>
-<original>(IDE NOT RECOMMENDED - PLEASE COMPILE)</original>
-<translation>(IDE NON RACCOMANDATA - PERFAVORE COMPILA)</translation>
-</phrase>
-
-<phrase>
 <original>Shift</original>
 <translation>Maiusc</translation>
 </phrase>
@@ -1282,7 +1277,7 @@ Per abilitare il supporto per i file PDI compressi, fare clic su Aiuto > Control
 <translation>Duplicazione dell'immagine completa.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 82 phrases. 30 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 80 phrases. 29 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -6387,12 +6382,7 @@ Nota: un testo meno significativo del programma non può essere aggiornato dal v
 <translation>Generazione della mappa HDR per l'immagine</translation>
 </phrase>
 
-<phrase>
-<original>WARNING! This tool is very slow when used inside the IDE. Please compile for best results.</original>
-<translation>ATTENZIONE! Questo strumento è molto lento quando viene utilizzato all'interno dell'IDE. Si prega di compilare per ottenere risultati migliori.</translation>
-</phrase>
-
-<!-- Adjustments_Photo_HDR.frm contains 8 phrases. 5 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Adjustments_Photo_HDR.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Photo_HDR.frm-->
 
@@ -7747,7 +7737,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Grafite</translation>
 </phrase>
 
-<!-- Effects_Artistic_ColoredPencil.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Artistic_ColoredPencil.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ColoredPencil.frm-->
 
@@ -7867,7 +7857,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Applicazione tecniche di arte moderna</translation>
 </phrase>
 
-<!-- Effects_Artistic_ModernArt.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Artistic_ModernArt.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Artistic_ModernArt.frm-->
 
@@ -7888,7 +7878,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Riverniciatura dell'immagine con olio</translation>
 </phrase>
 
-<!-- Effects_Artistic_OilPainting.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Artistic_OilPainting.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_OilPainting.frm-->
 
@@ -8047,7 +8037,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Applicazione della sfocatura rettangolare all'immagine</translation>
 </phrase>
 
-<!-- Effects_Blur_BoxBlur.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Blur_BoxBlur.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_BoxBlur.frm-->
 
@@ -8088,7 +8078,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Unione della luminanza e crominanza nell'immagine finale</translation>
 </phrase>
 
-<!-- Effects_Blur_ChromaBlur.frm contains 11 phrases. 4 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Effects_Blur_ChromaBlur.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_ChromaBlur.frm-->
 
@@ -8099,7 +8089,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Applicazione della sfocatura Gaussiana</translation>
 </phrase>
 
-<!-- Effects_Blur_GaussianBlur.frm contains 10 phrases. 9 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Blur_GaussianBlur.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Blur_GaussianBlur.frm-->
 
@@ -8115,7 +8105,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Applicazione della lisciatura Kuwahara</translation>
 </phrase>
 
-<!-- Effects_Blur_Kuwahara.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Blur_Kuwahara.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_Kuwahara.frm-->
 
@@ -8136,7 +8126,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Applicazione della sfocatura in movimento</translation>
 </phrase>
 
-<!-- Effects_Blur_MotionBlur.frm contains 11 phrases. 8 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Blur_MotionBlur.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_MotionBlur.frm-->
 
@@ -8147,7 +8137,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Applicazione della sfocatura radiale</translation>
 </phrase>
 
-<!-- Effects_Blur_RadialBlur.frm contains 10 phrases. 9 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Blur_RadialBlur.frm-->
 
@@ -8644,7 +8634,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Tracciamento dei contorni nell'immagine</translation>
 </phrase>
 
-<!-- Effects_Edge_TraceContour.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Edge_TraceContour.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_TraceContour.frm-->
 
@@ -8910,7 +8900,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Filtro della mediana</translation>
 </phrase>
 
-<!-- Effects_Noise_MedianSmoothing.frm contains 15 phrases. 7 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Noise_MedianSmoothing.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_MedianSmoothing.frm-->
 
@@ -9103,7 +9093,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Applicazione della maschera di contrasto (passo %1 di %2)</translation>
 </phrase>
 
-<!-- Effects_Sharpen_UnsharpMask.frm contains 13 phrases. 11 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Sharpen_UnsharpMask.frm contains 11 phrases. 9 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Sharpen_UnsharpMask.frm-->
 
@@ -14124,10 +14114,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2436</phrasecount>
+<phrasecount>2434</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4183 phrases. -->
-<!-- 1747 are duplicates, so only 2436 unique phrases have been written to file. -->
-<!-- These 2436 phrases contain approximately 13255 total words. -->
+<!-- As of this build, PhotoDemon contains 4155 phrases. -->
+<!-- 1721 are duplicates, so only 2434 unique phrases have been written to file. -->
+<!-- These 2434 phrases contain approximately 13234 total words. -->
 
 </pdData>

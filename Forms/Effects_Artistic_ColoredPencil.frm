@@ -38,7 +38,7 @@ Begin VB.Form FormPencil
       Height          =   360
       Left            =   6000
       Style           =   2  'Dropdown List
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   1740
       Width           =   5895
    End
@@ -51,15 +51,6 @@ Begin VB.Form FormPencil
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -74,7 +65,7 @@ Begin VB.Form FormPencil
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   720
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   2520
       Width           =   5895
       _ExtentX        =   10398
@@ -87,7 +78,7 @@ Begin VB.Form FormPencil
    Begin PhotoDemon.sliderTextCombo sltIntensity 
       Height          =   720
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   3600
       Width           =   5925
       _ExtentX        =   10451
@@ -113,29 +104,9 @@ Begin VB.Form FormPencil
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   1320
       Width           =   480
-   End
-   Begin VB.Label lblIDEWarning 
-      BackStyle       =   0  'Transparent
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H000000FF&
-      Height          =   1095
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   4560
-      Visible         =   0   'False
-      Width           =   5775
-      WordWrap        =   -1  'True
    End
 End
 Attribute VB_Name = "FormPencil"
@@ -445,13 +416,7 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_Tooltip = New clsToolTip
     makeFormPretty Me, m_Tooltip
-    
-    'If the program is not compiled, display a special warning for this tool
-    If Not g_IsProgramCompiled Then
-        lblIDEWarning.Caption = g_Language.TranslateMessage("WARNING! This tool is very slow when used inside the IDE. Please compile for best results.")
-        lblIDEWarning.Visible = True
-    End If
-    
+        
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
     updatePreview
