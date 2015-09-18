@@ -32,15 +32,6 @@ Begin VB.Form FormUnsharpMask
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -55,7 +46,7 @@ Begin VB.Form FormUnsharpMask
    Begin PhotoDemon.sliderTextCombo sltThreshold 
       Height          =   720
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   2880
       Width           =   5925
       _ExtentX        =   10451
@@ -66,7 +57,7 @@ Begin VB.Form FormUnsharpMask
    Begin PhotoDemon.sliderTextCombo sltAmount 
       Height          =   720
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   1920
       Width           =   5925
       _ExtentX        =   10451
@@ -81,7 +72,7 @@ Begin VB.Form FormUnsharpMask
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   720
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   960
       Width           =   5925
       _ExtentX        =   10451
@@ -95,7 +86,7 @@ Begin VB.Form FormUnsharpMask
    Begin PhotoDemon.buttonStrip btsQuality 
       Height          =   600
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   4260
       Width           =   5910
       _ExtentX        =   10425
@@ -118,29 +109,9 @@ Begin VB.Form FormUnsharpMask
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   3840
       Width           =   705
-   End
-   Begin VB.Label lblIDEWarning 
-      BackStyle       =   0  'Transparent
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H000000FF&
-      Height          =   855
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   4920
-      Visible         =   0   'False
-      Width           =   5775
-      WordWrap        =   -1  'True
    End
 End
 Attribute VB_Name = "FormUnsharpMask"
@@ -373,13 +344,6 @@ Private Sub Form_Activate()
     
     'Apply visual themes to the form
     makeFormPretty Me
-    
-    'If the program is not compiled, display a special warning for this tool
-    If Not g_IsProgramCompiled Then
-        sltRadius.Max = 50
-        lblIDEWarning.Caption = g_Language.TranslateMessage("WARNING! This tool is very slow when used inside the IDE. Please compile for best results.")
-        lblIDEWarning.Visible = True
-    End If
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True

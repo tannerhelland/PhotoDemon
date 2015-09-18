@@ -32,15 +32,6 @@ Begin VB.Form FormRadialBlur
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -56,7 +47,7 @@ Begin VB.Form FormRadialBlur
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   720
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   1680
       Width           =   5895
       _ExtentX        =   10398
@@ -71,7 +62,7 @@ Begin VB.Form FormRadialBlur
       Height          =   360
       Index           =   0
       Left            =   6120
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   3750
       Width           =   5685
       _ExtentX        =   10028
@@ -83,7 +74,7 @@ Begin VB.Form FormRadialBlur
       Height          =   360
       Index           =   1
       Left            =   6120
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   4200
       Width           =   5685
       _ExtentX        =   10028
@@ -93,7 +84,7 @@ Begin VB.Form FormRadialBlur
    Begin PhotoDemon.smartCheckBox chkSymmetry 
       Height          =   300
       Left            =   6120
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   2760
       Width           =   5655
       _ExtentX        =   9975
@@ -119,29 +110,9 @@ Begin VB.Form FormRadialBlur
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   3360
       Width           =   1755
-   End
-   Begin VB.Label lblIDEWarning 
-      BackStyle       =   0  'Transparent
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H000000FF&
-      Height          =   1215
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   4440
-      Visible         =   0   'False
-      Width           =   5775
-      WordWrap        =   -1  'True
    End
 End
 Attribute VB_Name = "FormRadialBlur"
@@ -294,12 +265,6 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_Tooltip = New clsToolTip
     makeFormPretty Me, m_Tooltip
-    
-    'If the program is not compiled, display a special warning for this tool
-    If Not g_IsProgramCompiled Then
-        lblIDEWarning.Caption = g_Language.TranslateMessage("WARNING! This tool is very slow when used inside the IDE. Please compile for best results.")
-        lblIDEWarning.Visible = True
-    End If
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True

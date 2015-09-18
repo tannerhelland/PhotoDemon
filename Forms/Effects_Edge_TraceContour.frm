@@ -32,21 +32,12 @@ Begin VB.Form FormContour
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.smartCheckBox chkBlackBackground 
       Height          =   375
       Left            =   6120
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   3120
       Width           =   5700
       _ExtentX        =   10054
@@ -65,7 +56,7 @@ Begin VB.Form FormContour
    Begin PhotoDemon.smartCheckBox chkSmoothing 
       Height          =   375
       Left            =   6120
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   3720
       Width           =   5700
       _ExtentX        =   10054
@@ -75,7 +66,7 @@ Begin VB.Form FormContour
    Begin PhotoDemon.sliderTextCombo sltThickness 
       Height          =   720
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   2160
       Width           =   5895
       _ExtentX        =   10398
@@ -84,26 +75,6 @@ Begin VB.Form FormContour
       Min             =   1
       Max             =   30
       Value           =   1
-   End
-   Begin VB.Label lblIDEWarning 
-      BackStyle       =   0  'Transparent
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H000000FF&
-      Height          =   1095
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   4440
-      Visible         =   0   'False
-      Width           =   5775
-      WordWrap        =   -1  'True
    End
 End
 Attribute VB_Name = "FormContour"
@@ -217,12 +188,6 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_Tooltip = New clsToolTip
     makeFormPretty Me, m_Tooltip
-    
-    'If the program is not compiled, display a special warning for this tool
-    If Not g_IsProgramCompiled Then
-        lblIDEWarning.Caption = g_Language.TranslateMessage("WARNING! This tool is very slow when used inside the IDE. Please compile for best results.")
-        lblIDEWarning.Visible = True
-    End If
     
     'Draw a preview of the effect
     updatePreview

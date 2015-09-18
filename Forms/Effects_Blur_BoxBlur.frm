@@ -26,7 +26,7 @@ Begin VB.Form FormBoxBlur
    Begin PhotoDemon.sliderTextCombo sltWidth 
       Height          =   720
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   2040
       Width           =   5880
       _ExtentX        =   10372
@@ -48,7 +48,7 @@ Begin VB.Form FormBoxBlur
    Begin PhotoDemon.smartCheckBox chkUnison 
       Height          =   330
       Left            =   6120
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   3840
       Width           =   5700
       _ExtentX        =   10054
@@ -58,7 +58,7 @@ Begin VB.Form FormBoxBlur
    Begin PhotoDemon.sliderTextCombo sltHeight 
       Height          =   720
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   3000
       Width           =   5880
       _ExtentX        =   10372
@@ -78,26 +78,6 @@ Begin VB.Form FormBoxBlur
       _ExtentX        =   21220
       _ExtentY        =   1323
       BackColor       =   14802140
-   End
-   Begin VB.Label lblIDEWarning 
-      BackStyle       =   0  'Transparent
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H000000FF&
-      Height          =   975
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   4440
-      Visible         =   0   'False
-      Width           =   5775
-      WordWrap        =   -1  'True
    End
 End
 Attribute VB_Name = "FormBoxBlur"
@@ -183,12 +163,6 @@ Private Sub Form_Activate()
     'Assign the system hand cursor to all relevant objects
     Set m_Tooltip = New clsToolTip
     makeFormPretty Me, m_Tooltip
-    
-    'If the program is not compiled, display a special warning for this tool
-    If Not g_IsProgramCompiled Then
-        lblIDEWarning.Caption = g_Language.TranslateMessage("WARNING! This tool is very slow when used inside the IDE. Please compile for best results.")
-        lblIDEWarning.Visible = True
-    End If
     
     'Draw a preview of the effect
     updatePreview

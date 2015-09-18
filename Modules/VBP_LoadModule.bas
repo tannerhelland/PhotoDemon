@@ -2628,10 +2628,7 @@ End Function
 Public Sub LoadMessage(ByVal sMsg As String)
     
     Static loadProgress As Long
-    
-    Dim warnIDE As String
-    warnIDE = "(IDE NOT RECOMMENDED - PLEASE COMPILE)"
-    
+        
     'In debug mode, mirror message output to PD's central Debugger
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction sMsg, PDM_USER_MESSAGE
@@ -2640,14 +2637,9 @@ Public Sub LoadMessage(ByVal sMsg As String)
     'Load messages are translatable, but we don't want to translate them if the translation object isn't ready yet
     If (Not (g_Language Is Nothing)) Then
         If g_Language.readyToTranslate Then
-            If g_Language.translationActive Then
-                sMsg = g_Language.TranslateMessage(sMsg)
-                warnIDE = g_Language.TranslateMessage("(IDE NOT RECOMMENDED - PLEASE COMPILE)")
-            End If
+            If g_Language.translationActive Then sMsg = g_Language.TranslateMessage(sMsg)
         End If
     End If
-    
-    If Not g_IsProgramCompiled Then sMsg = sMsg & "  " & warnIDE
     
     'Previously, the current load text would be displayed to the user at this point.  As of version 6.6, this step is skipped in favor
     ' of a more minimalist splash screen.
