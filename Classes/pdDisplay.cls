@@ -13,10 +13,10 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Display Device Manager (child class)
-'Copyright 2014-2015 by Tanner Helland
-'Created: 12/November/2012
-'Last updated: 15/September/15
-'Last update: started moving PD-specific functionality away from clsMonitors and into pdDisplays
+'Copyright 2012-2015 by Tanner Helland
+'Created: 12/November/12
+'Last updated: 18/September/15
+'Last update: add additional failsafes just in case core display APIs fail
 '
 'pdDisplay manages data for a single display instance.  Look inside the parent class, pdDisplays, for more
 ' detailed comments on how this class is populated.
@@ -148,7 +148,7 @@ Public Function getMonitorResolutionAsString() As String
     If m_hasEDID Then
         getMonitorResolutionAsString = CStr(m_EDIDNativeResH) & "x" & CStr(m_EDIDNativeResV)
     Else
-        getMonitorResolutionAsString = ""
+        getMonitorResolutionAsString = CStr(m_MonitorRect.Right - m_MonitorRect.Left) & "x" & CStr(m_MonitorRect.Bottom - m_MonitorRect.Top)
     End If
 
 End Function

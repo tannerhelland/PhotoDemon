@@ -2384,7 +2384,7 @@ Private Sub LoadAllPreferences()
                 
             Else
                 primaryIndex = 0
-                cboMonitors.AddItem "Unknown monitor", 0
+                cboMonitors.AddItem "Unknown display", 0
             End If
             
             'Display the primary monitor by default; this will also trigger a load of the matching
