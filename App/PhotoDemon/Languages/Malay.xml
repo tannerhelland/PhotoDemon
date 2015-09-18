@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.80</langversion>
+<langversion>6.7.83</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -2511,18 +2511,6 @@ Please masukkan nilai berangka.</translation>
 <!-- clsMenuImage.cls contains 0 phrases. -->
 
 <!-- END text for clsMenuImage.cls-->
-
-<!-- BEGIN text for OutsideDevelopment_Monitor.cls -->
-
-<!-- OutsideDevelopment_Monitor.cls contains 0 phrases. -->
-
-<!-- END text for OutsideDevelopment_Monitor.cls-->
-
-<!-- BEGIN text for OutsideDevelopment_Monitors.cls -->
-
-<!-- OutsideDevelopment_Monitors.cls contains 0 phrases. -->
-
-<!-- END text for OutsideDevelopment_Monitors.cls-->
 
 <!-- BEGIN text for pdCaption.cls -->
 
@@ -13557,6 +13545,11 @@ Are anda pasti anda mahu teruskan?</translation>
 </phrase>
 
 <phrase>
+<original>Unknown display</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
 <translation>Tetapan ini adalah pilihan terbaik bagi kebanyakan pengguna. Jika anda tidak tahu apa yang pengurusan warna, gunakan tetapan ini. Jika anda telah dikonfigurasi dengan betul profil paparan melalui Panel Kawalan Windows, juga menggunakan tetapan ini.</translation>
 </phrase>
@@ -13860,7 +13853,7 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <translation>AMARAN: folder ini adalah tidak sah (akses dilarang). Sila berikan folder yang sah. Jika tiada folder baru disediakan, PhotoDemon akan menggunakan lokasi temp lalai sistem.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 245 phrases. 66 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 246 phrases. 66 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14115,12 +14108,29 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdDisplays.cls -->
+
+<phrase>
+<original>Unknown adapter</original>
+<translation></translation>
+</phrase>
+
+<!-- pdDisplays.cls contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for pdDisplays.cls-->
+
+<!-- BEGIN text for pdDisplay.cls -->
+
+<!-- pdDisplay.cls contains 0 phrases. -->
+
+<!-- END text for pdDisplay.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2434</phrasecount>
+<phrasecount>2436</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4176 phrases. -->
-<!-- 1742 are duplicates, so only 2434 unique phrases have been written to file. -->
-<!-- These 2434 phrases contain approximately 13251 total words. -->
+<!-- As of this build, PhotoDemon contains 4183 phrases. -->
+<!-- 1747 are duplicates, so only 2436 unique phrases have been written to file. -->
+<!-- These 2436 phrases contain approximately 13255 total words. -->
 
 </pdData>

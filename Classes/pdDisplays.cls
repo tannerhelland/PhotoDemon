@@ -13,10 +13,10 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Display Device Manager (parent class)
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2012-2015 by Tanner Helland
 'Created: 12/November/2012
-'Last updated: 15/September/15
-'Last update: started moving PD-specific functionality away from clsMonitors and into pdDisplays
+'Last updated: 18/September/15
+'Last update: add additional failsafes just in case core display APIs fail
 '
 'As a photo editing program, PD spends a lot of time interacting with display devices.  In early builds, it relied
 ' on a Microsoft-provided class to manage interactions with multiple displays (http://support.microsoft.com/kb/194578).
@@ -177,6 +177,28 @@ Public Function RefreshDisplays() As Long
         
     Next y
     Next x
+    
+    'If for some reason no displays were found (perhaps possible under Wine or some alternative environment), create a
+    ' default display instance.
+    If m_NumOfDisplays = 0 Then
+        
+        'Get a default screen rect from VB's internal methods
+        Dim workingRect As RECTL
+        Me.getVBDesktopRect workingRect, True
+        
+        'Populate basic display features so external functions don't crash
+        Set listOfDisplays(0) = New pdDisplay
+        With listOfDisplays(0)
+            .SetRect workingRect
+            .setWorkingRect workingRect
+            .setAdapterName g_Language.TranslateMessage("Unknown adapter")
+            .setDescription g_Language.TranslateMessage("Unknown display")
+            .setFriendlyName g_Language.TranslateMessage("Unknown display")
+        End With
+        
+        m_NumOfDisplays = 1
+        
+    End If
     
     'Whenever the display collection is refreshed, add any discoveries to the debug log.
     'If this is a non-production release, note our discovered monitors in the debug log; this can be a big help when tracking
@@ -530,7 +552,10 @@ Friend Function CenterFormViaReferenceRect(ByRef FormToCenter As Form, ByRef src
     
     On Error GoTo couldNotCenterForm
     
-    'Get the containing display
+    'Our goal is to fill this working rect with the working rectangle (e.g. non-chrome) of the monitor containing most of the form.
+    Dim workingRect As RECTL
+    
+    'Start by getting the containing display
     Dim hDisplay As Long
     hDisplay = Me.GetHMonitorFromRectL(srcRect)
     
@@ -540,28 +565,25 @@ Friend Function CenterFormViaReferenceRect(ByRef FormToCenter As Form, ByRef src
         Dim srcDisplay As pdDisplay
         Set srcDisplay = GetDisplayByHandle(hDisplay)
         
+        'Get the display's working rect
         If Not srcDisplay Is Nothing Then
-        
-            'Get the display's working rect
-            Dim workingRect As RECTL
             srcDisplay.getWorkingRect workingRect
-            
-            'Center the form
-            Dim dWidth As Long, dHeight As Long
-            With workingRect
-                dWidth = (.Right - .Left) * TwipsPerPixelXFix
-                dHeight = (.Bottom - .Top) * TwipsPerPixelYFix
-                FormToCenter.Move ((dWidth - FormToCenter.Width) \ 2) + .Left * TwipsPerPixelXFix, ((dHeight - FormToCenter.Height) \ 2) + .Top * TwipsPerPixelYFix
-            End With
-        
         Else
-            FormToCenter.Move (Screen.Width - FormToCenter.Width) \ 2, (Screen.Height - FormToCenter.Height) \ 2
+            Me.getVBDesktopRect workingRect, True
         End If
     
     'hDisplay should always contain a non-zero value, but if it doesn't, we can fall back on internal VB methods as a last resort.
     Else
-        FormToCenter.Move (Screen.Width - FormToCenter.Width) \ 2, (Screen.Height - FormToCenter.Height) \ 2
+        Me.getVBDesktopRect workingRect, True
     End If
+    
+    'Center the form
+    Dim dWidth As Long, dHeight As Long
+    With workingRect
+        dWidth = (.Right - .Left) * TwipsPerPixelXFix
+        dHeight = (.Bottom - .Top) * TwipsPerPixelYFix
+        FormToCenter.Move ((dWidth - FormToCenter.Width) \ 2) + .Left * TwipsPerPixelXFix, ((dHeight - FormToCenter.Height) \ 2) + .Top * TwipsPerPixelYFix
+    End With
     
     CenterFormViaReferenceRect = True
     Exit Function
@@ -574,3 +596,23 @@ couldNotCenterForm:
     #End If
     
 End Function
+
+'As an absolute final failsafe, VB's Screen object can be queried for a display rect.  This is typically only done under alternative
+' environments (e.g. Wine) if all standard display enumeration APIs have failed.
+Friend Sub getVBDesktopRect(ByRef dstRect As RECTL, Optional ByVal returnInPixels As Boolean = True)
+    
+    With dstRect
+        .Left = 0
+        .Top = 0
+        
+        If returnInPixels Then
+            .Right = Screen.Width / TwipsPerPixelXFix
+            .Bottom = Screen.Height / TwipsPerPixelYFix
+        Else
+            .Right = Screen.Width
+            .Bottom = Screen.Height
+        End If
+        
+    End With
+    
+End Sub

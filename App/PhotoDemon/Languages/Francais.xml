@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.80</langversion>
+<langversion>6.7.83</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -2510,18 +2510,6 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <!-- clsMenuImage.cls contains 0 phrases. -->
 
 <!-- END text for clsMenuImage.cls-->
-
-<!-- BEGIN text for OutsideDevelopment_Monitor.cls -->
-
-<!-- OutsideDevelopment_Monitor.cls contains 0 phrases. -->
-
-<!-- END text for OutsideDevelopment_Monitor.cls-->
-
-<!-- BEGIN text for OutsideDevelopment_Monitors.cls -->
-
-<!-- OutsideDevelopment_Monitors.cls contains 0 phrases. -->
-
-<!-- END text for OutsideDevelopment_Monitors.cls-->
 
 <!-- BEGIN text for pdCaption.cls -->
 
@@ -13557,6 +13545,11 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
+<original>Unknown display</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
 <translation>Ce paramètre est le meilleur choix pour la plupart des utilisateurs. Si vous n'avez aucune idée de ce qu'est la gestion de couleur est, utiliser ce paramètre. Si vous avez correctement configuré un profil d'affichage via le panneau de configuration de Windows, utilisez également ce paramètre.</translation>
 </phrase>
@@ -13860,7 +13853,7 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 <translation>ATTENTION: ce dossier est invalide (accès interdit). S'il vous plaît fournir un dossier valide. Si aucun nouveau dossier est fourni, PhotoDemon va utiliser l'emplacement par défaut du système temp.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 245 phrases. 66 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 246 phrases. 66 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14115,12 +14108,29 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdDisplays.cls -->
+
+<phrase>
+<original>Unknown adapter</original>
+<translation></translation>
+</phrase>
+
+<!-- pdDisplays.cls contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for pdDisplays.cls-->
+
+<!-- BEGIN text for pdDisplay.cls -->
+
+<!-- pdDisplay.cls contains 0 phrases. -->
+
+<!-- END text for pdDisplay.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2434</phrasecount>
+<phrasecount>2436</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4176 phrases. -->
-<!-- 1742 are duplicates, so only 2434 unique phrases have been written to file. -->
-<!-- These 2434 phrases contain approximately 13251 total words. -->
+<!-- As of this build, PhotoDemon contains 4183 phrases. -->
+<!-- 1747 are duplicates, so only 2436 unique phrases have been written to file. -->
+<!-- These 2436 phrases contain approximately 13255 total words. -->
 
 </pdData>
