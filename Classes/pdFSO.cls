@@ -1350,7 +1350,7 @@ Public Function LoadTextFileAsString(ByRef srcFile As String, ByRef dstString As
     Dim fileBytes() As Byte
     If LoadFileAsByteArray(srcFile, fileBytes) Then
     
-        LoadTextFileAsString = m_Unicode.convertUnknownBytesToString(fileBytes, dstString, forceWindowsLineEndings)
+        LoadTextFileAsString = m_Unicode.ConvertUnknownBytesToString(fileBytes, dstString, forceWindowsLineEndings)
         
     'The file could not be loaded into a byte array; abandon ship
     Else
@@ -1370,12 +1370,15 @@ StopTextFileRead:
 End Function
 
 'Given a file path, access indicators, and a destination long, retrieve a generic hFile handle.
-' Note that this function (by design) assumes normal file attributes and active sharing rights (e.g. other functions can access files
-' we currently have open).  If this behavior is not desired, modify the attributeFlags and shareFlags settings below.
-' RETURNS: TRUE if handle generated successfully; FALSE otherwise.
+' Note that this function (by design) assumes normal file attributes and active sharing rights (e.g. other functions can
+' access files we currently have open).  If this behavior is not desired, modify the attributeFlags and shareFlags
+' settings below.
+'
+'RETURNS: TRUE if handle generated successfully; FALSE otherwise.
 Friend Function CreateFileHandle(ByRef srcFilePath As String, ByRef dstFileHandle As Long, Optional ByVal requestReadAccess As Boolean = False, Optional ByVal requestWriteAccess As Boolean = False, Optional ByVal optimizeAccess As PDFSO_FILE_ACCESS_OPTIMIZE = OptimizeNone) As Boolean
     
     Dim accessFlags As Long, shareFlags As Long, createFlags As Long, optimizeFlags As Long, attributeFlags As Long
+    
     accessFlags = 0
     If requestReadAccess Then accessFlags = accessFlags Or GENERIC_READ
     If requestWriteAccess Then accessFlags = accessFlags Or GENERIC_WRITE
@@ -1409,6 +1412,7 @@ Friend Function CreateFileHandle(ByRef srcFilePath As String, ByRef dstFileHandl
         
     End Select
     
+    'Create the handle!
     Dim hFile As Long
     hFile = CreateFileW(StrPtr(srcFilePath), accessFlags, shareFlags, 0&, createFlags, attributeFlags Or optimizeFlags, 0&)
     
@@ -1422,6 +1426,61 @@ Friend Function CreateFileHandle(ByRef srcFilePath As String, ByRef dstFileHandl
     Else
         dstFileHandle = hFile
         CreateFileHandle = True
+    End If
+    
+End Function
+
+'Given a file path, access indicators, and a destination long, retrieve an hFile handle that DOESN'T ERASE OR OTHERWISE
+' MODIFY THE TARGET FILE, IF IT ALREADY EXISTS.  (If it doesn't exist, it will be created.)
+'
+'If the file *does* exist, the file's pointer will automatically be moved to the *end* of the file, so any subsequent
+' write requests will be naturally appended without any special work on the caller's part.
+'
+'Note that this function (by design) assumes normal file attributes and active sharing rights (e.g. other functions can
+' access files opened via this function).  If this behavior is not desired, modify the attributeFlags and shareFlags
+' settings below.
+'
+'RETURNS: TRUE if handle generated successfully; FALSE otherwise.
+Friend Function CreateAppendFileHandle(ByRef srcFilePath As String, ByRef dstFileHandle As Long) As Boolean
+    
+    Dim accessFlags As Long, shareFlags As Long, createFlags As Long, optimizeFlags As Long, attributeFlags As Long
+    accessFlags = GENERIC_READ Or GENERIC_WRITE
+    
+    'Regardless of what the user plans to do with this file, we enable all sharing flags.  This is important while working from the IDE,
+    ' as a crash (or use of the STOP button) may cause a file handle to go unclosed, preventing all access to the file until the PC is rebooted.
+    shareFlags = FILE_SHARE_WRITE Or FILE_SHARE_READ Or FILE_SHARE_DELETE
+    
+    'The OPEN_ALWAYS flag is important because it lets us use the file as-is if it exists, or create the file automatically
+    ' if it doesn't exist.
+    createFlags = OPEN_ALWAYS
+    attributeFlags = FILE_ATTRIBUTE_NORMAL
+    
+    'Because we're appending to an existing file, assume sequential access
+    optimizeFlags = FILE_FLAG_SEQUENTIAL_SCAN
+    
+    'If the file already exists, make a note of it, and we'll move the file pointer accordingly.
+    Dim fileAlreadyExisted As Boolean
+    fileAlreadyExisted = Me.FileExist(srcFilePath)
+    
+    'Create the handle!
+    Dim hFile As Long
+    hFile = CreateFileW(StrPtr(srcFilePath), accessFlags, shareFlags, 0&, createFlags, attributeFlags Or optimizeFlags, 0&)
+    
+    If (hFile = 0) Or (hFile = INVALID_HANDLE_VALUE) Then
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  pdFSO.CreateFileHandle failed to create a handle for " & srcFilePath & ".  Relevant last error: " & Err.LastDllError
+        #End If
+        
+        CreateAppendFileHandle = False
+    Else
+    
+        dstFileHandle = hFile
+        CreateAppendFileHandle = True
+        
+        'If the file existed prior to us accessing it, move the file pointer to the end of the file.
+        If fileAlreadyExisted Then SetFilePointer dstFileHandle, 0&, 0&, FILE_END
+        
     End If
     
 End Function
@@ -1565,6 +1624,47 @@ StopSaveStringToTextFile:
     #End If
     
     SaveStringToTextFile = False
+    
+End Function
+
+'Write a string out to text file.  UTF-8 output is enforced.
+'
+'Returns TRUE if successful, FALSE otherwise.
+' (FALSE generally only occurs if write access to the destination folder is restricted.)
+Public Function AppendTextToFile(ByVal srcString As String, ByRef dstFilename As String) As Boolean
+    
+    On Error GoTo StopAppendText
+    
+    'Convert the incoming string to UTF-8
+    Dim fileBytes() As Byte
+    m_Unicode.StringToUTF8Bytes srcString, fileBytes
+    
+    'Open the file with append rights only
+    Dim hFile As Long
+    If Me.CreateAppendFileHandle(dstFilename, hFile) Then
+        
+        'Write the byte array and exit!
+        WriteDataToFile hFile, VarPtr(fileBytes(0)), UBound(fileBytes) + 1
+        CloseFileHandle hFile
+        AppendTextToFile = True
+        
+    'hFile should technically never be zero, FYI.  An invalid handle value may be returned for generic filesystem errors,
+    ' but if a previous "does file exist" check passed, that outcome is extremely unlikely.
+    Else
+        AppendTextToFile = False
+    End If
+    
+    Exit Function
+    
+StopAppendText:
+
+    #If DEBUGMODE = 1 Then
+        If Not pdDebug Is Nothing Then
+            pdDebug.LogAction "AppendTextToFile threw error " & Err.Description & " (" & Err.Number & ") on " & dstFilename & ". Abandoning append operation."
+        End If
+    #End If
+    
+    AppendTextToFile = False
     
 End Function
 

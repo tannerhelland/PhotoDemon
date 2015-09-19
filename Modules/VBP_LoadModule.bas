@@ -59,13 +59,8 @@ Public Sub LoadTheProgram()
     '*************************************************************************************************************************************
     ' With the debugger initialized, prep a few crucial variables
     '*************************************************************************************************************************************
-
-    'Retrieve a Unicode-friendly copy of any command line parameters, and store them publicly
-    Dim cUnicode As pdUnicode
-    Set cUnicode = New pdUnicode
-    g_CommandLine = cUnicode.CommandW()
     
-    'We also need to create a default pdImages() array, as some initialization functions may attempt to access the array
+    'Most importantly, we need to create a default pdImages() array, as some initialization functions may attempt to access that array
     ReDim pdImages(0 To 3) As pdImage
     
     
@@ -98,6 +93,10 @@ Public Sub LoadTheProgram()
         m_LoadTime = 0#
     End If
     
+    'Retrieve a Unicode-friendly copy of any command line parameters, and store them publicly
+    Dim cUnicode As pdUnicode
+    Set cUnicode = New pdUnicode
+    g_CommandLine = cUnicode.CommandW()
     
     
     '*************************************************************************************************************************************
@@ -206,7 +205,7 @@ Public Sub LoadTheProgram()
     
     'Apply that language to the program.  This involves loading the translation file into memory, which can take a bit of time,
     ' but it only needs to be done once.  From that point forward, any text requests will operate on the in-memory copy of the file.
-    g_Language.ApplyLanguage
+    g_Language.ApplyLanguage False
     
     
     
@@ -262,6 +261,8 @@ Public Sub LoadTheProgram()
         g_InterfaceFont = "Tahoma"
         g_UseFancyFonts = False
     End If
+    
+    Set tmpFontCheck = Nothing
         
     'Make the splash screen's message display match the rest of PD
     FormSplash.lblMessage.fontName = g_InterfaceFont
@@ -437,7 +438,7 @@ Public Sub LoadTheProgram()
     #End If
     
     LoadMessage "Initializing image tools..."
-        
+    
     'As of May 2015, tool panels are now loaded on-demand.  This improves the program's startup performance, and it saves a bit of memory
     ' if a user doesn't use a tool during a given session.
     

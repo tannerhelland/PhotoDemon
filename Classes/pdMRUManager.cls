@@ -35,9 +35,7 @@ Option Explicit
 
 'These functions are used to shrink long path entries to a max number of characters.  PhotoDemon exposes a global preference
 ' for Recent File menus, and this API is used to shrink full-length paths as necessary to fit them within a menu.
-Private Declare Function PathCompactPathEx Lib "shlwapi" Alias "PathCompactPathExW" (ByVal pszOutPointer As Long, ByVal pszSrcPointer As Long, ByVal cchMax As Long, ByVal dwFlags As Long) As Long
-Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
-Private Const MAX_PATH As Long = 260
+
 Private Const maxMRULength As Long = 64
 
 'MRUlist will contain string entries of all the most recently used files
@@ -56,8 +54,9 @@ Private m_XMLFilename As String
 'This class relies on a child class that implements that the IMRUList interface.
 Private m_MRUList As IMRUList
 
-'A pdFSO instance helps with various Unicode-friendly file tasks
+'PD provides lots of helper classes to simplify various file and text interactions
 Private cFile As pdFSO
+Private cUnicode As pdUnicode
 
 'When creating a new MRU file, or overwriting a corrupt one, use this to initialize the XML header.
 Private Sub resetXMLData()
@@ -67,23 +66,10 @@ Private Sub resetXMLData()
     m_XMLEngine.writeBlankLine
 End Sub
 
-'Remove null characters from a string
-Private Function TrimNullW(ByVal sString As String) As String
-   TrimNullW = Left$(sString, lstrlenW(StrPtr(sString)))
-End Function
-
 'Truncates a path to a specified number of characters by replacing path components with ellipses.
 ' (Originally written by Randy Birch @ http://vbnet.mvps.org/index.html?code/fileapi/pathcompactpathex.htm)
 Private Function getShortMRU(ByVal sPath As String) As String
-
-    Dim ret As Long
-    Dim buff As String
-      
-    buff = Space$(MAX_PATH)
-    ret = PathCompactPathEx(StrPtr(buff), StrPtr(sPath), maxMRULength + 1, 0&)
-   
-    getShortMRU = TrimNullW(buff)
-   
+    getShortMRU = cUnicode.ShrinkPathW(sPath, maxMRULength)
 End Function
 
 'Return the menu caption of the current recent file entry.  At present, menu caption length is controlled by a global preference
@@ -149,9 +135,6 @@ End Function
 Public Sub MRU_LoadFromFile()
 
     'Start by seeing if an XML file with previously saved MRU data exists
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
     If cFile.FileExist(m_XMLFilename) Then
         
         'Attempt to load and validate the current file; if we can't, create a new, blank XML object
@@ -273,7 +256,7 @@ End Sub
 Public Sub MRU_AddNewFile(ByVal newFile As String, Optional ByRef srcImage As pdImage = Nothing)
     
     'The filename is sometimes passed via dialogs, and as such may contain nulls
-    newFile = TrimNullW(newFile)
+    newFile = cUnicode.TrimNull(newFile)
     
     'Allow the child to perform any necessary UI prep work.  The child also has the option to cancel this operation.
     Dim Cancel As Boolean
@@ -423,5 +406,6 @@ Private Sub Class_Initialize()
     
     'Initialize a file interface
     Set cFile = New pdFSO
+    Set cUnicode = New pdUnicode
     
 End Sub
