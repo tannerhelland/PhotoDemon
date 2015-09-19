@@ -272,7 +272,7 @@ Private Sub addNewDisplay(ByVal hDisplay As Long)
         
         'Extract the adapter name as well
         Dim tmpName As String
-        tmpName = cUnicode.ConvertDBCSPointerToVBString(VarPtr(monInfo.szDevice(0)), CCHDEVICENAME * 2)
+        tmpName = cUnicode.ConvertUTF16PointerToVBString(VarPtr(monInfo.szDevice(0)), CCHDEVICENAME * 2)
         If Len(tmpName) > 0 Then tmpName = Trim$(tmpName)
         listOfDisplays(m_NumOfDisplays).setAdapterName tmpName
         
@@ -312,14 +312,14 @@ Private Sub fillDetailedDisplayInfo(ByVal displayIndex As Long)
     
         'Extract the monitor's device name (again, it's really the adapter name - thanks Windows!) and stick
         ' it in a string, so we can compare this device's name against the one we just added.
-        tmpName = cUnicode.ConvertDBCSPointerToVBString(VarPtr(monitorInfoDetailed.DeviceName(0)), CCHDEVICENAME * 2)
+        tmpName = cUnicode.ConvertUTF16PointerToVBString(VarPtr(monitorInfoDetailed.DeviceName(0)), CCHDEVICENAME * 2)
         If Len(tmpName) > 0 Then tmpName = Trim$(tmpName)
         
         'If the adapter name of our previous
         If StrComp(LCase(listOfDisplays(displayIndex).getAdapterName), LCase(tmpName), vbBinaryCompare) = 0 Then
             
             'This is a match!  Grab the description string while we're here.
-            tmpDescription = cUnicode.ConvertDBCSPointerToVBString(VarPtr(monitorInfoDetailed.DeviceString(0)), 256)
+            tmpDescription = cUnicode.ConvertUTF16PointerToVBString(VarPtr(monitorInfoDetailed.DeviceString(0)), 256)
             If Len(tmpDescription) > 0 Then tmpDescription = Trim$(tmpDescription)
             listOfDisplays(displayIndex).setDescription tmpDescription
             
@@ -344,7 +344,7 @@ Private Sub fillDetailedDisplayInfo(ByVal displayIndex As Long)
     If EnumDisplayDevices(StrPtr(adapterName), 0&, monitorInfoDetailed, 1&) <> 0 Then
         
         'The monitor's friendly name should now be stored inside the .DeviceString portion of the struct.
-        tmpName = cUnicode.ConvertDBCSPointerToVBString(VarPtr(monitorInfoDetailed.DeviceString(0)), 256)
+        tmpName = cUnicode.ConvertUTF16PointerToVBString(VarPtr(monitorInfoDetailed.DeviceString(0)), 256)
         If Len(tmpName) > 0 Then tmpName = Trim$(tmpName)
         listOfDisplays(displayIndex).setFriendlyName tmpName
         
@@ -362,7 +362,7 @@ Private Sub fillDetailedDisplayInfo(ByVal displayIndex As Long)
         
             'Retrieve and cache the device ID
             Dim devID As String
-            devID = cUnicode.ConvertDBCSPointerToVBString(VarPtr(monitorInfoDetailed.DeviceID(0)), 256)
+            devID = cUnicode.ConvertUTF16PointerToVBString(VarPtr(monitorInfoDetailed.DeviceID(0)), 256)
             If Len(devID) <> 0 Then devID = Trim$(devID)
             listOfDisplays(displayIndex).setDeviceID devID
             

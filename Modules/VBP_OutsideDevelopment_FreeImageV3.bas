@@ -184,10 +184,6 @@ Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" ( _
     ByRef Source As Any, _
     ByVal Length As Long)
 
-Private Declare Function lstrlen Lib "kernel32.dll" Alias "lstrlenA" ( _
-    ByVal lpString As Long) As Long
-    
-
 'OLEAUT32
 Public Type Guid
   Data1 As Long
@@ -307,8 +303,8 @@ Private Declare Function SetDIBitsToDevice Lib "gdi32.dll" ( _
     ByVal hDC As Long, _
     ByVal x As Long, _
     ByVal y As Long, _
-    ByVal dX As Long, _
-    ByVal dY As Long, _
+    ByVal dx As Long, _
+    ByVal dy As Long, _
     ByVal srcX As Long, _
     ByVal srcY As Long, _
     ByVal Scan As Long, _
@@ -321,8 +317,8 @@ Private Declare Function StretchDIBits Lib "gdi32.dll" ( _
     ByVal hDC As Long, _
     ByVal x As Long, _
     ByVal y As Long, _
-    ByVal dX As Long, _
-    ByVal dY As Long, _
+    ByVal dx As Long, _
+    ByVal dy As Long, _
     ByVal srcX As Long, _
     ByVal srcY As Long, _
     ByVal wSrcWidth As Long, _
@@ -6115,27 +6111,11 @@ End Function
 ' Private pointer manipulation helper functions
 '--------------------------------------------------------------------------------
 
+'Edited by Tanner: the old function was wasteful; this is simpler
 Private Function pGetStringFromPointerA(ByRef Ptr As Long) As String
-
-Dim abBuffer() As Byte
-Dim lLength As Long
-
-   ' This function creates and returns a VB BSTR variable from
-   ' a C/C++ style string pointer by making a redundant deep
-   ' copy of the string's characters.
-
-   If (Ptr) Then
-      ' get the length of the ANSI string pointed to by ptr
-      lLength = lstrlen(Ptr)
-      If (lLength) Then
-         ' copy characters to a byte array
-         ReDim abBuffer(lLength - 1)
-         Call CopyMemory(abBuffer(0), ByVal Ptr, lLength)
-         ' convert from byte array to unicode BSTR
-         pGetStringFromPointerA = StrConv(abBuffer, vbUnicode)
-      End If
-   End If
-
+    Dim cUnicode As pdUnicode
+    Set cUnicode = New pdUnicode
+    pGetStringFromPointerA = cUnicode.ConvertCharPointerToVBString(Ptr, False)
 End Function
 
 Private Function pDeref(ByVal Ptr As Long) As Long

@@ -45,10 +45,15 @@ Private Const CRYPT_STRING_NOCRLF As Long = &H40000000
 Private Declare Function CryptBinaryToString Lib "Crypt32" Alias "CryptBinaryToStringW" (ByRef pbBinary As Byte, ByVal cbBinary As Long, ByVal dwFlags As Long, ByVal pszString As Long, ByRef pcchString As Long) As Long
 Private Declare Function CryptStringToBinary Lib "Crypt32" Alias "CryptStringToBinaryW" (ByVal pszString As Long, ByVal cchString As Long, ByVal dwFlags As Long, ByVal pbBinary As Long, ByRef pcbBinary As Long, ByRef pdwSkip As Long, ByRef pdwFlags As Long) As Long
 
-'This class can now retrieve a wide-char version of the command line
+'This class provides a lot of interop for API-style strings
+Private Const MAX_PATH As Long = 260
 Private Declare Function GetCommandLineW Lib "kernel32" () As Long
 Private Declare Function lstrcpynW Lib "kernel32" (ByVal lpString1 As Long, ByVal lpString2 As Long, ByVal iMaxLength As Long) As Long
+Private Declare Function lstrcpyA Lib "kernel32" (ByVal lpBuffer As String, ByVal lpString As Long) As Long
+Private Declare Function SysAllocStringByteLen Lib "oleaut32" (ByVal Ptr As Long, ByVal Length As Long) As String
 Private Declare Function lstrlenW Lib "kernel32" (ByVal lpString As Long) As Long
+Private Declare Function lstrlenA Lib "kernel32" (ByVal lpString As Long) As Long
+Private Declare Function PathCompactPathEx Lib "shlwapi" Alias "PathCompactPathExW" (ByVal pszOutPointer As Long, ByVal pszSrcPointer As Long, ByVal cchMax As Long, ByVal dwFlags As Long) As Long
 Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
 
 'LCMapString functions provide support for changing Unicode string case (including CJK support like simplified <-> traditional Chinese characters).
@@ -81,17 +86,54 @@ Private Const LOCALE_SYSTEM_DEFAULT As Long = &H800&
 Private cSysInfo As pdSystemInfo
 
 'Given an arbitrary pointer (often to a VB array, but it doesn't matter) and a length IN BYTES, copy that chunk
-' of bytes to a VB string.  The bytes must already be in DBCS format.
-Public Function ConvertDBCSPointerToVBString(ByVal srcPointer As Long, ByVal lengthInBytes As Long, Optional ByVal trimNullChars As Boolean = True) As String
+' of bytes to a VB string.  The bytes must already be in Unicode format (UCS-2 or UTF-16).
+Public Function ConvertUTF16PointerToVBString(ByVal srcPointer As Long, ByVal lengthInBytes As Long, Optional ByVal trimNullChars As Boolean = True) As String
     
     Dim tmpString As String
     tmpString = String$(lengthInBytes / 2, 0)
     CopyMemoryStrict StrPtr(tmpString), srcPointer, lengthInBytes
     
     If trimNullChars Then
-        ConvertDBCSPointerToVBString = Me.TrimNull(tmpString)
+        ConvertUTF16PointerToVBString = Me.TrimNull(tmpString)
     Else
-        ConvertDBCSPointerToVBString = tmpString
+        ConvertUTF16PointerToVBString = tmpString
+    End If
+    
+End Function
+
+'Given an arbitrary pointer to a null-terminated CHAR or WCHAR run, measure the resulting string and copy the results
+' into a VB string.
+'
+'For security reasons, if an upper limit of the string's length is known in advance (e.g. MAX_PATH), pass that limit
+' via the optional maxLength parameter to avoid a buffer overrun.  This function has a hard-coded limit of 65k chars,
+' a limit you can easily lift but which makes sense for PD.  If a string exceeds the limit (whether passed or
+' hard-coded), *a string will still be created and returned*, but it will be clamped to the max length.
+'
+'If the string length is known in advance, and WCHARS are being used, please use the faster (and more secure)
+' ConvertUTF16PointerToVBString function, above.
+Public Function ConvertCharPointerToVBString(ByVal srcPointer As Long, Optional ByVal stringIsUnicode As Boolean = True, Optional ByVal maxLength As Long = -1) As String
+    
+    'Check string length
+    Dim strLength As Long
+    If stringIsUnicode Then strLength = lstrlenW(srcPointer) Else strLength = lstrlenA(srcPointer)
+    
+    'Make sure the length/pointer isn't null
+    If strLength <= 0 Then
+        ConvertCharPointerToVBString = ""
+        Exit Function
+    End If
+    
+    'Make sure the string's length is valid.
+    Dim maxAllowedLength As Long
+    If maxLength = -1 Then maxAllowedLength = 65535 Else maxAllowedLength = maxLength
+    If strLength > maxAllowedLength Then strLength = maxAllowedLength
+    
+    'Create the target string and copy the bytes over
+    If stringIsUnicode Then
+        ConvertCharPointerToVBString = String$(strLength, 0)
+        CopyMemoryStrict StrPtr(ConvertCharPointerToVBString), srcPointer, strLength * 2
+    Else
+        ConvertCharPointerToVBString = SysAllocStringByteLen(srcPointer, strLength)
     End If
     
 End Function
@@ -404,36 +446,63 @@ End Function
 
 'Return a Unicode-friendly copy of PD's command line params.  Thank you to contributor "dilettante" for the original version of this code,
 ' available here (link good as of March 2015): http://www.xtremevbtalk.com/showthread.php?t=325868
-Public Function CommandW$()
+Public Function CommandW() As String
     
     'If inside the IDE, we return the regular command-line; this allows test params set via Project Properties to still work
-    If inIDE Then
-        CommandW$ = Command$()
+    If Not g_IsProgramCompiled Then
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "IDE detected; command line params will not be Unicode-friendly."
+        #End If
+        CommandW = Command$
     
     'When compiled, a true Unicode-friendly command line is returned
     Else
         
-        'Get a pointer to the command line string
+        'Get a pointer to the command line string, and copy the result into a VB string
         Dim ptrCommandLine As Long
         ptrCommandLine = GetCommandLineW()
-        
-        'Copy the pointer into a VB string
-        Dim charLen As Long
-        charLen = lstrlenW(ptrCommandLine)
-        CommandW$ = Space$(charLen)
-        lstrcpynW StrPtr(CommandW$), ptrCommandLine, charLen + 1
-        
+        CommandW = Me.ConvertCharPointerToVBString(ptrCommandLine, True)
+                
         'To match VB's regular Command$ function, we strip out the program name and return just the argument portion
         Dim firstDelimiter As String
-        If StrComp(Left$(CommandW$, 1), """", vbBinaryCompare) = 0 Then
+        If StrComp(Left$(CommandW, 1), """", vbBinaryCompare) = 0 Then
             firstDelimiter = """"
         Else
             firstDelimiter = " "
         End If
         
         'Trim everything prior to the first delimiter
-        CommandW$ = Trim$(Mid$(CommandW$, InStr(2, CommandW$, firstDelimiter) + 1))
+        CommandW = Trim$(Mid$(CommandW, InStr(2, CommandW, firstDelimiter) + 1))
         
+    End If
+    
+End Function
+
+Public Function ShrinkPathW(ByRef srcString As String, ByVal newMaxLength As Long) As String
+    
+    'Limit length to MAX_PATH
+    If newMaxLength > MAX_PATH Then newMaxLength = MAX_PATH
+    
+    'This API is weird because regardless of original length, the incoming string must be, per MSDN,
+    ' "A pointer to a null-terminated string of length MAX_PATH that contains the path to be altered."
+    ' So we must copy the incoming string into a MAX_PATH buffer
+    Dim tmpStringSrc As String, copyLength As Long
+    tmpStringSrc = String$(MAX_PATH, 0)
+    
+    copyLength = Len(srcString)
+    If copyLength > MAX_PATH Then copyLength = MAX_PATH
+    CopyMemoryStrict StrPtr(tmpStringSrc), StrPtr(srcString), copyLength * 2
+    
+    'Now, prep an output buffer of size MAX_PATH
+    Dim tmpStringDst As String
+    tmpStringDst = String$(MAX_PATH, 0)
+    
+    'Use the API to shrink the path
+    If PathCompactPathEx(StrPtr(tmpStringDst), StrPtr(tmpStringSrc), newMaxLength + 1, 0&) <> 0 Then
+        ShrinkPathW = Me.TrimNull(tmpStringDst)
+    Else
+        ShrinkPathW = tmpStringDst
     End If
     
 End Function
@@ -540,11 +609,6 @@ Public Function TrimNull(ByRef origString As String) As String
        TrimNull = origString
     End If
     
-End Function
-
-'Some Unicode behavior varies inside the IDE, so this class must occasionally check for IDE vs compiled behavior
-Private Function inIDE() As Boolean
-    inIDE = Not CBool(App.logMode = 1)
 End Function
 
 Private Sub Class_Initialize()

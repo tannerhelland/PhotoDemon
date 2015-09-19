@@ -2353,14 +2353,16 @@ Private Sub shellPipeMain_DataArrival(ByVal CharsTotal As Long)
     Dim receivedData As String
     receivedData = shellPipeMain.GetData()
     
-    newMetadataReceived receivedData
+    If Len(receivedData) <> 0 Then
     
-    'DEBUG ONLY!
+        newMetadataReceived receivedData
     
-    #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Asynchronously received " & LenB(receivedData) & " bytes of new data from ExifTool."
-    #End If
-    'Debug.Print receivedData
+        'DEBUG ONLY!
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Asynchronously received " & LenB(receivedData) & " bytes of new data from ExifTool."
+        #End If
+        
+    End If
     
 End Sub
 
@@ -2795,8 +2797,15 @@ Private Sub Form_Load()
     Message "Checking command line..."
     
     If Len(g_CommandLine) <> 0 Then
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Command line might contain images.  Here's what I found:"
+            pdDebug.LogAction g_CommandLine
+        #End If
+        
         Message "Loading requested images..."
         Loading.LoadImagesFromCommandLine
+        
     End If
         
     '*************************************************************************************************************************************

@@ -412,7 +412,6 @@ Private Declare Function StringFromCLSID Lib "ole32" (ByRef pclsid As CLSID, ByR
          
 'Necessary for converting between ASCII and UNICODE strings
 Private Declare Function lstrlenW Lib "kernel32" (ByVal psString As Any) As Long
-'Private Declare Function lstrlenA Lib "kernel32" (ByVal psString As Any) As Long
 
 'CopyMemory
 Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, src As Any, ByVal cb As Long) As Long
@@ -2604,21 +2603,6 @@ Private Function pvPtrToStrW(ByVal lpsz As Long) As String
         pvPtrToStrW = StrConv(sOut, vbFromUnicode)
     End If
 End Function
-
-'Same as above, but in ANSI format (current unused)
-'Private Function pvPtrToStrA(ByVal lpsz As Long) As String
-'
-'  Dim sOut As String
-'  Dim lLen As Long
-'
-'    lLen = lstrlenA(lpsz)
-'
-'    If (lLen > 0) Then
-'        sOut = String$(lLen, vbNullChar)
-'        Call CopyMemory(ByVal sOut, ByVal lpsz, lLen)
-'        pvPtrToStrA = sOut
-'    End If
-'End Function
 
 'Given a GUID string, return a Long-type image format identifier
 Private Function getFIFFromGUID(ByRef srcGUID As String) As Long
