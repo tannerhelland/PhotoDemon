@@ -104,8 +104,8 @@ Private Declare Function CreateToolhelpSnapshot Lib "kernel32" Alias "CreateTool
 Private Declare Function LookupPrivilegeValue Lib "advapi32" Alias "LookupPrivilegeValueA" (ByVal lpSystemName As String, ByVal lpName As String, lpLuid As LUID) As Long
 Private Declare Function OpenProcess Lib "kernel32" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long
 Private Declare Function OpenProcessToken Lib "advapi32" (ByVal ProcessHandle As Long, ByVal DesiredAccess As Long, TokenHandle As Long) As Long
-Private Declare Function ProcessFirst Lib "kernel32" Alias "Process32First" (ByVal hSnapshot As Long, uProcess As PROCESSENTRY32) As Long
-Private Declare Function ProcessNext Lib "kernel32" Alias "Process32Next" (ByVal hSnapshot As Long, uProcess As PROCESSENTRY32) As Long
+Private Declare Function ProcessFirst Lib "kernel32" Alias "Process32First" (ByVal hSnapShot As Long, uProcess As PROCESSENTRY32) As Long
+Private Declare Function ProcessNext Lib "kernel32" Alias "Process32Next" (ByVal hSnapShot As Long, uProcess As PROCESSENTRY32) As Long
 Private Declare Function TerminateProcess Lib "kernel32" (ByVal ApphProcess As Long, ByVal uExitCode As Long) As Long
  
 Private Type LUID
@@ -134,7 +134,7 @@ Type PROCESSENTRY32
     th32ParentProcessID As Long
     pcPriClassBase As Long
     dwFlags As Long
-    szexeFile As String * MAX_PATH_LEN
+    szExeFile As String * MAX_PATH_LEN
 End Type
 
 
@@ -227,7 +227,7 @@ Private Sub writeMetadataDatabaseToFile()
     mdDatabasePath = g_PluginPath & "ExifToolDatabase.xml"
         
     'Replace the {ready} text supplied by ExifTool itself, which will be at the end of the metadata database
-    databaseString = Replace$(databaseString, "{ready}", "")
+    If Len(databaseString) <> 0 Then databaseString = Replace$(databaseString, "{ready}", "")
     
     'Write our XML string out to file
     Dim cFile As pdFSO
@@ -268,7 +268,7 @@ Private Sub stopVerificationMode()
     Else
     
         'Replace the {ready} text supplied by ExifTool itself, which will be at the end of the metadata report
-        verificationString = Replace$(verificationString, "{ready}", "")
+        If Len(verificationString) <> 0 Then verificationString = Replace$(verificationString, "{ready}", "")
         
         'Write the completed technical report out to a temp file
         Dim tmpFilename As String
@@ -313,6 +313,9 @@ Public Function isMetadataFinished() As Boolean
         Exit Function
     End If
     
+    'If there is no temporary metadata string, exit now
+    If Len(tmpMetadata) = 0 Then Exit Function
+    
     'Different verification modes require different checks for completion.
     If captureModeActive Then
         
@@ -346,14 +349,18 @@ End Function
 
 'When metadata is ready (as determined by a call to isMetadataFinished), it can be retrieved via this function
 Public Function retrieveMetadataString() As String
+    
+    If Len(curMetadataString) <> 0 Then
+    
+        'Because we request metadata in XML format, ExifTool escapes disallowed XML characters.  Convert those back
+        ' to standard characters before returning the retrieved metadata.
+        If InStr(1, curMetadataString, "&amp;") > 0 Then curMetadataString = Replace(curMetadataString, "&amp;", "&")
+        If InStr(1, curMetadataString, "&#39;") > 0 Then curMetadataString = Replace(curMetadataString, "&#39;", "'")
+        If InStr(1, curMetadataString, "&quot;") > 0 Then curMetadataString = Replace(curMetadataString, "&quot;", """")
+        If InStr(1, curMetadataString, "&gt;") > 0 Then curMetadataString = Replace(curMetadataString, "&gt;", ">")
+        If InStr(1, curMetadataString, "&lt;") > 0 Then curMetadataString = Replace(curMetadataString, "&lt;", "<")
         
-    'Because we request metadata in XML format, ExifTool escapes disallowed XML characters.  Convert those back
-    ' to standard characters before returning the retrieved metadata.
-    If InStr(1, curMetadataString, "&amp;") > 0 Then curMetadataString = Replace(curMetadataString, "&amp;", "&")
-    If InStr(1, curMetadataString, "&#39;") > 0 Then curMetadataString = Replace(curMetadataString, "&#39;", "'")
-    If InStr(1, curMetadataString, "&quot;") > 0 Then curMetadataString = Replace(curMetadataString, "&quot;", """")
-    If InStr(1, curMetadataString, "&gt;") > 0 Then curMetadataString = Replace(curMetadataString, "&gt;", ">")
-    If InStr(1, curMetadataString, "&lt;") > 0 Then curMetadataString = Replace(curMetadataString, "&lt;", "<")
+    End If
         
     'Return the processed string, then erase our copy of it
     retrieveMetadataString = curMetadataString
@@ -911,7 +918,7 @@ Public Sub killStrandedExifToolInstances()
     Const TH32CS_SNAPPROCESS As Long = 2&
     Const PROCESS_ALL_ACCESS = 0
     Dim uProcess As PROCESSENTRY32
-    Dim rProcessFound As Long, hSnapshot As Long, myProcess As Long
+    Dim rProcessFound As Long, hSnapShot As Long, myProcess As Long
     Dim szExename As String
     Dim i As Long
     
@@ -919,15 +926,15 @@ Public Sub killStrandedExifToolInstances()
     
     'Prepare a generic process reference
     uProcess.dwSize = Len(uProcess)
-    hSnapshot = CreateToolhelpSnapshot(TH32CS_SNAPPROCESS, 0&)
-    rProcessFound = ProcessFirst(hSnapshot, uProcess)
+    hSnapShot = CreateToolhelpSnapshot(TH32CS_SNAPPROCESS, 0&)
+    rProcessFound = ProcessFirst(hSnapShot, uProcess)
     
     'Iterate through all running processes, looking for ExifTool instances
     Do While rProcessFound
     
         'Retrieve the EXE name of this process
-        i = InStr(1, uProcess.szexeFile, Chr(0))
-        szExename = LCase$(Left$(uProcess.szexeFile, i - 1))
+        i = InStr(1, uProcess.szExeFile, Chr(0))
+        szExename = LCase$(Left$(uProcess.szExeFile, i - 1))
         
         'If the process name is "exiftool.exe", terminate it
         If Right$(szExename, Len("exiftool.exe")) = "exiftool.exe" Then
@@ -949,12 +956,12 @@ Public Sub killStrandedExifToolInstances()
         End If
         
         'Find the next process, then continue
-        rProcessFound = ProcessNext(hSnapshot, uProcess)
+        rProcessFound = ProcessNext(hSnapShot, uProcess)
     
     Loop
     
     'Release our generic process snapshot, then exit
-    CloseHandle hSnapshot
+    CloseHandle hSnapShot
     #If DEBUGMODE = 1 Then
         Debug.Print "All old ExifTool instances were auto-terminated successfully."
     #End If

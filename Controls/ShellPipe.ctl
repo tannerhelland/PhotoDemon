@@ -595,7 +595,7 @@ Public Property Let PollInterval(ByVal RHS As Long)
 End Property
 
 'NOTE FROM TANNER: I have modified this function to better work with ExifTool.  Specifically, I have separated out the command line
-'                   and command line params into two separate strings, which are then passed SEPARATELY to CreateProcessA.  Because
+'                   and command line params into two separate strings, which are then passed SEPARATELY to CreateProcess.  Because
 '                   ExifTool requests can require many command line parameters, this helps us avoid MAX_PATH limitations for the
 '                   whole command line + params string, and it also makes it easier to deal with spaces in the path name.
 Public Function Run( _

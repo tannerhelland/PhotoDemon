@@ -119,6 +119,9 @@ End Function
 Private Function doesTagExist(ByVal tagName As String, Optional ByRef tagIndex As Long = -1, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As Boolean
 
     doesTagExist = False
+    
+    'If this image has no metadata, exit now
+    If maxMetadataCount <= 0 Then Exit Function
 
     'Scan the metadata collection, looking for the given tag name
     Dim i As Long
@@ -142,7 +145,10 @@ End Function
 Private Function doesTagExistFullName(ByVal tagNameAndGroup As String, Optional ByRef tagIndex As Long = -1, Optional ByVal searchMode As VbCompareMethod = vbTextCompare) As Boolean
 
     doesTagExistFullName = False
-
+    
+    'If this image has no metadata, exit now
+    If maxMetadataCount <= 0 Then Exit Function
+    
     'Scan the metadata collection, looking for the given tag name
     Dim i As Long
     For i = 0 To maxMetadataCount - 1
@@ -170,7 +176,7 @@ Private Function getTagValue(ByVal tagNameAndGroup As String, Optional ByVal sea
     If doesTagExistFullName(tagNameAndGroup, tagIndex, searchMode) Then
         getTagValue = getMetadataEntry(tagIndex).Value
     Else
-        getTagValue = vbNullString
+        getTagValue = ""
     End If
 
 End Function
@@ -186,7 +192,7 @@ End Sub
 Friend Function getMetadataEntry(ByVal objIndex As Long) As mdItem
 
     'Make sure the passed index is valid
-    If objIndex < maxMetadataCount Then getMetadataEntry = iMetadata(objIndex)
+    If (objIndex < maxMetadataCount) And (objIndex >= 0) Then getMetadataEntry = iMetadata(objIndex)
 
 End Function
 
@@ -242,6 +248,12 @@ End Function
 
 'This function will return a new XML file string with all "marked for removal" entries removed
 Private Function retrieveModifiedXMLString() As String
+    
+    'If this image has no metadata, exit now
+    If maxMetadataCount <= 0 Then
+        retrieveModifiedXMLString = ""
+        Exit Function
+    End If
     
     Dim newXMLString As String
     newXMLString = originalMetadataXML
@@ -524,7 +536,7 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
                         'Generate the value by a heuristic conversion; in the future, we can try something smarter, but for now,
                         ' this at least gives us a baseline value.
                         uniHelper.Base64Decode tmpBytes, iMetadata(maxMetadataCount).Base64Value
-                        uniHelper.convertUnknownBytesToString tmpBytes, iMetadata(maxMetadataCount).Value, False
+                        uniHelper.ConvertUnknownBytesToString tmpBytes, iMetadata(maxMetadataCount).Value, False
                         
                     Else
                         iMetadata(maxMetadataCount).Value = Trim$(iMetadata(maxMetadataCount).Value)
