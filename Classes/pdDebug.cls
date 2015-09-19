@@ -49,10 +49,11 @@ Public Enum PD_DEBUG_MESSAGES
     PDM_HDD_REPORT = 3
     PDM_PROCESSOR = 4
     PDM_EXTERNAL_LIB = 5
+    PDM_STARTUP_MESSAGE = 6
 End Enum
 
 #If False Then
-    Const PDM_NORMAL = 0, PDM_USER_MESSAGE = 1, PDM_MEM_REPORT = 2, PDM_HDD_REPORT = 3, PDM_PROCESSOR = 4, PDM_EXTERNAL_LIB = 5
+    Const PDM_NORMAL = 0, PDM_USER_MESSAGE = 1, PDM_MEM_REPORT = 2, PDM_HDD_REPORT = 3, PDM_PROCESSOR = 4, PDM_EXTERNAL_LIB = 5, PDM_STARTUP_MESSAGE = 6
 #End If
 
 'Has this instance been initialized?  This will be set to true if the InitializeDebugger function has executed successfully.
@@ -71,11 +72,6 @@ Private m_debuggerID As Long
 ' is located.)
 Private m_logPath As String
 
-'Handle to the log file.  This value will change over the life of the debugger, as we repeatedly open and close the
-' log file to force VB to immediately write its data (otherwise it will wait, which is typically a good thing, but in
-' the case of a debugger, we need the file kept as up-to-date as possible in case of crashes).
-Private m_FileHandle As Integer
-
 'Number of unique events logged this session.
 Private m_NumLoggedEvents As Long
 
@@ -93,13 +89,13 @@ Private m_lastMemCheck As Long, m_lastMemCheckEventNum As Long
 'Various OS interactions are handled by pdSystemInfo
 Private cSysInfo As pdSystemInfo
 
+'File I/O is handled via pdFSO
+Private cFile As pdFSO
+
 'This specialty Initialize function must be called before attempting to use this class.  It will figure out where to log
 ' this session's data, among other things, so don't attempt to use the class until this has been called!
 ' Returns: TRUE if successful, FALSE otherwise.
 Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean = False) As Boolean
-    
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
     
     If writeLogDataToFile Then
     
@@ -133,49 +129,46 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
             overwroteOldLog = True
         End If
         
-        'Build a new log file, and populate it with some default information.
+        'Assemble a basic collection of relevant debug data.
+        Dim debugHeader As String
+            debugHeader = "**********************************************" & vbCrLf
+            debugHeader = debugHeader & "-- PHOTODEMON DEBUG LOG #" & CStr(m_debuggerID + 1) & " --" & vbCrLf & vbCrLf
+            
+            debugHeader = debugHeader & "Date: " & Date & vbCrLf
+            debugHeader = debugHeader & "Time: " & Time & vbCrLf
+            debugHeader = debugHeader & "Session ID: " & g_SessionID & vbCrLf
+            debugHeader = debugHeader & "Compiled: " & CStr(g_IsProgramCompiled) & vbCrLf
+            debugHeader = debugHeader & "First run: " & CStr(g_IsFirstRun) & vbCrLf & vbCrLf
+            
+            debugHeader = debugHeader & "-- SYSTEM INFORMATION --" & vbCrLf & vbCrLf
+            
+            debugHeader = debugHeader & "OS: " & cSysInfo.getOSVersionAsString & vbCrLf
+            debugHeader = debugHeader & "Processor cores (logical): " & cSysInfo.getNumLogicalCores & vbCrLf
+            debugHeader = debugHeader & "Processor features: " & cSysInfo.getProcessorFeatures & vbCrLf
+            debugHeader = debugHeader & "System RAM: " & cSysInfo.getTotalSystemRAM & vbCrLf
+            debugHeader = debugHeader & "Max memory available to PhotoDemon: " & cSysInfo.getRAMAvailableToPD & vbCrLf & vbCrLf
+            
+            debugHeader = debugHeader & "-- PROGRAM INFORMATION -- " & vbCrLf & vbCrLf
+            
+            debugHeader = debugHeader & "Version: " & getPhotoDemonNameAndVersion & vbCrLf
+            debugHeader = debugHeader & "Translations active: " & CStr(g_Language.translationActive()) & vbCrLf
+            debugHeader = debugHeader & "Language in use: " & CStr(g_Language.getCurrentLanguage()) & vbCrLf
+            debugHeader = debugHeader & "GDI+ available: " & CStr(g_GDIPlusAvailable) & vbCrLf
+            debugHeader = debugHeader & "zLib enabled: " & CStr(g_ZLibEnabled) & vbCrLf
+            debugHeader = debugHeader & "FreeImage enabled: " & CStr(g_ImageFormats.FreeImageEnabled) & vbCrLf
+            debugHeader = debugHeader & "ExifTool enabled: " & CStr(g_ExifToolEnabled) & vbCrLf
+            debugHeader = debugHeader & "EZTwain enabled: " & CStr(g_ScanEnabled) & vbCrLf
+            debugHeader = debugHeader & "PngQuant enabled: " & CStr(g_ImageFormats.pngQuantEnabled) & vbCrLf & vbCrLf
+            
+            debugHeader = debugHeader & "**********************************************" & vbCrLf & vbCrLf
+            debugHeader = debugHeader & "-- SESSION REPORT --" & vbCrLf
+        
+        'Build a new log file, and dump the debug string into it
         m_logDatatoFile = True
         
-        m_FileHandle = FreeFile
-        
-        Open m_logPath For Append As #m_FileHandle
-            Print #m_FileHandle, "**********************************************"
-            Print #m_FileHandle, ""
-            Print #m_FileHandle, "-- PHOTODEMON DEBUG LOG #" & CStr(m_debuggerID + 1) & " --"
-            Print #m_FileHandle, ""
-            Print #m_FileHandle, "Date: " & Date
-            Print #m_FileHandle, "Time: " & Time
-            Print #m_FileHandle, "Session ID: " & g_SessionID
-            Print #m_FileHandle, "Compiled: " & CStr(g_IsProgramCompiled)
-            Print #m_FileHandle, "First run: " & CStr(g_IsFirstRun)
-            Print #m_FileHandle, ""
-            
-            Print #m_FileHandle, "-- SYSTEM INFORMATION --"
-            Print #m_FileHandle, ""
-            Print #m_FileHandle, "OS: " & cSysInfo.getOSVersionAsString
-            Print #m_FileHandle, "Processor cores (logical): " & cSysInfo.getNumLogicalCores
-            Print #m_FileHandle, "Processor features: " & cSysInfo.getProcessorFeatures
-            Print #m_FileHandle, "System RAM: " & cSysInfo.getTotalSystemRAM
-            Print #m_FileHandle, "Max memory available to PhotoDemon: " & cSysInfo.getRAMAvailableToPD
-            Print #m_FileHandle, ""
-            Print #m_FileHandle, "-- PROGRAM INFORMATION -- "
-            Print #m_FileHandle, ""
-            Print #m_FileHandle, "Version: " & getPhotoDemonNameAndVersion
-            Print #m_FileHandle, "Translations active: " & CStr(g_Language.translationActive())
-            Print #m_FileHandle, "Language in use: " & CStr(g_Language.getCurrentLanguage())
-            Print #m_FileHandle, "GDI+ available: " & CStr(g_GDIPlusAvailable)
-            Print #m_FileHandle, "zLib enabled: " & CStr(g_ZLibEnabled)
-            Print #m_FileHandle, "FreeImage enabled: " & CStr(g_ImageFormats.FreeImageEnabled)
-            Print #m_FileHandle, "ExifTool enabled: " & CStr(g_ExifToolEnabled)
-            Print #m_FileHandle, "EZTwain enabled: " & CStr(g_ScanEnabled)
-            Print #m_FileHandle, "PngQuant enabled: " & CStr(g_ImageFormats.pngQuantEnabled)
-            Print #m_FileHandle, ""
-            Print #m_FileHandle, "**********************************************"
-            Print #m_FileHandle, ""
-            Print #m_FileHandle, "-- SESSION REPORT --"
-            
-        'Close the file to force an immediate write
-        Close #m_FileHandle
+        If Not cFile.SaveStringToTextFile(debugHeader, m_logPath) Then
+            Debug.Print "WARNING!  Debug file could not be created!"
+        End If
         
     End If
     
@@ -193,15 +186,10 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
         Me.LogAction "(The following " & numBackupMessages & " actions were logged prior to initialization.)"
         Me.LogAction "(They are presented here with their original timestamps.)"
         
-        m_FileHandle = FreeFile
-        Open m_logPath For Append As #m_FileHandle
-        
         Dim i As Long
         For i = 0 To numBackupMessages - 1
-            Print #m_FileHandle, backupMessages(i)
+            Me.LogAction backupMessages(i), PDM_STARTUP_MESSAGE, True
         Next i
-        
-        Close #m_FileHandle
         
         Me.LogAction "(End of pre-initialization data)"
         
@@ -228,7 +216,7 @@ Private Function getLogID() As Long
     
     'Retrieve the first matching file from the folder (if any)
     Dim chkFile As String
-    chkFile = Dir(m_logPath & "DebugReport_*.log", vbNormal)
+    chkFile = cFile.DirW(m_logPath & "DebugReport_*.log")
     
     'Continue checking potential autosave XML entries until all have been analyzed
     Do While Len(chkFile) <> 0
@@ -238,7 +226,7 @@ Private Function getLogID() As Long
         numFiles = numFiles + 1
         
         'Check the next file in the folder
-        chkFile = Dir
+        chkFile = cFile.DirW
         
     Loop
     
@@ -277,89 +265,88 @@ End Function
 ' a new log line to the relevant debug file in the program's /Data folder.
 ' Input: debug string, and a BOOL indicating whether the message comes from PD's central user-visible "Message()" function
 Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optional ByVal debugMsgType As PD_DEBUG_MESSAGES = PDM_NORMAL, Optional ByVal suspendMemoryAutoUpdate As Boolean = False)
-
-    'Increase the event count
-    m_NumLoggedEvents = m_NumLoggedEvents + 1
-
-    'Generate a timestamp for this request
-    Dim curTime As String
-    curTime = Format$(Now, "ttttt", vbUseSystemDayOfWeek, vbUseSystem)
-
-    'Modify the string to reflect whether it's a DEBUG message or user-visible MESSAGE() message
-    Dim prefixString As String
     
-    Select Case debugMsgType
+    Dim curTime As String, prefixString As String
     
-        Case PDM_NORMAL
-            prefixString = "-DBG-"
-            
-        Case PDM_USER_MESSAGE
-            prefixString = "(USM)"
+    'If this message was logged at startup, skip all the usual formalities and proceed directly to writing the file.
+    If debugMsgType <> PDM_STARTUP_MESSAGE Then
         
-        Case PDM_MEM_REPORT
-            prefixString = "*RAM*"
+        'Increase the event count
+        m_NumLoggedEvents = m_NumLoggedEvents + 1
         
-        Case PDM_HDD_REPORT
-            prefixString = "^HDD^"
-            
-        Case PDM_PROCESSOR
-            prefixString = "#PRC#"
-            
-        Case PDM_EXTERNAL_LIB
-            prefixString = "!EXT!"
-    
-    End Select
-    
-    'For special message types, populate their contents now
-    If debugMsgType = PDM_MEM_REPORT Then
-    
-        m_lastMemCheckEventNum = m_NumLoggedEvents
-    
-        'The caller wants a RAM update.  Generate one now.
-        Dim curMemUsage As Double, maxMemUsage As Double, deltaMem As Double
-        curMemUsage = cSysInfo.GetPhotoDemonMemoryUsage(False)
-        maxMemUsage = cSysInfo.GetPhotoDemonMemoryUsage(True)
-        deltaMem = curMemUsage - m_lastMemCheck
+        'Generate a timestamp for this request
+        curTime = Format$(Now, "ttttt", vbUseSystemDayOfWeek, vbUseSystem)
         
-        'Format the strings into something more readable
-        If curMemUsage <> 0 Then
+        'Modify the string to reflect whether it's a DEBUG message or user-visible MESSAGE() message
+        Select Case debugMsgType
         
-            Dim curMemUsageString As String, maxMemUsageString As String, deltaMemString As String
-            curMemUsageString = Format(curMemUsage, "###,###,###,###") & " K"
-            maxMemUsageString = Format(maxMemUsage, "###,###,###,###") & " K"
-            deltaMemString = Format(deltaMem, "###,###,###,###") & " K"
-            If deltaMem > 0 Then deltaMemString = "+" & deltaMemString
+            Case PDM_NORMAL
+                prefixString = "-DBG-"
+                
+            Case PDM_USER_MESSAGE
+                prefixString = "(USM)"
             
-            'Ignore the supplied action string, and create our own
-            actionString = "CURRENT: " & curMemUsageString & " | DELTA: " & deltaMemString & " | SESSION MAX: " & maxMemUsageString
+            Case PDM_MEM_REPORT
+                prefixString = "*RAM*"
             
-        Else
-            actionString = "WARNING: PD was unable to measure its own memory usage.  Please investigate."
+            Case PDM_HDD_REPORT
+                prefixString = "^HDD^"
+                
+            Case PDM_PROCESSOR
+                prefixString = "#PRC#"
+                
+            Case PDM_EXTERNAL_LIB
+                prefixString = "!EXT!"
+        
+        End Select
+        
+        'For special message types, populate their contents now
+        If debugMsgType = PDM_MEM_REPORT Then
+        
+            m_lastMemCheckEventNum = m_NumLoggedEvents
+        
+            'The caller wants a RAM update.  Generate one now.
+            Dim curMemUsage As Double, maxMemUsage As Double, deltaMem As Double
+            curMemUsage = cSysInfo.GetPhotoDemonMemoryUsage(False)
+            maxMemUsage = cSysInfo.GetPhotoDemonMemoryUsage(True)
+            deltaMem = curMemUsage - m_lastMemCheck
+            
+            'Format the strings into something more readable
+            If curMemUsage <> 0 Then
+            
+                Dim curMemUsageString As String, maxMemUsageString As String, deltaMemString As String
+                curMemUsageString = Format$(curMemUsage, "###,###,###,##0") & " K"
+                maxMemUsageString = Format$(maxMemUsage, "###,###,###,##0") & " K"
+                deltaMemString = Format$(deltaMem, "###,###,###,##0") & " K"
+                If deltaMem > 0 Then deltaMemString = "+" & deltaMemString
+                
+                'Ignore the supplied action string, and create our own
+                actionString = "CURRENT: " & curMemUsageString & " | DELTA: " & deltaMemString & " | SESSION MAX: " & maxMemUsageString
+                
+            Else
+                actionString = "WARNING: PD was unable to measure its own memory usage.  Please investigate."
+            End If
+            
+            'Update the module-level last mem check value
+            m_lastMemCheck = curMemUsage
+        
+        ElseIf debugMsgType = PDM_HDD_REPORT Then
+        
         End If
         
-        'Update the module-level last mem check value
-        m_lastMemCheck = curMemUsage
-    
-    ElseIf debugMsgType = PDM_HDD_REPORT Then
-    
+        'Add a timestamp
+        actionString = prefixString & " " & curTime & " | " & actionString
+        
+        'Mirror output to the Immediate window
+        Debug.Print actionString
+        
     End If
-    
-    'Add a timestamp
-    actionString = prefixString & " " & curTime & " | " & actionString
-    
-    'Mirror output to the Immediate window
-    Debug.Print actionString
     
     'If file logging is active, also mirror output to this session's log file
     If m_debuggerActive Then
         
         If m_logDatatoFile Then
-        
-            m_FileHandle = FreeFile
-            Open m_logPath For Append As #m_FileHandle
-                Print #m_FileHandle, actionString
-            Close #m_FileHandle
-            
+            cFile.AppendTextToFile actionString & vbCrLf, m_logPath
         End If
     
     Else
@@ -395,23 +382,20 @@ Private Sub Class_Initialize()
     m_lastMemCheck = 0
     
     Set cSysInfo = New pdSystemInfo
+    Set cFile = New pdFSO
 
 End Sub
 
 Public Sub TerminateDebugger()
 
     'If logging is active, post a final message
-    If m_debuggerActive Then
-    
-        m_FileHandle = FreeFile
-        Open m_logPath For Append As #m_FileHandle
-            Print #m_FileHandle, "-- END SESSION REPORT --"
-        Close #m_FileHandle
-        
-        m_debuggerActive = False
-    
+    If m_logDatatoFile Then
+        cFile.AppendTextToFile "-- END SESSION REPORT --", m_logPath
+        m_logDatatoFile = False
     End If
-
+    
+    If m_debuggerActive Then m_debuggerActive = False
+    
 End Sub
 
 Private Sub Class_Terminate()
