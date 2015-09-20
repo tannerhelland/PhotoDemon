@@ -405,8 +405,8 @@ Public Sub LoadTheProgram()
     Load toolbar_ImageTabs
     Load toolbar_Options
     
-    'Retrieve floating window status from the preferences file, mark their menus, and pass their values to the window manager
-    toggleWindowFloating TOOLBAR_WINDOW, g_UserPreferences.GetPref_Boolean("Core", "Floating Toolbars", False), True, True
+    'Apply the necessary window styles to have the toolbars self-align within the main PD window.
+    g_WindowManager.setFloatState TOOLBAR_WINDOW, False, True
     
     'Retrieve visibility and mark those menus as well
     FormMain.MnuWindowToolbox(0).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
@@ -2790,8 +2790,8 @@ Public Sub LoadAccelerators()
         
         
         'Window menu
-        .AddAccelerator vbKeyPageDown, 0, "Next_Image", FormMain.MnuWindow(7), False, True, False, UNDO_NOTHING
-        .AddAccelerator vbKeyPageUp, 0, "Prev_Image", FormMain.MnuWindow(8), False, True, False, UNDO_NOTHING
+        .AddAccelerator vbKeyPageDown, 0, "Next_Image", FormMain.MnuWindow(5), False, True, False, UNDO_NOTHING
+        .AddAccelerator vbKeyPageUp, 0, "Prev_Image", FormMain.MnuWindow(6), False, True, False, UNDO_NOTHING
                 
         'No equivalent menu
         .AddAccelerator vbKeyEscape, 0, "Escape"
