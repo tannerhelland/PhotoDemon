@@ -456,11 +456,11 @@ Public Sub syncInterfaceToCurrentImage()
     'Perform a special check if 2 or more images are loaded; if that is the case, enable a few additional controls, like
     ' the "Next/Previous" Window menu items.
     If g_OpenImageCount >= 2 Then
-        FormMain.MnuWindow(7).Enabled = True
-        FormMain.MnuWindow(8).Enabled = True
+        FormMain.MnuWindow(5).Enabled = True
+        FormMain.MnuWindow(6).Enabled = True
     Else
-        FormMain.MnuWindow(7).Enabled = False
-        FormMain.MnuWindow(8).Enabled = False
+        FormMain.MnuWindow(5).Enabled = False
+        FormMain.MnuWindow(6).Enabled = False
     End If
         
     'Redraw the layer box
@@ -936,14 +936,8 @@ Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     'Move the dialog into place, but do not repaint it (that will be handled in a moment by the .Show event)
     MoveWindow dialogHwnd, newLeft, newTop, dialogRect.x2 - dialogRect.x1, dialogRect.y2 - dialogRect.y1, 0
     
-    'Register the window with the window manager, which will also make it a top-most window
-    If g_WindowManager.getFloatState(TOOLBAR_WINDOW) Then g_WindowManager.requestTopmostWindow dialogHwnd, getModalOwner().hWnd
-    
     'Use VB to actually display the dialog.  Note that the sub will pause here until the form is closed.
     dialogForm.Show dialogModality, FormMain    'getModalOwner()
-    
-    'De-register this hWnd with the window manager
-    If g_WindowManager.getFloatState(TOOLBAR_WINDOW) Then g_WindowManager.requestTopmostWindow dialogHwnd, 0, True
     
     'Release our reference to this dialog
     If isSecondaryDialog Then
@@ -1096,28 +1090,6 @@ Public Sub toggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVa
         Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     End If
 
-End Sub
-
-'Both toolbars and image windows can be floated or docked.  Because some behind-the-scenes maintenance has to be applied whenever
-' this setting is changed, all float toggle operations should wrap this singular function.
-Public Sub toggleWindowFloating(ByVal whichWindowType As pdWindowType, ByVal floatStatus As Boolean, Optional ByVal suspendMenuRefresh As Boolean = False, Optional ByVal suppressPrefUpdate As Boolean = False)
-
-    'Make a note of the currently active image
-    Dim backupCurrentImage As Long
-    backupCurrentImage = g_CurrentImage
-    
-    Select Case whichWindowType
-    
-        Case TOOLBAR_WINDOW
-            FormMain.MnuWindow(5).Checked = floatStatus
-            If Not suppressPrefUpdate Then g_UserPreferences.SetPref_Boolean "Core", "Floating Toolbars", floatStatus
-            g_WindowManager.setFloatState TOOLBAR_WINDOW, floatStatus, suspendMenuRefresh
-            
-            'If image windows are docked, we need to redraw all their windows, because the available client area will have changed.
-            If Not suspendMenuRefresh Then FormMain.refreshAllCanvases
-            
-    End Select
-    
 End Sub
 
 'Toolbars can be dynamically shown/hidden by a variety of processes (e.g. clicking an entry in the Window menu, clicking the X in a

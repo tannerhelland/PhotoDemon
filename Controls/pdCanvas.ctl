@@ -1333,9 +1333,6 @@ Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVa
     'Note that the user has yet to interact with anything on the canvas.
     m_UserInteractedWithCanvas = False
     
-    'Notify the window manager that toolbars need to be made translucent
-    g_WindowManager.notifyMouseMoveOverCanvas
-    
     'If no images have been loaded, reset the cursor
     If g_OpenImageCount = 0 Then cMouseEvents.setSystemCursor IDC_ARROW
 

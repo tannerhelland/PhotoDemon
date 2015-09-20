@@ -566,7 +566,7 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
                     
                     'Close Other Images only works if more than one image is open.  We can determine this using the Next/Previous Image items
                     ' in the Window menu
-                    mnuTabstripPopup(POP_CLOSE).Enabled = FormMain.MnuWindow(7).Enabled
+                    mnuTabstripPopup(POP_CLOSE).Enabled = FormMain.MnuWindow(5).Enabled
                     
                     'Raise the context menu
                     Me.PopupMenu mnuImageTabsContext, x:=x, y:=y

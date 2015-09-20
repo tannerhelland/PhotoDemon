@@ -1511,21 +1511,12 @@ Begin VB.Form FormMain
          Index           =   4
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "Floating toolboxes"
-         Checked         =   -1  'True
+         Caption         =   "Next image"
          Index           =   5
       End
       Begin VB.Menu MnuWindow 
-         Caption         =   "-"
-         Index           =   6
-      End
-      Begin VB.Menu MnuWindow 
-         Caption         =   "Next image"
-         Index           =   7
-      End
-      Begin VB.Menu MnuWindow 
          Caption         =   "Previous image"
-         Index           =   8
+         Index           =   6
       End
    End
    Begin VB.Menu MnuHelpTop 
@@ -4596,9 +4587,6 @@ End Sub
 'All "Window" menu items are handled here
 Private Sub MnuWindow_Click(Index As Integer)
     
-    Dim prevActiveWindow As Long
-    prevActiveWindow = g_CurrentImage
-
     Select Case Index
     
         '<top-level Primary Toolbox options>
@@ -4617,24 +4605,16 @@ Private Sub MnuWindow_Click(Index As Integer)
         
         '<separator>
         Case 4
-    
-        'Floating toolbars
-        Case 5
-            toggleWindowFloating TOOLBAR_WINDOW, Not FormMain.MnuWindow(5).Checked
-        
-        '<separator>
-        Case 6
         
         'Next image
-        Case 7
+        Case 5
             moveToNextChildWindow True
             
         'Previous image
-        Case 8
+        Case 6
             moveToNextChildWindow False
 
     End Select
-    
 
 End Sub
 
