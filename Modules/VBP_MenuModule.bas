@@ -41,11 +41,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     Set openDialog = New pdOpenSaveDialog
         
     Dim sFileList As String
-    
-    'Remove top-most status from any/all windows (toolbars in floating mode, primarily).  If we don't do this, they may
-    ' appear over the top of the common dialog.
-    g_WindowManager.resetTopmostForAllWindows False
-    
+        
     'Retrieve one (or more) files to open
     If openDialog.GetOpenFileName(sFileList, , True, True, g_ImageFormats.getCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Open an image"), , ownerHwnd) Then
         
@@ -115,10 +111,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     
     'Re-enable user input
     Interface.enableUserInput
-    
-    'Restore window status
-    g_WindowManager.resetTopmostForAllWindows True
-    
+        
 End Function
 
 'Provide a common dialog that allows the user to retrieve a single image filename, which the calling function can
@@ -135,11 +128,7 @@ Public Function PhotoDemon_OpenImageDialog_Simple(ByRef userImagePath As String,
     'Get the last "open image" path from the preferences file
     Dim tempPathString As String
     tempPathString = g_UserPreferences.GetPref_String("Paths", "Open Image", "")
-    
-    'Remove top-most status from any/all windows (toolbars in floating mode, primarily).  If we don't do this, they may
-    ' appear over the top of the common dialog.
-    g_WindowManager.resetTopmostForAllWindows False
-    
+        
     'Use Steve McMahon's excellent Common Dialog class to launch a dialog (this way, no OCX is required)
     If openDialog.GetOpenFileName(userImagePath, , True, False, g_ImageFormats.getCommonDialogInputFormats, g_LastOpenFilter, tempPathString, g_Language.TranslateMessage("Select an image"), , ownerHwnd) Then
         
@@ -160,10 +149,7 @@ Public Function PhotoDemon_OpenImageDialog_Simple(ByRef userImagePath As String,
         PhotoDemon_OpenImageDialog_Simple = False
         
     End If
-    
-    'Restore window status
-    g_WindowManager.resetTopmostForAllWindows True
-    
+        
     'Re-enable user input
     Interface.enableUserInput
     
@@ -296,11 +282,7 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     ' function to append ascending numbers (of the format "_(#)") to the filename until a unique filename is found.
     Dim sFile As String
     sFile = tempPathString & incrementFilename(tempPathString, pdImages(imageID).originalFileName, g_ImageFormats.getOutputFormatExtension(g_LastSaveFilter - 1))
-    
-    'Remove top-most status from any/all windows (toolbars in floating mode, primarily).  If we don't do this, they may
-    ' appear over the top of the common dialog.
-    g_WindowManager.resetTopmostForAllWindows False
-    
+        
     If saveFileDialog.GetSaveFileName(sFile, , True, g_ImageFormats.getCommonDialogOutputFormats, g_LastSaveFilter, tempPathString, g_Language.TranslateMessage("Save an image"), g_ImageFormats.getCommonDialogDefaultExtensions, FormMain.hWnd) Then
                 
         'Store the selected file format to the image object
@@ -320,10 +302,7 @@ Public Function MenuSaveAs(ByVal imageID As Long) As Boolean
     Else
         MenuSaveAs = False
     End If
-    
-    'Restore window status
-    g_WindowManager.resetTopmostForAllWindows True
-        
+            
 End Function
 
 'Save a lossless copy of the current image.  I've debated a lot of small details about how to best implement this (e.g. how to

@@ -32,10 +32,6 @@ Attribute VB_Exposed = False
 ' when they are created. This class manages their placement, styles, opacity, and a host of other minor details.  Additionally,
 ' other windows (such as tool dialogs) can be registered on-the-fly if they require special behavior.
 '
-'One thing I am particularly adamant about is properly deactivating top-most windows when the user switches to another
-' application.  I believe I have covered every possible contingency, because errant top-most windows are never something I
-' want PD to cause.
-'
 'In order to perform all this detailed window management, this class subclasses a lot of forms and a lot of messages.  That
 ' said, it should be wholly IDE-safe, but consider yourself warned.  (Also, some window order API calls do not function
 ' properly in the IDE per http://support.microsoft.com/kb/192254.  Compile for best results.)
@@ -53,11 +49,9 @@ Private Const INACTIVE_TOOLBOX_OPACITY As Byte = 170
 'Subclassed messages related to window movement
 Private Const WM_SYSCOMMAND As Long = &H112
 Private Const WM_SYSCOMMAND_WPARAM_MASK As Long = &HFFF0&
-Private Const WM_MOUSEMOVE As Long = &H200
 Private Const WM_MOVE As Long = &H3
 Private Const WM_MOVING As Long = &H216
 Private Const WM_MOUSELEAVE As Long = &H2A3
-Private Const WM_NCMOUSEMOVE As Long = &HA0
 Private Const WM_SIZING As Long = &H214
 Private Const WM_SIZE As Long = &H5
 Private Const WM_ERASEBKGND As Long = &H14
@@ -66,8 +60,6 @@ Private Const WM_WINDOWPOSCHANGED As Long = &H47
 Private Const WM_NCACTIVATE As Long = &H86
 
 'Subclassed messages for detecting when PD is losing focus to another app, or regaining it from another app
-Private Const WM_ACTIVATE      As Long = &H6
-Private Const WM_ACTIVATEAPP   As Long = &H1C
 Private Const WA_INACTIVE      As Long = 0
 Private Const WA_ACTIVE        As Long = 1
 Private Const WA_CLICKACTIVE   As Long = 2
@@ -559,80 +551,10 @@ Public Sub setImageTabstripAlignment(ByVal newAlignment As AlignConstants)
 
 End Sub
 
-'Though officially discouraged by Microsoft (see http://msdn.microsoft.com/en-us/library/windows/desktop/ms633591%28v=vs.85%29.aspx), it is
-' sometimes useful to dynamically reassign ownership of a window at run-time.  In fact, this is a necessity in VB, because we cannot physically
-' assign an owner at creation time, as VB doesn't let us intermix form references and CreateWindow API calls.  (For the record, I am almost
-' certain that VB uses this exact same code to assign ownership when it encounters code like FormChild.Show vbModeless, FormOwner.)
-' Technically we should also track the previous window owner and restore it upon form exiting, but VB makes that unnecessary due to the way it
-' couples owner/child unload behavior.
-'
-'NOTE: I have left this code here because it may be helpful in the future, but at present, it is not used (due to the removal of
-'       floating image windows).
-'Public Sub requestNewOwner(ByVal childHwnd As Long, ByVal ownerhWnd As Long)
-'    SetWindowLong childHwnd, GWL_HWNDPARENT, ownerhWnd
-'End Sub
-
 'If external functions want to know if PD has focus or not, they can use this function.  It will return TRUE if PhotoDemon is the active window.
 Public Function doesProgramHaveFocus() As Boolean
     doesProgramHaveFocus = Not isPDDeactivated
 End Function
-
-'Sometimes, PhotoDemon needs to display a modal dialog (most tools are modal).  When it does so, this sub should be called so that the
-' window engine can make the modal dialog top-most, and deactivate the top-most parameter if the user switches to another application.
-Public Sub requestTopmostWindow(ByVal srcWindowHwnd As Long, ByVal ownerHwnd As Long, Optional ByVal windowUnloading As Boolean = False)
-
-    'By default, windows are ADDED to our collection, not removed.
-    If Not windowUnloading Then
-    
-        'Store the window's hWnd.  We need to remember it in case the user switches to another program while this window is still active;
-        ' in that case, we will remove the window's top-most status, to prevent the window from obscuring other programs.
-        extraWindowHwnds(numOfExtraWindows) = srcWindowHwnd
-        numOfExtraWindows = numOfExtraWindows + 1
-        ReDim Preserve extraWindowHwnds(0 To numOfExtraWindows) As Long
-        
-        'Make the window top-most, but do it without moving, sizing, or activating the window.  (Those actions are left up to the caller.)
-        SetWindowPos srcWindowHwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING 'Or SWP_SHOWWINDOW 'or SWP_NOACTIVATE
-        
-        'Dynamically set the window's owner to match
-        SetWindowLong srcWindowHwnd, GWL_HWNDPARENT, ownerHwnd
-        
-        'NOW we can display the window.  (Doing this via anything besides VB's in-built .Show method breaks stuff.  I'll need
-        ' to investigate further to see if it's possible to mimic the .Show event via API.)
-        'ShowWindow srcWindowHwnd, SW_SHOW
-    
-    'This function should be notified whenever a previously added window has been hidden or unloaded.  We'll remove it from our collection,
-    ' and stop activating/deactivating its top-most condition when the program gains or loses focus.
-    Else
-    
-        'Find the hWnd in our tracking array
-        Dim i As Long, srcWindowIndex As Long
-        srcWindowIndex = -1
-        For i = 0 To numOfExtraWindows
-            If extraWindowHwnds(i) = srcWindowHwnd Then
-                srcWindowIndex = i
-                Exit For
-            End If
-        Next i
-        
-        'If we found this hWnd, remove it from the collection
-        If srcWindowIndex >= 0 Then
-        
-            'Shift all existing entries down by one
-            For i = srcWindowIndex To numOfExtraWindows - 1
-                extraWindowHwnds(i) = extraWindowHwnds(i + 1)
-            Next i
-            
-            'Decrement our spare window counter
-            numOfExtraWindows = numOfExtraWindows - 1
-            
-            'Shrink the array by one
-            ReDim Preserve extraWindowHwnds(0 To numOfExtraWindows) As Long
-            
-        End If
-    
-    End If
-
-End Sub
 
 'Using a "Form.Caption = <string>" statement on a docked child form will cause the window to un-dock.  Thus, all caption requests
 ' must be passed through the window manager, who will then use the API to change the text.
@@ -962,7 +884,7 @@ Private Sub fixDockedToolbarSize(ByVal winIndex As Long)
     End If
     
     'Reposition the window, but note that we do not want it moved - only resized
-    SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), 0, 0, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_NOMOVE Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER Or SWP_NOZORDER Or SWP_NOREDRAW Or SWP_NOSENDCHANGING
+    SetWindowPos pdWindows(winIndex).hWnd, HWND_TOP, 0, 0, childRect.x2 - childRect.x1, childRect.y2 - childRect.y1, SWP_NOMOVE Or SWP_NOACTIVATE Or SWP_NOOWNERZORDER Or SWP_NOZORDER Or SWP_NOREDRAW Or SWP_NOSENDCHANGING
     'UpdateWindow pdWindows(winIndex).hWnd
     
     'SOME THOUGHTS:
@@ -998,30 +920,6 @@ Private Function getWindowHeight(ByVal targetHwnd As Long) As Long
     Dim tmpRect As winRect
     GetWindowRect targetHwnd, tmpRect
     getWindowHeight = tmpRect.y2 - tmpRect.y1
-End Function
-
-'Given a window, find the size differential between the window and client areas.
-' These two functions *should* return accurate results regardless of OS visual settings.
-Public Function getHorizontalChromeSize(ByVal targetHwnd As Long) As Long
-
-    'Ask the OS to report window and client size
-    Dim WindowRECT As winRect, clientRect As winRect
-    GetWindowRect targetHwnd, WindowRECT
-    GetClientRect targetHwnd, clientRect
-    
-    getHorizontalChromeSize = (WindowRECT.x2 - WindowRECT.x1) - clientRect.x2
-    
-End Function
-
-Public Function getVerticalChromeSize(ByVal targetHwnd As Long) As Long
-
-    'Ask the OS to report window and client size
-    Dim WindowRECT As winRect, clientRect As winRect
-    GetWindowRect targetHwnd, WindowRECT
-    GetClientRect targetHwnd, clientRect
-    
-    getVerticalChromeSize = (WindowRECT.y2 - WindowRECT.y1) - clientRect.y2
-    
 End Function
 
 'Force a full window refresh (invalidate + update)
@@ -1082,7 +980,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
                 If (Not isFirstLoad) And pdWindows(winIndex).isVisible Then newWinStyle = newWinStyle Or WS_VISIBLE
                 SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, newWinStyle
                 SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_NOACTIVATE Or WS_EX_COMPOSITED 'Or WS_EX_LAYERED
-                SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), 0, 0, pdWindows(winIndex).originalWidthClient, pdWindows(winIndex).originalHeightClient, SWP_NOMOVE Or SWP_FRAMECHANGED Or SWP_NOOWNERZORDER Or SWP_NOCOPYBITS
+                SetWindowPos pdWindows(winIndex).hWnd, HWND_TOP, 0, 0, pdWindows(winIndex).originalWidthClient, pdWindows(winIndex).originalHeightClient, SWP_NOMOVE Or SWP_FRAMECHANGED Or SWP_NOOWNERZORDER Or SWP_NOCOPYBITS
                 
                 'Specify the main window as the parent
                 SetParent pdWindows(winIndex).hWnd, mainWindowHwnd
@@ -1131,7 +1029,7 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
             If pdWindows(winIndex).isVisible Then newWinStyle = newWinStyle Or WS_VISIBLE
             SetWindowLong pdWindows(winIndex).hWnd, GWL_STYLE, newWinStyle
             'SetWindowLong pdWindows(winIndex).hWnd, GWL_EXSTYLE, WS_EX_LAYERED
-            SetWindowPos pdWindows(winIndex).hWnd, getDesiredZOrder(winIndex), 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_FRAMECHANGED Or SWP_NOACTIVATE
+            SetWindowPos pdWindows(winIndex).hWnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_FRAMECHANGED Or SWP_NOACTIVATE
             
             'Specify the main form as the tabstrip's parent
             SetParent pdWindows(winIndex).hWnd, mainWindowHwnd
@@ -1156,38 +1054,6 @@ Private Sub updateWindowStyle(ByVal winIndex As Long, Optional ByVal isFirstLoad
     'Finally, update this window's rect, and store its offset (so that the children windows will stay in their proper location)
     requestWindowResync winIndex
 
-End Sub
-
-'Set floating/docked state of toolbars or image windows
-Public Sub setFloatState(ByVal winType As pdWindowType, ByVal isFloating As Boolean, Optional ByVal overrideWindowStyleUpdate As Boolean = False)
-
-    Dim i As Long, j As Long
-    
-    'Before doing anything else, reset all z-order data
-    If (Not overrideWindowStyleUpdate) Then
-        For i = 0 To numOfPDWindows - 1
-            If pdWindows(i).typeOfWindow <> MAIN_WINDOW Then
-                SetWindowPos pdWindows(i).hWnd, 0, 0, 0, 0, 0, SWP_NOMOVE Or SWP_NOSIZE Or SWP_NOACTIVATE
-            End If
-        Next i
-    End If
-    
-    'Whenever float status is changed, all windows need to be redrawn (as their layering and/or position may have changed)
-    If (numOfPDWindows > 0) And (Not overrideWindowStyleUpdate) Then
-        
-        'Note that we have to redraw all windows twice; in the first pass, they will all be resized and aligned.  In the second,
-        ' they will be stretched to match the size and layout of their neighboring windows.
-        For i = 0 To 1
-            For j = 0 To numOfPDWindows - 1
-            
-                'Request a window style update and/or redraw
-                updateWindowStyle j
-            
-            Next j
-        Next i
-        
-    End If
-    
 End Sub
 
 'The first time PhotoDemon is run, this sub can be called to nicely center the window on the user's primary monitor.
@@ -1509,13 +1375,9 @@ Public Sub registerParentForm(ByRef parentForm As Form)
     
     'Subclass the main window
     cSubclass.ssc_Subclass mainWindowHwnd, , , Me
-    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_AFTER, WM_MOUSEMOVE, WM_NCMOUSEMOVE, WM_SIZE  ', WM_MOVE - adding WM_MOVE causes freezing at present, and I'm not sure why, so leave it unsubclassed for the time being
+    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_AFTER, WM_SIZE
     cSubclass.ssc_AddMsg mainWindowHwnd, MSG_BEFORE, WM_SIZING, WM_MOVING
     cSubclass.ssc_AddMsg mainWindowHwnd, MSG_BEFORE_AFTER, WM_SYSCOMMAND
-    
-    'Because I care about PD being a good "desktop citizen", I deactivate top-most status of all toolbars (and other windows, as necessary),
-    ' when PD loses focus.  To do that successfully, we must intercept app activation messages.
-    cSubclass.ssc_AddMsg mainWindowHwnd, MSG_BEFORE_AFTER, WM_ACTIVATEAPP, WM_ACTIVATE
     
     'Look for previous location data in the window location file.  If said data exists, load it and move the window to that location.
     restoreWindowLocation numOfPDWindows, 0
@@ -1618,7 +1480,7 @@ Public Sub registerChildForm(ByRef childForm As Form, ByVal whatWindowType As pd
     'Subclass this window, and add a user param of 64 + "index in array".  We can use this value to recognize this hWnd as belonging
     ' to a child window, and quickly look it up in our window tracking array.
     cSubclass.ssc_Subclass pdWindows(numOfPDWindows).hWnd, 64 + numOfPDWindows, , Me
-    cSubclass.ssc_AddMsg pdWindows(numOfPDWindows).hWnd, MSG_AFTER, WM_ACTIVATE, WM_MOVE, WM_SIZE, WM_WINDOWPOSCHANGED
+    cSubclass.ssc_AddMsg pdWindows(numOfPDWindows).hWnd, MSG_AFTER, WM_MOVE, WM_SIZE, WM_WINDOWPOSCHANGED
     cSubclass.ssc_AddMsg pdWindows(numOfPDWindows).hWnd, MSG_BEFORE, WM_MOVING, WM_SIZING
     
     'Paint this window with the proper visual style (based on whether it's docked or floating)
@@ -1673,16 +1535,6 @@ Public Sub unregisterForm(ByRef srcForm As Form)
 
 End Sub
 
-'At present, we handle all window maintenance on-the-fly, so nothing special needs to be done when all images are unloaded.
-' If extra work does need to be performed in the future, the program already ties into this function.
-Public Sub allImageWindowsUnloaded()
-    
-End Sub
-
-Public Sub requestActivation(ByVal hWndToActivate As Long)
-    SetWindowPos hWndToActivate, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_SHOWWINDOW Or SWP_NOOWNERZORDER
-End Sub
-
 'VB makes getting and setting focus an error-prone pain, so I prefer to use the API and deal strictly with hWnds.
 Public Function GetFocusAPI() As Long
     GetFocusAPI = GetFocus()
@@ -1690,16 +1542,6 @@ End Function
 
 Public Sub SetFocusAPI(ByVal hWndToReceiveFocus As Long)
     SetFocus hWndToReceiveFocus
-End Sub
-
-'External objects can call this function to activate system-level double-buffering for a given hWnd.
-Public Sub activateDoubleBuffering(ByVal srcHwnd As Long)
-    
-    Dim newWinStyle As Long
-    
-    newWinStyle = GetWindowLong(srcHwnd, GWL_EXSTYLE)
-    SetWindowLong srcHwnd, GWL_EXSTYLE, newWinStyle Or WS_EX_COMPOSITED
-    
 End Sub
 
 Private Sub Class_Initialize()
@@ -1729,10 +1571,7 @@ Private Sub Class_Terminate()
 
     'Release all subclassing
     cSubclass.ssc_Terminate
-    
-    'Write window location data out to file.
-    saveAllWindowLocations
-    
+        
     'Manually clear all form references
     Dim i As Long
     For i = 0 To UBound(pdWindows)
@@ -1740,56 +1579,6 @@ Private Sub Class_Terminate()
     Next i
 
 End Sub
-
-'Set a toolbar window's translucency.  We do this to make them semi-transparent when they do not have the mouse over them.
-Private Sub setWindowTranslucency(ByVal srcHwnd As Long, Optional ByVal nTransparency As Long = 255)
-    SetLayeredWindowAttributes srcHwnd, 0, nTransparency, LWA_ALPHA
-End Sub
-
-'Window z-order is a difficult thing to get right.  It's a complicated interplay of what is floating, what is not, and it must
-' all be disabled when PD loses focus.  Outside functions can call this with any window index to retrieve the proper hWndBefore
-' parameter for a SetWindowPos call.
-Private Function getDesiredZOrder(ByVal winIndex As Long, Optional ByVal pdLosingFocus As Boolean = False) As Long
-
-     'A window can receive four z-order instructions.  Unfortunately, Windows makes it very difficult to provide detailed z-order instructions.
-    ' Instead, we are limited to very broad classes of "top-most", "not-top-most", and "bottom".
-    ' Descriptions are taken directly from this MSDN page: http://msdn.microsoft.com/en-us/library/windows/desktop/ms633545%28v=vs.85%29.aspx
-    
-    'Place the window at the top of the Z order.
-    'Const HWND_TOP As Long = 0
-
-    'Place the window above all non-topmost windows. The window maintains its topmost position even when it is deactivated.
-    'Const HWND_TOPMOST As Long = -1
-    
-    'Place the window above all non-topmost windows but behind all topmost windows. This flag has no effect if the window is already
-    ' a non-topmost window.
-    'Const HWND_NOTOPMOST As Long = -2
-    
-    'Place the window at the bottom of the Z order. If the hWnd parameter identifies a topmost window, the window loses its topmost status
-    ' and is placed at the bottom of all other windows.
-    'Const HWND_BOTTOM As Long = 1
-
-    'If PhotoDemon is losing focus, this step is simple - restore a normal z-order and exit
-    If pdLosingFocus Then
-        getDesiredZOrder = HWND_TOP
-        Exit Function
-    End If
-    
-    'If the program is not losing focus, this step is more complicated. What window is made top-most is determined
-    ' by what is docked and what is not.  Roughly, speaking:
-    
-    'If images are docked, and toolbars are docked, z-order doesn't matter
-    'If images are docked, and toolbars are floating, make toolbars top-most
-    'If images are floating, and toolbars are floating, make toolbars top-most
-    'If images are floating, and toolbars are docked, make images top-most
-    
-    'By default, windows are given a default "bring to top, but NOT top-most" order
-    getDesiredZOrder = HWND_TOP
-    
-    Dim curWindowType As pdWindowType
-    curWindowType = pdWindows(winIndex).typeOfWindow
-    
-End Function
 
 'When the user has resized the image tabstrip, we need to redraw all image windows to match (but toolbars are okay).
 Public Sub notifyImageTabStripResized()
@@ -1859,47 +1648,6 @@ Private Sub requestWindowRedraw(ByVal winIndex As Long, ByRef curWinRect As winR
                     
     'Regardless of the type of window being redrawn, it makes sense to resync the window's coordinates here (as a failsafe).
     requestWindowResync winIndex
-
-End Sub
-
-'Under certain circumstances (such as PD losing focus), it is important to remove the top-most status of any window types.  Use this
-' function to do so.  If restoreOriginalZOrder is TRUE, the function will re-enable top-most status for any windows that require it.
-Public Sub resetTopmostForAllWindows(Optional ByVal restoreOriginalZOrder As Boolean = False)
-
-    Dim i As Long
-
-    If restoreOriginalZOrder Then
-    
-        For i = 0 To numOfPDWindows - 1
-            If pdWindows(i).isVisible Then
-                SetWindowPos pdWindows(i).hWnd, getDesiredZOrder(i), 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
-            End If
-        Next i
-        
-        'If the program has registered any extra windows (e.g. modal dialogs), restore them last.  This will ensure that they still
-        ' sit above any image or toolbar windows.
-        If numOfExtraWindows > 0 Then
-            For i = 0 To numOfExtraWindows - 1
-                SetWindowPos extraWindowHwnds(i), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING Or SWP_SHOWWINDOW
-            Next i
-        End If
-        
-    Else
-        
-        For i = 0 To numOfPDWindows - 1
-            If pdWindows(i).isVisible Then
-                SetWindowPos pdWindows(i).hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_SHOWWINDOW
-            End If
-        Next i
-        
-        'If the program has registered any extra windows (e.g. modal dialogs), reset them as well
-        If numOfExtraWindows > 0 Then
-            For i = 0 To numOfExtraWindows - 1
-                SetWindowPos extraWindowHwnds(i), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOSIZE Or SWP_NOMOVE Or SWP_NOSENDCHANGING
-            Next i
-        End If
-        
-    End If
 
 End Sub
 
@@ -2155,9 +1903,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
 
                 'Resize and/or move each child window as necessary
                 For i = 0 To numOfPDWindows - 1
-
                     If i <> mainWindowIndex Then requestWindowRedraw i, curWinRect
-
                 Next i
 
                 mainFormTriggeredChange = False
@@ -2171,35 +1917,6 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 ' To obtain the correct result when testing the value of wParam, an application must combine the value 0xFFF0 with
                 ' the wParam value by using the bitwise AND operator.
                 wParam = wParam And WM_SYSCOMMAND_WPARAM_MASK
-
-                'WM_SYSCOMMAND functions are difficult to handle, especially on Win 7 where Aero Snap features interact with them
-                ' in completely unpredictable ways.  This code block (which can be safely commented out) is helpful for seeing
-                ' what messages the window manager receives from different actions.
-                If Not g_IsProgramCompiled Then
-
-                    Select Case wParam
-
-                        Case SC_MAXIMIZE
-                            'Debug.Print "Received system maximize message " & bBefore
-                        
-                        Case SC_MINIMIZE
-                            'Debug.Print "Received system minimize message " & bBefore
-                        
-                        Case SC_RESTORE
-                            'Debug.Print "Received system restore window message " & bBefore
-
-                        Case SC_SIZE
-                            'Debug.Print "Received system window size message " & bBefore
-
-                        Case SC_MOVE
-                            'Debug.Print "Received system window move message " & bBefore
-
-                        Case Else
-                            'Debug.Print "Received unknown system window message: " & wParam
-
-                    End Select
-
-                End If
                 
                 'RANDOM NOTE: for reasons I don't fully understand, bBefore will not always evaluate properly if used as a standalone
                 ' boolean value (e.g. If Not bBefore Then...).  It must be *explicitly* checked against a VB Boolean type in order
@@ -2248,7 +1965,6 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         'PD is losing focus; make all top-most windows not topmost
                         Case WA_INACTIVE
                             Debug.Print "> PhotoDemon lost focus! <"
-                            resetTopmostForAllWindows False
                             isPDDeactivated = True
                             
                         'PD is gaining focus
@@ -2256,10 +1972,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                             Debug.Print "> PhotoDemon regained focus! <"
                             
                             'Reactivate window state
-                            If isPDDeactivated Then
-                                resetTopmostForAllWindows True
-                                isPDDeactivated = False
-                            End If
+                            If isPDDeactivated Then isPDDeactivated = False
                             
                     End Select
                     

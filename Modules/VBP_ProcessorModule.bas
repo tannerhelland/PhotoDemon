@@ -1935,11 +1935,8 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     'The interface will automatically be synched if an image is open and some undo-related action was applied,
     ' but if either of those did not occur, sync the interface now
     syncInterfaceToCurrentImage
-        
-    'Finally, after all our work is done, return focus to the main PD window
-    'If (MacroStatus <> MacroBATCH) Then g_WindowManager.requestActivation FormMain.hWnd
     
-    '...and then restore focus to whichever control had it previously
+    'Restore focus to whichever control had it previously
     If focusHwnd <> 0 Then g_WindowManager.SetFocusAPI focusHwnd
     
     'If an update is available, and we haven't displayed a notification yet, do so now

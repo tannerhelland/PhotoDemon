@@ -113,7 +113,6 @@ Private Const WM_MBUTTONDBLCLK As Long = &H209
 Private Const WM_RBUTTONDBLCLK As Long = &H206
 Private Const WM_XBUTTONDBLCLK As Long = &H20D
 
-Private Const WM_ACTIVATE As Long = &H6
 Private Const WM_SETFOCUS As Long = &H7
 Private Const WM_KILLFOCUS As Long = &H8
 
