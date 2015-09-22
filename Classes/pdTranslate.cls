@@ -881,7 +881,7 @@ Public Sub restoreFormCaption(ByRef srcForm As Form)
     'If a new string was found, apply it to the object's caption
     If Len(newString) <> 0 Then
         If Not (g_WindowManager Is Nothing) Then
-            g_WindowManager.requestWindowCaptionChange srcForm, " " & newString
+            g_WindowManager.SetWindowCaptionW srcForm.hWnd, " " & newString
         Else
             srcForm.Caption = " " & newString
         End If
@@ -904,7 +904,7 @@ Public Sub translateFormCaption(ByRef srcForm As Form)
     'If a new string was found, apply it to the object's caption
     If Len(newString) <> 0 Then
         If Not (g_WindowManager Is Nothing) Then
-            g_WindowManager.requestWindowCaptionChange srcForm, " " & newString
+            g_WindowManager.SetWindowCaptionW srcForm.hWnd, " " & newString
         Else
             srcForm.Caption = " " & newString
         End If

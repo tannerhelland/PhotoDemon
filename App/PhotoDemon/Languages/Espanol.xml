@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.87</langversion>
+<langversion>6.7.88</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -4930,11 +4930,6 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
-<original>Floating toolboxes</original>
-<translation>cajas de herramientas flotantes</translation>
-</phrase>
-
-<phrase>
 <original>Next image</original>
 <translation>Siguiente imagen</translation>
 </phrase>
@@ -5555,7 +5550,7 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 <translation>Retire canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 558 phrases. 172 were duplicates of existing phrases, so only 386 new phrases were written to file. -->
+<!-- MainWindow.frm contains 557 phrases. 172 were duplicates of existing phrases, so only 385 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14117,10 +14112,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2434</phrasecount>
+<phrasecount>2433</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4155 phrases. -->
-<!-- 1721 are duplicates, so only 2434 unique phrases have been written to file. -->
-<!-- These 2434 phrases contain approximately 13234 total words. -->
+<!-- As of this build, PhotoDemon contains 4154 phrases. -->
+<!-- 1721 are duplicates, so only 2433 unique phrases have been written to file. -->
+<!-- These 2433 phrases contain approximately 13232 total words. -->
 
 </pdData>
