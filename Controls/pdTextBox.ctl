@@ -236,7 +236,6 @@ Private Const WM_KILLFOCUS As Long = &H8
 Private Const WM_SETTEXT As Long = &HC
 Private Const WM_COMMAND As Long = &H111
 Private Const WM_NEXTDLGCTL As Long = &H28
-Private Const WM_ACTIVATE As Long = &H6
 Private Const WM_MOUSEACTIVATE As Long = &H21
 Private Const WM_CTLCOLOREDIT As Long = &H133
 

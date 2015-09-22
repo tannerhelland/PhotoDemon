@@ -134,11 +134,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         
         Dim cdTitle As String
         cdTitle = g_Language.TranslateMessage("Load a previously saved selection")
-        
-        'Remove top-most status from any/all windows (toolbars in floating mode, primarily).  If we don't do this, they may
-        ' appear over the top of the common dialog.
-        g_WindowManager.resetTopmostForAllWindows False
-        
+                
         If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, g_UserPreferences.getSelectionPath, cdTitle, , getModalOwner().hWnd) Then
             
             'Use a temporary selection object to validate the requested selection file
@@ -166,9 +162,6 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         
         'Re-enable user input
         Interface.enableUserInput
-        
-        'Reset window top-most status
-        g_WindowManager.resetTopmostForAllWindows True
         
     Else
     
@@ -201,11 +194,7 @@ Public Sub SaveSelectionToFile()
     
     Dim cdTitle As String
     cdTitle = g_Language.TranslateMessage("Save the current selection")
-    
-    'Remove top-most status from any/all windows (toolbars in floating mode, primarily).  If we don't do this, they may
-    ' appear over the top of the common dialog.
-    g_WindowManager.resetTopmostForAllWindows False
-    
+        
     If saveDialog.GetSaveFileName(sFile, , True, cdFilter, 1, g_UserPreferences.getSelectionPath, cdTitle, "." & SELECTION_EXT, getModalOwner().hWnd) Then
         
         'Save the new directory as the default path for future usage
@@ -219,10 +208,7 @@ Public Sub SaveSelectionToFile()
         End If
         
     End If
-    
-    'Reset window top-most status
-    g_WindowManager.resetTopmostForAllWindows True
-    
+        
 End Sub
 
 'Export the currently selected area as an image.  This is provided as a convenience to the user, so that they do not have to crop

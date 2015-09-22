@@ -405,10 +405,7 @@ Public Sub LoadTheProgram()
     Load toolbar_ImageTabs
     Load toolbar_Options
     
-    'Apply the necessary window styles to have the toolbars self-align within the main PD window.
-    g_WindowManager.setFloatState TOOLBAR_WINDOW, False, True
-    
-    'Retrieve visibility and mark those menus as well
+    'Retrieve tool window visibility and mark those menus as well
     FormMain.MnuWindowToolbox(0).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
     FormMain.MnuWindow(1).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True)
     FormMain.MnuWindow(2).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Layers Toolbox", True)

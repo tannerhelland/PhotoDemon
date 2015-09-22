@@ -3126,18 +3126,32 @@ Private Sub Form_Unload(Cancel As Integer)
         pdDebug.LogAction "Releasing main form theming"
     #End If
     
+    'TODO: implement this, as necessary, once theming is active
     'ReleaseFormTheming Me
+        
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Unloading toolbars"
+    #End If
+        
+    'Unload all toolbars
+    #If DEBUGMODE = 1 Then
+        If Not (toolbar_Debug Is Nothing) Then Unload toolbar_Debug
+    #End If
+    If Not (toolbar_ImageTabs Is Nothing) Then Unload toolbar_ImageTabs
+    If Not (toolbar_Layers Is Nothing) Then Unload toolbar_Layers
+    If Not (toolbar_Options Is Nothing) Then Unload toolbar_Options
+    If Not (toolbar_Toolbox Is Nothing) Then Unload toolbar_Toolbox
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Shutting down window manager"
     #End If
-            
+    
     'Release this form from the window manager, and write out all window data to file
     g_WindowManager.unregisterForm Me
     g_WindowManager.saveAllWindowLocations
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Forcibly unloading all remaining forms"
+        pdDebug.LogAction "Forcibly unloading any remaining forms"
     #End If
     
     'As a final failsafe, forcibly unload any remaining forms
