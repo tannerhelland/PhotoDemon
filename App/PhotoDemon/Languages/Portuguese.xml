@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.84</langversion>
+<langversion>6.7.85</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -4930,11 +4930,6 @@ or os menus File> Open e File> Import.</translation>
 </phrase>
 
 <phrase>
-<original>Floating toolboxes</original>
-<translation>caixas de ferramentas flutuante</translation>
-</phrase>
-
-<phrase>
 <original>Next image</original>
 <translation>Próxima imagem</translation>
 </phrase>
@@ -5555,7 +5550,7 @@ Note Idioma alterado com sucesso: algum texto programa menor não pode ser live-
 <translation>Remover canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 558 phrases. 172 were duplicates of existing phrases, so only 386 new phrases were written to file. -->
+<!-- MainWindow.frm contains 557 phrases. 172 were duplicates of existing phrases, so only 385 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14117,10 +14112,10 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2434</phrasecount>
+<phrasecount>2433</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4155 phrases. -->
-<!-- 1721 are duplicates, so only 2434 unique phrases have been written to file. -->
-<!-- These 2434 phrases contain approximately 13234 total words. -->
+<!-- As of this build, PhotoDemon contains 4154 phrases. -->
+<!-- 1721 are duplicates, so only 2433 unique phrases have been written to file. -->
+<!-- These 2433 phrases contain approximately 13232 total words. -->
 
 </pdData>

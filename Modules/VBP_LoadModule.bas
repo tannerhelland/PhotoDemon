@@ -397,7 +397,7 @@ Public Sub LoadTheProgram()
     Set g_WindowManager = New pdWindowManager
     
     'Register the main form
-    g_WindowManager.registerParentForm FormMain
+    g_WindowManager.RegisterParentForm FormMain
     
     'Load all tool windows.  Even though they may not be visible (as the user can elect to hide them), we still want them loaded,
     ' so we can interact with them as necessary (e.g. "enable Undo button", etc).
@@ -464,7 +464,11 @@ Public Sub LoadTheProgram()
     initAllCursors
     
     'Set up the program's title bar.  Odd-numbered releases are development releases.  Even-numbered releases are formal builds.
-    FormMain.Caption = getPhotoDemonNameAndVersion()
+    If Not (g_WindowManager Is Nothing) Then
+        g_WindowManager.SetWindowCaptionW FormMain.hWnd, getPhotoDemonNameAndVersion()
+    Else
+        FormMain.Caption = getPhotoDemonNameAndVersion()
+    End If
     
     'PhotoDemon renders many of its own icons dynamically.  Initialize that engine now.
     initializeIconHandler
@@ -553,7 +557,7 @@ Public Sub LoadTheProgram()
     
     'If this is the first time the user has run PhotoDemon, resize the window a bit to make the default position nice.
     ' (If this is *not* the first time, the window manager will automatically restore the window's last-known position and state.)
-    If g_IsFirstRun Then g_WindowManager.setFirstRunMainWindowPosition
+    If g_IsFirstRun Then g_WindowManager.SetFirstRunMainWindowPosition
     
     'In debug mode, make a baseline memory reading here, before the main form is displayed.
     #If DEBUGMODE = 1 Then

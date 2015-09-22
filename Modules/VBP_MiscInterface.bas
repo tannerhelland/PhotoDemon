@@ -142,7 +142,11 @@ Public Sub syncInterfaceToCurrentImage()
         Message "Please load or import an image to begin editing."
         
         'Assign a generic caption to the main window
-        FormMain.Caption = getPhotoDemonNameAndVersion()
+        If Not (g_WindowManager Is Nothing) Then
+            g_WindowManager.SetWindowCaptionW FormMain.hWnd, getPhotoDemonNameAndVersion()
+        Else
+            FormMain.Caption = getPhotoDemonNameAndVersion()
+        End If
         
         'Erase the main viewport's status bar
         FormMain.mainCanvas(0).displayImageSize Nothing, True
@@ -196,7 +200,11 @@ Public Sub syncInterfaceToCurrentImage()
             If Not FormMain.MnuEdit(9).Enabled Then FormMain.MnuEdit(9).Enabled = True
             
             'Display this image's path in the title bar.
-            FormMain.Caption = getWindowCaption(pdImages(g_CurrentImage))
+            If Not (g_WindowManager Is Nothing) Then
+                g_WindowManager.SetWindowCaptionW FormMain.hWnd, getWindowCaption(pdImages(g_CurrentImage))
+            Else
+                FormMain.Caption = getWindowCaption(pdImages(g_CurrentImage))
+            End If
             
             'Draw icons onto the main viewport's status bar
             FormMain.mainCanvas(0).drawStatusBarIcons True
@@ -427,7 +435,7 @@ Public Sub syncInterfaceToCurrentImage()
     
     'A setting of 2 equates to index 2 in the menu, specifically "Never show image tabstrip".  Hide the tabstrip.
     If g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1) = 2 Then
-        g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, False
+        g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, False
     Else
         
         'A setting of 1 equates to index 1 in the menu, specifically "Show for 2+ loaded images".  Check image count and
@@ -435,18 +443,18 @@ Public Sub syncInterfaceToCurrentImage()
         If g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1) = 1 Then
             
             If g_OpenImageCount > 1 Then
-                g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, True
+                g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, True
             Else
-                g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, False
+                g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, False
             End If
         
         'A setting of 0 equates to index 0 in the menu, specifically "always show tabstrip".
         Else
         
             If g_OpenImageCount > 0 Then
-                g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, True
+                g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, True
             Else
-                g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, False
+                g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, False
             End If
         
         End If
@@ -1043,7 +1051,7 @@ Public Sub toggleImageTabstripAlignment(ByVal newAlignment As AlignConstants, Op
     If Not suppressPrefUpdate Then g_UserPreferences.SetPref_Long "Core", "Image Tabstrip Alignment", CLng(newAlignment)
     
     'Notify the window manager of the change
-    g_WindowManager.setImageTabstripAlignment newAlignment
+    g_WindowManager.SetImageTabstripAlignment newAlignment
     
     If Not suppressInterfaceSync Then
     
@@ -1101,7 +1109,7 @@ Public Sub toggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
         Case FILE_TOOLBOX
             FormMain.MnuWindowToolbox(0).Checked = Not FormMain.MnuWindowToolbox(0).Checked
             g_UserPreferences.SetPref_Boolean "Core", "Show File Toolbox", FormMain.MnuWindowToolbox(0).Checked
-            g_WindowManager.setWindowVisibility toolbar_Toolbox.hWnd, FormMain.MnuWindowToolbox(0).Checked
+            g_WindowManager.SetWindowVisibility toolbar_Toolbox.hWnd, FormMain.MnuWindowToolbox(0).Checked
             
         Case TOOLS_TOOLBOX
             FormMain.MnuWindow(1).Checked = Not FormMain.MnuWindow(1).Checked
@@ -1114,12 +1122,12 @@ Public Sub toggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
         Case LAYER_TOOLBOX
             FormMain.MnuWindow(2).Checked = Not FormMain.MnuWindow(2).Checked
             g_UserPreferences.SetPref_Boolean "Core", "Show Layers Toolbox", FormMain.MnuWindow(2).Checked
-            g_WindowManager.setWindowVisibility toolbar_Layers.hWnd, FormMain.MnuWindow(2).Checked
+            g_WindowManager.SetWindowVisibility toolbar_Layers.hWnd, FormMain.MnuWindow(2).Checked
         
         Case DEBUG_TOOLBOX
             FormMain.MnuDevelopers(0).Checked = Not FormMain.MnuDevelopers(0).Checked
             g_UserPreferences.SetPref_Boolean "Core", "Show Debug Window", FormMain.MnuDevelopers(0).Checked
-            g_WindowManager.setWindowVisibility toolbar_Debug.hWnd, FormMain.MnuDevelopers(0).Checked
+            g_WindowManager.SetWindowVisibility toolbar_Debug.hWnd, FormMain.MnuDevelopers(0).Checked
     
     End Select
     

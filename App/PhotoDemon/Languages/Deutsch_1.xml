@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.84</langversion>
+<langversion>6.7.85</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -4928,11 +4928,6 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 </phrase>
 
 <phrase>
-<original>Floating toolboxes</original>
-<translation>Zusatzfenster nicht andocken</translation>
-</phrase>
-
-<phrase>
 <original>Next image</original>
 <translation>Nächstes Bild</translation>
 </phrase>
@@ -5553,7 +5548,7 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 558 phrases. 172 were duplicates of existing phrases, so only 386 new phrases were written to file. -->
+<!-- MainWindow.frm contains 557 phrases. 172 were duplicates of existing phrases, so only 385 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14115,10 +14110,10 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2434</phrasecount>
+<phrasecount>2433</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4155 phrases. -->
-<!-- 1721 are duplicates, so only 2434 unique phrases have been written to file. -->
-<!-- These 2434 phrases contain approximately 13234 total words. -->
+<!-- As of this build, PhotoDemon contains 4154 phrases. -->
+<!-- 1721 are duplicates, so only 2433 unique phrases have been written to file. -->
+<!-- These 2433 phrases contain approximately 13232 total words. -->
 
 </pdData>
