@@ -33,6 +33,7 @@ End Enum
     Private Const TabDefaultBehavior = 0, TabRaiseEvent = 1
 #End If
 
+
 'Iterate through all sibling controls in our container, and if one is capable of receiving focus, activate it.  I had *really* hoped
 ' to bypass this kind of manual handling by using WM_NEXTDLGCTL, but I failed to get it working reliably with all types of VB windows.
 ' I'm honestly not sure whether VB even uses that message, or whether it uses some internal mechanism for focus tracking; the latter
@@ -74,7 +75,7 @@ Public Function ForwardFocusToNewControl(ByRef sourceControl As Object, ByVal fo
             ' non-focusable objects like this, although this requires any outside user to complete the list with their own potentially
             ' non-focusable controls.  Not ideal, but I don't know a good way (short of error handling) to see whether a VB object
             ' is focusable.
-            If isControlFocusable(Ctl) Then
+            If IsControlFocusable(Ctl) Then
             
                 'Ignore controls whose TabStop property is False, who are not visible, or who are disabled
                 If Ctl.TabStop And Ctl.Visible And Ctl.Enabled Then
@@ -133,7 +134,7 @@ NextControlCheck:
                 ' non-focusable objects like this, although this requires any outside user to complete the list with their own potentially
                 ' non-focusable controls.  Not ideal, but I don't know a good way (short of error handling) to see whether a VB object
                 ' is focusable.
-                If isControlFocusable(Ctl) Then
+                If IsControlFocusable(Ctl) Then
                     
                     'Ignore controls whose TabStop property is False, who are not visible, or who are disabled
                     If Ctl.TabStop And Ctl.Visible And Ctl.Enabled Then
@@ -199,12 +200,12 @@ End Function
 
 'If an object of type Control is capable of receiving focus, this will return TRUE.  We use this to make sure focus-setting
 ' doesn't break by accidentally setting focus to something we shouldn't.
-Public Function isControlFocusable(ByRef Ctl As Control) As Boolean
+Public Function IsControlFocusable(ByRef Ctl As Control) As Boolean
 
     If Not (TypeOf Ctl Is Timer) And Not (TypeOf Ctl Is Line) And Not (TypeOf Ctl Is pdLabel) And Not (TypeOf Ctl Is Frame) And Not (TypeOf Ctl Is Shape) And Not (TypeOf Ctl Is Image) And Not (TypeOf Ctl Is vbalHookControl) And Not (TypeOf Ctl Is ShellPipe) And Not (TypeOf Ctl Is pdDownload) Then
-        isControlFocusable = True
+        IsControlFocusable = True
     Else
-        isControlFocusable = False
+        IsControlFocusable = False
     End If
 
 End Function

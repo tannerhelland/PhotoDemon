@@ -114,11 +114,11 @@ Public Sub LoadTheProgram()
     Dim cSysInfo As pdSystemInfo
     Set cSysInfo = New pdSystemInfo
     
-    g_IsVistaOrLater = cSysInfo.isOSVistaOrLater
-    g_IsWin7OrLater = cSysInfo.isOSWin7OrLater
-    g_IsWin8OrLater = cSysInfo.isOSWin8OrLater
-    g_IsWin81OrLater = cSysInfo.isOSWin81OrLater
-    g_IsWin10OrLater = cSysInfo.isOSWin10OrLater
+    g_IsVistaOrLater = cSysInfo.IsOSVistaOrLater
+    g_IsWin7OrLater = cSysInfo.IsOSWin7OrLater
+    g_IsWin8OrLater = cSysInfo.IsOSWin8OrLater
+    g_IsWin81OrLater = cSysInfo.IsOSWin81OrLater
+    g_IsWin10OrLater = cSysInfo.IsOSWin10OrLater
     
     'If we are on Windows 7, prepare some Win7-specific features (like taskbar progress bars)
     If g_IsWin7OrLater Then prepWin7Features
@@ -133,7 +133,7 @@ Public Sub LoadTheProgram()
         perfCheck.markEvent "ClearType check"
     #End If
     
-    handleClearType True
+    HandleClearType True
     
     
     
@@ -147,7 +147,7 @@ Public Sub LoadTheProgram()
     
     'Before initializing the preference engine, generate a unique session ID for this PhotoDemo instance.  This ID will be used to
     ' separate the temp files for this program instance from any other simultaneous instances.
-    g_SessionID = cSysInfo.getUniqueSessionID()
+    g_SessionID = cSysInfo.GetUniqueSessionID()
     
     Set g_UserPreferences = New pdPreferences
     
@@ -223,9 +223,9 @@ Public Sub LoadTheProgram()
     Set g_Displays = New pdDisplays
     g_Displays.RefreshDisplays
     
-    'While here, also cache the current color management settings in use by the system
-    cacheCurrentSystemColorProfile
-    
+    'While here, also cache various display-related settings; this is faster than constantly retrieving them via APIs
+    Color_Management.CacheCurrentSystemColorProfile
+    Interface.CacheSystemDPI g_Displays.GetWindowsDPI
     
     
     '*************************************************************************************************************************************
@@ -415,10 +415,10 @@ Public Sub LoadTheProgram()
     #End If
     
     'Retrieve two additional settings for the image tabstrip menu: when to display the image tabstrip...
-    toggleImageTabstripVisibility g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1), True, True
+    ToggleImageTabstripVisibility g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Visibility", 1), True, True
     
     '...and the alignment of the tabstrip
-    toggleImageTabstripAlignment g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Alignment", vbAlignTop), True, True
+    ToggleImageTabstripAlignment g_UserPreferences.GetPref_Long("Core", "Image Tabstrip Alignment", vbAlignTop), True, True
     
     'The primary toolbox has some options of its own.  Load them now.
     FormMain.MnuWindowToolbox(2).Checked = g_UserPreferences.GetPref_Boolean("Core", "Show Toolbox Category Labels", True)
@@ -490,7 +490,7 @@ Public Sub LoadTheProgram()
     
     'Throughout the program, g_MouseAccuracy is used to determine how close the mouse cursor must be to a point of interest to
     ' consider it "over" that point.  DPI must be accounted for when calculating this value (as it's calculated in pixels).
-    g_MouseAccuracy = fixDPIFloat(6)
+    g_MouseAccuracy = FixDPIFloat(6)
     
     'Apply visual styles
     FormMain.updateAgainstCurrentTheme False
@@ -535,7 +535,7 @@ Public Sub LoadTheProgram()
     loadMenuIcons
     
     'Synchronize all other interface elements to match the current program state (e.g. no images loaded).
-    syncInterfaceToCurrentImage
+    SyncInterfaceToCurrentImage
     
     
     
@@ -793,7 +793,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 missingFiles = missingFiles & GetFilename(sFile(thisImage)) & vbCrLf
             Else
                 If Not suspendWarnings Then
-                    pdMsgBox "Unfortunately, the image '%1' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found", sFile(thisImage)
+                    PDMsgBox "Unfortunately, the image '%1' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found", sFile(thisImage)
                 End If
             End If
             
@@ -1057,7 +1057,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
                 brokenFiles = brokenFiles & GetFilename(sFile(thisImage)) & vbCrLf
             Else
                 If (MacroStatus <> MacroBATCH) And (Not suspendWarnings) And (freeImage_Return <> PD_FAILURE_USER_CANCELED) Then
-                    pdMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Import Failed", sFile(thisImage)
+                    PDMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Import Failed", sFile(thisImage)
                 End If
             End If
             
@@ -1393,7 +1393,7 @@ PDI_Load_Continuation:
             toolbar_ImageTabs.registerNewImage g_CurrentImage
             
             'Just to be safe, update the color management profile of the current monitor
-            checkParentMonitor True
+            CheckParentMonitor True
             
             'If the user wants us to resize the image to fit on-screen, do that now
             If g_AutozoomLargeImages = 0 Then FitImageToViewport True
@@ -1620,7 +1620,7 @@ PreloadMoreImages:
     FormMain.Enabled = True
     
     'Synchronize all interface elements to match the newly loaded image(s)
-    syncInterfaceToCurrentImage
+    SyncInterfaceToCurrentImage
     toolbar_ImageTabs.forceRedraw
     
     
@@ -1644,14 +1644,14 @@ PreloadMoreImages:
     If multipleFilesLoading And (Len(missingFiles) <> 0) Then
         Message "All images loaded, except for those that could not be found."
         If Not suspendWarnings Then
-            pdMsgBox "Unfortunately, PhotoDemon was unable to find the following image(s):" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "If these images were originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "Image files missing", missingFiles
+            PDMsgBox "Unfortunately, PhotoDemon was unable to find the following image(s):" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "If these images were originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "Image files missing", missingFiles
         End If
     End If
         
     If multipleFilesLoading And (Len(brokenFiles) <> 0) Then
         Message "All images loaded, except for those in invalid formats."
         If Not suspendWarnings Then
-            pdMsgBox "Unfortunately, PhotoDemon was unable to load the following image(s):" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save these images in a generic format (such as JPEG or PNG) before loading them into PhotoDemon. Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Formats Not Supported", brokenFiles
+            PDMsgBox "Unfortunately, PhotoDemon was unable to load the following image(s):" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save these images in a generic format (such as JPEG or PNG) before loading them into PhotoDemon. Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Formats Not Supported", brokenFiles
         End If
     End If
     
@@ -1685,7 +1685,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
     Set cFile = New pdFSO
     
     If Not cFile.FileExist(imagePath) Then
-        pdMsgBox "Unfortunately, the image '%1' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found", imagePath
+        PDMsgBox "Unfortunately, the image '%1' could not be found." & vbCrLf & vbCrLf & "If this image was originally located on removable media (DVD, USB drive, etc), please re-insert or re-attach the media and try again.", vbApplicationModal + vbExclamation + vbOKOnly, "File not found", imagePath
         QuickLoadImageToDIB = False
         FormMain.Enabled = True
         Screen.MousePointer = vbNormal
@@ -1757,7 +1757,7 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
         'Only display an error dialog if the import wasn't canceled by the user
         If freeImageReturn <> PD_FAILURE_USER_CANCELED Then
             Message "Failed to load %1", imagePath
-            pdMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Import Failed", imagePath
+            PDMsgBox "Unfortunately, PhotoDemon was unable to load the following image:" & vbCrLf & vbCrLf & "%1" & vbCrLf & vbCrLf & "Please use another program to save this image in a generic format (such as JPEG or PNG) before loading it into PhotoDemon.  Thanks!", vbExclamation + vbOKOnly + vbApplicationModal, "Image Import Failed", imagePath
         Else
             Message "Layer import canceled."
         End If
@@ -2029,7 +2029,7 @@ LoadPDIFail:
     
     'Case 1: zLib is required for this file, but the user doesn't have the zLib plugin
     If pdiReader.getPackageFlag(PDP_FLAG_ZLIB_REQUIRED, PDP_LOCATION_ANY) And (Not g_ZLibEnabled) Then
-        pdMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbInformation + vbOKOnly + vbApplicationModal, "zLib plugin missing", GetFilename(PDIPath)
+        PDMsgBox "The PDI file ""%1"" contains compressed data, but the zLib plugin is missing or disabled." & vbCrLf & vbCrLf & "To enable support for compressed PDI files, click Help > Check for Updates, and when prompted, allow PhotoDemon to download all recommended plugins.", vbInformation + vbOKOnly + vbApplicationModal, "zLib plugin missing", GetFilename(PDIPath)
         Exit Function
     End If
 

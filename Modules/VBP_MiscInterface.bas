@@ -93,10 +93,23 @@ Private isSecondaryDialog As Boolean
 ' If a subsequent request is raised with the exact same text, we can skip the whole message display process.
 Private m_PrevMessage As String
 
+'System DPI is used frequently for UI positioning calculations.  Because it's costly to constantly retrieve it via APIs, this module
+' prefers to cache it only when the value changes.  Call the CacheSystemDPI() sub to update the value when appropriate, and the
+' corresponding GetSystemDPI() function to retrieve the cached value.
+Private m_CurrentSystemDPI As Single
+
+Public Sub CacheSystemDPI(ByVal newDPI As Single)
+    m_CurrentSystemDPI = newDPI
+End Sub
+
+Public Function GetSystemDPI() As Single
+    GetSystemDPI = m_CurrentSystemDPI
+End Function
+
 'Previously, various PD functions had to manually enable/disable button and menu state based on their actions.  This is no longer necessary.
 ' Simply call this function whenever an action has done something that will potentially affect the interface, and this function will iterate
 ' through all potential image/interface interactions, dis/enabling buttons and menus as necessary.
-Public Sub syncInterfaceToCurrentImage()
+Public Sub SyncInterfaceToCurrentImage()
     
     Dim i As Long
     
@@ -108,17 +121,17 @@ Public Sub syncInterfaceToCurrentImage()
     'If no images are loaded, we can disable a whole swath of controls
     If g_OpenImageCount = 0 Then
     
-        metaToggle tSave, False
-        metaToggle tSaveAs, False
-        metaToggle tClose, False
-        metaToggle tCopy, False
-        metaToggle tView, False
-        metaToggle tImageOps, False
-        metaToggle tSelection, False
-        metaToggle tMacro, False
-        metaToggle tZoom, False
-        metaToggle tLayerTools, False
-        metaToggle tNonDestructiveFX, False
+        MetaToggle tSave, False
+        MetaToggle tSaveAs, False
+        MetaToggle tClose, False
+        MetaToggle tCopy, False
+        MetaToggle tView, False
+        MetaToggle tImageOps, False
+        MetaToggle tSelection, False
+        MetaToggle tMacro, False
+        MetaToggle tZoom, False
+        MetaToggle tLayerTools, False
+        MetaToggle tNonDestructiveFX, False
         
         'Disable various layer-related commands as well
         FormMain.MnuLayerSize(0).Enabled = False
@@ -130,7 +143,7 @@ Public Sub syncInterfaceToCurrentImage()
         toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = False
         
         'Reset all Undo/Redo and related menus as well
-        syncUndoRedoInterfaceElements True
+        SyncUndoRedoInterfaceElements True
                 
         'All relevant menu icons can now be redrawn.  (This must be redone after menu captions change, as icons are associated
         ' with captions.)
@@ -186,24 +199,24 @@ Public Sub syncInterfaceToCurrentImage()
         If Not pdImages(g_CurrentImage) Is Nothing Then
         
             'Start by enabling actions that are always available if one or more images are loaded.
-            metaToggle tSaveAs, True
-            metaToggle tClose, True
-            metaToggle tCopy, True
+            MetaToggle tSaveAs, True
+            MetaToggle tClose, True
+            MetaToggle tCopy, True
             
-            metaToggle tView, True
-            metaToggle tZoom, True
-            metaToggle tImageOps, True
-            metaToggle tMacro, True
-            metaToggle tLayerTools, True
+            MetaToggle tView, True
+            MetaToggle tZoom, True
+            MetaToggle tImageOps, True
+            MetaToggle tMacro, True
+            MetaToggle tLayerTools, True
             
             'Paste as new layer is always available if one (or more) images are loaded
             If Not FormMain.MnuEdit(9).Enabled Then FormMain.MnuEdit(9).Enabled = True
             
             'Display this image's path in the title bar.
             If Not (g_WindowManager Is Nothing) Then
-                g_WindowManager.SetWindowCaptionW FormMain.hWnd, getWindowCaption(pdImages(g_CurrentImage))
+                g_WindowManager.SetWindowCaptionW FormMain.hWnd, GetWindowCaption(pdImages(g_CurrentImage))
             Else
-                FormMain.Caption = getWindowCaption(pdImages(g_CurrentImage))
+                FormMain.Caption = GetWindowCaption(pdImages(g_CurrentImage))
             End If
             
             'Draw icons onto the main viewport's status bar
@@ -216,18 +229,18 @@ Public Sub syncInterfaceToCurrentImage()
             
             'Reset all Undo/Redo and related menus.  (Note that this also controls the SAVE BUTTON, as the image's save state is modified
             ' by PD's Undo/Redo engine.)
-            syncUndoRedoInterfaceElements True
+            SyncUndoRedoInterfaceElements True
             
             'Because those changes may modify menu captions, menu icons need to be reset (as they are tied to menu captions)
             resetMenuIcons
             
             'Determine whether metadata is present, and dis/enable metadata menu items accordingly
             If Not pdImages(g_CurrentImage).imgMetadata Is Nothing Then
-                metaToggle tMetadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
-                metaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
+                MetaToggle tMetadata, pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata
+                MetaToggle tGPSMetadata, pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata()
             Else
-                metaToggle tMetadata, False
-                metaToggle tGPSMetadata, False
+                MetaToggle tMetadata, False
+                MetaToggle tGPSMetadata, False
             End If
             
             'Display the size of this image in the status bar
@@ -258,12 +271,12 @@ Public Sub syncInterfaceToCurrentImage()
             
             'If a selection is active on this image, update the text boxes to match
             If pdImages(g_CurrentImage).selectionActive And (Not pdImages(g_CurrentImage).mainSelection Is Nothing) Then
-                metaToggle tSelection, True
-                metaToggle tSelectionTransform, pdImages(g_CurrentImage).mainSelection.isTransformable
+                MetaToggle tSelection, True
+                MetaToggle tSelectionTransform, pdImages(g_CurrentImage).mainSelection.isTransformable
                 syncTextToCurrentSelection g_CurrentImage
             Else
-                metaToggle tSelection, False
-                metaToggle tSelectionTransform, False
+                MetaToggle tSelection, False
+                MetaToggle tSelectionTransform, False
             End If
             
             'Update all layer menus; some will be disabled depending on just how many layers are available, how many layers
@@ -291,7 +304,7 @@ Public Sub syncInterfaceToCurrentImage()
                     toolpanel_MoveSize.cmdLayerAffinePermanent.Enabled = pdImages(g_CurrentImage).getActiveLayer.affineTransformsActive(True)
                     
                     'If non-destructive FX are active on the current layer, update the non-destructive tool enablement to match
-                    metaToggle tNonDestructiveFX, True
+                    MetaToggle tNonDestructiveFX, True
                     
                     'Layer rasterization depends on the current layer type
                     FormMain.MnuLayerRasterize(0).Enabled = pdImages(g_CurrentImage).getActiveLayer.isLayerVector
@@ -412,7 +425,7 @@ Public Sub syncInterfaceToCurrentImage()
                 FormMain.MnuLayer(13).Enabled = False
                 FormMain.MnuLayer(15).Enabled = False
                 FormMain.MnuLayer(16).Enabled = False
-                metaToggle tNonDestructiveFX, False
+                MetaToggle tNonDestructiveFX, False
             
             End If
                     
@@ -482,12 +495,12 @@ End Sub
 '
 'If the caller will be calling resetMenuIcons after using this function, make sure to pass the optional suspendAssociatedRedraws as TRUE
 ' to prevent unnecessary redraws.
-Public Sub syncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws As Boolean = False)
+Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws As Boolean = False)
 
     If g_OpenImageCount = 0 Then
     
-        metaToggle tUndo, False, True
-        metaToggle tRedo, False, True
+        MetaToggle tUndo, False, True
+        MetaToggle tRedo, False, True
         
         'Undo history is disabled when no images are loaded
         FormMain.MnuEdit(2).Enabled = False
@@ -507,13 +520,13 @@ Public Sub syncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
     Else
     
         'Save is a bit funny, because if the image HAS been saved to file, we DISABLE the save button.
-        metaToggle tSave, Not pdImages(g_CurrentImage).getSaveState(pdSE_AnySave)
+        MetaToggle tSave, Not pdImages(g_CurrentImage).getSaveState(pdSE_AnySave)
         
         'Undo, Redo, Repeat and Fade are all closely related
         If Not (pdImages(g_CurrentImage).undoManager Is Nothing) Then
         
-            metaToggle tUndo, pdImages(g_CurrentImage).undoManager.getUndoState, True
-            metaToggle tRedo, pdImages(g_CurrentImage).undoManager.getRedoState, True
+            MetaToggle tUndo, pdImages(g_CurrentImage).undoManager.getUndoState, True
+            MetaToggle tRedo, pdImages(g_CurrentImage).undoManager.getRedoState, True
             
             'Undo history is enabled if either Undo or Redo is active
             If pdImages(g_CurrentImage).undoManager.getUndoState Or pdImages(g_CurrentImage).undoManager.getRedoState Then
@@ -557,7 +570,7 @@ End Sub
 
 'metaToggle enables or disables a swath of controls related to a simple keyword (e.g. "Undo", which affects multiple menu items
 ' and toolbar buttons)
-Public Sub metaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boolean, Optional ByVal suspendAssociatedRedraws As Boolean = False)
+Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boolean, Optional ByVal suspendAssociatedRedraws As Boolean = False)
     
     Dim i As Long
     
@@ -894,7 +907,7 @@ End Sub
 ' while also properly assigning ownership so that the dialog is truly on top of any active windows.  It also handles deactivation of
 ' other windows (to prevent click-through), and dynamic top-most behavior to ensure that the program doesn't steal focus if the user switches
 ' to another program while a modal dialog is active.
-Public Sub showPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogForm As Form, Optional ByVal doNotUnload As Boolean = False)
+Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogForm As Form, Optional ByVal doNotUnload As Boolean = False)
 
     On Error GoTo showPDDialogError
     
@@ -977,16 +990,16 @@ End Sub
 '
 'If the caller knows in advance that a modal dialog is owned by another modal dialog (for example, a tool dialog displaying a color
 ' selection dialog), it can explicitly mark the assumeSecondaryDialog function as TRUE.
-Public Function getModalOwner(Optional ByVal assumeSecondaryDialog As Boolean = False) As Form
+Public Function GetModalOwner(Optional ByVal assumeSecondaryDialog As Boolean = False) As Form
 
     'If a modal dialog is already active, it gets ownership over subsequent dialogs
     If isSecondaryDialog Or assumeSecondaryDialog Then
-        Set getModalOwner = currentDialogReference
+        Set GetModalOwner = currentDialogReference
         
     'No modal dialog is active, making this the only one.  Give the main form ownership.
     Else
         
-        Set getModalOwner = FormMain
+        Set GetModalOwner = FormMain
         
     End If
     
@@ -994,15 +1007,15 @@ End Function
 
 'Return the system keyboard delay, in seconds.  This isn't an exact science because the delay is actually hardware dependent
 ' (e.g. the system returns a value from 0 to 3), but we can use a "good enough" approximation.
-Public Function getKeyboardDelay() As Double
+Public Function GetKeyboardDelay() As Double
     Dim keyDelayIndex As Long
     SystemParametersInfo SPI_GETKEYBOARDDELAY, 0, keyDelayIndex, 0
-    getKeyboardDelay = (keyDelayIndex + 1) * 0.25
+    GetKeyboardDelay = (keyDelayIndex + 1) * 0.25
 End Function
 
 'Return the system keyboard repeat rate, in seconds.  This isn't an exact science because the delay is actually hardware dependent
 ' (e.g. the system returns a value from 0 to 31), but we can use a "good enough" approximation.
-Public Function getKeyboardRepeatRate() As Double
+Public Function GetKeyboardRepeatRate() As Double
     
     Dim keyRepeatIndex As Long
     SystemParametersInfo SPI_GETKEYBOARDSPEED, 0, keyRepeatIndex, 0
@@ -1013,11 +1026,11 @@ Public Function getKeyboardRepeatRate() As Double
     ' scale by as much as 20%. The pvParam parameter must point to a DWORD variable that receives the setting."
     '
     'The formula below mimics this behavior pretty closely (35 repetitions per second at the high-end, but identical at the low end)
-    getKeyboardRepeatRate = (400 - (keyRepeatIndex * 12)) / 1000
+    GetKeyboardRepeatRate = (400 - (keyRepeatIndex * 12)) / 1000
     
 End Function
 
-Public Sub toggleImageTabstripAlignment(ByVal newAlignment As AlignConstants, Optional ByVal suppressInterfaceSync As Boolean = False, Optional ByVal suppressPrefUpdate As Boolean = False)
+Public Sub ToggleImageTabstripAlignment(ByVal newAlignment As AlignConstants, Optional ByVal suppressInterfaceSync As Boolean = False, Optional ByVal suppressPrefUpdate As Boolean = False)
     
     'Reset the menu checkmarks
     Dim curMenuIndex As Long
@@ -1067,7 +1080,7 @@ End Sub
 
 'The image tabstrip can set to appear under a variety of circumstances.  Use this sub to change the current setting; it will
 ' automatically handle syncing with the preferences file.
-Public Sub toggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVal suppressInterfaceSync As Boolean = False, Optional ByVal suppressPrefUpdate As Boolean = False)
+Public Sub ToggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVal suppressInterfaceSync As Boolean = False, Optional ByVal suppressPrefUpdate As Boolean = False)
 
     'Start by synchronizing menu checkmarks to the selected option
     Dim i As Long
@@ -1089,7 +1102,7 @@ Public Sub toggleImageTabstripVisibility(ByVal newSetting As Long, Optional ByVa
     
         'Synchronize the interface to match; note that this will handle showing/hiding the tabstrip based on the number of
         ' currently open images.
-        syncInterfaceToCurrentImage
+        SyncInterfaceToCurrentImage
         
     End If
     
@@ -1102,7 +1115,7 @@ End Sub
 
 'Toolbars can be dynamically shown/hidden by a variety of processes (e.g. clicking an entry in the Window menu, clicking the X in a
 ' toolbar's command box, etc).  All those operations should wrap this singular function.
-Public Sub toggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
+Public Sub ToggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
 
     Select Case whichToolbar
     
@@ -1136,7 +1149,7 @@ Public Sub toggleToolbarVisibility(ByVal whichToolbar As pdToolbarType)
     
 End Sub
 
-Public Function fixDPI(ByVal pxMeasurement As Long) As Long
+Public Function FixDPI(ByVal pxMeasurement As Long) As Long
 
     'The first time this function is called, dpiRatio will be 0.  Calculate it.
     If dpiRatio = 0# Then
@@ -1150,11 +1163,11 @@ Public Function fixDPI(ByVal pxMeasurement As Long) As Long
     
     End If
     
-    fixDPI = CLng(dpiRatio * CDbl(pxMeasurement))
+    FixDPI = CLng(dpiRatio * CDbl(pxMeasurement))
     
 End Function
 
-Public Function fixDPIFloat(ByVal pxMeasurement As Long) As Double
+Public Function FixDPIFloat(ByVal pxMeasurement As Long) As Double
 
     'The first time this function is called, dpiRatio will be 0.  Calculate it.
     If dpiRatio = 0# Then
@@ -1168,7 +1181,7 @@ Public Function fixDPIFloat(ByVal pxMeasurement As Long) As Double
     
     End If
     
-    fixDPIFloat = dpiRatio * CDbl(pxMeasurement)
+    FixDPIFloat = dpiRatio * CDbl(pxMeasurement)
     
 End Function
 
@@ -1177,36 +1190,48 @@ End Function
 ' certain controls (like SmartCheckBox) because the size will actually come up short due to rounding errors!
 ' So whenever TwipsPerPixelXFix/Y is required, use these functions instead.
 Public Function TwipsPerPixelXFix() As Double
-
-    If Screen.TwipsPerPixelX = 7 Then
-        TwipsPerPixelXFix = 7.5
+    
+    If m_CurrentSystemDPI = 0 Then
+    
+        If Screen.TwipsPerPixelX = 7 Then
+            TwipsPerPixelXFix = 7.5
+        Else
+            TwipsPerPixelXFix = Screen.TwipsPerPixelX
+        End If
+        
     Else
-        TwipsPerPixelXFix = Screen.TwipsPerPixelX
+        TwipsPerPixelXFix = 15# / m_CurrentSystemDPI
     End If
 
 End Function
 
 Public Function TwipsPerPixelYFix() As Double
-
-    If Screen.TwipsPerPixelY = 7 Then
-        TwipsPerPixelYFix = 7.5
+    
+    If m_CurrentSystemDPI = 0 Then
+    
+        If Screen.TwipsPerPixelY = 7 Then
+            TwipsPerPixelYFix = 7.5
+        Else
+            TwipsPerPixelYFix = Screen.TwipsPerPixelY
+        End If
+        
     Else
-        TwipsPerPixelYFix = Screen.TwipsPerPixelY
+        TwipsPerPixelYFix = 15# / m_CurrentSystemDPI
     End If
 
 End Function
 
 'ScaleX and ScaleY functions do not work when converting from pixels to twips, thanks to the 15 / 2 <> 7
 ' bug described above.  Instead of using ScaleX/Y functions, use these wrapper.
-Public Function pxToTwipsX(ByVal srcPixelWidth As Long) As Long
-    pxToTwipsX = srcPixelWidth * TwipsPerPixelXFix
+Public Function PXToTwipsX(ByVal srcPixelWidth As Long) As Long
+    PXToTwipsX = srcPixelWidth * TwipsPerPixelXFix
 End Function
 
-Public Function pxToTwipsY(ByVal srcPixelHeight As Long) As Long
-    pxToTwipsY = srcPixelHeight * TwipsPerPixelYFix
+Public Function PXToTwipsY(ByVal srcPixelHeight As Long) As Long
+    PXToTwipsY = srcPixelHeight * TwipsPerPixelYFix
 End Function
 
-Public Sub displayWaitScreen(ByVal waitTitle As String, ByRef ownerForm As Form)
+Public Sub DisplayWaitScreen(ByVal waitTitle As String, ByRef ownerForm As Form)
     
     FormWait.Visible = False
     
@@ -1222,13 +1247,13 @@ Public Sub displayWaitScreen(ByVal waitTitle As String, ByRef ownerForm As Form)
     
 End Sub
 
-Public Sub hideWaitScreen()
+Public Sub HideWaitScreen()
     Screen.MousePointer = vbDefault
     Unload FormWait
 End Sub
 
 'Given a wordwrap label with a set size, attempt to fit the label's text inside it
-Public Sub fitWordwrapLabel(ByRef srcLabel As Label, ByRef srcForm As Form)
+Public Sub FitWordwrapLabel(ByRef srcLabel As Label, ByRef srcForm As Form)
 
     'We will use a pdFont object to help us measure the label in question
     Dim tmpFont As pdFont
@@ -1276,7 +1301,7 @@ End Sub
 'Because VB6 apps look terrible on modern version of Windows, I do a bit of beautification to every form upon at load-time.
 ' This routine is nice because every form calls it at least once, so I can make centralized changes without having to rewrite
 ' code in every individual form.  This is also where run-time translation occurs.
-Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As clsToolTip, Optional ByVal tooltipsAlreadyInitialized As Boolean = False, Optional ByVal useDoEvents As Boolean = False)
+Public Sub MakeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As clsToolTip, Optional ByVal tooltipsAlreadyInitialized As Boolean = False, Optional ByVal useDoEvents As Boolean = False)
 
     'Before doing anything else, make sure the form's default cursor is set to an arrow
     tForm.MouseIcon = LoadPicture("")
@@ -1379,9 +1404,8 @@ Public Sub makeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
         
 End Sub
 
-
 'Used to enable font smoothing if currently disabled.
-Public Sub handleClearType(ByVal startingProgram As Boolean)
+Public Sub HandleClearType(ByVal startingProgram As Boolean)
     
     'At start-up, activate ClearType.  At shutdown, restore the original setting (as necessary).
     If startingProgram Then
@@ -1447,7 +1471,7 @@ Public Sub ReleaseFormTheming(ByRef tForm As Object)
 End Sub
 
 'Given a pdImage object, generate an appropriate caption for the main PhotoDemon window.
-Private Function getWindowCaption(ByRef srcImage As pdImage) As String
+Private Function GetWindowCaption(ByRef srcImage As pdImage) As String
 
     Dim captionBase As String
     captionBase = ""
@@ -1479,7 +1503,7 @@ Private Function getWindowCaption(ByRef srcImage As pdImage) As String
     End If
     
     'Append the current PhotoDemon version number and exit
-    getWindowCaption = captionBase & "  -  " & getPhotoDemonNameAndVersion()
+    GetWindowCaption = captionBase & "  -  " & getPhotoDemonNameAndVersion()
 
 End Function
 
@@ -1514,7 +1538,7 @@ End Sub
 
 'This wrapper is used in place of the standard MsgBox function.  At present it's just a wrapper around MsgBox, but
 ' in the future I may replace the dialog function with something custom.
-Public Function pdMsgBox(ByVal pMessage As String, ByVal pButtons As VbMsgBoxStyle, ByVal pTitle As String, ParamArray ExtraText() As Variant) As VbMsgBoxResult
+Public Function PDMsgBox(ByVal pMessage As String, ByVal pButtons As VbMsgBoxStyle, ByVal pTitle As String, ParamArray ExtraText() As Variant) As VbMsgBoxResult
 
     Dim newMessage As String, newTitle As String
     newMessage = pMessage
@@ -1540,7 +1564,7 @@ Public Function pdMsgBox(ByVal pMessage As String, ByVal pButtons As VbMsgBoxSty
     
     End If
 
-    pdMsgBox = MsgBox(newMessage, pButtons, newTitle)
+    PDMsgBox = MsgBox(newMessage, pButtons, newTitle)
 
 End Function
 
@@ -1657,7 +1681,7 @@ Public Sub ClearImageCoordinatesDisplay()
 End Sub
 
 'Populate the passed combo box with options related to distort filter edge-handle options.  Also, select the specified method by default.
-Public Sub popDistortEdgeBox(ByRef cmbEdges As ComboBox, Optional ByVal defaultEdgeMethod As EDGE_OPERATOR)
+Public Sub PopDistortEdgeBox(ByRef cmbEdges As ComboBox, Optional ByVal defaultEdgeMethod As EDGE_OPERATOR)
 
     cmbEdges.Clear
     cmbEdges.AddItem " clamp them to the nearest available pixel"
@@ -1670,21 +1694,21 @@ Public Sub popDistortEdgeBox(ByRef cmbEdges As ComboBox, Optional ByVal defaultE
 End Sub
 
 'Return the width (and below, height) of a string, in pixels, according to the font assigned to fontContainerDC
-Public Function getPixelWidthOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
+Public Function GetPixelWidthOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelWidthOfString = txtSize.x
+    GetPixelWidthOfString = txtSize.x
 End Function
 
-Public Function getPixelHeightOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
+Public Function GetPixelHeightOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
     GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    getPixelHeightOfString = txtSize.y
+    GetPixelHeightOfString = txtSize.y
 End Function
 
 'Use whenever you want the user to not be allowed to interact with the primary PD window.  Make sure that call "enableUserInput", below,
 ' when you are done processing!
-Public Sub disableUserInput()
+Public Sub DisableUserInput()
 
     'Set the "input disabled" flag, which individual functions can use to modify their own behavior
     g_DisableUserInput = True
@@ -1695,7 +1719,7 @@ Public Sub disableUserInput()
 End Sub
 
 'Sister function to "disableUserInput", above
-Public Sub enableUserInput()
+Public Sub EnableUserInput()
     
     'Start a countdown timer on the main form.  When it terminates, user input will be restored.  A timer is required because
     ' we need a certain amount of "dead time" to elapse between double-clicks on a top-level dialog (like a common dialog)
@@ -1709,7 +1733,7 @@ Public Sub enableUserInput()
 End Sub
 
 'Given a combo box, populate it with all currently supported blend modes
-Public Sub populateBlendModeComboBox(ByRef dstCombo As pdComboBox, Optional ByVal blendIndex As LAYER_BLENDMODE = BL_NORMAL)
+Public Sub PopulateBlendModeComboBox(ByRef dstCombo As pdComboBox, Optional ByVal blendIndex As LAYER_BLENDMODE = BL_NORMAL)
     
     dstCombo.Clear
     
@@ -1748,15 +1772,15 @@ End Sub
 ' Note that the requested size is in PIXELS, so it is up to the caller to determine the proper size IN PIXELS of
 ' any requested UI elements.  This value will be automatically scaled to the current DPI, so make sure the passed
 ' pixel value is relevant to 100% DPI only (96 DPI).
-Public Function getRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByVal dibSize As Long = 16, Optional ByVal dibPadding As Long = 0, Optional ByVal BackColor As Long = 0) As pdDIB
+Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByVal dibSize As Long = 16, Optional ByVal dibPadding As Long = 0, Optional ByVal BackColor As Long = 0) As pdDIB
 
     'Adjust the dib size and padding to account for DPI
-    dibSize = fixDPI(dibSize)
-    dibPadding = fixDPI(dibPadding)
+    dibSize = FixDPI(dibSize)
+    dibPadding = FixDPI(dibPadding)
 
     'Create the target DIB
-    Set getRuntimeUIDIB = New pdDIB
-    getRuntimeUIDIB.createBlank dibSize, dibSize, 32, BackColor, 0
+    Set GetRuntimeUIDIB = New pdDIB
+    GetRuntimeUIDIB.createBlank dibSize, dibSize, 32, BackColor, 0
     
     Dim paintColor As Long
     
@@ -1775,7 +1799,7 @@ Public Function getRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
             End If
             
             'Draw a colored circle just within the bounds of the DIB
-            GDI_Plus.GDIPlusFillEllipseToDC getRuntimeUIDIB.getDIBDC, dibPadding, dibPadding, dibSize - dibPadding * 2, dibSize - dibPadding * 2, paintColor, True
+            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.getDIBDC, dibPadding, dibPadding, dibSize - dibPadding * 2, dibSize - dibPadding * 2, paintColor, True
         
         'The RGB DIB is a triad of the individual RGB circles
         Case PDRUID_CHANNEL_RGB
@@ -1784,27 +1808,27 @@ Public Function getRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
             Dim circleSize As Long
             circleSize = (dibSize - dibPadding) * 0.55
             
-            GDI_Plus.GDIPlusFillEllipseToDC getRuntimeUIDIB.getDIBDC, dibSize - circleSize - dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.getThemeColor(PDTC_CHANNEL_BLUE), True, 210
-            GDI_Plus.GDIPlusFillEllipseToDC getRuntimeUIDIB.getDIBDC, dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.getThemeColor(PDTC_CHANNEL_GREEN), True, 210
-            GDI_Plus.GDIPlusFillEllipseToDC getRuntimeUIDIB.getDIBDC, dibSize \ 2 - circleSize \ 2, dibPadding, circleSize, circleSize, g_Themer.getThemeColor(PDTC_CHANNEL_RED), True, 210
+            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.getDIBDC, dibSize - circleSize - dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.getThemeColor(PDTC_CHANNEL_BLUE), True, 210
+            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.getDIBDC, dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.getThemeColor(PDTC_CHANNEL_GREEN), True, 210
+            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.getDIBDC, dibSize \ 2 - circleSize \ 2, dibPadding, circleSize, circleSize, g_Themer.getThemeColor(PDTC_CHANNEL_RED), True, 210
     
     End Select
     
     'If the user requested any padding, apply it now
-    If dibPadding > 0 Then padDIB getRuntimeUIDIB, dibPadding
+    If dibPadding > 0 Then padDIB GetRuntimeUIDIB, dibPadding
     
 
 End Function
 
 'New test functions to (hopefully) help address high-DPI issues where VB's internal scale properties report false values
-Public Function apiWidth(ByVal srcHwnd As Long) As Long
+Public Function APIWidth(ByVal srcHwnd As Long) As Long
     Dim tmpRect As winRect
     GetWindowRect srcHwnd, tmpRect
-    apiWidth = tmpRect.x2 - tmpRect.x1
+    APIWidth = tmpRect.x2 - tmpRect.x1
 End Function
 
-Public Function apiHeight(ByVal srcHwnd As Long) As Long
+Public Function APIHeight(ByVal srcHwnd As Long) As Long
     Dim tmpRect As winRect
     GetWindowRect srcHwnd, tmpRect
-    apiHeight = tmpRect.y2 - tmpRect.y1
+    APIHeight = tmpRect.y2 - tmpRect.y1
 End Function
