@@ -908,6 +908,13 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
 End Sub
 
+Private Sub UserControl_Resize()
+    
+    'This (lengthy) line of code is required to make resizing work correctly under high-DPI settings.  Thanks to Zhu JY for the tip.
+    If g_IsProgramRunning Then MoveWindow UserControl.hWnd, scaleX(Extender.Left, vbContainerSize, vbPixels), scaleY(Extender.Top, vbContainerSize, vbPixels), scaleX(Extender.Width, vbContainerSize, vbPixels), scaleY(Extender.Height, vbContainerSize, vbPixels), 1
+    
+End Sub
+
 'Show the control and the combo box.  (This is the first place the combo box is typically created, as well.)
 Private Sub UserControl_Show()
     
@@ -1064,7 +1071,7 @@ Private Function createComboBox() As Boolean
         'If the program is running (e.g. NOT design-time) resize the user control to match.  This improves compile-time performance, as there
         ' are a lot of instances in this control, and their size events will be fired during compilation.
         If g_IsProgramRunning Then
-            UserControl.Height = pxToTwipsY(idealHeight + 8)
+            UserControl.Height = PXToTwipsY(idealHeight + 8)
         End If
         
         m_InternalResizeState = False
@@ -1439,7 +1446,7 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                     curFont.attachToDC targetDC
                     
                     With cbiCombo.rcItem
-                        curFont.fastRenderTextWithClipping .Left + 4, .Top, (.Right - .Left) - fixDPIFloat(8), (.Bottom - .Top) - 2, tmpString, True
+                        curFont.fastRenderTextWithClipping .Left + 4, .Top, (.Right - .Left) - FixDPIFloat(8), (.Bottom - .Top) - 2, tmpString, True
                     End With
                     
                     curFont.releaseFromDC
@@ -1450,14 +1457,14 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                 Dim buttonPt1 As POINTFLOAT, buttonPt2 As POINTFLOAT, buttonPt3 As POINTFLOAT
                 
                 'Start with the downward-pointing arrow
-                buttonPt1.x = fullWinRect.Right - fixDPIFloat(16)
-                buttonPt1.y = (fullWinRect.Bottom - fullWinRect.Top) / 2 - fixDPIFloat(1)
+                buttonPt1.x = fullWinRect.Right - FixDPIFloat(16)
+                buttonPt1.y = (fullWinRect.Bottom - fullWinRect.Top) / 2 - FixDPIFloat(1)
                 
-                buttonPt3.x = fullWinRect.Right - fixDPIFloat(8)
+                buttonPt3.x = fullWinRect.Right - FixDPIFloat(8)
                 buttonPt3.y = buttonPt1.y
                 
                 buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
-                buttonPt2.y = buttonPt1.y + fixDPIFloat(3)
+                buttonPt2.y = buttonPt1.y + FixDPIFloat(3)
                 
                 GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, cboButtonColor, 255, 2, True, LineCapRound
                 GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, cboButtonColor, 255, 2, True, LineCapRound
@@ -1556,7 +1563,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
                 Dim lineY As Single
                 lineY = srcDIS.rcItem.Bottom + CLng(m_ItemHeight * COMBO_BOX_DIVIDER_HEIGHT) \ 2
                 
-                GDI_Plus.GDIPlusDrawLineToDC srcDIS.hDC, srcDIS.rcItem.Left + fixDPI(12), lineY, srcDIS.rcItem.Right - fixDPI(12), lineY, g_Themer.getThemeColor(PDTC_GRAY_ULTRALIGHT), 255
+                GDI_Plus.GDIPlusDrawLineToDC srcDIS.hDC, srcDIS.rcItem.Left + FixDPI(12), lineY, srcDIS.rcItem.Right - FixDPI(12), lineY, g_Themer.getThemeColor(PDTC_GRAY_ULTRALIGHT), 255
             
             End If
             
@@ -1614,7 +1621,7 @@ Public Sub requestNewWidth(Optional ByVal newWidth As Long = 100, Optional ByVal
         End If
         
         'Add some padding for the drop-down arrow, then exit
-        newWidth = maxTextWidth + fixDPI(30)
+        newWidth = maxTextWidth + FixDPI(30)
     
     End If
     
@@ -1638,7 +1645,7 @@ Private Sub syncUserControlSizeToComboSize()
         With UserControl
         
             If (comboRect.Bottom - comboRect.Top) <> .ScaleHeight Or (comboRect.Right - comboRect.Left) <> .ScaleWidth Then
-                .Size pxToTwipsX(comboRect.Right - comboRect.Left), pxToTwipsY(comboRect.Bottom - comboRect.Top)
+                .Size PXToTwipsX(comboRect.Right - comboRect.Left), PXToTwipsY(comboRect.Bottom - comboRect.Top)
             End If
         
         End With
@@ -1882,7 +1889,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 finalReportedHeight = m_DropDownCalculatedHeight
                 
                 'If the combo box is gonna extend past the edge of the screen, display it above the edit box (instead of below).
-                If editRect.Bottom + m_DropDownCalculatedHeight > g_Displays.getDesktopHeight Then
+                If editRect.Bottom + m_DropDownCalculatedHeight > g_Displays.GetDesktopHeight Then
                     listRect.Top = editRect.Top - m_DropDownCalculatedHeight + 1
                     
                     'Perform a second check; if the box *still* extends past the edge of the screen, we have no choice but to shrink it
@@ -1890,7 +1897,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                     If listRect.Top < 0 Then
                     
                         'Find the greater available area, up or down, and use that as our extension dimension.
-                        If Abs(listRect.Top) < Abs(g_Displays.getDesktopHeight - (editRect.Bottom + m_DropDownCalculatedHeight)) Then
+                        If Abs(listRect.Top) < Abs(g_Displays.GetDesktopHeight - (editRect.Bottom + m_DropDownCalculatedHeight)) Then
                             
                             'Top is larger; use it
                             listRect.Top = 0
@@ -1900,7 +1907,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                         
                             'Bottom is larger; use it
                             listRect.Top = editRect.Bottom
-                            finalReportedHeight = g_Displays.getDesktopHeight - listRect.Top
+                            finalReportedHeight = g_Displays.GetDesktopHeight - listRect.Top
                             
                         End If
                     

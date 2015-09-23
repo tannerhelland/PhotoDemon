@@ -146,19 +146,19 @@ Public g_IsSystemColorProfileSRGB As Boolean
 Private Const MAX_PATH As Long = 260
 
 'Shorthand way to activate color management for anything with a DC
-Public Sub turnOnDefaultColorManagement(ByVal targetDC As Long, ByVal targetHwnd As Long)
+Public Sub TurnOnDefaultColorManagement(ByVal targetDC As Long, ByVal targetHwnd As Long)
     
     'Perform a quick check to see if we the target DC is requesting sRGB management.  If it is, we can skip
     ' color management entirely, because PD stores all RGB data in sRGB anyway.
     If Not (g_UseSystemColorProfile And g_IsSystemColorProfileSRGB) Then
-        assignDefaultColorProfileToObject targetHwnd, targetDC
-        turnOnColorManagementForDC targetDC
+        AssignDefaultColorProfileToObject targetHwnd, targetDC
+        TurnOnColorManagementForDC targetDC
     End If
     
 End Sub
 
 'Retrieve the current system color profile directory
-Public Function getSystemColorFolder() As String
+Public Function GetSystemColorFolder() As String
 
     'Prepare a blank string to receive the profile path
     Dim filenameLength As Long
@@ -172,14 +172,14 @@ Public Function getSystemColorFolder() As String
     
     'Use the GetColorDirectory function to request the location of the system color folder
     If GetColorDirectory(0&, ByVal VarPtr(tmpPathBuffer(0)), filenameLength) = 0 Then
-        getSystemColorFolder = ""
+        GetSystemColorFolder = ""
     Else
     
         'Convert the returned byte array into a string
         tmpPathString = StrConv(tmpPathBuffer, vbUnicode)
         tmpPathString = TrimNull(tmpPathString)
                 
-        getSystemColorFolder = tmpPathString
+        GetSystemColorFolder = tmpPathString
         
     End If
 
@@ -187,7 +187,7 @@ End Function
 
 'Assign the default color profile (whether the system profile or the user profile) to any arbitrary object.  Note that the object
 ' MUST have an hWnd and an hDC property for this to work.
-Public Sub assignDefaultColorProfileToObject(ByVal objectHWnd As Long, ByVal objectHDC As Long)
+Public Sub AssignDefaultColorProfileToObject(ByVal objectHWnd As Long, ByVal objectHDC As Long)
     
     'If the current user setting is "use system color profile", our job is easy.
     If g_UseSystemColorProfile Then
@@ -212,33 +212,33 @@ Public Sub assignDefaultColorProfileToObject(ByVal objectHWnd As Long, ByVal obj
 End Sub
 
 'When PD is first loaded, this function will be called, which caches the current color management file in use by the system
-Public Sub cacheCurrentSystemColorProfile()
+Public Sub CacheCurrentSystemColorProfile()
     
-    currentSystemColorProfile = getDefaultICCProfile()
+    currentSystemColorProfile = GetDefaultICCProfile()
     
     'As part of this step, we will also temporarily load the default system ICC profile, and check to see if it's sRGB.
     ' If it is, we can skip color management entirely, as all images are processed in sRGB.
     
     'Obtain a handle to the default system profile
     Dim sysProfileHandle As Long
-    sysProfileHandle = loadICCProfileFromFile(currentSystemColorProfile)
+    sysProfileHandle = LoadICCProfileFromFile(currentSystemColorProfile)
     
     If sysProfileHandle <> 0 Then
     
         'Obtain a handle to a stock sRGB profile.
         Dim srgbProfileHandle As Long
-        srgbProfileHandle = loadStandardICCProfile(LCS_sRGB)
+        srgbProfileHandle = LoadStandardICCProfile(LCS_sRGB)
         
         'Compare the two profiles
-        If areColorProfilesEqual(sysProfileHandle, srgbProfileHandle) Then
+        If AreColorProfilesEqual(sysProfileHandle, srgbProfileHandle) Then
             g_IsSystemColorProfileSRGB = True
         Else
             g_IsSystemColorProfileSRGB = False
         End If
         
         'Release our profile handles
-        releaseICCProfile sysProfileHandle
-        releaseICCProfile srgbProfileHandle
+        ReleaseICCProfile sysProfileHandle
+        ReleaseICCProfile srgbProfileHandle
         
     Else
         
@@ -250,7 +250,7 @@ Public Sub cacheCurrentSystemColorProfile()
 End Sub
 
 'Returns the path to the default color mangement profile file (ICC or WCS) currently in use by the system.
-Public Function getDefaultICCProfile() As String
+Public Function GetDefaultICCProfile() As String
 
     'Prepare a blank string to receive the profile path
     Dim filenameLength As Long
@@ -264,7 +264,7 @@ Public Function getDefaultICCProfile() As String
     
     'Using the desktop DC as our reference, request the filename of the currently in-use ICM profile (which should be the system default)
     If GetICMProfile(GetDC(0), filenameLength, ByVal VarPtr(tmpPathBuffer(0))) = 0 Then
-        getDefaultICCProfile = ""
+        GetDefaultICCProfile = ""
     Else
     
         'Convert the returned byte array into a string
@@ -273,25 +273,25 @@ Public Function getDefaultICCProfile() As String
             tmpPathString = tmpPathString & Chr(tmpPathBuffer(i))
         Next i
                 
-        getDefaultICCProfile = tmpPathString
+        GetDefaultICCProfile = tmpPathString
         
     End If
     
 End Function
 
 'Turn on color management for a specified device context
-Public Sub turnOnColorManagementForDC(ByVal dstDC As Long)
+Public Sub TurnOnColorManagementForDC(ByVal dstDC As Long)
     SetICMMode dstDC, ICM_ON
 End Sub
 
 'Turn off color management for a specified device context
-Public Sub turnOffColorManagementForDC(ByVal dstDC As Long)
+Public Sub TurnOffColorManagementForDC(ByVal dstDC As Long)
     SetICMMode dstDC, ICM_OFF
 End Sub
 
 'Given a valid iccProfileArray (such as one stored in a pdICCProfile class), convert it to an internal Windows color profile
 ' handle, validate it, and return the result.  Returns a non-zero handle if successful.
-Public Function loadICCProfileFromMemory(ByVal profileArrayPointer As Long, ByVal profileArraySize As Long) As Long
+Public Function LoadICCProfileFromMemory(ByVal profileArrayPointer As Long, ByVal profileArraySize As Long) As Long
 
     'Start by preparing an ICC_PROFILE header to use with the color management APIs
     Dim srcProfileHeader As ICC_PROFILE
@@ -300,16 +300,16 @@ Public Function loadICCProfileFromMemory(ByVal profileArrayPointer As Long, ByVa
     srcProfileHeader.cbDataSize = profileArraySize
     
     'Use that header to open a reference to an internal Windows color profile (which is required by all ICC-related API)
-    loadICCProfileFromMemory = OpenColorProfile(srcProfileHeader, PROFILE_READ, FILE_SHARE_READ, OPEN_EXISTING)
+    LoadICCProfileFromMemory = OpenColorProfile(srcProfileHeader, PROFILE_READ, FILE_SHARE_READ, OPEN_EXISTING)
     
-    If loadICCProfileFromMemory <> 0 Then
+    If LoadICCProfileFromMemory <> 0 Then
     
         'Validate the profile's XML as well; it is possible for a profile to be ill-formed, which means we cannot use it.
         Dim tmpCheck As Long
-        If IsColorProfileValid(loadICCProfileFromMemory, tmpCheck) = 0 Then
+        If IsColorProfileValid(LoadICCProfileFromMemory, tmpCheck) = 0 Then
             Debug.Print "Color profile loaded succesfully, but XML failed to validate."
-            CloseColorProfile loadICCProfileFromMemory
-            loadICCProfileFromMemory = 0
+            CloseColorProfile LoadICCProfileFromMemory
+            LoadICCProfileFromMemory = 0
         End If
         
     Else
@@ -320,7 +320,7 @@ End Function
 
 'Given a valid ICC profile path, convert it to an internal Windows color profile handle, validate it,
 ' and return the result.  Returns a non-zero handle if successful.
-Public Function loadICCProfileFromFile(ByVal profilePath As String) As Long
+Public Function LoadICCProfileFromFile(ByVal profilePath As String) As Long
 
     Dim cFile As pdFSO
     Set cFile = New pdFSO
@@ -331,12 +331,12 @@ Public Function loadICCProfileFromFile(ByVal profilePath As String) As Long
     If cFile.FileExist(profilePath) Then
         
         If Not cFile.LoadFileAsByteArray(profilePath, tmpProfileArray) Then
-            loadICCProfileFromFile = 0
+            LoadICCProfileFromFile = 0
             Exit Function
         End If
         
     Else
-        loadICCProfileFromFile = 0
+        LoadICCProfileFromFile = 0
         Exit Function
     End If
 
@@ -347,16 +347,16 @@ Public Function loadICCProfileFromFile(ByVal profilePath As String) As Long
     srcProfileHeader.cbDataSize = UBound(tmpProfileArray) + 1
     
     'Use that header to open a reference to an internal Windows color profile (which is required by all ICC-related API)
-    loadICCProfileFromFile = OpenColorProfile(srcProfileHeader, PROFILE_READ, FILE_SHARE_READ, OPEN_EXISTING)
+    LoadICCProfileFromFile = OpenColorProfile(srcProfileHeader, PROFILE_READ, FILE_SHARE_READ, OPEN_EXISTING)
     
-    If loadICCProfileFromFile <> 0 Then
+    If LoadICCProfileFromFile <> 0 Then
     
         'Validate the profile's XML as well; it is possible for a profile to be ill-formed, which means we cannot use it.
         Dim tmpCheck As Long
-        If IsColorProfileValid(loadICCProfileFromFile, tmpCheck) = 0 Then
+        If IsColorProfileValid(LoadICCProfileFromFile, tmpCheck) = 0 Then
             Debug.Print "Color profile loaded succesfully, but XML failed to validate."
-            CloseColorProfile loadICCProfileFromFile
-            loadICCProfileFromFile = 0
+            CloseColorProfile LoadICCProfileFromFile
+            LoadICCProfileFromFile = 0
         End If
         
     Else
@@ -368,7 +368,7 @@ End Function
 'Request a standard ICC profile from the OS.  Windows only provides two standard color profiles: sRGB (LCS_sRGB), and whatever
 ' the system default currently is (LCS_WINDOWS_COLOR_SPACE).  While probably not necessary, this function also validates the
 ' requested profile, just to be safe.
-Public Function loadStandardICCProfile(ByVal profileID As Long) As Long
+Public Function LoadStandardICCProfile(ByVal profileID As Long) As Long
 
     'Start by preparing a header for the destination ICC profile
     Dim dstProfileHeader As ICC_PROFILE
@@ -387,18 +387,18 @@ Public Function loadStandardICCProfile(ByVal profileID As Long) As Long
     GetStandardColorSpaceProfile vbNullString, profileID, dstProfileHeader.pProfileData, dstProfileHeader.cbDataSize
         
     'With a fully populated header, it is finally time to open an internal Windows version of the data!
-    loadStandardICCProfile = OpenColorProfile(dstProfileHeader, PROFILE_READ, FILE_SHARE_READ, OPEN_EXISTING)
+    LoadStandardICCProfile = OpenColorProfile(dstProfileHeader, PROFILE_READ, FILE_SHARE_READ, OPEN_EXISTING)
     
     'It is highly unlikely (maybe even impossible?) for the system to return an invalid standard profile, but just to be
     ' safe, validate the XML.
-    If loadStandardICCProfile <> 0 Then
+    If LoadStandardICCProfile <> 0 Then
     
         'Validate the profile's XML as well; it is possible for a profile to be ill-formed, which means we cannot use it.
         Dim tmpCheck As Long
-        If IsColorProfileValid(loadStandardICCProfile, tmpCheck) = 0 Then
+        If IsColorProfileValid(LoadStandardICCProfile, tmpCheck) = 0 Then
             Debug.Print "Standard color profile loaded succesfully, but XML failed to validate."
-            CloseColorProfile loadStandardICCProfile
-            loadStandardICCProfile = 0
+            CloseColorProfile LoadStandardICCProfile
+            LoadStandardICCProfile = 0
         End If
         
     Else
@@ -409,12 +409,12 @@ End Function
 
 'This function is just a thin wrapper to CloseColorProfile; however, using it allows us to keep various color-management
 ' DLLs nicely encapsulated within this module.
-Public Sub releaseICCProfile(ByVal profileHandle As Long)
+Public Sub ReleaseICCProfile(ByVal profileHandle As Long)
     CloseColorProfile profileHandle
 End Sub
 
 'Given a source profile, destination profile, and rendering intent, return a compatible transformation handle.
-Public Function requestProfileTransform(ByVal srcProfile As Long, ByVal dstProfile As Long, ByVal preferredIntent As RenderingIntents, Optional ByVal useEmbeddedIntent As Long = -1) As Long
+Public Function RequestProfileTransform(ByVal srcProfile As Long, ByVal dstProfile As Long, ByVal preferredIntent As RenderingIntents, Optional ByVal useEmbeddedIntent As Long = -1) As Long
 
     'Next we need to prepare two matrices to supply to CreateMultiProfileTransform: one for ICC profiles themselves,
     ' and one for desired render intents.
@@ -447,9 +447,9 @@ Public Function requestProfileTransform(ByVal srcProfile As Long, ByVal dstProfi
     ' Note: the quality of the transform will affect the speed of the resulting transformation.  Windows supports 3 quality levels
     '       on the range [1, 3].  We map our internal g_ColorPerformance preference on the range [0, 2] to that range, and use it
     '       to transparently adjust the quality of the transform.
-    requestProfileTransform = CreateMultiProfileTransform(ByVal VarPtr(profileMatrix(0)), 2&, ByVal VarPtr(intentMatrix(0)), 2&, (2 - g_ColorPerformance) + 1, INDEX_DONT_CARE)
+    RequestProfileTransform = CreateMultiProfileTransform(ByVal VarPtr(profileMatrix(0)), 2&, ByVal VarPtr(intentMatrix(0)), 2&, (2 - g_ColorPerformance) + 1, INDEX_DONT_CARE)
     
-    If requestProfileTransform = 0 Then
+    If RequestProfileTransform = 0 Then
         Debug.Print "Requested color transformation could not be generated (Error #" & Err.LastDllError & ")."
     End If
     
@@ -457,12 +457,12 @@ End Function
 
 'This function is just a thin wrapper to DeleteColorTransform; however, using it allows us to keep various color-management
 ' DLLs nicely encapsulated within this module.
-Public Sub releaseColorTransform(ByVal transformHandle As Long)
+Public Sub ReleaseColorTransform(ByVal transformHandle As Long)
     DeleteColorTransform transformHandle
 End Sub
 
 'Given a color transformation and a DIB, apply one to the other!  Returns TRUE if successful.
-Public Function applyColorTransformToDIB(ByVal srcTransform As Long, ByRef dstDIB As pdDIB) As Boolean
+Public Function ApplyColorTransformToDIB(ByVal srcTransform As Long, ByRef dstDIB As pdDIB) As Boolean
 
     Dim transformCheck As Long
     
@@ -479,7 +479,7 @@ Public Function applyColorTransformToDIB(ByVal srcTransform As Long, ByRef dstDI
     End With
     
     If transformCheck = 0 Then
-        applyColorTransformToDIB = False
+        ApplyColorTransformToDIB = False
         
         'Error #2021 is ERROR_COLORSPACE_MISMATCH: "The specified transform does not match the bitmap's color space."
         ' This is a known error when the source image was in CMYK format, because FreeImage (or GDI+) will have
@@ -492,13 +492,13 @@ Public Function applyColorTransformToDIB(ByVal srcTransform As Long, ByRef dstDI
         End If
         
     Else
-        applyColorTransformToDIB = True
+        ApplyColorTransformToDIB = True
     End If
 
 End Function
 
 'Given a color transformation and two DIBs, fill one DIB with a transformed copy of the other!  Returns TRUE if successful.
-Public Function applyColorTransformToTwoDIBs(ByVal srcTransform As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal srcFormat As Long, ByVal dstFormat As Long) As Boolean
+Public Function ApplyColorTransformToTwoDIBs(ByVal srcTransform As Long, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal srcFormat As Long, ByVal dstFormat As Long) As Boolean
 
     Dim transformCheck As Long
     
@@ -506,7 +506,7 @@ Public Function applyColorTransformToTwoDIBs(ByVal srcTransform As Long, ByRef s
     transformCheck = TranslateBitmapBits(srcTransform, srcDIB.getActualDIBBits, srcFormat, srcDIB.getDIBWidth, srcDIB.getDIBHeight, srcDIB.getDIBArrayWidth, dstDIB.getActualDIBBits, dstFormat, dstDIB.getDIBArrayWidth, ByVal 0&, 0&)
     
     If transformCheck = 0 Then
-        applyColorTransformToTwoDIBs = False
+        ApplyColorTransformToTwoDIBs = False
         
         'Error #2021 is ERROR_COLORSPACE_MISMATCH: "The specified transform does not match the bitmap's color space."
         ' This is a known error when the source image was in CMYK format, because FreeImage (or GDI+) will have
@@ -519,13 +519,13 @@ Public Function applyColorTransformToTwoDIBs(ByVal srcTransform As Long, ByRef s
         End If
         
     Else
-        applyColorTransformToTwoDIBs = True
+        ApplyColorTransformToTwoDIBs = True
     End If
 
 End Function
 
 'Apply a CMYK transform between a 32bpp CMYK DIB and a 24bpp sRGB DIB.
-Public Function applyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccProfileSize As Long, ByRef srcCMYKDIB As pdDIB, ByRef dstRGBDIB As pdDIB, Optional ByVal customSourceIntent As Long = -1) As Boolean
+Public Function ApplyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccProfileSize As Long, ByRef srcCMYKDIB As pdDIB, ByRef dstRGBDIB As pdDIB, Optional ByVal customSourceIntent As Long = -1) As Boolean
 
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Using embedded ICC profile to convert image from CMYK to sRGB color space..."
@@ -534,7 +534,7 @@ Public Function applyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccPro
     'Use the Color_Management module to convert the raw ICC profile into an internal Windows profile handle.  Note that
     ' this function will also validate the profile for us.
     Dim srcProfile As Long
-    srcProfile = loadICCProfileFromMemory(iccProfilePointer, iccProfileSize)
+    srcProfile = LoadICCProfileFromMemory(iccProfilePointer, iccProfileSize)
     
     'If we successfully opened and validated our source profile, continue on to the next step!
     If srcProfile <> 0 Then
@@ -544,7 +544,7 @@ Public Function applyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccPro
             
         'Use the Color_Management module to request a standard sRGB profile.
         Dim dstProfile As Long
-        dstProfile = loadStandardICCProfile(LCS_sRGB)
+        dstProfile = LoadStandardICCProfile(LCS_sRGB)
         
         'It's highly unlikely that a request for a standard ICC profile will fail, but just be safe, double-check the
         ' returned handle before continuing.
@@ -553,7 +553,7 @@ Public Function applyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccPro
             'We can now use our profile matrix to generate a transformation object, which we will use to directly modify
             ' the DIB's RGB values.
             Dim iccTransformation As Long
-            iccTransformation = requestProfileTransform(srcProfile, dstProfile, INTENT_PERCEPTUAL, customSourceIntent)
+            iccTransformation = RequestProfileTransform(srcProfile, dstProfile, INTENT_PERCEPTUAL, customSourceIntent)
             
             'If the transformation was generated successfully, carry on!
             If iccTransformation <> 0 Then
@@ -567,7 +567,7 @@ Public Function applyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccPro
                 'Note that a color format must be explicitly specified - we vary this contingent on the parent image's
                 ' color depth.
                 Dim transformCheck As Boolean
-                transformCheck = applyColorTransformToTwoDIBs(iccTransformation, srcCMYKDIB, dstRGBDIB, BM_KYMCQUADS, BM_RGBTRIPLETS)
+                transformCheck = ApplyColorTransformToTwoDIBs(iccTransformation, srcCMYKDIB, dstRGBDIB, BM_KYMCQUADS, BM_RGBTRIPLETS)
                 
                 'If the transform was successful, pat ourselves on the back.
                 If transformCheck Then
@@ -576,39 +576,39 @@ Public Function applyCMYKTransform(ByVal iccProfilePointer As Long, ByVal iccPro
                         pdDebug.LogAction "CMYK to sRGB transformation successful."
                     #End If
                     
-                    applyCMYKTransform = True
+                    ApplyCMYKTransform = True
                     
                 Else
                     Message "sRGB transform could not be applied.  Image remains in CMYK format."
                 End If
                 
                 'Release our transformation
-                releaseColorTransform iccTransformation
+                ReleaseColorTransform iccTransformation
                                 
             Else
                 Message "Both ICC profiles loaded successfully, but CMYK transformation could not be created."
-                applyCMYKTransform = False
+                ApplyCMYKTransform = False
             End If
         
-            releaseICCProfile dstProfile
+            ReleaseICCProfile dstProfile
         
         Else
             Message "Could not obtain standard sRGB color profile.  CMYK transform abandoned."
-            applyCMYKTransform = False
+            ApplyCMYKTransform = False
         End If
         
-        releaseICCProfile srcProfile
+        ReleaseICCProfile srcProfile
     
     Else
         Message "Embedded ICC profile is invalid.  CMYK transform could not be performed."
-        applyCMYKTransform = False
+        ApplyCMYKTransform = False
     End If
 
 End Function
 
 'When the main PD window is moved, the window manager will trigger this function.  (Because the user can set color management
 ' on a per-monitor basis, we must keep track of which monitor contains this PD instance.)
-Public Sub checkParentMonitor(Optional ByVal suspendRedraw As Boolean = False, Optional ByVal forceRefresh As Boolean = False)
+Public Sub CheckParentMonitor(Optional ByVal suspendRedraw As Boolean = False, Optional ByVal forceRefresh As Boolean = False)
 
     'Use the API to determine the monitor with the largest intersect with this window
     Dim monitorCheck As Long
@@ -627,7 +627,7 @@ Public Sub checkParentMonitor(Optional ByVal suspendRedraw As Boolean = False, O
         If pdImages(g_CurrentImage) Is Nothing Then Exit Sub
         
         'If an image has been loaded, and it is valid, redraw it now
-        If (pdImages(g_CurrentImage).Width > 0) And (pdImages(g_CurrentImage).Height > 0) And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.getClientWidth(FormMain.hWnd) > 0) And pdImages(g_CurrentImage).loadedSuccessfully Then
+        If (pdImages(g_CurrentImage).Width > 0) And (pdImages(g_CurrentImage).Height > 0) And (FormMain.WindowState <> vbMinimized) And (g_WindowManager.GetClientWidth(FormMain.hWnd) > 0) And pdImages(g_CurrentImage).loadedSuccessfully Then
             Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         End If
         
@@ -639,7 +639,7 @@ Public Sub checkParentMonitor(Optional ByVal suspendRedraw As Boolean = False, O
 End Sub
 
 'Compare two ICC profiles to determine equality.  Thank you to VB developer LaVolpe for this suggestion and original implementation.
-Public Function areColorProfilesEqual(ByVal profileHandle1 As Long, ByVal profileHandle2 As Long) As Boolean
+Public Function AreColorProfilesEqual(ByVal profileHandle1 As Long, ByVal profileHandle2 As Long) As Boolean
 
     Dim profilesEqual As Boolean
     profilesEqual = True
@@ -661,7 +661,7 @@ Public Function areColorProfilesEqual(ByVal profileHandle1 As Long, ByVal profil
         End If
     End If
     
-    areColorProfilesEqual = profilesEqual
+    AreColorProfilesEqual = profilesEqual
     
 End Function
 
@@ -675,7 +675,7 @@ End Function
 '
 'Gamma is also optional; if none is specified, the default sRGB gamma transform value will be used.  Note that sRGB uses a two-part curve
 ' constructed around 2.4 - *not* a simple one-part 2.2 curve - so if you want 2.2 gamma, make sure you specify it!
-Public Function convertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX As Double, ByVal RedY As Double, ByVal GreenX As Double, ByVal GreenY As Double, ByVal BlueX As Double, ByVal BlueY As Double, ByVal WhiteX As Double, ByVal WhiteY As Double, Optional ByRef srcGamma As Double = 0#, Optional ByVal treatEndpointsAsForwardValues As Boolean = False, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
+Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX As Double, ByVal RedY As Double, ByVal GreenX As Double, ByVal GreenY As Double, ByVal BlueX As Double, ByVal BlueY As Double, ByVal WhiteX As Double, ByVal WhiteY As Double, Optional ByRef srcGamma As Double = 0#, Optional ByVal treatEndpointsAsForwardValues As Boolean = False, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Boolean
 
     'As always, Bruce Lindbloom provides very helpful conversion functions here:
     ' http://brucelindbloom.com/index.html?Eqn_RGB_to_XYZ.html
@@ -734,7 +734,7 @@ Public Function convertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
     
     'Apply the inversion.  Note that *not all matrices are invertible*!  Image-encoded endpoints should be valid, but if they are not,
     ' matrix inversion will fail.
-    If invert3x3Matrix(invMatrix, srcMatrix) Then
+    If Invert3x3Matrix(invMatrix, srcMatrix) Then
         
         'Calculate the S conversion vector by multiplying the inverse matrix by the white point vector
         Dim Sr As Double, Sg As Double, Sb As Double
@@ -772,7 +772,7 @@ Public Function convertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
         ' for users to enter faulty values, so I don't check that possibility here.
         Dim mFinalInvert() As Double
         ReDim mFinalInvert(0 To 2, 0 To 2) As Double
-        If Not treatEndpointsAsForwardValues Then invert3x3Matrix mFinalInvert, mFinal
+        If Not treatEndpointsAsForwardValues Then Invert3x3Matrix mFinalInvert, mFinal
         
         'Debug.Print "Reverse matrix: "
         'Debug.Print mFinalInvert(0, 0), mFinalInvert(0, 1), mFinalInvert(0, 2)
@@ -977,10 +977,10 @@ Public Function convertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
         CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
         Erase ImageData
         
-        If cancelCurrentAction Then convertRGBUsingCustomEndpoints = False Else convertRGBUsingCustomEndpoints = True
+        If cancelCurrentAction Then ConvertRGBUsingCustomEndpoints = False Else ConvertRGBUsingCustomEndpoints = True
         
     Else
-        convertRGBUsingCustomEndpoints = False
+        ConvertRGBUsingCustomEndpoints = False
         Exit Function
     End If
     
@@ -991,7 +991,7 @@ End Function
 '
 'Thanks to Vagelis Plevris of Greece, whose FreeVBCode project provided a nice refresher on how one might
 ' tackle this in VB (http://www.freevbcode.com/ShowCode.asp?ID=6221).
-Private Function invert3x3Matrix(ByRef newMatrix() As Double, ByRef srcMatrix() As Double) As Boolean
+Private Function Invert3x3Matrix(ByRef newMatrix() As Double, ByRef srcMatrix() As Double) As Boolean
 
     'Some matrices are not invertible.  If color endpoints are calculated correctly, this shouldn't be a problem,
     ' but we need to have a failsafe for the case of determinant = 0
@@ -1001,9 +1001,10 @@ Private Function invert3x3Matrix(ByRef newMatrix() As Double, ByRef srcMatrix() 
     Dim intMatrix() As Double
     ReDim intMatrix(0 To 2, 0 To 5) As Double
     
-    'Gaussian elimination works by using simple row operations to solve a system of linear equations.  This is computationally slow,
-    ' but algorithmically simple, and for a single 3x3 matrix no one cares about performance.
-    ' To visualize what happens, see how we put the source matrix on the left and the identity matrix on the right, like so:
+    'Gaussian elimination works by using simple row operations to solve a system of linear equations.  This is
+    ' computationally slow, but algorithmically simple, and for a single 3x3 matrix no one cares about performance.
+    '
+    'To visualize what happens, see how we put the source matrix on the left and the identity matrix on the right, like so:
     '
     ' [ src11 src12 src13 | 1 0 0 ]
     ' [ src21 src22 src23 | 0 1 0 ]
@@ -1101,11 +1102,11 @@ Private Function invert3x3Matrix(ByRef newMatrix() As Double, ByRef srcMatrix() 
     Next n
     
     'Report the successful inversion to the user, then exit
-    invert3x3Matrix = True
+    Invert3x3Matrix = True
     Exit Function
 
 cantCreateMatrix:
     Debug.Print "Matrix is not invertible; function cancelled."
-    invert3x3Matrix = False
+    Invert3x3Matrix = False
 
 End Function
