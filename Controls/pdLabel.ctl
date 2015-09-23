@@ -77,6 +77,10 @@ End Enum
 Private WithEvents cPainter As pdWindowPainter
 Attribute cPainter.VB_VarHelpID = -1
 
+'DPI-aware window resizer
+Private WithEvents cResize As pdWindowSize
+Attribute cResize.VB_VarHelpID = -1
+
 'pdFont handles all text rendering duties.
 Private curFont As pdFont
 
@@ -386,12 +390,73 @@ Public Property Get containerHwnd() As Long
     containerHwnd = UserControl.containerHwnd
 End Property
 
+'When the API detects a resize, update ourselves accordingly.
+Private Sub cResize_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    If g_IsProgramRunning Then
+        If (Not m_InternalResizeState) Then updateControlSize
+    End If
+End Sub
+
+'************************************************
+' START cResize BLOCK OF COPIED FUNCTIONS
+'************************************************
+
+'Note: this set of helper functions is provided to make life easier for external callers.  Callers should use these functions
+'      (instead of VB's internal size/move functions) to ensure accurate size and movement changes under any screen DPI.
+Public Function GetLeft() As Long
+    If g_IsProgramRunning Then GetLeft = cResize.GetLeft
+End Function
+
+Public Function GetTop() As Long
+    If g_IsProgramRunning Then GetTop = cResize.GetTop
+End Function
+
+Public Function GetWidth() As Long
+    If g_IsProgramRunning Then GetWidth = cResize.GetWidth
+End Function
+
+Public Function GetHeight() As Long
+    If g_IsProgramRunning Then GetHeight = cResize.GetHeight
+End Function
+
+Public Sub SetLeft(ByVal newLeft As Long)
+    If g_IsProgramRunning Then cResize.SetPosition newLeft, cResize.GetTop
+End Sub
+
+Public Sub SetTop(ByVal newTop As Long)
+    If g_IsProgramRunning Then cResize.SetPosition cResize.GetLeft, newTop
+End Sub
+
+Public Sub SetWidth(ByVal newWidth As Long)
+    If g_IsProgramRunning Then cResize.SetSize newWidth, cResize.GetHeight
+End Sub
+
+Public Sub SetHeight(ByVal newHeight As Long)
+    If g_IsProgramRunning Then cResize.SetSize cResize.GetWidth, newHeight
+End Sub
+
+Public Sub SetSize(ByVal newWidth As Long, ByVal newHeight As Long)
+    If g_IsProgramRunning Then cResize.SetSize newWidth, newHeight
+End Sub
+
+Public Sub SetPosition(ByVal newLeft As Long, ByVal newTop As Long)
+    If g_IsProgramRunning Then cResize.SetPosition newLeft, newTop
+End Sub
+
+'************************************************
+' END cResize BLOCK OF COPIED FUNCTIONS
+'************************************************
+
 'INITIALIZE control
 Private Sub UserControl_Initialize()
     
     'Initialize the internal font object
     Set curFont = New pdFont
     curFont.setTextAlignment vbLeftJustify
+    
+    'Initialize a DPI-aware window resizer.  (Window messages won't be subclassed in the IDE, FYI)
+    Set cResize = New pdWindowSize
+    cResize.AttachToHWnd Me.hWnd, g_IsProgramRunning
     
     'When not in design mode, initialize a tracker for mouse events
     If g_IsProgramRunning Then
@@ -464,7 +529,9 @@ End Sub
 
 'The control dynamically resizes each button to match the dimensions of their relative captions.
 Private Sub UserControl_Resize()
-    If (Not m_InternalResizeState) Then updateControlSize
+    If Not g_IsProgramRunning Then
+        If (Not m_InternalResizeState) Then updateControlSize
+    End If
 End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
@@ -483,10 +550,8 @@ Private Sub updateControlSize()
     'If the label caption was previously blank, and the label is set to "autosize", the user control may have dimensions (0, 0).
     ' If this happens, creating the back buffer will fail, so we must manually create a (1, 1) buffer, which will then become
     ' properly sized in subsequent render steps.
-    If (UserControl.ScaleWidth = 0) Or (UserControl.ScaleHeight = 0) Or (m_BackBuffer.getDIBWidth = 0) Then
+    If (cResize.GetWidth() = 0) Or (cResize.GetHeight() = 0) Or (m_BackBuffer.getDIBWidth = 0) Then
         m_BackBuffer.createBlank 1, 1, 24
-    'Else
-        'm_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
     End If
     
     'Depending on the layout in use (e.g. autosize vs non-autosize), we may need to reposition the user control.
@@ -494,8 +559,8 @@ Private Sub updateControlSize()
     ' To facilitate this behavior, we'll store the original label's width and height; this will let us know how far we
     ' need to move the label, if any.
     Dim origWidth As Long, origHeight As Long
-    origWidth = UserControl.ScaleWidth
-    origHeight = UserControl.ScaleHeight
+    origWidth = cResize.GetWidth()
+    origHeight = cResize.GetHeight()
     
     'You might think that it makes sense to wait to create our back buffer until we know what dimensions are
     ' required for an AutoSize label - and you'd be right!  However, we can't measure a string against a GDI font
@@ -555,15 +620,15 @@ Private Sub updateControlSize()
                 ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
                 ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
                 If g_IsProgramRunning Then
-                    MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, origWidth, stringHeight, 1
+                    cResize.SetSize origWidth, stringHeight
                 Else
-                    UserControl.Size pxToTwipsX(origWidth), pxToTwipsY(stringHeight)
+                    UserControl.Size PXToTwipsX(origWidth), PXToTwipsY(stringHeight)
                 End If
                 
                 'Recreate the backbuffer
-                If (UserControl.ScaleWidth <> m_BackBuffer.getDIBWidth) Or (UserControl.ScaleHeight <> m_BackBuffer.getDIBHeight) Then
+                If (cResize.GetWidth() <> m_BackBuffer.getDIBWidth) Or (cResize.GetHeight() <> m_BackBuffer.getDIBHeight) Then
                     curFont.releaseFromDC
-                    m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
+                    m_BackBuffer.createBlank cResize.GetWidth(), cResize.GetHeight(), 24
                     curFont.attachToDC m_BackBuffer.getDIBDC
                 End If
                 
@@ -573,16 +638,16 @@ Private Sub updateControlSize()
             Else
             
                 'Create the backbuffer if it hasn't been created before
-                If (UserControl.ScaleWidth <> m_BackBuffer.getDIBWidth) Or (UserControl.ScaleHeight > m_BackBuffer.getDIBHeight) Then
+                If (cResize.GetWidth() <> m_BackBuffer.getDIBWidth) Or (cResize.GetHeight() > m_BackBuffer.getDIBHeight) Then
                     curFont.releaseFromDC
-                    m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
+                    m_BackBuffer.createBlank cResize.GetWidth(), cResize.GetHeight(), 24
                     curFont.attachToDC m_BackBuffer.getDIBDC
                 End If
                 
             End If
             
             'If the caption still does not fit within the available area, set the failure state to TRUE.
-            If stringWidth > UserControl.ScaleWidth Then
+            If stringWidth > cResize.GetWidth() Then
                 m_FitFailure = True
             Else
                 m_FitFailure = False
@@ -615,9 +680,9 @@ Private Sub updateControlSize()
             Loop
             
             'Create the backbuffer if it hasn't been created before
-            If (UserControl.ScaleWidth <> m_BackBuffer.getDIBWidth) Or (UserControl.ScaleHeight > m_BackBuffer.getDIBHeight) Then
+            If (cResize.GetWidth() <> m_BackBuffer.getDIBWidth) Or (cResize.GetHeight() > m_BackBuffer.getDIBHeight) Then
                 curFont.releaseFromDC
-                m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
+                m_BackBuffer.createBlank cResize.GetWidth(), cResize.GetHeight(), 24
                 curFont.attachToDC m_BackBuffer.getDIBDC
             End If
             
@@ -635,23 +700,25 @@ Private Sub updateControlSize()
             'We must make the back buffer fit the control's caption precisely.  stringWidth should be accurate;
             ' however, antialiasing may require us to add an additional pixel to the caption, in the event
             ' that ClearType is in use.
-            'If (stringWidth <> m_BackBuffer.getDIBWidth) Or (stringHeight <> m_BackBuffer.getDIBHeight) Then
+            If (stringWidth <> m_BackBuffer.getDIBWidth) Or (stringHeight <> m_BackBuffer.getDIBHeight) Then
                 
                 'Resize the user control.  For inexplicable reasons, setting the .Width and .Height properties works for .Width,
                 ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
                 ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
-                With UserControl
-                    .Size pxToTwipsX(stringWidth), pxToTwipsY(stringHeight)
-                End With
+                If g_IsProgramRunning Then
+                    cResize.SetSize stringWidth, stringHeight
+                Else
+                    With UserControl
+                        .Size PXToTwipsX(stringWidth), PXToTwipsY(stringHeight)
+                    End With
+                End If
                 
                 'Recreate the backbuffer
-                'If (stringWidth <> m_BackBuffer.getDIBWidth) Or (stringHeight <> m_BackBuffer.getDIBHeight) Then
-                    curFont.releaseFromDC
-                    m_BackBuffer.createBlank stringWidth, stringHeight, 24
-                    curFont.attachToDC m_BackBuffer.getDIBDC
-                'End If
+                curFont.releaseFromDC
+                m_BackBuffer.createBlank stringWidth, stringHeight, 24
+                curFont.attachToDC m_BackBuffer.getDIBDC
                 
-            'End If
+            End If
             
             'Restore normal resize behavior
             m_InternalResizeState = False
@@ -675,14 +742,14 @@ Private Sub updateControlSize()
                 ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
                 ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
                 If g_IsProgramRunning Then
-                    MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, origWidth, stringHeight, 1
+                    cResize.SetSize origWidth, stringHeight
                 Else
-                    UserControl.Height = pxToTwipsY(stringHeight)
+                    UserControl.Height = PXToTwipsY(stringHeight)
                 End If
                 
                 'Recreate the backbuffer
                 curFont.releaseFromDC
-                m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
+                m_BackBuffer.createBlank cResize.GetWidth(), cResize.GetHeight(), 24
                 curFont.attachToDC m_BackBuffer.getDIBDC
                 
             End If
@@ -696,7 +763,11 @@ Private Sub updateControlSize()
     ' to any size changes.
     If (m_Alignment = vbRightJustify) And (origWidth <> m_BackBuffer.getDIBWidth) And (m_Layout = AutoSizeControl) Then
         m_InternalResizeState = True
-        UserControl.Extender.Left = UserControl.Extender.Left + (m_BackBuffer.getDIBWidth - origWidth)
+        If g_IsProgramRunning Then
+            cResize.SetPosition UserControl.Extender.Left + (m_BackBuffer.getDIBWidth - origWidth), cResize.GetTop
+        Else
+            UserControl.Extender.Left = UserControl.Extender.Left + (m_BackBuffer.getDIBWidth - origWidth)
+        End If
         m_InternalResizeState = False
     End If
     
@@ -820,7 +891,7 @@ Private Sub redrawBackBuffer()
     End Select
     
     'Paint the buffer to the screen
-    If g_IsProgramRunning Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    If g_IsProgramRunning Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, cResize.GetWidth(), cResize.GetHeight(), m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
 
 End Sub
 

@@ -104,9 +104,9 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   10
          Top             =   15
          Width           =   660
-         _ExtentX        =   1164
-         _ExtentY        =   556
-         FontSize        =   9
+         _extentx        =   1164
+         _extenty        =   556
+         fontsize        =   9
       End
       Begin PhotoDemon.pdComboBox cmbZoom 
          Height          =   360
@@ -114,22 +114,22 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   9
          Top             =   15
          Width           =   1290
-         _ExtentX        =   2275
-         _ExtentY        =   635
-         FontSize        =   9
+         _extentx        =   2275
+         _extenty        =   635
+         fontsize        =   9
       End
       Begin PhotoDemon.pdLabel lblImgSize 
          Height          =   210
          Left            =   3240
          Top             =   60
          Width           =   345
-         _ExtentX        =   609
-         _ExtentY        =   370
-         BackColor       =   -2147483626
-         Caption         =   "size:"
-         FontSize        =   9
-         Layout          =   2
-         UseCustomBackColor=   -1  'True
+         _extentx        =   609
+         _extenty        =   370
+         backcolor       =   -2147483626
+         caption         =   "size:"
+         fontsize        =   9
+         layout          =   2
+         usecustombackcolor=   -1
       End
       Begin PhotoDemon.pdButtonToolbox cmdZoomFit 
          Height          =   345
@@ -137,9 +137,9 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   5
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         BackColor       =   -2147483626
+         _extentx        =   688
+         _extenty        =   609
+         backcolor       =   -2147483626
       End
       Begin PhotoDemon.pdButtonToolbox cmdZoomOut 
          Height          =   345
@@ -147,10 +147,10 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   6
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         BackColor       =   -2147483626
-         AutoToggle      =   -1  'True
+         _extentx        =   688
+         _extenty        =   609
+         backcolor       =   -2147483626
+         autotoggle      =   -1
       End
       Begin PhotoDemon.pdButtonToolbox cmdZoomIn 
          Height          =   345
@@ -158,10 +158,10 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   7
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         BackColor       =   -2147483626
-         AutoToggle      =   -1  'True
+         _extentx        =   688
+         _extenty        =   609
+         backcolor       =   -2147483626
+         autotoggle      =   -1
       End
       Begin PhotoDemon.pdButtonToolbox cmdImgSize 
          Height          =   345
@@ -169,36 +169,36 @@ Begin VB.UserControl pdCanvas
          TabIndex        =   8
          Top             =   0
          Width           =   390
-         _ExtentX        =   688
-         _ExtentY        =   609
-         BackColor       =   -2147483626
-         AutoToggle      =   -1  'True
+         _extentx        =   688
+         _extenty        =   609
+         backcolor       =   -2147483626
+         autotoggle      =   -1
       End
       Begin PhotoDemon.pdLabel lblCoordinates 
          Height          =   210
          Left            =   5160
          Top             =   60
          Width           =   345
-         _ExtentX        =   609
-         _ExtentY        =   370
-         BackColor       =   -2147483626
-         Caption         =   "size:"
-         FontSize        =   9
-         Layout          =   2
-         UseCustomBackColor=   -1  'True
+         _extentx        =   609
+         _extenty        =   370
+         backcolor       =   -2147483626
+         caption         =   "size:"
+         fontsize        =   9
+         layout          =   2
+         usecustombackcolor=   -1
       End
       Begin PhotoDemon.pdLabel lblMessages 
          Height          =   210
          Left            =   6360
          Top             =   60
          Width           =   6825
-         _ExtentX        =   12039
-         _ExtentY        =   635
-         Alignment       =   1
-         BackColor       =   -2147483626
-         Caption         =   "(messages will appear here at run-time)"
-         FontSize        =   9
-         UseCustomBackColor=   -1  'True
+         _extentx        =   12039
+         _extenty        =   635
+         alignment       =   1
+         backcolor       =   -2147483626
+         caption         =   "(messages will appear here at run-time)"
+         fontsize        =   9
+         usecustombackcolor=   -1
       End
       Begin VB.Line lineStatusBar 
          BorderColor     =   &H00808080&
@@ -645,7 +645,7 @@ Public Sub displayCanvasCoordinates(ByVal xCoord As Long, ByVal yCoord As Long, 
     'lblCoordinates.updateAgainstCurrentTheme
     
     'Align the right-hand line control with the newly captioned label
-    lineStatusBar(2).x1 = lblCoordinates.Left + lblCoordinates.PixelWidth + fixDPI(10)
+    lineStatusBar(2).x1 = lblCoordinates.Left + lblCoordinates.PixelWidth + FixDPI(10)
     lineStatusBar(2).x2 = lineStatusBar(2).x1
     
     'Make the message area shrink to match the new coordinate display size
@@ -821,7 +821,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                         
                         'Redraw the viewport and interface to match
                         Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), Me
-                        syncInterfaceToCurrentImage
+                        SyncInterfaceToCurrentImage
                         
                     End If
                 
@@ -830,7 +830,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                         markEventHandled = True
                         pdImages(g_CurrentImage).getActiveLayer.setLayerVisibility (Not pdImages(g_CurrentImage).getActiveLayer.getLayerVisibility)
                         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
-                        syncInterfaceToCurrentImage
+                        SyncInterfaceToCurrentImage
                     End If
                 
                 End If
@@ -1788,7 +1788,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
                     End With
                     
                     'Manually synchronize menu, layer toolbox, and other UI settings against the newly created layer.
-                    syncInterfaceToCurrentImage
+                    SyncInterfaceToCurrentImage
                     
                     'Finally, set focus to the text layer text entry box
                     If g_CurrentTool = VECTOR_TEXT Then
@@ -2167,8 +2167,8 @@ CanvasShowError:
         'Make all status bar lines a proper height (again, necessary on high-DPI displays)
         Dim i As Long
         For i = 0 To lineStatusBar.Count - 1
-            lineStatusBar(i).y1 = fixDPI(1)
-            lineStatusBar(i).y2 = picStatusBar.ScaleHeight - fixDPI(1)
+            lineStatusBar(i).y1 = FixDPI(1)
+            lineStatusBar(i).y2 = picStatusBar.ScaleHeight - FixDPI(1)
         Next i
         
     End If
@@ -2199,17 +2199,17 @@ Public Sub fixChromeLayout()
     
     'Move the message label into position (right-aligned, with a slight margin)
     Dim newLeft As Long
-    newLeft = lineStatusBar(2).x1 + fixDPI(7)
-    If lblMessages.Left <> newLeft Then lblMessages.Left = newLeft
+    newLeft = lineStatusBar(2).x1 + FixDPI(7)
+    If lblMessages.GetLeft <> newLeft Then lblMessages.SetLeft newLeft
     
     'If the message label will overflow other elements of the status bar, shrink it as necessary
     Dim newMessageArea As Long
-    newMessageArea = (UserControl.ScaleWidth - lblMessages.Left) - fixDPI(12)
+    newMessageArea = (UserControl.ScaleWidth - lblMessages.GetLeft) - FixDPI(12)
     
     If newMessageArea < 0 Then
         lblMessages.Visible = False
     Else
-        If lblMessages.Width <> newMessageArea Then lblMessages.Width = newMessageArea
+        If lblMessages.GetWidth <> newMessageArea Then lblMessages.SetWidth newMessageArea
         lblMessages.Visible = True
     End If
     
@@ -2256,7 +2256,7 @@ Public Sub fixChromeLayout()
             If Not (iconLoadAnImage Is Nothing) Then
             
                 Dim modifiedHeight As Long
-                modifiedHeight = tmpDIB.getDIBHeight + (iconLoadAnImage.getDIBHeight / 2) + fixDPI(24)
+                modifiedHeight = tmpDIB.getDIBHeight + (iconLoadAnImage.getDIBHeight / 2) + FixDPI(24)
                 
                 Dim loadImageMessage As String
                 If Not (g_Language Is Nothing) Then
@@ -2265,7 +2265,7 @@ Public Sub fixChromeLayout()
                 notifyFont.drawCenteredText loadImageMessage, tmpDIB.getDIBWidth, modifiedHeight
                 
                 'Just above the text instructions, add a generic image icon
-                iconLoadAnImage.alphaBlendToDC tmpDIB.getDIBDC, 192, (tmpDIB.getDIBWidth - iconLoadAnImage.getDIBWidth) / 2, (modifiedHeight / 2) - (iconLoadAnImage.getDIBHeight) - fixDPI(20)
+                iconLoadAnImage.alphaBlendToDC tmpDIB.getDIBDC, 192, (tmpDIB.getDIBWidth - iconLoadAnImage.getDIBWidth) / 2, (modifiedHeight / 2) - (iconLoadAnImage.getDIBHeight) - FixDPI(20)
                 
             End If
             
@@ -2291,46 +2291,46 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
     'Some elements must always be reflowed dynamically
     
     'The zoom drop-down can now change width if a translation is active.  Make sure the zoom-in button is positioned accordingly.
-    cmdZoomIn.Left = cmbZoom.Left + cmbZoom.Width + fixDPI(3)
+    cmdZoomIn.Left = cmbZoom.Left + cmbZoom.Width + FixDPI(3)
     
     'Move the left-most line into position.  (This must be done dynamically, or it will be mispositioned
     ' on high-DPI displays)
     lineStatusBar(0).Visible = True
-    lineStatusBar(0).x1 = (cmdZoomIn.Left + cmdZoomIn.Width) + fixDPI(6)
+    lineStatusBar(0).x1 = (cmdZoomIn.Left + cmdZoomIn.Width) + FixDPI(6)
     lineStatusBar(0).x2 = lineStatusBar(0).x1
     
     'We will only draw subsequent interface elements if at least one image is currently loaded.
     If enabledState Then
         
         'Start with the "image size" button
-        cmdImgSize.Left = lineStatusBar(0).x1 + fixDPI(4)
+        cmdImgSize.Left = lineStatusBar(0).x1 + FixDPI(4)
         If (Not cmdImgSize.Visible) Then cmdImgSize.Visible = True
         
         'After the "image size" icon comes the actual image size label.  Its position is determined by the image resize button width,
         ' plus a 4px buffer on either size (contingent on DPI)
-        lblImgSize.Left = cmdImgSize.Left + cmdImgSize.Width + fixDPI(4)
+        lblImgSize.Left = cmdImgSize.Left + cmdImgSize.Width + FixDPI(4)
         
         'The image size label is autosized.  Move the "size unit" combo box next to it, and the next vertical line
         ' separator just past it.
         If (Not cmbSizeUnit.Visible) Then cmbSizeUnit.Visible = True
-        cmbSizeUnit.Left = lblImgSize.Left + lblImgSize.PixelWidth + fixDPI(10)
+        cmbSizeUnit.Left = lblImgSize.Left + lblImgSize.PixelWidth + FixDPI(10)
         
         If (Not lineStatusBar(1).Visible) Then lineStatusBar(1).Visible = True
-        lineStatusBar(1).x1 = cmbSizeUnit.Left + cmbSizeUnit.Width + fixDPI(10)
+        lineStatusBar(1).x1 = cmbSizeUnit.Left + cmbSizeUnit.Width + FixDPI(10)
         lineStatusBar(1).x2 = lineStatusBar(1).x1
         
         'After the "image size" panel and separator comes mouse coordinates.  The basic steps from above are repeated.
         If Not sbIconCoords Is Nothing Then
-            sbIconCoords.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(1).x1 + fixDPI(8), fixDPI(4), fixDPI(sbIconCoords.getDIBWidth), fixDPI(sbIconCoords.getDIBHeight)
+            sbIconCoords.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(1).x1 + FixDPI(8), FixDPI(4), FixDPI(sbIconCoords.getDIBWidth), FixDPI(sbIconCoords.getDIBHeight)
         End If
-        lblCoordinates.Left = lineStatusBar(1).x1 + fixDPI(14) + fixDPI(16)
+        lblCoordinates.Left = lineStatusBar(1).x1 + FixDPI(14) + FixDPI(16)
         
         If (Not lineStatusBar(2).Visible) Then lineStatusBar(2).Visible = True
-        lineStatusBar(2).x1 = lblCoordinates.Left + lblCoordinates.PixelWidth + fixDPI(10)
+        lineStatusBar(2).x1 = lblCoordinates.Left + lblCoordinates.PixelWidth + FixDPI(10)
         lineStatusBar(2).x2 = lineStatusBar(2).x1
         
         'Render the network access icon as necessary
-        If m_NetworkAccessActive Then sbIconNetwork.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(2).x1 + fixDPI(8), fixDPI(4), fixDPI(sbIconNetwork.getDIBWidth), fixDPI(sbIconNetwork.getDIBHeight)
+        If m_NetworkAccessActive Then sbIconNetwork.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(2).x1 + FixDPI(8), FixDPI(4), FixDPI(sbIconNetwork.getDIBWidth), FixDPI(sbIconNetwork.getDIBHeight)
         
     'Images are not loaded.  Hide the lines and other items.
     Else
@@ -2342,7 +2342,7 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
         lineStatusBar(2).Visible = False
         
         'Render the network access icon as necessary
-        If m_NetworkAccessActive Then sbIconNetwork.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(0).x1, fixDPI(4), fixDPI(sbIconNetwork.getDIBWidth), fixDPI(sbIconNetwork.getDIBHeight)
+        If m_NetworkAccessActive Then sbIconNetwork.alphaBlendToDC picStatusBar.hDC, , lineStatusBar(0).x1, FixDPI(4), FixDPI(sbIconNetwork.getDIBWidth), FixDPI(sbIconNetwork.getDIBHeight)
                 
     End If
     
