@@ -42,6 +42,8 @@ Private Const SM_CYVIRTUALSCREEN As Long = 79
 
 'Current system DPI settings (used with the GetDeviceCaps API)
 Private Const GDC_VERTRES As Long = 10
+Private Const GDC_LOGPIXELSX As Long = 88
+Private Const GDC_LOGPIXELSY As Long = 90
 Private Const GDC_DESKTOPVERTRES As Long = 117
 
 'GetMonitorInfo struct
@@ -167,19 +169,18 @@ Public Function GetWindowsDPI() As Double
     Dim screenDC As Long
     screenDC = GetDC(0)
     
-    'Thanks to StackOverflow user Farshid T (http://stackoverflow.com/questions/5977445/how-to-get-windows-display-settings)
-    ' for this hackish but helpful solution to determine current Windows DPI settings.
-    Dim logScreenHeight As Double, phyScreenHeight As Double
-    logScreenHeight = CDbl(GetDeviceCaps(screenDC, GDC_VERTRES))
-    phyScreenHeight = CDbl(GetDeviceCaps(screenDC, GDC_DESKTOPVERTRES))
+    Dim LogPixelsX As Double
+    LogPixelsX = CDbl(GetDeviceCaps(screenDC, GDC_LOGPIXELSX))
     
-    If logScreenHeight = 0 Then
+    ReleaseDC 0, screenDC
+    
+    If LogPixelsX = 0 Then
         GetWindowsDPI = 1#
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "WARNING!  System DPI could not be retrieved via pdDisplays.GetWindowsDPI()."
         #End If
     Else
-        GetWindowsDPI = phyScreenHeight / logScreenHeight
+        GetWindowsDPI = LogPixelsX / 96#
     End If
     
 End Function
