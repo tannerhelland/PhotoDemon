@@ -166,14 +166,13 @@ End Function
 'For convenience, this is returned as a float where 1.0 = 96 DPI (the default Windows setting).  2.0 = 200% DPI scaling, etc.
 Public Function GetWindowsDPI() As Double
     
-    Dim screenDC As Long
+    'Retrieve LogPixelsX via the API; this will be 96 at 100% DPI scaling
+    Dim screenDC As Long, LogPixelsX As Double
     screenDC = GetDC(0)
-    
-    Dim LogPixelsX As Double
     LogPixelsX = CDbl(GetDeviceCaps(screenDC, GDC_LOGPIXELSX))
-    
     ReleaseDC 0, screenDC
     
+    'Convert that value into a fractional DPI modified (e.g. 1.0 for 100% scaling, 2.0 for 200% scaling)
     If LogPixelsX = 0 Then
         GetWindowsDPI = 1#
         #If DEBUGMODE = 1 Then
@@ -634,9 +633,9 @@ Friend Function CenterFormViaReferenceRect(ByRef FormToCenter As Form, ByRef src
     'Center the form
     Dim dWidth As Long, dHeight As Long
     With workingRect
-        dWidth = (.Right - .Left) * TwipsPerPixelXFix
-        dHeight = (.Bottom - .Top) * TwipsPerPixelYFix
-        FormToCenter.Move ((dWidth - FormToCenter.Width) \ 2) + .Left * TwipsPerPixelXFix, ((dHeight - FormToCenter.Height) \ 2) + .Top * TwipsPerPixelYFix
+        dWidth = (.Right - .Left) * InternalTwipsFix
+        dHeight = (.Bottom - .Top) * InternalTwipsFix
+        FormToCenter.Move ((dWidth - FormToCenter.Width) \ 2) + .Left * InternalTwipsFix, ((dHeight - FormToCenter.Height) \ 2) + .Top * InternalTwipsFix
     End With
     
     CenterFormViaReferenceRect = True
@@ -651,3 +650,7 @@ couldNotCenterForm:
     
 End Function
 
+'VB truncates its internal TwipsPerPixel measurement, so use this method instead.
+Private Function InternalTwipsFix() As Double
+    InternalTwipsFix = 15# / Me.GetWindowsDPI()
+End Function
