@@ -143,8 +143,8 @@ Friend Sub GetVBDesktopRect(ByRef dstRect As RECTL, Optional ByVal returnInPixel
         .Top = 0
         
         If returnInPixels Then
-            .Right = Screen.Width / TwipsPerPixelXFix
-            .Bottom = Screen.Height / TwipsPerPixelYFix
+            .Right = Screen.Width / InternalTwipsFix
+            .Bottom = Screen.Height / InternalTwipsFix
         Else
             .Right = Screen.Width
             .Bottom = Screen.Height
@@ -620,7 +620,7 @@ Friend Function CenterFormViaReferenceRect(ByRef FormToCenter As Form, ByRef src
         
         'Get the display's working rect
         If Not srcDisplay Is Nothing Then
-            srcDisplay.getWorkingRect workingRect
+            srcDisplay.getRect workingRect
         Else
             Me.GetVBDesktopRect workingRect, True
         End If
