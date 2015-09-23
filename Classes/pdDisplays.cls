@@ -40,6 +40,10 @@ Private Const SM_YVIRTUALSCREEN As Long = 77
 Private Const SM_CXVIRTUALSCREEN As Long = 78
 Private Const SM_CYVIRTUALSCREEN As Long = 79
 
+'Current system DPI settings (used with the GetDeviceCaps API)
+Private Const GDC_VERTRES As Long = 10
+Private Const GDC_DESKTOPVERTRES As Long = 117
+
 'GetMonitorInfo struct
 Private Const CCHDEVICENAME As Long = 32
 Private Type MONITORINFOEX
@@ -71,6 +75,7 @@ Private Const MONITOR_DEFAULTTONEAREST As Long = 2
 Private Declare Function MonitorFromPoint Lib "user32" (ByVal x As Long, ByVal y As Long, ByVal dwFlags As Long) As Long
 Private Declare Function MonitorFromRect Lib "user32" (ByRef srcRect As RECTL, ByVal dwFlags As Long) As Long
 Private Declare Function GetMonitorInfo Lib "user32" Alias "GetMonitorInfoW" (ByVal hMonitor As Long, ByRef dstMonitorInfo As MONITORINFOEX) As Long
+Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
 Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
 
 'Some display settings are stored in the registry (e.g. EDID).
@@ -100,37 +105,83 @@ End Sub
 
 'Retrieve virtual desktop dimensions.  These are retrieved on-the-fly, to simplify dealing with changing monitor
 ' resolutions at runtime.
-Public Function getDesktopLeft() As Long
-    getDesktopLeft = GetSystemMetrics(SM_XVIRTUALSCREEN)
+Public Function GetDesktopLeft() As Long
+    GetDesktopLeft = GetSystemMetrics(SM_XVIRTUALSCREEN)
 End Function
 
-Public Function getDesktopTop() As Long
-    getDesktopTop = GetSystemMetrics(SM_YVIRTUALSCREEN)
+Public Function GetDesktopTop() As Long
+    GetDesktopTop = GetSystemMetrics(SM_YVIRTUALSCREEN)
 End Function
 
-Public Function getDesktopWidth() As Long
-    getDesktopWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN)
+Public Function GetDesktopWidth() As Long
+    GetDesktopWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN)
 End Function
 
-Public Function getDesktopHeight() As Long
-    getDesktopHeight = GetSystemMetrics(SM_CYVIRTUALSCREEN)
+Public Function GetDesktopHeight() As Long
+    GetDesktopHeight = GetSystemMetrics(SM_CYVIRTUALSCREEN)
 End Function
 
-Friend Sub getDesktopRect(ByRef dstRect As RECTL)
+Friend Sub GetDesktopRect(ByRef dstRect As RECTL)
     
     With dstRect
-        .Left = Me.getDesktopLeft
-        .Top = Me.getDesktopTop
-        .Right = Me.getDesktopLeft + Me.getDesktopWidth
-        .Bottom = Me.getDesktopTop + Me.getDesktopHeight
+        .Left = Me.GetDesktopLeft
+        .Top = Me.GetDesktopTop
+        .Right = Me.GetDesktopLeft + Me.GetDesktopWidth
+        .Bottom = Me.GetDesktopTop + Me.GetDesktopHeight
+    End With
+    
+End Sub
+
+'As an absolute final failsafe, VB's Screen object can be queried for a display rect.  This is typically only done under alternative
+' environments (e.g. Wine) if all standard display enumeration APIs have failed.
+Friend Sub GetVBDesktopRect(ByRef dstRect As RECTL, Optional ByVal returnInPixels As Boolean = True)
+    
+    With dstRect
+        .Left = 0
+        .Top = 0
+        
+        If returnInPixels Then
+            .Right = Screen.Width / TwipsPerPixelXFix
+            .Bottom = Screen.Height / TwipsPerPixelYFix
+        Else
+            .Right = Screen.Width
+            .Bottom = Screen.Height
+        End If
+        
     End With
     
 End Sub
 
 'Returns the number of active displays.  Inaccurate until .RefreshDisplays() has been called.
-Public Function getDisplayCount() As Long
+Public Function GetDisplayCount() As Long
     If m_NumOfDisplays = 0 Then RefreshDisplays
-    getDisplayCount = m_NumOfDisplays
+    GetDisplayCount = m_NumOfDisplays
+End Function
+
+'Returns the current screen DPI, *as set in Windows display settings.*  This has no relationship to actual screen DPI, which would
+' need to be calculated on a per-monitor basis using the EDID data PD collects.
+'
+'For convenience, this is returned as a float where 1.0 = 96 DPI (the default Windows setting).  2.0 = 200% DPI scaling, etc.
+Public Function GetWindowsDPI() As Double
+    
+    Dim screenDC As Long
+    screenDC = GetDC(0)
+    
+    'Thanks to StackOverflow user Farshid T (http://stackoverflow.com/questions/5977445/how-to-get-windows-display-settings)
+    ' for this hackish but helpful solution to determine current Windows DPI settings.
+    Dim logScreenHeight As Double, phyScreenHeight As Double
+    logScreenHeight = CDbl(GetDeviceCaps(screenDC, GDC_VERTRES))
+    phyScreenHeight = CDbl(GetDeviceCaps(screenDC, GDC_DESKTOPVERTRES))
+    
+    If logScreenHeight = 0 Then
+        GetWindowsDPI = 1#
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  System DPI could not be retrieved via pdDisplays.GetWindowsDPI()."
+        #End If
+    Else
+        GetWindowsDPI = phyScreenHeight / logScreenHeight
+    End If
+    
 End Function
 
 'Erase our current display collection.  Not exposed publicly, as callers should rely on RefreshDisplays, instead.
@@ -158,7 +209,7 @@ Public Function RefreshDisplays() As Long
     
     'Retrieve the virtual screen area
     Dim virtualScreenRect As RECTL
-    Me.getDesktopRect virtualScreenRect
+    Me.GetDesktopRect virtualScreenRect
     
     'We're now going to search the display area, in 320x200 increments, probing for unique monitors.
     ' This is a relatively foolproof way to check for active monitors and their positioning/dimensions.
@@ -172,7 +223,7 @@ Public Function RefreshDisplays() As Long
         
         'If the display doesn't exist in our collection, add it now!
         If hDisplay <> 0 Then
-            If Not doesDisplayExistInCollection(hDisplay) Then addNewDisplay hDisplay
+            If Not DoesDisplayExistInCollection(hDisplay) Then AddNewDisplay hDisplay
         End If
         
     Next y
@@ -184,7 +235,7 @@ Public Function RefreshDisplays() As Long
         
         'Get a default screen rect from VB's internal methods
         Dim workingRect As RECTL
-        Me.getVBDesktopRect workingRect, True
+        Me.GetVBDesktopRect workingRect, True
         
         'Populate basic display features so external functions don't crash
         Set listOfDisplays(0) = New pdDisplay
@@ -223,16 +274,18 @@ Public Function RefreshDisplays() As Long
         Else
             pdDebug.LogAction "WARNING!  pdDisplays.RefreshDisplays couldn't locate any displays.  This shouldn't be possible - please investigate!"
         End If
+        
+        pdDebug.LogAction "System-wide DPI currently set to " & Format$(Me.GetWindowsDPI * 100, "##0") & "%"
               
     #End If
     
 End Function
 
 'Given a display handle (hMonitor), see if it already exists in our display collection.
-Private Function doesDisplayExistInCollection(ByVal hDisplay As Long) As Boolean
+Private Function DoesDisplayExistInCollection(ByVal hDisplay As Long) As Boolean
         
     If m_NumOfDisplays = 0 Then
-        doesDisplayExistInCollection = False
+        DoesDisplayExistInCollection = False
     Else
         
         Dim displayFound As Boolean
@@ -246,14 +299,14 @@ Private Function doesDisplayExistInCollection(ByVal hDisplay As Long) As Boolean
             End If
         Next i
         
-        doesDisplayExistInCollection = displayFound
+        DoesDisplayExistInCollection = displayFound
         
     End If
         
 End Function
 
 'Add a new display to the collection.  Do *not* call this without first calling doesDisplayExistInCollection(), above.
-Private Sub addNewDisplay(ByVal hDisplay As Long)
+Private Sub AddNewDisplay(ByVal hDisplay As Long)
 
     'Our display collection is 0-based, so we can add new entries immediately, without incrementing our counter.
     Set listOfDisplays(m_NumOfDisplays) = New pdDisplay
@@ -278,7 +331,7 @@ Private Sub addNewDisplay(ByVal hDisplay As Long)
         
         'While here, we want to add some additional information to the display entry, but it's fairly involved, so we're
         ' going to turn control over to a secondary sub for now.
-        fillDetailedDisplayInfo m_NumOfDisplays
+        FillDetailedDisplayInfo m_NumOfDisplays
         
         'Increment the display counter before exiting
         m_NumOfDisplays = m_NumOfDisplays + 1
@@ -295,7 +348,7 @@ Private Sub addNewDisplay(ByVal hDisplay As Long)
 End Sub
 
 'After adding a new display to the collection, call this to populate detailed info (like friendly name, physical dimensions, etc)
-Private Sub fillDetailedDisplayInfo(ByVal displayIndex As Long)
+Private Sub FillDetailedDisplayInfo(ByVal displayIndex As Long)
     
     On Error GoTo detailedDisplayInfoBug
     
@@ -388,7 +441,7 @@ Private Sub fillDetailedDisplayInfo(ByVal displayIndex As Long)
                         regPath = "System\CurrentControlSet\Enum\Display\" & tmpStringArray(1) & "\" & tmpStringArray(2) & "\Device Parameters"
                         
                         'Using that path, retrieve this monitor's EDID
-                        If retrieveEDIDFromRegistry(edidArray, regPath) Then
+                        If RetrieveEDIDFromRegistry(edidArray, regPath) Then
                             listOfDisplays(displayIndex).setEDID edidArray
                         Else
                             listOfDisplays(displayIndex).setEDID edidArray, True
@@ -421,7 +474,7 @@ End Sub
 
 'Given a registry path (created from a monitor's device ID), retrieve a corresponding EDID.
 ' Returns: TRUE if the EDID is found, FALSE otherwise.  API errors will be logged to pdDebug.
-Private Function retrieveEDIDFromRegistry(ByRef dstArray() As Byte, ByVal registryPath As String) As Boolean
+Private Function RetrieveEDIDFromRegistry(ByRef dstArray() As Byte, ByVal registryPath As String) As Boolean
 
     On Error GoTo registryFetchError
 
@@ -455,12 +508,12 @@ Private Function retrieveEDIDFromRegistry(ByRef dstArray() As Byte, ByVal regist
         
             ReDim dstArray(0 To edidSize - 1) As Byte
             successCheck = RegQueryValueEx(regHandle, StrPtr(regString), 0&, 0&, VarPtr(dstArray(0)), edidSize)
-            retrieveEDIDFromRegistry = CBool(successCheck = 0)
+            RetrieveEDIDFromRegistry = CBool(successCheck = 0)
             
         Else
         
             'If the key was queried successfully but the EDID size was 0, we don't have a choice but to fail.
-            retrieveEDIDFromRegistry = False
+            RetrieveEDIDFromRegistry = False
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "WARNING!  pdDisplays.retrieveEDID found the EDID key, but the EDID length was zero."
             #End If
@@ -470,7 +523,7 @@ Private Function retrieveEDIDFromRegistry(ByRef dstArray() As Byte, ByVal regist
     'Couldn't open the registry key.  Exit.
     Else
         
-        retrieveEDIDFromRegistry = False
+        RetrieveEDIDFromRegistry = False
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "WARNING!  pdDisplays.retrieveEDID couldn't locate the EDID key in the registry.  Sorry."
         #End If
@@ -482,7 +535,7 @@ Private Function retrieveEDIDFromRegistry(ByRef dstArray() As Byte, ByVal regist
 registryFetchError:
 
     'successCheck will contain the last return value of a registry API call; might as well return it in case it's helpful
-    retrieveEDIDFromRegistry = False
+    RetrieveEDIDFromRegistry = False
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "WARNING!  pdDisplays.retrieveEDID experienced an error.  The last return code from registry APIs was: " & successCheck & ".  The last VB error was: " & Err.Description & "."
     #End If
@@ -569,12 +622,12 @@ Friend Function CenterFormViaReferenceRect(ByRef FormToCenter As Form, ByRef src
         If Not srcDisplay Is Nothing Then
             srcDisplay.getWorkingRect workingRect
         Else
-            Me.getVBDesktopRect workingRect, True
+            Me.GetVBDesktopRect workingRect, True
         End If
     
     'hDisplay should always contain a non-zero value, but if it doesn't, we can fall back on internal VB methods as a last resort.
     Else
-        Me.getVBDesktopRect workingRect, True
+        Me.GetVBDesktopRect workingRect, True
     End If
     
     'Center the form
@@ -597,22 +650,3 @@ couldNotCenterForm:
     
 End Function
 
-'As an absolute final failsafe, VB's Screen object can be queried for a display rect.  This is typically only done under alternative
-' environments (e.g. Wine) if all standard display enumeration APIs have failed.
-Friend Sub getVBDesktopRect(ByRef dstRect As RECTL, Optional ByVal returnInPixels As Boolean = True)
-    
-    With dstRect
-        .Left = 0
-        .Top = 0
-        
-        If returnInPixels Then
-            .Right = Screen.Width / TwipsPerPixelXFix
-            .Bottom = Screen.Height / TwipsPerPixelYFix
-        Else
-            .Right = Screen.Width
-            .Bottom = Screen.Height
-        End If
-        
-    End With
-    
-End Sub
