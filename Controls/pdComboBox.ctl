@@ -82,6 +82,10 @@ Public Event LostFocusAPI()
 Private WithEvents cPainterBox As pdWindowPainter
 Attribute cPainterBox.VB_VarHelpID = -1
 
+'DPI-aware window resizer
+Private WithEvents cResize As pdWindowSize
+Attribute cResize.VB_VarHelpID = -1
+
 'Window styles
 Private Enum enWindowStyles
     WS_BORDER = &H800000
@@ -859,7 +863,11 @@ Private Sub UserControl_Hide()
 End Sub
 
 Private Sub UserControl_Initialize()
-
+    
+    'Initialize a DPI-aware window resizer.  (Window messages won't be subclassed in the IDE, FYI)
+    Set cResize = New pdWindowSize
+    cResize.AttachToHWnd Me.hWnd, g_IsProgramRunning
+    
     m_ComboBoxHwnd = 0
     ReDim m_BackupEntries(0 To 15) As backupComboEntry
     
@@ -908,13 +916,6 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
 End Sub
 
-Private Sub UserControl_Resize()
-    
-    'This (lengthy) line of code is required to make resizing work correctly under high-DPI settings.  Thanks to Zhu JY for the tip.
-    If g_IsProgramRunning Then MoveWindow UserControl.hWnd, scaleX(Extender.Left, vbContainerSize, vbPixels), scaleY(Extender.Top, vbContainerSize, vbPixels), scaleX(Extender.Width, vbContainerSize, vbPixels), scaleY(Extender.Height, vbContainerSize, vbPixels), 1
-    
-End Sub
-
 'Show the control and the combo box.  (This is the first place the combo box is typically created, as well.)
 Private Sub UserControl_Show()
     
@@ -945,8 +946,13 @@ Private Sub getComboBoxRect(ByRef targetRect As winRect)
     With targetRect
         .x1 = 0
         .y1 = 0
-        .x2 = UserControl.ScaleWidth
-        .y2 = UserControl.ScaleHeight
+        If g_IsProgramRunning Then
+            .x2 = cResize.GetWidth
+            .y2 = cResize.GetHeight
+        Else
+            .x2 = UserControl.ScaleWidth
+            .y2 = UserControl.ScaleHeight
+        End If
     End With
 
 End Sub
@@ -1101,8 +1107,15 @@ Private Function createComboBox() As Boolean
     Dim tmpRect As winRect
     tmpRect.x1 = 0
     tmpRect.y1 = 0
-    tmpRect.x2 = UserControl.ScaleWidth
+    
+    If g_IsProgramRunning Then
+        tmpRect.x2 = cResize.GetWidth
+    Else
+        tmpRect.x2 = UserControl.ScaleWidth
+    End If
+    
     tmpRect.y2 = idealHeight + 6
+    
     
     'Creating a combo box window is a little different from other windows, because the drop-down height must be factored into the initial
     ' size calculation.  We start at zero, then increase the combo box size as additional items are added.
@@ -1617,11 +1630,11 @@ Public Sub requestNewWidth(Optional ByVal newWidth As Long = 100, Optional ByVal
             Next i
         
         Else
-            maxTextWidth = 100
+            maxTextWidth = FixDPI(100)
         End If
         
         'Add some padding for the drop-down arrow, then exit
-        newWidth = maxTextWidth + FixDPI(30)
+        newWidth = maxTextWidth + FixDPI(36)
     
     End If
     
@@ -1642,13 +1655,9 @@ Private Sub syncUserControlSizeToComboSize()
         GetClientRect m_ComboBoxHwnd, comboRect
         
         'Resize the user control, as necessary
-        With UserControl
-        
-            If (comboRect.Bottom - comboRect.Top) <> .ScaleHeight Or (comboRect.Right - comboRect.Left) <> .ScaleWidth Then
-                .Size PXToTwipsX(comboRect.Right - comboRect.Left), PXToTwipsY(comboRect.Bottom - comboRect.Top)
-            End If
-        
-        End With
+        If g_IsProgramRunning Then
+            cResize.SetSize comboRect.Right - comboRect.Left, comboRect.Bottom - comboRect.Top
+        End If
             
         'Repaint the control
         If Not (cPainterBox Is Nothing) Then cPainterBox.requestRepaint
