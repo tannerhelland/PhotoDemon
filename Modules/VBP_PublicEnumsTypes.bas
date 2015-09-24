@@ -45,6 +45,7 @@ Public Enum PDTools
     SELECT_WAND = 8
     VECTOR_TEXT = 9
     VECTOR_FANCYTEXT = 10
+    PAINT_BASICBRUSH = 11
 End Enum
 
 #If False Then
@@ -52,6 +53,7 @@ End Enum
     Const SELECT_RECT = 3, SELECT_CIRC = 4, SELECT_LINE = 5
     Const SELECT_POLYGON = 6, SELECT_LASSO = 7, SELECT_WAND = 8
     Const VECTOR_TEXT = 9, VECTOR_FANCYTEXT = 10
+    Const PAINT_BASICBRUSH = 11
 #End If
 
 'Currently supported file tools; these numbers correspond to the index of the tool's command button on the main form.
