@@ -376,6 +376,9 @@ T_SELWAND    CUSTOM  MOVEABLE        LOADONCALL      toolbox_select_wand_24.png
 TV_TEXT      CUSTOM  MOVEABLE        LOADONCALL      toolbox_vector_text_24.png
 TV_FANCYTEXT CUSTOM  MOVEABLE        LOADONCALL      toolbox_vector_fancy_text_24.png
 
+//Paint tool area toolbox icons
+PNT_BASICBRUSH CUSTOM MOVEABLE       LOADONCALL      toolbox_paint_basicbrush_24.png
+
 //Tool options area icons
 TO_APPLY     CUSTOM  MOVEABLE        LOADONCALL      apply_changes.png
 TEXT_BOLD    CUSTOM  MOVEABLE        LOADONCALL      text_bold_24.png
