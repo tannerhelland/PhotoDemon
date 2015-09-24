@@ -31,9 +31,9 @@ Begin VB.Form toolbar_Toolbox
       Left            =   120
       Top             =   30
       Width           =   2175
-      _ExtentX        =   450
-      _ExtentY        =   503
-      Caption         =   "file"
+      _extentx        =   450
+      _extenty        =   503
+      caption         =   "file"
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -42,8 +42,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   1
       Top             =   2880
       Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
+      _extentx        =   1085
+      _extenty        =   1085
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -52,8 +52,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   2
       Top             =   2880
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -62,8 +62,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   3
       Top             =   2880
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -72,8 +72,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   4
       Top             =   3840
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -82,8 +82,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   5
       Top             =   3840
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -92,8 +92,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   6
       Top             =   3840
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -102,8 +102,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   7
       Top             =   4440
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -112,8 +112,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   8
       Top             =   4440
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -122,8 +122,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   9
       Top             =   4440
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin PhotoDemon.pdLabel lblCategories 
       Height          =   240
@@ -131,9 +131,9 @@ Begin VB.Form toolbar_Toolbox
       Left            =   120
       Top             =   1620
       Width           =   2175
-      _ExtentX        =   3836
-      _ExtentY        =   503
-      Caption         =   "undo"
+      _extentx        =   3836
+      _extenty        =   503
+      caption         =   "undo"
    End
    Begin PhotoDemon.pdLabel lblCategories 
       Height          =   240
@@ -141,9 +141,9 @@ Begin VB.Form toolbar_Toolbox
       Left            =   120
       Top             =   2580
       Width           =   2175
-      _ExtentX        =   3836
-      _ExtentY        =   503
-      Caption         =   "non-destructive"
+      _extentx        =   3836
+      _extenty        =   503
+      caption         =   "non-destructive"
    End
    Begin PhotoDemon.pdLabel lblCategories 
       Height          =   240
@@ -151,9 +151,9 @@ Begin VB.Form toolbar_Toolbox
       Left            =   120
       Top             =   3540
       Width           =   2175
-      _ExtentX        =   3836
-      _ExtentY        =   503
-      Caption         =   "selection"
+      _extentx        =   3836
+      _extenty        =   503
+      caption         =   "selection"
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -162,8 +162,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   10
       Top             =   300
       Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
+      _extentx        =   1085
+      _extenty        =   1085
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -172,8 +172,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   11
       Top             =   300
       Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
+      _extentx        =   1085
+      _extenty        =   1085
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -182,8 +182,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   12
       Top             =   300
       Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
+      _extentx        =   1085
+      _extenty        =   1085
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -192,8 +192,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   13
       Top             =   960
       Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
+      _extentx        =   1085
+      _extenty        =   1085
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -202,8 +202,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   14
       Top             =   960
       Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
+      _extentx        =   1085
+      _extenty        =   1085
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -212,8 +212,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   15
       Top             =   960
       Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
+      _extentx        =   1085
+      _extenty        =   1085
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -222,8 +222,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   16
       Top             =   1920
       Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
+      _extentx        =   1085
+      _extenty        =   1085
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -232,8 +232,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   17
       Top             =   1920
       Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
+      _extentx        =   1085
+      _extenty        =   1085
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -242,8 +242,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   18
       Top             =   1920
       Width           =   720
-      _ExtentX        =   1085
-      _ExtentY        =   1085
+      _extentx        =   1085
+      _extenty        =   1085
    End
    Begin PhotoDemon.pdLabel lblCategories 
       Height          =   240
@@ -251,9 +251,9 @@ Begin VB.Form toolbar_Toolbox
       Left            =   120
       Top             =   5100
       Width           =   2175
-      _ExtentX        =   3836
-      _ExtentY        =   503
-      Caption         =   "text"
+      _extentx        =   3836
+      _extenty        =   503
+      caption         =   "text"
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -262,8 +262,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   19
       Top             =   5400
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin PhotoDemon.pdButtonToolbox cmdTools 
       Height          =   600
@@ -272,8 +272,8 @@ Begin VB.Form toolbar_Toolbox
       TabIndex        =   20
       Top             =   5400
       Width           =   720
-      _ExtentX        =   1270
-      _ExtentY        =   1058
+      _extentx        =   1270
+      _extenty        =   1058
    End
    Begin VB.Line lnRightSeparator 
       X1              =   136
@@ -361,6 +361,12 @@ Private Const BTS_HEIGHT_LARGE As Long = 48
 
 Private m_ButtonWidth As Long, m_ButtonHeight As Long
 
+'These values are basically constants; they are set by the ReflowToolboxLayout function.
+Private m_hOffsetDefaultLabel As Long, m_hOffsetDefaultButton As Long
+Private m_labelMarginBottom As Long, m_labelMarginTop As Long
+Private m_buttonMarginBottom As Long, m_buttonMarginRight As Long
+Private m_rightBoundary As Long
+
 'The currently active tool panel and ID key will be mirrored to this reference
 Private m_ActiveToolPanelKey As String
 
@@ -425,7 +431,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     'How close does the mouse have to be to the form border to allow resizing; currently we use 7 pixels, while accounting
     ' for DPI variance (e.g. 7 pixels at 96 dpi)
     Dim resizeBorderAllowance As Long
-    resizeBorderAllowance = fixDPI(7)
+    resizeBorderAllowance = FixDPI(7)
     
     Dim hitCode As Long
     
@@ -466,7 +472,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         
         'If theming is disabled, window performance is so poor that the window manager will automatically
         ' disable canvas updates until the mouse is released.  Request a full update now.
-        If (Not g_IsThemingEnabled) Then g_WindowManager.notifyToolboxResized Me.hWnd, True
+        If (Not g_IsThemingEnabled) Then g_WindowManager.NotifyToolboxResized Me.hWnd, True
         
     End If
 
@@ -534,11 +540,11 @@ End Sub
 Private Sub Form_Resize()
     
     'Reflow the form's contents
-    reflowToolboxLayout
+    ReflowToolboxLayout
     
 End Sub
 
-Private Sub reflowToolboxLayout()
+Private Sub ReflowToolboxLayout()
 
     Dim i As Long
     
@@ -549,186 +555,122 @@ Private Sub reflowToolboxLayout()
     lnRightSeparator.y2 = Me.ScaleHeight
     
     'We're also going to mark the right boundary for images, which allows for some padding when reflowing the interface
-    Dim rightBoundary As Long
-    rightBoundary = Me.ScaleWidth - 3
+    m_rightBoundary = Me.ScaleWidth - 3
     
     'Reflow label width first; they are easy because they simply match the width of the form
     For i = 0 To lblCategories.UBound
-        lblCategories(i).Width = rightBoundary - (lblCategories(i).Left + fixDPI(2))
+        lblCategories(i).Width = m_rightBoundary - (lblCategories(i).Left + FixDPI(2))
     Next i
     
-    lblRecording.Width = rightBoundary - (lblRecording.Left + fixDPI(2))
+    lblRecording.Width = m_rightBoundary - (lblRecording.Left + FixDPI(2))
     
     'Next, we are going to reflow the interface in two segments: the "file" buttons (which are handled separately, since
     ' they are actual buttons and not persistent toggles), then the toolbox buttons.
     
     'Conceptually, reflowing is simple: we iterate through controls in top-to-bottom order, and we position them
     ' according to a few simple rules:
-    ' 1) Title labels are handled first.  They always receive their own row
+    ' 1) Title labels are handled first.  They always receive their own row.
     ' 2) Buttons are laid out in groups.  The groups are hand-coded.
     ' 3) Buttons are laid out in horizontal rows until the end of the form is reached.  When this happens, buttons are
     '     pushed down to a new row.
     ' 4) We repeat the pattern until all buttons and labels have been dealt with.
     
     Dim hOffset As Long, vOffset As Long
-    Dim hOffsetDefaultLabel As Long, hOffsetDefaultButton As Long
-    Dim labelMarginBottom As Long, labelMarginTop As Long, buttonMarginBottom As Long, buttonMarginRight As Long
     
     'Start by establishing default values
-    hOffsetDefaultLabel = fixDPI(4) 'Left-position of labels
-    hOffsetDefaultButton = 0        'Left-position of left-most buttons
-    labelMarginBottom = fixDPI(4)   'Distance between the bottom of labels and the top of buttons
-    labelMarginTop = fixDPI(2)      'Distance between the bottom of buttons and top of labels
-    buttonMarginBottom = 0          'Distance between button rows
-    buttonMarginRight = 0           'Distance between buttons
+    m_hOffsetDefaultLabel = FixDPI(4) 'Left-position of labels
+    m_hOffsetDefaultButton = 0        'Left-position of left-most buttons
+    m_labelMarginBottom = FixDPI(4)   'Distance between the bottom of labels and the top of buttons
+    m_labelMarginTop = FixDPI(2)      'Distance between the bottom of buttons and top of labels
+    m_buttonMarginBottom = 0          'Distance between button rows
+    m_buttonMarginRight = 0           'Distance between buttons
     
     'If category labels are displayed, make them visible now
     For i = 0 To lblCategories.UBound
         If lblCategories(i).Visible <> m_ShowCategoryLabels Then lblCategories(i).Visible = m_ShowCategoryLabels
     Next i
     
-    'File group
+    'File group.  We position this label manually, and it serves as the reference for all subsequent labels.
     If m_ShowCategoryLabels Then
-        lblCategories(0).Move hOffsetDefaultLabel, fixDPI(2)
-        vOffset = lblCategories(0).Top + lblCategories(0).Height + labelMarginBottom
+        lblCategories(0).Move m_hOffsetDefaultLabel, FixDPI(2)
+        vOffset = lblCategories(0).Top + lblCategories(0).Height + m_labelMarginBottom
     Else
-        vOffset = fixDPI(2)
+        vOffset = FixDPI(2)
     End If
     
-    For i = FILE_NEW To FILE_SAVEAS_FLAT
-        
-        'Move this button into position
-        cmdFile(i).Move hOffset, vOffset
-        
-        'Calculate a new offset for the next button
-        hOffset = hOffset + cmdFile(i).Width + buttonMarginRight
-        If hOffset + cmdFile(i).Width > rightBoundary Then
-            hOffset = hOffsetDefaultButton
-            vOffset = vOffset + cmdFile(i).Height + buttonMarginBottom
-        End If
-        
-    Next i
+    ReflowButtonSet False, FILE_NEW, FILE_SAVEAS_FLAT, hOffset, vOffset
     
     'Undo group
-    If m_ShowCategoryLabels Then
-    
-        If vOffset < cmdFile(FILE_SAVEAS_FLAT).Top + cmdFile(FILE_SAVEAS_FLAT).Height Then
-            vOffset = cmdFile(FILE_SAVEAS_FLAT).Top + cmdFile(FILE_SAVEAS_FLAT).Height + buttonMarginBottom
-        End If
-        
-        vOffset = vOffset + labelMarginTop
-        lblCategories(1).Move hOffsetDefaultLabel, vOffset
-        vOffset = lblCategories(1).Top + lblCategories(1).Height + labelMarginBottom
-        hOffset = hOffsetDefaultButton
-        
-    End If
-    
-    For i = FILE_UNDO To FILE_REDO
-        
-        'Move this button into position
-        cmdFile(i).Move hOffset, vOffset
-        
-        'Calculate a new offset for the next button
-        hOffset = hOffset + cmdFile(i).Width + buttonMarginRight
-        If hOffset + cmdFile(i).Width > rightBoundary Then
-            hOffset = hOffsetDefaultButton
-            vOffset = vOffset + cmdFile(i).Height + buttonMarginBottom
-        End If
-        
-    Next i
+    PositionToolLabel lblCategories(1), cmdFile(FILE_SAVEAS_FLAT), hOffset, vOffset
+    ReflowButtonSet False, FILE_UNDO, FILE_REDO, hOffset, vOffset
     
     'Non-destructive group
-    If m_ShowCategoryLabels Then
-    
-        If vOffset < cmdFile(FILE_REDO).Top + cmdFile(FILE_REDO).Height Then
-            vOffset = cmdFile(FILE_REDO).Top + cmdFile(FILE_REDO).Height + buttonMarginBottom
-        End If
-        
-        vOffset = vOffset + labelMarginTop
-        lblCategories(2).Move hOffsetDefaultLabel, vOffset
-        vOffset = lblCategories(2).Top + lblCategories(2).Height + labelMarginBottom
-        hOffset = hOffsetDefaultButton
-        
-    End If
-    
-    For i = NAV_DRAG To QUICK_FIX_LIGHTING
-        
-        'Move this button into position
-        cmdTools(i).Move hOffset, vOffset
-        
-        'Calculate a new offset for the next button
-        hOffset = hOffset + cmdTools(i).Width + buttonMarginRight
-        If hOffset + cmdTools(i).Width > rightBoundary Then
-            hOffset = hOffsetDefaultButton
-            vOffset = vOffset + cmdTools(i).Height + buttonMarginBottom
-        End If
-        
-    Next i
+    PositionToolLabel lblCategories(2), cmdFile(FILE_REDO), hOffset, vOffset
+    ReflowButtonSet True, NAV_DRAG, QUICK_FIX_LIGHTING, hOffset, vOffset
     
     'Selection group
-    If m_ShowCategoryLabels Then
-    
-        If vOffset < cmdTools(QUICK_FIX_LIGHTING).Top + cmdTools(QUICK_FIX_LIGHTING).Height Then
-            vOffset = cmdTools(QUICK_FIX_LIGHTING).Top + cmdTools(QUICK_FIX_LIGHTING).Height + buttonMarginBottom
-        End If
-        
-        vOffset = vOffset + labelMarginTop
-        lblCategories(3).Move hOffsetDefaultLabel, vOffset
-        vOffset = lblCategories(3).Top + lblCategories(3).Height + labelMarginBottom
-        hOffset = hOffsetDefaultButton
-        
-    End If
-    
-    For i = SELECT_RECT To SELECT_WAND
-        
-        'Move this button into position
-        cmdTools(i).Move hOffset, vOffset
-        
-        'Calculate a new offset for the next button
-        hOffset = hOffset + cmdTools(i).Width + buttonMarginRight
-        If hOffset + cmdTools(i).Width > rightBoundary Then
-            hOffset = hOffsetDefaultButton
-            vOffset = vOffset + cmdTools(i).Height + buttonMarginBottom
-        End If
-        
-    Next i
+    PositionToolLabel lblCategories(3), cmdTools(QUICK_FIX_LIGHTING), hOffset, vOffset
+    ReflowButtonSet True, SELECT_RECT, SELECT_WAND, hOffset, vOffset
     
     'Vector group
+    PositionToolLabel lblCategories(4), cmdTools(SELECT_WAND), hOffset, vOffset
+    ReflowButtonSet True, VECTOR_TEXT, VECTOR_FANCYTEXT, hOffset, vOffset
+        
+    'Macro recording message
+    If vOffset < cmdTools(cmdTools.UBound).Top + cmdTools(cmdTools.UBound).Height Then
+        vOffset = cmdTools(cmdTools.UBound).Top + cmdTools(cmdTools.UBound).Height + m_buttonMarginBottom
+    End If
+    
+    vOffset = vOffset + m_labelMarginTop
+    lblRecording.Move lblRecording.Left, vOffset
+
+End Sub
+
+'Companion function to ReflowToolboxLayout(), above.
+Private Sub PositionToolLabel(ByRef targetLabel As Object, ByRef referenceButton As Object, ByRef hOffset As Long, ByRef vOffset As Long)
+    
     If m_ShowCategoryLabels Then
     
-        If vOffset < cmdTools(SELECT_WAND).Top + cmdTools(SELECT_WAND).Height Then
-            vOffset = cmdTools(SELECT_WAND).Top + cmdTools(SELECT_WAND).Height + buttonMarginBottom
+        If vOffset < referenceButton.Top + referenceButton.Height Then
+            vOffset = referenceButton.Top + referenceButton.Height + m_buttonMarginBottom
         End If
         
-        vOffset = vOffset + labelMarginTop
-        lblCategories(4).Move hOffsetDefaultLabel, vOffset
-        vOffset = lblCategories(4).Top + lblCategories(4).Height + labelMarginBottom
-        hOffset = hOffsetDefaultButton
+        vOffset = vOffset + m_labelMarginTop
+        targetLabel.Move m_hOffsetDefaultLabel, vOffset
+        vOffset = targetLabel.Top + targetLabel.Height + m_labelMarginBottom
+        hOffset = m_hOffsetDefaultButton
         
     End If
     
-    For i = VECTOR_TEXT To VECTOR_FANCYTEXT
+End Sub
+
+'Companion function to ReflowToolboxLayout(), above.
+Private Sub ReflowButtonSet(ByVal categoryIsTools As Boolean, ByVal startIndex As Long, ByVal endIndex As Long, ByRef hOffset As Long, ByRef vOffset As Long)
+    
+    Dim i As Long, targetObject As Object
+        
+    For i = startIndex To endIndex
+        
+        'Toolbox buttons are divided into two groups: file, and canvas.  The code for positioning these is identical,
+        ' so changes to one block should be mirrored to the other.
+        If categoryIsTools Then
+            Set targetObject = cmdTools(i)
+        Else
+            Set targetObject = cmdFile(i)
+        End If
         
         'Move this button into position
-        cmdTools(i).Move hOffset, vOffset
+        targetObject.Move hOffset, vOffset
         
         'Calculate a new offset for the next button
-        hOffset = hOffset + cmdTools(i).Width + buttonMarginRight
-        If hOffset + cmdTools(i).Width > rightBoundary Then
-            hOffset = hOffsetDefaultButton
-            vOffset = vOffset + cmdTools(i).Height + buttonMarginBottom
+        hOffset = hOffset + targetObject.Width + m_buttonMarginRight
+        If hOffset + targetObject.Width > m_rightBoundary Then
+            hOffset = m_hOffsetDefaultButton
+            vOffset = vOffset + targetObject.Height + m_buttonMarginBottom
         End If
         
     Next i
     
-    'Macro recording message
-    If vOffset < cmdTools(cmdTools.UBound).Top + cmdTools(cmdTools.UBound).Height Then
-        vOffset = cmdTools(cmdTools.UBound).Top + cmdTools(cmdTools.UBound).Height + buttonMarginBottom
-    End If
-    
-    vOffset = vOffset + labelMarginTop
-    lblRecording.Move lblRecording.Left, vOffset
-
 End Sub
 
 'Toolbars can never be unloaded, EXCEPT when the whole program is going down.  Check for the program-wide closing flag prior
@@ -738,10 +680,10 @@ Private Sub Form_Unload(Cancel As Integer)
     
     If g_ProgramShuttingDown Then
         ReleaseFormTheming Me
-        g_WindowManager.unregisterForm Me
+        g_WindowManager.UnregisterForm Me
     Else
         Cancel = True
-        toggleToolbarVisibility FILE_TOOLBOX
+        ToggleToolbarVisibility FILE_TOOLBOX
     End If
     
 End Sub
@@ -762,7 +704,7 @@ Private Sub newToolSelected()
                 'If the existing selection type matches the tool type, no problem - activate the transform tools
                 ' (if relevant), but make no other changes to the image
                 If (g_CurrentTool = Selection_Handler.getRelevantToolFromSelectShape()) Then
-                    metaToggle tSelectionTransform, pdImages(g_CurrentImage).mainSelection.isTransformable
+                    MetaToggle tSelectionTransform, pdImages(g_CurrentImage).mainSelection.isTransformable
                 
                 'A selection is already active, and it doesn't match the current tool type!
                 Else
@@ -921,11 +863,11 @@ Public Sub resetToolButtonStates()
             
             'Hand tool is currently the only tool without additional options
             Case NAV_DRAG
-                g_WindowManager.setWindowVisibility toolbar_Options.hWnd, False, False
+                g_WindowManager.SetWindowVisibility toolbar_Options.hWnd, False, False
                 
             'All other tools expose options, so display the toolbox (unless the user has disabled the window completely)
             Case Else
-                g_WindowManager.setWindowVisibility toolbar_Options.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True), False
+                g_WindowManager.SetWindowVisibility toolbar_Options.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Selections Toolbox", True), False
                 
         End Select
         
@@ -941,7 +883,7 @@ Public Sub resetToolButtonStates()
     If Not (toolpanel_Text Is Nothing) Then toolPanelCollection.AddEntry "Text", toolpanel_Text.hWnd
     If Not (toolpanel_FancyText Is Nothing) Then toolPanelCollection.AddEntry "FancyText", toolpanel_FancyText.hWnd
     
-    g_WindowManager.deactivateToolPanel False
+    g_WindowManager.DeactivateToolPanel False
     
     'To prevent flicker, we handle this in two passes.
     
@@ -952,7 +894,7 @@ Public Sub resetToolButtonStates()
             
             'If this is the active panel, display it
             If StrComp(toolPanelCollection.getKeyByIndex(i), LCase(m_ActiveToolPanelKey)) = 0 Then
-                g_WindowManager.activateToolPanel toolPanelCollection.getValueByIndex(i)
+                g_WindowManager.ActivateToolPanel toolPanelCollection.getValueByIndex(i)
             End If
             
         Next i
@@ -960,7 +902,7 @@ Public Sub resetToolButtonStates()
         'Next, hide all other panels
         For i = 0 To toolPanelCollection.getNumOfEntries - 1
             If StrComp(toolPanelCollection.getKeyByIndex(i), LCase(m_ActiveToolPanelKey)) <> 0 Then
-                g_WindowManager.setVisibilityOfAnyWindowByHwnd toolPanelCollection.getValueByIndex(i), False
+                g_WindowManager.SetVisibilityOfAnyWindowByHwnd toolPanelCollection.getValueByIndex(i), False
             End If
         Next i
         
@@ -1038,7 +980,7 @@ Public Sub toggleToolCategoryLabels()
     m_ShowCategoryLabels = CBool(FormMain.MnuWindowToolbox(2).Checked)
     
     'Reflow the interface
-    reflowToolboxLayout
+    ReflowToolboxLayout
     
 End Sub
 
@@ -1054,16 +996,16 @@ Public Sub updateButtonSize(ByVal newSize As Long, Optional ByVal suppressRedraw
     Select Case m_ButtonSize
     
         Case PDTBS_SMALL
-            m_ButtonWidth = fixDPI(BTS_WIDTH_SMALL)
-            m_ButtonHeight = fixDPI(BTS_HEIGHT_SMALL)
+            m_ButtonWidth = FixDPI(BTS_WIDTH_SMALL)
+            m_ButtonHeight = FixDPI(BTS_HEIGHT_SMALL)
         
         Case PDTBS_MEDIUM
-            m_ButtonWidth = fixDPI(BTS_WIDTH_MEDIUM)
-            m_ButtonHeight = fixDPI(BTS_HEIGHT_MEDIUM)
+            m_ButtonWidth = FixDPI(BTS_WIDTH_MEDIUM)
+            m_ButtonHeight = FixDPI(BTS_HEIGHT_MEDIUM)
         
         Case PDTBS_LARGE
-            m_ButtonWidth = fixDPI(BTS_WIDTH_LARGE)
-            m_ButtonHeight = fixDPI(BTS_HEIGHT_LARGE)
+            m_ButtonWidth = FixDPI(BTS_WIDTH_LARGE)
+            m_ButtonHeight = FixDPI(BTS_HEIGHT_LARGE)
     
     End Select
     
@@ -1094,10 +1036,10 @@ Public Sub updateButtonSize(ByVal newSize As Long, Optional ByVal suppressRedraw
         End If
     Next i
     
-    g_WindowManager.updateMinimumDimensions Me.hWnd, m_ButtonWidth
+    g_WindowManager.UpdateMinimumDimensions Me.hWnd, m_ButtonWidth
     
     'Reflow the interface as requested
-    If Not suppressRedraw Then reflowToolboxLayout
+    If Not suppressRedraw Then ReflowToolboxLayout
     
 End Sub
 
@@ -1111,7 +1053,7 @@ Public Sub updateAgainstCurrentTheme()
 
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Tooltips must be manually re-assigned according to the current language.  This is a necessary evil, if the user switches
     ' between two non-English languages at run-time.
