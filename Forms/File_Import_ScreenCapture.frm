@@ -195,7 +195,7 @@ Private Sub cmdBarMini_OKClick()
         
         'Make sure the user has selected a window to capture
         If lstWindows.ListIndex = -1 Then
-            pdMsgBox "Please select a window to capture.", vbInformation + vbApplicationModal + vbOKOnly, "Target window required"
+            PDMsgBox "Please select a window to capture.", vbInformation + vbApplicationModal + vbOKOnly, "Target window required"
             Exit Sub
         End If
         
@@ -213,7 +213,7 @@ Private Sub Form_Load()
     fillListWithOpenApplications lstWindows
     
     'Apply translations and visual themes
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Wait just a moment before continuing, to give the corresponding menu time to animate away (otherwise it may
     ' get caught in the capture preview)
@@ -268,7 +268,7 @@ Private Sub updatePreview()
             
             'Make sure the function returns successfully; if a window is unloaded after the listbox has been
             ' filled, the function will (obviously) fail to capture the screen contents.
-            If Screen_Capture.getHwndContentsAsDIB(tmpDIB, lstWindows.itemData(lstWindows.ListIndex), chkChrome) Then
+            If Screen_Capture.GetHwndContentsAsDIB(tmpDIB, lstWindows.itemData(lstWindows.ListIndex), chkChrome) Then
                 tmpDIB.renderToPictureBox picPreview
             Else
                 lstWindows.RemoveItem lstWindows.ListIndex

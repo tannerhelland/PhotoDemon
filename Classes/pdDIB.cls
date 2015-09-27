@@ -393,6 +393,41 @@ Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
     
 End Sub
 
+'Force all alpha bytes in the DIB to some preset value.  If the value is *not* 255, please remember to premultiply
+' alpha accordingly, if the DIB will be rendered to the screen.
+Public Sub ForceNewAlpha(ByVal newAlpha As Byte)
+
+    'Make sure this DIB is 32bpp. If it isn't, running this function is pointless.
+    If m_dibColorDepth = 32 Then
+
+        'Make sure this DIB isn't empty
+        If (m_dibDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
+            
+            'Loop through the image and force each alpha value to the user's specified value
+            Dim iData() As Byte
+            Dim tmpSA As SAFEARRAY2D
+            prepInternalSafeArray tmpSA
+            CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
+    
+            Dim x As Long, y As Long, QuickX As Long
+                
+            'Loop through the image, checking alphas as we go
+            For x = 0 To m_dibWidth - 1
+                QuickX = x * 4
+            For y = 0 To m_dibHeight - 1
+                iData(QuickX + 3, y) = newAlpha
+            Next y
+            Next x
+    
+            'With our alpha channel complete, point iData() away from the DIB and deallocate it
+            CopyMemory ByVal VarPtrArray(iData), 0&, 4
+                
+        End If
+        
+    End If
+    
+End Sub
+
 'Translate an OLE color to an RGB Long
 Private Function TranslateColor(ByVal colorRef As Long) As Long
     'OleTranslateColor returns -1 if it fails; if that happens, default to white
@@ -973,8 +1008,8 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
         End If
         
         'Activate color management for the destination picture box
-        assignDefaultColorProfileToObject dstPicture.hWnd, dstPicture.hDC
-        turnOnColorManagementForDC dstPicture.hDC
+        AssignDefaultColorProfileToObject dstPicture.hWnd, dstPicture.hDC
+        TurnOnColorManagementForDC dstPicture.hDC
         
         'Render the image to the picture box
         BitBlt dstPicture.hDC, previewX, previewY, dWidth, dHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
