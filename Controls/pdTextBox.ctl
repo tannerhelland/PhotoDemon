@@ -797,7 +797,7 @@ Private Function createEditBox() As Boolean
             'If the program is running (e.g. NOT design-time) resize the user control to match.  This improves compile-time performance, as there
             ' are a lot of instances in this control, and their size events will be fired during compilation.
             If g_IsProgramRunning Then
-                UserControl.Height = pxToTwipsY(idealHeight + 5)
+                UserControl.Height = PXToTwipsY(idealHeight + 5)
             End If
             
             m_InternalResizeState = False

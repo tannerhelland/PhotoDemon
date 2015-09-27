@@ -485,7 +485,7 @@ Public Sub SyncInterfaceToCurrentImage()
     End If
         
     'Redraw the layer box
-    toolbar_Layers.forceRedraw
+    If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw
         
 End Sub
 

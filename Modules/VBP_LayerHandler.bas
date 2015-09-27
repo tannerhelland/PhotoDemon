@@ -44,13 +44,13 @@ Public Sub addBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType 
     pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE_VECTORSAFE
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
-    toolbar_Layers.forceRedraw True
+    If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw True
     
     'Render the new image to screen (not technically necessary, but doesn't hurt)
     Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             
     'Synchronize the interface to the new image
-    syncInterfaceToCurrentImage
+    SyncInterfaceToCurrentImage
     
 End Sub
 
@@ -184,7 +184,7 @@ Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
         'Redraw the layer box, and note that thumbnails need to be re-cached
-        toolbar_Layers.forceRedraw True
+        If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw True
         
     End If
     
@@ -243,7 +243,7 @@ Public Sub loadImageAsNewLayer(ByVal showDialog As Boolean, Optional ByVal image
             Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             
             'Synchronize the interface to the new image
-            syncInterfaceToCurrentImage
+            SyncInterfaceToCurrentImage
             
             Message "New layer added successfully."
         
@@ -296,7 +296,7 @@ Public Sub setActiveLayerByID(ByVal newLayerID As Long, Optional ByVal alsoRedra
     pdImages(g_CurrentImage).setActiveLayerByID newLayerID
     
     'Sync the interface to the new layer
-    If alsoSyncInterface Then syncInterfaceToCurrentImage
+    If alsoSyncInterface Then SyncInterfaceToCurrentImage
     
     'Redraw the viewport, but only if requested
     If alsoRedrawViewport Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -313,7 +313,7 @@ Public Sub setActiveLayerByIndex(ByVal newLayerIndex As Long, Optional ByVal als
     pdImages(g_CurrentImage).setActiveLayerByIndex newLayerIndex
     
     'Sync the interface to the new layer
-    If alsoSyncInterface Then syncInterfaceToCurrentImage
+    If alsoSyncInterface Then SyncInterfaceToCurrentImage
         
     'Redraw the viewport, but only if requested
     If alsoRedrawViewport Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -330,10 +330,10 @@ Public Sub setLayerVisibilityByIndex(ByVal dLayerIndex As Long, ByVal layerVisib
     pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYERHEADER, dLayerIndex
     
     'Redraw the layer box, but note that thumbnails don't need to be re-cached
-    toolbar_Layers.forceRedraw False
+    If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw False
     
     'Synchronize the interface to the new image
-    syncInterfaceToCurrentImage
+    SyncInterfaceToCurrentImage
     
     'Redraw the viewport, but only if requested
     If alsoRedrawViewport Then Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -370,13 +370,13 @@ Public Sub duplicateLayerByIndex(ByVal dLayerIndex As Long)
     pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE_VECTORSAFE
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
-    toolbar_Layers.forceRedraw True
+    If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw True
     
     'Render the new image to screen
     Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
             
     'Synchronize the interface to the new image
-    syncInterfaceToCurrentImage
+    SyncInterfaceToCurrentImage
     
 End Sub
 
@@ -429,8 +429,8 @@ Public Sub mergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Bool
         End If
                 
         'Redraw the layer box, and note that thumbnails need to be re-cached
-        toolbar_Layers.forceRedraw True
-    
+        If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw True
+        
         'Redraw the viewport
         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
@@ -518,7 +518,7 @@ Public Sub deleteLayer(ByVal dLayerIndex As Long)
     pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE_VECTORSAFE
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
-    toolbar_Layers.forceRedraw True
+    If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw True
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -569,7 +569,7 @@ Public Sub deleteHiddenLayers()
     pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE_VECTORSAFE
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
-    toolbar_Layers.forceRedraw True
+    If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw True
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -595,7 +595,7 @@ Public Sub moveLayerAdjacent(ByVal dLayerIndex As Long, ByVal directionIsUp As B
     If updateInterface Then
         
         'Redraw the layer box, and note that thumbnails need to be re-cached
-        toolbar_Layers.forceRedraw True
+        If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw True
         
         'Redraw the viewport
         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -643,7 +643,7 @@ Public Sub moveLayerToEndOfStack(ByVal dLayerIndex As Long, ByVal moveToTopOfSta
     If updateInterface Then
     
         'Redraw the layer box, and note that thumbnails need to be re-cached
-        toolbar_Layers.forceRedraw True
+        If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw True
         
         'Redraw the viewport
         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -689,7 +689,7 @@ Public Sub flattenImage()
     pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
-    toolbar_Layers.forceRedraw True
+    If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw True
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -752,7 +752,7 @@ Public Sub mergeVisibleLayers()
     pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
-    toolbar_Layers.forceRedraw True
+    If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw True
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -769,7 +769,7 @@ Public Sub resetLayerSize(ByVal srcLayerIndex As Long)
     pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYERHEADER, srcLayerIndex
     
     'Re-sync the interface
-    syncInterfaceToCurrentImage
+    SyncInterfaceToCurrentImage
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -786,7 +786,7 @@ Public Sub MakeLayerAffineTransformsPermanent(ByVal srcLayerIndex As Long)
     pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, srcLayerIndex
     
     'Re-sync the interface
-    syncInterfaceToCurrentImage
+    SyncInterfaceToCurrentImage
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -802,7 +802,7 @@ Public Sub resetLayerAngle(ByVal srcLayerIndex As Long)
     pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYERHEADER, srcLayerIndex
     
     'Re-sync the interface
-    syncInterfaceToCurrentImage
+    SyncInterfaceToCurrentImage
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -823,7 +823,7 @@ Public Sub resetLayerShear(ByVal srcLayerIndex As Long, Optional ByVal shearDire
     pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYERHEADER, srcLayerIndex
     
     'Re-sync the interface
-    syncInterfaceToCurrentImage
+    SyncInterfaceToCurrentImage
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -1196,7 +1196,7 @@ Public Sub RasterizeLayer(Optional ByVal srcLayerIndex As Long = -1)
     End If
     
     'Re-sync the interface
-    syncInterfaceToCurrentImage
+    SyncInterfaceToCurrentImage
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
