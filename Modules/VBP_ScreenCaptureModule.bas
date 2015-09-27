@@ -29,11 +29,15 @@ Private Declare Function PrintWindow Lib "user32" (ByVal hWnd As Long, ByVal hDC
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Const PW_CLIENTONLY As Long = &H1
+Private Const PW_RENDERFULLCONTENT As Long = &H2    'Win 8.1+ only
+
+'Vista+ only
+Private Declare Function DwmGetWindowAttribute Lib "Dwmapi" (ByVal targethWnd As Long, ByVal dwAttribute As Long, ByVal ptrToRecipient As Long, ByVal sizeOfRecipient As Long) As Long
 
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextA" (ByVal hWnd As Long, ByVal lpString As String, ByVal cch As Long) As Long
+Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextW" (ByVal hWnd As Long, ByVal ptrToString As Long, ByVal cch As Long) As Long
 
 'Constant used to determine window owner.
 Private Const GWL_HWNDPARENT = (-8)
@@ -68,7 +72,7 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
     If captureFullDesktop Then
         getDesktopAsDIB tmpDIB
     Else
-        If Not getHwndContentsAsDIB(tmpDIB, alternateWindowHwnd, includeChrome) Then
+        If Not GetHwndContentsAsDIB(tmpDIB, alternateWindowHwnd, includeChrome) Then
             Message "Could not retrieve program window - the program appears to have been unloaded."
             Exit Sub
         End If
@@ -77,7 +81,7 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
     'If we minimized the main window, now's the time to return it to normal size
     If captureFullDesktop And minimizePD Then
         ShowWindow FormMain.hWnd, SW_RESTORE
-        g_WindowManager.refreshAllWindows
+        g_WindowManager.RefreshAllWindows
     End If
     
     'Set the picture of the form to equal its image
@@ -93,7 +97,8 @@ Public Sub CaptureScreen(ByVal captureFullDesktop As Boolean, ByVal minimizePD A
         
     'Once the capture is saved, load it up like any other bitmap
     ' NOTE: Because LoadFileAsNewImage requires an array of strings, create an array to send to it
-    Dim sFile(0) As String
+    Dim sFile() As String
+    ReDim sFile(0) As String
     sFile(0) = tmpFilename
     
     Dim sTitle As String
@@ -129,10 +134,10 @@ Public Sub getDesktopAsDIB(ByRef dstDIB As pdDIB)
     Dim screenLeft As Long, screenTop As Long
     Dim screenWidth As Long, screenHeight As Long
     
-    screenLeft = g_Displays.getDesktopLeft
-    screenTop = g_Displays.getDesktopTop
-    screenWidth = g_Displays.getDesktopWidth
-    screenHeight = g_Displays.getDesktopHeight
+    screenLeft = g_Displays.GetDesktopLeft
+    screenTop = g_Displays.GetDesktopTop
+    screenWidth = g_Displays.GetDesktopWidth
+    screenHeight = g_Displays.GetDesktopHeight
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Preparing to capture screen using rect (" & screenLeft & ", " & screenTop & ")x(" & screenWidth & ", " & screenHeight & ")"
@@ -144,7 +149,7 @@ Public Sub getDesktopAsDIB(ByRef dstDIB As pdDIB)
     desktopDC = GetDC(screenHwnd)
     
     'Copy the bitmap into the specified DIB
-    dstDIB.createBlank screenWidth, screenHeight, 32
+    dstDIB.createBlank screenWidth, screenHeight, 24
     BitBlt dstDIB.getDIBDC, 0, 0, screenWidth, screenHeight, desktopDC, 0, 0, vbSrcCopy
     
     'Release everything we generated for the capture, then exit
@@ -161,10 +166,10 @@ Public Sub getPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RECTL)
     Dim screenLeft As Long, screenTop As Long
     Dim screenWidth As Long, screenHeight As Long
     
-    screenLeft = g_Displays.getDesktopLeft
-    screenTop = g_Displays.getDesktopTop
-    screenWidth = g_Displays.getDesktopWidth
-    screenHeight = g_Displays.getDesktopHeight
+    screenLeft = g_Displays.GetDesktopLeft
+    screenTop = g_Displays.GetDesktopTop
+    screenWidth = g_Displays.GetDesktopWidth
+    screenHeight = g_Displays.GetDesktopHeight
     
     'Retrieve an hWnd and DC for the screen
     Dim screenHwnd As Long, desktopDC As Long
@@ -181,34 +186,54 @@ Public Sub getPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RECTL)
 End Sub
 
 'Copy the visual contents of any hWnd into a DIB; window chrome can be optionally included, if desired
-Public Function getHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHwnd As Long, Optional ByVal includeChrome As Boolean = True) As Boolean
+Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targethWnd As Long, Optional ByVal includeChrome As Boolean = True) As Boolean
 
+    'Vista+ defines window boundaries differently, so we have to use a special API to retrieve correct boundaries.
+    Dim hLib As Long
+    
+    If g_IsVistaOrLater Then hLib = LoadLibrary("Dwmapi.dll")
+    
     'Start by retrieving the necessary dimensions from the target window
     Dim targetRect As winRect
     
     If includeChrome Then
-        GetWindowRect targetHwnd, targetRect
+        
+        If g_IsVistaOrLater And (hLib <> 0) Then
+            Const DWMWA_EXTENDED_FRAME_BOUNDS = 9
+            DwmGetWindowAttribute targethWnd, DWMWA_EXTENDED_FRAME_BOUNDS, VarPtr(targetRect), 16&
+            FreeLibrary hLib
+        Else
+            GetWindowRect targethWnd, targetRect
+        End If
+        
     Else
-        GetClientRect targetHwnd, targetRect
+        GetClientRect targethWnd, targetRect
     End If
     
     'Check to make sure the window hasn't been unloaded
-    If (targetRect.x2 - targetRect.x1 = 0) Or (targetRect.y2 - targetRect.y1 = 0) Then
-        getHwndContentsAsDIB = False
+    If (targetRect.x2 - targetRect.x1 <= 0) Or (targetRect.y2 - targetRect.y1 <= 0) Then
+        GetHwndContentsAsDIB = False
         Exit Function
     End If
     
     'Prepare the DIB at the proper size
-    dstDIB.createBlank targetRect.x2 - targetRect.x1, targetRect.y2 - targetRect.y1
-    
-    'Ask the window in question to paint itself into our DIB
-    If includeChrome Then
-        PrintWindow targetHwnd, dstDIB.getDIBDC, 0
+    If g_IsWin81OrLater Then
+        dstDIB.createBlank targetRect.x2 - targetRect.x1, targetRect.y2 - targetRect.y1, 32
     Else
-        PrintWindow targetHwnd, dstDIB.getDIBDC, PW_CLIENTONLY
+        dstDIB.createBlank targetRect.x2 - targetRect.x1, targetRect.y2 - targetRect.y1, 24
     End If
     
-    getHwndContentsAsDIB = True
+    'Ask the window in question to paint itself into our DIB
+    Dim printFlags As Long
+    printFlags = 0&
+    If Not includeChrome Then printFlags = printFlags Or PW_CLIENTONLY
+    If g_IsWin81OrLater Then printFlags = printFlags Or PW_RENDERFULLCONTENT
+    
+    GetHwndContentsAsDIB = CBool(PrintWindow(targethWnd, dstDIB.getDIBDC, printFlags) <> 0)
+    
+    'DWM-rendered windows have the (bizarre) side-effect of alpha values being set to 0 in some regions of the image.
+    ' To circumvent this, we forcibly set all alpha values to opaque, which makes the resulting image okay.
+    If g_IsWin81OrLater And GetHwndContentsAsDIB Then dstDIB.ForceNewAlpha 255
     
 End Function
 
@@ -238,10 +263,10 @@ Public Function EnumWindowsProc(ByVal hWnd As Long, ByVal lParam As Long) As Lon
                     
                     'Retrieve the window's caption
                     WindowText = Space$(256)
-                    nRet = GetWindowText(hWnd, WindowText, Len(WindowText))
+                    nRet = GetWindowText(hWnd, StrPtr(WindowText), Len(WindowText))
                     
                     'If window text was obtained, trim it and add this entry to the list
-                    If nRet Then
+                    If (nRet <> 0) Then
                     
                         WindowText = Left$(WindowText, nRet)
                         nRet = SendMessageA(lParam, LB_ADDSTRING, ByVal 0&, ByVal WindowText)
