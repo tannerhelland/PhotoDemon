@@ -51,8 +51,8 @@ Private Enum SWP_FLAGS
 End Enum
 
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
-Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
-Private Declare Function GetParent Lib "user32" (ByVal targetHwnd As Long) As Long
+Private Declare Sub SetWindowPos Lib "user32" (ByVal targethWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Declare Function GetParent Lib "user32" (ByVal targethWnd As Long) As Long
 Private Declare Function ClientToScreen Lib "user32" (ByVal srcHwnd As Long, ByRef lpPoint As POINTAPI) As Long
 Private Declare Function ScreenToClient Lib "user32" (ByVal srcHwnd As Long, ByRef lpPoint As POINTAPI) As Long
 Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByRef lpPoints As POINTAPI, ByVal cPoints As Long) As Long
@@ -221,7 +221,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         Case WM_MOVE
             UpdateWinRect
             RaiseEvent WindowMove(m_WindowRect.x1, m_WindowRect.y1)
-    
+        
     End Select
     
 
