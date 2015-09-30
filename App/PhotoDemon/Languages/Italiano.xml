@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.85</langversion>
+<langversion>6.7.86</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -11677,97 +11677,7 @@ Per attivare il supporto per questa funzionalità, per favore copia il file Free
 
 <!-- BEGIN text for Toolbar_Layers.frm (toolbar_Layers) -->
 
-<phrase>
-<original>blend</original>
-<translation>fusione</translation>
-</phrase>
-
-<phrase>
-<original>Click to hide this layer.</original>
-<translation>Clicca per nascondere questo livello.</translation>
-</phrase>
-
-<phrase>
-<original>Click to show this layer.</original>
-<translation>Clicca per vedere questo livello.</translation>
-</phrase>
-
-<phrase>
-<original>Click to duplicate this layer.</original>
-<translation>Clicca per duplicare questo livello.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer beneath it.</original>
-<translation>Clicca per fondere questo livello con il livello sottostante.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge down, because there are no visible layers beneath it.</original>
-<translation>Questo livello non può essere unito in basso, perché non ci sono i livelli visibili sotto di esso.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer above it.</original>
-<translation>Clicca per fondere questo livello con il livello sopra di esso.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge up, because there are no visible layers above it.</original>
-<translation>Questo strato non può essere unito sopra, perché non ci sono i livelli visibili sopra di esso.</translation>
-</phrase>
-
-<phrase>
-<original>Click to make this the active layer.</original>
-<translation>Clicca per rendere questo il livello attivo.</translation>
-</phrase>
-
-<phrase>
-<original>This is the currently active layer.</original>
-<translation>Questo è il livello corentemente attivo.</translation>
-</phrase>
-
-<phrase>
-<original>Rearrange layers</original>
-<translation>Riorganizza i livelli</translation>
-</phrase>
-
-<phrase>
-<original>(hidden)</original>
-<translation>(nascosto)</translation>
-</phrase>
-
-<phrase>
-<original>Add a blank layer to the image.</original>
-<translation>Aggiungi un livello vuoto all'immagine.</translation>
-</phrase>
-
-<phrase>
-<original>Delete the currently selected layer.</original>
-<translation>Elimina il livello attualmente selezionato.</translation>
-</phrase>
-
-<phrase>
-<original>Move the current layer upward in the layer stack.</original>
-<translation>Sposta il livello corrente verso l'alto nella pila dei livelli.</translation>
-</phrase>
-
-<phrase>
-<original>Move layer up</original>
-<translation>Sposta il livello sopra</translation>
-</phrase>
-
-<phrase>
-<original>Move the current layer downward in the layer stack.</original>
-<translation>Sposta il livello corrente verso il basso nella pila dei livelli.</translation>
-</phrase>
-
-<phrase>
-<original>Move layer down</original>
-<translation>Sposta il livello in basso</translation>
-</phrase>
-
-<!-- Toolbar_Layers.frm contains 41 phrases. 23 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Toolbar_Layers.frm contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for Toolbar_Layers.frm-->
 
@@ -11802,6 +11712,11 @@ Per attivare il supporto per questa funzionalità, per favore copia il file Free
 <phrase>
 <original>selection</original>
 <translation>selezione</translation>
+</phrase>
+
+<phrase>
+<original>paint</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11934,7 +11849,7 @@ Per attivare il supporto per questa funzionalità, per favore copia il file Free
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 45 phrases. 15 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 46 phrases. 15 were duplicates of existing phrases, so only 31 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -14107,12 +14022,131 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- END text for pdDisplay.cls-->
 
+<!-- BEGIN text for pdWindowSize.cls -->
+
+<!-- pdWindowSize.cls contains 0 phrases. -->
+
+<!-- END text for pdWindowSize.cls-->
+
+<!-- BEGIN text for Layerpanel_Layers.frm (layerpanel_Layers) -->
+
+<phrase>
+<original>Form1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>blend</original>
+<translation>fusione</translation>
+</phrase>
+
+<phrase>
+<original>Click to hide this layer.</original>
+<translation>Clicca per nascondere questo livello.</translation>
+</phrase>
+
+<phrase>
+<original>Click to show this layer.</original>
+<translation>Clicca per vedere questo livello.</translation>
+</phrase>
+
+<phrase>
+<original>Click to duplicate this layer.</original>
+<translation>Clicca per duplicare questo livello.</translation>
+</phrase>
+
+<phrase>
+<original>Click to merge this layer with the layer beneath it.</original>
+<translation>Clicca per fondere questo livello con il livello sottostante.</translation>
+</phrase>
+
+<phrase>
+<original>This layer can't merge down, because there are no visible layers beneath it.</original>
+<translation>Questo livello non può essere unito in basso, perché non ci sono i livelli visibili sotto di esso.</translation>
+</phrase>
+
+<phrase>
+<original>Click to merge this layer with the layer above it.</original>
+<translation>Clicca per fondere questo livello con il livello sopra di esso.</translation>
+</phrase>
+
+<phrase>
+<original>This layer can't merge up, because there are no visible layers above it.</original>
+<translation>Questo strato non può essere unito sopra, perché non ci sono i livelli visibili sopra di esso.</translation>
+</phrase>
+
+<phrase>
+<original>Click to make this the active layer.</original>
+<translation>Clicca per rendere questo il livello attivo.</translation>
+</phrase>
+
+<phrase>
+<original>This is the currently active layer.</original>
+<translation>Questo è il livello corentemente attivo.</translation>
+</phrase>
+
+<phrase>
+<original>Rearrange layers</original>
+<translation>Riorganizza i livelli</translation>
+</phrase>
+
+<phrase>
+<original>(hidden)</original>
+<translation>(nascosto)</translation>
+</phrase>
+
+<phrase>
+<original>Add a blank layer to the image.</original>
+<translation>Aggiungi un livello vuoto all'immagine.</translation>
+</phrase>
+
+<phrase>
+<original>Delete the currently selected layer.</original>
+<translation>Elimina il livello attualmente selezionato.</translation>
+</phrase>
+
+<phrase>
+<original>Move the current layer upward in the layer stack.</original>
+<translation>Sposta il livello corrente verso l'alto nella pila dei livelli.</translation>
+</phrase>
+
+<phrase>
+<original>Move layer up</original>
+<translation>Sposta il livello sopra</translation>
+</phrase>
+
+<phrase>
+<original>Move the current layer downward in the layer stack.</original>
+<translation>Sposta il livello corrente verso il basso nella pila dei livelli.</translation>
+</phrase>
+
+<phrase>
+<original>Move layer down</original>
+<translation>Sposta il livello in basso</translation>
+</phrase>
+
+<!-- Layerpanel_Layers.frm contains 41 phrases. 22 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+
+<!-- END text for Layerpanel_Layers.frm-->
+
+<!-- BEGIN text for pdWindowSync.cls -->
+
+<!-- pdWindowSync.cls contains 0 phrases. -->
+
+<!-- END text for pdWindowSync.cls-->
+
+<!-- BEGIN text for pdTitle.ctl -->
+
+<!-- pdTitle.ctl contains 0 phrases. -->
+
+<!-- END text for pdTitle.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2433</phrasecount>
+<phrasecount>2435</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4154 phrases. -->
-<!-- 1721 are duplicates, so only 2433 unique phrases have been written to file. -->
-<!-- These 2433 phrases contain approximately 13232 total words. -->
+<!-- As of this build, PhotoDemon contains 4156 phrases. -->
+<!-- 1721 are duplicates, so only 2435 unique phrases have been written to file. -->
+<!-- These 2435 phrases contain approximately 13233 total words. -->
 
 </pdData>
