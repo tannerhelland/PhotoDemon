@@ -26,6 +26,17 @@ Begin VB.Form toolbar_Layers
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   249
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdTitle ttlPanel 
+      Height          =   270
+      Index           =   0
+      Left            =   120
+      TabIndex        =   1
+      Top             =   60
+      Width           =   3495
+      _ExtentX        =   6165
+      _ExtentY        =   476
+      Caption         =   "LAYERS"
+   End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
@@ -38,7 +49,7 @@ Begin VB.Form toolbar_Layers
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   121
       TabIndex        =   0
-      Top             =   120
+      Top             =   600
       Width           =   1815
    End
    Begin VB.Line lnSeparatorLeft 
@@ -54,11 +65,15 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'PhotoDemon Layers Toolbar
+'PhotoDemon Right-side ("Layers") Toolbar
 'Copyright 2014-2015 by Tanner Helland
 'Created: 25/March/14
-'Last updated: 01/June/14
-'Last update: implement drag/drop layer reordering
+'Last updated: 30/September/15
+'Last update: implement collapsible panels
+'
+'For historical reasons, I call this the "layers" toolbar, but it actually encompasses everything that appears on
+' the right-side toolbar.  Most of the code in this window is dedicated to supporting collapsible panels, and all
+' the messy UI that goes along with that.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -80,8 +95,24 @@ Private Const RESIZE_BORDER As Long = 7
 
 'A dedicated mouse handler helps provide cursor handling
 Private WithEvents m_MouseEvents As pdInputMouse
+Attribute m_MouseEvents.VB_VarHelpID = -1
+
+'Default heights of each panel.  These are (currently) hard-coded for all panels except the layers panel; it is dynamically
+' sized to fit whatever remaining space we have in the panel as a whole.
+Private m_defaultPanelHeight() As Long
+
+'Number of panels; set automatically at Form_Load
+Private m_numOfPanels As Long
 
 Private Sub Form_Load()
+    
+    'All layout decisions on this form are contingent on the number of panels, so set this first as subsequent code
+    ' will likely rely on it.
+    m_numOfPanels = ttlPanel.Count
+    ReDim m_defaultPanelHeight(0 To m_numOfPanels - 1) As Long
+    
+    'Some panel heights are hard-coded.  Calculate those now.
+    ' TODO.
     
     'Prep a mouse handler
     Set m_MouseEvents = New pdInputMouse
@@ -150,10 +181,43 @@ Private Sub reflowInterface()
     'Next, we want to resize all subpanel picture boxes, so that their size reflects the new form size.  This is a
     ' bit complicated, as each form has a different base size, and the user can toggle panel visibility at any time.
     
-    '(TODO: implement subpanels, but for now, there's just the one - layers)
+    'Start by calculating initial x/y offsets
+    Dim yOffset As Long, xOffset As Long, xWidth As Long
+    xOffset = FixDPI(RESIZE_BORDER)
+    yOffset = FixDPI(2)
+    xWidth = Me.ScaleWidth - xOffset
     
-    'Temporary implementation is to just make the layers subpanel the size of this entire form
-    picContainer(0).Move FixDPI(RESIZE_BORDER), 0, Me.ScaleWidth - FixDPI(RESIZE_BORDER), Me.ScaleHeight
+    Dim i As Long
+    For i = 0 To m_numOfPanels - 1
+        
+        'Move the titlebar of this panel into position
+        ttlPanel(i).Move xOffset, yOffset, xWidth - xOffset + FixDPI(2)
+        
+        'Move the yOffset beneath the panel
+        yOffset = yOffset + ttlPanel(i).Height
+        
+        'If the title bar state is TRUE, open its corresponding panel.
+        If ttlPanel(i).Value Then
+            
+            'Move the panel into position.  For all panels except the layers panel, height is hard-coded at design-time.
+            If i < m_numOfPanels - 1 Then
+                picContainer(i).Move xOffset * 2, yOffset, xWidth - xOffset, m_defaultPanelHeight(i)
+                
+            'The layers panel is unique, because it shrinks to fit all available space.
+            Else
+                picContainer(i).Move xOffset * 2, yOffset, xWidth - xOffset, Me.ScaleHeight - yOffset
+            End If
+            
+            'Show the panel, and add its height to the running offset calculation
+            picContainer(i).Visible = True
+            yOffset = yOffset + picContainer(i).Height
+            
+        'If the title bar state is FALSE, close its corresponding panel.
+        Else
+            picContainer(i).Visible = False
+        End If
+        
+    Next i
     
 End Sub
 
@@ -239,4 +303,8 @@ End Sub
 
 Private Sub m_MouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
     m_MouseEvents.setSystemCursor IDC_DEFAULT
+End Sub
+
+Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
+    reflowInterface
 End Sub

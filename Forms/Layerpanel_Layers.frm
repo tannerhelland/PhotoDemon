@@ -3,7 +3,6 @@ Begin VB.Form layerpanel_Layers
    Appearance      =   0  'Flat
    BackColor       =   &H80000005&
    BorderStyle     =   0  'None
-   Caption         =   "Form1"
    ClientHeight    =   7275
    ClientLeft      =   0
    ClientTop       =   0
