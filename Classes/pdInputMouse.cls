@@ -113,9 +113,6 @@ Private Const WM_MBUTTONDBLCLK As Long = &H209
 Private Const WM_RBUTTONDBLCLK As Long = &H206
 Private Const WM_XBUTTONDBLCLK As Long = &H20D
 
-Private Const WM_SETFOCUS As Long = &H7
-Private Const WM_KILLFOCUS As Long = &H8
-
 'X buttons (sometimes called buttons 4 and 5 in MSDN docs) are typically used for forward/back maneuvering.
 ' Users of this class can check their states in Mouse Up/Down events, but PD will preferentially use WM_APPCOMMAND instead,
 ' as it can be raised by both keyboard and mouse equivalents of forward/back keys, which is typically a better solution.
