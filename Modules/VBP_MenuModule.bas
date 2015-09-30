@@ -21,7 +21,7 @@ Public Sub MenuOpen()
     'String returned from the common dialog wrapper
     Dim sFile() As String
     
-    If PhotoDemon_OpenImageDialog(sFile, getModalOwner().hWnd) Then LoadFileAsNewImage sFile
+    If PhotoDemon_OpenImageDialog(sFile, GetModalOwner().hWnd) Then LoadFileAsNewImage sFile
     
 End Sub
 
@@ -30,7 +30,7 @@ End Sub
 Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal ownerHwnd As Long) As Boolean
 
     'Disable user input until the dialog closes
-    Interface.disableUserInput
+    Interface.DisableUserInput
         
     'Get the last "open image" path from the preferences file
     Dim tempPathString As String
@@ -110,7 +110,7 @@ Public Function PhotoDemon_OpenImageDialog(ByRef listOfFiles() As String, ByVal 
     End If
     
     'Re-enable user input
-    Interface.enableUserInput
+    Interface.EnableUserInput
         
 End Function
 
@@ -119,7 +119,7 @@ End Function
 Public Function PhotoDemon_OpenImageDialog_Simple(ByRef userImagePath As String, ByVal ownerHwnd As Long) As Boolean
 
     'Disable user input until the dialog closes
-    Interface.disableUserInput
+    Interface.DisableUserInput
     
     'Common dialog interface
     Dim openDialog As pdOpenSaveDialog
@@ -151,7 +151,7 @@ Public Function PhotoDemon_OpenImageDialog_Simple(ByRef userImagePath As String,
     End If
         
     'Re-enable user input
-    Interface.enableUserInput
+    Interface.EnableUserInput
     
 End Function
 
@@ -321,7 +321,7 @@ Public Function MenuSaveLosslessCopy(ByVal imageID As Long) As Boolean
         
         'TODO: make this a dialog with a "check to remember" option.  I'm waiting on this because I want a generic solution
         '       for these types of dialogs, because they would be helpful in many places throughout PD.
-        pdMsgBox "Before lossless copies can be saved, you must save this image at least once." & vbCrLf & vbCrLf & "Lossless copies will be saved to the same folder as this initial image save.", vbInformation + vbOKOnly + vbApplicationModal, "Initial save required"
+        PDMsgBox "Before lossless copies can be saved, you must save this image at least once." & vbCrLf & vbCrLf & "Lossless copies will be saved to the same folder as this initial image save.", vbInformation + vbOKOnly + vbApplicationModal, "Initial save required"
         
         'This image hasn't been saved before.  Launch the Save As... dialog, and wait for it to return.
         MenuSaveLosslessCopy = MenuSaveAs(imageID)
@@ -354,7 +354,7 @@ Public Function MenuSaveLosslessCopy(ByVal imageID As Long) As Boolean
     Else
     
         'If zLib doesn't exist...
-        pdMsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.", vbExclamation + vbOKOnly + vbApplicationModal, " PDI Interface Error", PROGRAMNAME
+        PDMsgBox "The zLib compression library (zlibwapi.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable PDI saving, please allow %1 to download plugin updates by going to the Tools -> Options menu, and selecting the 'offer to download core plugins' check box.", vbExclamation + vbOKOnly + vbApplicationModal, " PDI Interface Error", PROGRAMNAME
         Message "No %1 encoder found. Save aborted.", "PDI"
         Saving.endSaveProcess
         MenuSaveLosslessCopy = False
@@ -378,7 +378,7 @@ Public Function MenuSaveLosslessCopy(ByVal imageID As Long) As Boolean
     Else
         
         Message "Save canceled."
-        pdMsgBox "An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format." & vbCrLf & vbCrLf & "If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact", vbCritical Or vbApplicationModal Or vbOKOnly, "Image save error"
+        PDMsgBox "An unspecified error occurred when attempting to save this image.  Please try saving the image to an alternate format." & vbCrLf & vbCrLf & "If the problem persists, please report it to the PhotoDemon developers via photodemon.org/contact", vbCritical Or vbApplicationModal Or vbOKOnly, "Image save error"
         MenuSaveLosslessCopy = False
         
     End If
@@ -408,7 +408,7 @@ Public Sub MenuCloseAll()
 
     'Loop through each image object and close their associated forms
     Dim i As Long
-    For i = 0 To g_NumOfImagesLoaded
+    For i = LBound(pdImages) To UBound(pdImages)
     
         Message "Unloading image %1 of %2", i, g_NumOfImagesLoaded
     
@@ -426,7 +426,7 @@ Public Sub MenuCloseAll()
     
     'Redraw the screen to match the new program state
     toolbar_ImageTabs.forceRedraw
-    syncInterfaceToCurrentImage
+    SyncInterfaceToCurrentImage
     
     'Reset the "closing all images" flags
     g_ClosingAllImages = False
@@ -515,7 +515,7 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     toolbar_ImageTabs.registerNewImage g_CurrentImage
     
     'Just to be safe, update the color management profile of the current monitor
-    checkParentMonitor True
+    CheckParentMonitor True
     
     'If the user wants us to resize the image to fit on-screen, do that now
     If g_AutozoomLargeImages = 0 Then FitImageToViewport True
@@ -541,7 +541,7 @@ Public Function CreateNewImage(ByVal imgWidth As Long, ByVal imgHeight As Long, 
     FormMain.Enabled = True
     
     'Synchronize all interface elements to match the newly created image
-    syncInterfaceToCurrentImage
+    SyncInterfaceToCurrentImage
     toolbar_ImageTabs.forceRedraw
     
     'Restore the default cursor

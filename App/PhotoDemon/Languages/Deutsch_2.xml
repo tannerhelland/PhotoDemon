@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (rk)</langname>
-<langversion>6.7.87</langversion>
+<langversion>6.7.88</langversion>
 <langstatus>Nicht abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -11680,7 +11680,12 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei "
 
 <!-- BEGIN text for Toolbar_Layers.frm (toolbar_Layers) -->
 
-<!-- Toolbar_Layers.frm contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
+<phrase>
+<original>LAYERS</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_Layers.frm contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for Toolbar_Layers.frm-->
 
@@ -14034,11 +14039,6 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 <!-- BEGIN text for Layerpanel_Layers.frm (layerpanel_Layers) -->
 
 <phrase>
-<original>Form1</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>blend</original>
 <translation>Füllmodus</translation>
 </phrase>
@@ -14128,7 +14128,7 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 <translation>Ebene nach unten</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 41 phrases. 22 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 40 phrases. 22 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -14150,6 +14150,6 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- As of this build, PhotoDemon contains 4156 phrases. -->
 <!-- 1721 are duplicates, so only 2435 unique phrases have been written to file. -->
-<!-- These 2435 phrases contain approximately 13233 total words. -->
+<!-- These 2435 phrases contain approximately 13234 total words. -->
 
 </pdData>
