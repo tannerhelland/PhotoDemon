@@ -149,10 +149,6 @@ Public Function fullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
     'If no images are open, take additional steps to free memory
     If g_OpenImageCount = 0 Then
         
-        'Reset the main image array
-        ReDim pdImages(0 To 3) As pdImage
-        g_CurrentImage = 0
-        
         'Unload the backbuffer of the primary canvas
         Viewport_Engine.eraseViewportBuffers
         
@@ -194,7 +190,7 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
                 If g_ProgramShuttingDown Or g_ClosingAllImages Then
                     
                     Dim i As Long
-                    For i = 1 To UBound(pdImages)
+                    For i = LBound(pdImages) To UBound(pdImages)
                         If Not (pdImages(i) Is Nothing) Then
                             If pdImages(i).IsActive And (Not pdImages(i).forInternalUseOnly) And (Not pdImages(i).getSaveState(pdSE_AnySave)) Then
                                 g_NumOfUnsavedImages = g_NumOfUnsavedImages + 1
@@ -325,7 +321,7 @@ Public Function UnloadPDImage(Cancel As Integer, ByVal imageID As Long, Optional
     
     'Sync the interface to match the settings of whichever image is active (or disable a bunch of items if no images are active)
     If resyncInterface Then
-        syncInterfaceToCurrentImage
+        SyncInterfaceToCurrentImage
         Message "Finished."
     End If
     
@@ -346,7 +342,7 @@ Public Sub activatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
         Debug.Print "(Image #" & g_CurrentImage & " was activated because " & reasonForActivation & ")"
         
         'Double-check which monitor we are appearing on (for color management reasons)
-        checkParentMonitor True
+        CheckParentMonitor True
         
         'Before displaying the form, redraw it, just in case something changed while it was deactivated (e.g. form resize)
         If Not pdImages(g_CurrentImage) Is Nothing Then
@@ -368,7 +364,7 @@ Public Sub activatePDImage(ByVal imageID As Long, Optional ByRef reasonForActiva
                 toolbar_ImageTabs.notifyNewActiveImage imageID
             
                 'Synchronize various interface elements to match values stored in this image.
-                syncInterfaceToCurrentImage
+                SyncInterfaceToCurrentImage
             
             End If
             

@@ -87,7 +87,7 @@ Public Sub StopMacro()
 SaveMacroAgain:
      
     'If we get the data we want, save the information
-    If saveDialog.GetSaveFileName(sFile, , True, cdFilter, 1, g_UserPreferences.getMacroPath, cdTitle, "." & MACRO_EXT, getModalOwner().hWnd) Then
+    If saveDialog.GetSaveFileName(sFile, , True, cdFilter, 1, g_UserPreferences.getMacroPath, cdTitle, "." & MACRO_EXT, GetModalOwner().hWnd) Then
         
         'Save this macro's directory as the default macro path
         g_UserPreferences.setMacroPath sFile
@@ -157,7 +157,7 @@ SaveMacroAgain:
         
     Else
         
-        mReturn = pdMsgBox("If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?" & vbCrLf & vbCrLf & "(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)", vbApplicationModal + vbExclamation + vbYesNo, "Warning: last chance to save macro")
+        mReturn = PDMsgBox("If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?" & vbCrLf & vbCrLf & "(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)", vbApplicationModal + vbExclamation + vbYesNo, "Warning: last chance to save macro")
         If mReturn = vbNo Then GoTo SaveMacroAgain
         
         Message "Macro abandoned."
@@ -171,7 +171,7 @@ End Sub
 Public Sub PlayMacro()
 
     'Disable user input until the dialog closes
-    Interface.disableUserInput
+    Interface.DisableUserInput
 
     'Automatically launch the load Macro data routine
     Dim openDialog As pdOpenSaveDialog
@@ -187,7 +187,7 @@ Public Sub PlayMacro()
     cdTitle = g_Language.TranslateMessage("Open Macro File")
         
     'If we get a path, load that file
-    If openDialog.GetOpenFileName(sFile, , True, , cdFilter, 1, g_UserPreferences.getMacroPath, cdTitle, "." & MACRO_EXT, getModalOwner().hWnd) Then
+    If openDialog.GetOpenFileName(sFile, , True, , cdFilter, 1, g_UserPreferences.getMacroPath, cdTitle, "." & MACRO_EXT, GetModalOwner().hWnd) Then
         
         Message "Loading macro data..."
         
@@ -201,7 +201,7 @@ Public Sub PlayMacro()
     End If
     
     'Re-enable user input
-    Interface.enableUserInput
+    Interface.EnableUserInput
         
 End Sub
 
@@ -230,6 +230,10 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
                 'Retrieve the number of processes in this macro
                 ProcessCount = xmlEngine.getUniqueTag_Long("processCount")
                 ReDim Processes(0 To ProcessCount - 1) As ProcessCall
+                
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "WARNING!  ProcessCount is zero!  Macro file is invalid."
+                #End If
                 
                 'Start retrieving individual process data from the file
                 Dim i As Long
@@ -271,7 +275,7 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
         
     Else
     
-        pdMsgBox "Unfortunately, this macro file is no longer supported by the current version of PhotoDemon." & vbCrLf & vbCrLf & "In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch." & vbCrLf & vbCrLf & "(Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)", vbInformation + vbOKOnly, "Unsupported macro file"
+        PDMsgBox "Unfortunately, this macro file is no longer supported by the current version of PhotoDemon." & vbCrLf & vbCrLf & "In version 6.0, PhotoDemon macro files were redesigned to support new features, improve performance, and solve some long-standing reliability issues.  Unfortunately, this means that macros recorded prior to version 6.0 are no longer compatible.  You will need to re-record these macros from scratch." & vbCrLf & vbCrLf & "(Note that any old macro files will still work in old versions of PhotoDemon, if you absolutely need to access them.)", vbInformation + vbOKOnly, "Unsupported macro file"
         PlayMacroFromFile = False
         Exit Function
         

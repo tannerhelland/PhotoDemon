@@ -489,14 +489,13 @@ Public Sub resetStack(Optional ByVal newStackSize As Long = INIT_STACK_SIZE)
     If newStackSize <= 0 Then newStackSize = INIT_STACK_SIZE
     
     'Reset the array (but only if necessary!)
-    If m_NumOfStrings <> 0 Then
-    
+    If m_NumOfStrings = 0 Then
         ReDim m_Strings(0 To newStackSize - 1) As String
-        m_NumOfStrings = 0
-        
     Else
         If UBound(m_Strings) <> newStackSize - 1 Then ReDim m_Strings(0 To newStackSize - 1) As String
     End If
+    
+    m_NumOfStrings = 0
     
     Exit Sub
     
