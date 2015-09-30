@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.88</langversion>
+<langversion>6.7.89</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -11680,97 +11680,7 @@ To habilitar el soporte para esta función, por favor copie el archivo FreeImage
 
 <!-- BEGIN text for Toolbar_Layers.frm (toolbar_Layers) -->
 
-<phrase>
-<original>blend</original>
-<translation>mezcla</translation>
-</phrase>
-
-<phrase>
-<original>Click to hide this layer.</original>
-<translation>Haga clic para ocultar esta capa.</translation>
-</phrase>
-
-<phrase>
-<original>Click to show this layer.</original>
-<translation>Haga clic para mostrar esta capa.</translation>
-</phrase>
-
-<phrase>
-<original>Click to duplicate this layer.</original>
-<translation>Haga clic para duplicar esta capa.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer beneath it.</original>
-<translation>Haga clic para fusionar esta capa con la capa debajo de ella.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge down, because there are no visible layers beneath it.</original>
-<translation>Esta capa no puede fusionar hacia abajo, porque no hay capas visibles por debajo de él.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer above it.</original>
-<translation>Haga clic para fusionar esta capa con la capa de encima de ella.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge up, because there are no visible layers above it.</original>
-<translation>Esta capa no puede fusionar, porque no hay capas visibles por encima de ella.</translation>
-</phrase>
-
-<phrase>
-<original>Click to make this the active layer.</original>
-<translation>Haga clic para hacer de este la capa activa.</translation>
-</phrase>
-
-<phrase>
-<original>This is the currently active layer.</original>
-<translation>Esta es la capa activa.</translation>
-</phrase>
-
-<phrase>
-<original>Rearrange layers</original>
-<translation>Reorganizar capas</translation>
-</phrase>
-
-<phrase>
-<original>(hidden)</original>
-<translation>(oculto)</translation>
-</phrase>
-
-<phrase>
-<original>Add a blank layer to the image.</original>
-<translation>Añadir una capa en blanco a la imagen.</translation>
-</phrase>
-
-<phrase>
-<original>Delete the currently selected layer.</original>
-<translation>Eliminar la capa actualmente seleccionada.</translation>
-</phrase>
-
-<phrase>
-<original>Move the current layer upward in the layer stack.</original>
-<translation>Mover la capa actual alza en la pila de capas.</translation>
-</phrase>
-
-<phrase>
-<original>Move layer up</original>
-<translation>Capa Move up</translation>
-</phrase>
-
-<phrase>
-<original>Move the current layer downward in the layer stack.</original>
-<translation>Mover la capa actual a la baja en la pila de capas.</translation>
-</phrase>
-
-<phrase>
-<original>Move layer down</original>
-<translation>Capa Mover hacia abajo</translation>
-</phrase>
-
-<!-- Toolbar_Layers.frm contains 41 phrases. 23 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Toolbar_Layers.frm contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for Toolbar_Layers.frm-->
 
@@ -11805,6 +11715,11 @@ To habilitar el soporte para esta función, por favor copie el archivo FreeImage
 <phrase>
 <original>selection</original>
 <translation>selección</translation>
+</phrase>
+
+<phrase>
+<original>paint</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11937,7 +11852,7 @@ To habilitar el soporte para esta función, por favor copie el archivo FreeImage
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 45 phrases. 15 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 46 phrases. 15 were duplicates of existing phrases, so only 31 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -14110,12 +14025,131 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- END text for pdDisplay.cls-->
 
+<!-- BEGIN text for pdWindowSize.cls -->
+
+<!-- pdWindowSize.cls contains 0 phrases. -->
+
+<!-- END text for pdWindowSize.cls-->
+
+<!-- BEGIN text for Layerpanel_Layers.frm (layerpanel_Layers) -->
+
+<phrase>
+<original>Form1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>blend</original>
+<translation>mezcla</translation>
+</phrase>
+
+<phrase>
+<original>Click to hide this layer.</original>
+<translation>Haga clic para ocultar esta capa.</translation>
+</phrase>
+
+<phrase>
+<original>Click to show this layer.</original>
+<translation>Haga clic para mostrar esta capa.</translation>
+</phrase>
+
+<phrase>
+<original>Click to duplicate this layer.</original>
+<translation>Haga clic para duplicar esta capa.</translation>
+</phrase>
+
+<phrase>
+<original>Click to merge this layer with the layer beneath it.</original>
+<translation>Haga clic para fusionar esta capa con la capa debajo de ella.</translation>
+</phrase>
+
+<phrase>
+<original>This layer can't merge down, because there are no visible layers beneath it.</original>
+<translation>Esta capa no puede fusionar hacia abajo, porque no hay capas visibles por debajo de él.</translation>
+</phrase>
+
+<phrase>
+<original>Click to merge this layer with the layer above it.</original>
+<translation>Haga clic para fusionar esta capa con la capa de encima de ella.</translation>
+</phrase>
+
+<phrase>
+<original>This layer can't merge up, because there are no visible layers above it.</original>
+<translation>Esta capa no puede fusionar, porque no hay capas visibles por encima de ella.</translation>
+</phrase>
+
+<phrase>
+<original>Click to make this the active layer.</original>
+<translation>Haga clic para hacer de este la capa activa.</translation>
+</phrase>
+
+<phrase>
+<original>This is the currently active layer.</original>
+<translation>Esta es la capa activa.</translation>
+</phrase>
+
+<phrase>
+<original>Rearrange layers</original>
+<translation>Reorganizar capas</translation>
+</phrase>
+
+<phrase>
+<original>(hidden)</original>
+<translation>(oculto)</translation>
+</phrase>
+
+<phrase>
+<original>Add a blank layer to the image.</original>
+<translation>Añadir una capa en blanco a la imagen.</translation>
+</phrase>
+
+<phrase>
+<original>Delete the currently selected layer.</original>
+<translation>Eliminar la capa actualmente seleccionada.</translation>
+</phrase>
+
+<phrase>
+<original>Move the current layer upward in the layer stack.</original>
+<translation>Mover la capa actual alza en la pila de capas.</translation>
+</phrase>
+
+<phrase>
+<original>Move layer up</original>
+<translation>Capa Move up</translation>
+</phrase>
+
+<phrase>
+<original>Move the current layer downward in the layer stack.</original>
+<translation>Mover la capa actual a la baja en la pila de capas.</translation>
+</phrase>
+
+<phrase>
+<original>Move layer down</original>
+<translation>Capa Mover hacia abajo</translation>
+</phrase>
+
+<!-- Layerpanel_Layers.frm contains 41 phrases. 22 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+
+<!-- END text for Layerpanel_Layers.frm-->
+
+<!-- BEGIN text for pdWindowSync.cls -->
+
+<!-- pdWindowSync.cls contains 0 phrases. -->
+
+<!-- END text for pdWindowSync.cls-->
+
+<!-- BEGIN text for pdTitle.ctl -->
+
+<!-- pdTitle.ctl contains 0 phrases. -->
+
+<!-- END text for pdTitle.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2433</phrasecount>
+<phrasecount>2435</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4154 phrases. -->
-<!-- 1721 are duplicates, so only 2433 unique phrases have been written to file. -->
-<!-- These 2433 phrases contain approximately 13232 total words. -->
+<!-- As of this build, PhotoDemon contains 4156 phrases. -->
+<!-- 1721 are duplicates, so only 2435 unique phrases have been written to file. -->
+<!-- These 2435 phrases contain approximately 13233 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.27</langversion>
+<langversion>6.6.28</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -11685,97 +11685,7 @@ Dukung Di Perbolehkan untuk ciri ini, Tolong Salin Berkas FreeImage.dll ke Dalam
 
 <!-- BEGIN text for Toolbar_Layers.frm (toolbar_Layers) -->
 
-<phrase>
-<original>blend</original>
-<translation>gabungan</translation>
-</phrase>
-
-<phrase>
-<original>Click to hide this layer.</original>
-<translation>Klik untuk menyembunyikan lapisan ini.</translation>
-</phrase>
-
-<phrase>
-<original>Click to show this layer.</original>
-<translation>Klik untuk menunjukkan lapisan ini.</translation>
-</phrase>
-
-<phrase>
-<original>Click to duplicate this layer.</original>
-<translation>Klik untuk menduplikasi lapisan ini.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer beneath it.</original>
-<translation>Klik untuk bergabung lapisan ini dengan lapisan di bawahnya.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge down, because there are no visible layers beneath it.</original>
-<translation>Lapisan ini tidak boleh bergabung ke bawah, kerana tidak ada lapisan yang dapat dilihat di bawahnya.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer above it.</original>
-<translation>Klik untuk bergabung dengan lapisan ini lapisan di atasnya.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge up, because there are no visible layers above it.</original>
-<translation>Lapisan ini tidak boleh bergabung sehingga, kerana tiada lapisan yang dapat dilihat di atas itu.</translation>
-</phrase>
-
-<phrase>
-<original>Click to make this the active layer.</original>
-<translation>Klik untuk membuat ini lapisan aktif.</translation>
-</phrase>
-
-<phrase>
-<original>This is the currently active layer.</original>
-<translation>Ini adalah lapisan yang sedang aktif.</translation>
-</phrase>
-
-<phrase>
-<original>Rearrange layers</original>
-<translation>Susun semula lapisan</translation>
-</phrase>
-
-<phrase>
-<original>(hidden)</original>
-<translation>(tersembunyi)</translation>
-</phrase>
-
-<phrase>
-<original>Add a blank layer to the image.</original>
-<translation>Tambah lapisan kosong untuk imej.</translation>
-</phrase>
-
-<phrase>
-<original>Delete the currently selected layer.</original>
-<translation>Padam lapisan semasa yang dipilih.</translation>
-</phrase>
-
-<phrase>
-<original>Move the current layer upward in the layer stack.</original>
-<translation>Pindah lapisan semasa menaik dalam timbunan lapisan.</translation>
-</phrase>
-
-<phrase>
-<original>Move layer up</original>
-<translation>Pindah lapisan sehingga</translation>
-</phrase>
-
-<phrase>
-<original>Move the current layer downward in the layer stack.</original>
-<translation>Pindah lapisan semasa menurun dalam timbunan lapisan.</translation>
-</phrase>
-
-<phrase>
-<original>Move layer down</original>
-<translation>Pindah ke bawah lapisan</translation>
-</phrase>
-
-<!-- Toolbar_Layers.frm contains 41 phrases. 23 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Toolbar_Layers.frm contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for Toolbar_Layers.frm-->
 
@@ -11810,6 +11720,11 @@ Dukung Di Perbolehkan untuk ciri ini, Tolong Salin Berkas FreeImage.dll ke Dalam
 <phrase>
 <original>selection</original>
 <translation>pilihan</translation>
+</phrase>
+
+<phrase>
+<original>paint</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11942,7 +11857,7 @@ Dukung Di Perbolehkan untuk ciri ini, Tolong Salin Berkas FreeImage.dll ke Dalam
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 45 phrases. 15 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 46 phrases. 15 were duplicates of existing phrases, so only 31 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -14115,12 +14030,131 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- END text for pdDisplay.cls-->
 
+<!-- BEGIN text for pdWindowSize.cls -->
+
+<!-- pdWindowSize.cls contains 0 phrases. -->
+
+<!-- END text for pdWindowSize.cls-->
+
+<!-- BEGIN text for Layerpanel_Layers.frm (layerpanel_Layers) -->
+
+<phrase>
+<original>Form1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>blend</original>
+<translation>gabungan</translation>
+</phrase>
+
+<phrase>
+<original>Click to hide this layer.</original>
+<translation>Klik untuk menyembunyikan lapisan ini.</translation>
+</phrase>
+
+<phrase>
+<original>Click to show this layer.</original>
+<translation>Klik untuk menunjukkan lapisan ini.</translation>
+</phrase>
+
+<phrase>
+<original>Click to duplicate this layer.</original>
+<translation>Klik untuk menduplikasi lapisan ini.</translation>
+</phrase>
+
+<phrase>
+<original>Click to merge this layer with the layer beneath it.</original>
+<translation>Klik untuk bergabung lapisan ini dengan lapisan di bawahnya.</translation>
+</phrase>
+
+<phrase>
+<original>This layer can't merge down, because there are no visible layers beneath it.</original>
+<translation>Lapisan ini tidak boleh bergabung ke bawah, kerana tidak ada lapisan yang dapat dilihat di bawahnya.</translation>
+</phrase>
+
+<phrase>
+<original>Click to merge this layer with the layer above it.</original>
+<translation>Klik untuk bergabung dengan lapisan ini lapisan di atasnya.</translation>
+</phrase>
+
+<phrase>
+<original>This layer can't merge up, because there are no visible layers above it.</original>
+<translation>Lapisan ini tidak boleh bergabung sehingga, kerana tiada lapisan yang dapat dilihat di atas itu.</translation>
+</phrase>
+
+<phrase>
+<original>Click to make this the active layer.</original>
+<translation>Klik untuk membuat ini lapisan aktif.</translation>
+</phrase>
+
+<phrase>
+<original>This is the currently active layer.</original>
+<translation>Ini adalah lapisan yang sedang aktif.</translation>
+</phrase>
+
+<phrase>
+<original>Rearrange layers</original>
+<translation>Susun semula lapisan</translation>
+</phrase>
+
+<phrase>
+<original>(hidden)</original>
+<translation>(tersembunyi)</translation>
+</phrase>
+
+<phrase>
+<original>Add a blank layer to the image.</original>
+<translation>Tambah lapisan kosong untuk imej.</translation>
+</phrase>
+
+<phrase>
+<original>Delete the currently selected layer.</original>
+<translation>Padam lapisan semasa yang dipilih.</translation>
+</phrase>
+
+<phrase>
+<original>Move the current layer upward in the layer stack.</original>
+<translation>Pindah lapisan semasa menaik dalam timbunan lapisan.</translation>
+</phrase>
+
+<phrase>
+<original>Move layer up</original>
+<translation>Pindah lapisan sehingga</translation>
+</phrase>
+
+<phrase>
+<original>Move the current layer downward in the layer stack.</original>
+<translation>Pindah lapisan semasa menurun dalam timbunan lapisan.</translation>
+</phrase>
+
+<phrase>
+<original>Move layer down</original>
+<translation>Pindah ke bawah lapisan</translation>
+</phrase>
+
+<!-- Layerpanel_Layers.frm contains 41 phrases. 22 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+
+<!-- END text for Layerpanel_Layers.frm-->
+
+<!-- BEGIN text for pdWindowSync.cls -->
+
+<!-- pdWindowSync.cls contains 0 phrases. -->
+
+<!-- END text for pdWindowSync.cls-->
+
+<!-- BEGIN text for pdTitle.ctl -->
+
+<!-- pdTitle.ctl contains 0 phrases. -->
+
+<!-- END text for pdTitle.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2433</phrasecount>
+<phrasecount>2435</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4154 phrases. -->
-<!-- 1721 are duplicates, so only 2433 unique phrases have been written to file. -->
-<!-- These 2433 phrases contain approximately 13232 total words. -->
+<!-- As of this build, PhotoDemon contains 4156 phrases. -->
+<!-- 1721 are duplicates, so only 2435 unique phrases have been written to file. -->
+<!-- These 2435 phrases contain approximately 13233 total words. -->
 
 </pdData>

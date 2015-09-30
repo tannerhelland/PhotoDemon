@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.85</langversion>
+<langversion>6.7.86</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -11679,97 +11679,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <!-- BEGIN text for Toolbar_Layers.frm (toolbar_Layers) -->
 
-<phrase>
-<original>blend</original>
-<translation>mengsel</translation>
-</phrase>
-
-<phrase>
-<original>Click to hide this layer.</original>
-<translation>Klik om deze laag te verbergen.</translation>
-</phrase>
-
-<phrase>
-<original>Click to show this layer.</original>
-<translation>Klik om deze laag te tonen.</translation>
-</phrase>
-
-<phrase>
-<original>Click to duplicate this layer.</original>
-<translation>Klik om deze laag dupliceren.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer beneath it.</original>
-<translation>Klik om deze laag samen te voegen met de laag eronder.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge down, because there are no visible layers beneath it.</original>
-<translation>Deze laag kan niet omlaag samenvoegen, omdat er geen onderliggende zichtbare lagen zijn.</translation>
-</phrase>
-
-<phrase>
-<original>Click to merge this layer with the layer above it.</original>
-<translation>Klik om deze laag samen te voegen met de laag erboven.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge up, because there are no visible layers above it.</original>
-<translation>Deze laag kan niet omhoog samenvoegen, omdat er geen bovenliggende zichtbare lagen zijn..</translation>
-</phrase>
-
-<phrase>
-<original>Click to make this the active layer.</original>
-<translation>Klik om deze laag de actieve te maken.</translation>
-</phrase>
-
-<phrase>
-<original>This is the currently active layer.</original>
-<translation>Dit is de actieve laag.</translation>
-</phrase>
-
-<phrase>
-<original>Rearrange layers</original>
-<translation>Herschikken lagen</translation>
-</phrase>
-
-<phrase>
-<original>(hidden)</original>
-<translation>(verborgen)</translation>
-</phrase>
-
-<phrase>
-<original>Add a blank layer to the image.</original>
-<translation>Voeg een lege laag toe aan de afbeelding.</translation>
-</phrase>
-
-<phrase>
-<original>Delete the currently selected layer.</original>
-<translation>Wis de geselecteerde laag.</translation>
-</phrase>
-
-<phrase>
-<original>Move the current layer upward in the layer stack.</original>
-<translation>Verplaats de huidige laag naar boven in de laag-stack.</translation>
-</phrase>
-
-<phrase>
-<original>Move layer up</original>
-<translation>Verplaats laag opwaarts</translation>
-</phrase>
-
-<phrase>
-<original>Move the current layer downward in the layer stack.</original>
-<translation>Verplaats de huidige laag naar beneden in de laag-stack.</translation>
-</phrase>
-
-<phrase>
-<original>Move layer down</original>
-<translation>Verplaats laag neerwaarts</translation>
-</phrase>
-
-<!-- Toolbar_Layers.frm contains 41 phrases. 23 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Toolbar_Layers.frm contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for Toolbar_Layers.frm-->
 
@@ -11804,6 +11714,11 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <phrase>
 <original>selection</original>
 <translation>selectie</translation>
+</phrase>
+
+<phrase>
+<original>paint</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -11936,7 +11851,7 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_ToolSelect.frm contains 45 phrases. 15 were duplicates of existing phrases, so only 30 new phrases were written to file. -->
+<!-- Toolbar_ToolSelect.frm contains 46 phrases. 15 were duplicates of existing phrases, so only 31 new phrases were written to file. -->
 
 <!-- END text for Toolbar_ToolSelect.frm-->
 
@@ -14109,12 +14024,131 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- END text for pdDisplay.cls-->
 
+<!-- BEGIN text for pdWindowSize.cls -->
+
+<!-- pdWindowSize.cls contains 0 phrases. -->
+
+<!-- END text for pdWindowSize.cls-->
+
+<!-- BEGIN text for Layerpanel_Layers.frm (layerpanel_Layers) -->
+
+<phrase>
+<original>Form1</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>blend</original>
+<translation>mengsel</translation>
+</phrase>
+
+<phrase>
+<original>Click to hide this layer.</original>
+<translation>Klik om deze laag te verbergen.</translation>
+</phrase>
+
+<phrase>
+<original>Click to show this layer.</original>
+<translation>Klik om deze laag te tonen.</translation>
+</phrase>
+
+<phrase>
+<original>Click to duplicate this layer.</original>
+<translation>Klik om deze laag dupliceren.</translation>
+</phrase>
+
+<phrase>
+<original>Click to merge this layer with the layer beneath it.</original>
+<translation>Klik om deze laag samen te voegen met de laag eronder.</translation>
+</phrase>
+
+<phrase>
+<original>This layer can't merge down, because there are no visible layers beneath it.</original>
+<translation>Deze laag kan niet omlaag samenvoegen, omdat er geen onderliggende zichtbare lagen zijn.</translation>
+</phrase>
+
+<phrase>
+<original>Click to merge this layer with the layer above it.</original>
+<translation>Klik om deze laag samen te voegen met de laag erboven.</translation>
+</phrase>
+
+<phrase>
+<original>This layer can't merge up, because there are no visible layers above it.</original>
+<translation>Deze laag kan niet omhoog samenvoegen, omdat er geen bovenliggende zichtbare lagen zijn..</translation>
+</phrase>
+
+<phrase>
+<original>Click to make this the active layer.</original>
+<translation>Klik om deze laag de actieve te maken.</translation>
+</phrase>
+
+<phrase>
+<original>This is the currently active layer.</original>
+<translation>Dit is de actieve laag.</translation>
+</phrase>
+
+<phrase>
+<original>Rearrange layers</original>
+<translation>Herschikken lagen</translation>
+</phrase>
+
+<phrase>
+<original>(hidden)</original>
+<translation>(verborgen)</translation>
+</phrase>
+
+<phrase>
+<original>Add a blank layer to the image.</original>
+<translation>Voeg een lege laag toe aan de afbeelding.</translation>
+</phrase>
+
+<phrase>
+<original>Delete the currently selected layer.</original>
+<translation>Wis de geselecteerde laag.</translation>
+</phrase>
+
+<phrase>
+<original>Move the current layer upward in the layer stack.</original>
+<translation>Verplaats de huidige laag naar boven in de laag-stack.</translation>
+</phrase>
+
+<phrase>
+<original>Move layer up</original>
+<translation>Verplaats laag opwaarts</translation>
+</phrase>
+
+<phrase>
+<original>Move the current layer downward in the layer stack.</original>
+<translation>Verplaats de huidige laag naar beneden in de laag-stack.</translation>
+</phrase>
+
+<phrase>
+<original>Move layer down</original>
+<translation>Verplaats laag neerwaarts</translation>
+</phrase>
+
+<!-- Layerpanel_Layers.frm contains 41 phrases. 22 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
+
+<!-- END text for Layerpanel_Layers.frm-->
+
+<!-- BEGIN text for pdWindowSync.cls -->
+
+<!-- pdWindowSync.cls contains 0 phrases. -->
+
+<!-- END text for pdWindowSync.cls-->
+
+<!-- BEGIN text for pdTitle.ctl -->
+
+<!-- pdTitle.ctl contains 0 phrases. -->
+
+<!-- END text for pdTitle.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2433</phrasecount>
+<phrasecount>2435</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4154 phrases. -->
-<!-- 1721 are duplicates, so only 2433 unique phrases have been written to file. -->
-<!-- These 2433 phrases contain approximately 13232 total words. -->
+<!-- As of this build, PhotoDemon contains 4156 phrases. -->
+<!-- 1721 are duplicates, so only 2435 unique phrases have been written to file. -->
+<!-- These 2435 phrases contain approximately 13233 total words. -->
 
 </pdData>

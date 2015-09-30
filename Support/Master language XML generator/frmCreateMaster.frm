@@ -1468,7 +1468,7 @@ Private Sub processFile(ByVal srcFile As String)
             processedText = findCaptionInQuotes(fileLines, curLineNumber)
         
         '6) Check for message box text, including 7) message box titles (which must also be translated)
-        ElseIf InStr(1, curLineText, "pdMsgBox") <> 0 Then
+        ElseIf (InStr(1, curLineText, "pdMsgBox", vbTextCompare) <> 0) Then
         
             'First, retrieve the message box text itself
             processedText = findMsgBoxText(fileLines, curLineNumber)
@@ -1817,7 +1817,7 @@ Private Function findMsgBoxText(ByRef srcLines() As String, ByRef lineNumber As 
 
     'Before processing this message box, make sure that the text contains actual text and not just a reference to a string.
     ' If all it contains is a reference to a string variable, don't process it.
-    If InStr(1, srcLines(lineNumber), "pdMsgBox(""") = 0 And InStr(1, srcLines(lineNumber), "pdMsgBox """) = 0 Then
+    If InStr(1, srcLines(lineNumber), "pdMsgBox(""", vbTextCompare) = 0 And InStr(1, srcLines(lineNumber), "pdMsgBox """, vbTextCompare) = 0 Then
         findMsgBoxText = ""
         Exit Function
     End If
