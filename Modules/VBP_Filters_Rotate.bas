@@ -936,10 +936,13 @@ Public Sub MenuFitCanvasToLayer(ByVal dstLayerIndex As Long)
         pdImages(g_CurrentImage).mainSelection.lockRelease
     End If
     
-    'Start by calculating a new offset, based on the current layer's offsets
+    'Start by calculating a new offset, based on the current layer's offsets.
+    Dim curLayerBounds As RECTF
+    pdImages(g_CurrentImage).getLayerByIndex(dstLayerIndex).getLayerBoundaryRect curLayerBounds
+    
     Dim dstX As Long, dstY As Long
-    dstX = pdImages(g_CurrentImage).getLayerByIndex(dstLayerIndex).getLayerOffsetX
-    dstY = pdImages(g_CurrentImage).getLayerByIndex(dstLayerIndex).getLayerOffsetY
+    dstX = curLayerBounds.Left
+    dstY = curLayerBounds.Top
     
     'Now that we have new top-left corner coordinates (and new width/height values), resizing the canvas
     ' is actually very easy.  In PhotoDemon, there is no such thing as "image data"; an image is just an
@@ -956,7 +959,7 @@ Public Sub MenuFitCanvasToLayer(ByVal dstLayerIndex As Long)
     Next i
     
     'Finally, update the parent image's size and DPI values
-    pdImages(g_CurrentImage).updateSize False, pdImages(g_CurrentImage).getLayerByIndex(dstLayerIndex).getLayerWidth(False), pdImages(g_CurrentImage).getLayerByIndex(dstLayerIndex).getLayerHeight(False)
+    pdImages(g_CurrentImage).updateSize False, curLayerBounds.Width, curLayerBounds.Height
     DisplaySize pdImages(g_CurrentImage)
     
     'In other functions, we would refresh the layer box here; however, because we haven't actually changed the
@@ -989,19 +992,23 @@ Public Sub MenuFitCanvasToAllLayers()
     dstRight = -1 * &HFFFFFF
     dstBottom = -1 * &HFFFFFF
     
+    Dim curLayerBounds As RECTF
     Dim i As Long
     
     For i = 0 To pdImages(g_CurrentImage).getNumOfLayers - 1
-    
-        With pdImages(g_CurrentImage).getLayerByIndex(i)
+        
+        'Get a new boundary rect, with all affine transforms accounted for
+        pdImages(g_CurrentImage).getLayerByIndex(i).getLayerBoundaryRect curLayerBounds
+        
+        With curLayerBounds
         
             'Check for new minimum offsets
-            If .getLayerOffsetX < dstLeft Then dstLeft = .getLayerOffsetX
-            If .getLayerOffsetY < dstTop Then dstTop = .getLayerOffsetY
+            If .Left < dstLeft Then dstLeft = .Left
+            If .Top < dstTop Then dstTop = .Top
             
             'Check for new maximum right/top
-            If .getLayerOffsetX + .getLayerWidth(False) > dstRight Then dstRight = .getLayerOffsetX + .getLayerWidth(False)
-            If .getLayerOffsetY + .getLayerHeight(False) > dstBottom Then dstBottom = .getLayerOffsetY + .getLayerHeight(False)
+            If .Left + .Width > dstRight Then dstRight = .Left + .Width
+            If .Top + .Height > dstBottom Then dstBottom = .Top + .Height
         
         End With
     
