@@ -50,24 +50,53 @@ Public Sub StartMacro()
     ProcessCount = 1
     ReDim Processes(0 To ProcessCount) As ProcessCall
     
-    'Notify the user that recording has begun
-    Message "Macro recording started."
-    toolbar_Toolbox.lblRecording.Visible = True
+    'Update any related macro UI elements
+    Macro_Interface.updateMacroUI True
     
-    FormMain.MnuRecordMacro(0).Enabled = False
-    FormMain.MnuRecordMacro(1).Enabled = True
-
 End Sub
 
 'Stop recording the current macro, and offer to save it to file.
 Public Sub StopMacro()
-
-    MacroStatus = MacroSTOP
-    Message "Macro recording stopped."
     
-    toolbar_Toolbox.lblRecording.Visible = False
-    FormMain.MnuRecordMacro(0).Enabled = True
-    FormMain.MnuRecordMacro(1).Enabled = False
+    'Before stopping the macro, make sure at least one valid, recordable action has occurred.
+    Dim i As Long, numOfValidProcesses As Long
+    numOfValidProcesses = 0
+    
+    For i = 0 To ProcessCount
+        If (Len(Processes(i).Id) <> 0) And (Not Processes(i).Dialog) And Processes(i).Recorded Then
+            numOfValidProcesses = numOfValidProcesses + 1
+        End If
+    Next i
+    
+    Dim msgReturn As VbMsgBoxResult
+    
+    If numOfValidProcesses = 0 Then
+    
+        'Warn the user that this macro won't be saved unless they keep recording
+        msgReturn = PDMsgBox("This macro does not contain any recordable actions.  Are you sure you want to stop recording?" & vbCrLf & vbCrLf & "(Press No to continue recording.)", vbApplicationModal + vbExclamation + vbYesNo, "Warning: invalid macro")
+        
+        If msgReturn = vbYes Then
+            
+            'Update any related macro UI elements
+            Macro_Interface.updateMacroUI False
+            
+            'Reset the macro engine and exit
+            MacroStatus = MacroSTOP
+            ProcessCount = 0
+            Message "Macro abandoned."
+            Exit Sub
+        
+        'If the user clicks anything but "yes", exit without making changes (e.g. let them continue recording).
+        Else
+            Exit Sub
+        End If
+        
+    End If
+    
+    MacroStatus = MacroSTOP
+    
+    'Update any related macro UI elements
+    Macro_Interface.updateMacroUI False
     
     'Automatically launch the save macro data routine
     Dim saveDialog As pdOpenSaveDialog
@@ -81,9 +110,8 @@ Public Sub StopMacro()
     Dim cdTitle As String
     cdTitle = g_Language.TranslateMessage("Save macro data")
     
-    'If the user cancels the save dialog, give them another chance to save - just in case
-    Dim mReturn As VbMsgBoxResult
-        
+    'If the user cancels the save dialog, we'll raise a warning to tell them that the macro will be lost for good.
+    ' That dialog gives them an option to return to the save dialog, which will bring us back to this line of code.
 SaveMacroAgain:
      
     'If we get the data we want, save the information
@@ -91,7 +119,7 @@ SaveMacroAgain:
         
         'Save this macro's directory as the default macro path
         g_UserPreferences.setMacroPath sFile
-
+        
         'Create a pdXML class, which will help us assemble the macro file
         Dim xmlEngine As pdXML
         Set xmlEngine = New pdXML
@@ -105,15 +133,9 @@ SaveMacroAgain:
         ' 1) It isn't blank/empty
         ' 2) It doesn't display a dialog
         ' 3) It was not specifically marked as "DO_NOT_RECORD"
-        Dim numOfValidProcesses As Long
-        numOfValidProcesses = 0
         
-        Dim i As Long
-        For i = 0 To ProcessCount
-            If (Len(Processes(i).Id) <> 0) And (Not Processes(i).Dialog) And Processes(i).Recorded Then
-                numOfValidProcesses = numOfValidProcesses + 1
-            End If
-        Next i
+        'Due to the previous check at the top of this function, we already know how many valid functions are in the process list,
+        ' and this value is guaranteed to be non-zero.
         
         'Write out the number of valid processes in the macro
         xmlEngine.writeTag "processCount", CStr(numOfValidProcesses)
@@ -157,8 +179,8 @@ SaveMacroAgain:
         
     Else
         
-        mReturn = PDMsgBox("If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?" & vbCrLf & vbCrLf & "(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)", vbApplicationModal + vbExclamation + vbYesNo, "Warning: last chance to save macro")
-        If mReturn = vbNo Then GoTo SaveMacroAgain
+        msgReturn = PDMsgBox("If you do not save this macro, all actions recorded during this session will be permanently lost.  Are you sure you want to cancel?" & vbCrLf & vbCrLf & "(Press No to return to the Save Macro screen.  Note that you can always delete this macro later if you decide you don't want it.)", vbApplicationModal + vbExclamation + vbYesNo, "Warning: last chance to save macro")
+        If msgReturn = vbNo Then GoTo SaveMacroAgain
         
         Message "Macro abandoned."
         
@@ -166,6 +188,29 @@ SaveMacroAgain:
             
     ProcessCount = 0
     
+End Sub
+
+'All macro-related UI instructions should be placed here, as PD can terminate a macro recording session for any number of reasons,
+' and it needs a uniform way to wipe macro-related UI changes).
+Private Sub updateMacroUI(ByVal recordingIsActive As Boolean)
+
+    If recordingIsActive Then
+    
+        'Notify the user that recording has begun
+        Message "Macro recording started."
+        toolbar_Toolbox.lblRecording.Visible = True
+        
+        'Disable "start recording", and enable "stop recording"
+        FormMain.MnuRecordMacro(0).Enabled = False
+        FormMain.MnuRecordMacro(1).Enabled = True
+    
+    Else
+        Message "Macro recording stopped."
+        toolbar_Toolbox.lblRecording.Visible = False
+        FormMain.MnuRecordMacro(0).Enabled = True
+        FormMain.MnuRecordMacro(1).Enabled = False
+    End If
+
 End Sub
 
 Public Sub PlayMacro()
@@ -229,39 +274,52 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
             
                 'Retrieve the number of processes in this macro
                 ProcessCount = xmlEngine.getUniqueTag_Long("processCount")
-                ReDim Processes(0 To ProcessCount - 1) As ProcessCall
                 
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "WARNING!  ProcessCount is zero!  Macro file is invalid."
-                #End If
+                If ProcessCount > 0 Then
                 
-                'Start retrieving individual process data from the file
-                Dim i As Long
-                For i = 1 To ProcessCount
-                
-                    'Start by finding the location of the tag we want
-                    Dim tagPosition As Long
-                    tagPosition = xmlEngine.getLocationOfTagPlusAttribute("processEntry", "index", i)
+                    ReDim Processes(0 To ProcessCount - 1) As ProcessCall
                     
-                    If tagPosition > 0 Then
+                    'Start retrieving individual process data from the file
+                    Dim i As Long
+                    For i = 1 To ProcessCount
                     
-                        'Use that tag position to retrieve the processor parameters we need.
-                        With Processes(i - 1)
-                            .Id = xmlEngine.getUniqueTag_String("ID", , tagPosition)
-                            .Parameters = xmlEngine.getUniqueTag_String("Parameters", , tagPosition)
-                            .MakeUndo = xmlEngine.getUniqueTag_Long("MakeUndo", , tagPosition)
-                            .Tool = xmlEngine.getUniqueTag_Long("Tool", , tagPosition)
-                            
-                            'These two attributes can be assigned automatically, as we know what their values must be.
-                            .Dialog = False
-                            .Recorded = True
-                        End With
+                        'Start by finding the location of the tag we want
+                        Dim tagPosition As Long
+                        tagPosition = xmlEngine.getLocationOfTagPlusAttribute("processEntry", "index", i)
                         
-                    Else
-                        Debug.Print "Expected macro entry could not be found!"
-                    End If
-                
-                Next i
+                        If tagPosition > 0 Then
+                        
+                            'Use that tag position to retrieve the processor parameters we need.
+                            With Processes(i - 1)
+                                .Id = xmlEngine.getUniqueTag_String("ID", , tagPosition)
+                                .Parameters = xmlEngine.getUniqueTag_String("Parameters", , tagPosition)
+                                .MakeUndo = xmlEngine.getUniqueTag_Long("MakeUndo", , tagPosition)
+                                .Tool = xmlEngine.getUniqueTag_Long("Tool", , tagPosition)
+                                
+                                'These two attributes can be assigned automatically, as we know what their values must be.
+                                .Dialog = False
+                                .Recorded = True
+                            End With
+                            
+                        Else
+                            Debug.Print "Expected macro entry could not be found!"
+                        End If
+                    
+                    Next i
+                    
+                'This macro file contains no valid actions.  It's no longer possible to create a macro like this, so this is basically
+                ' a failsafe for faulty old versions of PD.
+                Else
+                    
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "WARNING!  ProcessCount is zero!  Macro file is technically valid, but there's nothing to see here..."
+                    #End If
+                    
+                    Message "Macro complete!"
+                    PlayMacroFromFile = True
+                    Exit Function
+                    
+                End If
             
             Case Else
                 Message "Incompatible macro version found.  Macro playback abandoned."
@@ -301,4 +359,5 @@ Public Function PlayMacroFromFile(ByVal MacroPath As String) As Boolean
     
     'After playing, the macro should be added to the Recent Macros list
     g_RecentMacros.MRU_AddNewFile MacroPath
+    
 End Function
