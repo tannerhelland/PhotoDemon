@@ -26,6 +26,21 @@ Begin VB.Form toolbar_Layers
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   249
    ShowInTaskbar   =   0   'False
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   735
+      Index           =   1
+      Left            =   360
+      ScaleHeight     =   49
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   121
+      TabIndex        =   2
+      Top             =   3000
+      Width           =   1815
+   End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   270
       Index           =   0
@@ -35,7 +50,7 @@ Begin VB.Form toolbar_Layers
       Width           =   3495
       _ExtentX        =   6165
       _ExtentY        =   476
-      Caption         =   "LAYERS"
+      Caption         =   "overview"
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -44,13 +59,24 @@ Begin VB.Form toolbar_Layers
       ForeColor       =   &H80000008&
       Height          =   735
       Index           =   0
-      Left            =   120
+      Left            =   480
       ScaleHeight     =   49
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   121
       TabIndex        =   0
-      Top             =   600
+      Top             =   2040
       Width           =   1815
+   End
+   Begin PhotoDemon.pdTitle ttlPanel 
+      Height          =   270
+      Index           =   1
+      Left            =   120
+      TabIndex        =   3
+      Top             =   480
+      Width           =   3495
+      _ExtentX        =   6165
+      _ExtentY        =   476
+      Caption         =   "layers"
    End
    Begin VB.Line lnSeparatorLeft 
       X1              =   0
@@ -112,7 +138,9 @@ Private Sub Form_Load()
     ReDim m_defaultPanelHeight(0 To m_numOfPanels - 1) As Long
     
     'Some panel heights are hard-coded.  Calculate those now.
-    ' TODO.
+    ' (Note that we do not calculate a hard-coded size for the final panel (layers).  It is autosized to fill whatever
+    '  space remains after other panels are positioned.)
+    m_defaultPanelHeight(0) = FixDPI(100)
     
     'Prep a mouse handler
     Set m_MouseEvents = New pdInputMouse
@@ -122,7 +150,7 @@ Private Sub Form_Load()
     Set m_WindowSync = New pdWindowSync
     
     Load layerpanel_Layers
-    m_WindowSync.SynchronizeWindows picContainer(0).hWnd, layerpanel_Layers.hWnd
+    m_WindowSync.SynchronizeWindows picContainer(1).hWnd, layerpanel_Layers.hWnd
     layerpanel_Layers.Show
     
     'Theme everything
@@ -194,7 +222,7 @@ Private Sub reflowInterface()
         ttlPanel(i).Move xOffset, yOffset, xWidth - xOffset + FixDPI(2)
         
         'Move the yOffset beneath the panel
-        yOffset = yOffset + ttlPanel(i).Height
+        yOffset = yOffset + ttlPanel(i).Height + FixDPI(1)
         
         'If the title bar state is TRUE, open its corresponding panel.
         If ttlPanel(i).Value Then
@@ -216,6 +244,9 @@ Private Sub reflowInterface()
         Else
             picContainer(i).Visible = False
         End If
+        
+        'Regardless of visibility, always add some padding to the running offset
+        yOffset = yOffset + FixDPI(4)
         
     Next i
     

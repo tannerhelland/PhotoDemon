@@ -157,6 +157,15 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     
 End Property
 
+Public Property Get FontBold() As Boolean
+    FontBold = m_Caption.getFontBold
+End Property
+
+Public Property Let FontBold(ByVal newValue As Boolean)
+    If m_Caption.setFontBold(newValue) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then updateControlLayout
+    PropertyChanged "FontBold"
+End Property
+
 Public Property Get FontSize() As Single
     FontSize = m_Caption.getFontSize
 End Property
@@ -347,6 +356,7 @@ End Sub
 Private Sub UserControl_InitProperties()
     BackColor = vbWhite
     Caption = ""
+    FontBold = False
     FontSize = 10
     Value = True
 End Sub
@@ -381,6 +391,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     With PropBag
         m_BackColor = .ReadProperty("BackColor", vbWhite)
         Caption = .ReadProperty("Caption", "")
+        FontBold = .ReadProperty("FontBold", False)
         FontSize = .ReadProperty("FontSize", 10)
         Value = .ReadProperty("Value", True)
     End With
@@ -404,7 +415,7 @@ Private Sub updateControlLayout()
         GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackColor
     End If
     
-    Const hTextPadding As Long = 2&, vTextPadding As Long = 1&
+    Const hTextPadding As Long = 2&, vTextPadding As Long = 2&
     
     'Next, we need to determine the size of the caption.  The caption height determines control height, so if the current control
     ' size does not match that value, we want to immediately resize the control to match.
@@ -465,6 +476,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "BackColor", m_BackColor, vbWhite
         .WriteProperty "Caption", m_Caption.getCaptionEn, ""
+        .WriteProperty "FontBold", m_Caption.getFontBold, False
         .WriteProperty "FontSize", m_Caption.getFontSize, 10
         .WriteProperty "Value", m_TitleState, True
     End With
@@ -499,7 +511,7 @@ Private Sub redrawBackBuffer()
     ' 3) Value (controls arrow direction)
     ' 4) The central themer (which contains default color values for all these scenarios)
     Dim textColor As Long, arrowColor As Long
-    Dim ctlBorderColor As Long, ctlFillColor As Long
+    Dim ctlBorderColor As Long, ctlFillColor As Long, ctlTopLineColor As Long
     
     'For this particular control, fill color is always consistent
     ctlFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
@@ -511,6 +523,7 @@ Private Sub redrawBackBuffer()
             ctlBorderColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
             textColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
             arrowColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+            ctlTopLineColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
             
         'The mouse is not inside the UC
         Else
@@ -518,8 +531,10 @@ Private Sub redrawBackBuffer()
             'If focus was received via keyboard, change the border to reflect it
             If m_FocusRectActive Then
                 ctlBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
+                ctlTopLineColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
             Else
                 ctlBorderColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                ctlTopLineColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
             End If
             
             'Text and arrow color is identical regardless of focus
@@ -532,6 +547,7 @@ Private Sub redrawBackBuffer()
     Else
     
         ctlBorderColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+        ctlTopLineColor = g_Themer.getThemeColor(PDTC_DISABLED)
         textColor = g_Themer.getThemeColor(PDTC_DISABLED)
         arrowColor = g_Themer.getThemeColor(PDTC_DISABLED)
         
@@ -549,7 +565,7 @@ Private Sub redrawBackBuffer()
         m_Caption.setCaptionColor textColor
         m_Caption.drawCaption m_BackBuffer.getDIBDC, m_CaptionRect.Left, m_CaptionRect.Top
     End If
-    
+        
     'Next, paint the drop-down arrow.  To simplify calculations, we first calculate the boundary rect where the arrow will be drawn.
     Dim arrowRect As RECTF
     arrowRect.Left = m_BackBuffer.getDIBWidth - m_BackBuffer.getDIBHeight - FixDPI(2)
@@ -565,7 +581,7 @@ Private Sub redrawBackBuffer()
     If m_TitleState Then
     
         arrowPt1.x = arrowRect.Left + FixDPIFloat(4)
-        arrowPt1.y = arrowRect.Top + (arrowRect.Height / 2) - FixDPIFloat(1)
+        arrowPt1.y = arrowRect.Top + (arrowRect.Height / 2) - FixDPIFloat(2)
         
         arrowPt3.x = (arrowRect.Left + arrowRect.Width) - FixDPIFloat(4)
         arrowPt3.y = arrowPt1.y
@@ -576,7 +592,7 @@ Private Sub redrawBackBuffer()
     'Corresponding panel is closed, so arrow points left
     Else
     
-        arrowPt1.x = arrowRect.Left + (arrowRect.Width / 2) + FixDPIFloat(1)
+        arrowPt1.x = arrowRect.Left + (arrowRect.Width / 2) + FixDPIFloat(2)
         arrowPt1.y = arrowRect.Top + FixDPIFloat(4)
     
         arrowPt3.x = arrowPt1.x
@@ -591,6 +607,10 @@ Private Sub redrawBackBuffer()
     If m_MouseInsideUC Then arrowWidth = 2 Else arrowWidth = 1
     GDI_Plus.GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, arrowPt1.x, arrowPt1.y, arrowPt2.x, arrowPt2.y, arrowColor, 255, 2, True, LineCapRound
     GDI_Plus.GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, arrowPt2.x, arrowPt2.y, arrowPt3.x, arrowPt3.y, arrowColor, 255, 2, True, LineCapRound
+    
+    'Finally, frame the control.  At present, this consists of two gradient lines - one across the top, the other down the right side.
+    GDI_Plus.GDIPlusDrawGradientLineToDC m_BackBuffer.getDIBDC, 0#, 0#, m_BackBuffer.getDIBWidth - 1, 0#, ctlFillColor, ctlTopLineColor, 255, 255, 1, True, LineCapRound
+    GDI_Plus.GDIPlusDrawGradientLineToDC m_BackBuffer.getDIBDC, m_BackBuffer.getDIBWidth - 1, 0#, m_BackBuffer.getDIBWidth - 1, m_BackBuffer.getDIBHeight, ctlTopLineColor, ctlFillColor, 255, 255, 1, True, LineCapRound
     
     'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
     If Not g_IsProgramRunning Then

@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.90</langversion>
+<langversion>6.7.91</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -1286,13 +1286,20 @@ To habilitar el soporte para archivos de PDI comprimido, haga clic en Ayuda> Bus
 <!-- BEGIN text for VBP_BatchConversion.bas -->
 
 <phrase>
-<original>Macro recording started.</original>
-<translation>La grabación de macros comenzó.</translation>
+<original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
+
+(Press No to continue recording.)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Macro recording stopped.</original>
-<translation>La grabación de macros se detuvo.</translation>
+<original>Warning: invalid macro</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Macro abandoned.</original>
+<translation>Macro abandonado.</translation>
 </phrase>
 
 <phrase>
@@ -1325,8 +1332,13 @@ To habilitar el soporte para archivos de PDI comprimido, haga clic en Ayuda> Bus
 </phrase>
 
 <phrase>
-<original>Macro abandoned.</original>
-<translation>Macro abandonado.</translation>
+<original>Macro recording started.</original>
+<translation>La grabación de macros comenzó.</translation>
+</phrase>
+
+<phrase>
+<original>Macro recording stopped.</original>
+<translation>La grabación de macros se detuvo.</translation>
 </phrase>
 
 <phrase>
@@ -1347,6 +1359,11 @@ To habilitar el soporte para archivos de PDI comprimido, haga clic en Ayuda> Bus
 <phrase>
 <original>Macro load canceled.</original>
 <translation>Carga Macro cancelado.</translation>
+</phrase>
+
+<phrase>
+<original>Macro complete!</original>
+<translation>Macro completa!</translation>
 </phrase>
 
 <phrase>
@@ -1377,12 +1394,7 @@ In versión 6.0, los archivos de macros PhotoDemon fueron rediseñados para sopo
 <translation>El procesamiento de los datos macro</translation>
 </phrase>
 
-<phrase>
-<original>Macro complete!</original>
-<translation>Macro completa!</translation>
-</phrase>
-
-<!-- VBP_BatchConversion.bas contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- VBP_BatchConversion.bas contains 27 phrases. 8 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for VBP_BatchConversion.bas-->
 
@@ -14146,10 +14158,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2435</phrasecount>
+<phrasecount>2437</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4156 phrases. -->
-<!-- 1721 are duplicates, so only 2435 unique phrases have been written to file. -->
-<!-- These 2435 phrases contain approximately 13234 total words. -->
+<!-- As of this build, PhotoDemon contains 4160 phrases. -->
+<!-- 1723 are duplicates, so only 2437 unique phrases have been written to file. -->
+<!-- These 2437 phrases contain approximately 13257 total words. -->
 
 </pdData>

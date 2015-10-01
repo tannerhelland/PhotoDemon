@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.29</langversion>
+<langversion>6.6.30</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -1286,13 +1286,20 @@ Untuk mengaktifkan dukungan untuk kompresi file PDI, klik Bantuan> Memeriksa pem
 <!-- BEGIN text for VBP_BatchConversion.bas -->
 
 <phrase>
-<original>Macro recording started.</original>
-<translation>Rekaman makro dimulai.</translation>
+<original>This macro does not contain any recordable actions.  Are you sure you want to stop recording?
+
+(Press No to continue recording.)</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Macro recording stopped.</original>
-<translation>Rekaman makro dihentikan.</translation>
+<original>Warning: invalid macro</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Macro abandoned.</original>
+<translation>Makro terbengkalai.</translation>
 </phrase>
 
 <phrase>
@@ -1325,8 +1332,13 @@ Untuk mengaktifkan dukungan untuk kompresi file PDI, klik Bantuan> Memeriksa pem
 </phrase>
 
 <phrase>
-<original>Macro abandoned.</original>
-<translation>Makro terbengkalai.</translation>
+<original>Macro recording started.</original>
+<translation>Rekaman makro dimulai.</translation>
+</phrase>
+
+<phrase>
+<original>Macro recording stopped.</original>
+<translation>Rekaman makro dihentikan.</translation>
 </phrase>
 
 <phrase>
@@ -1347,6 +1359,11 @@ Untuk mengaktifkan dukungan untuk kompresi file PDI, klik Bantuan> Memeriksa pem
 <phrase>
 <original>Macro load canceled.</original>
 <translation>muat makro dibatalkan.</translation>
+</phrase>
+
+<phrase>
+<original>Macro complete!</original>
+<translation>Lengkap makro!</translation>
 </phrase>
 
 <phrase>
@@ -1377,12 +1394,7 @@ Di versi 6.0, PhotoDemon Berkas makro telah direkabentuk semula untuk mendukung 
 <translation>Memproses data makro</translation>
 </phrase>
 
-<phrase>
-<original>Macro complete!</original>
-<translation>Lengkap makro!</translation>
-</phrase>
-
-<!-- VBP_BatchConversion.bas contains 23 phrases. 6 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
+<!-- VBP_BatchConversion.bas contains 27 phrases. 8 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for VBP_BatchConversion.bas-->
 
@@ -14151,10 +14163,10 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2435</phrasecount>
+<phrasecount>2437</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4156 phrases. -->
-<!-- 1721 are duplicates, so only 2435 unique phrases have been written to file. -->
-<!-- These 2435 phrases contain approximately 13234 total words. -->
+<!-- As of this build, PhotoDemon contains 4160 phrases. -->
+<!-- 1723 are duplicates, so only 2437 unique phrases have been written to file. -->
+<!-- These 2437 phrases contain approximately 13257 total words. -->
 
 </pdData>
