@@ -66,6 +66,9 @@ Private m_FontSizeVerified As Boolean
 'Current caption color
 Private m_CaptionColor As Long
 
+'Other font settings.  I implement these as I need them, so some may be missing, by design.
+Private m_FontBold As Boolean
+
 'Get the current ENGLISH caption.
 Public Function getCaptionEn() As String
     getCaptionEn = m_CaptionEn
@@ -141,6 +144,21 @@ Public Sub setCaptionColor(ByVal newColor As Long)
     m_CaptionColor = newColor
 End Sub
 
+Public Function getFontBold() As Boolean
+    getFontBold = m_FontBold
+End Function
+
+Public Function setFontBold(ByVal newValue As Boolean) As Boolean
+    If m_FontBold <> newValue Then
+        m_FontBold = newValue
+        m_FontObjectClean = False
+        m_FontSizeVerified = False
+        setFontBold = True
+    Else
+        setFontBold = False
+    End If
+End Function
+
 Public Function getFontSize() As Single
     getFontSize = m_FontSizeCaption
 End Function
@@ -193,6 +211,7 @@ Private Sub Class_Initialize()
     
     m_FontObjectClean = False
     m_FontSizeVerified = False
+    m_FontBold = False
     
     If g_IsProgramRunning And Not (g_Themer Is Nothing) Then
         m_CaptionColor = g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
@@ -213,6 +232,19 @@ Public Sub setControlSize(ByVal newWidth As Single, ByVal newHeight As Single)
     End If
     
 End Sub
+
+'Returns the width of the current caption, in pixels.  No padding is applied.
+' Note that this return *ignores the wordwrap setting.*  Wordwrap will (obviously) affect the width of the string, but because the width
+' of a wordwrap string is simply the container width - which the caller must specify - there's no point in returning it here.
+Public Function getCaptionWidth() As Single
+    
+    'Make sure the current font object reflects all active settings
+    If Not m_FontObjectClean Then rebuildFont
+    If Not m_FontSizeVerified Then verifyFontSize
+    
+    getCaptionWidth = m_TextRenderer.getWidthOfString(m_CaptionTranslated)
+    
+End Function
 
 'Returns the height of the current caption, in pixels.  No padding is applied.
 ' Note that this return varies depending on the presence of wordwrapping.  Wordwrap will (obviously) affect the return.
@@ -315,7 +347,6 @@ Private Sub rebuildFont()
         'Prep the font using default settings
         With m_TextRenderer
             
-            .setFontBold False
             .setFontItalic False
             .setFontStrikeout False
             .setFontUnderline False
@@ -330,9 +361,12 @@ Private Sub rebuildFont()
     End If
     
     'Next, set font properties that may change at run-time
-    If g_IsProgramRunning Then m_TextRenderer.setFontFace g_InterfaceFont
-    m_TextRenderer.setFontSize m_FontSizeCaption
-    m_TextRenderer.setFontColor m_CaptionColor
+    With m_TextRenderer
+        If g_IsProgramRunning Then .setFontFace g_InterfaceFont
+        .setFontSize m_FontSizeCaption
+        .setFontBold m_FontBold
+        .setFontColor m_CaptionColor
+    End With
     
     'Create the new font
     m_TextRenderer.createFontObject
@@ -369,6 +403,7 @@ Private Sub verifyFontSize()
             If .getFontSize <> newFontSize Then
                 .deleteCurrentFont
                 .setFontSize newFontSize
+                .setFontBold m_FontBold
                 .createFontObject
             End If
         End With
