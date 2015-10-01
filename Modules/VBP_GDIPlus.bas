@@ -500,6 +500,8 @@ Private Declare Function GdipSetPenDashStyle Lib "gdiplus" (ByVal dstPen As Long
 Private Declare Function GdipSetPenDashCap197819 Lib "gdiplus" (ByVal dstPen As Long, ByVal newDashCap As DashCap) As Long
 Private Declare Function GdipSetPenMiterLimit Lib "gdiplus" (ByVal dstPen As Long, ByVal newMiterLimit As Single) As Long
 Private Declare Function GdipSetPenMode Lib "gdiplus" (ByVal Pen As Long, ByVal penMode As PenAlignment) As Long
+Private Declare Function GdipCreateLineBrush Lib "gdiplus" (ByRef point1 As POINTFLOAT, ByRef point2 As POINTFLOAT, ByVal color1 As Long, ByVal color2 As Long, ByVal brushWrapMode As WrapMode, ByRef dstBrush As Long) As Long
+Private Declare Function GdipCreatePenFromBrush Lib "gdiplus" Alias "GdipCreatePen2" (ByVal srcBrush As Long, ByVal penWidth As Single, ByVal srcUnit As GpUnit, ByRef dstPen As Long) As Long
 
 'Transforms
 Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal order As Long) As Long
@@ -576,6 +578,10 @@ Public Enum WrapMode
    WrapModeTileFlipXY = 3
    WrapModeClamp = 4
 End Enum
+
+#If False Then
+    Private Const WrapModeTile = 0, WrapModeTileFlipX = 1, WrapModeTileFlipY = 2, WrapModeTileFlipXY = 3, WrapModeClamp = 4
+#End If
 
 'PixelOffsetMode controls how GDI+ attempts to antialias objects.  For cheap antialiasing, use PixelOffsetModeHalf.
 ' This provides a good estimation of AA, without actually applying a full AA operation.
@@ -1076,6 +1082,60 @@ Public Function GDIPlusDrawLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByV
     'Release all created objects
     GdipDeletePen iPen
     GdipDeleteGraphics iGraphics
+
+End Function
+
+'Use GDI+ to render a gradient line, with optional color, opacity, and antialiasing
+Public Function GDIPlusDrawGradientLineToDC(ByVal dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single, ByVal firstColor As Long, ByVal secondColor As Long, Optional ByVal firstTransparency As Long = 255, Optional ByVal secondTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLineCap As LineCap = LineCapFlat) As Boolean
+    
+    Dim gdipReturn As Long
+    
+    'Create a GDI+ copy of the image and request matching AA behavior
+    Dim hGraphics As Long
+    GdipCreateFromHDC dstDC, hGraphics
+    If useAA Then GdipSetSmoothingMode hGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode hGraphics, SmoothingModeNone
+    
+    'GDI+ does not allow direct creation of gradient pens.  We must first construct a linear gradient brush.
+    Dim pt1 As POINTFLOAT, pt2 As POINTFLOAT
+    pt1.x = x1
+    pt1.y = y1
+    pt2.x = x2
+    pt2.y = y2
+    
+    Dim srcBrush As Long
+    gdipReturn = GdipCreateLineBrush(pt1, pt2, fillQuadWithVBRGB(firstColor, firstTransparency), fillQuadWithVBRGB(secondColor, secondTransparency), WrapModeTileFlipXY, srcBrush)
+    If gdipReturn = 0 Then
+    
+        '"Convert" that brush into a pen, which is what's actually used to stroke the line
+        Dim hPen As Long
+        gdipReturn = GdipCreatePenFromBrush(srcBrush, lineWidth, UnitPixel, hPen)
+        If gdipReturn = 0 Then
+        
+            'If a custom line cap was specified, apply it now
+            If customLineCap > 0 Then GdipSetPenLineCap hPen, customLineCap, customLineCap, 0&
+            
+            'Render the line
+            GdipDrawLine hGraphics, hPen, x1, y1, x2, y2
+                
+            'Release the pen
+            GdipDeletePen hPen
+                
+        Else
+            #If DEBUGMODE = 1 Then
+                If g_IsProgramRunning Then pdDebug.LogAction "WARNING - GDI+ PEN FAILURE IN GDIPlusDrawGradientLineToDC: " & gdipReturn
+            #End If
+        End If
+        
+        'Release the reference brush
+        GdipDeleteBrush srcBrush
+        
+    Else
+        #If DEBUGMODE = 1 Then
+            If g_IsProgramRunning Then pdDebug.LogAction "WARNING - GDI+ BRUSH FAILURE IN GDIPlusDrawGradientLineToDC: " & gdipReturn
+        #End If
+    End If
+    
+    GdipDeleteGraphics hGraphics
 
 End Function
 
@@ -1765,7 +1825,7 @@ Public Function GDIPlusLoadPicture(ByVal srcFilename As String, ByRef dstDIB As 
             GdipBitmapUnlockBits hImage, copyBitmapData
                         
             'Apply the transformation using the dedicated CMYK transform handler
-            If applyCMYKTransform(dstDIB.ICCProfile.getICCDataPointer, dstDIB.ICCProfile.getICCDataSize, tmpCMYKDIB, dstDIB, dstDIB.ICCProfile.getSourceRenderIntent) Then
+            If ApplyCMYKTransform(dstDIB.ICCProfile.getICCDataPointer, dstDIB.ICCProfile.getICCDataSize, tmpCMYKDIB, dstDIB, dstDIB.ICCProfile.getSourceRenderIntent) Then
             
                 #If DEBUGMODE = 1 Then
                     pdDebug.LogAction "Copying newly transformed sRGB data..."
