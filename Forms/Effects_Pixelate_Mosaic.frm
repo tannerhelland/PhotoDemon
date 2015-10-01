@@ -33,15 +33,6 @@ Begin VB.Form FormMosaic
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.smartCheckBox chkUnison 
@@ -128,8 +119,8 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Opti
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
-        
+    prepImageData dstSA, toPreview, dstPic, , , True
+    
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -276,7 +267,7 @@ NextPixelatePixel3:
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    finalizeImageData toPreview, dstPic, True
     
 End Sub
 
@@ -298,7 +289,7 @@ Private Sub Form_Activate()
     
     'Assign the system hand cursor to all relevant objects
     Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    MakeFormPretty Me, m_Tooltip
     
     'Request a preview
     cmdBar.markPreviewStatus True
