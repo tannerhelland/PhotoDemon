@@ -500,12 +500,12 @@ Private Declare Function GdipSetPenDashStyle Lib "gdiplus" (ByVal dstPen As Long
 Private Declare Function GdipSetPenDashCap197819 Lib "gdiplus" (ByVal dstPen As Long, ByVal newDashCap As DashCap) As Long
 Private Declare Function GdipSetPenMiterLimit Lib "gdiplus" (ByVal dstPen As Long, ByVal newMiterLimit As Single) As Long
 Private Declare Function GdipSetPenMode Lib "gdiplus" (ByVal Pen As Long, ByVal penMode As PenAlignment) As Long
-Private Declare Function GdipCreateLineBrush Lib "gdiplus" (ByRef point1 As POINTFLOAT, ByRef point2 As POINTFLOAT, ByVal color1 As Long, ByVal color2 As Long, ByVal brushWrapMode As WrapMode, ByRef dstBrush As Long) As Long
+Private Declare Function GdipCreateLineBrush Lib "gdiplus" (ByRef point1 As POINTFLOAT, ByRef point2 As POINTFLOAT, ByVal Color1 As Long, ByVal Color2 As Long, ByVal brushWrapMode As WrapMode, ByRef dstBrush As Long) As Long
 Private Declare Function GdipCreatePenFromBrush Lib "gdiplus" Alias "GdipCreatePen2" (ByVal srcBrush As Long, ByVal penWidth As Single, ByVal srcUnit As GpUnit, ByRef dstPen As Long) As Long
 
 'Transforms
 Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal order As Long) As Long
-Private Declare Function GdipTranslateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal dx As Single, ByVal dy As Single, ByVal order As Long) As Long
+Private Declare Function GdipTranslateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal dX As Single, ByVal dY As Single, ByVal order As Long) As Long
 
 'Helpful GDI functions for moving image data between GDI and GDI+
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
@@ -2484,7 +2484,7 @@ End Sub
 '
 'Note that the supplied plgPoints array *MUST HAVE THREE POINTS* in it, in the specific order: top-left, top-right, bottom-left.
 ' The fourth point is inferred from the other three.
-Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT, ByRef srcDIB As pdDIB, ByVal x2 As Single, ByVal y2 As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal newAlpha As Single = 1#, Optional ByVal interpolationType As InterpolationMode = InterpolationModeHighQualityBicubic)
+Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT, ByRef srcDIB As pdDIB, ByVal x2 As Single, ByVal y2 As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, Optional ByVal newAlpha As Single = 1#, Optional ByVal interpolationType As InterpolationMode = InterpolationModeHighQualityBicubic, Optional ByVal useHQOffsets As Boolean = True)
 
     'Because this function is such a crucial part of PD's render chain, I occasionally like to profile it against
     ' viewport engine changes.  Uncomment the two lines below, and the reporting line at the end of the sub to
@@ -2509,13 +2509,13 @@ Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT
         ' algorithm from drawing semi-transparent lines randomly around image borders.
         ' Thank you to http://stackoverflow.com/questions/1890605/ghost-borders-ringing-when-resizing-in-gdi for the fix.
         Dim imgAttributesHandle As Long
-        GdipCreateImageAttributes imgAttributesHandle
+        If newAlpha <> 1 Then GdipCreateImageAttributes imgAttributesHandle Else imgAttributesHandle = 0
         
         'To improve performance and quality, explicitly request high-speed (aka linear) alpha compositing operation, and high-quality
         ' pixel offsets (treat pixels as if they fall on pixel borders, instead of center points - this provides rudimentary edge
         ' antialiasing, which is the best we can do without murdering performance)
         GdipSetCompositingQuality iGraphics, CompositingQualityHighSpeed
-        GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighQuality
+        If useHQOffsets Then GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighQuality Else GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighSpeed
         
         'If modified alpha is requested, pass the new value to this image container
         If newAlpha <> 1 Then
@@ -2524,10 +2524,10 @@ Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT
         End If
     
         'Perform the draw
-        GdipDrawImagePointsRect iGraphics, tBitmap, VarPtr(plgPoints(0)), 3, x2, y2, srcWidth, srcHeight, UnitPixel, imgAttributesHandle, 0, 0
+        GdipDrawImagePointsRect iGraphics, tBitmap, VarPtr(plgPoints(0)), 3, x2, y2, srcWidth, srcHeight, UnitPixel, imgAttributesHandle, 0&, 0&
         
         'Release our image attributes object
-        GdipDisposeImageAttributes imgAttributesHandle
+        If imgAttributesHandle <> 0 Then GdipDisposeImageAttributes imgAttributesHandle
         
         'Reset alpha in the master identity matrix
         If newAlpha <> 1 Then m_AttributesMatrix(3, 3) = 1
@@ -2538,13 +2538,183 @@ Public Sub GDIPlus_PlgBlt(ByRef dstDIB As pdDIB, ByRef plgPoints() As POINTFLOAT
     End If
     
     'Release both the destination graphics object and the source bitmap object
-    GdipDeleteGraphics iGraphics
     GdipDisposeImage tBitmap
+    GdipDeleteGraphics iGraphics
     
     'Uncomment the line below to receive timing reports
     'Debug.Print Format(CStr((Timer - profileTime) * 1000), "0000.00")
     
     
+End Sub
+
+'Given a source DIB and an angle, rotate it into a destination DIB.  The destination DIB can be automatically resized
+' to fit the rotated image, or a parameter can be set, instructing the function to use the destination DIB "as-is"
+Public Sub GDIPlus_RotateDIBPlgStyle(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal rotateAngle As Single, Optional ByVal dstDIBAlreadySized As Boolean = False)
+    
+    'Before doing any rotating or blurring, we need to figure out the size of our destination image.  If we don't
+    ' do this, the rotation will chop off the image's corners!
+    Dim nWidth As Double, nHeight As Double
+    Math_Functions.findBoundarySizeOfRotatedRect srcDIB.getDIBWidth, srcDIB.getDIBHeight, rotateAngle, nWidth, nHeight, False
+    
+    'Use these dimensions to size the destination image, as requested by the user
+    If dstDIBAlreadySized Then
+        nWidth = dstDIB.getDIBWidth
+        nHeight = dstDIB.getDIBHeight
+    Else
+        If dstDIB Is Nothing Then Set dstDIB = New pdDIB
+        dstDIB.createBlank nWidth, nHeight, srcDIB.getDIBColorDepth, 0, 0
+    End If
+    
+    'We also want a copy of the corner points of the rotated rect; we'll use these to perform a fast PlgBlt-like operation,
+    ' which is how we draw both the rotation and the corner extensions.
+    Dim listOfPoints() As POINTFLOAT
+    ReDim listOfPoints(0 To 3) As POINTFLOAT
+    Math_Functions.findCornersOfRotatedRect srcDIB.getDIBWidth, srcDIB.getDIBHeight, rotateAngle, listOfPoints, True
+    
+    'Calculate the size difference between the source and destination images.  We need to add this offset to all
+    ' rotation coordinates, to ensure the rotated image is fully contained within the destination DIB.
+    Dim hOffset As Double, vOffset As Double
+    hOffset = (nWidth - srcDIB.getDIBWidth) / 2
+    vOffset = (nHeight - srcDIB.getDIBHeight) / 2
+    
+    'Apply those offsets to all rotation points, and because GDI+ requires us to use an offset pixel mode for
+    ' non-shit results along edges, pad all coordinates with an extra half-pixel as well.
+    Dim i As Long
+    For i = 0 To 3
+        listOfPoints(i).x = listOfPoints(i).x + 0.5 + hOffset
+        listOfPoints(i).y = listOfPoints(i).y + 0.5 + vOffset
+    Next i
+    
+    'Rotate the source DIB into the destination DIB.  At this point, corners are still blank - we'll deal with those momentarily.
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, listOfPoints, srcDIB, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, 1, InterpolationModeHighQualityBicubic, True
+    
+End Sub
+
+'Given a regular ol' DIB and an angle, return a DIB that is rotated by that angle, with its edge values clamped and extended
+' to fill all empty space around the rotated image.  This very cool operation allows us to support angles for any filter
+' with a grid implementation (e.g. something that operates on the (x, y) axes of an image, like pixellate or blur).
+Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal rotateAngle As Single)
+
+    'Before doing any rotating or blurring, we need to figure out the size of our destination image.  If we don't
+    ' do this, the rotation will chop off the image's corners!
+    Dim nWidth As Double, nHeight As Double
+    Math_Functions.findBoundarySizeOfRotatedRect srcDIB.getDIBWidth, srcDIB.getDIBHeight, rotateAngle, nWidth, nHeight
+    
+    'Use these dimensions to size the destination image
+    If dstDIB Is Nothing Then Set dstDIB = New pdDIB
+    dstDIB.createBlank nWidth, nHeight, srcDIB.getDIBColorDepth, 0, 0
+    
+    'We also want a copy of the corner points of the rotated rect; we'll use these to perform a fast PlgBlt-like operation,
+    ' which is how we draw both the rotation and the corner extensions.
+    Dim listOfPoints() As POINTFLOAT
+    ReDim listOfPoints(0 To 3) As POINTFLOAT
+    Math_Functions.findCornersOfRotatedRect srcDIB.getDIBWidth, srcDIB.getDIBHeight, rotateAngle, listOfPoints, True
+    
+    'Calculate the size difference between the source and destination images.  We need to add this offset to all
+    ' rotation coordinates, to ensure the rotated image is fully contained within the destination DIB.
+    Dim hOffset As Double, vOffset As Double
+    hOffset = (nWidth - srcDIB.getDIBWidth) / 2
+    vOffset = (nHeight - srcDIB.getDIBHeight) / 2
+    
+    'Apply those offsets to all rotation points, and because GDI+ requires us to use an offset pixel mode for
+    ' non-shit results along edges, pad all coordinates with an extra half-pixel as well.
+    Dim i As Long
+    For i = 0 To 3
+        listOfPoints(i).x = listOfPoints(i).x + hOffset '+ 0.5
+        listOfPoints(i).y = listOfPoints(i).y + vOffset '+ 0.5
+    Next i
+    
+    'Rotate the source DIB into the destination DIB.  At this point, corners are still blank - we'll deal with those momentarily.
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, listOfPoints, srcDIB, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, 1, InterpolationModeHighQualityBicubic, False
+    
+    'We're now going to calculate a whole bunch of geometry based around the concept of extending a rectangle from
+    ' each edge of our rotated image, out to the corner of the rotation DIB.  We will then fill this dead space with a
+    ' stretched version of the image edge, resulting in "clamped" edge behavior.
+    Dim diagDistance As Double, distDiff As Double
+    Dim dX As Double, dY As Double, lineLength As Double, pX As Double, pY As Double
+    Dim padPoints() As POINTFLOAT
+    ReDim padPoints(0 To 2) As POINTFLOAT
+    
+    'Calculate the distance from the center of the rotated image to the corner of the rotated image
+    diagDistance = Sqr(nWidth * nWidth + nHeight * nHeight) / 2
+    
+    'Get the difference between the diagonal distance, and the original height of the image.  This is the distance
+    ' where we need to provide clamped pixels on this edge.
+    distDiff = diagDistance - (srcDIB.getDIBHeight / 2)
+    
+    'Calculate delta x/y values for the top line, then convert those into unit vectors
+    dX = listOfPoints(1).x - listOfPoints(0).x
+    dY = listOfPoints(1).y - listOfPoints(0).y
+    lineLength = Sqr(dX * dX + dY * dY)
+    dX = dX / lineLength
+    dY = dY / lineLength
+    
+    'dX/Y now represent a vector in the direction of the line.  We want a perpendicular vector instead (because we're
+    ' extending a rectangle out from that image edge), and we want the vector to be of length distDiff, so it reaches
+    ' all the way to the corner.
+    pX = distDiff * -dY
+    pY = distDiff * dX
+    
+    'Use this perpendicular vector to calculate new parallelogram coordinates, which "extrude" the top of the image
+    ' from where it appears on the rotated image, to the very edge of the image.
+    padPoints(0).x = listOfPoints(0).x - pX
+    padPoints(0).y = listOfPoints(0).y - pY
+    padPoints(1).x = listOfPoints(1).x - pX
+    padPoints(1).y = listOfPoints(1).y - pY
+    padPoints(2).x = listOfPoints(0).x
+    padPoints(2).y = listOfPoints(0).y
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, 0, srcDIB.getDIBWidth, 1, 1, InterpolationModeHighQualityBilinear, False
+    
+    'Now repeat the above steps for the bottom of the image.  Note that we can reuse almost all of the calculations,
+    ' as this line is parallel to the one we just calculated.
+    padPoints(0).x = listOfPoints(2).x - (pX / distDiff)
+    padPoints(0).y = listOfPoints(2).y - (pY / distDiff)
+    padPoints(1).x = listOfPoints(3).x - (pX / distDiff)
+    padPoints(1).y = listOfPoints(3).y - (pY / distDiff)
+    padPoints(2).x = listOfPoints(2).x + pX
+    padPoints(2).y = listOfPoints(2).y + pY
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, srcDIB.getDIBHeight - 2, srcDIB.getDIBWidth, 1, 1, InterpolationModeHighQualityBilinear, False
+    
+    'We are now going to repeat the above steps, but for the left and right edges of the image.  The end result of this
+    ' will be a rotated destination image, with clamped values extending from all image edges.
+    
+    'Get the difference between the diagonal distance, and the original width of the image.  This is the distance
+    ' where we need to provide clamped pixels on this edge.
+    distDiff = diagDistance - (srcDIB.getDIBWidth / 2)
+    
+    'Calculate delta x/y values for the left line, then convert those into unit vectors
+    dX = listOfPoints(2).x - listOfPoints(0).x
+    dY = listOfPoints(2).y - listOfPoints(0).y
+    lineLength = Sqr(dX * dX + dY * dY)
+    dX = dX / lineLength
+    dY = dY / lineLength
+    
+    'dX/Y now represent a vector in the direction of the line.  We want a perpendicular vector instead,
+    ' of length distDiff.
+    pX = distDiff * -dY
+    pY = distDiff * dX
+    
+    'Use the perpendicular vector to calculate new parallelogram coordinates, which "extrude" the left of the image
+    ' from where it appears on the rotated image, to the very edge of the image.
+    padPoints(0).x = listOfPoints(0).x + pX
+    padPoints(0).y = listOfPoints(0).y + pY
+    padPoints(1).x = listOfPoints(0).x
+    padPoints(1).y = listOfPoints(0).y
+    padPoints(2).x = listOfPoints(2).x + pX
+    padPoints(2).y = listOfPoints(2).y + pY
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, 0, 0, 1, srcDIB.getDIBHeight, 1, InterpolationModeHighQualityBilinear, False
+    
+    '...and finally, repeat everything for the right side of the image
+    padPoints(0).x = listOfPoints(1).x + (pX / distDiff)
+    padPoints(0).y = listOfPoints(1).y + (pY / distDiff)
+    padPoints(1).x = listOfPoints(1).x - pX
+    padPoints(1).y = listOfPoints(1).y - pY
+    padPoints(2).x = listOfPoints(3).x + (pX / distDiff)
+    padPoints(2).y = listOfPoints(3).y + (pY / distDiff)
+    GDI_Plus.GDIPlus_PlgBlt dstDIB, padPoints, srcDIB, srcDIB.getDIBWidth - 2, 0, 1, srcDIB.getDIBHeight, 1, InterpolationModeHighQualityBilinear, False
+    
+    'Our work here is complete!
+
 End Sub
 
 'At start-up, this function is called to determine whether or not we have GDI+ available on this machine.
