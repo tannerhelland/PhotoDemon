@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.88</langversion>
+<langversion>6.7.89</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -11693,11 +11693,16 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 <!-- BEGIN text for Toolbar_Layers.frm (toolbar_Layers) -->
 
 <phrase>
-<original>LAYERS</original>
+<original>overview</original>
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_Layers.frm contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
+<phrase>
+<original>layers</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_Layers.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
 
 <!-- END text for Toolbar_Layers.frm-->
 
@@ -14158,10 +14163,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2437</phrasecount>
+<phrasecount>2438</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4160 phrases. -->
-<!-- 1723 are duplicates, so only 2437 unique phrases have been written to file. -->
-<!-- These 2437 phrases contain approximately 13257 total words. -->
+<!-- As of this build, PhotoDemon contains 4161 phrases. -->
+<!-- 1723 are duplicates, so only 2438 unique phrases have been written to file. -->
+<!-- These 2438 phrases contain approximately 13258 total words. -->
 
 </pdData>
