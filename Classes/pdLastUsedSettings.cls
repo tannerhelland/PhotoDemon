@@ -178,14 +178,17 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
                 'Make sure the combo box is not the preset box on this control!
                 controlValue = Str(eControl.ListIndex)
                 
-            Case "TextBox"
-                controlValue = Str(eControl.Text)
+            Case "TextBox", "pdTextBox"
+                controlValue = eControl.Text
+                
+            'pdTitle stores an up/down state in its .Value property
+            Case "pdTitle"
+                controlValue = Str(eControl.Value)
                 
             'PhotoDemon's new resize control is a special case.  Because it uses multiple properties (despite being
             ' a single control), we must combine its various values into a single string.
             Case "smartResize"
-                controlValue = Str(eControl.imgWidth) & "|" & Str(eControl.imgHeight) & "|" & Str(eControl.lockAspectRatio) _
-                                & "|" & Str(eControl.unitOfMeasurement) & "|" & Str(eControl.imgDPI) & "|" & Str(eControl.unitOfResolution)
+                controlValue = buildParams(eControl.imgWidth, eControl.imgHeight, eControl.lockAspectRatio, eControl.unitOfMeasurement, eControl.imgDPI, eControl.unitOfResolution)
         
         End Select
         
@@ -325,8 +328,12 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                         If eControl.ListCount > 0 Then eControl.ListIndex = eControl.ListCount - 1 Else eControl.ListIndex = 0
                     End If
                     
-                Case "TextBox"
+                Case "TextBox", "pdTextBox"
                     eControl.Text = controlValue
+                
+                'pdTitle is just a boolean
+                Case "pdTitle"
+                    eControl.Value = CBool(controlValue)
                     
                 'PD's "smart resize" control has some special needs, on account of using multiple value properties
                 ' within a single control.  Parse out those values from the control string.

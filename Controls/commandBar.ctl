@@ -723,7 +723,7 @@ Private Sub updateControlLayout()
     On Error GoTo skipUpdateLayout
 
     'Force a standard user control size
-    UserControl.Height = fixDPI(50) * TwipsPerPixelYFix
+    UserControl.Height = FixDPI(50) * TwipsPerPixelYFix
     
     'Make the control the same width as its parent
     If g_IsProgramRunning Then
@@ -731,8 +731,8 @@ Private Sub updateControlLayout()
         UserControl.Width = UserControl.Parent.ScaleWidth * TwipsPerPixelXFix
         
         'Right-align the Cancel and OK buttons
-        cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - fixDPI(8)
-        cmdOK.Left = cmdCancel.Left - cmdOK.Width - fixDPI(8)
+        cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - FixDPI(8)
+        cmdOK.Left = cmdCancel.Left - cmdOK.Width - FixDPI(8)
         
     End If
     
@@ -895,6 +895,10 @@ Private Sub storePreset(Optional ByVal presetName As String = "last-used setting
             'Text boxes will store a copy of their current text
             Case "TextBox", "pdTextBox"
                 controlValue = eControl.Text
+                
+            'pdTitle stores an up/down state in its .Value property
+            Case "pdTitle"
+                controlValue = Str(eControl.Value)
                 
             'PhotoDemon's resize UC is a special case.  Because it uses multiple properties (despite being
             ' a single control), we must combine its various values into a single string.
@@ -1082,7 +1086,11 @@ Private Function loadPreset(Optional ByVal presetName As String = "last-used set
                     'Text boxes just take the stored string as-is
                     Case "TextBox", "pdTextBox"
                         eControl.Text = controlValue
-                        
+                    
+                    'pdTitle is just a boolean
+                    Case "pdTitle"
+                        eControl.Value = CBool(controlValue)
+                    
                     'PD's "smart resize" control has some special needs, on account of using multiple value properties
                     ' within a single control.  We now parse out those values from the control string.
                     Case "smartResize"

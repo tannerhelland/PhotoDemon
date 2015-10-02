@@ -48,9 +48,9 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   1
       Top             =   60
       Width           =   3495
-      _ExtentX        =   6165
-      _ExtentY        =   476
-      Caption         =   "overview"
+      _extentx        =   6165
+      _extenty        =   476
+      caption         =   "overview"
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -74,9 +74,9 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   3
       Top             =   480
       Width           =   3495
-      _ExtentX        =   6165
-      _ExtentY        =   476
-      Caption         =   "layers"
+      _extentx        =   6165
+      _extenty        =   476
+      caption         =   "layers"
    End
    Begin VB.Line lnSeparatorLeft 
       X1              =   0
@@ -107,6 +107,10 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+'The value of all controls on this form are saved and loaded to file by this class
+Private WithEvents m_lastUsedSettings As pdLastUsedSettings
+Attribute m_lastUsedSettings.VB_VarHelpID = -1
 
 'Helper class to synchronize various subpanels with the picture boxes we use for positioning
 Private m_WindowSync As pdWindowSync
@@ -153,11 +157,23 @@ Private Sub Form_Load()
     m_WindowSync.SynchronizeWindows picContainer(1).hWnd, layerpanel_Layers.hWnd
     layerpanel_Layers.Show
     
+    'Load any last-used settings for this form
+    Set m_lastUsedSettings = New pdLastUsedSettings
+    m_lastUsedSettings.setParentForm Me
+    m_lastUsedSettings.loadAllControlValues
+    
     'Theme everything
     updateAgainstCurrentTheme
     
     'Reflow the interface to match its current size
     reflowInterface
+    
+End Sub
+
+Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+    
+    'Save all last-used settings to file
+    m_lastUsedSettings.saveAllControlValues
     
 End Sub
 
