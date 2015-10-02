@@ -1687,7 +1687,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 ShowPDDialog vbModal, FormMosaic
             Else
-                FormMosaic.MosaicFilter cParams.GetLong(1), cParams.GetLong(2)
+                FormMosaic.MosaicFilter cParams.GetLong(1), cParams.GetLong(2), cParams.GetDouble(3, 0#)
             End If
         
         
