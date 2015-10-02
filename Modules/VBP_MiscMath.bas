@@ -614,3 +614,59 @@ Public Sub findBoundarySizeOfRotatedRect(ByVal srcWidth As Double, ByVal srcHeig
     dstHeight = yMax - yMin
     
 End Sub
+
+'Given a rectangle (as defined by width and height, not position), calculate new corner positions as an array of PointF structs.
+Public Sub findCornersOfRotatedRect(ByVal srcWidth As Double, ByVal srcHeight As Double, ByVal rotateAngle As Double, ByRef dstPoints() As POINTFLOAT, Optional ByVal arrayAlreadyDimmed As Boolean = False)
+
+    'Convert the rotation angle to radians
+    rotateAngle = rotateAngle * (PI_DIV_180)
+    
+    'Find the cos and sin of this angle and store the values
+    Dim cosTheta As Double, sinTheta As Double
+    cosTheta = Cos(rotateAngle)
+    sinTheta = Sin(rotateAngle)
+    
+    'Create source and destination points
+    Dim x1 As Double, x2 As Double, x3 As Double, x4 As Double
+    Dim x11 As Double, x21 As Double, x31 As Double, x41 As Double
+    
+    Dim y1 As Double, y2 As Double, y3 As Double, y4 As Double
+    Dim y11 As Double, y21 As Double, y31 As Double, y41 As Double
+    
+    'Position the points around (0, 0) to simplify the rotation code
+    Dim halfWidth As Double, halfHeight As Double
+    halfWidth = srcWidth / 2
+    halfHeight = srcHeight / 2
+    
+    x1 = -halfWidth
+    x2 = halfWidth
+    x3 = halfWidth
+    x4 = -halfWidth
+    y1 = -halfHeight
+    y2 = -halfHeight
+    y3 = halfHeight
+    y4 = halfHeight
+
+    'Apply the rotation to each point
+    x11 = x1 * cosTheta + y1 * sinTheta
+    y11 = -x1 * sinTheta + y1 * cosTheta
+    x21 = x2 * cosTheta + y2 * sinTheta
+    y21 = -x2 * sinTheta + y2 * cosTheta
+    x31 = x3 * cosTheta + y3 * sinTheta
+    y31 = -x3 * sinTheta + y3 * cosTheta
+    x41 = x4 * cosTheta + y4 * sinTheta
+    y41 = -x4 * sinTheta + y4 * cosTheta
+    
+    'Fill the destination array with the rotated points, translated back into the original coordinate space for convenience
+    If Not arrayAlreadyDimmed Then ReDim dstPoints(0 To 3) As POINTFLOAT
+    dstPoints(0).x = x11 + halfWidth
+    dstPoints(0).y = y11 + halfHeight
+    dstPoints(1).x = x21 + halfWidth
+    dstPoints(1).y = y21 + halfHeight
+    dstPoints(3).x = x31 + halfWidth
+    dstPoints(3).y = y31 + halfHeight
+    dstPoints(2).x = x41 + halfWidth
+    dstPoints(2).y = y41 + halfHeight
+    
+End Sub
+
