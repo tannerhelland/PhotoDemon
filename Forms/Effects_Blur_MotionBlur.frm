@@ -47,7 +47,7 @@ Begin VB.Form FormMotionBlur
       Height          =   720
       Left            =   6000
       TabIndex        =   2
-      Top             =   1080
+      Top             =   1680
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -55,34 +55,11 @@ Begin VB.Form FormMotionBlur
       Max             =   359.9
       SigDigits       =   1
    End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   3
-      Top             =   3990
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   582
-      Caption         =   "quality"
-      Value           =   -1  'True
-   End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   1
-      Left            =   6120
-      TabIndex        =   4
-      Top             =   4410
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   582
-      Caption         =   "speed"
-   End
    Begin PhotoDemon.smartCheckBox chkSymmetry 
       Height          =   300
       Left            =   6120
-      TabIndex        =   6
-      Top             =   3000
+      TabIndex        =   3
+      Top             =   3600
       Width           =   5655
       _ExtentX        =   3413
       _ExtentY        =   582
@@ -91,8 +68,8 @@ Begin VB.Form FormMotionBlur
    Begin PhotoDemon.sliderTextCombo sltDistance 
       Height          =   720
       Left            =   6000
-      TabIndex        =   7
-      Top             =   2040
+      TabIndex        =   4
+      Top             =   2640
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -100,29 +77,6 @@ Begin VB.Form FormMotionBlur
       Min             =   1
       Max             =   500
       Value           =   5
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "render emphasis:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      TabIndex        =   5
-      Top             =   3600
-      Width           =   1845
    End
 End
 Attribute VB_Name = "FormMotionBlur"
@@ -134,18 +88,15 @@ Attribute VB_Exposed = False
 'Motion Blur Tool
 'Copyright 2013-2015 by Tanner Helland
 'Created: 26/August/13
-'Last updated: 26/August/13
-'Last update: initial build
+'Last updated: 02/October/15
+'Last update: rewrite against new all-in-one rotate/edge-extend function
 '
 'To my knowledge, this tool is the first of its kind in VB6 - a motion blur tool that supports variable angle
 ' and strength, while still capable of operating in real-time.  This function is mostly just a wrapper to PD's
 ' horizontal blur and rotate functions; they do all the heavy lifting, as you can see from the code below.
 '
-'Performance is pretty good, all things considered, but be careful in the IDE.  I STRONGLY recommend compiling
-' the project before applying any actions at a large radius.
-'
-'If FreeImage is available, it is used to estimate a new size for the rotated image.  This is not the best way
-' to estimate that value, but it's easier than doing the trig by hand, and FreeImage's rotate is *very* fast.  :)
+'Performance is an order of magnitude faster than GIMP or Paint.NET, and even when uncompiled, we're *still*
+' faster than either program.  Not bad, eh?
 '
 'All source code in this file is licensed under a modified BSD license. This means you may use the code in your own
 ' projects IF you provide attribution. For more information, please visit http://photodemon.org/about/license/
@@ -154,18 +105,15 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 'Apply motion blur to an image
 'Inputs: angle of the blur, distance of the blur
-Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByVal blurSymmetrically As Boolean, ByVal useBilinear As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByVal blurSymmetrically As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Applying motion blur..."
     
     'Call prepImageData, which will initialize a workingDIB object for us (with all selection tool masks applied)
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    prepImageData dstSA, toPreview, dstPic, , , True
     
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
@@ -177,81 +125,42 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
     finalX = workingDIB.getDIBWidth
     finalY = workingDIB.getDIBHeight
     
-    'Before doing any rotating or blurring, we need to increase the size of the image we're working with.  If we
-    ' don't do this, intermediate rotation actions will chop off the image's corners, and the resulting effect
-    ' will look terrible.
-    Dim hScaleAmount As Long, vScaleAmount As Long
-    Dim nWidth As Double, nHeight As Double
-    Math_Functions.findBoundarySizeOfRotatedRect finalX, finalY, bAngle, nWidth, nHeight
-        
-    'Use the rotated size to calculate optimal padding amounts
-    hScaleAmount = (nWidth - finalX) \ 2
-    vScaleAmount = (nHeight - finalY) \ 2
-    
-    If hScaleAmount < 0 Then hScaleAmount = 0
-    If vScaleAmount < 0 Then vScaleAmount = 0
-    
-    'I built a separate function to enlarge the image and fill the blank borders with clamped pixels from the source image:
-    Dim tmpClampDIB As pdDIB
-    Set tmpClampDIB = New pdDIB
-    padDIBClampedPixels hScaleAmount, vScaleAmount, workingDIB, tmpClampDIB
-    
     'Create a second DIB, which will receive the results of this one
     Dim rotateDIB As pdDIB
     Set rotateDIB = New pdDIB
     
-    'PD has a number of different rotation engines available.
+    'As of October 2015, I've finally cracked the math to have GDI+ generate a rotated+padded+clamped DIB for us.
+    ' This greatly simplifies this function, while also providing higher-quality results!
+    GDI_Plus.GDIPlus_GetRotatedClampedDIB workingDIB, rotateDIB, bAngle
     
-    'GDI+ code:
-    'rotateDIB.createBlank tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, tmpClampDIB.getDIBColorDepth, 0, 255
-    'GDIPlusRotateDIB rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, tmpClampDIB, 0, 0, tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, -bAngle, InterpolationModeHighQualityBicubic, WrapModeClamp
+    'Rotate DIB now has a properly sized, rotated, padded and clamped copy of the original image.  We need a matching
+    ' DIB of identical size to store intermediate blur results; reuse workingDIB to create such a DIB now.
+    workingDIB.createFromExistingDIB rotateDIB
     
-    'FreeImage code:
-    'Plugin_FreeImage_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, -bAngle, False, False
-    
-    'Internal pure-VB code:
-    ' I have chosen to go with this mode for motion blur, because our custom clamping code ensures that no dead pixels
-    ' are introduced prior to the blur function, below.
-    rotateDIB.createBlank tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, tmpClampDIB.getDIBColorDepth, 0, 0
-    CreateRotatedDIB bAngle, EDGE_CLAMP, True, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3
-    
-    'Next, apply a horizontal blur, using the blur radius supplied by the user
+    'Next, apply a horizontal blur to the rotated image, using the blur radius supplied by the user
     Dim rightRadius As Long
     If blurSymmetrically Then rightRadius = bDistance Else rightRadius = 0
         
-    If CreateHorizontalBlurDIB(bDistance, rightRadius, rotateDIB, tmpClampDIB, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth) Then
+    If CreateHorizontalBlurDIB(bDistance, rightRadius, workingDIB, rotateDIB, toPreview) Then
             
-        'Finally, rotate the image back to its original orientation, using the opposite parameters of the first conversion.
-        ' As before, multiple rotation engines could be used, but GDI+ is presently fastest, and as we don't care about distortion
-        ' (because we will manually be cropping out the relevant rect from the center), there is no penalty to using it:
+        'Finally, we need to rotate the image back to its original orientation, using the opposite parameters of the
+        ' first conversion.
         
-        'GDI+ code:
-        'GDI_Plus.GDIPlusFillDIBRect rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, 0, 0
-        'GDIPlusRotateDIB rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, tmpClampDIB, 0, 0, tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, bAngle, InterpolationModeHighQualityBicubic, WrapModeClamp
+        'Start by resizing workingDIB to its original dimensions.
+        workingDIB.createBlank finalX, finalY, rotateDIB.getDIBColorDepth, 0, 0
         
-        'FreeImage code:
-        'Plugin_FreeImage_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, bAngle, False, False
-        
-        'Internal pure-VB code:
-        GDI_Plus.GDIPlusFillDIBRect rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, 0, 0
-        CreateRotatedDIB -bAngle, EDGE_CLAMP, True, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth * 2
-        
-        'Erase the temporary clamp DIB
-        tmpClampDIB.eraseDIB
-        Set tmpClampDIB = Nothing
-        
-        'rotateDIB now contains the image we want, but it also has all the (now-useless) padding from
-        ' the rotate operation.  Chop out the valid section and copy it into workingDIB.
-        BitBlt workingDIB.getDIBDC, 0, 0, workingDIB.getDIBWidth, workingDIB.getDIBHeight, rotateDIB.getDIBDC, hScaleAmount, vScaleAmount, vbSrcCopy
+        'Use GDI+ to apply the inverse rotation.  Note that it will automatically center the rotated image within
+        ' the destination boundaries, sparing us the trouble of manually trimming the clamped edges
+        GDI_Plus.GDIPlus_RotateDIBPlgStyle rotateDIB, workingDIB, -bAngle, True
         
     End If
     
-    'Erase the temporary rotation DIB
+    'Release our temporary rotation DIB
     rotateDIB.eraseDIB
     Set rotateDIB = Nothing
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
+    finalizeImageData toPreview, dstPic, True
     
 End Sub
 
@@ -260,7 +169,7 @@ Private Sub chkSymmetry_Click()
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Motion blur", , buildParams(sltAngle, sltDistance, CBool(chkSymmetry), OptInterpolate(0)), UNDO_LAYER
+    Process "Motion blur", , buildParams(sltAngle, sltDistance, CBool(chkSymmetry)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -269,9 +178,8 @@ End Sub
 
 Private Sub Form_Activate()
 
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply visual themes and translations
+    MakeFormPretty Me
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
@@ -290,13 +198,9 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub OptInterpolate_Click(Index As Integer)
-    updatePreview
-End Sub
-
 'Render a new effect preview
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then MotionBlurFilter sltAngle, sltDistance, CBool(chkSymmetry), OptInterpolate(0), True, fxPreview
+    If cmdBar.previewsAllowed Then MotionBlurFilter sltAngle, sltDistance, CBool(chkSymmetry), True, fxPreview
 End Sub
 
 Private Sub sltAngle_Change()
