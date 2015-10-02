@@ -1251,7 +1251,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 ShowPDDialog vbModal, FormComicBook
             Else
-                FormComicBook.fxComicBook cParams.GetLong(1), cParams.GetLong(2)
+                FormComicBook.fxComicBook cParams.GetLong(1), cParams.GetLong(2), cParams.GetLong(3, 0)
             End If
             
         Case "Figured glass"

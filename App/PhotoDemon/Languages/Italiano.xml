@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.89</langversion>
+<langversion>6.7.90</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -8133,7 +8133,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation>Applicazione della sfocatura in movimento</translation>
 </phrase>
 
-<!-- Effects_Blur_MotionBlur.frm contains 9 phrases. 6 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Blur_MotionBlur.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_MotionBlur.frm-->
 
@@ -9059,6 +9059,11 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <!-- BEGIN text for Effects_Pixelate_Mosaic.frm (FormMosaic) -->
 
 <phrase>
+<original>synchronize block size</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>block width</original>
 <translation>larghezza del blocco</translation>
 </phrase>
@@ -9073,7 +9078,7 @@ Se vuoi salvare il file dell'immagine con un altro nome, per favore seleziona 'A
 <translation></translation>
 </phrase>
 
-<!-- Effects_Pixelate_Mosaic.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Pixelate_Mosaic.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Pixelate_Mosaic.frm-->
 
@@ -14160,10 +14165,10 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2438</phrasecount>
+<phrasecount>2439</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4161 phrases. -->
-<!-- 1723 are duplicates, so only 2438 unique phrases have been written to file. -->
-<!-- These 2438 phrases contain approximately 13258 total words. -->
+<!-- As of this build, PhotoDemon contains 4159 phrases. -->
+<!-- 1720 are duplicates, so only 2439 unique phrases have been written to file. -->
+<!-- These 2439 phrases contain approximately 13261 total words. -->
 
 </pdData>

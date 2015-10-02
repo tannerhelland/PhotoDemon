@@ -23,6 +23,25 @@ Begin VB.Form FormComicBook
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.buttonStrip btsStrength 
+      Height          =   615
+      Left            =   6120
+      TabIndex        =   4
+      Top             =   4020
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1085
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   285
+      Left            =   6000
+      Top             =   3600
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   503
+      Caption         =   "brush smoothing"
+      FontSize        =   12
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -32,15 +51,6 @@ Begin VB.Form FormComicBook
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -56,7 +66,7 @@ Begin VB.Form FormComicBook
       Height          =   720
       Left            =   6000
       TabIndex        =   2
-      Top             =   2040
+      Top             =   1680
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -69,11 +79,11 @@ Begin VB.Form FormComicBook
       Height          =   720
       Left            =   6000
       TabIndex        =   3
-      Top             =   3120
+      Top             =   2640
       Width           =   5925
       _ExtentX        =   10451
       _ExtentY        =   1270
-      Caption         =   "color smoothing"
+      Caption         =   "brush size"
       Max             =   50
    End
 End
@@ -85,9 +95,9 @@ Attribute VB_Exposed = False
 '***************************************************************************
 'Comic Book Image Effect
 'Copyright 2013-2015 by Tanner Helland
-'Created: sometime 2013, I think??
-'Last updated: 24/July/14
-'Last update: overhauled algorithm, gave tool its own dialog
+'Created: 02/Feb/13 (ish... I didn't write it down, alas)
+'Last updated: 02/October/15
+'Last update: added "strength" parameter, for a really powerful comic book effect
 '
 'PhotoDemon has provided a "comic book" effect for a long time, but despite going through many incarnations, it always
 ' used low-quality, "quick and dirty" approximations.
@@ -103,16 +113,13 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 'Apply a "comic book" effect to an image
 'Inputs:
 ' 1) strength of the inking
 ' 2) color smudging, which controls the radius of the median effect applied to the base image
-Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, ByVal colorStrength As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If Not toPreview Then Message "Animating image (stage %1 of %2)...", 1, 3
+    If Not toPreview Then Message "Animating image (stage %1 of %2)...", 1, 3 + colorStrength
     
     'Initiate PhotoDemon's central image handler
     Dim dstSA As SAFEARRAY2D
@@ -153,10 +160,10 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, Opti
     finalParamString = tmpParamHeader & convoString
     
     'Use PD's central convolver to generate the horizontal edge image
-    ConvolveDIB finalParamString, workingDIB, inkDIBh, toPreview, workingDIB.getDIBWidth * 3, 0
+    ConvolveDIB finalParamString, workingDIB, inkDIBh, toPreview, workingDIB.getDIBWidth * (3 + colorStrength), 0
     
     'Repeat the steps above, but in the vertical direction
-    If Not toPreview Then Message "Animating image (stage %1 of %2)...", 2, 3
+    If Not toPreview Then Message "Animating image (stage %1 of %2)...", 2, 3 + colorStrength
     
     Dim inkDIBv As pdDIB
     Set inkDIBv = New pdDIB
@@ -178,7 +185,7 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, Opti
     finalParamString = tmpParamHeader & convoString
     
     'Use PD's central convolver to generate the vertical edge image
-    ConvolveDIB finalParamString, workingDIB, inkDIBv, toPreview, workingDIB.getDIBWidth * 3, workingDIB.getDIBWidth
+    ConvolveDIB finalParamString, workingDIB, inkDIBv, toPreview, workingDIB.getDIBWidth * (3 + colorStrength), workingDIB.getDIBWidth
     
     'Apply premultiplication prior to compositing
     inkDIBv.setAlphaPremultiplication True
@@ -201,12 +208,14 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, Opti
     GrayscaleDIB inkDIBh, True
     
     'We now need to obtain the underlying color-smudged version of the source image
-    If Not toPreview Then Message "Animating image (stage %1 of %2)...", 3, 3
-    
     If colorSmudge > 0 Then
         
         'Use PD's excellent bilateral smoothing function to handle color smudging.
-        createBilateralDIB workingDIB, colorSmudge, 100, 2, 10, 10, toPreview, workingDIB.getDIBWidth * 4, workingDIB.getDIBWidth * 2
+        Dim i As Long
+        For i = 0 To colorStrength
+            If Not toPreview Then Message "Animating image (stage %1 of %2)...", 3 + i, 3 + colorStrength
+            createBilateralDIB workingDIB, colorSmudge, 100, 2, 10, 10, toPreview, workingDIB.getDIBWidth * (3 + colorStrength), workingDIB.getDIBWidth * (i + 2)
+        Next i
         
     End If
     
@@ -242,8 +251,12 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, Opti
     
 End Sub
 
+Private Sub btsStrength_Click(ByVal buttonIndex As Long)
+    updatePreview
+End Sub
+
 Private Sub cmdBar_OKClick()
-    Process "Comic book", , buildParams(sltInk, sltColor), UNDO_LAYER
+    Process "Comic book", , buildParams(sltInk, sltColor, btsStrength.ListIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -257,9 +270,8 @@ End Sub
 
 Private Sub Form_Activate()
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
         
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
@@ -272,6 +284,12 @@ Private Sub Form_Load()
     'Disable previews until the dialog is fully loaded
     cmdBar.markPreviewStatus False
     
+    'Populate the button strip
+    btsStrength.AddItem "low", 0
+    btsStrength.AddItem "medium", 1
+    btsStrength.AddItem "high", 2
+    btsStrength.ListIndex = 0
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -280,7 +298,7 @@ End Sub
 
 'Render a new effect preview
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then fxComicBook sltInk, sltColor, True, fxPreview
+    If cmdBar.previewsAllowed Then fxComicBook sltInk, sltColor, btsStrength.ListIndex, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
