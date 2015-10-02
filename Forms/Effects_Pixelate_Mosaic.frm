@@ -38,17 +38,17 @@ Begin VB.Form FormMosaic
    Begin PhotoDemon.smartCheckBox chkUnison 
       Height          =   330
       Left            =   6120
-      TabIndex        =   2
-      Top             =   3600
+      TabIndex        =   4
+      Top             =   4200
       Width           =   5790
       _ExtentX        =   10213
       _ExtentY        =   582
-      Caption         =   "keep both dimensions in sync"
+      Caption         =   "synchronize block size"
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   1
+      TabIndex        =   5
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -57,8 +57,8 @@ Begin VB.Form FormMosaic
    Begin PhotoDemon.sliderTextCombo sltWidth 
       Height          =   720
       Left            =   6000
-      TabIndex        =   3
-      Top             =   1560
+      TabIndex        =   2
+      Top             =   2280
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -70,8 +70,8 @@ Begin VB.Form FormMosaic
    Begin PhotoDemon.sliderTextCombo sltHeight 
       Height          =   720
       Left            =   6000
-      TabIndex        =   4
-      Top             =   2520
+      TabIndex        =   3
+      Top             =   3240
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -80,6 +80,18 @@ Begin VB.Form FormMosaic
       Max             =   64
       Value           =   2
    End
+   Begin PhotoDemon.sliderTextCombo sltAngle 
+      Height          =   720
+      Left            =   6000
+      TabIndex        =   1
+      Top             =   1320
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "angle"
+      Max             =   359.9
+      SigDigits       =   1
+   End
 End
 Attribute VB_Name = "FormMosaic"
 Attribute VB_GlobalNameSpace = False
@@ -87,11 +99,11 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
-'Pixelate filter interface (formerly "mosaic")
+'Pixelate/Mosaic filter interface
 'Copyright 2000-2015 by Tanner Helland
-'Created: 8/5/00
-'Last updated: 05/June/14
-'Last update: fix to work with 32bpp images
+'Created: 08/May/00
+'Last updated: 02/October/15
+'Last update: add support for variable angles
 '
 'Form for handling all the pixellation image transform code.
 '
@@ -102,9 +114,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 Private Sub chkUnison_Click()
     If CBool(chkUnison) Then syncScrollBars True
     updatePreview
@@ -112,16 +121,20 @@ End Sub
 
 'Apply a pixelate effect (sometimes called "mosaic") to an image
 ' Inputs: width and height of the desired pixelation tiles (in pixels), optional preview settings
-Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVal blockAngle As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Applying mosaic..."
         
-    'Create a local array and point it at the pixel data of the current image
+    'Grab a copy of the relevant pixel data from PD's main image data handler
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
     prepImageData dstSA, toPreview, dstPic, , , True
     
-    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
+    'Make a note of the original image's size; we need this so we can restore the image to its original angle after
+    ' the pixelation is complete.
+    Dim origWidth As Long, origHeight As Long
+    origWidth = workingDIB.getDIBWidth
+    origHeight = workingDIB.getDIBHeight
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
     ' (This is necessary to prevent already-mosaic'ed pixels from affecting the results of later pixels.)
@@ -130,24 +143,43 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, Opti
     
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
-    srcDIB.createFromExistingDIB workingDIB
     
-    prepSafeArray srcSA, srcDIB
+    'If an angle has been specified, we need to pre-rotate the image to match.
+    If blockAngle <> 0 Then
+        GDI_Plus.GDIPlus_GetRotatedClampedDIB workingDIB, srcDIB, blockAngle
+        workingDIB.createFromExistingDIB srcDIB
+    Else
+        srcDIB.createFromExistingDIB workingDIB
+    End If
+    
+    'Only now can we safely point arrays at their DIBs, as the DIBs will not be recreated again.  Note that we reverse
+    ' the order of the source and destination DIBs if an angle is active; this spares us from having to perform an
+    ' extra BitBlt after the operation is complete.
+    
+    If blockAngle = 0 Then
+        prepSafeArray dstSA, workingDIB
+        prepSafeArray srcSA, srcDIB
+    Else
+        prepSafeArray dstSA, srcDIB
+        prepSafeArray srcSA, workingDIB
+    End If
+    
+    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
+    initX = 0
+    initY = 0
+    finalX = workingDIB.getDIBWidth - 1
+    finalY = workingDIB.getDIBHeight - 1
     
     'If this is a preview, we need to adjust the mosaic values to match the size of the preview box
     If toPreview Then
         BlockSizeX = BlockSizeX * curDIBValues.previewModifier
         BlockSizeY = BlockSizeY * curDIBValues.previewModifier
-        If BlockSizeX = 0 Then BlockSizeX = 1
-        If BlockSizeY = 0 Then BlockSizeY = 1
+        If BlockSizeX < 1 Then BlockSizeX = 1
+        If BlockSizeY < 1 Then BlockSizeY = 1
     End If
     
     'These values will help us access locations in the array more quickly.
@@ -266,6 +298,12 @@ NextPixelatePixel3:
     CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
     Erase dstImageData
     
+    'If rotation was applied, restore the image to its original orientation.
+    If blockAngle <> 0 Then
+        workingDIB.createBlank origWidth, origHeight, srcDIB.getDIBColorDepth, 0, 0
+        GDI_Plus.GDIPlus_RotateDIBPlgStyle srcDIB, workingDIB, -blockAngle, True
+    End If
+    
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic, True
     
@@ -273,7 +311,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Mosaic", , buildParams(sltWidth.Value, sltHeight.Value), UNDO_LAYER
+    Process "Mosaic", , buildParams(sltWidth.Value, sltHeight.Value, sltAngle.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -281,15 +319,15 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
+    sltAngle.Value = 0
     sltWidth.Value = 2
     sltHeight.Value = 2
 End Sub
 
 Private Sub Form_Activate()
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    MakeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Request a preview
     cmdBar.markPreviewStatus True
@@ -336,7 +374,11 @@ End Sub
 
 'Redraw the effect preview
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then MosaicFilter sltWidth.Value, sltHeight.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then MosaicFilter sltWidth.Value, sltHeight.Value, sltAngle.Value, True, fxPreview
+End Sub
+
+Private Sub sltAngle_Change()
+    updatePreview
 End Sub
 
 Private Sub sltHeight_Change()
