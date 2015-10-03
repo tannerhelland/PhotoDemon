@@ -141,7 +141,7 @@ Public Sub loadMenuIcons()
             Exit Sub
         End If
         
-        .Init FormMain.hWnd, fixDPI(16), fixDPI(16)
+        .Init FormMain.hWnd, FixDPI(16), FixDPI(16)
         
     End With
             
@@ -151,9 +151,9 @@ Public Sub loadMenuIcons()
     '...and initialize the separate MRU icon handler.
     Set cMRUIcons = New clsMenuImage
     If g_IsVistaOrLater Then
-        cMRUIcons.Init FormMain.hWnd, fixDPI(64), fixDPI(64)
+        cMRUIcons.Init FormMain.hWnd, FixDPI(64), FixDPI(64)
     Else
-        cMRUIcons.Init FormMain.hWnd, fixDPI(16), fixDPI(16)
+        cMRUIcons.Init FormMain.hWnd, FixDPI(16), FixDPI(16)
     End If
         
 End Sub
@@ -458,8 +458,9 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "FILMGRAIN", 7, 6, 0      'Film grain
         addMenuIcon "ADDNOISE", 7, 6, 1       'Add Noise
         addMenuIcon "BILATERAL", 7, 6, 3      'Bilateral smoothing
-        addMenuIcon "MEDIAN", 7, 6, 4         'Median
-    
+        'TODO: mean shift
+        addMenuIcon "MEDIAN", 7, 6, 5         'Median
+        
     addMenuIcon "PIXELATE", 7, 7        'Pixelate
         '--> Pixelate sub-menu
         'addMenuIcon "CLRHALFTONE", 7, 7, 0   'Color halftone (TODO)
@@ -856,7 +857,7 @@ Public Function createCursorFromResource(ByVal resTitle As String, Optional ByVa
         '       need to standardize their size and layout before implementing a universal "resize per DPI" check.
         '       The proper way to do this would be to retrieve cursor size from the system, then resize anything
         '       that isn't already that size - I've made a note to do this eventually.
-        If fixDPI(96) <> 96 Then
+        If FixDPI(96) <> 96 Then
         
             'Create a temporary copy of the image
             Dim dpiDIB As pdDIB
@@ -865,7 +866,7 @@ Public Function createCursorFromResource(ByVal resTitle As String, Optional ByVa
             dpiDIB.createFromExistingDIB resDIB
             
             'Erase and resize the primary DIB
-            resDIB.createBlank fixDPI(dpiDIB.getDIBWidth), fixDPI(dpiDIB.getDIBHeight), dpiDIB.getDIBColorDepth
+            resDIB.createBlank FixDPI(dpiDIB.getDIBWidth), FixDPI(dpiDIB.getDIBHeight), dpiDIB.getDIBColorDepth
             
             'Use GDI+ to resize the cursor from dpiDIB into resDIB
             GDIPlusResizeDIB resDIB, 0, 0, resDIB.getDIBWidth, resDIB.getDIBHeight, dpiDIB, 0, 0, dpiDIB.getDIBWidth, dpiDIB.getDIBHeight, InterpolationModeNearestNeighbor
@@ -886,8 +887,8 @@ Public Function createCursorFromResource(ByVal resTitle As String, Optional ByVa
         Dim icoInfo As ICONINFO
         With icoInfo
             .fIcon = False
-            .xHotspot = fixDPI(curHotspotX)
-            .yHotspot = fixDPI(curHotspotY)
+            .xHotspot = FixDPI(curHotspotX)
+            .yHotspot = FixDPI(curHotspotY)
             .hbmMask = monoBmp
             .hbmColor = resDIB.getDIBHandle
         End With

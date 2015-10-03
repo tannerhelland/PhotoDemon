@@ -224,8 +224,8 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
     End If
     
     'The number of pixels in the current median box are tracked dynamically.
-    Dim NumOfPixels As Long
-    NumOfPixels = 0
+    Dim numOfPixels As Long
+    numOfPixels = 0
             
     'Median filtering takes a lot of variables
     Dim rValues(0 To 255) As Long, gValues(0 To 255) As Long, bValues(0 To 255) As Long
@@ -242,12 +242,12 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
     
     Dim startY As Long, stopY As Long, yStep As Long
     
-    NumOfPixels = 0
+    numOfPixels = 0
     
     'Generate an initial array of median data for the first pixel
     For x = initX To initX + mRadius - 1
         QuickVal = x * qvDepth
-    For y = initY To initY + mRadius '- 1
+    For y = initY To initY + mRadius
     
         r = srcImageData(QuickVal + 2, y)
         g = srcImageData(QuickVal + 1, y)
@@ -257,7 +257,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
         bValues(b) = bValues(b) + 1
         
         'Increase the pixel tally
-        NumOfPixels = NumOfPixels + 1
+        numOfPixels = numOfPixels + 1
         
     Next y
     Next x
@@ -301,7 +301,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
                 rValues(r) = rValues(r) - 1
                 gValues(g) = gValues(g) - 1
                 bValues(b) = bValues(b) - 1
-                NumOfPixels = NumOfPixels - 1
+                numOfPixels = numOfPixels - 1
             Next j
         
         End If
@@ -318,7 +318,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
                 rValues(r) = rValues(r) + 1
                 gValues(g) = gValues(g) + 1
                 bValues(b) = bValues(b) + 1
-                NumOfPixels = NumOfPixels + 1
+                numOfPixels = numOfPixels + 1
             Next j
             
         End If
@@ -335,7 +335,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
                 rValues(r) = rValues(r) - 1
                 gValues(g) = gValues(g) - 1
                 bValues(b) = bValues(b) - 1
-                NumOfPixels = NumOfPixels - 1
+                numOfPixels = numOfPixels - 1
             Next i
        
         Else
@@ -350,7 +350,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
                 rValues(r) = rValues(r) - 1
                 gValues(g) = gValues(g) - 1
                 bValues(b) = bValues(b) - 1
-                NumOfPixels = NumOfPixels - 1
+                numOfPixels = numOfPixels - 1
             Next i
        
         End If
@@ -399,7 +399,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
                     rValues(r) = rValues(r) - 1
                     gValues(g) = gValues(g) - 1
                     bValues(b) = bValues(b) - 1
-                    NumOfPixels = NumOfPixels - 1
+                    numOfPixels = numOfPixels - 1
                 Next i
                         
             End If
@@ -415,7 +415,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
                     rValues(r) = rValues(r) + 1
                     gValues(g) = gValues(g) + 1
                     bValues(b) = bValues(b) + 1
-                    NumOfPixels = NumOfPixels + 1
+                    numOfPixels = numOfPixels + 1
                 Next i
             
             End If
@@ -446,7 +446,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
                     rValues(r) = rValues(r) - 1
                     gValues(g) = gValues(g) - 1
                     bValues(b) = bValues(b) - 1
-                    NumOfPixels = NumOfPixels - 1
+                    numOfPixels = numOfPixels - 1
                 Next i
                         
             End If
@@ -461,7 +461,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
                     rValues(r) = rValues(r) + 1
                     gValues(g) = gValues(g) + 1
                     bValues(b) = bValues(b) + 1
-                    NumOfPixels = NumOfPixels + 1
+                    numOfPixels = numOfPixels + 1
                 Next i
             
             End If
@@ -474,7 +474,7 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
         midR = 0
         midG = 0
         midB = 0
-        cutoffTotal = (mPercent * NumOfPixels)
+        cutoffTotal = (mPercent * numOfPixels)
         If cutoffTotal = 0 Then cutoffTotal = 1
         
         i = -1
@@ -597,11 +597,11 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     Dim foundYet As Boolean
     foundYet = False
     
-    Dim NumOfPixels As Long
-    NumOfPixels = (finalX + 1) * (finalY + 1)
+    Dim numOfPixels As Long
+    numOfPixels = (finalX + 1) * (finalY + 1)
     
     Dim wbThreshold As Long
-    wbThreshold = NumOfPixels * percentIgnore
+    wbThreshold = numOfPixels * percentIgnore
     
     r = 0: g = 0: b = 0
     
@@ -811,11 +811,11 @@ Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB A
     Dim foundYet As Boolean
     foundYet = False
     
-    Dim NumOfPixels As Long
-    NumOfPixels = (finalX + 1) * (finalY + 1)
+    Dim numOfPixels As Long
+    numOfPixels = (finalX + 1) * (finalY + 1)
     
     Dim wbThreshold As Long
-    wbThreshold = NumOfPixels * percentIgnore
+    wbThreshold = numOfPixels * percentIgnore
     
     grayVal = 0
     
@@ -2400,8 +2400,8 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
     If rRadius > xRadius Then rRadius = xRadius
         
     'The number of pixels in the current horizontal line are tracked dynamically.
-    Dim NumOfPixels As Long
-    NumOfPixels = 0
+    Dim numOfPixels As Long
+    numOfPixels = 0
             
     'Blurring takes a lot of variables
     Dim lbX As Long, ubX As Long
@@ -2428,7 +2428,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
         
     Next y
         'Increase the pixel tally
-        NumOfPixels = NumOfPixels + 1
+        numOfPixels = numOfPixels + 1
     Next x
                 
     'Loop through each column in the image, tallying blur values as we go
@@ -2460,7 +2460,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
                 If qvDepth = 4 Then aTotals(y) = aTotals(y) - srcImageData(QuickValInner + 3, y)
             Next y
             
-            NumOfPixels = NumOfPixels - 1
+            numOfPixels = numOfPixels - 1
         
         End If
         
@@ -2476,7 +2476,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
                 If qvDepth = 4 Then aTotals(y) = aTotals(y) + srcImageData(QuickValInner + 3, y)
             Next y
             
-            NumOfPixels = NumOfPixels + 1
+            numOfPixels = numOfPixels + 1
             
         End If
             
@@ -2484,10 +2484,10 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
         For y = initY To finalY
                 
             'With the blur box successfully calculated, we can finally apply the results to the image.
-            dstImageData(QuickVal + 2, y) = rTotals(y) \ NumOfPixels
-            dstImageData(QuickVal + 1, y) = gTotals(y) \ NumOfPixels
-            dstImageData(QuickVal, y) = bTotals(y) \ NumOfPixels
-            If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = aTotals(y) \ NumOfPixels
+            dstImageData(QuickVal + 2, y) = rTotals(y) \ numOfPixels
+            dstImageData(QuickVal + 1, y) = gTotals(y) \ numOfPixels
+            dstImageData(QuickVal, y) = bTotals(y) \ numOfPixels
+            If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = aTotals(y) \ numOfPixels
     
         Next y
         
@@ -2562,8 +2562,8 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
     If dRadius > yRadius Then dRadius = yRadius
         
     'The number of pixels in the current vertical line are tracked dynamically.
-    Dim NumOfPixels As Long
-    NumOfPixels = 0
+    Dim numOfPixels As Long
+    numOfPixels = 0
             
     'Blurring takes a lot of variables
     Dim lbY As Long, ubY As Long
@@ -2588,7 +2588,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
         If qvDepth = 4 Then aTotals(x) = aTotals(x) + srcImageData(QuickVal + 3, y)
     Next x
         'Increase the pixel tally
-        NumOfPixels = NumOfPixels + 1
+        numOfPixels = numOfPixels + 1
     Next y
                 
     'Loop through each row in the image, tallying blur values as we go
@@ -2619,7 +2619,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
                 If qvDepth = 4 Then aTotals(x) = aTotals(x) - srcImageData(QuickVal + 3, QuickY)
             Next x
             
-            NumOfPixels = NumOfPixels - 1
+            numOfPixels = numOfPixels - 1
         
         End If
         
@@ -2636,7 +2636,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
                 If qvDepth = 4 Then aTotals(x) = aTotals(x) + srcImageData(QuickVal + 3, QuickY)
             Next x
             
-            NumOfPixels = NumOfPixels + 1
+            numOfPixels = numOfPixels + 1
             
         End If
             
@@ -2646,10 +2646,10 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
             QuickVal = x * qvDepth
             
             'With the blur box successfully calculated, we can finally apply the results to the image.
-            dstImageData(QuickVal + 2, y) = rTotals(x) \ NumOfPixels
-            dstImageData(QuickVal + 1, y) = gTotals(x) \ NumOfPixels
-            dstImageData(QuickVal, y) = bTotals(x) \ NumOfPixels
-            If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = aTotals(x) \ NumOfPixels
+            dstImageData(QuickVal + 2, y) = rTotals(x) \ numOfPixels
+            dstImageData(QuickVal + 1, y) = gTotals(x) \ numOfPixels
+            dstImageData(QuickVal, y) = bTotals(x) \ numOfPixels
+            If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = aTotals(x) \ numOfPixels
     
         Next x
         

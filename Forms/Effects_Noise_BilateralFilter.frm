@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form FormBilateral 
    BackColor       =   &H80000005&
    BorderStyle     =   4  'Fixed ToolWindow
-   Caption         =   " Remove noise (bilateral smoothing)"
+   Caption         =   "Bilateral smoothing"
    ClientHeight    =   6540
    ClientLeft      =   45
    ClientTop       =   285
@@ -32,15 +32,6 @@ Begin VB.Form FormBilateral
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
@@ -435,7 +426,7 @@ Private Sub Form_Activate()
         
     'Assign the system hand cursor to all relevant objects
     Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    MakeFormPretty Me, m_Tooltip
     
     'Display the previewed effect in the neighboring window
     updatePreview
