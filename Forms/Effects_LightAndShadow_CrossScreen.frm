@@ -32,15 +32,6 @@ Begin VB.Form FormCrossScreen
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -75,7 +66,7 @@ Begin VB.Form FormCrossScreen
       _ExtentY        =   1270
       Caption         =   "distance"
       Min             =   1
-      Max             =   100
+      Max             =   200
       SigDigits       =   1
       Value           =   10
    End
@@ -165,8 +156,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
+'To reduce churn, we reuse a few different temporary DIBs whenever we can
+Private m_rotateDIB As pdDIB
 
 'Apply a cross-screen blur to an image
 'Inputs: 1) luminance threshold for pixels to be considered for filtering
@@ -231,7 +222,6 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     Set cLUT = New pdFilterLUT
     
     Dim tmpLUT() As Byte
-    'cLUT.fillLUT_Threshold tmpLUT, 255 - csThreshold
     cLUT.fillLUT_RemappedRange tmpLUT, 255 - csThreshold, 255, 0, 255
     cLUT.applyLUTsToDIB_Gray thresholdDIB, tmpLUT, True
     
@@ -252,7 +242,6 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     ' mbDIB serves as the "master" spoke DIB, and we will also be merging subsequent spokes onto it as we go.
     mbDIB.createFromExistingDIB thresholdDIB
     getMotionBlurredDIB thresholdDIB, mbDIB, csAngle, csDistance, True, ((csSpokes Mod 2) = 0)
-    If alphaIsRelevant Then mbDIB.setAlphaPremultiplication True
     
     If Not toPreview Then
         If userPressedESC() Then GoTo PrematureCrossScreenExit
@@ -274,15 +263,12 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
                 
                 'Create the new spoke layer
                 mbDIBTemp.createFromExistingDIB thresholdDIB
-                getMotionBlurredDIB thresholdDIB, mbDIBTemp, csAngle + (i * spokeIntervalDegrees), csDistance, True, Not alphaIsRelevant
+                getMotionBlurredDIB thresholdDIB, mbDIBTemp, csAngle + (i * spokeIntervalDegrees), csDistance, True, True
                 
                 If Not toPreview Then
                     If userPressedESC() Then GoTo PrematureCrossScreenExit
                     SetProgBarVal 2 + i * 2
                 End If
-                
-                'Premultiply alpha (as required by the compositor)
-                If alphaIsRelevant Then mbDIBTemp.setAlphaPremultiplication True
                 
                 'Composite our two motion-blurred images together.  This blend mode is somewhat like alpha-blending, but it
                 ' over-emphasizes bright areas, which gives a nice "bloom" effect.
@@ -313,15 +299,12 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
                 
                 'Create the new spoke layer
                 mbDIBTemp.createFromExistingDIB thresholdDIB
-                getMotionBlurredDIB thresholdDIB, mbDIBTemp, csAngle + (i * spokeIntervalDegrees), csDistance, True, False, Not alphaIsRelevant
+                getMotionBlurredDIB thresholdDIB, mbDIBTemp, csAngle + (i * spokeIntervalDegrees), csDistance, True, False
                 
                 If Not toPreview Then
                     If userPressedESC() Then GoTo PrematureCrossScreenExit
                     SetProgBarVal 2 + (i * 2) - 1
                 End If
-                
-                'Premultiply alpha (as required by the compositor)
-                If alphaIsRelevant Then mbDIBTemp.setAlphaPremultiplication True
                 
                 'Composite our two motion-blurred images together.  This blend mode is somewhat like alpha-blending, but it
                 ' over-emphasizes bright areas, which gives a nice "bloom" effect.
@@ -337,6 +320,9 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
         End If
     
     End If
+    
+    'Release any backup DIBs used during the motion blur stage
+    If Not (m_rotateDIB Is Nothing) Then m_rotateDIB.eraseDIB
     
     'Remove premultipled alpha from the final, fully composited DIB, and release any temporary DIBs that
     ' are no longer needed.
@@ -415,96 +401,33 @@ PrematureCrossScreenExit:
     
 End Sub
 
-'Used to motion-blur the intermediate images required by the cross-screen filter
-Private Sub getMotionBlurredDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal mbAngle As Double, ByVal mbDistance As Double, Optional ByVal toPreview As Boolean = False, Optional ByVal spokesAreSymmetrical As Boolean = True, Optional ByVal useGDIPlus As Boolean = False)
+'Used to motion-blur the intermediate images required by the cross-screen filter.  During testing, I've looked at using
+' both a box blur and an IIR blur to generate this; the IIR produces much more natural results, and it can blur in-place,
+' which is a double win for us.
+Private Sub getMotionBlurredDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, ByVal mbAngle As Double, ByVal mbDistance As Double, Optional ByVal toPreview As Boolean = False, Optional ByVal spokesAreSymmetrical As Boolean = True)
 
     Dim finalX As Long, finalY As Long
     finalX = srcDIB.getDIBWidth
     finalY = srcDIB.getDIBHeight
     
-    'Before doing any rotating or blurring, we need to increase the size of the image we're working with.  If we
-    ' don't do this, intermediate rotation actions will chop off the image's corners, and the resulting effect
-    ' will look terrible.
-    Dim hScaleAmount As Long, vScaleAmount As Long
-    Dim nWidth As Double, nHeight As Double
-    Math_Functions.findBoundarySizeOfRotatedRect finalX, finalY, mbAngle, nWidth, nHeight
-        
-    'Use the rotated size to calculate optimal padding amounts
-    hScaleAmount = (nWidth - srcDIB.getDIBWidth) \ 2
-    vScaleAmount = (nHeight - srcDIB.getDIBHeight) \ 2
-    
-    If hScaleAmount < 0 Then hScaleAmount = 0
-    If vScaleAmount < 0 Then vScaleAmount = 0
-    
-    'I built a separate function to enlarge the image and fill the blank borders with clamped pixels from the source image:
-    Dim tmpClampDIB As pdDIB
-    Set tmpClampDIB = New pdDIB
-    padDIBClampedPixels hScaleAmount, vScaleAmount, srcDIB, tmpClampDIB
-    
     'Create a second DIB, which will receive the results of this one
-    Dim rotateDIB As pdDIB
-    Set rotateDIB = New pdDIB
+    If m_rotateDIB Is Nothing Then Set m_rotateDIB = New pdDIB
     
-    'PD has a number of different rotation engines available.  After profiling each one, I have found GDI+ to be the fastest.
-    ' Code for the other engines is still here, in case those methods prove faster after future updates.  (For example, FreeImage may
-    ' be faster once they finally implement arbitrary view support, so we don't have to make so many intermediate DIB copies.)
+    'As of October 2015, I've finally cracked the math to have GDI+ generate a rotated+padded+clamped DIB for us.
+    ' This greatly simplifies this function, while also providing higher-quality results!
+    GDI_Plus.GDIPlus_GetRotatedClampedDIB srcDIB, m_rotateDIB, mbAngle
     
-    If useGDIPlus Then
-    
-        'GDI+ code:
-        rotateDIB.createBlank tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, tmpClampDIB.getDIBColorDepth, 0, 255
-        GDIPlusRotateDIB rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, tmpClampDIB, 0, 0, tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, -mbAngle, InterpolationModeHighQualityBicubic
-    
-    Else
-    
-        'FreeImage code:
-        Plugin_FreeImage_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, -mbAngle, False, False
+    If Filters_Area.HorizontalBlur_IIR(m_rotateDIB, mbDistance, 1, spokesAreSymmetrical, toPreview, m_rotateDIB.getDIBWidth * 3, m_rotateDIB.getDIBWidth) Then
         
-    End If
-    
-    'Internal pure-VB code:
-    'rotateDIB.createBlank tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, tmpClampDIB.getDIBColorDepth, 0, 255
-    'CreateRotatedDIB mbAngle, EDGE_CLAMP, True, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3
-    
-    'Next, apply a horizontal blur, using the blur radius supplied by the user
-    Dim rightRadius As Long
-    If spokesAreSymmetrical Then rightRadius = mbDistance Else rightRadius = 0
+        'Finally, we need to rotate the image back to its original orientation, using the opposite parameters of the
+        ' first conversion.
         
-    If CreateHorizontalBlurDIB(mbDistance, rightRadius, rotateDIB, tmpClampDIB, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth) Then
-        
-        'Finally, rotate the image back to its original orientation, using the opposite parameters of the first conversion.
-        ' As before, multiple rotation engines could be used, but GDI+ is presently fastest:
-        
-        If useGDIPlus Then
-        
-            'GDI+ code:
-            'GDI_Plus.GDIPlusFillDIBRect rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, 0, 255
-            'GDIPlusRotateDIB rotateDIB, 0, 0, rotateDIB.getDIBWidth, rotateDIB.getDIBHeight, tmpClampDIB, 0, 0, tmpClampDIB.getDIBWidth, tmpClampDIB.getDIBHeight, mbAngle, InterpolationModeHighQualityBicubic
-        
-        Else
-        
-            'FreeImage code:
-            Plugin_FreeImage_Interface.FreeImageRotateDIBFast tmpClampDIB, rotateDIB, mbAngle, False, False
-            
-        End If
-        
-        'Internal pure-VB code:
-        'CreateRotatedDIB -mbAngle, EDGE_CLAMP, True, tmpClampDIB, rotateDIB, 0.5, 0.5, toPreview, tmpClampDIB.getDIBWidth * 3, tmpClampDIB.getDIBWidth * 2
-        
-        'Erase the temporary clamp DIB
-        tmpClampDIB.eraseDIB
-        Set tmpClampDIB = Nothing
-        
-        'rotateDIB now contains the image we want, but it also has all the (now-useless) padding from
-        ' the rotate operation.  Chop out the valid section and copy it into workingDIB.
+        'Use GDI+ to apply the inverse rotation.  Note that it will automatically center the rotated image within
+        ' the destination boundaries, sparing us the trouble of manually trimming the clamped edges
         dstDIB.createFromExistingDIB srcDIB
-        BitBlt dstDIB.getDIBDC, 0, 0, srcDIB.getDIBWidth, srcDIB.getDIBHeight, rotateDIB.getDIBDC, hScaleAmount, vScaleAmount, vbSrcCopy
+        GDI_Plus.GDIPlus_RotateDIBPlgStyle m_rotateDIB, dstDIB, -mbAngle, True
         
     End If
-    
-    'Erase the temporary rotation DIB
-    rotateDIB.eraseDIB
-    Set rotateDIB = Nothing
     
 End Sub
 
@@ -526,9 +449,8 @@ End Sub
 
 Private Sub Form_Activate()
 
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
         
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
