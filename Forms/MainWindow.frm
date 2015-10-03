@@ -49,29 +49,29 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.vbalHookControl ctlAccelerator 
       Left            =   120
       Top             =   120
-      _ExtentX        =   1191
-      _ExtentY        =   1058
-      Enabled         =   0   'False
+      _extentx        =   1191
+      _extenty        =   1058
+      enabled         =   0
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _ExtentX        =   873
-      _ExtentY        =   873
+      _extentx        =   873
+      _extenty        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
       Top             =   3360
-      _ExtentX        =   635
-      _ExtentY        =   635
-      ErrAsOut        =   0   'False
-      PollInterval    =   5
+      _extentx        =   635
+      _extenty        =   635
+      errasout        =   0
+      pollinterval    =   5
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1201,12 +1201,16 @@ Begin VB.Form FormMain
             Index           =   2
          End
          Begin VB.Menu MnuNoise 
-            Caption         =   "Remove noise..."
+            Caption         =   "Bilateral filter..."
             Index           =   3
          End
          Begin VB.Menu MnuNoise 
-            Caption         =   "Median smoothing..."
+            Caption         =   "Mean shift..."
             Index           =   4
+         End
+         Begin VB.Menu MnuNoise 
+            Caption         =   "Median..."
+            Index           =   5
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -1671,9 +1675,9 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
                 DoEvents
                 
                 If updateAvailable Then
-                    pdMsgBox "A new version of PhotoDemon is available!" & vbCrLf & vbCrLf & "The update is automatically processing in the background.  You will receive a new notification when it completes.", vbOKOnly + vbInformation + vbApplicationModal, "PhotoDemon Updates", App.Major, App.Minor, App.Revision
+                    PDMsgBox "A new version of PhotoDemon is available!" & vbCrLf & vbCrLf & "The update is automatically processing in the background.  You will receive a new notification when it completes.", vbOKOnly + vbInformation + vbApplicationModal, "PhotoDemon Updates", App.Major, App.Minor, App.Revision
                 Else
-                    pdMsgBox "This copy of PhotoDemon is the newest version available." & vbCrLf & vbCrLf & "(Current version: %1.%2.%3)", vbOKOnly + vbInformation + vbApplicationModal, "PhotoDemon Updates", App.Major, App.Minor, App.Revision
+                    PDMsgBox "This copy of PhotoDemon is the newest version available." & vbCrLf & vbCrLf & "(Current version: %1.%2.%3)", vbOKOnly + vbInformation + vbApplicationModal, "PhotoDemon Updates", App.Major, App.Minor, App.Revision
                 End If
                 
                 'If the update managed to download while the reader was staring at the message box, display the restart notification immediately
@@ -1835,7 +1839,7 @@ Public Sub refreshAllCanvases()
     'Start by reorienting the canvas to fill the full available client area
     Dim mainRect As winRect
     
-    g_WindowManager.getActualMainFormClientRect mainRect, False, False
+    g_WindowManager.GetActualMainFormClientRect mainRect, False, False
     
     'API is used instead of .Move as it produces smoother movement
     MoveWindow mainCanvas(0).hWnd, mainRect.x1, mainRect.y1, mainRect.x2 - mainRect.x1, mainRect.y2 - mainRect.y1, 1
@@ -1934,7 +1938,7 @@ Private Sub mnuDevelopers_Click(Index As Integer)
         'Debug window
         Case 0
             #If DEBUGMODE = 1 Then
-                toggleToolbarVisibility DEBUG_TOOLBOX
+                ToggleToolbarVisibility DEBUG_TOOLBOX
             #End If
         
         '(separator)
@@ -1942,7 +1946,7 @@ Private Sub mnuDevelopers_Click(Index As Integer)
         
         'Theme Editor
         Case 2
-            showPDDialog vbModal, FormThemeEditor
+            ShowPDDialog vbModal, FormThemeEditor
     
     End Select
 
@@ -2309,7 +2313,7 @@ Private Sub MnuWindowToolbox_Click(Index As Integer)
     
         'Toggle toolbox visibility
         Case 0
-            toggleToolbarVisibility FILE_TOOLBOX
+            ToggleToolbarVisibility FILE_TOOLBOX
         
         '<separator>
         Case 1
@@ -2398,14 +2402,14 @@ Private Sub tmrAccelerators_Timer()
         'Open program preferences
         If ctlAccelerator.Key(m_AcceleratorIndex) = "Preferences" Then
             If Not FormPreferences.Visible Then
-                showPDDialog vbModal, FormPreferences
+                ShowPDDialog vbModal, FormPreferences
                 Exit Sub
             End If
         End If
         
         If ctlAccelerator.Key(m_AcceleratorIndex) = "Plugin manager" Then
             If Not FormPluginManager.Visible Then
-                showPDDialog vbModal, FormPluginManager
+                ShowPDDialog vbModal, FormPluginManager
                 Exit Sub
             End If
         End If
@@ -2617,7 +2621,7 @@ Private Sub tmrMetadata_Timer()
         
         'Update the interface to match the active image.  (This must be done if things like GPS tags were found in the metadata,
         ' because their presence affects the enabling of certain metadata-related menu entries.)
-        syncInterfaceToCurrentImage
+        SyncInterfaceToCurrentImage
         
         'Restore the original on-screen message and exit
         Message prevMessage
@@ -2654,10 +2658,10 @@ Private Sub Form_Load()
     #End If
     
     'Register all toolbox forms with the window manager
-    g_WindowManager.registerChildForm toolbar_Toolbox, TOOLBAR_WINDOW, 1, FILE_TOOLBOX, , fixDPI(48)
-    g_WindowManager.registerChildForm toolbar_Layers, TOOLBAR_WINDOW, 2, LAYER_TOOLBOX, , fixDPI(200)
-    g_WindowManager.registerChildForm toolbar_Options, TOOLBAR_WINDOW, 3, TOOLS_TOOLBOX
-    g_WindowManager.registerChildForm toolbar_ImageTabs, IMAGE_TABSTRIP, , , , , fixDPI(32)
+    g_WindowManager.RegisterChildForm toolbar_Toolbox, TOOLBAR_WINDOW, 1, FILE_TOOLBOX, , FixDPI(48)
+    g_WindowManager.RegisterChildForm toolbar_Layers, TOOLBAR_WINDOW, 2, LAYER_TOOLBOX, , FixDPI(200)
+    g_WindowManager.RegisterChildForm toolbar_Options, TOOLBAR_WINDOW, 3, TOOLS_TOOLBOX
+    g_WindowManager.RegisterChildForm toolbar_ImageTabs, IMAGE_TABSTRIP, , , , , FixDPI(32)
     
     'The debug window can optionally be displayed, but only in nightly builds
     #If DEBUGMODE = 1 Then
@@ -2672,14 +2676,14 @@ Private Sub Form_Load()
     
     'Display the various toolboxes per the user's display settings
     toolbar_Toolbox.Show vbModeless, Me
-    g_WindowManager.setWindowVisibility toolbar_Toolbox.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
+    g_WindowManager.SetWindowVisibility toolbar_Toolbox.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show File Toolbox", True)
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Preparing layers toolbar..."
     #End If
     
     toolbar_Layers.Show vbModeless, Me
-    g_WindowManager.setWindowVisibility toolbar_Layers.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Layers Toolbox", True)
+    g_WindowManager.SetWindowVisibility toolbar_Layers.hWnd, g_UserPreferences.GetPref_Boolean("Core", "Show Layers Toolbox", True)
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Preparing options toolbar..."
@@ -2697,7 +2701,7 @@ Private Sub Form_Load()
     
     'We only display the image tab manager now if the user loaded two or more images from the command line
     toolbar_ImageTabs.Show vbModeless, Me
-    g_WindowManager.setWindowVisibility toolbar_ImageTabs.hWnd, IIf(g_OpenImageCount > 1, True, False)
+    g_WindowManager.SetWindowVisibility toolbar_ImageTabs.hWnd, IIf(g_OpenImageCount > 1, True, False)
     
     'The debug window is only shown in nightly builds, and even then, it's only shown if explicitly requested
     #If DEBUGMODE = 1 Then
@@ -2753,7 +2757,7 @@ Private Sub Form_Load()
                     Autosave_Handler.loadTheseAutosaveFiles listOfFilesToSave
                     
                     'Synchronize the interface to the restored files
-                    syncInterfaceToCurrentImage
+                    SyncInterfaceToCurrentImage
                                 
                 Else
                     
@@ -3007,31 +3011,31 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
         
     'Manually unload all tool panels
     If Not (toolpanel_MoveSize Is Nothing) Then
-        g_WindowManager.deactivateToolPanel True, toolpanel_MoveSize.hWnd
+        g_WindowManager.DeactivateToolPanel True, toolpanel_MoveSize.hWnd
         Unload toolpanel_MoveSize
         Set toolpanel_MoveSize = Nothing
     End If
 
     If Not (toolpanel_NDFX Is Nothing) Then
-        g_WindowManager.deactivateToolPanel True, toolpanel_NDFX.hWnd
+        g_WindowManager.DeactivateToolPanel True, toolpanel_NDFX.hWnd
         Unload toolpanel_NDFX
         Set toolpanel_NDFX = Nothing
     End If
     
     If Not (toolpanel_Selections Is Nothing) Then
-        g_WindowManager.deactivateToolPanel True, toolpanel_Selections.hWnd
+        g_WindowManager.DeactivateToolPanel True, toolpanel_Selections.hWnd
         Unload toolpanel_Selections
         Set toolpanel_Selections = Nothing
     End If
 
     If Not (toolpanel_Text Is Nothing) Then
-        g_WindowManager.deactivateToolPanel True, toolpanel_Text.hWnd
+        g_WindowManager.DeactivateToolPanel True, toolpanel_Text.hWnd
         Unload toolpanel_Text
         Set toolpanel_Text = Nothing
     End If
     
     If Not (toolpanel_FancyText Is Nothing) Then
-        g_WindowManager.deactivateToolPanel True, toolpanel_FancyText.hWnd
+        g_WindowManager.DeactivateToolPanel True, toolpanel_FancyText.hWnd
         Unload toolpanel_FancyText
         Set toolpanel_FancyText = Nothing
     End If
@@ -3113,7 +3117,7 @@ Private Sub Form_Unload(Cancel As Integer)
     #End If
     
     'Restore the user's font smoothing setting as necessary
-    handleClearType False
+    HandleClearType False
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Releasing custom Windows 7 features"
@@ -3147,8 +3151,8 @@ Private Sub Form_Unload(Cancel As Integer)
     #End If
     
     'Release this form from the window manager, and write out all window data to file
-    g_WindowManager.unregisterForm Me
-    g_WindowManager.saveAllWindowLocations
+    g_WindowManager.UnregisterForm Me
+    g_WindowManager.SaveAllWindowLocations
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Forcibly unloading any remaining forms"
@@ -3793,7 +3797,7 @@ Private Sub MnuHelp_Click(Index As Integer)
             'If this is the first time they are submitting feedback, ask them if they have a GitHub account
             Else
             
-                msgReturn = pdMsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNoCancel, "Thanks for fixing PhotoDemon")
+                msgReturn = PDMsgBox("Thank you for submitting a bug report.  To make sure your bug is addressed as quickly as possible, PhotoDemon needs to know where to send it." & vbCrLf & vbCrLf & "Do you have a GitHub account? (If you have no idea what this means, answer ""No"".)", vbQuestion + vbApplicationModal + vbYesNoCancel, "Thanks for fixing PhotoDemon")
                 
                 'If their answer was anything but "Cancel", store that answer to file
                 If msgReturn = vbYes Then g_UserPreferences.SetPref_Boolean "Core", "Has GitHub Account", True
@@ -3824,7 +3828,7 @@ Private Sub MnuHelp_Click(Index As Integer)
             
         'Display About page
         Case 10
-            showPDDialog vbModal, FormAbout
+            ShowPDDialog vbModal, FormAbout
         
     End Select
 
@@ -3832,7 +3836,7 @@ End Sub
 
 Private Sub MnuHistogram_Click()
     'Process "Display histogram", True
-    showPDDialog vbModal, FormHistogram
+    ShowPDDialog vbModal, FormHistogram
 End Sub
 
 Private Sub MnuHistogramEqualize_Click()
@@ -3953,7 +3957,7 @@ Private Sub mnuLanguages_Click(Index As Integer)
     Screen.MousePointer = vbHourglass
     
     'Because loading a language can take some time, display a wait screen to discourage attempted interaction
-    displayWaitScreen g_Language.TranslateMessage("Please wait while the new language is applied..."), Me
+    DisplayWaitScreen g_Language.TranslateMessage("Please wait while the new language is applied..."), Me
     
     'Remove the existing translation from any visible windows
     Message "Removing existing translation..."
@@ -3969,12 +3973,12 @@ Private Sub mnuLanguages_Click(Index As Integer)
     
     Message "Language changed successfully."
     
-    hideWaitScreen
+    HideWaitScreen
     
     Screen.MousePointer = vbDefault
     
     'Added 09 January 2014.  Let the user know that some translations will not take affect until the program is restarted.
-    pdMsgBox "Language changed successfully!" & vbCrLf & vbCrLf & "Note: some minor program text cannot be live-updated.  Such text will be properly translated the next time you start the application.", vbApplicationModal + vbOKOnly + vbInformation, "Language changed successfully"
+    PDMsgBox "Language changed successfully!" & vbCrLf & vbCrLf & "Note: some minor program text cannot be live-updated.  Such text will be properly translated the next time you start the application.", vbApplicationModal + vbOKOnly + vbInformation, "Language changed successfully"
     
 End Sub
 
@@ -4041,18 +4045,18 @@ Private Sub MnuMetadata_Click(Index As Integer)
                     
                     'Update the interface to reflect any changes to the metadata menu (for example, if we found GPS data
                     ' during the metadata load process)
-                    syncInterfaceToCurrentImage
+                    SyncInterfaceToCurrentImage
                     
                 End If
                 
                 'If the image STILL doesn't have metadata, warn the user and exit.
                 If Not pdImages(g_CurrentImage).imgMetadata.hasXMLMetadata Then
                     Message "No metadata available."
-                    pdMsgBox "This image does not contain any metadata.", vbInformation + vbOKOnly + vbApplicationModal, "No metadata available"
+                    PDMsgBox "This image does not contain any metadata.", vbInformation + vbOKOnly + vbApplicationModal, "No metadata available"
                     Exit Sub
                 End If
                 
-                showPDDialog vbModal, FormMetadata
+                ShowPDDialog vbModal, FormMetadata
                 
             End If
         
@@ -4075,12 +4079,12 @@ Private Sub MnuMetadata_Click(Index As Integer)
                 'pdImages(g_CurrentImage).imgMetadata.loadAllMetadata pdImages(g_CurrentImage).locationOnDisk, pdImages(g_CurrentImage).originalFileFormat
                 
                 'Determine whether metadata is present, and dis/enable metadata menu items accordingly
-                syncInterfaceToCurrentImage
+                SyncInterfaceToCurrentImage
             
             End If
             
             If Not pdImages(g_CurrentImage).imgMetadata.hasGPSMetadata Then
-                pdMsgBox "This image does not contain any GPS metadata.", vbOKOnly + vbApplicationModal + vbInformation, "No GPS data found"
+                PDMsgBox "This image does not contain any GPS metadata.", vbOKOnly + vbApplicationModal + vbInformation, "No GPS data found"
                 Exit Sub
             End If
             
@@ -4190,8 +4194,12 @@ Private Sub MnuNoise_Click(Index As Integer)
         Case 3
             Process "Bilateral smoothing", True
         
-        'Median
+        'Mean shift
         Case 4
+            Process "Mean shift", True
+        
+        'Median
+        Case 5
             Process "Median", True
             
     End Select
@@ -4484,7 +4492,7 @@ Private Sub mnuTool_Click(Index As Integer)
         
         'Language editor
         Case 1
-            If Not FormLanguageEditor.Visible Then showPDDialog vbModal, FormLanguageEditor
+            If Not FormLanguageEditor.Visible Then ShowPDDialog vbModal, FormLanguageEditor
             
         '(separator)
         Case 2
@@ -4504,11 +4512,11 @@ Private Sub mnuTool_Click(Index As Integer)
     
         'Options
         Case 7
-            If Not FormPreferences.Visible Then showPDDialog vbModal, FormPreferences
+            If Not FormPreferences.Visible Then ShowPDDialog vbModal, FormPreferences
             
         'Plugin manager
         Case 8
-            If Not FormPluginManager.Visible Then showPDDialog vbModal, FormPluginManager
+            If Not FormPluginManager.Visible Then ShowPDDialog vbModal, FormPluginManager
             
         '(separator)
         Case 9
@@ -4577,7 +4585,7 @@ Private Sub ctlAccelerator_Accelerator(ByVal nIndex As Long, bCancel As Boolean)
 
     'Accelerators can be fired multiple times by accident.  Don't allow the user to press accelerators
     ' faster than the system keyboard delay (250ms at minimum, 1s at maximum).
-    If Abs(Timer - m_TimerAtAcceleratorPress < getKeyboardDelay()) Then
+    If Abs(Timer - m_TimerAtAcceleratorPress < GetKeyboardDelay()) Then
         bCancel = True
         Exit Sub
     End If
@@ -4608,11 +4616,11 @@ Private Sub MnuWindow_Click(Index As Integer)
             
         'Show/hide tool options
         Case 1
-            toggleToolbarVisibility TOOLS_TOOLBOX
+            ToggleToolbarVisibility TOOLS_TOOLBOX
         
         'Show/hide layer toolbox
         Case 2
-            toggleToolbarVisibility LAYER_TOOLBOX
+            ToggleToolbarVisibility LAYER_TOOLBOX
         
         '<top-level Image tabstrip>
         Case 3
@@ -4681,34 +4689,34 @@ Private Sub MnuWindowTabstrip_Click(Index As Integer)
     
         'Always display image tabstrip
         Case 0
-            toggleImageTabstripVisibility Index
+            ToggleImageTabstripVisibility Index
         
         'Display tabstrip for 2+ images (default)
         Case 1
-            toggleImageTabstripVisibility Index
+            ToggleImageTabstripVisibility Index
         
         'Never display image tabstrip
         Case 2
-            toggleImageTabstripVisibility Index
+            ToggleImageTabstripVisibility Index
         
         '<separator>
         Case 3
         
         'Align left
         Case 4
-            toggleImageTabstripAlignment vbAlignLeft
+            ToggleImageTabstripAlignment vbAlignLeft
         
         'Align top
         Case 5
-            toggleImageTabstripAlignment vbAlignTop
+            ToggleImageTabstripAlignment vbAlignTop
         
         'Align right
         Case 6
-            toggleImageTabstripAlignment vbAlignRight
+            ToggleImageTabstripAlignment vbAlignRight
         
         'Align bottom
         Case 7
-            toggleImageTabstripAlignment vbAlignBottom
+            ToggleImageTabstripAlignment vbAlignBottom
     
     End Select
 
@@ -4730,6 +4738,6 @@ End Sub
 'Update the main form against the current theme.  At present, this is just a thin wrapper against the public makeFormPretty() function,
 ' but once the form's menu is owner-drawn, we will likely need some custom code to handle menu redraws and translations.
 Public Sub updateAgainstCurrentTheme(Optional ByVal useDoEvents As Boolean = False)
-    makeFormPretty Me, , , useDoEvents
+    MakeFormPretty Me, , , useDoEvents
 End Sub
 
