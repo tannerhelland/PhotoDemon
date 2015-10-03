@@ -71,7 +71,6 @@ Begin VB.Form FormComicBook
       _ExtentX        =   10398
       _ExtentY        =   1270
       Caption         =   "ink"
-      Min             =   1
       Max             =   100
       Value           =   50
    End
@@ -128,84 +127,39 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, ByVa
     'During a preview, the smudge radius must be reduced to match the preview size
     If toPreview Then colorSmudge = colorSmudge * curDIBValues.previewModifier
     
-    'Create two copies of the working image.  This filter overlays an inked image over a color-smudged version, and we need to
-    ' handle these separately until the final step.
-    Dim inkDIBh As pdDIB
-    Set inkDIBh = New pdDIB
-    inkDIBh.createFromExistingDIB workingDIB
+    'During a preview, ink opacity is artificially reduced to give a better idea of how the final image will appear
+    If toPreview Then inkOpacity = inkOpacity * curDIBValues.previewModifier
     
-    'To generate the inked image, we'll use bidirectional Sobel edge detection.
-    Dim tmpParamHeader As String, finalParamString As String
+    'If this is not a preview, calculate a new maximum progress bar value.  This changes depending on the number of
+    ' iterations we must run to obtain a proper colored image.
+    Dim numOfSteps As Long, newProgBarMax As Long
     
-    '1a) Generate a name for the requested filter (none, in this case, but it's required by the central convolver)
-    tmpParamHeader = " |"
+    If inkOpacity > 0 Then
+        numOfSteps = 2 + colorStrength
+    Else
+        numOfSteps = 1 + colorStrength
+    End If
     
-    '1b) Add in the invert (black background) parameter
-    tmpParamHeader = tmpParamHeader & "True" & "|"
+    newProgBarMax = workingDIB.getDIBWidth * numOfSteps + ((colorStrength + 1) * workingDIB.getDIBWidth)
+    If Not toPreview Then SetProgBarMax newProgBarMax
     
-    'Now, build a specific convolution matrix for the horizontal direction.
-    Dim convoString As String
-    
-        'Set divisor and offset
-        convoString = "1|0|"
+    'If the user wants the image inked, we're actually going to generate a contour map now, before applying any coloring.
+    ' This gives us more interesting lines to work with.
+    If inkOpacity > 0 Then
+            
+        If Not toPreview Then Message "Animating image (stage %1 of %2)...", 1, numOfSteps
         
-        'Build a horizontal convolution matrix
-        convoString = convoString & "0|0|0|0|0|"
-        convoString = convoString & "0|-1|0|1|0|"
-        convoString = convoString & "0|-2|0|2|0|"
-        convoString = convoString & "0|-1|0|1|0|"
-        convoString = convoString & "0|0|0|0|0"
+        'Create two copies of the working image.  This filter overlays an inked image over a color-smudged version, and we need to
+        ' handle these separately until the final step.
+        Dim inkDIB As pdDIB
+        Set inkDIB = New pdDIB
+        inkDIB.createFromExistingDIB workingDIB
+        Filters_Layers.CreateContourDIB True, workingDIB, inkDIB, toPreview, newProgBarMax, 0
         
-    'Merge the convolution header and matrix into a single param string
-    finalParamString = tmpParamHeader & convoString
-    
-    'Use PD's central convolver to generate the horizontal edge image
-    ConvolveDIB finalParamString, workingDIB, inkDIBh, toPreview, workingDIB.getDIBWidth * (3 + colorStrength), 0
-    
-    'Repeat the steps above, but in the vertical direction
-    If Not toPreview Then Message "Animating image (stage %1 of %2)...", 2, 3 + colorStrength
-    
-    Dim inkDIBv As pdDIB
-    Set inkDIBv = New pdDIB
-    inkDIBv.createFromExistingDIB workingDIB
-    
-    'As before, create a Sobel edge detection matrix - but this time, in the vertical direction
-    
-        'Set divisor and offset
-        convoString = "1|0|"
+        'Apply premultiplication to the DIB prior to compositing
+        inkDIB.setAlphaPremultiplication True
         
-        'Build a vertical convolution matrix
-        convoString = convoString & "0|0|0|0|0|"
-        convoString = convoString & "0|1|2|1|0|"
-        convoString = convoString & "0|0|0|0|0|"
-        convoString = convoString & "0|-1|-2|-1|0|"
-        convoString = convoString & "0|0|0|0|0"
-    
-    'Merge the convolution header and matrix into a single param string
-    finalParamString = tmpParamHeader & convoString
-    
-    'Use PD's central convolver to generate the vertical edge image
-    ConvolveDIB finalParamString, workingDIB, inkDIBv, toPreview, workingDIB.getDIBWidth * (3 + colorStrength), workingDIB.getDIBWidth
-    
-    'Apply premultiplication prior to compositing
-    inkDIBv.setAlphaPremultiplication True
-    inkDIBh.setAlphaPremultiplication True
-    
-    'With both ink images now available, we can composite the two into a single bidirectional ink image, using
-    ' PD's central compositor class.
-    Dim cComposite As pdCompositor
-    Set cComposite = New pdCompositor
-    
-    cComposite.compositeDIBs inkDIBv, inkDIBh, BL_MULTIPLY, 0, 0
-    
-    'The bottom DIB (inkDIBh) now contains the composite image.  Release the vertical copy.
-    Set inkDIBv = Nothing
-    
-    'Remove premultiplication from the horizontal ink dib
-    inkDIBh.setAlphaPremultiplication False
-    
-    'Convert the ink DIB to grayscale
-    GrayscaleDIB inkDIBh, True
+    End If
     
     'We now need to obtain the underlying color-smudged version of the source image
     If colorSmudge > 0 Then
@@ -213,38 +167,60 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, ByVa
         'Use PD's excellent bilateral smoothing function to handle color smudging.
         Dim i As Long
         For i = 0 To colorStrength
-            If Not toPreview Then Message "Animating image (stage %1 of %2)...", 3 + i, 3 + colorStrength
-            createBilateralDIB workingDIB, colorSmudge, 100, 2, 10, 10, toPreview, workingDIB.getDIBWidth * (3 + colorStrength), workingDIB.getDIBWidth * (i + 2)
+            
+            If Not toPreview Then
+                If numOfSteps > 1 Then
+                    If inkOpacity > 0 Then
+                        Message "Animating image (stage %1 of %2)...", i + 2, numOfSteps
+                    Else
+                        Message "Animating image (stage %1 of %2)...", i + 1, numOfSteps
+                    End If
+                Else
+                    Message "Animating image..."
+                End If
+            End If
+            
+            createBilateralDIB workingDIB, colorSmudge, 100, 2, 10, 10, toPreview, newProgBarMax, workingDIB.getDIBWidth * (i * 2 + 1)
+            
         Next i
         
     End If
     
-    'Apply premultiplication to the DIBs prior to compositing
-    inkDIBh.setAlphaPremultiplication True
+    'Return the image to the premultiplied alpha space
     workingDIB.setAlphaPremultiplication True
     
-    'Finally, composite the ink over the color smudge, using the opacity supplied by the user.  To make the composite
-    ' operation easier, we're going to place our DIBs inside temporary layers.  This allows us to use existing layer
-    ' code to handle the merge.
-    Dim tmpLayerTop As pdLayer, tmpLayerBottom As pdLayer
-    Set tmpLayerTop = New pdLayer
-    Set tmpLayerBottom = New pdLayer
-    
-    tmpLayerTop.InitializeNewLayer PDL_IMAGE, , inkDIBh
-    Set inkDIBh = Nothing
-    
-    tmpLayerBottom.InitializeNewLayer PDL_IMAGE, , workingDIB
-    workingDIB.eraseDIB
-    
-    tmpLayerTop.setLayerBlendMode BL_MULTIPLY
-    tmpLayerTop.setLayerOpacity inkOpacity
-    
-    cComposite.mergeLayers tmpLayerTop, tmpLayerBottom, True
-    Set tmpLayerTop = Nothing
-    
-    'Refresh the workingDIB instance, then exit!
-    workingDIB.createFromExistingDIB tmpLayerBottom.layerDIB
-    Set tmpLayerBottom = Nothing
+    'If the caller doesn't want us to ink the image, we're all done!
+    If inkOpacity > 0 Then
+        
+        'With an ink image and color image now available, we can composite the two into a single "comic book" image
+        ' via PD's central compositor.
+        Dim cComposite As pdCompositor
+        Set cComposite = New pdCompositor
+        
+        'Finally, composite the ink over the color smudge, using the opacity supplied by the user.  To make the composite
+        ' operation easier, we're going to place our DIBs inside temporary layers.  This allows us to use existing layer
+        ' code to handle the merge.
+        Dim tmpLayerTop As pdLayer, tmpLayerBottom As pdLayer
+        Set tmpLayerTop = New pdLayer
+        Set tmpLayerBottom = New pdLayer
+        
+        tmpLayerTop.InitializeNewLayer PDL_IMAGE, , inkDIB
+        Set inkDIB = Nothing
+        
+        tmpLayerBottom.InitializeNewLayer PDL_IMAGE, , workingDIB
+        workingDIB.eraseDIB
+        
+        tmpLayerTop.setLayerBlendMode BL_DIFFERENCE
+        tmpLayerTop.setLayerOpacity inkOpacity
+        
+        cComposite.mergeLayers tmpLayerTop, tmpLayerBottom, True
+        Set tmpLayerTop = Nothing
+        
+        'Refresh the workingDIB instance, then exit!
+        workingDIB.createFromExistingDIB tmpLayerBottom.layerDIB
+        Set tmpLayerBottom = Nothing
+        
+    End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
     finalizeImageData toPreview, dstPic, True

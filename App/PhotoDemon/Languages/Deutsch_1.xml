@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.90</langversion>
+<langversion>6.7.91</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -7752,16 +7752,36 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Artistic_ComicBook.frm (FormComicBook) -->
 
 <phrase>
+<original>brush smoothing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>ink</original>
 <translation>Tinte</translation>
 </phrase>
 
 <phrase>
-<original>color smoothing</original>
-<translation>Farbglättung</translation>
+<original>brush size</original>
+<translation>Pinselgröße</translation>
 </phrase>
 
-<!-- Effects_Artistic_ComicBook.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>low</original>
+<translation>niedrig</translation>
+</phrase>
+
+<phrase>
+<original>medium</original>
+<translation>mittel</translation>
+</phrase>
+
+<phrase>
+<original>high</original>
+<translation>hoch</translation>
+</phrase>
+
+<!-- Effects_Artistic_ComicBook.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ComicBook.frm-->
 
@@ -7872,11 +7892,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Artistic_OilPainting.frm (FormOilPainting) -->
 
 <phrase>
-<original>brush size</original>
-<translation>Pinselgröße</translation>
-</phrase>
-
-<phrase>
 <original>detail</original>
 <translation>Detail</translation>
 </phrase>
@@ -7886,7 +7901,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Bild mit Ölfarben übermalen</translation>
 </phrase>
 
-<!-- Effects_Artistic_OilPainting.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Artistic_OilPainting.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_OilPainting.frm-->
 
@@ -10700,21 +10715,6 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 </phrase>
 
 <phrase>
-<original>low</original>
-<translation>niedrig</translation>
-</phrase>
-
-<phrase>
-<original>medium</original>
-<translation>mittel</translation>
-</phrase>
-
-<phrase>
-<original>high</original>
-<translation>hoch</translation>
-</phrase>
-
-<phrase>
 <original>portrait</original>
 <translation>Hochformat</translation>
 </phrase>
@@ -10749,7 +10749,7 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <translation>Das Bild wurde gedruckt. (Hinweis: Je nach Drucker kann ein zusätzlicher Bestätigungsdialog erscheinen.)</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -14168,8 +14168,8 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <phrasecount>2439</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4159 phrases. -->
-<!-- 1720 are duplicates, so only 2439 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4163 phrases. -->
+<!-- 1724 are duplicates, so only 2439 unique phrases have been written to file. -->
 <!-- These 2439 phrases contain approximately 13261 total words. -->
 
 </pdData>

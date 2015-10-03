@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.32</langversion>
+<langversion>6.6.33</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -7759,16 +7759,36 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_Artistic_ComicBook.frm (FormComicBook) -->
 
 <phrase>
+<original>brush smoothing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>ink</original>
 <translation>dakwat</translation>
 </phrase>
 
 <phrase>
-<original>color smoothing</original>
-<translation>warna pelicinan</translation>
+<original>brush size</original>
+<translation>saiz berus</translation>
 </phrase>
 
-<!-- Effects_Artistic_ComicBook.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>low</original>
+<translation>rendah</translation>
+</phrase>
+
+<phrase>
+<original>medium</original>
+<translation>sederhana</translation>
+</phrase>
+
+<phrase>
+<original>high</original>
+<translation>tinggi</translation>
+</phrase>
+
+<!-- Effects_Artistic_ComicBook.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ComicBook.frm-->
 
@@ -7879,11 +7899,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_Artistic_OilPainting.frm (FormOilPainting) -->
 
 <phrase>
-<original>brush size</original>
-<translation>saiz berus</translation>
-</phrase>
-
-<phrase>
 <original>detail</original>
 <translation>terperinci</translation>
 </phrase>
@@ -7893,7 +7908,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Mengecat semula imej dengan minyak</translation>
 </phrase>
 
-<!-- Effects_Artistic_OilPainting.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Artistic_OilPainting.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_OilPainting.frm-->
 
@@ -10707,21 +10722,6 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 </phrase>
 
 <phrase>
-<original>low</original>
-<translation>rendah</translation>
-</phrase>
-
-<phrase>
-<original>medium</original>
-<translation>sederhana</translation>
-</phrase>
-
-<phrase>
-<original>high</original>
-<translation>tinggi</translation>
-</phrase>
-
-<phrase>
 <original>portrait</original>
 <translation>potret</translation>
 </phrase>
@@ -10756,7 +10756,7 @@ I memohon maaf di atas kesulitan ini, tetapi malangnya tiada apa %2 boleh lakuka
 <translation>gambar dicetak berhasil. (Nota: bergantung kepada pencetak anda, skrin pengesahan cetak tambahan mungkin muncul.)</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -14175,8 +14175,8 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <phrasecount>2439</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4159 phrases. -->
-<!-- 1720 are duplicates, so only 2439 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4163 phrases. -->
+<!-- 1724 are duplicates, so only 2439 unique phrases have been written to file. -->
 <!-- These 2439 phrases contain approximately 13261 total words. -->
 
 </pdData>
