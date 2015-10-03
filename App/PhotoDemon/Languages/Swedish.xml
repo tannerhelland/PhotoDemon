@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.90</langversion>
+<langversion>6.7.91</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -7754,16 +7754,36 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <!-- BEGIN text for Effects_Artistic_ComicBook.frm (FormComicBook) -->
 
 <phrase>
+<original>brush smoothing</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>ink</original>
 <translation>bläck</translation>
 </phrase>
 
 <phrase>
-<original>color smoothing</original>
-<translation>färg utjämning</translation>
+<original>brush size</original>
+<translation>penselstorlek</translation>
 </phrase>
 
-<!-- Effects_Artistic_ComicBook.frm contains 7 phrases. 5 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>low</original>
+<translation>låg</translation>
+</phrase>
+
+<phrase>
+<original>medium</original>
+<translation>mediet</translation>
+</phrase>
+
+<phrase>
+<original>high</original>
+<translation>hög</translation>
+</phrase>
+
+<!-- Effects_Artistic_ComicBook.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ComicBook.frm-->
 
@@ -7874,11 +7894,6 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <!-- BEGIN text for Effects_Artistic_OilPainting.frm (FormOilPainting) -->
 
 <phrase>
-<original>brush size</original>
-<translation>penselstorlek</translation>
-</phrase>
-
-<phrase>
 <original>detail</original>
 <translation>detalj</translation>
 </phrase>
@@ -7888,7 +7903,7 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <translation>Ommålning bild med oljor</translation>
 </phrase>
 
-<!-- Effects_Artistic_OilPainting.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Artistic_OilPainting.frm contains 5 phrases. 3 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_OilPainting.frm-->
 
@@ -10702,21 +10717,6 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 </phrase>
 
 <phrase>
-<original>low</original>
-<translation>låg</translation>
-</phrase>
-
-<phrase>
-<original>medium</original>
-<translation>mediet</translation>
-</phrase>
-
-<phrase>
-<original>high</original>
-<translation>hög</translation>
-</phrase>
-
-<phrase>
 <original>portrait</original>
 <translation>porträtt</translation>
 </phrase>
@@ -10751,7 +10751,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 <translation>Bild ut korrekt. (OBS: Beroende på skrivaren kan ytterligare utskriftsbekräftelseskärmar visas.)</translation>
 </phrase>
 
-<!-- File_PrintXP.frm contains 28 phrases. 10 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- File_PrintXP.frm contains 28 phrases. 13 were duplicates of existing phrases, so only 15 new phrases were written to file. -->
 
 <!-- END text for File_PrintXP.frm-->
 
@@ -14170,8 +14170,8 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <phrasecount>2439</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4159 phrases. -->
-<!-- 1720 are duplicates, so only 2439 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4163 phrases. -->
+<!-- 1724 are duplicates, so only 2439 unique phrases have been written to file. -->
 <!-- These 2439 phrases contain approximately 13261 total words. -->
 
 </pdData>

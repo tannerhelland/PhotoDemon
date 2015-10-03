@@ -3159,7 +3159,8 @@ Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double,
     
 End Function
 
-'Apply bilateral smoothing (separable implementation, so faster but lower quality) to an arbitrary DIB
+'Apply bilateral smoothing (separable implementation, so faster but lower quality) to an arbitrary DIB.
+' PROGRESS BAR: one call of this function requires (2 * width) progress bar range
 ' INPUT RANGES:
 ' 1) kernelRadius: Any integer 1+
 ' 2) spatialFactor: [0, 100]
