@@ -2602,7 +2602,11 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     
     'Use these dimensions to size the destination image
     If dstDIB Is Nothing Then Set dstDIB = New pdDIB
-    dstDIB.createBlank nWidth, nHeight, srcDIB.getDIBColorDepth, 0, 0
+    If (dstDIB.getDIBWidth <> nWidth) Or (dstDIB.getDIBHeight <> nHeight) Or (dstDIB.getDIBColorDepth <> srcDIB.getDIBColorDepth) Then
+        dstDIB.createBlank nWidth, nHeight, srcDIB.getDIBColorDepth, 0, 0
+    Else
+        dstDIB.resetDIB 0
+    End If
     
     'We also want a copy of the corner points of the rotated rect; we'll use these to perform a fast PlgBlt-like operation,
     ' which is how we draw both the rotation and the corner extensions.

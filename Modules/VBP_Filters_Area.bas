@@ -741,3 +741,219 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     If cancelCurrentAction Then GaussianBlur_IIRImplementation = 0 Else GaussianBlur_IIRImplementation = 1
 
 End Function
+
+'Horizontal blur filter, using an IIR (Infininte Impulse Response) approach.
+'
+'I developed this function with help from http://www.getreuer.info/home/gaussianiir
+' Many thanks to Pascal Getreuer for his valuable reference.
+Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double, ByVal numSteps As Long, Optional ByVal blurSymmetric As Boolean = True, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+    
+    'Create a local array and point it at the pixel data we want to operate on
+    Dim ImageData() As Byte
+    Dim tmpSA As SAFEARRAY2D
+    prepSafeArray tmpSA, srcDIB
+    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
+    
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
+    initX = 0
+    initY = 0
+    finalX = srcDIB.getDIBWidth - 1
+    finalY = srcDIB.getDIBHeight - 1
+    
+    Dim iWidth As Long, iHeight As Long
+    iWidth = srcDIB.getDIBWidth
+    iHeight = srcDIB.getDIBHeight
+    
+    'These values will help us access locations in the array more quickly.
+    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
+    Dim QuickX As Long, QuickX2 As Long, QuickY As Long, qvDepth As Long
+    qvDepth = srcDIB.getDIBColorDepth \ 8
+    
+    'Determine if alpha handling is necessary for this image
+    Dim hasAlpha As Boolean
+    hasAlpha = CBool(qvDepth = 4)
+    
+    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
+    ' based on the size of the area to be processed.
+    Dim progBarCheck As Long
+    If modifyProgBarMax = -1 Then modifyProgBarMax = srcDIB.getDIBWidth
+    If Not suppressMessages Then SetProgBarMax modifyProgBarMax
+    
+    progBarCheck = findBestProgBarValue()
+    
+    'Finally, a bunch of variables used in color calculation
+    Dim r As Long, g As Long, b As Long, a As Long
+    
+    'Prep some IIR-specific values next
+    Dim lambda As Double, dnu As Double
+    Dim nu As Double, boundaryScale As Double, postScale As Double
+    Dim i As Long, step As Long
+    
+    'Calculate sigma from the radius, using the same formula we do for PD's pure gaussian blur
+    Dim sigma As Double
+    sigma = Sqr(-(radius * radius) / (2 * Log(1# / 255#)))
+    
+    'Another possible sigma formula, per this link (http://stackoverflow.com/questions/21984405/relation-between-sigma-and-radius-on-the-gaussian-blur):
+    'sigma = (radius + 1) / Sqr(2 * (Log(255) / Log(10)))
+    
+    'Make sure sigma and steps are valid
+    If sigma <= 0 Then sigma = 0.01
+    If numSteps <= 0 Then numSteps = 1
+    
+    'In the best paper I've read on this topic (http://dx.doi.org/10.5201/ipol.2013.87), an alternate lambda calculation
+    ' is proposed.  This adjustment doesn't affect running time at all, and should reduce errors relative to a pure Gaussian.
+    ' The behavior could be toggled by the caller, but for now, I've hard-coded use of the modified formula.
+    Dim useModifiedQ As Boolean, q As Single
+    useModifiedQ = True
+    
+    If useModifiedQ Then
+        q = sigma * (1# + (0.3165 * numSteps + 0.5695) / ((numSteps + 0.7818) * (numSteps + 0.7818)))
+    Else
+        q = sigma
+    End If
+    
+    'Calculate IIR values
+    lambda = (q * q) / (2 * numSteps)
+    dnu = (1 + 2 * lambda - Sqr(1 + 4 * lambda)) / (2 * lambda)
+    nu = dnu
+    boundaryScale = (1 / (1 - dnu))
+    If blurSymmetric Then
+        postScale = Sqr((dnu / lambda) ^ (2 * numSteps)) * 255
+    Else
+        postScale = Sqr((dnu / lambda) ^ numSteps) * 255
+    End If
+    
+    'Intermediate float arrays are required, so this technique consumes a *lot* of memory.
+    Dim rFloat() As Single, gFloat() As Single, bFloat() As Single, aFloat() As Single
+    ReDim rFloat(initX To finalX, initY To finalY) As Single
+    ReDim gFloat(initX To finalX, initY To finalY) As Single
+    ReDim bFloat(initX To finalX, initY To finalY) As Single
+    
+    If hasAlpha Then ReDim aFloat(initX To finalX, initY To finalY) As Single
+    
+    'Copy the contents of the current image into the float arrays
+    For x = initX To finalX
+        QuickX = x * qvDepth
+    For y = initY To finalY
+        
+        r = ImageData(QuickX + 2, y)
+        g = ImageData(QuickX + 1, y)
+        b = ImageData(QuickX, y)
+        
+        rFloat(x, y) = r / 255
+        gFloat(x, y) = g / 255
+        bFloat(x, y) = b / 255
+        
+        If hasAlpha Then
+            a = ImageData(QuickX + 3, y)
+            aFloat(x, y) = a / 255
+        End If
+
+    Next y
+    Next x
+    
+    '/* Filter horizontally along each row */
+    For y = initY To finalY
+    
+        For step = 0 To numSteps - 1
+            
+            'Set initial values
+            rFloat(initX, y) = rFloat(initX, y) * boundaryScale
+            gFloat(initX, y) = gFloat(initX, y) * boundaryScale
+            bFloat(initX, y) = bFloat(initX, y) * boundaryScale
+            
+            'Filter right
+            For x = initX + 1 To finalX
+                QuickX2 = (x - 1)
+                rFloat(x, y) = rFloat(x, y) + nu * rFloat(QuickX2, y)
+                gFloat(x, y) = gFloat(x, y) + nu * gFloat(QuickX2, y)
+                bFloat(x, y) = bFloat(x, y) + nu * bFloat(QuickX2, y)
+            Next x
+            
+            'Filter left only if symmetric
+            If blurSymmetric Then
+                            
+                'Fix closing row
+                rFloat(finalX, y) = rFloat(finalX, y) * boundaryScale
+                gFloat(finalX, y) = gFloat(finalX, y) * boundaryScale
+                bFloat(finalX, y) = bFloat(finalX, y) * boundaryScale
+                
+                For x = finalX To 1 Step -1
+                    QuickX = (x - 1)
+                    rFloat(QuickX, y) = rFloat(QuickX, y) + nu * rFloat(x, y)
+                    gFloat(QuickX, y) = gFloat(QuickX, y) + nu * gFloat(x, y)
+                    bFloat(QuickX, y) = bFloat(QuickX, y) + nu * bFloat(x, y)
+                Next x
+                
+            End If
+            
+            'Apply alpha separately
+            If hasAlpha Then
+                
+                aFloat(initX, y) = aFloat(initX, y) * boundaryScale
+                
+                For x = initX + 1 To finalX
+                    aFloat(x, y) = aFloat(x, y) + nu * aFloat(x - 1, y)
+                Next x
+                
+                If blurSymmetric Then
+                    aFloat(finalX, y) = aFloat(finalX, y) * boundaryScale
+                    For x = finalX To 1 Step -1
+                        QuickX = (x - 1)
+                        aFloat(QuickX, y) = aFloat(QuickX, y) + nu * aFloat(x, y)
+                    Next x
+                End If
+            
+            End If
+            
+        Next step
+        
+        If Not suppressMessages Then
+            If (y And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal y + modifyProgBarOffset
+            End If
+        End If
+        
+    Next y
+    
+    'Apply final post-scaling
+    If Not cancelCurrentAction Then
+        
+        For x = initX To finalX
+            QuickX = x * qvDepth
+        For y = initY To finalY
+        
+            r = rFloat(x, y) * postScale
+            g = gFloat(x, y) * postScale
+            b = bFloat(x, y) * postScale
+            
+            'Perform failsafe clipping
+            If r > 255 Then r = 255
+            If g > 255 Then g = 255
+            If b > 255 Then b = 255
+            
+            ImageData(QuickX, y) = b
+            ImageData(QuickX + 1, y) = g
+            ImageData(QuickX + 2, y) = r
+            
+            'Handle alpha separately
+            If hasAlpha Then
+                a = aFloat(x, y) * postScale
+                If a > 255 Then a = 255
+                ImageData(QuickX + 3, y) = a
+            End If
+        
+        Next y
+        Next x
+        
+    End If
+    
+    'With our work complete, point ImageData() away from the DIB and deallocate it
+    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
+    Erase ImageData
+    
+    If cancelCurrentAction Then HorizontalBlur_IIR = 0 Else HorizontalBlur_IIR = 1
+
+End Function
