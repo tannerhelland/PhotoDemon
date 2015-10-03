@@ -1345,7 +1345,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 ShowPDDialog vbModal, FormMotionBlur
             Else
-                FormMotionBlur.MotionBlurFilter cParams.GetDouble(1), cParams.GetLong(2), cParams.GetBool(3)
+                FormMotionBlur.MotionBlurFilter cParams.GetDouble(1), cParams.GetLong(2), cParams.GetBool(3), cParams.GetLong(4)
             End If
             
         Case "Radial blur"

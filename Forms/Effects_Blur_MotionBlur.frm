@@ -23,6 +23,25 @@ Begin VB.Form FormMotionBlur
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.buttonStrip btsStyle 
+      Height          =   615
+      Left            =   6120
+      TabIndex        =   5
+      Top             =   3600
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1085
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   375
+      Left            =   6000
+      Top             =   3120
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   661
+      Caption         =   "style"
+      FontSize        =   12
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -47,7 +66,7 @@ Begin VB.Form FormMotionBlur
       Height          =   720
       Left            =   6000
       TabIndex        =   2
-      Top             =   1680
+      Top             =   1200
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -56,12 +75,12 @@ Begin VB.Form FormMotionBlur
       SigDigits       =   1
    End
    Begin PhotoDemon.smartCheckBox chkSymmetry 
-      Height          =   300
+      Height          =   330
       Left            =   6120
       TabIndex        =   3
-      Top             =   3600
-      Width           =   5655
-      _ExtentX        =   3413
+      Top             =   4440
+      Width           =   5775
+      _ExtentX        =   10186
       _ExtentY        =   582
       Caption         =   "blur symmetrically"
    End
@@ -69,7 +88,7 @@ Begin VB.Form FormMotionBlur
       Height          =   720
       Left            =   6000
       TabIndex        =   4
-      Top             =   2640
+      Top             =   2160
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -107,7 +126,7 @@ Option Explicit
 
 'Apply motion blur to an image
 'Inputs: angle of the blur, distance of the blur
-Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByVal blurSymmetrically As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByVal blurSymmetrically As Boolean, ByVal blurAlgorithm As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Applying motion blur..."
     
@@ -133,21 +152,33 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
     ' This greatly simplifies this function, while also providing higher-quality results!
     GDI_Plus.GDIPlus_GetRotatedClampedDIB workingDIB, rotateDIB, bAngle
     
-    'Rotate DIB now has a properly sized, rotated, padded and clamped copy of the original image.  We need a matching
-    ' DIB of identical size to store intermediate blur results; reuse workingDIB to create such a DIB now.
-    workingDIB.createFromExistingDIB rotateDIB
-    
     'Next, apply a horizontal blur to the rotated image, using the blur radius supplied by the user
     Dim rightRadius As Long
     If blurSymmetrically Then rightRadius = bDistance Else rightRadius = 0
+    
+    Dim blurSuccess As Boolean
+    
+    'Motion blur currently supports two different blur algorithms
+    Select Case blurAlgorithm
+    
+        'Box blur (requires intermediary DIB, as the transform can't be performed in-place)
+        Case 0
+            Dim tmpDIB As pdDIB
+            Set tmpDIB = New pdDIB
+            tmpDIB.createFromExistingDIB rotateDIB
+            blurSuccess = CreateHorizontalBlurDIB(bDistance, rightRadius, tmpDIB, rotateDIB, toPreview)
+            Set tmpDIB = Nothing
         
-    If CreateHorizontalBlurDIB(bDistance, rightRadius, workingDIB, rotateDIB, toPreview) Then
+        'Gaussian blur (IIR estimation, no intermediary DIB required)
+        Case 1
+            blurSuccess = Filters_Area.HorizontalBlur_IIR(rotateDIB, bDistance, 1, blurSymmetrically, toPreview)
+    
+    End Select
+    
+    If blurSuccess Then
             
         'Finally, we need to rotate the image back to its original orientation, using the opposite parameters of the
         ' first conversion.
-        
-        'Start by resizing workingDIB to its original dimensions.
-        workingDIB.createBlank finalX, finalY, rotateDIB.getDIBColorDepth, 0, 0
         
         'Use GDI+ to apply the inverse rotation.  Note that it will automatically center the rotated image within
         ' the destination boundaries, sparing us the trouble of manually trimming the clamped edges
@@ -164,12 +195,16 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
     
 End Sub
 
+Private Sub btsStyle_Click(ByVal buttonIndex As Long)
+    updatePreview
+End Sub
+
 Private Sub chkSymmetry_Click()
     updatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Motion blur", , buildParams(sltAngle, sltDistance, CBool(chkSymmetry)), UNDO_LAYER
+    Process "Motion blur", , buildParams(sltAngle, sltDistance, CBool(chkSymmetry), btsStyle.ListIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -192,6 +227,10 @@ Private Sub Form_Load()
     'Disable previews until the form is fully initialized
     cmdBar.markPreviewStatus False
     
+    btsStyle.AddItem "constant", 0
+    btsStyle.AddItem "gaussian", 1
+    btsStyle.ListIndex = 0
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -200,7 +239,7 @@ End Sub
 
 'Render a new effect preview
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then MotionBlurFilter sltAngle, sltDistance, CBool(chkSymmetry), True, fxPreview
+    If cmdBar.previewsAllowed Then MotionBlurFilter sltAngle, sltDistance, CBool(chkSymmetry), btsStyle.ListIndex, True, fxPreview
 End Sub
 
 Private Sub sltAngle_Change()
