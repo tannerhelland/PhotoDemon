@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.91</langversion>
+<langversion>6.7.93</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -418,11 +418,6 @@ Idien het probleem zich blijft voordoen, kunt u dit melden via photodemon.org/co
 </phrase>
 
 <phrase>
-<original>Embuing image with the essence of F. Miller</original>
-<translation>Doordringen afbeelding met de essentie van F. Miller</translation>
-</phrase>
-
-<phrase>
 <original>Adjusting image contrast</original>
 <translation>Instellen van de afbeeldingcontrast</translation>
 </phrase>
@@ -461,7 +456,7 @@ Je kan gebruik maken van de MenuTest() sub in de Filters_Miscellaneous module om
 <translation>PhotoDemon Pro Tip</translation>
 </phrase>
 
-<!-- VBP_Filters_Misc.bas contains 22 phrases. 4 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- VBP_Filters_Misc.bas contains 21 phrases. 4 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for VBP_Filters_Misc.bas-->
 
@@ -2568,6 +2563,28 @@ Geef een numerieke waarde.</translation>
 
 <!-- END text for pdDictionary.cls-->
 
+<!-- BEGIN text for pdDisplay.cls -->
+
+<!-- pdDisplay.cls contains 0 phrases. -->
+
+<!-- END text for pdDisplay.cls-->
+
+<!-- BEGIN text for pdDisplays.cls -->
+
+<phrase>
+<original>Unknown adapter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Unknown display</original>
+<translation></translation>
+</phrase>
+
+<!-- pdDisplays.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for pdDisplays.cls-->
+
 <!-- BEGIN text for pdFFT.cls -->
 
 <!-- pdFFT.cls contains 0 phrases. -->
@@ -3111,6 +3128,18 @@ Geef een numerieke waarde.</translation>
 
 <!-- END text for pdWindowPainter.cls-->
 
+<!-- BEGIN text for pdWindowSize.cls -->
+
+<!-- pdWindowSize.cls contains 0 phrases. -->
+
+<!-- END text for pdWindowSize.cls-->
+
+<!-- BEGIN text for pdWindowSync.cls -->
+
+<!-- pdWindowSync.cls contains 0 phrases. -->
+
+<!-- END text for pdWindowSync.cls-->
+
 <!-- BEGIN text for pdXML.cls -->
 
 <!-- pdXML.cls contains 0 phrases. -->
@@ -3475,6 +3504,12 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <!-- pdTextBox.ctl contains 0 phrases. -->
 
 <!-- END text for pdTextBox.ctl-->
+
+<!-- BEGIN text for pdTitle.ctl -->
+
+<!-- pdTitle.ctl contains 0 phrases. -->
+
+<!-- END text for pdTitle.ctl-->
 
 <!-- BEGIN text for penSelector.ctl -->
 
@@ -4626,13 +4661,18 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>Remove noise</original>
-<translation>Verwijder ruis</translation>
+<original>Bilateral filter</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Median smoothing</original>
-<translation>Mediaans vergladden</translation>
+<original>Mean shift</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Median</original>
+<translation>Mediaan</translation>
 </phrase>
 
 <phrase>
@@ -5472,11 +5512,6 @@ Nota: enkele kleine programmateksten kunnen niet live worden  bijgewerkt. Een de
 </phrase>
 
 <phrase>
-<original>Median</original>
-<translation>Mediaan</translation>
-</phrase>
-
-<phrase>
 <original>Straighten image</original>
 <translation>Rechten afbeelding</translation>
 </phrase>
@@ -5561,7 +5596,7 @@ Nota: enkele kleine programmateksten kunnen niet live worden  bijgewerkt. Een de
 <translation>Verwijder alfakanaal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 557 phrases. 172 were duplicates of existing phrases, so only 385 new phrases were written to file. -->
+<!-- MainWindow.frm contains 559 phrases. 174 were duplicates of existing phrases, so only 385 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -7768,6 +7803,11 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 </phrase>
 
 <phrase>
+<original>Animating image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>low</original>
 <translation>laag</translation>
 </phrase>
@@ -7782,7 +7822,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>hoog</translation>
 </phrase>
 
-<!-- Effects_Artistic_ComicBook.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Artistic_ComicBook.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ComicBook.frm-->
 
@@ -8150,7 +8190,12 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Toepassen bewegingsvervaging</translation>
 </phrase>
 
-<!-- Effects_Blur_MotionBlur.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>gaussian</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Blur_MotionBlur.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_MotionBlur.frm-->
 
@@ -8856,6 +8901,42 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 
 <!-- END text for Effects_Noise_AddRGBNoise.frm-->
 
+<!-- BEGIN text for Effects_Noise_BilateralFilter.frm (FormBilateral) -->
+
+<phrase>
+<original>edge strength</original>
+<translation>kantsterkte</translation>
+</phrase>
+
+<phrase>
+<original>spatial power (currently hidden)</original>
+<translation>ruimtelijke vermogen (momenteel verborgen)</translation>
+</phrase>
+
+<phrase>
+<original>color strength</original>
+<translation>kleurkracht</translation>
+</phrase>
+
+<phrase>
+<original>color preservation</original>
+<translation>kleurbehoud</translation>
+</phrase>
+
+<phrase>
+<original>use estimation to improve performance</original>
+<translation>gebruik schatting om prestaties te verbeteren</translation>
+</phrase>
+
+<phrase>
+<original>Applying bilateral smoothing</original>
+<translation>Toepassen van bilaterale vergladding</translation>
+</phrase>
+
+<!-- Effects_Noise_BilateralFilter.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for Effects_Noise_BilateralFilter.frm-->
+
 <!-- BEGIN text for Effects_Noise_FilmGrain.frm (FormFilmGrain) -->
 
 <phrase>
@@ -8881,6 +8962,17 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <!-- Effects_Noise_FilmGrain.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
+
+<!-- BEGIN text for Effects_Noise_MeanShift.frm (FormMeanShift) -->
+
+<phrase>
+<original>Applying mean shift filter</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_MeanShift.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Effects_Noise_MeanShift.frm-->
 
 <!-- BEGIN text for Effects_Noise_MedianSmoothing.frm (FormMedian) -->
 
@@ -8927,47 +9019,6 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <!-- Effects_Noise_MedianSmoothing.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_MedianSmoothing.frm-->
-
-<!-- BEGIN text for Effects_Noise_RemoveNoise.frm (FormBilateral) -->
-
-<phrase>
-<original>Remove noise (bilateral smoothing)</original>
-<translation>Verwijder ruis (bilaterale smoothing)</translation>
-</phrase>
-
-<phrase>
-<original>edge strength</original>
-<translation>kantsterkte</translation>
-</phrase>
-
-<phrase>
-<original>spatial power (currently hidden)</original>
-<translation>ruimtelijke vermogen (momenteel verborgen)</translation>
-</phrase>
-
-<phrase>
-<original>color strength</original>
-<translation>kleurkracht</translation>
-</phrase>
-
-<phrase>
-<original>color preservation</original>
-<translation>kleurbehoud</translation>
-</phrase>
-
-<phrase>
-<original>use estimation to improve performance</original>
-<translation>gebruik schatting om prestaties te verbeteren</translation>
-</phrase>
-
-<phrase>
-<original>Applying bilateral smoothing</original>
-<translation>Toepassen van bilaterale vergladding</translation>
-</phrase>
-
-<!-- Effects_Noise_RemoveNoise.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
-
-<!-- END text for Effects_Noise_RemoveNoise.frm-->
 
 <!-- BEGIN text for Effects_Pixelate_ColorHalftone.frm (FormColorHalftone) -->
 
@@ -11565,6 +11616,102 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 
 <!-- END text for Layer_Transparency_RemoveTransparency.frm-->
 
+<!-- BEGIN text for Layerpanel_Layers.frm (layerpanel_Layers) -->
+
+<phrase>
+<original>blend</original>
+<translation>mengsel</translation>
+</phrase>
+
+<phrase>
+<original>Click to hide this layer.</original>
+<translation>Klik om deze laag te verbergen.</translation>
+</phrase>
+
+<phrase>
+<original>Click to show this layer.</original>
+<translation>Klik om deze laag te tonen.</translation>
+</phrase>
+
+<phrase>
+<original>Click to duplicate this layer.</original>
+<translation>Klik om deze laag dupliceren.</translation>
+</phrase>
+
+<phrase>
+<original>Click to merge this layer with the layer beneath it.</original>
+<translation>Klik om deze laag samen te voegen met de laag eronder.</translation>
+</phrase>
+
+<phrase>
+<original>This layer can't merge down, because there are no visible layers beneath it.</original>
+<translation>Deze laag kan niet omlaag samenvoegen, omdat er geen onderliggende zichtbare lagen zijn.</translation>
+</phrase>
+
+<phrase>
+<original>Click to merge this layer with the layer above it.</original>
+<translation>Klik om deze laag samen te voegen met de laag erboven.</translation>
+</phrase>
+
+<phrase>
+<original>This layer can't merge up, because there are no visible layers above it.</original>
+<translation>Deze laag kan niet omhoog samenvoegen, omdat er geen bovenliggende zichtbare lagen zijn..</translation>
+</phrase>
+
+<phrase>
+<original>Click to make this the active layer.</original>
+<translation>Klik om deze laag de actieve te maken.</translation>
+</phrase>
+
+<phrase>
+<original>This is the currently active layer.</original>
+<translation>Dit is de actieve laag.</translation>
+</phrase>
+
+<phrase>
+<original>Rearrange layers</original>
+<translation>Herschikken lagen</translation>
+</phrase>
+
+<phrase>
+<original>(hidden)</original>
+<translation>(verborgen)</translation>
+</phrase>
+
+<phrase>
+<original>Add a blank layer to the image.</original>
+<translation>Voeg een lege laag toe aan de afbeelding.</translation>
+</phrase>
+
+<phrase>
+<original>Delete the currently selected layer.</original>
+<translation>Wis de geselecteerde laag.</translation>
+</phrase>
+
+<phrase>
+<original>Move the current layer upward in the layer stack.</original>
+<translation>Verplaats de huidige laag naar boven in de laag-stack.</translation>
+</phrase>
+
+<phrase>
+<original>Move layer up</original>
+<translation>Verplaats laag opwaarts</translation>
+</phrase>
+
+<phrase>
+<original>Move the current layer downward in the layer stack.</original>
+<translation>Verplaats de huidige laag naar beneden in de laag-stack.</translation>
+</phrase>
+
+<phrase>
+<original>Move layer down</original>
+<translation>Verplaats laag neerwaarts</translation>
+</phrase>
+
+<!-- Layerpanel_Layers.frm contains 40 phrases. 22 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+
+<!-- END text for Layerpanel_Layers.frm-->
+
 <!-- BEGIN text for Select_GenericModification.frm (FormSelectionDialogs) -->
 
 <phrase>
@@ -13471,11 +13618,6 @@ Weet u zeker dat u wilt doorgaan?</translation>
 </phrase>
 
 <phrase>
-<original>Unknown display</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
 <translation>Deze instelling is de beste keuze voor de meeste gebruikers.  Indien je geen idee hebt wat kleurbeheer is, gebruik dan deze instelling. Wanneer je een correct beeldscherm profiel hebt geconfigureerd via het Configuratiescherm van Windows, gebruikt u ook deze instelling.</translation>
 </phrase>
@@ -13779,7 +13921,7 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <translation>WAARSCHUWING: deze map is ongeldig (toegang verboden). Geef een geldige map op. Als er geen nieuwe map wordt voorzien, zal PhotoDemon gebruik maken van de systeem standaard temp locatie.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 246 phrases. 66 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 246 phrases. 67 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14034,143 +14176,48 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdDisplays.cls -->
+<!-- BEGIN text for Effects_Artistic_FilmNoir.frm (FormFilmNoir) -->
 
 <phrase>
-<original>Unknown adapter</original>
+<original>shadow cut-off</original>
 <translation></translation>
 </phrase>
 
-<!-- pdDisplays.cls contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for pdDisplays.cls-->
-
-<!-- BEGIN text for pdDisplay.cls -->
-
-<!-- pdDisplay.cls contains 0 phrases. -->
-
-<!-- END text for pdDisplay.cls-->
-
-<!-- BEGIN text for pdWindowSize.cls -->
-
-<!-- pdWindowSize.cls contains 0 phrases. -->
-
-<!-- END text for pdWindowSize.cls-->
-
-<!-- BEGIN text for Layerpanel_Layers.frm (layerpanel_Layers) -->
-
 <phrase>
-<original>blend</original>
-<translation>mengsel</translation>
+<original>contrast boost</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Click to hide this layer.</original>
-<translation>Klik om deze laag te verbergen.</translation>
+<original>highlight cut-off</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Click to show this layer.</original>
-<translation>Klik om deze laag te tonen.</translation>
+<original>contrast midpoint</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Click to duplicate this layer.</original>
-<translation>Klik om deze laag dupliceren.</translation>
+<original>film grain</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Click to merge this layer with the layer beneath it.</original>
-<translation>Klik om deze laag samen te voegen met de laag eronder.</translation>
+<original>Asking Sam Spade for help</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>This layer can't merge down, because there are no visible layers beneath it.</original>
-<translation>Deze laag kan niet omlaag samenvoegen, omdat er geen onderliggende zichtbare lagen zijn.</translation>
-</phrase>
+<!-- Effects_Artistic_FilmNoir.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
-<phrase>
-<original>Click to merge this layer with the layer above it.</original>
-<translation>Klik om deze laag samen te voegen met de laag erboven.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge up, because there are no visible layers above it.</original>
-<translation>Deze laag kan niet omhoog samenvoegen, omdat er geen bovenliggende zichtbare lagen zijn..</translation>
-</phrase>
-
-<phrase>
-<original>Click to make this the active layer.</original>
-<translation>Klik om deze laag de actieve te maken.</translation>
-</phrase>
-
-<phrase>
-<original>This is the currently active layer.</original>
-<translation>Dit is de actieve laag.</translation>
-</phrase>
-
-<phrase>
-<original>Rearrange layers</original>
-<translation>Herschikken lagen</translation>
-</phrase>
-
-<phrase>
-<original>(hidden)</original>
-<translation>(verborgen)</translation>
-</phrase>
-
-<phrase>
-<original>Add a blank layer to the image.</original>
-<translation>Voeg een lege laag toe aan de afbeelding.</translation>
-</phrase>
-
-<phrase>
-<original>Delete the currently selected layer.</original>
-<translation>Wis de geselecteerde laag.</translation>
-</phrase>
-
-<phrase>
-<original>Move the current layer upward in the layer stack.</original>
-<translation>Verplaats de huidige laag naar boven in de laag-stack.</translation>
-</phrase>
-
-<phrase>
-<original>Move layer up</original>
-<translation>Verplaats laag opwaarts</translation>
-</phrase>
-
-<phrase>
-<original>Move the current layer downward in the layer stack.</original>
-<translation>Verplaats de huidige laag naar beneden in de laag-stack.</translation>
-</phrase>
-
-<phrase>
-<original>Move layer down</original>
-<translation>Verplaats laag neerwaarts</translation>
-</phrase>
-
-<!-- Layerpanel_Layers.frm contains 40 phrases. 22 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
-
-<!-- END text for Layerpanel_Layers.frm-->
-
-<!-- BEGIN text for pdWindowSync.cls -->
-
-<!-- pdWindowSync.cls contains 0 phrases. -->
-
-<!-- END text for pdWindowSync.cls-->
-
-<!-- BEGIN text for pdTitle.ctl -->
-
-<!-- pdTitle.ctl contains 0 phrases. -->
-
-<!-- END text for pdTitle.ctl-->
+<!-- END text for Effects_Artistic_FilmNoir.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2439</phrasecount>
+<phrasecount>2446</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4163 phrases. -->
-<!-- 1724 are duplicates, so only 2439 unique phrases have been written to file. -->
-<!-- These 2439 phrases contain approximately 13261 total words. -->
+<!-- As of this build, PhotoDemon contains 4182 phrases. -->
+<!-- 1736 are duplicates, so only 2446 unique phrases have been written to file. -->
+<!-- These 2446 phrases contain approximately 13271 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.91</langversion>
+<langversion>6.7.93</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -418,11 +418,6 @@ If masalah berterusan, sila laporkan kepada pemaju PhotoDemon melalui photodemon
 </phrase>
 
 <phrase>
-<original>Embuing image with the essence of F. Miller</original>
-<translation>Embuing imej dengan intipati F. Miller</translation>
-</phrase>
-
-<phrase>
 <original>Adjusting image contrast</original>
 <translation>Menyesuaikan kontras imej</translation>
 </phrase>
@@ -461,7 +456,7 @@ You boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk me
 <translation>PhotoDemon Pro Petua</translation>
 </phrase>
 
-<!-- VBP_Filters_Misc.bas contains 22 phrases. 4 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- VBP_Filters_Misc.bas contains 21 phrases. 4 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for VBP_Filters_Misc.bas-->
 
@@ -2569,6 +2564,28 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for pdDictionary.cls-->
 
+<!-- BEGIN text for pdDisplay.cls -->
+
+<!-- pdDisplay.cls contains 0 phrases. -->
+
+<!-- END text for pdDisplay.cls-->
+
+<!-- BEGIN text for pdDisplays.cls -->
+
+<phrase>
+<original>Unknown adapter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Unknown display</original>
+<translation></translation>
+</phrase>
+
+<!-- pdDisplays.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for pdDisplays.cls-->
+
 <!-- BEGIN text for pdFFT.cls -->
 
 <!-- pdFFT.cls contains 0 phrases. -->
@@ -3112,6 +3129,18 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for pdWindowPainter.cls-->
 
+<!-- BEGIN text for pdWindowSize.cls -->
+
+<!-- pdWindowSize.cls contains 0 phrases. -->
+
+<!-- END text for pdWindowSize.cls-->
+
+<!-- BEGIN text for pdWindowSync.cls -->
+
+<!-- pdWindowSync.cls contains 0 phrases. -->
+
+<!-- END text for pdWindowSync.cls-->
+
 <!-- BEGIN text for pdXML.cls -->
 
 <!-- pdXML.cls contains 0 phrases. -->
@@ -3476,6 +3505,12 @@ or menu Fail > Import dan Fail > Buka.</translation>
 <!-- pdTextBox.ctl contains 0 phrases. -->
 
 <!-- END text for pdTextBox.ctl-->
+
+<!-- BEGIN text for pdTitle.ctl -->
+
+<!-- pdTitle.ctl contains 0 phrases. -->
+
+<!-- END text for pdTitle.ctl-->
 
 <!-- BEGIN text for penSelector.ctl -->
 
@@ -4627,13 +4662,18 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
-<original>Remove noise</original>
-<translation>keluarkan bunyi</translation>
+<original>Bilateral filter</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Median smoothing</original>
-<translation>pelicinan median</translation>
+<original>Mean shift</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Median</original>
+<translation>median</translation>
 </phrase>
 
 <phrase>
@@ -5473,11 +5513,6 @@ Note: beberapa teks program minor tidak boleh hidup dikemaskini. Teks tersebut a
 </phrase>
 
 <phrase>
-<original>Median</original>
-<translation>median</translation>
-</phrase>
-
-<phrase>
 <original>Straighten image</original>
 <translation>meluruskan imej</translation>
 </phrase>
@@ -5562,7 +5597,7 @@ Note: beberapa teks program minor tidak boleh hidup dikemaskini. Teks tersebut a
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 557 phrases. 172 were duplicates of existing phrases, so only 385 new phrases were written to file. -->
+<!-- MainWindow.frm contains 559 phrases. 174 were duplicates of existing phrases, so only 385 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -7769,6 +7804,11 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
+<original>Animating image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>low</original>
 <translation>rendah</translation>
 </phrase>
@@ -7783,7 +7823,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>tinggi</translation>
 </phrase>
 
-<!-- Effects_Artistic_ComicBook.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Artistic_ComicBook.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ComicBook.frm-->
 
@@ -8151,7 +8191,12 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <translation>Menggunakan gerakan kabur</translation>
 </phrase>
 
-<!-- Effects_Blur_MotionBlur.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>gaussian</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Blur_MotionBlur.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_MotionBlur.frm-->
 
@@ -8857,6 +8902,42 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <!-- END text for Effects_Noise_AddRGBNoise.frm-->
 
+<!-- BEGIN text for Effects_Noise_BilateralFilter.frm (FormBilateral) -->
+
+<phrase>
+<original>edge strength</original>
+<translation>kekuatan daya</translation>
+</phrase>
+
+<phrase>
+<original>spatial power (currently hidden)</original>
+<translation>kuasa spatial (tersembunyi)</translation>
+</phrase>
+
+<phrase>
+<original>color strength</original>
+<translation>kekuatan warna</translation>
+</phrase>
+
+<phrase>
+<original>color preservation</original>
+<translation>pemeliharaan warna</translation>
+</phrase>
+
+<phrase>
+<original>use estimation to improve performance</original>
+<translation>menggunakan anggaran untuk meningkatkan prestasi</translation>
+</phrase>
+
+<phrase>
+<original>Applying bilateral smoothing</original>
+<translation>Memohon pelicinan dua hala</translation>
+</phrase>
+
+<!-- Effects_Noise_BilateralFilter.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for Effects_Noise_BilateralFilter.frm-->
+
 <!-- BEGIN text for Effects_Noise_FilmGrain.frm (FormFilmGrain) -->
 
 <phrase>
@@ -8882,6 +8963,17 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- Effects_Noise_FilmGrain.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
+
+<!-- BEGIN text for Effects_Noise_MeanShift.frm (FormMeanShift) -->
+
+<phrase>
+<original>Applying mean shift filter</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_MeanShift.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Effects_Noise_MeanShift.frm-->
 
 <!-- BEGIN text for Effects_Noise_MedianSmoothing.frm (FormMedian) -->
 
@@ -8928,47 +9020,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- Effects_Noise_MedianSmoothing.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_MedianSmoothing.frm-->
-
-<!-- BEGIN text for Effects_Noise_RemoveNoise.frm (FormBilateral) -->
-
-<phrase>
-<original>Remove noise (bilateral smoothing)</original>
-<translation>Keluarkan bunyi (smoothing dua hala)</translation>
-</phrase>
-
-<phrase>
-<original>edge strength</original>
-<translation>kekuatan daya</translation>
-</phrase>
-
-<phrase>
-<original>spatial power (currently hidden)</original>
-<translation>kuasa spatial (tersembunyi)</translation>
-</phrase>
-
-<phrase>
-<original>color strength</original>
-<translation>kekuatan warna</translation>
-</phrase>
-
-<phrase>
-<original>color preservation</original>
-<translation>pemeliharaan warna</translation>
-</phrase>
-
-<phrase>
-<original>use estimation to improve performance</original>
-<translation>menggunakan anggaran untuk meningkatkan prestasi</translation>
-</phrase>
-
-<phrase>
-<original>Applying bilateral smoothing</original>
-<translation>Memohon pelicinan dua hala</translation>
-</phrase>
-
-<!-- Effects_Noise_RemoveNoise.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
-
-<!-- END text for Effects_Noise_RemoveNoise.frm-->
 
 <!-- BEGIN text for Effects_Pixelate_ColorHalftone.frm (FormColorHalftone) -->
 
@@ -11566,6 +11617,102 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 
 <!-- END text for Layer_Transparency_RemoveTransparency.frm-->
 
+<!-- BEGIN text for Layerpanel_Layers.frm (layerpanel_Layers) -->
+
+<phrase>
+<original>blend</original>
+<translation>gabungan</translation>
+</phrase>
+
+<phrase>
+<original>Click to hide this layer.</original>
+<translation>Klik untuk menyembunyikan lapisan ini.</translation>
+</phrase>
+
+<phrase>
+<original>Click to show this layer.</original>
+<translation>Klik untuk menunjukkan lapisan ini.</translation>
+</phrase>
+
+<phrase>
+<original>Click to duplicate this layer.</original>
+<translation>Klik untuk menduplikasi lapisan ini.</translation>
+</phrase>
+
+<phrase>
+<original>Click to merge this layer with the layer beneath it.</original>
+<translation>Klik untuk bergabung lapisan ini dengan lapisan di bawahnya.</translation>
+</phrase>
+
+<phrase>
+<original>This layer can't merge down, because there are no visible layers beneath it.</original>
+<translation>Lapisan ini tidak boleh bergabung ke bawah, kerana tidak ada lapisan yang dapat dilihat di bawahnya.</translation>
+</phrase>
+
+<phrase>
+<original>Click to merge this layer with the layer above it.</original>
+<translation>Klik untuk bergabung dengan lapisan ini lapisan di atasnya.</translation>
+</phrase>
+
+<phrase>
+<original>This layer can't merge up, because there are no visible layers above it.</original>
+<translation>Lapisan ini tidak boleh bergabung sehingga, kerana tiada lapisan yang dapat dilihat di atas itu.</translation>
+</phrase>
+
+<phrase>
+<original>Click to make this the active layer.</original>
+<translation>Klik untuk membuat ini lapisan aktif.</translation>
+</phrase>
+
+<phrase>
+<original>This is the currently active layer.</original>
+<translation>Ini adalah lapisan yang sedang aktif.</translation>
+</phrase>
+
+<phrase>
+<original>Rearrange layers</original>
+<translation>Susun semula lapisan</translation>
+</phrase>
+
+<phrase>
+<original>(hidden)</original>
+<translation>(tersembunyi)</translation>
+</phrase>
+
+<phrase>
+<original>Add a blank layer to the image.</original>
+<translation>Tambah lapisan kosong untuk imej.</translation>
+</phrase>
+
+<phrase>
+<original>Delete the currently selected layer.</original>
+<translation>Padam lapisan semasa yang dipilih.</translation>
+</phrase>
+
+<phrase>
+<original>Move the current layer upward in the layer stack.</original>
+<translation>Pindah lapisan semasa menaik dalam timbunan lapisan.</translation>
+</phrase>
+
+<phrase>
+<original>Move layer up</original>
+<translation>Pindah lapisan sehingga</translation>
+</phrase>
+
+<phrase>
+<original>Move the current layer downward in the layer stack.</original>
+<translation>Pindah lapisan semasa menurun dalam timbunan lapisan.</translation>
+</phrase>
+
+<phrase>
+<original>Move layer down</original>
+<translation>Pindah ke bawah lapisan</translation>
+</phrase>
+
+<!-- Layerpanel_Layers.frm contains 40 phrases. 22 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+
+<!-- END text for Layerpanel_Layers.frm-->
+
 <!-- BEGIN text for Select_GenericModification.frm (FormSelectionDialogs) -->
 
 <phrase>
@@ -13472,11 +13619,6 @@ Are anda pasti anda mahu teruskan?</translation>
 </phrase>
 
 <phrase>
-<original>Unknown display</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
 <translation>Tetapan ini adalah pilihan terbaik bagi kebanyakan pengguna. Jika anda tidak tahu apa yang pengurusan warna, gunakan tetapan ini. Jika anda telah dikonfigurasi dengan betul profil paparan melalui Panel Kawalan Windows, juga menggunakan tetapan ini.</translation>
 </phrase>
@@ -13780,7 +13922,7 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <translation>AMARAN: folder ini adalah tidak sah (akses dilarang). Sila berikan folder yang sah. Jika tiada folder baru disediakan, PhotoDemon akan menggunakan lokasi temp lalai sistem.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 246 phrases. 66 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 246 phrases. 67 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14035,143 +14177,48 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdDisplays.cls -->
+<!-- BEGIN text for Effects_Artistic_FilmNoir.frm (FormFilmNoir) -->
 
 <phrase>
-<original>Unknown adapter</original>
+<original>shadow cut-off</original>
 <translation></translation>
 </phrase>
 
-<!-- pdDisplays.cls contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for pdDisplays.cls-->
-
-<!-- BEGIN text for pdDisplay.cls -->
-
-<!-- pdDisplay.cls contains 0 phrases. -->
-
-<!-- END text for pdDisplay.cls-->
-
-<!-- BEGIN text for pdWindowSize.cls -->
-
-<!-- pdWindowSize.cls contains 0 phrases. -->
-
-<!-- END text for pdWindowSize.cls-->
-
-<!-- BEGIN text for Layerpanel_Layers.frm (layerpanel_Layers) -->
-
 <phrase>
-<original>blend</original>
-<translation>gabungan</translation>
+<original>contrast boost</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Click to hide this layer.</original>
-<translation>Klik untuk menyembunyikan lapisan ini.</translation>
+<original>highlight cut-off</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Click to show this layer.</original>
-<translation>Klik untuk menunjukkan lapisan ini.</translation>
+<original>contrast midpoint</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Click to duplicate this layer.</original>
-<translation>Klik untuk menduplikasi lapisan ini.</translation>
+<original>film grain</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Click to merge this layer with the layer beneath it.</original>
-<translation>Klik untuk bergabung lapisan ini dengan lapisan di bawahnya.</translation>
+<original>Asking Sam Spade for help</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>This layer can't merge down, because there are no visible layers beneath it.</original>
-<translation>Lapisan ini tidak boleh bergabung ke bawah, kerana tidak ada lapisan yang dapat dilihat di bawahnya.</translation>
-</phrase>
+<!-- Effects_Artistic_FilmNoir.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
-<phrase>
-<original>Click to merge this layer with the layer above it.</original>
-<translation>Klik untuk bergabung dengan lapisan ini lapisan di atasnya.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge up, because there are no visible layers above it.</original>
-<translation>Lapisan ini tidak boleh bergabung sehingga, kerana tiada lapisan yang dapat dilihat di atas itu.</translation>
-</phrase>
-
-<phrase>
-<original>Click to make this the active layer.</original>
-<translation>Klik untuk membuat ini lapisan aktif.</translation>
-</phrase>
-
-<phrase>
-<original>This is the currently active layer.</original>
-<translation>Ini adalah lapisan yang sedang aktif.</translation>
-</phrase>
-
-<phrase>
-<original>Rearrange layers</original>
-<translation>Susun semula lapisan</translation>
-</phrase>
-
-<phrase>
-<original>(hidden)</original>
-<translation>(tersembunyi)</translation>
-</phrase>
-
-<phrase>
-<original>Add a blank layer to the image.</original>
-<translation>Tambah lapisan kosong untuk imej.</translation>
-</phrase>
-
-<phrase>
-<original>Delete the currently selected layer.</original>
-<translation>Padam lapisan semasa yang dipilih.</translation>
-</phrase>
-
-<phrase>
-<original>Move the current layer upward in the layer stack.</original>
-<translation>Pindah lapisan semasa menaik dalam timbunan lapisan.</translation>
-</phrase>
-
-<phrase>
-<original>Move layer up</original>
-<translation>Pindah lapisan sehingga</translation>
-</phrase>
-
-<phrase>
-<original>Move the current layer downward in the layer stack.</original>
-<translation>Pindah lapisan semasa menurun dalam timbunan lapisan.</translation>
-</phrase>
-
-<phrase>
-<original>Move layer down</original>
-<translation>Pindah ke bawah lapisan</translation>
-</phrase>
-
-<!-- Layerpanel_Layers.frm contains 40 phrases. 22 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
-
-<!-- END text for Layerpanel_Layers.frm-->
-
-<!-- BEGIN text for pdWindowSync.cls -->
-
-<!-- pdWindowSync.cls contains 0 phrases. -->
-
-<!-- END text for pdWindowSync.cls-->
-
-<!-- BEGIN text for pdTitle.ctl -->
-
-<!-- pdTitle.ctl contains 0 phrases. -->
-
-<!-- END text for pdTitle.ctl-->
+<!-- END text for Effects_Artistic_FilmNoir.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2439</phrasecount>
+<phrasecount>2446</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4163 phrases. -->
-<!-- 1724 are duplicates, so only 2439 unique phrases have been written to file. -->
-<!-- These 2439 phrases contain approximately 13261 total words. -->
+<!-- As of this build, PhotoDemon contains 4182 phrases. -->
+<!-- 1736 are duplicates, so only 2446 unique phrases have been written to file. -->
+<!-- These 2446 phrases contain approximately 13271 total words. -->
 
 </pdData>
