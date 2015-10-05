@@ -973,7 +973,7 @@ Begin VB.Form FormMain
             Index           =   2
          End
          Begin VB.Menu MnuArtistic 
-            Caption         =   "Film noir"
+            Caption         =   "Film noir..."
             Index           =   3
          End
          Begin VB.Menu MnuArtistic 
@@ -3324,7 +3324,7 @@ Private Sub MnuArtistic_Click(Index As Integer)
             
         'Film noir
         Case 3
-            Process "Film noir", , , UNDO_LAYER
+            Process "Film noir", True
         
         'Glass tiles
         Case 4
