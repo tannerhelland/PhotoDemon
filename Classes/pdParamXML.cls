@@ -267,7 +267,6 @@ Public Function addParam(ByVal paramName As String, ByVal paramValue As Variant)
         strParamValue = paramValue
     End If
     
-    
     'Make the parameter name and value XML-safe
     paramName = getXMLSafeName(paramName)
     strParamValue = delimitParamValue(strParamValue)
@@ -279,6 +278,50 @@ Public Function addParam(ByVal paramName As String, ByVal paramValue As Variant)
     'Tack it onto the master string
     m_ParamString = m_ParamString & newParamEntry
     
+    addParam = True
+    
+End Function
+
+'Want to add multiple parameters at once?  Use this function, and call it using the order "Name", Value, "Name 2", Value 2...
+Public Function addMultipleParams(ParamArray allParams() As Variant) As Boolean
+    
+    On Error GoTo multiParamFailure
+    
+    If UBound(allParams) >= LBound(allParams) Then
+    
+        Dim tmpName As String, tmpValue As Variant
+        
+        Dim i As Long
+        For i = LBound(allParams) To UBound(allParams) Step 2
+            
+            'Parameters must be passed in a strict name/value order.  An odd number of parameters will cause crashes.
+            tmpName = allParams(i)
+            
+            If (i + 1) <= UBound(allParams) Then
+                tmpValue = allParams(i + 1)
+            Else
+                Err.Raise 9
+            End If
+            
+            'Add this key/value pair to the current running param string
+            Me.addParam tmpName, tmpValue
+            
+        Next i
+    
+    End If
+    
+    addMultipleParams = True
+    
+    Exit Function
+    
+multiParamFailure:
+    
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "WARNING!  Parse failure in pdParamXML.addMultipleParams()."
+    #End If
+    
+    addMultipleParams = False
+
 End Function
 
 'Update a given parameter.  If the parameter is not found, it will be added to the string. (Create-if-missing behavior can be toggled.)
@@ -359,7 +402,7 @@ Private Function getXMLSafeName(ByRef srcString As String) As String
 End Function
 
 'Given a parameter value string, make it XML-safe (e.g. replace "<" and ">" with HTML equivalents).
-' Note that we don't have to delimit other chars because PD uses only a subset of XML functionality, by design.
+' Note that we don't currently delimit other chars because PD uses only a subset of XML functionality, by design.
 Private Function delimitParamValue(ByVal srcString As String) As String
 
     If InStr(1, srcString, "<") Then srcString = Replace(srcString, "<", "&lt;")
