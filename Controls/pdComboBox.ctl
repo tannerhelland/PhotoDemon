@@ -828,6 +828,10 @@ Private Sub cPainterBox_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long,
     drawComboBox True
 End Sub
 
+Private Sub cResize_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    If Not m_InternalResizeState Then syncUserControlSizeToComboSize
+End Sub
+
 Private Sub tmrHookRelease_Timer()
 
     'If a hook is active, this timer will repeatedly try to kill it.  Do not enable it until you are certain the hook needs to be released.
@@ -1656,7 +1660,9 @@ Private Sub syncUserControlSizeToComboSize()
         
         'Resize the user control, as necessary
         If g_IsProgramRunning Then
-            cResize.SetSize comboRect.Right - comboRect.Left, comboRect.Bottom - comboRect.Top
+            m_InternalResizeState = True
+            cResize.SetSize comboRect.Right - comboRect.Left, comboRect.Bottom - comboRect.Top, True
+            m_InternalResizeState = False
         End If
             
         'Repaint the control
