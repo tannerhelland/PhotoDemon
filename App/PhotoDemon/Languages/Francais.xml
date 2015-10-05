@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.91</langversion>
+<langversion>6.7.93</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -418,11 +418,6 @@ Si le problème persiste, s'il vous plaît le signaler aux développeurs PhotoDe
 </phrase>
 
 <phrase>
-<original>Embuing image with the essence of F. Miller</original>
-<translation>L'image pénétrante avec l'essence de F. Miller</translation>
-</phrase>
-
-<phrase>
 <original>Adjusting image contrast</original>
 <translation>Réglage de la contraste de l'image</translation>
 </phrase>
@@ -461,7 +456,7 @@ You can use the MenuTest() sub in the Filters_Miscellaneous module to test your 
 <translation>PhotoDemon professionnel pointe</translation>
 </phrase>
 
-<!-- VBP_Filters_Misc.bas contains 22 phrases. 4 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- VBP_Filters_Misc.bas contains 21 phrases. 4 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for VBP_Filters_Misc.bas-->
 
@@ -2568,6 +2563,28 @@ S'il vous plaît entrer une valeur numérique.</translation>
 
 <!-- END text for pdDictionary.cls-->
 
+<!-- BEGIN text for pdDisplay.cls -->
+
+<!-- pdDisplay.cls contains 0 phrases. -->
+
+<!-- END text for pdDisplay.cls-->
+
+<!-- BEGIN text for pdDisplays.cls -->
+
+<phrase>
+<original>Unknown adapter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Unknown display</original>
+<translation></translation>
+</phrase>
+
+<!-- pdDisplays.cls contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for pdDisplays.cls-->
+
 <!-- BEGIN text for pdFFT.cls -->
 
 <!-- pdFFT.cls contains 0 phrases. -->
@@ -3111,6 +3128,18 @@ S'il vous plaît entrer une valeur numérique.</translation>
 
 <!-- END text for pdWindowPainter.cls-->
 
+<!-- BEGIN text for pdWindowSize.cls -->
+
+<!-- pdWindowSize.cls contains 0 phrases. -->
+
+<!-- END text for pdWindowSize.cls-->
+
+<!-- BEGIN text for pdWindowSync.cls -->
+
+<!-- pdWindowSync.cls contains 0 phrases. -->
+
+<!-- END text for pdWindowSync.cls-->
+
 <!-- BEGIN text for pdXML.cls -->
 
 <!-- pdXML.cls contains 0 phrases. -->
@@ -3475,6 +3504,12 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 <!-- pdTextBox.ctl contains 0 phrases. -->
 
 <!-- END text for pdTextBox.ctl-->
+
+<!-- BEGIN text for pdTitle.ctl -->
+
+<!-- pdTitle.ctl contains 0 phrases. -->
+
+<!-- END text for pdTitle.ctl-->
 
 <!-- BEGIN text for penSelector.ctl -->
 
@@ -4626,13 +4661,18 @@ ou la commande Fichier > Ouvrir et Fichier > Importer menu.</translation>
 </phrase>
 
 <phrase>
-<original>Remove noise</original>
-<translation>Suppression du bruit</translation>
+<original>Bilateral filter</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Median smoothing</original>
-<translation>Lissage médian</translation>
+<original>Mean shift</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Median</original>
+<translation>Médiane</translation>
 </phrase>
 
 <phrase>
@@ -5472,11 +5512,6 @@ Note: mineur texte de programme ne peut pas être mise à jour en direct. Ce tex
 </phrase>
 
 <phrase>
-<original>Median</original>
-<translation>Médiane</translation>
-</phrase>
-
-<phrase>
 <original>Straighten image</original>
 <translation>Redresser l'image</translation>
 </phrase>
@@ -5561,7 +5596,7 @@ Note: mineur texte de programme ne peut pas être mise à jour en direct. Ce tex
 <translation>Retirer canal alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 557 phrases. 172 were duplicates of existing phrases, so only 385 new phrases were written to file. -->
+<!-- MainWindow.frm contains 559 phrases. 174 were duplicates of existing phrases, so only 385 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -7768,6 +7803,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>Animating image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>low</original>
 <translation>faible</translation>
 </phrase>
@@ -7782,7 +7822,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>haut</translation>
 </phrase>
 
-<!-- Effects_Artistic_ComicBook.frm contains 11 phrases. 5 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Effects_Artistic_ComicBook.frm contains 13 phrases. 6 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ComicBook.frm-->
 
@@ -8150,7 +8190,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Applique un flou de mouvement</translation>
 </phrase>
 
-<!-- Effects_Blur_MotionBlur.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>gaussian</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Blur_MotionBlur.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_MotionBlur.frm-->
 
@@ -8856,6 +8901,42 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- END text for Effects_Noise_AddRGBNoise.frm-->
 
+<!-- BEGIN text for Effects_Noise_BilateralFilter.frm (FormBilateral) -->
+
+<phrase>
+<original>edge strength</original>
+<translation>force de bord</translation>
+</phrase>
+
+<phrase>
+<original>spatial power (currently hidden)</original>
+<translation>puissance spatiale (actuellement caché)</translation>
+</phrase>
+
+<phrase>
+<original>color strength</original>
+<translation>intensité de la couleur</translation>
+</phrase>
+
+<phrase>
+<original>color preservation</original>
+<translation>préservation de la couleur</translation>
+</phrase>
+
+<phrase>
+<original>use estimation to improve performance</original>
+<translation>utiliser l'estimation pour améliorer les performances</translation>
+</phrase>
+
+<phrase>
+<original>Applying bilateral smoothing</original>
+<translation>Application de lissage bilatérale</translation>
+</phrase>
+
+<!-- Effects_Noise_BilateralFilter.frm contains 10 phrases. 4 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for Effects_Noise_BilateralFilter.frm-->
+
 <!-- BEGIN text for Effects_Noise_FilmGrain.frm (FormFilmGrain) -->
 
 <phrase>
@@ -8881,6 +8962,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Noise_FilmGrain.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_FilmGrain.frm-->
+
+<!-- BEGIN text for Effects_Noise_MeanShift.frm (FormMeanShift) -->
+
+<phrase>
+<original>Applying mean shift filter</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_MeanShift.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Effects_Noise_MeanShift.frm-->
 
 <!-- BEGIN text for Effects_Noise_MedianSmoothing.frm (FormMedian) -->
 
@@ -8927,47 +9019,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Noise_MedianSmoothing.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_MedianSmoothing.frm-->
-
-<!-- BEGIN text for Effects_Noise_RemoveNoise.frm (FormBilateral) -->
-
-<phrase>
-<original>Remove noise (bilateral smoothing)</original>
-<translation>Suppression du bruit (de lissage bilatérale)</translation>
-</phrase>
-
-<phrase>
-<original>edge strength</original>
-<translation>force de bord</translation>
-</phrase>
-
-<phrase>
-<original>spatial power (currently hidden)</original>
-<translation>puissance spatiale (actuellement caché)</translation>
-</phrase>
-
-<phrase>
-<original>color strength</original>
-<translation>intensité de la couleur</translation>
-</phrase>
-
-<phrase>
-<original>color preservation</original>
-<translation>préservation de la couleur</translation>
-</phrase>
-
-<phrase>
-<original>use estimation to improve performance</original>
-<translation>utiliser l'estimation pour améliorer les performances</translation>
-</phrase>
-
-<phrase>
-<original>Applying bilateral smoothing</original>
-<translation>Application de lissage bilatérale</translation>
-</phrase>
-
-<!-- Effects_Noise_RemoveNoise.frm contains 10 phrases. 3 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
-
-<!-- END text for Effects_Noise_RemoveNoise.frm-->
 
 <!-- BEGIN text for Effects_Pixelate_ColorHalftone.frm (FormColorHalftone) -->
 
@@ -11565,6 +11616,102 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 
 <!-- END text for Layer_Transparency_RemoveTransparency.frm-->
 
+<!-- BEGIN text for Layerpanel_Layers.frm (layerpanel_Layers) -->
+
+<phrase>
+<original>blend</original>
+<translation>mélange</translation>
+</phrase>
+
+<phrase>
+<original>Click to hide this layer.</original>
+<translation>Cliquez pour cacher cette couche.</translation>
+</phrase>
+
+<phrase>
+<original>Click to show this layer.</original>
+<translation>Cliquez pour afficher cette couche.</translation>
+</phrase>
+
+<phrase>
+<original>Click to duplicate this layer.</original>
+<translation>Cliquez pour dupliquer cette couche.</translation>
+</phrase>
+
+<phrase>
+<original>Click to merge this layer with the layer beneath it.</original>
+<translation>Cliquez pour fusionner cette couche avec la couche en dessous.</translation>
+</phrase>
+
+<phrase>
+<original>This layer can't merge down, because there are no visible layers beneath it.</original>
+<translation>Cette couche peut pas fusionner vers le bas, car il n'y a pas de couches visibles en dessous.</translation>
+</phrase>
+
+<phrase>
+<original>Click to merge this layer with the layer above it.</original>
+<translation>Cliquez pour fusionner cette couche avec la couche au-dessus.</translation>
+</phrase>
+
+<phrase>
+<original>This layer can't merge up, because there are no visible layers above it.</original>
+<translation>Cette couche peut pas fusionner, parce que il n'y a pas les calques visibles au-dessus.</translation>
+</phrase>
+
+<phrase>
+<original>Click to make this the active layer.</original>
+<translation>Cliquez pour en faire la couche actif.</translation>
+</phrase>
+
+<phrase>
+<original>This is the currently active layer.</original>
+<translation>C'est la couche actif.</translation>
+</phrase>
+
+<phrase>
+<original>Rearrange layers</original>
+<translation>Eéorganiser couches </translation>
+</phrase>
+
+<phrase>
+<original>(hidden)</original>
+<translation>(caché)</translation>
+</phrase>
+
+<phrase>
+<original>Add a blank layer to the image.</original>
+<translation>Ajouter une couche blanche de l'image.</translation>
+</phrase>
+
+<phrase>
+<original>Delete the currently selected layer.</original>
+<translation>Supprimer la couche sélectionné.</translation>
+</phrase>
+
+<phrase>
+<original>Move the current layer upward in the layer stack.</original>
+<translation>Déplacez la couche courant vers le haut dans la pile des couches.</translation>
+</phrase>
+
+<phrase>
+<original>Move layer up</original>
+<translation>Déplacer couche jusqu'à</translation>
+</phrase>
+
+<phrase>
+<original>Move the current layer downward in the layer stack.</original>
+<translation>Déplacer la couche courant descendant dans la pile des couches.</translation>
+</phrase>
+
+<phrase>
+<original>Move layer down</original>
+<translation>Couche Descendre</translation>
+</phrase>
+
+<!-- Layerpanel_Layers.frm contains 40 phrases. 22 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+
+<!-- END text for Layerpanel_Layers.frm-->
+
 <!-- BEGIN text for Select_GenericModification.frm (FormSelectionDialogs) -->
 
 <phrase>
@@ -13472,11 +13619,6 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>Unknown display</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting.</original>
 <translation>Ce paramètre est le meilleur choix pour la plupart des utilisateurs. Si vous n'avez aucune idée de ce qu'est la gestion de couleur est, utiliser ce paramètre. Si vous avez correctement configuré un profil d'affichage via le panneau de configuration de Windows, utilisez également ce paramètre.</translation>
 </phrase>
@@ -13780,7 +13922,7 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 <translation>ATTENTION: ce dossier est invalide (accès interdit). S'il vous plaît fournir un dossier valide. Si aucun nouveau dossier est fourni, PhotoDemon va utiliser l'emplacement par défaut du système temp.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 246 phrases. 66 were duplicates of existing phrases, so only 180 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 246 phrases. 67 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14035,143 +14177,48 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdDisplays.cls -->
+<!-- BEGIN text for Effects_Artistic_FilmNoir.frm (FormFilmNoir) -->
 
 <phrase>
-<original>Unknown adapter</original>
+<original>shadow cut-off</original>
 <translation></translation>
 </phrase>
 
-<!-- pdDisplays.cls contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for pdDisplays.cls-->
-
-<!-- BEGIN text for pdDisplay.cls -->
-
-<!-- pdDisplay.cls contains 0 phrases. -->
-
-<!-- END text for pdDisplay.cls-->
-
-<!-- BEGIN text for pdWindowSize.cls -->
-
-<!-- pdWindowSize.cls contains 0 phrases. -->
-
-<!-- END text for pdWindowSize.cls-->
-
-<!-- BEGIN text for Layerpanel_Layers.frm (layerpanel_Layers) -->
-
 <phrase>
-<original>blend</original>
-<translation>mélange</translation>
+<original>contrast boost</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Click to hide this layer.</original>
-<translation>Cliquez pour cacher cette couche.</translation>
+<original>highlight cut-off</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Click to show this layer.</original>
-<translation>Cliquez pour afficher cette couche.</translation>
+<original>contrast midpoint</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Click to duplicate this layer.</original>
-<translation>Cliquez pour dupliquer cette couche.</translation>
+<original>film grain</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Click to merge this layer with the layer beneath it.</original>
-<translation>Cliquez pour fusionner cette couche avec la couche en dessous.</translation>
+<original>Asking Sam Spade for help</original>
+<translation></translation>
 </phrase>
 
-<phrase>
-<original>This layer can't merge down, because there are no visible layers beneath it.</original>
-<translation>Cette couche peut pas fusionner vers le bas, car il n'y a pas de couches visibles en dessous.</translation>
-</phrase>
+<!-- Effects_Artistic_FilmNoir.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
-<phrase>
-<original>Click to merge this layer with the layer above it.</original>
-<translation>Cliquez pour fusionner cette couche avec la couche au-dessus.</translation>
-</phrase>
-
-<phrase>
-<original>This layer can't merge up, because there are no visible layers above it.</original>
-<translation>Cette couche peut pas fusionner, parce que il n'y a pas les calques visibles au-dessus.</translation>
-</phrase>
-
-<phrase>
-<original>Click to make this the active layer.</original>
-<translation>Cliquez pour en faire la couche actif.</translation>
-</phrase>
-
-<phrase>
-<original>This is the currently active layer.</original>
-<translation>C'est la couche actif.</translation>
-</phrase>
-
-<phrase>
-<original>Rearrange layers</original>
-<translation>Eéorganiser couches </translation>
-</phrase>
-
-<phrase>
-<original>(hidden)</original>
-<translation>(caché)</translation>
-</phrase>
-
-<phrase>
-<original>Add a blank layer to the image.</original>
-<translation>Ajouter une couche blanche de l'image.</translation>
-</phrase>
-
-<phrase>
-<original>Delete the currently selected layer.</original>
-<translation>Supprimer la couche sélectionné.</translation>
-</phrase>
-
-<phrase>
-<original>Move the current layer upward in the layer stack.</original>
-<translation>Déplacez la couche courant vers le haut dans la pile des couches.</translation>
-</phrase>
-
-<phrase>
-<original>Move layer up</original>
-<translation>Déplacer couche jusqu'à</translation>
-</phrase>
-
-<phrase>
-<original>Move the current layer downward in the layer stack.</original>
-<translation>Déplacer la couche courant descendant dans la pile des couches.</translation>
-</phrase>
-
-<phrase>
-<original>Move layer down</original>
-<translation>Couche Descendre</translation>
-</phrase>
-
-<!-- Layerpanel_Layers.frm contains 40 phrases. 22 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
-
-<!-- END text for Layerpanel_Layers.frm-->
-
-<!-- BEGIN text for pdWindowSync.cls -->
-
-<!-- pdWindowSync.cls contains 0 phrases. -->
-
-<!-- END text for pdWindowSync.cls-->
-
-<!-- BEGIN text for pdTitle.ctl -->
-
-<!-- pdTitle.ctl contains 0 phrases. -->
-
-<!-- END text for pdTitle.ctl-->
+<!-- END text for Effects_Artistic_FilmNoir.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2439</phrasecount>
+<phrasecount>2446</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4163 phrases. -->
-<!-- 1724 are duplicates, so only 2439 unique phrases have been written to file. -->
-<!-- These 2439 phrases contain approximately 13261 total words. -->
+<!-- As of this build, PhotoDemon contains 4182 phrases. -->
+<!-- 1736 are duplicates, so only 2446 unique phrases have been written to file. -->
+<!-- These 2446 phrases contain approximately 13271 total words. -->
 
 </pdData>

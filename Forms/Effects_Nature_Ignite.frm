@@ -56,15 +56,6 @@ Begin VB.Form FormIgnite
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
@@ -124,9 +115,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 'Apply the "burn" fire effect filter
 'Input: strength of the filter (min 1, no real max - but above 7 it becomes increasingly blown-out)
 Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxOpacity As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -150,7 +138,7 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     Dim edgeDIB As pdDIB
     Set edgeDIB = New pdDIB
     edgeDIB.createFromExistingDIB workingDIB
-    CreateContourDIB True, workingDIB, edgeDIB, toPreview, workingDIB.getDIBWidth * 3, 0
+    Filters_Layers.CreateContourDIB True, workingDIB, edgeDIB, toPreview, workingDIB.getDIBWidth * 3, 0
     
     'Next, we're going to do two things: blurring the flame upward, while also applying some decay
     ' to the flame.
@@ -330,9 +318,8 @@ End Sub
 
 Private Sub Form_Activate()
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Draw a preview of the effect
     updatePreview
