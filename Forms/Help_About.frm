@@ -346,6 +346,7 @@ Private Sub Form_Load()
     GenerateThankyou "Manuel Augusto Santos", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=26303&lngWId=1", True
     GenerateThankyou "Mark James", "http://www.famfamfam.com/lab/icons/silk/", True
     GenerateThankyou "Mohammad Reza Karimi"
+    GenerateThankyou "Nguyen Van Hung"
     GenerateThankyou "Olaf Schmidt", "http://www.vbrichclient.com/#/en/About/", True
     GenerateThankyou "Paul Bourke", "http://paulbourke.net/miscellaneous/", True
     GenerateThankyou "Peter Burn"
@@ -389,7 +390,7 @@ Private Sub Form_Load()
     GenerateThankyou g_Language.TranslateMessage("Thank you for using PhotoDemon"), "http://photodemon.org", True
     
     'Apply translations and visual themes
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Initialize the background DIB (this allows for faster blitting than a picture box)
     ' Note that this DIB is dynamically resized; this solves issues with high-DPI screens
@@ -477,7 +478,7 @@ End Sub
 ' scrolling code I wrote for the metadata browser.
 Private Sub tmrText_Timer()
     
-    scrollOffset = scrollOffset + fixDPIFloat(m_pxScroll)
+    scrollOffset = scrollOffset + FixDPIFloat(m_pxScroll)
     If scrollOffset > (numOfCredits * BLOCKHEIGHT) Then scrollOffset = 0
     
     renderFullCreditList
@@ -492,7 +493,7 @@ Private Sub renderFullCreditList()
     'Render all text
     Dim i As Long
     For i = 0 To numOfCredits - 1
-        renderCredit i, fixDPI(8), fixDPI(i * BLOCKHEIGHT) - scrollOffset - fixDPIFloat(2)
+        renderCredit i, FixDPI(8), FixDPI(i * BLOCKHEIGHT) - scrollOffset - FixDPIFloat(2)
     Next i
     
     'The back DIB now contains the credit text drawn over the program logo.
@@ -521,7 +522,7 @@ End Sub
 Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal offsetY As Long)
 
     'Only draw the current block if it will be visible
-    If ((offsetY + fixDPI(BLOCKHEIGHT)) > 0) And (offsetY < m_BufferHeight - 40) Then
+    If ((offsetY + FixDPI(BLOCKHEIGHT)) > 0) And (offsetY < m_BufferHeight - 40) Then
     
         'Check to see if the current credit block is highlighted
         Dim isHovered As Boolean
@@ -580,7 +581,7 @@ Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal 
         If isHovered Then
         
             Dim tmpRect As RECTL, hBrush As Long
-            SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + fixDPI(BLOCKHEIGHT)
+            SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + FixDPI(BLOCKHEIGHT)
             hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
             FrameRect backDIB.getDIBDC, tmpRect, hBrush
             DeleteObject hBrush
