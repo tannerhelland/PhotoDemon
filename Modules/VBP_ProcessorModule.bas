@@ -102,9 +102,16 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     
     'Up front, create a parameter parser to handle the parameter string.  This can parse out individual function parameters as specific
     ' data types as necessary.  (Some pre-processing steps require parameter knowledge.)
+    '
+    'Note that at present, I am migrating all parameter strings to a new XML-based format.  As such, there are two
+    ' param string processors running in parallel here.  cParams is due for deprecation as soon as that work finishes.
     Dim cParams As pdParamString
     Set cParams = New pdParamString
     If Len(processParameters) <> 0 Then cParams.setParamString processParameters
+    
+    Dim cXMLParams As pdParamXML
+    Set cXMLParams = New pdParamXML
+    If Len(processParameters) <> 0 Then cXMLParams.setParamString processParameters
     
     'This central processor is a convenient place to check for any hot-patches that may have occurred in the background.
     
@@ -1265,7 +1272,8 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 ShowPDDialog vbModal, FormFilmNoir
             Else
-                FormFilmNoir.fxFilmNoir cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetDouble(5)
+                'FormFilmNoir.fxFilmNoir cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetDouble(5)
+                FormFilmNoir.fxFilmNoir cXMLParams.getParamString
             End If
             
         Case "Glass tiles"
