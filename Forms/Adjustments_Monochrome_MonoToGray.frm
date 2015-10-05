@@ -32,15 +32,6 @@ Begin VB.Form FormMonoToColor
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -141,16 +132,13 @@ Option Explicit
 
 'When previewing, we need to modify the strength to be representative of the final filter.  This means dividing by the
 ' original image dimensions in order to establish the right ratio.
-Dim iWidth As Long, iHeight As Long
-
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
+Private iWidth As Long, iHeight As Long
 
 'Given a monochrome image, convert it to grayscale
 'Input: radius of the search area (min 1, no real max - but there are diminishing returns above 50)
 Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Converting monochrome image to grayscale..."
+    If Not toPreview Then Message "Converting monochrome image to grayscale..."
         
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -407,7 +395,7 @@ Public Sub ConvertMonoToColor(ByVal mRadius As Long, Optional ByVal toPreview As
         
     Next y
         atBottom = Not atBottom
-        If toPreview = False Then
+        If Not toPreview Then
             If (x And progBarCheck) = 0 Then
                 If userPressedESC() Then Exit For
                 SetProgBarVal x
@@ -438,9 +426,8 @@ End Sub
 
 Private Sub Form_Activate()
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Provide a small explanation about how this process works
     lblExplanation.Caption = g_Language.TranslateMessage("Like all monochrome-to-grayscale tools, this tool will produce a blurry image.  You can use the Effects -> Sharpen -> Unsharp Masking tool to fix this.  (For best results, use an Unsharp Mask radius at least as large as this radius.)")

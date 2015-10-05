@@ -32,15 +32,6 @@ Begin VB.Form FormFilmGrain
       Width           =   12120
       _ExtentX        =   21378
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltNoise 
@@ -106,9 +97,6 @@ Option Explicit
 'When previewing, we need to modify the strength to be representative of the final filter. This means dividing by the
 ' original image dimensions in order to establish the right ratio.
 Dim iWidth As Long, iHeight As Long
-
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
 
 'Subroutine for adding noise to an image
 ' Inputs: Amount of noise, monochromatic or not, preview settings
@@ -312,9 +300,8 @@ End Sub
 
 Private Sub Form_Activate()
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Render a preview
     updatePreview

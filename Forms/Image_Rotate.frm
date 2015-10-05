@@ -134,14 +134,11 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'This temporary DIB will be used for rendering the preview
-Dim smallDIB As pdDIB
+Private smallDIB As pdDIB
 
 'This dialog can be used to resize the full image, or a single layer.  The requested target will be stored here,
 ' and can be externally accessed by the ResizeTarget property.
 Private m_RotateTarget As PD_ACTION_TARGET
-
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
 
 Public Property Let RotateTarget(newTarget As PD_ACTION_TARGET)
     m_RotateTarget = newTarget
@@ -363,7 +360,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
         
     Else
         Message "Arbitrary rotation requires the FreeImage plugin, which could not be located.  Rotation canceled."
-        pdMsgBox "The FreeImage plugin is required for image rotation.  Please go to Tools -> Options -> Updates and allow PhotoDemon to download core plugins.  Then restart the program.", vbApplicationModal + vbOKOnly + vbInformation, "FreeImage plugin missing"
+        PDMsgBox "The FreeImage plugin is required for image rotation.  Please go to Tools -> Options -> Updates and allow PhotoDemon to download core plugins.  Then restart the program.", vbApplicationModal + vbOKOnly + vbInformation, "FreeImage plugin missing"
     End If
         
 End Sub
@@ -466,9 +463,8 @@ Private Sub Form_Activate()
     'Give the preview object a copy of this image data so it can show it to the user if requested
     fxPreview.setOriginalImage smallDIB
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
         
     'Render a preview
     cmdBar.markPreviewStatus True

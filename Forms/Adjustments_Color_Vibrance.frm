@@ -32,15 +32,6 @@ Begin VB.Form FormVibrance
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltVibrance 
@@ -72,12 +63,12 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Vibrance Adjustment Tool
-'Copyright 2013-2015 by audioglider and Tanner Helland
+'Copyright 2013-2015 by Audioglider
 'Created: 26/June/13
 'Last updated: 24/August/13
 'Last update: added command bar
 '
-'Many thanks to talented contributer audioglider for creating this tool.
+'Many thanks to talented contributer Audioglider for creating this tool.
 '
 'Vibrance is similar to saturation, but slightly smarter, more subtle.  The algorithm attempts to provide a greater boost
 ' to colors that are less saturated, while performing a smaller adjustment to already saturated colors.
@@ -90,9 +81,6 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
-
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
 
 Public Sub Vibrance(ByVal vibranceAdjustment As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
@@ -202,9 +190,8 @@ End Sub
 
 Private Sub Form_Activate()
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Draw a preview of the effect
     updatePreview

@@ -151,9 +151,6 @@ Private srcDIB As pdDIB
 'Our copy of the image being saved.  This will be created and destroyed frequently as the alpha values are updated.
 Private tmpDIB As pdDIB
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 'The user's answer is returned via this property
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
@@ -175,9 +172,9 @@ Public Sub showDialog()
         
     'Automatically draw a question icon using the system icon set
     Dim iconY As Long
-    iconY = fixDPI(18)
-    If g_UseFancyFonts Then iconY = iconY + fixDPI(2)
-    DrawSystemIcon IDI_ASTERISK, Me.hDC, fixDPI(22), iconY
+    iconY = FixDPI(18)
+    If g_UseFancyFonts Then iconY = iconY + FixDPI(2)
+    DrawSystemIcon IDI_ASTERISK, Me.hDC, FixDPI(22), iconY
         
     'Initialize our temporary DIB render object
     Set tmpDIB = New pdDIB
@@ -187,12 +184,11 @@ Public Sub showDialog()
         
     Message "Waiting for user to specify alpha threshold... "
         
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Display the dialog
-    showPDDialog vbModal, Me, True
+    ShowPDDialog vbModal, Me, True
 
 End Sub
 

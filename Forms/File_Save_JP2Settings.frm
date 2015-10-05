@@ -63,15 +63,6 @@ Begin VB.Form dialog_ExportJP2
       Width           =   12135
       _ExtentX        =   21405
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
       dontAutoUnloadParent=   -1  'True
    End
@@ -174,9 +165,6 @@ Private userAnswer As VbMsgBoxResult
 
 'This form can be notified of the image being exported.  This may be used in the future to provide a preview.
 Public imageBeingExported As pdImage
-
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
 
 'When rendering the preview, we don't want to always re-request a copy of the main image.  Instead, we
 ' store one in this DIB (at the size of the preview) and simply re-use it when we need to render a preview.
@@ -295,9 +283,8 @@ Public Sub showDialog()
     
     Message "Waiting for user to specify JPEG-2000 export options... "
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Make a copy of the current image
     Set origImageCopy = New pdDIB
@@ -307,7 +294,7 @@ Public Sub showDialog()
     updatePreview
     
     'Display the dialog
-    showPDDialog vbModal, Me, True
+    ShowPDDialog vbModal, Me, True
 
 End Sub
 

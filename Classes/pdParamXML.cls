@@ -13,10 +13,10 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Internal Parameter Handler v2
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2013-2015 by Tanner Helland
 'Created: 25/March/13
-'Last updated: 03/July/14
-'Last update: start rewriting pdParamString to operate on XML strings instead of pipe-delimited ones
+'Last updated: 05/October/15
+'Last update: new helper function for adding a bunch of parameters at once
 '
 'PhotoDemon has unique needs regarding parameter passing.  Because it allows the user to record all actions as part of
 ' macros, the program needs a way to not only trade around parameters, but also store them in a file.

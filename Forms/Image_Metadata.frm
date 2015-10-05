@@ -31,9 +31,9 @@ Begin VB.Form FormMetadata
       TabIndex        =   13
       Top             =   7095
       Width           =   12015
-      _extentx        =   21193
-      _extenty        =   1323
-      backcolor       =   14802140
+      _ExtentX        =   21193
+      _ExtentY        =   1323
+      BackColor       =   14802140
    End
    Begin PhotoDemon.pdButton cmdTechnicalReport 
       Height          =   735
@@ -41,9 +41,9 @@ Begin VB.Form FormMetadata
       TabIndex        =   12
       Top             =   4380
       Width           =   4410
-      _extentx        =   7779
-      _extenty        =   1296
-      caption         =   "Generate full metadata report (HTML)..."
+      _ExtentX        =   7779
+      _ExtentY        =   1296
+      Caption         =   "Generate full metadata report (HTML)..."
    End
    Begin VB.PictureBox picScroll 
       Appearance      =   0  'Flat
@@ -65,8 +65,8 @@ Begin VB.Form FormMetadata
       TabIndex        =   1
       Top             =   540
       Width           =   11730
-      _extentx        =   20690
-      _extenty        =   1085
+      _ExtentX        =   20690
+      _ExtentY        =   1085
    End
    Begin VB.PictureBox picBuffer 
       Appearance      =   0  'Flat
@@ -89,8 +89,8 @@ Begin VB.Form FormMetadata
       TabIndex        =   6
       Top             =   2160
       Width           =   4410
-      _extentx        =   20690
-      _extenty        =   1085
+      _ExtentX        =   20690
+      _ExtentY        =   1085
    End
    Begin PhotoDemon.buttonStrip btsTechnical 
       Height          =   495
@@ -99,8 +99,8 @@ Begin VB.Form FormMetadata
       TabIndex        =   7
       Top             =   3240
       Width           =   4410
-      _extentx        =   6720
-      _extenty        =   873
+      _ExtentX        =   6720
+      _ExtentY        =   873
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -309,9 +309,6 @@ Private m_TitleFont As pdFont, m_DescriptionFont As pdFont
 'Additional rendering values
 Private m_SeparatorColor As OLE_COLOR
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 'API scrollbar allows for larger scroll values
 Private WithEvents vsMetadata As pdScrollAPI
 Attribute vsMetadata.VB_VarHelpID = -1
@@ -330,7 +327,7 @@ Private Sub btsGroup_Click(ByVal buttonIndex As Long)
     
     'First, determine if the vertical scrollbar needs to be visible or not
     Dim maxMDSize As Long
-    maxMDSize = fixDPIFloat(BLOCKHEIGHT) * mdCategories(curCategory).Count
+    maxMDSize = FixDPIFloat(BLOCKHEIGHT) * mdCategories(curCategory).Count
     
     vsMetadata.Value = 0
     If maxMDSize < picBuffer.Height Then
@@ -389,9 +386,8 @@ End Sub
 
 Private Sub Form_Activate()
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
 End Sub
 
@@ -561,7 +557,7 @@ Private Sub redrawMetadataList()
     'Render each block in turn
     Dim i As Long
     For i = 0 To mdCategories(curCategory).Count - 1
-        renderMDBlock curCategory, i, fixDPI(8), fixDPI(i * BLOCKHEIGHT) - scrollOffset - fixDPI(2)
+        renderMDBlock curCategory, i, FixDPI(8), FixDPI(i * BLOCKHEIGHT) - scrollOffset - FixDPI(2)
     Next i
     
     'Copy the buffer to the target picture box
@@ -576,13 +572,13 @@ Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long,
     'Only draw the current block if it will be visible
     If ((offsetY + BLOCKHEIGHT) > 0) And (offsetY < m_BackBuffer.getDIBHeight) Then
         
-        offsetY = offsetY + fixDPI(9)
+        offsetY = offsetY + FixDPI(9)
         
         Dim thisTag As mdItem
         thisTag = allTags(blockCategory, blockIndex)
         
         Dim linePadding As Long
-        linePadding = fixDPI(4)
+        linePadding = FixDPI(4)
     
         Dim mHeight As Single
         Dim drawString As String, numericalPrefix As String
@@ -618,13 +614,13 @@ Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long,
         End If
         
         m_DescriptionFont.attachToDC m_BackBuffer.getDIBDC
-        m_DescriptionFont.fastRenderTextWithClipping offsetX + m_TitleFont.getWidthOfString(numericalPrefix), offsetY + mHeight, m_BackBuffer.getDIBWidth - offsetX - fixDPI(17), m_DescriptionFont.getHeightOfString(drawString), drawString
+        m_DescriptionFont.fastRenderTextWithClipping offsetX + m_TitleFont.getWidthOfString(numericalPrefix), offsetY + mHeight, m_BackBuffer.getDIBWidth - offsetX - FixDPI(17), m_DescriptionFont.getHeightOfString(drawString), drawString
         
         'Draw a divider line near the bottom of the metadata block
         Dim lineY As Long
         'If blockIndex < mdCategories(blockCategory).Count - 1 Then
-            lineY = offsetY + fixDPI(BLOCKHEIGHT - 7)
-            GDI_Plus.GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, fixDPI(4), lineY, m_BackBuffer.getDIBWidth - fixDPI(4), lineY, m_SeparatorColor
+            lineY = offsetY + FixDPI(BLOCKHEIGHT - 7)
+            GDI_Plus.GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, FixDPI(4), lineY, m_BackBuffer.getDIBWidth - FixDPI(4), lineY, m_SeparatorColor
         'End If
         
     End If

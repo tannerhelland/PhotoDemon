@@ -694,7 +694,7 @@ Private Sub Form_Activate()
     lblExplanation.Caption = addInstructions
         
     'If translations are active, the translated text may not fit the explanation label.  Automatically adjust it to fit.
-    fitWordwrapLabel lblExplanation, Me
+    FitWordwrapLabel lblExplanation, Me
     
     'Mark the mouse as not being down
     isMouseDown = False
@@ -706,8 +706,8 @@ Private Sub Form_Activate()
     Histogram_Analysis.generateHistogramImages hData, hMax, hDIB, picDraw.ScaleWidth - (previewBorder * 2) - 1, picDraw.ScaleHeight - (previewBorder * 2) - 1
     Histogram_Analysis.generateHistogramImages hDataLog, hMaxLog, hLogDIB, picDraw.ScaleWidth - (previewBorder * 2) - 1, picDraw.ScaleHeight - (previewBorder * 2) - 1
         
-    'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     cmdBar.markPreviewStatus True
     updatePreview
@@ -725,10 +725,10 @@ Private Sub Form_Load()
     btsChannel.AddItem "blue", 2
     btsChannel.AddItem "RGB", 3
     
-    btsChannel.AssignImageToItem 0, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_RED, 16, 2)
-    btsChannel.AssignImageToItem 1, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_GREEN, 16, 2)
-    btsChannel.AssignImageToItem 2, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_BLUE, 16, 2)
-    btsChannel.AssignImageToItem 3, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_RGB, 24, 2)
+    btsChannel.AssignImageToItem 0, "", Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_RED, 16, 2)
+    btsChannel.AssignImageToItem 1, "", Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_GREEN, 16, 2)
+    btsChannel.AssignImageToItem 2, "", Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_BLUE, 16, 2)
+    btsChannel.AssignImageToItem 3, "", Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_RGB, 24, 2)
         
     'Populate the histogram display options
     btsHistogram.AddItem "none", 0
@@ -886,7 +886,7 @@ skipHistogramRender:
     
     'Next, render the spline control points.
     Dim circRadius As Long
-    circRadius = fixDPI(8)
+    circRadius = FixDPI(8)
     
     Dim circAlpha As Long
     circAlpha = 190
@@ -956,8 +956,8 @@ skipHistogramRender:
         
         'Create a new DIB at the size of the string (with a slight bit of padding on all sides)
         Dim coordBoxWidth As Long, coordBoxHeight As Long
-        coordBoxWidth = coordStringWidth + fixDPI(8)
-        coordBoxHeight = coordStringHeight + fixDPI(5)
+        coordBoxWidth = coordStringWidth + FixDPI(8)
+        coordBoxHeight = coordStringHeight + FixDPI(5)
         
         If mouseCoordDIB Is Nothing Then
             mouseCoordDIB.createBlank coordBoxWidth, coordBoxHeight, 24, RGB(255, 255, 255)
@@ -971,7 +971,7 @@ skipHistogramRender:
                 
         'Render the coordinate string onto the temporary DIB
         mouseCoordFont.attachToDC mouseCoordDIB.getDIBDC
-        mouseCoordFont.fastRenderMultilineText fixDPI(4), fixDPI(2), coordString
+        mouseCoordFont.fastRenderMultilineText FixDPI(4), FixDPI(2), coordString
         
         'Render a 1px border around the coordinate overlay
         GDIPlusDrawRectOutlineToDC mouseCoordDIB.getDIBDC, 0, 0, mouseCoordDIB.getDIBWidth - 1, mouseCoordDIB.getDIBHeight - 1, RGB(25, 25, 25)
@@ -980,11 +980,11 @@ skipHistogramRender:
         ' given node, but if that location lies off-image, move the overlay in-bounds.
         Dim coordX As Long, coordY As Long
         
-        coordX = coordActualX + fixDPI(3)
+        coordX = coordActualX + FixDPI(3)
         If coordX < 0 Then coordX = 0
         If coordX + mouseCoordDIB.getDIBWidth > picDraw.ScaleWidth Then coordX = picDraw.ScaleWidth - mouseCoordDIB.getDIBWidth
         
-        coordY = coordActualY + fixDPI(3)
+        coordY = coordActualY + FixDPI(3)
         If coordY < 0 Then coordY = 0
         If coordY + mouseCoordDIB.getDIBHeight > picDraw.ScaleHeight Then coordY = picDraw.ScaleHeight - mouseCoordDIB.getDIBHeight
         

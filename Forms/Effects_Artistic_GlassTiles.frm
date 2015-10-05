@@ -51,15 +51,6 @@ Begin VB.Form FormGlassTiles
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
@@ -157,7 +148,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Glass Tiles Filter Dialog
-'Copyright 2014 by Audioglider and Tanner Helland
+'Copyright 2014 by Audioglider
 'Created: 23/May/14
 'Last updated: 23/May/14
 'Last update: Initial build
@@ -180,9 +171,6 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
-
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
 
 'Apply a glass tile filter to an image
 Public Sub GlassTiles(ByVal lSquareSize As Long, ByVal lCurvature As Double, ByVal lAngle As Double, ByVal superSamplingAmount As Long, ByVal edgeHandling As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
@@ -396,9 +384,8 @@ End Sub
 
 Private Sub Form_Activate()
         
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Display the previewed effect in the neighboring window
     cmdBar.markPreviewStatus True
@@ -413,7 +400,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    popDistortEdgeBox cmbEdges, EDGE_CLAMP
+    PopDistortEdgeBox cmbEdges, EDGE_CLAMP
     
 End Sub
 

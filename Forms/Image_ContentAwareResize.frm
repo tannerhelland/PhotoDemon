@@ -121,9 +121,6 @@ Option Explicit
 ' and can be externally accessed by the ResizeTarget property.
 Private m_ResizeTarget As PD_ACTION_TARGET
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 Public Property Let ResizeTarget(newTarget As PD_ACTION_TARGET)
     m_ResizeTarget = newTarget
 End Property
@@ -243,9 +240,8 @@ Private Sub Form_Load()
         lblFlatten.Visible = False
     End If
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
 End Sub
 

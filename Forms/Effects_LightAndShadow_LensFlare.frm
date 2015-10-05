@@ -363,9 +363,6 @@ Private m_numFlares As Long
 'To reduce the number of parameters passed mid-loop, some values are cached at module level
 Private m_PrimaryIntensity As Double, m_SecondaryIntensity As Double, m_TertiaryIntensity As Double
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 'Helper function to initialize a flare
 Private Function SetFlare(ByVal wType As Long, ByVal fScale As Double, ByVal x As Long, ByVal y As Long, _
                           ByVal r As Double, ByVal g As Double, ByVal b As Double) As tFlare
@@ -827,9 +824,8 @@ End Sub
 
 Private Sub Form_Activate()
         
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Display the previewed effect in the neighboring window
     updatePreview

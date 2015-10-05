@@ -357,7 +357,6 @@ Private Sub Form_Load()
     GenerateThankyou "Roy (rk)"
     GenerateThankyou "Raj Chaudhuri", "https://github.com/rajch", True
     GenerateThankyou "Robert Rayment", "http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=66991&lngWId=1", True
-    GenerateThankyou "Rod Stephens", "http://www.vb-helper.com", True
     GenerateThankyou "Steve McMahon", "http://www.vbaccelerator.com/home/VB/index.asp", True
     GenerateThankyou "Tango Icon Library", "http://tango.freedesktop.org/", True
     GenerateThankyou "Tom Loos", "http://www.designedbyinstinct.com", True

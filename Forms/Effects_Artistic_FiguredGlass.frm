@@ -33,15 +33,6 @@ Begin VB.Form FormFiguredGlass
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltScale 
@@ -170,10 +161,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'This variable stores random z-location in the perlin noise generator (which allows for a unique effect each time the form is loaded)
-Dim m_zOffset As Double
-
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
+Private m_zOffset As Double
 
 Private Sub cmbEdges_Click()
     updatePreview
@@ -416,9 +404,8 @@ End Sub
 
 Private Sub Form_Activate()
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Create the preview
     cmdBar.markPreviewStatus True
@@ -438,7 +425,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    popDistortEdgeBox cmbEdges, EDGE_REFLECT
+    PopDistortEdgeBox cmbEdges, EDGE_REFLECT
     
 End Sub
 

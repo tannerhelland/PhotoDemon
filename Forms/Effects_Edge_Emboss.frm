@@ -120,9 +120,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 'OK button
 Private Sub cmdBar_OKClick()
     Process "Emboss", , buildParams(sltDistance.Value, sltAngle.Value, sltDepth.Value, colorPicker.Color), UNDO_LAYER
@@ -144,9 +141,8 @@ End Sub
 
 Private Sub Form_Activate()
             
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Render a preview of the emboss/engrave effect
     updatePreview

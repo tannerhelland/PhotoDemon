@@ -1110,10 +1110,10 @@ Private Sub Form_Load()
     btsChannel.AddItem "blue", 2
     btsChannel.AddItem "RGB", 3
     
-    btsChannel.AssignImageToItem 0, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_RED, 16, 2)
-    btsChannel.AssignImageToItem 1, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_GREEN, 16, 2)
-    btsChannel.AssignImageToItem 2, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_BLUE, 16, 2)
-    btsChannel.AssignImageToItem 3, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_RGB, 24, 2)
+    btsChannel.AssignImageToItem 0, "", Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_RED, 16, 2)
+    btsChannel.AssignImageToItem 1, "", Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_GREEN, 16, 2)
+    btsChannel.AssignImageToItem 2, "", Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_BLUE, 16, 2)
+    btsChannel.AssignImageToItem 3, "", Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_RGB, 24, 2)
     
     'Prepare the custom input handlers
     Set cMouseEventsIn = New pdInputMouse
@@ -1128,8 +1128,8 @@ Private Sub Form_Load()
     cmdColorSelect(1).assignTooltip "When this button is active, you can set the highlight input level color by right-clicking a color in the preview window."
     cmdColorSelect(0).Value = True
     
-    'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    'Apply translations and visual themes
+    MakeFormPretty Me
 
 End Sub
 

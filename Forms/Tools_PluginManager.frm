@@ -1775,13 +1775,10 @@ Private Declare Function VerQueryValue Lib "Version" Alias "VerQueryValueA" (pBl
 Private Declare Sub MoveMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, ByVal Source As Long, ByVal Length As Long)
 
 'This array will contain the full version strings of our various plugins
-Dim vString(0 To 4) As String
+Private vString(0 To 4) As String
 
 'If the user presses "cancel", we need to restore the previous enabled/disabled values
-Dim pEnabled(0 To 4) As Boolean
-
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
+Private pEnabled(0 To 4) As Boolean
 
 Private Sub CollectVersionInfo(ByVal FullFileName As String, ByVal strIndex As Long)
    
@@ -1969,21 +1966,20 @@ Private Sub Form_Load()
         setArrowCursor picContainer(i)
     Next i
             
-    'Apply visual styles
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'If a translation is active, realign text as necessary
     If g_Language.translationActive Then
-        lblPluginStatus.Left = lblTitle(0).Left + lblTitle(0).Width + fixDPI(8)
+        lblPluginStatus.Left = lblTitle(0).Left + lblTitle(0).Width + FixDPI(8)
         
         For i = 0 To lblStatus.Count - 1
-            lblStatus(i).Left = lblInterfaceSubheader(i).Left + lblInterfaceSubheader(i).Width + fixDPI(8)
+            lblStatus(i).Left = lblInterfaceSubheader(i).Left + lblInterfaceSubheader(i).Width + FixDPI(8)
         Next i
         
         For i = 0 To lblHomepage.Count - 1
-            lblHomepageLink(i).Left = lblHomepage(i).Left + lblHomepage(i).Width + fixDPI(8)
-            lblLicenseLink(i).Left = lblLicense(i).Left + lblLicense(i).Width + fixDPI(8)
+            lblHomepageLink(i).Left = lblHomepage(i).Left + lblHomepage(i).Width + FixDPI(8)
+            lblLicenseLink(i).Left = lblLicense(i).Left + lblLicense(i).Width + FixDPI(8)
         Next i
         
     End If

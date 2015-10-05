@@ -32,15 +32,6 @@ Begin VB.Form FormBrightnessContrast
       Width           =   12075
       _ExtentX        =   21299
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.smartCheckBox chkSample 
@@ -115,11 +106,8 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'While previewing, we don't need to repeatedly sample contrast.  Just do it once and store the value.
-Dim previewHasSampled As Boolean
-Dim previewSampledContrast As Long
-
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
+Private previewHasSampled As Boolean
+Private previewSampledContrast As Long
 
 'Update the preview when the "sample contrast" checkbox value is changed
 Private Sub chkSample_Click()
@@ -261,7 +249,7 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
         End If
             
         
-        If toPreview = False Then Message "Adjusting image contrast..."
+        If Not toPreview Then Message "Adjusting image contrast..."
         
         'Like brightness, contrast works beautifully with look-up tables
         Dim ContrastTable(0 To 255) As Byte, CTCalc As Long
@@ -326,9 +314,8 @@ Private Sub Form_Activate()
     previewHasSampled = 0
     previewSampledContrast = 0
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
 End Sub
 

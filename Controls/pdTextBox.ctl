@@ -345,7 +345,7 @@ Private m_InHookNow As Boolean
 Private m_TextBackup As String
 
 'Additional helpers for rendering themed and multiline tooltips
-Private m_Tooltip As clsToolTip
+Private m_Tooltip As pdToolTip
 Private m_ToolString As String
 
 'hWnds aren't exposed by default
@@ -408,10 +408,10 @@ Public Property Get Multiline() As Boolean
     Multiline = m_Multiline
 End Property
 
-Public Property Let Multiline(ByVal NewState As Boolean)
+Public Property Let Multiline(ByVal newState As Boolean)
     
-    If NewState <> m_Multiline Then
-        m_Multiline = NewState
+    If newState <> m_Multiline Then
+        m_Multiline = newState
         
         'Changing the multiline property requires a full recreation of the edit box (e.g. it cannot be changed via window message alone).
         ' Also, note that the createEditBox function will automatically handle the backup/restoration of any text currently in the edit box.
@@ -708,19 +708,13 @@ Private Sub UserControl_Show()
     '
     'TODO!  Add helper functions for setting the tooltip to the created hWnd, instead of the VB control
     m_ToolString = Extender.ToolTipText
-
-    If m_ToolString <> "" Then
-
-        Set m_Tooltip = New clsToolTip
-        With m_Tooltip
-
-            .Create Me
-            .MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            .AddTool Me, m_ToolString
-            Extender.ToolTipText = ""
-
-        End With
-
+    
+    If Len(m_ToolString) <> 0 Then
+    
+        If (m_Tooltip Is Nothing) Then Set m_Tooltip = New pdToolTip
+        m_Tooltip.setTooltip m_EditBoxHwnd, Me.hWnd, m_ToolString
+        Extender.ToolTipText = ""
+        
     End If
 
 End Sub

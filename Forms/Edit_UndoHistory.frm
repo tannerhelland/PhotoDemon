@@ -182,7 +182,7 @@ Private Sub redrawUndoList()
     
     Dim i As Long
     For i = 0 To numOfUndos - 1
-        renderUndoBlock i, 0, fixDPI(i * BLOCKHEIGHT) - scrollOffset - fixDPI(2)
+        renderUndoBlock i, 0, FixDPI(i * BLOCKHEIGHT) - scrollOffset - FixDPI(2)
     Next i
     
     'Copy the buffer to the main form
@@ -196,12 +196,12 @@ End Sub
 Private Sub renderUndoBlock(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal offsetY As Long)
 
     'Only draw the current block if it will be visible
-    If ((offsetY + fixDPI(BLOCKHEIGHT)) > 0) And (offsetY < m_BufferHeight) Then
+    If ((offsetY + FixDPI(BLOCKHEIGHT)) > 0) And (offsetY < m_BufferHeight) Then
     
-        offsetY = offsetY + fixDPI(2)
+        offsetY = offsetY + FixDPI(2)
         
         Dim linePadding As Long
-        linePadding = fixDPI(2)
+        linePadding = FixDPI(2)
     
         Dim mHeight As Single
         Dim tmpRect As RECTL
@@ -210,7 +210,7 @@ Private Sub renderUndoBlock(ByVal blockIndex As Long, ByVal offsetX As Long, ByV
         'If this filter has been selected, draw the background with the system's current selection color
         If blockIndex = curBlock Then
         
-            SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + fixDPI(BLOCKHEIGHT)
+            SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + FixDPI(BLOCKHEIGHT)
             hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
             FillRect bufferDIB.getDIBDC, tmpRect, hBrush
             DeleteObject hBrush
@@ -226,7 +226,7 @@ Private Sub renderUndoBlock(ByVal blockIndex As Long, ByVal offsetX As Long, ByV
         
         'If the current filter is highlighted but not selected, simply render the border with a highlight
         If (blockIndex <> curBlock) And (blockIndex = curBlockHover) Then
-            SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + fixDPI(BLOCKHEIGHT)
+            SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + FixDPI(BLOCKHEIGHT)
             hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
             FrameRect bufferDIB.getDIBDC, tmpRect, hBrush
             DeleteObject hBrush
@@ -240,12 +240,12 @@ Private Sub renderUndoBlock(ByVal blockIndex As Long, ByVal offsetX As Long, ByV
         
         'Render the thumbnail for this entry onto its block
         Dim thumbWidth As Long
-        thumbWidth = offsetX + fixDPI(4) + undoEntries(blockIndex).thumbnailSmall.getDIBWidth
-        undoEntries(blockIndex).thumbnailSmall.alphaBlendToDC bufferDIB.getDIBDC, 255, offsetX + fixDPI(4), offsetY + ((fixDPI(BLOCKHEIGHT) - undoEntries(blockIndex).thumbnailSmall.getDIBHeight) \ 2)
+        thumbWidth = offsetX + FixDPI(4) + undoEntries(blockIndex).thumbnailSmall.getDIBWidth
+        undoEntries(blockIndex).thumbnailSmall.alphaBlendToDC bufferDIB.getDIBDC, 255, offsetX + FixDPI(4), offsetY + ((FixDPI(BLOCKHEIGHT) - undoEntries(blockIndex).thumbnailSmall.getDIBHeight) \ 2)
             
         'Render the index and name fields
         firstFont.attachToDC bufferDIB.getDIBDC
-        firstFont.fastRenderText thumbWidth + fixDPI(16) + offsetX, offsetY + fixDPI(4), drawString
+        firstFont.fastRenderText thumbWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4), drawString
         firstFont.releaseFromDC
                 
         'Below that, add the description text
@@ -253,7 +253,7 @@ Private Sub renderUndoBlock(ByVal blockIndex As Long, ByVal offsetX As Long, ByV
         drawString = getStringForUndoType(undoEntries(blockIndex).undoType, undoEntries(blockIndex).undoLayerID)
         
         secondFont.attachToDC bufferDIB.getDIBDC
-        secondFont.fastRenderText thumbWidth + fixDPI(16) + offsetX, offsetY + fixDPI(4) + mHeight, drawString
+        secondFont.fastRenderText thumbWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4) + mHeight, drawString
         secondFont.releaseFromDC
         
     End If
@@ -305,7 +305,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
         
         'Calculate a new vertical scroll position so that the selected filter appears on-screen
         Dim newScrollOffset As Long
-        newScrollOffset = curBlock * fixDPI(BLOCKHEIGHT)
+        newScrollOffset = curBlock * FixDPI(BLOCKHEIGHT)
         If newScrollOffset > vsBuffer.Max Then newScrollOffset = vsBuffer.Max
         vsBuffer.Value = newScrollOffset
         
@@ -369,8 +369,8 @@ End Sub
 
 Private Sub Form_Activate()
     
-    'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Redraw the undo list
     redrawUndoList
@@ -424,7 +424,7 @@ Private Sub Form_Load()
     
     'Determine if the vertical scrollbar needs to be visible or not
     Dim maxListSize As Long
-    maxListSize = fixDPIFloat(BLOCKHEIGHT) * numOfUndos - 1
+    maxListSize = FixDPIFloat(BLOCKHEIGHT) * numOfUndos - 1
     
     vsBuffer.Value = 0
     If maxListSize < picBuffer.ScaleHeight Then
@@ -437,7 +437,7 @@ Private Sub Form_Load()
         ' is displayed in the center of the box by default.  (This gives the user a chance to see several actions
         ' above and below the current state.)
         Dim idealPosition As Long
-        idealPosition = curBlock * fixDPIFloat(BLOCKHEIGHT) - ((picBuffer.ScaleHeight - fixDPIFloat(BLOCKHEIGHT)) / 2)
+        idealPosition = curBlock * FixDPIFloat(BLOCKHEIGHT) - ((picBuffer.ScaleHeight - FixDPIFloat(BLOCKHEIGHT)) / 2)
         
         If idealPosition < vsBuffer.Max Then
             If idealPosition < 0 Then idealPosition = 0
@@ -480,7 +480,7 @@ Private Function getUndoAtPosition(ByVal x As Long, ByVal y As Long) As Long
     Dim vOffset As Long
     vOffset = vsBuffer.Value
     
-    getUndoAtPosition = (y + vOffset) \ fixDPI(BLOCKHEIGHT)
+    getUndoAtPosition = (y + vOffset) \ FixDPI(BLOCKHEIGHT)
     
 End Function
 
