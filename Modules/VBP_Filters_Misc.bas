@@ -878,86 +878,6 @@ Public Sub MenuRadioactive()
 
 End Sub
 
-'Stretch out the contrast and convert the image to dramatic black and white.  Originally called the "comic book" filter, since renamed to Film Noir.
-Public Sub MenuFilmNoir()
-
-    Message "Embuing image with the essence of F. Miller..."
-    
-    'Create a local array and point it at the pixel data we want to operate on
-    Dim ImageData() As Byte
-    Dim tmpSA As SAFEARRAY2D
-    prepImageData tmpSA
-    CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
-            
-    'These values will help us access locations in the array more quickly.
-    ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
-    qvDepth = curDIBValues.BytesPerPixel
-    
-    'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
-    ' based on the size of the area to be processed.
-    Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
-    
-    'Finally, a bunch of variables used in color calculation
-    Dim r As Long, g As Long, b As Long
-    Dim grayVal As Long
-    
-    'Because gray values are constant, we can use a look-up table to calculate them
-    Dim gLookUp(0 To 765) As Byte
-    For x = 0 To 765
-        gLookUp(x) = CByte(x \ 3)
-    Next x
-    
-    'Same goes for contrast
-    Dim cLookup(0 To 255) As Byte, cCalc As Long
-                
-    For x = 0 To 255
-        cCalc = x + (((x - 127) * 30) \ 100)
-        If cCalc > 255 Then cCalc = 255
-        If cCalc < 0 Then cCalc = 0
-        cLookup(x) = CByte(cCalc)
-    Next x
-        
-    'Apply the filter
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
-        
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        
-        grayVal = gLookUp(r + g + b)
-        grayVal = cLookup(grayVal)
-        
-        ImageData(QuickVal + 2, y) = grayVal
-        ImageData(QuickVal + 1, y) = grayVal
-        ImageData(QuickVal, y) = grayVal
-        
-    Next y
-        If (x And progBarCheck) = 0 Then
-            If userPressedESC() Then Exit For
-            SetProgBarVal x
-        End If
-    Next x
-        
-    'With our work complete, point ImageData() away from the DIB and deallocate it
-    CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
-    Erase ImageData
-    
-    'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData
-
-End Sub
-
 'Correct image contrast by stretching the luminance histogram across the full spectrum
 Public Sub AutoContrastCorrect(Optional ByVal percentIgnore As Double = 0.05, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
@@ -1046,14 +966,14 @@ Public Sub MenuCountColors()
     
     'Show the user our final tally
     Message "Total number of unique colors: %1", totalCount
-    pdMsgBox "This image contains %1 unique colors.", vbOKOnly + vbApplicationModal + vbInformation, "Count Image Colors", totalCount
+    PDMsgBox "This image contains %1 unique colors.", vbOKOnly + vbApplicationModal + vbInformation, "Count Image Colors", totalCount
     
 End Sub
 
 'You can use this section of code to test out your own filters.  I've left some sample code below.
 Public Sub MenuTest()
     
-    pdMsgBox "This menu item only appears in the Visual Basic IDE." & vbCrLf & vbCrLf & "You can use the MenuTest() sub in the Filters_Miscellaneous module to test your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.", vbInformation + vbOKOnly + vbApplicationModal, " PhotoDemon Pro Tip"
+    PDMsgBox "This menu item only appears in the Visual Basic IDE." & vbCrLf & vbCrLf & "You can use the MenuTest() sub in the Filters_Miscellaneous module to test your own filters.  I typically do this first, then once the filter is working properly, I give it a subroutine of its own.", vbInformation + vbOKOnly + vbApplicationModal, " PhotoDemon Pro Tip"
     
     'Apply fake color correction, as a test
     'Color_Management.convertRGBUsingCustomEndpoints pdImages(g_CurrentImage).getActiveDIB, 0.15, 0.06, 0.3, 0.6, 0.64, 0.33, 0.3127, 0.329
