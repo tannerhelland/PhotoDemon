@@ -455,10 +455,7 @@ End Enum
 
 'Base DPI defaults to the current screen DPI (VB uses this as the default when sending an image to the printer via PaintPicture.)
 ' We use a variety of tricky math to adjust this, and in turn adjust the print quality of the image.
-Dim baseDPI As Double, desiredDPI As Double
-
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
+Private baseDPI As Double, desiredDPI As Double
 
 'Changing the orientation box forces a refresh of the preview
 Private Sub cbOrientation_Click()
@@ -624,9 +621,8 @@ Private Sub Form_Load()
     cmbDPI.AddItem "4000"
     cmbDPI = baseDPI
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
 
     If g_UseFancyFonts Then txtCopies.Height = txtCopies.Height + 1
     
@@ -659,7 +655,7 @@ Private Sub CmdOK_Click()
           
             'Print the image
             If (PrintPictureToFitPage(Printer, picOut.Picture, cbOrientation.ListIndex + 1, CBool(chkCenter), CBool(chkFit)) = 0) Then
-                pdMsgBox "%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.", vbExclamation + vbOKOnly + vbApplicationModal, "Printer Error", PROGRAMNAME, Printer.DeviceName
+                PDMsgBox "%1 was unable to print the image.  Please make sure that the specified printer (%2) is powered-on and ready for printing.", vbExclamation + vbOKOnly + vbApplicationModal, "Printer Error", PROGRAMNAME, Printer.DeviceName
                 Message "Print canceled."
             End If
               

@@ -101,9 +101,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 'Because this tool can be used for multiple actions (median, dilate, erode), we need to track which mode is currently active.
 ' When the reset or randomize buttons are pressed, we will automatically adjust our behavior to match.
 Private Enum MedianToolMode
@@ -197,9 +194,8 @@ End Sub
 
 Private Sub Form_Activate()
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
@@ -243,7 +239,7 @@ Public Sub showMedianDialog(ByVal initPercentage As Long)
         
     End If
     
-    showPDDialog vbModal, Me
+    ShowPDDialog vbModal, Me
 
 End Sub
 

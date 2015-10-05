@@ -666,9 +666,6 @@ Private oldColor As Long
 'The new color selected by the user, if any
 Private newUserColor As Long
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Private m_Tooltip As clsToolTip
-
 'pdDIB for the primary color box (luminance/saturation) on the left
 Private primaryBox As pdDIB
 
@@ -753,7 +750,7 @@ Private Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByV
 Private Declare Function SetCapture Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function ReleaseCapture Lib "user32" () As Long
 Private Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
-Private Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Long, ByVal dX As Long, ByVal dY As Long, ByVal cButtons As Long, ByVal dwExtraInfo As Long)
+Private Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Long, ByVal dx As Long, ByVal dy As Long, ByVal cButtons As Long, ByVal dwExtraInfo As Long)
 
 'pdInputMouse makes it easier to deal with a custom hand cursor for the many picture boxes on the form
 Private WithEvents cMouse As pdInputMouse
@@ -935,9 +932,8 @@ Public Sub showDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     cmdCapture.AssignImage "CS_FROM_SCREEN"
     cmdCapture.assignTooltip "Click this button to enable color capturing from anywhere on the screen."
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Manually assign a hand cursor to the various picture boxes.
     prepSpecialMouseHandling True
@@ -952,7 +948,7 @@ Public Sub showDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     loadRecentColorList
     
     'Display the dialog
-    showPDDialog vbModal, Me, True
+    ShowPDDialog vbModal, Me, True
 
 End Sub
 
@@ -1241,7 +1237,7 @@ Private Sub syncInterfaceToCurrentColor()
     Erase pImageData
     
     'We now want to draw a circle around the point where the user's current color resides
-    GDIPlusDrawCanvasCircle primaryBox.getDIBDC, curValue * loopWidth, (1 - curSaturation) * loopHeight, fixDPI(7), 192
+    GDIPlusDrawCanvasCircle primaryBox.getDIBDC, curValue * loopWidth, (1 - curSaturation) * loopHeight, FixDPI(7), 192
         
     'Render the primary color box
     primaryBox.renderToPictureBox picColor

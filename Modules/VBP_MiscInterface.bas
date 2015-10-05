@@ -570,7 +570,7 @@ End Sub
 
 'metaToggle enables or disables a swath of controls related to a simple keyword (e.g. "Undo", which affects multiple menu items
 ' and toolbar buttons)
-Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boolean, Optional ByVal suspendAssociatedRedraws As Boolean = False)
+Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boolean, Optional ByVal suspendAssociatedRedraws As Boolean = False)
     
     Dim i As Long
     
@@ -578,48 +578,48 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             
         'Save (left-hand panel button AND menu item)
         Case tSave
-            If FormMain.MnuFile(8).Enabled <> NewState Then
+            If FormMain.MnuFile(8).Enabled <> newState Then
                 
-                toolbar_Toolbox.cmdFile(FILE_SAVE).Enabled = NewState
+                toolbar_Toolbox.cmdFile(FILE_SAVE).Enabled = newState
                 
-                FormMain.MnuFile(8).Enabled = NewState
+                FormMain.MnuFile(8).Enabled = newState
                 
                 'The File -> Revert menu is also tied to Save state (if the image has not been saved in its current state,
                 ' we allow the user to revert to the last save state).
-                FormMain.MnuFile(11).Enabled = NewState
+                FormMain.MnuFile(11).Enabled = newState
                 
             End If
             
         'Save As (menu item only).  Note that Save Copy is also tied to Save As functionality, because they use the same rules
         ' for enablement (e.g. disabled if no images are loaded, always enabled otherwise)
         Case tSaveAs
-            If FormMain.MnuFile(10).Enabled <> NewState Then
-                toolbar_Toolbox.cmdFile(FILE_SAVEAS_LAYERS).Enabled = NewState
-                toolbar_Toolbox.cmdFile(FILE_SAVEAS_FLAT).Enabled = NewState
+            If FormMain.MnuFile(10).Enabled <> newState Then
+                toolbar_Toolbox.cmdFile(FILE_SAVEAS_LAYERS).Enabled = newState
+                toolbar_Toolbox.cmdFile(FILE_SAVEAS_FLAT).Enabled = newState
                 
-                FormMain.MnuFile(9).Enabled = NewState
-                FormMain.MnuFile(10).Enabled = NewState
+                FormMain.MnuFile(9).Enabled = newState
+                FormMain.MnuFile(10).Enabled = newState
             End If
             
         'Close and Close All
         Case tClose
-            If FormMain.MnuFile(5).Enabled <> NewState Then
-                FormMain.MnuFile(5).Enabled = NewState
-                FormMain.MnuFile(6).Enabled = NewState
-                toolbar_Toolbox.cmdFile(FILE_CLOSE).Enabled = NewState
+            If FormMain.MnuFile(5).Enabled <> newState Then
+                FormMain.MnuFile(5).Enabled = newState
+                FormMain.MnuFile(6).Enabled = newState
+                toolbar_Toolbox.cmdFile(FILE_CLOSE).Enabled = newState
             End If
         
         'Undo (left-hand panel button AND menu item).  Undo toggles also control the "Fade last action" button, because that
         ' action requires Undo data to operate.
         Case tUndo
         
-            If FormMain.MnuEdit(0).Enabled <> NewState Then
-                toolbar_Toolbox.cmdFile(FILE_UNDO).Enabled = NewState
-                FormMain.MnuEdit(0).Enabled = NewState
+            If FormMain.MnuEdit(0).Enabled <> newState Then
+                toolbar_Toolbox.cmdFile(FILE_UNDO).Enabled = newState
+                FormMain.MnuEdit(0).Enabled = newState
             End If
             
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
-            If NewState Then
+            If newState Then
                 toolbar_Toolbox.cmdFile(FILE_UNDO).assignTooltip pdImages(g_CurrentImage).undoManager.getUndoProcessID, "Undo"
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getUndoProcessID) & vbTab & g_Language.TranslateMessage("Ctrl") & "+Z"
             Else
@@ -632,13 +632,13 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
         
         'Redo (left-hand panel button AND menu item)
         Case tRedo
-            If FormMain.MnuEdit(1).Enabled <> NewState Then
-                toolbar_Toolbox.cmdFile(FILE_REDO).Enabled = NewState
-                FormMain.MnuEdit(1).Enabled = NewState
+            If FormMain.MnuEdit(1).Enabled <> newState Then
+                toolbar_Toolbox.cmdFile(FILE_REDO).Enabled = newState
+                FormMain.MnuEdit(1).Enabled = newState
             End If
             
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
-            If NewState Then
+            If newState Then
                 toolbar_Toolbox.cmdFile(FILE_REDO).assignTooltip pdImages(g_CurrentImage).undoManager.getRedoProcessID, "Redo"
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getRedoProcessID) & vbTab & g_Language.TranslateMessage("Ctrl") & "+Y"
             Else
@@ -651,53 +651,53 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             
         'Copy (menu item only)
         Case tCopy
-            If FormMain.MnuEdit(7).Enabled <> NewState Then FormMain.MnuEdit(7).Enabled = NewState
-            If FormMain.MnuEdit(8).Enabled <> NewState Then FormMain.MnuEdit(8).Enabled = NewState
-            If FormMain.MnuEdit(9).Enabled <> NewState Then FormMain.MnuEdit(9).Enabled = NewState
-            If FormMain.MnuEdit(10).Enabled <> NewState Then FormMain.MnuEdit(10).Enabled = NewState
-            If FormMain.MnuEdit(12).Enabled <> NewState Then FormMain.MnuEdit(12).Enabled = NewState
+            If FormMain.MnuEdit(7).Enabled <> newState Then FormMain.MnuEdit(7).Enabled = newState
+            If FormMain.MnuEdit(8).Enabled <> newState Then FormMain.MnuEdit(8).Enabled = newState
+            If FormMain.MnuEdit(9).Enabled <> newState Then FormMain.MnuEdit(9).Enabled = newState
+            If FormMain.MnuEdit(10).Enabled <> newState Then FormMain.MnuEdit(10).Enabled = newState
+            If FormMain.MnuEdit(12).Enabled <> newState Then FormMain.MnuEdit(12).Enabled = newState
             
         'View (top-menu level)
         Case tView
-            If FormMain.MnuView.Enabled <> NewState Then FormMain.MnuView.Enabled = NewState
+            If FormMain.MnuView.Enabled <> newState Then FormMain.MnuView.Enabled = newState
         
         'ImageOps is all Image-related menu items; it enables/disables the Image, Layer, Select, Color, and Print menus
         Case tImageOps
-            If FormMain.MnuImageTop.Enabled <> NewState Then
-                FormMain.MnuImageTop.Enabled = NewState
+            If FormMain.MnuImageTop.Enabled <> newState Then
+                FormMain.MnuImageTop.Enabled = newState
                 
                 'Use this same command to disable other menus
                 
                 'File -> Print
-                FormMain.MnuFile(15).Enabled = NewState
+                FormMain.MnuFile(15).Enabled = newState
                 
                 'Layer menu
-                FormMain.MnuLayerTop.Enabled = NewState
+                FormMain.MnuLayerTop.Enabled = newState
                 
                 'Select menu
-                FormMain.MnuSelectTop.Enabled = NewState
+                FormMain.MnuSelectTop.Enabled = newState
                 
                 'Adjustments menu
-                FormMain.MnuAdjustmentsTop.Enabled = NewState
+                FormMain.MnuAdjustmentsTop.Enabled = newState
                 
                 'Effects menu
-                FormMain.MnuEffectsTop.Enabled = NewState
+                FormMain.MnuEffectsTop.Enabled = newState
                 
             End If
             
         'Macro (within the Tools menu)
         Case tMacro
-            If FormMain.mnuTool(3).Enabled <> NewState Then
-                FormMain.mnuTool(3).Enabled = NewState
-                FormMain.mnuTool(4).Enabled = NewState
-                FormMain.mnuTool(5).Enabled = NewState
+            If FormMain.mnuTool(3).Enabled <> newState Then
+                FormMain.mnuTool(3).Enabled = newState
+                FormMain.mnuTool(4).Enabled = newState
+                FormMain.mnuTool(5).Enabled = newState
             End If
         
         'Selections in general
         Case tSelection
             
             'If selections are not active, clear all the selection value textboxes
-            If Not NewState Then
+            If Not newState Then
                 For i = 0 To toolpanel_Selections.tudSel.Count - 1
                     toolpanel_Selections.tudSel(i).Value = 0
                 Next i
@@ -707,43 +707,43 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             ' even without a selection present; this allows the user to set certain parameters in advance, so when they actually
             ' draw a selection, it already has the attributes they want.
             For i = 0 To toolpanel_Selections.tudSel.Count - 1
-                toolpanel_Selections.tudSel(i).Enabled = NewState
+                toolpanel_Selections.tudSel(i).Enabled = newState
             Next i
             
             'En/disable all selection menu items that rely on an existing selection to operate
-            If FormMain.MnuSelect(2).Enabled <> NewState Then
+            If FormMain.MnuSelect(2).Enabled <> newState Then
                 
                 'Select none, invert selection
-                FormMain.MnuSelect(1).Enabled = NewState
-                FormMain.MnuSelect(2).Enabled = NewState
+                FormMain.MnuSelect(1).Enabled = newState
+                FormMain.MnuSelect(2).Enabled = newState
                 
                 'Grow/shrink/border/feather/sharpen selection
                 For i = 4 To 8
-                    FormMain.MnuSelect(i).Enabled = NewState
+                    FormMain.MnuSelect(i).Enabled = newState
                 Next i
                 
                 'Erase selected area
-                FormMain.MnuSelect(10).Enabled = NewState
+                FormMain.MnuSelect(10).Enabled = newState
                 
                 'Save selection
-                FormMain.MnuSelect(13).Enabled = NewState
+                FormMain.MnuSelect(13).Enabled = newState
                 
                 'Export selection top-level menu
-                FormMain.MnuSelect(14).Enabled = NewState
+                FormMain.MnuSelect(14).Enabled = newState
                 
             End If
                                     
             'Selection enabling/disabling also affects the two Crop to Selection commands (one in the Image menu, one in the Layer menu)
-            If FormMain.MnuImage(9).Enabled <> NewState Then FormMain.MnuImage(9).Enabled = NewState
-            If FormMain.MnuLayer(9).Enabled <> NewState Then FormMain.MnuLayer(9).Enabled = NewState
+            If FormMain.MnuImage(9).Enabled <> newState Then FormMain.MnuImage(9).Enabled = newState
+            If FormMain.MnuLayer(9).Enabled <> newState Then FormMain.MnuLayer(9).Enabled = newState
             
         'Transformable selection controls specifically
         Case tSelectionTransform
         
             'Under certain circumstances, it is desirable to disable only the selection location boxes
             For i = 0 To toolpanel_Selections.tudSel.Count - 1
-                If (Not NewState) Then toolpanel_Selections.tudSel(i).Value = 0
-                toolpanel_Selections.tudSel(i).Enabled = NewState
+                If (Not newState) Then toolpanel_Selections.tudSel(i).Value = 0
+                toolpanel_Selections.tudSel(i).Enabled = newState
             Next i
                 
         'If the ExifTool plugin is not available, metadata will ALWAYS be disabled.  (We do not currently have a separate fallback for
@@ -751,7 +751,7 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
         Case tMetadata
         
             If g_ExifToolEnabled Then
-                If FormMain.MnuMetadata(0).Enabled <> NewState Then FormMain.MnuMetadata(0).Enabled = NewState
+                If FormMain.MnuMetadata(0).Enabled <> newState Then FormMain.MnuMetadata(0).Enabled = newState
             Else
                 If FormMain.MnuMetadata(0).Enabled Then FormMain.MnuMetadata(0).Enabled = False
             End If
@@ -760,22 +760,22 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
         Case tGPSMetadata
         
             If g_ExifToolEnabled Then
-                If FormMain.MnuMetadata(3).Enabled <> NewState Then FormMain.MnuMetadata(3).Enabled = NewState
+                If FormMain.MnuMetadata(3).Enabled <> newState Then FormMain.MnuMetadata(3).Enabled = newState
             Else
                 If FormMain.MnuMetadata(3).Enabled Then FormMain.MnuMetadata(3).Enabled = False
             End If
         
         'Zoom controls not just the drop-down zoom box, but the zoom in, zoom out, and zoom fit buttons as well
         Case tZoom
-            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled <> NewState Then
-                FormMain.mainCanvas(0).getZoomDropDownReference().Enabled = NewState
-                FormMain.mainCanvas(0).enableZoomIn NewState
-                FormMain.mainCanvas(0).enableZoomOut NewState
-                FormMain.mainCanvas(0).enableZoomFit NewState
+            If FormMain.mainCanvas(0).getZoomDropDownReference().Enabled <> newState Then
+                FormMain.mainCanvas(0).getZoomDropDownReference().Enabled = newState
+                FormMain.mainCanvas(0).enableZoomIn newState
+                FormMain.mainCanvas(0).enableZoomOut newState
+                FormMain.mainCanvas(0).enableZoomFit newState
             End If
             
             'When disabling zoom controls, reset the zoom drop-down to 100%
-            If Not NewState Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getZoom100Index
+            If Not newState Then FormMain.mainCanvas(0).getZoomDropDownReference().ListIndex = g_Zoom.getZoom100Index
         
         'Various layer-related tools (move, etc) are exposed on the tool options dialog.  For consistency, we disable those UI elements
         ' when no images are loaded.
@@ -786,7 +786,7 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             Dim minLayerUIValue_Width As Long, maxLayerUIValue_Width As Long
             Dim minLayerUIValue_Height As Long, maxLayerUIValue_Height As Long
             
-            If NewState Then
+            If newState Then
                 maxLayerUIValue_Width = pdImages(g_CurrentImage).Width * 3
                 maxLayerUIValue_Height = pdImages(g_CurrentImage).Height * 3
             Else
@@ -807,11 +807,11 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
             
             'Enable/disable all UI elements as necessary
             For i = 0 To toolpanel_MoveSize.tudLayerMove.Count - 1
-                If toolpanel_MoveSize.tudLayerMove(i).Enabled <> NewState Then toolpanel_MoveSize.tudLayerMove(i).Enabled = NewState
+                If toolpanel_MoveSize.tudLayerMove(i).Enabled <> newState Then toolpanel_MoveSize.tudLayerMove(i).Enabled = newState
             Next i
             
             'Where relevant, also update control bounds
-            If NewState Then
+            If newState Then
             
                 For i = 0 To toolpanel_MoveSize.tudLayerMove.Count - 1
                     
@@ -841,7 +841,7 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal NewState As Boole
         'Non-destructive FX are effects that the user can apply to a layer, without permanently modifying the layer
         Case tNonDestructiveFX
         
-            If NewState Then
+            If newState Then
                 
                 'Start by enabling all non-destructive FX controls
                 For i = 0 To toolpanel_NDFX.sltQuickFix.Count - 1
@@ -1301,7 +1301,7 @@ End Sub
 'Because VB6 apps look terrible on modern version of Windows, I do a bit of beautification to every form upon at load-time.
 ' This routine is nice because every form calls it at least once, so I can make centralized changes without having to rewrite
 ' code in every individual form.  This is also where run-time translation occurs.
-Public Sub MakeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As clsToolTip, Optional ByVal tooltipsAlreadyInitialized As Boolean = False, Optional ByVal useDoEvents As Boolean = False)
+Public Sub MakeFormPretty(ByRef tForm As Form, Optional ByVal useDoEvents As Boolean = False)
 
     'Before doing anything else, make sure the form's default cursor is set to an arrow
     tForm.MouseIcon = LoadPicture("")
@@ -1358,41 +1358,6 @@ Public Sub MakeFormPretty(ByRef tForm As Form, Optional ByRef customTooltips As 
     If g_Language.translationActive And tForm.Enabled Then
         g_Language.applyTranslations tForm, useDoEvents
     End If
-    
-    'FORM STEP 4: if a custom tooltip handler was passed in, activate and populate it now.
-    If Not (customTooltips Is Nothing) Then
-        
-        'In rare cases, the custom tooltip handler passed to this function may already be initialized.  Some forms
-        ' do this if they need to handle multiline tooltips (as VB will not handle them properly).  If the class has
-        ' NOT been initialized, we can do so now - otherwise, trust that it was already created correctly.
-        If Not tooltipsAlreadyInitialized Then
-            customTooltips.Create tForm
-            customTooltips.MaxTipWidth = PD_MAX_TOOLTIP_WIDTH
-            customTooltips.DelayTime(ttDelayShow) = 10000
-        End If
-        
-        'Once again, enumerate every control on the form and copy their tooltips into this object.  (This allows
-        ' for things like automatic multiline support, unsupported characters, theming, and displaying tooltips
-        ' on the correct monitor of a multimonitor setup.)
-        Dim tmpTooltip As String
-        For Each eControl In tForm.Controls
-            
-            If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is PictureBox) Or (TypeOf eControl Is TextBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is colorSelector) Then
-                If (Trim(eControl.ToolTipText) <> "") Then
-                    tmpTooltip = eControl.ToolTipText
-                    eControl.ToolTipText = ""
-                    customTooltips.AddTool eControl, tmpTooltip
-                End If
-            End If
-            
-            'Optionally, DoEvents can be called after each change.  This slows the process, but it allows external progress
-            ' bars to be automatically refreshed.
-            If useDoEvents Then DoEvents
-            
-        Next
-                
-    End If
-    
     
     'Refresh all non-MDI forms after making the changes above
     If tForm.Name <> "FormMain" Then

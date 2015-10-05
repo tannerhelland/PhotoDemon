@@ -43,15 +43,6 @@ Begin VB.Form FormPolar
       Width           =   12105
       _ExtentX        =   21352
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin VB.ComboBox cmbEdges 
@@ -233,9 +224,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 Private Sub cboConvert_Click()
     updatePreview
 End Sub
@@ -299,9 +287,8 @@ End Sub
 
 Private Sub Form_Activate()
 
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
         
     'Create the preview
     cmdBar.markPreviewStatus True
@@ -316,7 +303,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    popDistortEdgeBox cmbEdges, EDGE_ERASE
+    PopDistortEdgeBox cmbEdges, EDGE_ERASE
     
     'Populate the polar conversion technique drop-down
     cboConvert.AddItem "Rectangular to polar", 0

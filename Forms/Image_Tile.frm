@@ -33,15 +33,6 @@ Begin VB.Form FormTile
       Width           =   11592
       _ExtentX        =   20452
       _ExtentY        =   1429
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin VB.ComboBox cboTarget 
@@ -283,10 +274,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Track the last type of option used; we use this to convert the text box values intelligently
-Dim lastTargetMode As Long
-
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
+Private lastTargetMode As Long
 
 'When the combo box is changed, make the appropriate controls visible
 Private Sub cboTarget_Click()
@@ -494,9 +482,8 @@ End Sub
 
 Private Sub Form_Activate()
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Render a preview
     cmdBar.markPreviewStatus True

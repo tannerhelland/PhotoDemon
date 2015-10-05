@@ -82,9 +82,6 @@ Private userAnswer As VbMsgBoxResult
 'The slider value, if the dialog is closed via OK
 Private userValue As Double
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 Public Property Get DialogResult() As VbMsgBoxResult
     DialogResult = userAnswer
 End Property
@@ -129,12 +126,11 @@ Public Sub showDialog(ByVal typeOfDialog As SelectionDialogType)
     'Provide a default answer of "first image only" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbNo
 
-    'Apply any custom styles to the form
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
 
     'Display the form
-    showPDDialog vbModal, Me
+    ShowPDDialog vbModal, Me
 
 End Sub
 

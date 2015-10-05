@@ -456,8 +456,8 @@ Private Sub Form_Load()
     chkNames.assignTooltip "By default, descriptive names are used in place of technical ones.  Advanced users can toggle this option to expose more resampling techniques."
     cmbFit.assignTooltip "When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead."
     
-    'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
 End Sub
 

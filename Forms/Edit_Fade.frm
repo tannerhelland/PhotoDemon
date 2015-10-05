@@ -41,15 +41,6 @@ Begin VB.Form FormFadeLast
       Width           =   12315
       _ExtentX        =   21722
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -152,8 +143,8 @@ End Sub
 
 Private Sub Form_Activate()
         
-    'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Render a preview
     cmdBar.markPreviewStatus True
@@ -167,7 +158,7 @@ Private Sub Form_Load()
     cmdBar.markPreviewStatus False
     
     'Populate the blend mode drop-down
-    Interface.populateBlendModeComboBox cboBlendMode, BL_NORMAL
+    Interface.PopulateBlendModeComboBox cboBlendMode, BL_NORMAL
     
     'Retrieve a copy of the relevant previous image state
     Set m_prevLayerDIB = New pdDIB
@@ -260,7 +251,7 @@ Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As L
         'Notify the parent of the change
         pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, pdImages(g_CurrentImage).getLayerIndexFromID(m_relevantLayerID)
         
-        syncInterfaceToCurrentImage
+        SyncInterfaceToCurrentImage
         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
         SetProgBarVal 0

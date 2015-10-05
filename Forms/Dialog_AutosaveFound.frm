@@ -186,9 +186,6 @@ Option Explicit
 'The user input from the dialog
 Private userAnswer As VbMsgBoxResult
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 'Collection of Autosave XML entries found
 Private m_numOfXMLFound As Long
 Private m_XmlEntries() As AutosaveXML
@@ -232,9 +229,9 @@ Public Sub showDialog()
 
     'Automatically draw a warning icon using the system icon set
     Dim iconY As Long
-    iconY = fixDPI(18)
-    If g_UseFancyFonts Then iconY = iconY + fixDPI(2)
-    DrawSystemIcon IDI_EXCLAMATION, Me.hDC, fixDPI(22), iconY
+    iconY = FixDPI(18)
+    If g_UseFancyFonts Then iconY = iconY + FixDPI(2)
+    DrawSystemIcon IDI_EXCLAMATION, Me.hDC, FixDPI(22), iconY
     
     'Display a brief explanation of the dialog at the top of the window
     lblWarning(1).Caption = g_Language.TranslateMessage("A previous PhotoDemon session terminated unexpectedly.  Would you like to automatically recover the following autosaved images?")
@@ -243,18 +240,17 @@ Public Sub showDialog()
     userAnswer = vbNo
     
     'Load command button images
-    CmdOK.AssignImage "LRGACCEPT"
-    CmdCancel.AssignImage "LRGCANCEL"
+    cmdOK.AssignImage "LRGACCEPT"
+    cmdCancel.AssignImage "LRGCANCEL"
     
     'Apply any custom styles to the form
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    MakeFormPretty Me
 
     'Populate the AutoSave entry list box
     displayAutosaveEntries
 
     'Display the form
-    showPDDialog vbModal, Me, True
+    ShowPDDialog vbModal, Me, True
 
 End Sub
 
@@ -262,7 +258,7 @@ End Sub
 Private Sub CmdCancel_Click()
 
     Dim msgReturn As VbMsgBoxResult
-    msgReturn = pdMsgBox("If you exit now, this autosave data will be lost forever.  Are you sure you want to exit?", vbApplicationModal + vbInformation + vbYesNo, "Warning: autosave data will be deleted")
+    msgReturn = PDMsgBox("If you exit now, this autosave data will be lost forever.  Are you sure you want to exit?", vbApplicationModal + vbInformation + vbYesNo, "Warning: autosave data will be deleted")
     
     If msgReturn = vbYes Then
         userAnswer = vbNo

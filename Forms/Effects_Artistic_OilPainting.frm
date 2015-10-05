@@ -96,9 +96,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 'Apply an "oil painting" effect to the image (heavily optimized accumulation implementation!)
 'Inputs: radius of the effect (min 1, no real max - but the scroll bar is maxed at 200 presently)
 '        smoothness of the effect; smaller values indicate less smoothness (e.g. less bins are used to calculate luminance)
@@ -478,9 +475,8 @@ End Sub
 
 Private Sub Form_Activate()
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True

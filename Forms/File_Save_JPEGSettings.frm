@@ -42,15 +42,6 @@ Begin VB.Form dialog_ExportJPEG
       Width           =   13110
       _ExtentX        =   23125
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
       dontAutoUnloadParent=   -1  'True
    End
@@ -638,14 +629,14 @@ Public Sub showDialog()
         
     End If
     
-    'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Update the preview
     updatePreview
     
     'Display the dialog
-    showPDDialog vbModal, Me, True
+    ShowPDDialog vbModal, Me, True
 
 End Sub
 
@@ -658,11 +649,11 @@ Private Sub lblReviewMetadata_Click()
 
     'If the current image does not have metadata, warn the user and exit.
     If Not imageBeingExported.imgMetadata.hasXMLMetadata Then
-        pdMsgBox "This image does not contain any metadata.", vbInformation + vbOKOnly + vbApplicationModal, "No metadata available"
+        PDMsgBox "This image does not contain any metadata.", vbInformation + vbOKOnly + vbApplicationModal, "No metadata available"
         Exit Sub
     End If
     
-    showPDDialog vbModal, FormMetadata
+    ShowPDDialog vbModal, FormMetadata
 
 End Sub
 

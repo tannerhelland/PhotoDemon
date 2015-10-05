@@ -214,9 +214,6 @@ Private m_isMouseDown As Boolean
 'Currently selected node in the workspace area
 Private m_selPoint As Long
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 Private Sub cmbEdges_Click()
     updatePreview
 End Sub
@@ -676,9 +673,8 @@ End Sub
 
 Private Sub Form_Activate()
         
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    MakeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
         
     'Create the preview
     cmdBar.markPreviewStatus True

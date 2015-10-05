@@ -1531,9 +1531,6 @@ Private userInitiatedAlphaSelection As Boolean
 ' "cancel", the original settings need to be returned.  Thus, remember these settings, and restore them upon canceling.
 Dim originalg_CanvasBackground As Long
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 'This dialog interacts heavily with various system-level bits.  pdSystemInfo retrieves this data for us.
 Private cSysInfo As pdSystemInfo
 
@@ -1871,8 +1868,8 @@ Private Sub cmdBarMini_OKClick()
         'START use system color profile
             g_UserPreferences.SetPref_Boolean "Transparency", "Use System Color Profile", optColorManagement(0)
             g_UseSystemColorProfile = optColorManagement(0)
-            cacheCurrentSystemColorProfile
-            Color_Management.checkParentMonitor False, True
+            CacheCurrentSystemColorProfile
+            Color_Management.CheckParentMonitor False, True
         'END use system color profile
 
         'START alpha checkerboard colors
@@ -1954,7 +1951,7 @@ End Sub
 Private Sub cmdColorProfilePath_Click()
 
     'Disable user input until the dialog closes
-    Interface.disableUserInput
+    Interface.DisableUserInput
     
     Dim sFile As String
     sFile = ""
@@ -1964,7 +1961,7 @@ Private Sub cmdColorProfilePath_Click()
     tempPathString = g_UserPreferences.GetPref_String("Paths", "Color Profile", "")
     
     'If no color profile path was found, populate it with the default system color profile path
-    If Len(tempPathString) = 0 Then tempPathString = getSystemColorFolder()
+    If Len(tempPathString) = 0 Then tempPathString = GetSystemColorFolder()
     
     'Prepare a common dialog filter list with extensions of known profile types
     Dim cdFilter As String
@@ -1998,7 +1995,7 @@ Private Sub cmdColorProfilePath_Click()
     End If
     
     'Re-enable user input
-    Interface.enableUserInput
+    Interface.EnableUserInput
 
 End Sub
 
@@ -2014,7 +2011,7 @@ Private Sub cmdReset_Click()
 
     'Before resetting, warn the user
     Dim confirmReset As VbMsgBoxResult
-    confirmReset = pdMsgBox("This action will reset all preferences to their default values.  It cannot be undone." & vbCrLf & vbCrLf & "Are you sure you want to continue?", vbApplicationModal + vbExclamation + vbYesNo, "Reset all preferences")
+    confirmReset = PDMsgBox("This action will reset all preferences to their default values.  It cannot be undone." & vbCrLf & vbCrLf & "Are you sure you want to continue?", vbApplicationModal + vbExclamation + vbYesNo, "Reset all preferences")
 
     'If the user gives final permission, rewrite the preferences file from scratch and repopulate this form
     If confirmReset = vbYes Then
@@ -2101,7 +2098,7 @@ Private Sub LoadAllPreferences()
         
         'START Recent file max count
             lblRecentFileCount.Caption = g_Language.TranslateMessage("maximum number of recent file entries: ")
-            tudRecentFiles.Left = lblRecentFileCount.Left + lblRecentFileCount.PixelWidth + fixDPI(6)
+            tudRecentFiles.Left = lblRecentFileCount.Left + lblRecentFileCount.PixelWidth + FixDPI(6)
             tudRecentFiles.Value = g_UserPreferences.GetPref_Long("Interface", "Recent Files Limit", 10)
         'END
         
@@ -2354,9 +2351,9 @@ Private Sub LoadAllPreferences()
             
             Dim monitorEntry As String
             
-            If g_Displays.getDisplayCount > 0 Then
+            If g_Displays.GetDisplayCount > 0 Then
                 
-                For i = 0 To g_Displays.getDisplayCount - 1
+                For i = 0 To g_Displays.GetDisplayCount - 1
                 
                     monitorEntry = ""
                     
@@ -2508,7 +2505,7 @@ Private Sub LoadAllPreferences()
             txtTempPath.Text = g_UserPreferences.GetTempPath
     
         'Display what we know about this PC's hardware acceleration capabilities
-            txtHardware = cSysInfo.getDeviceCapsString()
+            txtHardware = cSysInfo.GetDeviceCapsString()
             
         '...and give the "copy to clipboard" button a tooltip
             cmdCopyReportClipboard.assignTooltip "Copy the report to the system clipboard"
@@ -2661,10 +2658,8 @@ Private Sub Form_Load()
     cboFiletype.ListIndex = g_UserPreferences.GetPref_Long("Core", "Last File Preferences Page", 1)
     picFileContainer(g_UserPreferences.GetPref_Long("Core", "Last File Preferences Page", 1)).Visible = True
     
-    'Translate and decorate the form; note that a custom tooltip object is passed.  makeFormPretty will automatically
-    ' populate this object for us, which allows for themed and multiline tooltips.
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'For some reason, the container picture boxes automatically acquire the pointer of children objects.
     ' Manually force those cursors to arrows to prevent this.

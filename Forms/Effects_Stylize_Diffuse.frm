@@ -32,15 +32,6 @@ Begin VB.Form FormDiffuse
       Width           =   12210
       _ExtentX        =   21537
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltX 
@@ -108,10 +99,7 @@ Option Explicit
 
 'When previewing, we need to modify the strength to be representative of the final filter.  This means dividing by the
 ' original image width in order to establish the right ratio.
-Dim iWidth As Long, iHeight As Long
-
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
+Private iWidth As Long, iHeight As Long
 
 Private Sub ChkWrap_Click()
     updatePreview
@@ -128,9 +116,8 @@ End Sub
 
 Private Sub Form_Activate()
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Re-enable previews and request an initial render
     cmdBar.markPreviewStatus True
@@ -168,7 +155,7 @@ End Sub
 ' Inputs: diameter in x direction, diameter in y direction, whether or not to wrap edge pixels, and optional preview settings
 Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal wrapPixels As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
 
-    If toPreview = False Then Message "Simulating large image explosion..."
+    If Not toPreview Then Message "Simulating large image explosion..."
     
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte

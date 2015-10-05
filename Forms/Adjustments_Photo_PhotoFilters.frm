@@ -32,15 +32,6 @@ Begin VB.Form FormPhotoFilters
       Width           =   14748
       _ExtentX        =   26009
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin VB.PictureBox picBuffer 
@@ -185,9 +176,6 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 Private WithEvents cKeyEvents As pdInputKeyboard
 Attribute cKeyEvents.VB_VarHelpID = -1
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 'Extra variables for custom list rendering
 Dim bufferDIB As pdDIB
 Dim m_BufferWidth As Long, m_BufferHeight As Long
@@ -212,7 +200,7 @@ Private Sub redrawFilterList()
     
     Dim i As Long
     For i = 0 To numOfFilters - 1
-        renderFilterBlock i, 0, fixDPI(i * BLOCKHEIGHT) - scrollOffset - fixDPI(2)
+        renderFilterBlock i, 0, FixDPI(i * BLOCKHEIGHT) - scrollOffset - FixDPI(2)
     Next i
     
     'Copy the buffer to the main form
@@ -226,12 +214,12 @@ End Sub
 Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal offsetY As Long)
 
     'Only draw the current block if it will be visible
-    If ((offsetY + fixDPI(BLOCKHEIGHT)) >= 0) And (offsetY <= m_BufferHeight) Then
+    If ((offsetY + FixDPI(BLOCKHEIGHT)) >= 0) And (offsetY <= m_BufferHeight) Then
     
-        offsetY = offsetY + fixDPI(2)
+        offsetY = offsetY + FixDPI(2)
         
         Dim linePadding As Long
-        linePadding = fixDPI(2)
+        linePadding = FixDPI(2)
     
         Dim mHeight As Single
         Dim tmpRect As RECTL
@@ -240,7 +228,7 @@ Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, B
         'If this filter has been selected, draw the background with the system's current selection color
         If blockIndex = curFilter Then
         
-            SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + fixDPI(BLOCKHEIGHT)
+            SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + FixDPI(BLOCKHEIGHT)
             hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
             FillRect bufferDIB.getDIBDC, tmpRect, hBrush
             DeleteObject hBrush
@@ -256,7 +244,7 @@ Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, B
         
         'If the current filter is highlighted but not selected, simply render the border with a highlight
         If (blockIndex <> curFilter) And (blockIndex = curFilterHover) Then
-            SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + fixDPI(BLOCKHEIGHT)
+            SetRect tmpRect, offsetX, offsetY, m_BufferWidth, offsetY + FixDPI(BLOCKHEIGHT)
             hBrush = CreateSolidBrush(ConvertSystemColor(vbHighlight))
             FrameRect bufferDIB.getDIBDC, tmpRect, hBrush
             DeleteObject hBrush
@@ -267,9 +255,9 @@ Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, B
         
         'Render a color box for the image
         Dim colorWidth As Long, colorHeight As Long
-        colorWidth = fixDPI(64)
-        colorHeight = fixDPI(42)
-        SetRect tmpRect, offsetX + fixDPI(4), offsetY + ((fixDPI(BLOCKHEIGHT) - colorHeight) \ 2), offsetX + fixDPI(4) + colorWidth, offsetY + ((fixDPI(BLOCKHEIGHT) - colorHeight) \ 2) + colorHeight
+        colorWidth = FixDPI(64)
+        colorHeight = FixDPI(42)
+        SetRect tmpRect, offsetX + FixDPI(4), offsetY + ((FixDPI(BLOCKHEIGHT) - colorHeight) \ 2), offsetX + FixDPI(4) + colorWidth, offsetY + ((FixDPI(BLOCKHEIGHT) - colorHeight) \ 2) + colorHeight
         
         hBrush = CreateSolidBrush(fArray(blockIndex).RGBColor)
         FillRect bufferDIB.getDIBDC, tmpRect, hBrush
@@ -280,7 +268,7 @@ Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, B
             
         'Render the Wratten ID and name fields
         firstFont.attachToDC bufferDIB.getDIBDC
-        firstFont.fastRenderText colorWidth + fixDPI(16) + offsetX, offsetY + fixDPI(4), drawString
+        firstFont.fastRenderText colorWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4), drawString
         
         'Calculate the drop-down for the description line
         mHeight = firstFont.getHeightOfString(drawString) + linePadding
@@ -290,7 +278,7 @@ Private Sub renderFilterBlock(ByVal blockIndex As Long, ByVal offsetX As Long, B
         drawString = fArray(blockIndex).Description
         
         secondFont.attachToDC bufferDIB.getDIBDC
-        secondFont.fastRenderText colorWidth + fixDPI(16) + offsetX, offsetY + fixDPI(4) + mHeight, drawString
+        secondFont.fastRenderText colorWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4) + mHeight, drawString
         secondFont.releaseFromDC
         
     End If
@@ -314,7 +302,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
         
         'Calculate a new vertical scroll position so that the selected filter appears on-screen
         Dim newScrollOffset As Long
-        newScrollOffset = curFilter * fixDPI(BLOCKHEIGHT)
+        newScrollOffset = curFilter * FixDPI(BLOCKHEIGHT)
         If newScrollOffset > vsFilter.Max Then newScrollOffset = vsFilter.Max
         vsFilter.Value = newScrollOffset
         
@@ -437,9 +425,8 @@ End Sub
 
 Private Sub Form_Activate()
     
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Display the previewed effect in the neighboring window, then render the list of available filters
     cmdBar.markPreviewStatus True
@@ -560,7 +547,7 @@ Private Sub Form_Load()
     
     'Determine if the vertical scrollbar needs to be visible or not
     Dim maxMDSize As Long
-    maxMDSize = fixDPIFloat(BLOCKHEIGHT) * numOfFilters - 1
+    maxMDSize = FixDPIFloat(BLOCKHEIGHT) * numOfFilters - 1
     
     vsFilter.Value = 0
     If maxMDSize < picBuffer.ScaleHeight Then
@@ -588,7 +575,7 @@ Private Function getFilterAtPosition(ByVal x As Long, ByVal y As Long) As Long
     Dim vOffset As Long
     vOffset = vsFilter.Value
     
-    getFilterAtPosition = (y + vOffset) \ fixDPI(BLOCKHEIGHT)
+    getFilterAtPosition = (y + vOffset) \ FixDPI(BLOCKHEIGHT)
     
 End Function
 

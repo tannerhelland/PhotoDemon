@@ -332,8 +332,8 @@ End Sub
 'Upon form activation, determine the ratio between the width and height of the image
 Private Sub Form_Activate()
     
-    'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    'Apply translations and visual themes
+    MakeFormPretty Me
         
 End Sub
 

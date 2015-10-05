@@ -32,15 +32,6 @@ Begin VB.Form FormReduceColors
       Width           =   12315
       _ExtentX        =   21722
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.smartOptionButton optQuant 
@@ -182,8 +173,8 @@ End Sub
 
 Private Sub Form_Activate()
         
-    'Assign the system hand cursor to all relevant objects
-    makeFormPretty Me
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'Render a preview
     cmdBar.markPreviewStatus True
@@ -324,7 +315,7 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
         End If
         
     Else
-        pdMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this feature, please copy the FreeImage.dll file into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, " FreeImage Interface Error"
+        PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this feature, please copy the FreeImage.dll file into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, " FreeImage Interface Error"
         Exit Sub
     End If
     

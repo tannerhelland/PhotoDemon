@@ -243,9 +243,6 @@ Dim curSliderValues(0 To 3, 0 To 3) As Long
 
 Dim forbidUpdate As Boolean
 
-'Custom tooltip class allows for things like multiline, theming, and multiple monitor support
-Dim m_Tooltip As clsToolTip
-
 Private Sub btsChannel_Click(ByVal buttonIndex As Long)
 
     'Populate the sliders with any previously saved values
@@ -304,7 +301,7 @@ End Sub
 '  - all modifiers as one long string; see "createChannelParamString" for how this string is assembled
 Public Sub ApplyChannelMixer(ByVal channelMixerParams As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If toPreview = False Then Message "Mixing color channels..."
+    If Not toPreview Then Message "Mixing color channels..."
     
     'Because this tool has so many parameters, they are condensed into a single string and passed here.  We need to
     ' parse out individual values before continuing.
@@ -560,9 +557,8 @@ End Sub
 
 Private Sub Form_Activate()
         
-    'Assign the system hand cursor to all relevant objects
-    Set m_Tooltip = New clsToolTip
-    makeFormPretty Me, m_Tooltip
+    'Apply translations and visual themes
+    MakeFormPretty Me
     
     'If the last-used settings involve the monochrome check box, the luminance check box may not be deactivated properly
     ' (due to no Click event being fired).  Forcibly check this state in advance.
@@ -585,9 +581,9 @@ Private Sub Form_Load()
     btsChannel.AddItem "green", 1
     btsChannel.AddItem "blue", 2
     
-    btsChannel.AssignImageToItem 0, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_RED, 16, 2)
-    btsChannel.AssignImageToItem 1, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_GREEN, 16, 2)
-    btsChannel.AssignImageToItem 2, "", Interface.getRuntimeUIDIB(PDRUID_CHANNEL_BLUE, 16, 2)
+    btsChannel.AssignImageToItem 0, "", Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_RED, 16, 2)
+    btsChannel.AssignImageToItem 1, "", Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_GREEN, 16, 2)
+    btsChannel.AssignImageToItem 2, "", Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_BLUE, 16, 2)
     
     btsChannel.ListIndex = 0
     
