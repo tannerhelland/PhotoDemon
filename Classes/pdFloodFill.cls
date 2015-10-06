@@ -200,7 +200,7 @@ Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     pushOntoStack m_InitPoint.x, m_InitPoint.y
     
     'Make sure 24 and 32bpp sources are both handled correctly
-    Dim x As Long, y As Long, QuickX As Long, xOffset As Long, hasAlpha As Boolean
+    Dim x As Long, y As Long, QuickX As Long, dstQuickX As Long, xOffset As Long, hasAlpha As Boolean
     xOffset = srcDIB.getDIBColorDepth \ 8
     If srcDIB.getDIBColorDepth = 32 Then hasAlpha = True Else hasAlpha = False
     
@@ -320,8 +320,11 @@ Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
         
         'If this value is within the requested tolerance, mark it on the destination map
         If isWithinTolerance Then
-        
-            dstImageData(x * 3, y) = 255
+            
+            dstQuickX = x * 3
+            dstImageData(dstQuickX, y) = 255
+            dstImageData(dstQuickX + 1, y) = 255
+            dstImageData(dstQuickX + 2, y) = 255
             
             'If antialiasing is active, mark this pixel as filled; this simplifies the AA process
             If m_AntialiasingMode Then m_AlreadyChecked(x, y) = 2
@@ -355,7 +358,7 @@ Private Function floodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) A
     yBound = srcDIB.getDIBHeight - 1
     
     'Make sure 24 and 32bpp sources are both handled correctly
-    Dim x As Long, y As Long, QuickX As Long, xOffset As Long, hasAlpha As Boolean
+    Dim x As Long, y As Long, QuickX As Long, dstQuickX As Long, xOffset As Long, hasAlpha As Boolean
     xOffset = srcDIB.getDIBColorDepth \ 8
     If srcDIB.getDIBColorDepth = 32 Then hasAlpha = True Else hasAlpha = False
     
@@ -471,7 +474,12 @@ Private Function floodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) A
         End Select
         
         'If this value is within the requested tolerance, mark it on the destination map
-        If isWithinTolerance Then dstImageData(x * 3, y) = 255
+        If isWithinTolerance Then
+            dstQuickX = x * 3
+            dstImageData(dstQuickX, y) = 255
+            dstImageData(dstQuickX + 1, y) = 255
+            dstImageData(dstQuickX + 2, y) = 255
+        End If
         
     Next y
     Next x
@@ -537,7 +545,7 @@ Private Function floodFillCustomAA(ByRef floodFillDIB As pdDIB) As Boolean
     CopyMemory ByVal VarPtrArray(fImageData()), VarPtr(fSA), 4
         
     'Populate our reference comparison values
-    Dim aaStrength As Long
+    Dim aaStrength As Long, finalResult As Byte
     Dim yDownSafe As Boolean, yUpSafe As Boolean
     
     Dim constMultiplier As Double
@@ -585,7 +593,10 @@ Private Function floodFillCustomAA(ByRef floodFillDIB As pdDIB) As Boolean
             
             'We know the floodfill map at this position is unfilled, so we don't even need to retrieve the value to
             ' calculate proper AA.
-            fImageData(QuickX, y) = aaStrength * constMultiplier
+            finalResult = aaStrength * constMultiplier
+            fImageData(QuickX, y) = finalResult
+            fImageData(QuickX + 1, y) = finalResult
+            fImageData(QuickX + 2, y) = finalResult
         
         End If
         

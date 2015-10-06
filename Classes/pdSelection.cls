@@ -629,8 +629,8 @@ Public Function getLassoClosedState() As Boolean
     getLassoClosedState = m_LassoClosed
 End Function
 
-Public Sub setLassoClosedState(ByVal NewState As Boolean)
-    m_LassoClosed = NewState
+Public Sub setLassoClosedState(ByVal newState As Boolean)
+    m_LassoClosed = newState
 End Sub
 
 'For polygon selections, the canvas needs to know if the current polygon selection is open (e.g. still under construction) or closed.
@@ -638,8 +638,8 @@ Public Function getPolygonClosedState() As Boolean
     getPolygonClosedState = m_PolygonClosed
 End Function
 
-Public Sub setPolygonClosedState(ByVal NewState As Boolean)
-    m_PolygonClosed = NewState
+Public Sub setPolygonClosedState(ByVal newState As Boolean)
+    m_PolygonClosed = newState
 End Sub
 
 'For lasso and polygon selections, this function will return the current selecton region as a GDI+ region handle.  The mouse coordinate
@@ -1543,14 +1543,16 @@ Private Sub createSelectionMask()
         Exit Sub
     End If
     
-    Dim maskBackColor As Long, maskForeColor As Long
+    Dim maskBackColor As Long, maskForeColor As Long, maskBackByte As Byte
     
     'Interior and exterior selections are rendered using identical code; the only difference is the colors used
     If getSelectionProperty_Long(SP_AREA) = sExterior Then
         maskBackColor = RGB(255, 255, 255)
+        maskBackByte = 255
         maskForeColor = RGB(0, 0, 0)
     Else
         maskBackColor = RGB(0, 0, 0)
+        maskBackByte = 0
         maskForeColor = RGB(255, 255, 255)
     End If
 
@@ -1576,7 +1578,11 @@ Private Sub createSelectionMask()
     ' As such, use caution when calling this function, as the existing mask will be completely erased.
     
     'Start by creating a blank mask (this will also erase any existing mask)
-    selMask.createBlank containingPDImage.Width, containingPDImage.Height, 24, maskBackColor
+    If (selMask.getDIBWidth <> containingPDImage.Width) Or (selMask.getDIBHeight <> containingPDImage.Height) Then
+        selMask.createBlank containingPDImage.Width, containingPDImage.Height, 24, maskBackColor
+    Else
+        selMask.resetDIB maskBackByte
+    End If
         
     'Border selections are automatically disabled if the border size exceeds the smallest dimension (width or height)
     ' of the image
@@ -1967,7 +1973,8 @@ Private Sub applyFeatheringToMask()
     'If GDI+ 1.1 exists, use it for a faster blur operation.
     If g_GDIPlusFXAvailable Then
         
-        GDIPlusBlurDIB selMask, getSelectionProperty_Long(SP_FEATHERING_RADIUS), boundLeft, boundTop, boundWidth, boundHeight
+        'GDIPlusBlurDIB selMask, getSelectionProperty_Long(SP_FEATHERING_RADIUS), boundLeft, boundTop, boundWidth, boundHeight
+        quickBlurDIB selMask, getSelectionProperty_Long(SP_FEATHERING_RADIUS)
     
     'If GDI+ v1.0 is found, blurring is not supported, so fall back to PD's internal Gaussian blur function.
     Else
