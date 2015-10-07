@@ -218,21 +218,25 @@ Private Sub drawControl()
         GDI_Plus.GDIPlusFillDC_Brush m_BackBuffer.getDIBDC, m_Brush.getBrushHandle, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight
         
         'Draw borders around the preview.
-        Dim outlineColor As Long
-        
-        If m_MouseInsideUC Then
+        Dim outlineColor As Long, outlineWidth As Long, outlineOffset As Long
+    
+        If g_IsProgramRunning And m_MouseInsideUC Then
             outlineColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+            outlineWidth = 3
+            outlineOffset = 1
         Else
             outlineColor = vbBlack
+            outlineWidth = 1
+            outlineOffset = 0
         End If
         
-        GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, 0, 0, UserControl.ScaleWidth - 1, 0, outlineColor
-        GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, UserControl.ScaleWidth - 1, 0, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, outlineColor
-        GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, 0, UserControl.ScaleHeight - 1, outlineColor
-        GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, 0, UserControl.ScaleHeight - 1, 0, 0, outlineColor
+        GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, 0, outlineOffset, UserControl.ScaleWidth - 1, outlineOffset, outlineColor, , outlineWidth, , LineCapFlat
+        GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, UserControl.ScaleWidth - 1 - outlineOffset, 0, UserControl.ScaleWidth - 1 - outlineOffset, UserControl.ScaleHeight - 1, outlineColor, , outlineWidth, , LineCapFlat
+        GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1 - outlineOffset, 0, UserControl.ScaleHeight - 1 - outlineOffset, outlineColor, , outlineWidth, , LineCapFlat
+        GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, outlineOffset, UserControl.ScaleHeight - 1, outlineOffset, 0, outlineColor, , outlineWidth, , LineCapFlat
         
         'Render the completed DIB to the control.  (This is when color management takes place.)
-        turnOnDefaultColorManagement UserControl.hDC, UserControl.hWnd
+        TurnOnDefaultColorManagement UserControl.hDC, UserControl.hWnd
         BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
         
     Else
