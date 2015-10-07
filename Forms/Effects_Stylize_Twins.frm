@@ -118,7 +118,7 @@ Public Sub GenerateTwins(ByVal tType As Long, Optional ByVal toPreview As Boolea
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    prepImageData dstSA, toPreview, dstPic, , , True
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
@@ -162,8 +162,8 @@ Public Sub GenerateTwins(ByVal tType As Long, Optional ByVal toPreview As Boolea
     Next x
     
     'Color variables
-    Dim r As Long, g As Long, b As Long
-    Dim r2 As Long, g2 As Long, b2 As Long
+    Dim r As Long, g As Long, b As Long, a As Long
+    Dim r2 As Long, g2 As Long, b2 As Long, a2 As Long
     
     'Loop through each pixel in the image, converting values as we go
     For x = initX To finalX
@@ -174,22 +174,27 @@ Public Sub GenerateTwins(ByVal tType As Long, Optional ByVal toPreview As Boolea
         r = srcImageData(QuickVal + 2, y)
         g = srcImageData(QuickVal + 1, y)
         b = srcImageData(QuickVal, y)
+        If qvDepth = 4 Then a = srcImageData(QuickVal + 3, y)
         
         'Grab the value of the "second" pixel, whose position will vary depending on the method (vertical or horizontal)
         If tType = 0 Then
             r2 = srcImageData(maxX - QuickVal + 2, y)
             g2 = srcImageData(maxX - QuickVal + 1, y)
             b2 = srcImageData(maxX - QuickVal, y)
+            If qvDepth = 4 Then a2 = srcImageData(maxX - QuickVal + 3, y)
         Else
             r2 = srcImageData(QuickVal + 2, finalY - y)
             g2 = srcImageData(QuickVal + 1, finalY - y)
             b2 = srcImageData(QuickVal, finalY - y)
+            If qvDepth = 4 Then a2 = srcImageData(QuickVal + 3, finalY - y)
         End If
         
         'Alpha-blend the two pixels using our shortcut look-up table
         dstImageData(QuickVal + 2, y) = hLookup(r + r2)
         dstImageData(QuickVal + 1, y) = hLookup(g + g2)
         dstImageData(QuickVal, y) = hLookup(b + b2)
+        
+        If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = hLookup(a + a2)
         
     Next y
         If Not toPreview Then
@@ -208,7 +213,7 @@ Public Sub GenerateTwins(ByVal tType As Long, Optional ByVal toPreview As Boolea
     Erase dstImageData
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering
-    finalizeImageData toPreview, dstPic
+    finalizeImageData toPreview, dstPic, True
         
 End Sub
 
