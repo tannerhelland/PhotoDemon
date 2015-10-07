@@ -380,12 +380,12 @@ Private Sub updateControlLayout()
             .Top = 0
             .Left = 0
             .Right = m_BackBuffer.getDIBWidth
-            .Bottom = m_Caption.getCaptionHeight() + fixDPI(6)
+            .Bottom = m_Caption.getCaptionHeight() + FixDPI(6)
         End With
         
         With m_ButtonRect
             .Top = m_CaptionRect.Bottom + 1
-            .Left = fixDPI(8)
+            .Left = FixDPI(8)
             .Right = m_BackBuffer.getDIBWidth - 1
             .Bottom = m_BackBuffer.getDIBHeight - 1
         End With
@@ -499,7 +499,7 @@ Public Sub updateAgainstCurrentTheme()
         m_Caption.updateAgainstCurrentTheme
         
         'Re-enable color management for the underlying UC
-        Color_Management.turnOnDefaultColorManagement UserControl.hDC, UserControl.hWnd
+        Color_Management.TurnOnDefaultColorManagement UserControl.hDC, UserControl.hWnd
         
     End If
     

@@ -195,43 +195,55 @@ Private Sub drawControl()
         m_BackBuffer.resetDIB
     End If
     
-    'Render the brush first.  (Gradient brushes require a target width/height, which we want to be the same size as the control.)
-    Dim cBounds As RECTF
-    With cBounds
-        .Left = 0
-        .Top = 0
-        .Width = UserControl.ScaleWidth
-        .Height = UserControl.ScaleHeight
-    End With
+    'Because so much of the rendering code requires GDI+, we can't do much in the IDE
+    If g_IsProgramRunning Then
+        
+        'Render the brush first.  (Gradient brushes require a target width/height, which we want to be the same size as the control.)
+        Dim cBounds As RECTF
+        With cBounds
+            .Left = 0
+            .Top = 0
+            .Width = UserControl.ScaleWidth
+            .Height = UserControl.ScaleHeight
+        End With
+        
+        m_Filler.setBoundaryRect cBounds
+        m_Filler.createBrushFromString Me.Brush
+        
+        Dim tmpBrush As Long
+        tmpBrush = m_Filler.getBrushHandle
+        
+        GDI_Plus.GDIPlusFillDIBRect_Pattern m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_CheckerboardPattern
+        GDI_Plus.GDIPlusFillDC_Brush m_BackBuffer.getDIBDC, tmpBrush, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight
+        m_Filler.releaseBrushHandle tmpBrush
+        
+        'Draw borders around the brush results.
+        Dim outlineColor As Long, outlineWidth As Long, outlineOffset As Long
+        
+        If g_IsProgramRunning And m_MouseInsideUC Then
+            outlineColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+            outlineWidth = 3
+            outlineOffset = 1
+        Else
+            outlineColor = vbBlack
+            outlineWidth = 1
+            outlineOffset = 0
+        End If
+        
+        GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, 0, outlineOffset, UserControl.ScaleWidth - 1, outlineOffset, outlineColor, , outlineWidth, , LineCapFlat
+        GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, UserControl.ScaleWidth - 1 - outlineOffset, 0, UserControl.ScaleWidth - 1 - outlineOffset, UserControl.ScaleHeight - 1, outlineColor, , outlineWidth, , LineCapFlat
+        GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1 - outlineOffset, 0, UserControl.ScaleHeight - 1 - outlineOffset, outlineColor, , outlineWidth, , LineCapFlat
+        GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, outlineOffset, UserControl.ScaleHeight - 1, outlineOffset, 0, outlineColor, , outlineWidth, , LineCapFlat
+        
+        'Render the completed DIB to the control.  (This is when color management takes place.)
+        ' (Note also that we use a g_IsProgramRunning check to prevent color management from firing at compile-time.)
+        If g_IsProgramRunning Then TurnOnDefaultColorManagement UserControl.hDC, UserControl.hWnd
+        BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
     
-    m_Filler.setBoundaryRect cBounds
-    m_Filler.createBrushFromString Me.Brush
-    
-    Dim tmpBrush As Long
-    tmpBrush = m_Filler.getBrushHandle
-    
-    GDI_Plus.GDIPlusFillDIBRect_Pattern m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_CheckerboardPattern
-    GDI_Plus.GDIPlusFillDC_Brush m_BackBuffer.getDIBDC, tmpBrush, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight
-    m_Filler.releaseBrushHandle tmpBrush
-    
-    'Draw borders around the brush results.
-    Dim outlineColor As Long
-    
-    If g_IsProgramRunning And m_MouseInsideUC Then
-        outlineColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
     Else
-        outlineColor = vbBlack
+        UserControl.BackColor = m_Filler.getBrushProperty(pgbs_PrimaryColor)
     End If
     
-    GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, 0, 0, UserControl.ScaleWidth - 1, 0, outlineColor
-    GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, UserControl.ScaleWidth - 1, 0, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, outlineColor
-    GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1, 0, UserControl.ScaleHeight - 1, outlineColor
-    GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, 0, UserControl.ScaleHeight - 1, 0, 0, outlineColor
-    
-    'Render the completed DIB to the control.  (This is when color management takes place.)
-    ' (Note also that we use a g_IsProgramRunning check to prevent color management from firing at compile-time.)
-    If g_IsProgramRunning Then turnOnDefaultColorManagement UserControl.hDC, UserControl.hWnd
-    BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
     UserControl.Picture = UserControl.Image
     UserControl.Refresh
     
