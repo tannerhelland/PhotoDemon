@@ -243,6 +243,9 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
         dstImageData(QuickVal + 2, y) = srcImageData(QuickValDiffuseX + 2, QuickValDiffuseY)
         dstImageData(QuickVal + 1, y) = srcImageData(QuickValDiffuseX + 1, QuickValDiffuseY)
         dstImageData(QuickVal, y) = srcImageData(QuickValDiffuseX, QuickValDiffuseY)
+        
+        'Handle alpha as well, if present
+        If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = srcImageData(QuickValDiffuseX + 3, QuickValDiffuseY)
 
     Next y
         If toPreview = False Then
