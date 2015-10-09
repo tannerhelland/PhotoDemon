@@ -18,6 +18,7 @@ Begin VB.UserControl pdScrollBar
    ScaleHeight     =   40
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
+   ToolboxBitmap   =   "pdScrollBar.ctx":0000
    Begin VB.Timer tmrUpButton 
       Enabled         =   0   'False
       Left            =   0
@@ -134,8 +135,9 @@ Private m_MouseDownThumb As Boolean, m_MouseOverThumb As Boolean
 Private m_MouseDownUpButton As Boolean, m_MouseDownDownButton As Boolean
 Private m_MouseOverUpButton As Boolean, m_MouseOverDownButton As Boolean
 
-'To simplify our lives, we use the API for some rect calculations.
-Private Declare Function IntersectRect Lib "user32" (ByRef lpDestRect As RECTL, ByRef lpSrc1Rect As RECTL, ByRef lpSrc2Rect As RECTL) As Long
+'When the user click-drags the thumb, we need to store a couple of offsets at MouseDown time, to ensure that the thumb moves
+' relative to the initial mouse position (as opposed to "snapping" its top-left point to the new mouse coordinates).
+Private m_InitMouseX As Single, m_InitMouseY As Single, m_initValue As Double, m_initMouseValue As Double
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
@@ -180,12 +182,15 @@ Public Property Get Value() As Double
 End Property
 
 Public Property Let Value(ByVal newValue As Double)
-        
+    
+    'For integer-only scroll bars, clamp values to their integer range
+    If m_significantDigits = 0 Then newValue = Int(newValue)
+    
     'Don't make any changes unless the new value deviates from the existing one
     If (newValue <> m_Value) Then
         
         m_Value = newValue
-                
+        
         'While running, perform bounds-checking.  (It's less important in the designer, as the assumption is that the
         ' developer will momentarily bring everything into order.)
         If g_IsProgramRunning Then
@@ -202,7 +207,7 @@ Public Property Let Value(ByVal newValue As Double)
         
         'Mark the value property as being changed, and raise the corresponding event.
         PropertyChanged "Value"
-        RaiseEvent Scroll(True)
+        RaiseEvent Scroll(Not m_MouseDownThumb)
         
     End If
                 
@@ -366,6 +371,13 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
             'Determine button state for the thumb
             If Math_Functions.isPointInRectF(x, y, thumbRect) Then
                 m_MouseDownThumb = True
+                
+                'Store initial x/y/value values at this location
+                m_InitMouseX = x
+                m_InitMouseY = y
+                m_initValue = m_Value
+                m_initMouseValue = getValueFromMouseCoords(x, y)
+                
             Else
                 m_MouseDownThumb = False
             End If
@@ -382,7 +394,6 @@ End Sub
 Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseInsideUC = True
     cMouseEvents.setSystemCursor IDC_HAND
-'    redrawBackBuffer
 End Sub
 
 'When the mouse leaves the UC, we must repaint the button (as it's no longer hovered)
@@ -410,28 +421,45 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     'Reset mouse capture behavior; this greatly simplifies parts of the drawing function
     If Not m_MouseInsideUC Then m_MouseInsideUC = True
     
-    'Determine mouse hover state for the up and down button areas
-    If Math_Functions.isPointInRectL(x, y, upLeftRect) Then
-        m_MouseOverUpButton = True
+    'If the user is click-dragging the thumb, we give that preferential treatment
+    If m_MouseDownThumb Then
+        
+        'Figure out a new value for the current mouse position
+        Dim curValue As Double, valDiff As Double
+        curValue = getValueFromMouseCoords(x, y)
+        
+        'Solve for the difference between this value and the initial MouseDown value
+        valDiff = curValue - m_initMouseValue
+        
+        'Set the actual control value to match; this assignment will handle redraws as necessary
+        Value = m_initValue + valDiff
+        
     Else
-        m_MouseOverUpButton = False
-    End If
     
-    If Math_Functions.isPointInRectL(x, y, downRightRect) Then
-        m_MouseOverDownButton = True
-    Else
-        m_MouseOverDownButton = False
-    End If
+        'Determine mouse hover state for the up and down button areas
+        If Math_Functions.isPointInRectL(x, y, upLeftRect) Then
+            m_MouseOverUpButton = True
+        Else
+            m_MouseOverUpButton = False
+        End If
         
-    If Math_Functions.isPointInRectF(x, y, thumbRect) Then
-        m_MouseOverThumb = True
-    Else
-        m_MouseOverThumb = False
-    End If
+        If Math_Functions.isPointInRectL(x, y, downRightRect) Then
+            m_MouseOverDownButton = True
+        Else
+            m_MouseOverDownButton = False
+        End If
+            
+        If Math_Functions.isPointInRectF(x, y, thumbRect) Then
+            m_MouseOverThumb = True
+        Else
+            m_MouseOverThumb = False
+        End If
         
-    'Repaint the control
-    ' TODO: add conditional checks, as some moves may not require a redraw
-    redrawBackBuffer
+        'Repaint the control
+        ' TODO: potentially add conditional checks, as moves only require a redraw if the above booleans actually change
+        redrawBackBuffer
+        
+    End If
     
 End Sub
 
@@ -441,6 +469,8 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
         
         m_MouseDownUpButton = False
         m_MouseDownDownButton = False
+        m_MouseDownThumb = False
+        
         tmrUpButton.Enabled = False
         tmrDownButton.Enabled = False
         
@@ -649,7 +679,7 @@ Private Sub updateControlLayout()
         With trackRect
             .Left = upLeftRect.Right + 1
             .Top = 0
-            .Right = downRightRect.Left '- 1
+            .Right = downRightRect.Left
             .Bottom = m_BackBuffer.getDIBHeight
         End With
     Else
@@ -898,8 +928,6 @@ Private Sub determineThumbSize()
     'Start by determining the maximum available size for the thumb
     Dim maxThumbSize As Single
     
-    Debug.Print "TrackRect: " & trackRect.Left & ", " & trackRect.Top & " - " & trackRect.Right & ", " & trackRect.Bottom
-    
     If m_OrientationHorizontal Then
         maxThumbSize = trackRect.Right - trackRect.Left
     Else
@@ -908,7 +936,6 @@ Private Sub determineThumbSize()
     
     'If the max size is less than zero, force it to zero and exit
     If maxThumbSize <= 0 Then
-        Debug.Print "WARNING: setting thumb size to zero.  Orientation h=" & m_OrientationHorizontal
         m_ThumbSize = 0
         
     'If the max size is larger than zero, figure out how many discrete, pixel-sized increments there are between
@@ -936,16 +963,11 @@ Private Sub determineThumbSize()
                 If m_ThumbSize > trackRect.Bottom - trackRect.Top Then m_ThumbSize = trackRect.Bottom - trackRect.Top
             End If
             
-            Debug.Print "Thumbsize successfully calculated = " & m_ThumbSize
-            
         Else
-            Debug.Print "WARNING: setting thumb size to zero because scroll max = min"
             m_ThumbSize = 0
         End If
     
     End If
-    
-    Debug.Print "m_thumbsize = " & m_ThumbSize
     
     'After determining a thumb size, we must always recalculate the current position.
     determineThumbRect
@@ -969,8 +991,6 @@ Private Sub determineThumbRect()
     'Next, let's calculate a few special circumstances: max and min values, specifically.
     If m_Value <= m_Min Then
         
-        Debug.Print "determineThumbRect taking special action for min value case"
-        
         If m_OrientationHorizontal Then
             thumbRect.Left = trackRect.Left
         Else
@@ -978,9 +998,7 @@ Private Sub determineThumbRect()
         End If
     
     ElseIf m_Value >= m_Max Then
-    
-        Debug.Print "determineThumbRect taking special action for max value case"
-    
+        
         If m_OrientationHorizontal Then
             thumbRect.Left = trackRect.Right - m_ThumbSize
         Else
@@ -989,8 +1007,6 @@ Private Sub determineThumbRect()
     
     'For any other value, we must calculate the position dynamically
     Else
-        
-        Debug.Print "determineThumbRect manually calculating thumb position"
         
         'Figure out how many pixels we have to work with, and note that we must subtract the size of the thumb from
         ' the available track space.
@@ -1025,9 +1041,47 @@ Private Sub determineThumbRect()
         thumbRect.Height = m_ThumbSize
     End If
     
-    Debug.Print "Thumbrect: " & thumbRect.Left & ", " & thumbRect.Top & " - " & thumbRect.Width & "x" & thumbRect.Height
-
 End Sub
+
+'Given an (x, y) coordinate pair, return the "value" corresponding to that position on the scroll bar track.
+Private Function getValueFromMouseCoords(ByVal x As Single, ByVal y As Single, Optional ByVal padToMaxMinRange As Boolean = False) As Double
+    
+    'Obviously, value calculations differ depending on the scroll bar's orientation.  Start by figuring out the range afforded
+    ' by the track bar portion of the scrollbar.
+    Dim availablePixels As Double
+    If m_OrientationHorizontal Then
+        availablePixels = ((trackRect.Right - trackRect.Left) - m_ThumbSize)
+    Else
+        availablePixels = ((trackRect.Bottom - trackRect.Top) - m_ThumbSize)
+    End If
+    
+    'Next, figure out where the relevant coordinate (x or y, depending on orientation) lies as a fraction of the total width
+    Dim posRatio As Double
+    If m_OrientationHorizontal Then
+        posRatio = (x - trackRect.Left) / availablePixels
+    Else
+        posRatio = (y - trackRect.Top) / availablePixels
+    End If
+    
+    'Convert that to a matching position on the control's min/max scale
+    If m_Min = m_Max Then
+        getValueFromMouseCoords = m_Max
+    Else
+    
+        getValueFromMouseCoords = m_Min + posRatio * (m_Max - m_Min)
+        
+        'Clamp output to min/max ranges, as a convenience to the caller
+        If padToMaxMinRange Then
+            If getValueFromMouseCoords < m_Min Then
+                getValueFromMouseCoords = m_Min
+            ElseIf getValueFromMouseCoords > m_Max Then
+                getValueFromMouseCoords = m_Max
+            End If
+        End If
+        
+    End If
+    
+End Function
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
