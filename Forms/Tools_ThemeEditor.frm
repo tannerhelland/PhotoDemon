@@ -24,6 +24,17 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdLabel lblHScroll 
+      Height          =   255
+      Index           =   0
+      Left            =   10320
+      Top             =   1320
+      Width           =   1335
+      _extentx        =   2355
+      _extenty        =   503
+      alignment       =   2
+      caption         =   ""
+   End
    Begin PhotoDemon.pdScrollBar hScroll1 
       Height          =   255
       Index           =   0
@@ -31,10 +42,10 @@ Begin VB.Form FormThemeEditor
       TabIndex        =   14
       Top             =   600
       Width           =   2775
-      _ExtentX        =   4895
-      _ExtentY        =   450
-      BackColor       =   0
-      OrientationHorizontal=   -1  'True
+      _extentx        =   4895
+      _extenty        =   450
+      backcolor       =   0
+      orientationhorizontal=   -1  'True
    End
    Begin PhotoDemon.pdButton cmdTest 
       Height          =   615
@@ -43,20 +54,20 @@ Begin VB.Form FormThemeEditor
       TabIndex        =   8
       Top             =   4320
       Width           =   2055
-      _ExtentX        =   3625
-      _ExtentY        =   1085
-      Caption         =   "toggle visibility"
+      _extentx        =   3625
+      _extenty        =   1085
+      caption         =   "toggle visibility"
    End
    Begin PhotoDemon.pdLabel lblExplanation 
       Height          =   855
       Left            =   120
       Top             =   7560
       Width           =   10335
-      _ExtentX        =   18230
-      _ExtentY        =   1508
-      Caption         =   $"Tools_ThemeEditor.frx":0000
-      FontSize        =   12
-      Layout          =   3
+      _extentx        =   18230
+      _extenty        =   1508
+      caption         =   $"Tools_ThemeEditor.frx":0000
+      fontsize        =   12
+      layout          =   3
    End
    Begin PhotoDemon.pdComboBox pdComboBox1 
       Height          =   375
@@ -64,19 +75,19 @@ Begin VB.Form FormThemeEditor
       TabIndex        =   2
       Top             =   6000
       Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   635
+      _extentx        =   9975
+      _extenty        =   635
    End
    Begin PhotoDemon.pdLabel pdLabelVerify 
       Height          =   1695
       Left            =   4800
       Top             =   4200
       Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   2990
-      Caption         =   ""
-      FontSize        =   9
-      Layout          =   1
+      _extentx        =   9975
+      _extenty        =   2990
+      caption         =   ""
+      fontsize        =   9
+      layout          =   1
    End
    Begin VB.CommandButton cmdTextBoxFake 
       Caption         =   "useless command button with TabIndex 0"
@@ -101,11 +112,11 @@ Begin VB.Form FormThemeEditor
       Left            =   120
       Top             =   120
       Width           =   3030
-      _ExtentX        =   5345
-      _ExtentY        =   503
-      Caption         =   "Unicode text box for testing:"
-      FontSize        =   12
-      Layout          =   2
+      _extentx        =   5345
+      _extenty        =   503
+      caption         =   "Unicode text box for testing:"
+      fontsize        =   12
+      layout          =   2
    End
    Begin PhotoDemon.pdTextBox pdTextBox1 
       Height          =   2055
@@ -113,9 +124,9 @@ Begin VB.Form FormThemeEditor
       TabIndex        =   1
       Top             =   480
       Width           =   9975
-      _ExtentX        =   17595
-      _ExtentY        =   5741
-      Multiline       =   -1  'True
+      _extentx        =   17595
+      _extenty        =   5741
+      multiline       =   -1  'True
    End
    Begin PhotoDemon.pdLabel pdLabelTitle 
       Height          =   285
@@ -123,11 +134,11 @@ Begin VB.Form FormThemeEditor
       Left            =   120
       Top             =   3840
       Width           =   1650
-      _ExtentX        =   2910
-      _ExtentY        =   503
-      Caption         =   "testing options:"
-      FontSize        =   12
-      Layout          =   2
+      _extentx        =   2910
+      _extenty        =   503
+      caption         =   "testing options:"
+      fontsize        =   12
+      layout          =   2
    End
    Begin PhotoDemon.pdLabel pdLabelTitle 
       Height          =   285
@@ -135,11 +146,11 @@ Begin VB.Form FormThemeEditor
       Left            =   4800
       Top             =   3840
       Width           =   4455
-      _ExtentX        =   7858
-      _ExtentY        =   503
-      Caption         =   "Other Unicode controls for testing output:"
-      FontSize        =   12
-      Layout          =   2
+      _extentx        =   7858
+      _extenty        =   503
+      caption         =   "Other Unicode controls for testing output:"
+      fontsize        =   12
+      layout          =   2
    End
    Begin PhotoDemon.pdTextBox pdTextBox2 
       Height          =   315
@@ -148,8 +159,8 @@ Begin VB.Form FormThemeEditor
       TabIndex        =   3
       Top             =   2640
       Width           =   9975
-      _ExtentX        =   17595
-      _ExtentY        =   556
+      _extentx        =   17595
+      _extenty        =   556
    End
    Begin PhotoDemon.pdTextBox pdTextBox2 
       Height          =   315
@@ -158,8 +169,8 @@ Begin VB.Form FormThemeEditor
       TabIndex        =   4
       Top             =   3000
       Width           =   9975
-      _ExtentX        =   17595
-      _ExtentY        =   556
+      _extentx        =   17595
+      _extenty        =   556
    End
    Begin PhotoDemon.pdTextBox pdTextBox2 
       Height          =   315
@@ -168,9 +179,9 @@ Begin VB.Form FormThemeEditor
       TabIndex        =   5
       Top             =   3360
       Width           =   9975
-      _ExtentX        =   17595
-      _ExtentY        =   556
-      Enabled         =   0   'False
+      _extentx        =   17595
+      _extenty        =   556
+      enabled         =   0   'False
    End
    Begin PhotoDemon.pdComboBox pdComboBox2 
       Height          =   375
@@ -179,8 +190,8 @@ Begin VB.Form FormThemeEditor
       TabIndex        =   6
       Top             =   6480
       Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   635
+      _extentx        =   9975
+      _extenty        =   635
    End
    Begin PhotoDemon.pdComboBox pdComboBox2 
       Height          =   375
@@ -189,9 +200,9 @@ Begin VB.Form FormThemeEditor
       TabIndex        =   7
       Top             =   6960
       Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   635
-      Enabled         =   0   'False
+      _extentx        =   9975
+      _extenty        =   635
+      enabled         =   0   'False
    End
    Begin PhotoDemon.pdButton cmdTest 
       Height          =   615
@@ -200,9 +211,9 @@ Begin VB.Form FormThemeEditor
       TabIndex        =   9
       Top             =   4320
       Width           =   2055
-      _ExtentX        =   3625
-      _ExtentY        =   1085
-      Caption         =   "toggle enablement"
+      _extentx        =   3625
+      _extenty        =   1085
+      caption         =   "toggle enablement"
    End
    Begin PhotoDemon.pdButton cmdTest 
       Height          =   615
@@ -211,9 +222,9 @@ Begin VB.Form FormThemeEditor
       TabIndex        =   10
       Top             =   5040
       Width           =   2055
-      _ExtentX        =   3625
-      _ExtentY        =   1085
-      Caption         =   "append random chars"
+      _extentx        =   3625
+      _extenty        =   1085
+      caption         =   "append random chars"
    End
    Begin PhotoDemon.pdButton cmdTest 
       Height          =   615
@@ -222,9 +233,9 @@ Begin VB.Form FormThemeEditor
       TabIndex        =   11
       Top             =   5040
       Width           =   2055
-      _ExtentX        =   3625
-      _ExtentY        =   1085
-      Caption         =   "toggle multiline"
+      _extentx        =   3625
+      _extenty        =   1085
+      caption         =   "toggle multiline"
    End
    Begin PhotoDemon.pdButton cmdTest 
       Height          =   615
@@ -233,9 +244,9 @@ Begin VB.Form FormThemeEditor
       TabIndex        =   12
       Top             =   5760
       Width           =   2055
-      _ExtentX        =   3625
-      _ExtentY        =   1085
-      Caption         =   "add drop-down entries"
+      _extentx        =   3625
+      _extenty        =   1085
+      caption         =   "add drop-down entries"
    End
    Begin PhotoDemon.pdButton cmdTest 
       Height          =   615
@@ -244,9 +255,9 @@ Begin VB.Form FormThemeEditor
       TabIndex        =   13
       Top             =   5760
       Width           =   2055
-      _ExtentX        =   3625
-      _ExtentY        =   1085
-      Caption         =   "delete drop-down entries"
+      _extentx        =   3625
+      _extenty        =   1085
+      caption         =   "delete drop-down entries"
    End
    Begin PhotoDemon.pdLabel pdLabelTitle 
       Height          =   285
@@ -254,11 +265,11 @@ Begin VB.Form FormThemeEditor
       Left            =   10320
       Top             =   120
       Width           =   1875
-      _ExtentX        =   5345
-      _ExtentY        =   503
-      Caption         =   "Unicode text box for testing:"
-      FontSize        =   12
-      Layout          =   2
+      _extentx        =   5345
+      _extenty        =   503
+      caption         =   "Unicode text box for testing:"
+      fontsize        =   12
+      layout          =   2
    End
    Begin PhotoDemon.pdScrollBar hScroll1 
       Height          =   255
@@ -267,34 +278,67 @@ Begin VB.Form FormThemeEditor
       TabIndex        =   15
       Top             =   960
       Width           =   2775
-      _ExtentX        =   4895
-      _ExtentY        =   450
-      BackColor       =   0
-      Max             =   100
-      OrientationHorizontal=   -1  'True
+      _extentx        =   4895
+      _extenty        =   450
+      backcolor       =   0
+      max             =   100
+      orientationhorizontal=   -1  'True
    End
    Begin PhotoDemon.pdScrollBar vScroll1 
       Height          =   2775
       Index           =   0
-      Left            =   10680
+      Left            =   11760
       TabIndex        =   16
       Top             =   1320
       Width           =   255
-      _ExtentX        =   4895
-      _ExtentY        =   450
-      BackColor       =   0
+      _extentx        =   4895
+      _extenty        =   450
+      backcolor       =   0
    End
    Begin PhotoDemon.pdScrollBar vScroll1 
       Height          =   2775
       Index           =   1
-      Left            =   11040
+      Left            =   12120
       TabIndex        =   17
       Top             =   1320
       Width           =   255
-      _ExtentX        =   4895
-      _ExtentY        =   450
-      BackColor       =   0
-      Max             =   100
+      _extentx        =   4895
+      _extenty        =   450
+      backcolor       =   0
+      max             =   100
+   End
+   Begin PhotoDemon.pdLabel lblHScroll 
+      Height          =   255
+      Index           =   1
+      Left            =   10320
+      Top             =   1680
+      Width           =   1335
+      _extentx        =   2355
+      _extenty        =   503
+      alignment       =   2
+      caption         =   ""
+   End
+   Begin PhotoDemon.pdLabel lblVScroll 
+      Height          =   255
+      Index           =   0
+      Left            =   10320
+      Top             =   2520
+      Width           =   1335
+      _extentx        =   2355
+      _extenty        =   503
+      alignment       =   2
+      caption         =   ""
+   End
+   Begin PhotoDemon.pdLabel lblVScroll 
+      Height          =   255
+      Index           =   1
+      Left            =   10320
+      Top             =   2880
+      Width           =   1335
+      _extentx        =   2355
+      _extenty        =   503
+      alignment       =   2
+      caption         =   ""
    End
 End
 Attribute VB_Name = "FormThemeEditor"
@@ -371,6 +415,10 @@ Private Sub Form_Load()
     
 End Sub
 
+Private Sub hScroll1_Scroll(Index As Integer, ByVal eventIsCritical As Boolean)
+    lblHScroll(Index).Caption = CStr(hScroll1(Index).Value)
+End Sub
+
 Private Sub pdComboBox1_Click()
     Debug.Print "pdComboBox1 clicked: " & pdComboBox1.ListIndex
 End Sub
@@ -389,4 +437,8 @@ End Sub
 
 Private Sub pdTextBox1_LostFocus()
     Debug.Print "Focus lost from UC - TabStop item " & pdTextBox1.TabIndex
+End Sub
+
+Private Sub vScroll1_Scroll(Index As Integer, ByVal eventIsCritical As Boolean)
+    lblVScroll(Index).Caption = CStr(vScroll1(Index).Value)
 End Sub
