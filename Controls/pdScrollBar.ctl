@@ -375,18 +375,32 @@ Private Sub makeLostFocusUIChanges()
 End Sub
 
 'A few key events are also handled
-Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
 
-    'When space is released, redraw the button to match
-'    If (vkCode = VK_SPACE) Or (vkCode = VK_RETURN) Then
-'
-'        If m_FocusRectActive And Me.Enabled Then
-'            m_TitleState = Not m_TitleState
-'            redrawBackBuffer
-'            RaiseEvent Click(m_TitleState)
-'        End If
-'
-'    End If
+    'Only process key events if this control has focus
+    If m_MouseInsideUC Or cFocusDetector.HasFocus Then
+        
+        If (vkCode = VK_UP) Or (vkCode = VK_LEFT) Then
+            moveValueDown
+            markEventHandled = True
+        ElseIf (vkCode = VK_DOWN) Or (vkCode = VK_RIGHT) Then
+            moveValueUp
+            markEventHandled = True
+        ElseIf (vkCode = VK_PAGEUP) Then
+            moveValueDown True
+            markEventHandled = True
+        ElseIf (vkCode = VK_PAGEDOWN) Then
+            moveValueUp True
+            markEventHandled = True
+        ElseIf (vkCode = VK_HOME) Then
+            Value = Min
+            markEventHandled = True
+        ElseIf (vkCode = VK_END) Then
+            Value = Max
+            markEventHandled = True
+        End If
+        
+    End If
 
 End Sub
 
@@ -502,7 +516,7 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
         m_MouseOverDownButton = False
         m_MouseOverThumb = False
         m_MouseOverTrack = False
-                
+        
         m_MouseInsideUC = False
         redrawBackBuffer
         
@@ -672,7 +686,7 @@ Private Sub UserControl_Initialize()
         cMouseEvents.setSystemCursor IDC_HAND
         
         Set cKeyEvents = New pdInputKeyboard
-        cKeyEvents.createKeyboardTracker "pdScrollBar", Me.hWnd, VK_UP, VK_DOWN, VK_RIGHT, VK_LEFT
+        cKeyEvents.createKeyboardTracker "pdScrollBar", Me.hWnd, VK_UP, VK_DOWN, VK_RIGHT, VK_LEFT, VK_END, VK_HOME, VK_PAGEUP, VK_PAGEDOWN
         
         'Also start a flicker-free window painter
         Set cPainter = New pdWindowPainter
@@ -1110,7 +1124,7 @@ Private Sub determineThumbSize()
     Else
     
         Dim totalIncrements As Single
-        totalIncrements = Abs(m_Max - m_Min)
+        totalIncrements = Abs(m_Max - m_Min) + 1
         
         If totalIncrements <> 0 Then
             m_ThumbSize = maxThumbSize / totalIncrements
