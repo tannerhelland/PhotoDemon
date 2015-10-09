@@ -232,7 +232,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
             moveValueDown
             
             'Start the repeat timer as well
-            tmrUpButton.Interval = Interface.getKeyboardDelay() * 1000
+            tmrUpButton.Interval = Interface.GetKeyboardDelay() * 1000
             tmrUpButton.Enabled = True
             
         Else
@@ -242,7 +242,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
         If isPointInRect(x, y, downRect) Then
             m_MouseDownDownButton = True
             moveValueUp
-            tmrDownButton.Interval = Interface.getKeyboardDelay() * 1000
+            tmrDownButton.Interval = Interface.GetKeyboardDelay() * 1000
             tmrDownButton.Enabled = True
         Else
             m_MouseDownDownButton = False
@@ -325,8 +325,8 @@ Private Sub tmrDownButton_Timer()
 
     'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
     ' of the delay rate.
-    If tmrDownButton.Interval = Interface.getKeyboardDelay * 1000 Then
-        tmrDownButton.Interval = Interface.getKeyboardRepeatRate * 1000
+    If tmrDownButton.Interval = Interface.GetKeyboardDelay * 1000 Then
+        tmrDownButton.Interval = Interface.GetKeyboardRepeatRate * 1000
     End If
     
     'It's a little counter-intuitive, but the DOWN button actually moves the control value UP
@@ -338,8 +338,8 @@ Private Sub tmrUpButton_Timer()
     
     'If this is the first time the button is firing, we want to reset the button's interval to the repeat rate instead
     ' of the delay rate.
-    If tmrUpButton.Interval = Interface.getKeyboardDelay * 1000 Then
-        tmrUpButton.Interval = Interface.getKeyboardRepeatRate * 1000
+    If tmrUpButton.Interval = Interface.GetKeyboardDelay * 1000 Then
+        tmrUpButton.Interval = Interface.GetKeyboardRepeatRate * 1000
     End If
     
     'It's a little counter-intuitive, but the UP button actually moves the control value DOWN
@@ -596,7 +596,7 @@ End Sub
 Private Sub resizeControl()
 
     'The goal here is to keep the text box and scroll bar nicely aligned, with a 1px border for the red "error" box
-    picScroll.Width = fixDPI(18)
+    picScroll.Width = FixDPI(18)
     picScroll.Top = 1
     picScroll.Height = txtPrimary.Height
     
@@ -723,27 +723,27 @@ Private Sub RedrawButton()
     Dim buttonPt1 As POINTFLOAT, buttonPt2 As POINTFLOAT, buttonPt3 As POINTFLOAT
                 
     'Start with the up-pointing arrow
-    buttonPt1.x = upRect.Left + fixDPIFloat(5)
-    buttonPt1.y = (upRect.Bottom - upRect.Top) / 2 + fixDPIFloat(2)
+    buttonPt1.x = upRect.Left + FixDPIFloat(5)
+    buttonPt1.y = (upRect.Bottom - upRect.Top) / 2 + FixDPIFloat(2)
     
-    buttonPt3.x = upRect.Right - fixDPIFloat(5)
+    buttonPt3.x = upRect.Right - FixDPIFloat(5)
     buttonPt3.y = buttonPt1.y
     
     buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
-    buttonPt2.y = buttonPt1.y - fixDPIFloat(3)
+    buttonPt2.y = buttonPt1.y - FixDPIFloat(3)
     
     GDI_Plus.GDIPlusDrawLineToDC buttonDIB.getDIBDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, upButtonArrowColor, 255, 2, True, LineCapRound
     GDI_Plus.GDIPlusDrawLineToDC buttonDIB.getDIBDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, upButtonArrowColor, 255, 2, True, LineCapRound
                 
     'Next, the down-pointing arrow
-    buttonPt1.x = downRect.Left + fixDPIFloat(5)
-    buttonPt1.y = downRect.Top + (downRect.Bottom - downRect.Top) / 2 - fixDPIFloat(1)
+    buttonPt1.x = downRect.Left + FixDPIFloat(5)
+    buttonPt1.y = downRect.Top + (downRect.Bottom - downRect.Top) / 2 - FixDPIFloat(1)
     
-    buttonPt3.x = downRect.Right - fixDPIFloat(5)
+    buttonPt3.x = downRect.Right - FixDPIFloat(5)
     buttonPt3.y = buttonPt1.y
     
     buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
-    buttonPt2.y = buttonPt1.y + fixDPIFloat(3)
+    buttonPt2.y = buttonPt1.y + FixDPIFloat(3)
     
     GDI_Plus.GDIPlusDrawLineToDC buttonDIB.getDIBDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, downButtonArrowColor, 255, 2, True, LineCapRound
     GDI_Plus.GDIPlusDrawLineToDC buttonDIB.getDIBDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, downButtonArrowColor, 255, 2, True, LineCapRound
@@ -821,7 +821,7 @@ Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = Fa
     End If
         
     If Not IsNumeric(chkString) Then
-        If displayErrorMsg Then pdMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", txtPrimary
+        If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a numeric value.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", txtPrimary
         IsTextEntryValid = False
     Else
         
@@ -831,7 +831,7 @@ Private Function IsTextEntryValid(Optional ByVal displayErrorMsg As Boolean = Fa
         If (checkVal >= controlMin) And (checkVal <= controlMax) Then
             IsTextEntryValid = True
         Else
-            If displayErrorMsg Then pdMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", txtPrimary, getFormattedStringValue(controlMin), getFormattedStringValue(controlMax)
+            If displayErrorMsg Then PDMsgBox "%1 is not a valid entry." & vbCrLf & "Please enter a value between %2 and %3.", vbExclamation + vbOKOnly + vbApplicationModal, "Invalid entry", txtPrimary, getFormattedStringValue(controlMin), getFormattedStringValue(controlMax)
             IsTextEntryValid = False
         End If
     End If
@@ -855,7 +855,6 @@ Private Sub evaluateFocusCount(ByVal focusCountJustIncremented As Boolean)
     End If
 
 End Sub
-
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub updateAgainstCurrentTheme()

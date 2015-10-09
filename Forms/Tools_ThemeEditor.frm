@@ -7,7 +7,7 @@ Begin VB.Form FormThemeEditor
    ClientHeight    =   8985
    ClientLeft      =   45
    ClientTop       =   315
-   ClientWidth     =   10605
+   ClientWidth     =   13260
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -22,8 +22,20 @@ Begin VB.Form FormThemeEditor
    MinButton       =   0   'False
    ScaleHeight     =   599
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   707
+   ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdScrollBar hScroll1 
+      Height          =   255
+      Index           =   0
+      Left            =   10320
+      TabIndex        =   14
+      Top             =   600
+      Width           =   2775
+      _ExtentX        =   4895
+      _ExtentY        =   450
+      BackColor       =   0
+      OrientationHorizontal=   -1  'True
+   End
    Begin PhotoDemon.pdButton cmdTest 
       Height          =   615
       Index           =   0
@@ -236,6 +248,54 @@ Begin VB.Form FormThemeEditor
       _ExtentY        =   1085
       Caption         =   "delete drop-down entries"
    End
+   Begin PhotoDemon.pdLabel pdLabelTitle 
+      Height          =   285
+      Index           =   3
+      Left            =   10320
+      Top             =   120
+      Width           =   1875
+      _ExtentX        =   5345
+      _ExtentY        =   503
+      Caption         =   "Unicode text box for testing:"
+      FontSize        =   12
+      Layout          =   2
+   End
+   Begin PhotoDemon.pdScrollBar hScroll1 
+      Height          =   255
+      Index           =   1
+      Left            =   10320
+      TabIndex        =   15
+      Top             =   960
+      Width           =   2775
+      _ExtentX        =   4895
+      _ExtentY        =   450
+      BackColor       =   0
+      Max             =   100
+      OrientationHorizontal=   -1  'True
+   End
+   Begin PhotoDemon.pdScrollBar vScroll1 
+      Height          =   2775
+      Index           =   0
+      Left            =   10680
+      TabIndex        =   16
+      Top             =   1320
+      Width           =   255
+      _ExtentX        =   4895
+      _ExtentY        =   450
+      BackColor       =   0
+   End
+   Begin PhotoDemon.pdScrollBar vScroll1 
+      Height          =   2775
+      Index           =   1
+      Left            =   11040
+      TabIndex        =   17
+      Top             =   1320
+      Width           =   255
+      _ExtentX        =   4895
+      _ExtentY        =   450
+      BackColor       =   0
+      Max             =   100
+   End
 End
 Attribute VB_Name = "FormThemeEditor"
 Attribute VB_GlobalNameSpace = False
@@ -307,7 +367,7 @@ Private Sub Form_Load()
     pdTextBox2(1).Text = ChrW$(&H6B22) & ChrW$(&H8FCE) & ChrW$(&H6B22) & "abc"
     pdComboBox2(0).ListIndex = 3
     
-    makeFormPretty Me
+    MakeFormPretty Me
     
 End Sub
 

@@ -505,7 +505,7 @@ Private Declare Function GdipCreatePenFromBrush Lib "gdiplus" Alias "GdipCreateP
 
 'Transforms
 Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal order As Long) As Long
-Private Declare Function GdipTranslateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal dX As Single, ByVal dY As Single, ByVal order As Long) As Long
+Private Declare Function GdipTranslateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal dx As Single, ByVal dy As Single, ByVal order As Long) As Long
 
 'Helpful GDI functions for moving image data between GDI and GDI+
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
@@ -985,7 +985,7 @@ Public Sub releaseGDIPlusGraphics(ByVal srcHandle As Long)
 End Sub
 
 'Return a persistent handle to a GDI+ pen.  This can be useful if many drawing operations are going to be applied with the same pen.
-Public Function getGDIPlusPenHandle(ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal customLineCap As LineCap = LineCapFlat, Optional ByVal customLineJoin As LineJoin = LineJoinMiter, Optional ByVal customDashMode As DashStyle = DashStyleSolid, Optional ByVal penMiterLimit As Single = 3#, Optional ByVal penPositioning As PenAlignment = PenAlignmentCenter) As Long
+Public Function getGDIPlusPenHandle(ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal customLineCap As LineCap = LineCapFlat, Optional ByVal customLinejoin As LineJoin = LineJoinMiter, Optional ByVal customDashMode As DashStyle = DashStyleSolid, Optional ByVal penMiterLimit As Single = 3#, Optional ByVal penPositioning As PenAlignment = PenAlignmentCenter) As Long
 
     'Create the requested pen
     Dim iPen As Long
@@ -993,7 +993,7 @@ Public Function getGDIPlusPenHandle(ByVal eColor As Long, Optional ByVal cTransp
     
     'If a custom line cap or join was specified, apply it now
     If customLineCap <> LineCapFlat Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
-    If customLineJoin <> LineJoinMiter Then GdipSetPenLineJoin iPen, customLineJoin
+    If customLinejoin <> LineJoinMiter Then GdipSetPenLineJoin iPen, customLinejoin
     If customDashMode <> DashStyleSolid Then
         
         GdipSetPenDashStyle iPen, customDashMode
@@ -1205,7 +1205,7 @@ Public Function GDIPlusStrokePathToDC(ByVal dstDC As Long, ByVal numOfPoints As 
 End Function
 
 'Use GDI+ to render a hollow rectangle, with optional color, opacity, and antialiasing
-Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectRight As Single, ByVal rectBottom As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLineCap As LineCap = 0, Optional ByVal hqOffsets As Boolean = False, Optional ByVal useInsetMode As Boolean = False) As Boolean
+Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft As Single, ByVal rectTop As Single, ByVal rectRight As Single, ByVal rectBottom As Single, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLinejoin As LineJoin = LineJoinBevel, Optional ByVal hqOffsets As Boolean = False, Optional ByVal useInsetMode As Boolean = False) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
@@ -1218,7 +1218,7 @@ Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft A
     GdipCreatePen1 fillQuadWithVBRGB(eColor, cTransparency), lineWidth, UnitPixel, iPen
     
     'Apply any other custom settings now
-    If customLineCap > 0 Then GdipSetPenLineCap iPen, customLineCap, customLineCap, 0&
+    If customLinejoin > 0 Then GdipSetPenLineJoin iPen, customLinejoin
     If useInsetMode Then GdipSetPenMode iPen, PenAlignmentInset Else GdipSetPenMode iPen, PenAlignmentCenter
     
     'Render the rectangle
@@ -1228,6 +1228,14 @@ Public Function GDIPlusDrawRectOutlineToDC(ByVal dstDC As Long, ByVal rectLeft A
     GdipDeletePen iPen
     GdipDeleteGraphics iGraphics
 
+End Function
+
+Public Function GDIPlusDrawRectLOutlineToDC(ByVal dstDC As Long, ByRef srcRectL As RECTL, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLinejoin As LineJoin = LineJoinBevel, Optional ByVal hqOffsets As Boolean = False, Optional ByVal useInsetMode As Boolean = False) As Boolean
+    GDIPlusDrawRectLOutlineToDC = GDIPlusDrawRectOutlineToDC(dstDC, srcRectL.Left, srcRectL.Top, srcRectL.Right, srcRectL.Bottom, eColor, cTransparency, lineWidth, useAA, customLinejoin, hqOffsets, useInsetMode)
+End Function
+
+Public Function GDIPlusDrawRectFOutlineToDC(ByVal dstDC As Long, ByRef srcRectF As RECTF, ByVal eColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal lineWidth As Single = 1, Optional ByVal useAA As Boolean = True, Optional ByVal customLinejoin As LineJoin = LineJoinBevel, Optional ByVal hqOffsets As Boolean = False, Optional ByVal useInsetMode As Boolean = False) As Boolean
+    GDIPlusDrawRectFOutlineToDC = GDIPlusDrawRectOutlineToDC(dstDC, srcRectF.Left, srcRectF.Top, srcRectF.Left + srcRectF.Width, srcRectF.Top + srcRectF.Height, eColor, cTransparency, lineWidth, useAA, customLinejoin, hqOffsets, useInsetMode)
 End Function
 
 'Use GDI+ to render a hollow circle, with optional color, opacity, and antialiasing
@@ -1379,6 +1387,14 @@ Public Function GDIPlusFillDIBRect(ByRef dstDIB As pdDIB, ByVal x1 As Single, By
     
     GDIPlusFillDIBRect = True
 
+End Function
+
+Public Function GDIPlusFillDIBRectL(ByRef dstDIB As pdDIB, ByRef srcRectL As RECTL, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As CompositingMode = CompositingModeSourceOver, Optional ByVal useAA As Boolean = False) As Boolean
+    GDIPlusFillDIBRectL = GDIPlusFillDIBRect(dstDIB, srcRectL.Left, srcRectL.Top, srcRectL.Right - srcRectL.Left, srcRectL.Bottom - srcRectL.Top, eColor, eTransparency, dstFillMode, useAA)
+End Function
+
+Public Function GDIPlusFillDIBRectF(ByRef dstDIB As pdDIB, ByRef srcRectF As RECTF, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As CompositingMode = CompositingModeSourceOver, Optional ByVal useAA As Boolean = False) As Boolean
+    GDIPlusFillDIBRectF = GDIPlusFillDIBRect(dstDIB, srcRectF.Left, srcRectF.Top, srcRectF.Width, srcRectF.Height, eColor, eTransparency, dstFillMode, useAA)
 End Function
 
 'Given a source DIB, fill it with the alpha checkerboard pattern.  32bpp images can then be alpha blended onto it.
@@ -2635,7 +2651,7 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     ' each edge of our rotated image, out to the corner of the rotation DIB.  We will then fill this dead space with a
     ' stretched version of the image edge, resulting in "clamped" edge behavior.
     Dim diagDistance As Double, distDiff As Double
-    Dim dX As Double, dY As Double, lineLength As Double, pX As Double, pY As Double
+    Dim dx As Double, dy As Double, lineLength As Double, pX As Double, pY As Double
     Dim padPoints() As POINTFLOAT
     ReDim padPoints(0 To 2) As POINTFLOAT
     
@@ -2647,17 +2663,17 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     distDiff = diagDistance - (srcDIB.getDIBHeight / 2)
     
     'Calculate delta x/y values for the top line, then convert those into unit vectors
-    dX = listOfPoints(1).x - listOfPoints(0).x
-    dY = listOfPoints(1).y - listOfPoints(0).y
-    lineLength = Sqr(dX * dX + dY * dY)
-    dX = dX / lineLength
-    dY = dY / lineLength
+    dx = listOfPoints(1).x - listOfPoints(0).x
+    dy = listOfPoints(1).y - listOfPoints(0).y
+    lineLength = Sqr(dx * dx + dy * dy)
+    dx = dx / lineLength
+    dy = dy / lineLength
     
     'dX/Y now represent a vector in the direction of the line.  We want a perpendicular vector instead (because we're
     ' extending a rectangle out from that image edge), and we want the vector to be of length distDiff, so it reaches
     ' all the way to the corner.
-    pX = distDiff * -dY
-    pY = distDiff * dX
+    pX = distDiff * -dy
+    pY = distDiff * dx
     
     'Use this perpendicular vector to calculate new parallelogram coordinates, which "extrude" the top of the image
     ' from where it appears on the rotated image, to the very edge of the image.
@@ -2687,16 +2703,16 @@ Public Sub GDIPlus_GetRotatedClampedDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As p
     distDiff = diagDistance - (srcDIB.getDIBWidth / 2)
     
     'Calculate delta x/y values for the left line, then convert those into unit vectors
-    dX = listOfPoints(2).x - listOfPoints(0).x
-    dY = listOfPoints(2).y - listOfPoints(0).y
-    lineLength = Sqr(dX * dX + dY * dY)
-    dX = dX / lineLength
-    dY = dY / lineLength
+    dx = listOfPoints(2).x - listOfPoints(0).x
+    dy = listOfPoints(2).y - listOfPoints(0).y
+    lineLength = Sqr(dx * dx + dy * dy)
+    dx = dx / lineLength
+    dy = dy / lineLength
     
     'dX/Y now represent a vector in the direction of the line.  We want a perpendicular vector instead,
     ' of length distDiff.
-    pX = distDiff * -dY
-    pY = distDiff * dX
+    pX = distDiff * -dy
+    pY = distDiff * dx
     
     'Use the perpendicular vector to calculate new parallelogram coordinates, which "extrude" the left of the image
     ' from where it appears on the rotated image, to the very edge of the image.
