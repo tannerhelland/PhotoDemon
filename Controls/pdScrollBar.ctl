@@ -614,6 +614,39 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
     
 End Sub
 
+Private Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+    RelayMouseWheelEvent False, Button, Shift, x, y, scrollAmount
+End Sub
+
+'If some external window wants the scrollbar to automatically sync to its own wheel events, it can use this wrapper function.
+Public Sub RelayMouseWheelEvent(ByVal wheelIsVertical As Boolean, ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+    
+    If (scrollAmount <> 0) Then
+        
+        'For convenience, swap wheel direction for horizontal wheel actions
+        If (Not wheelIsVertical) Then scrollAmount = -1 * scrollAmount
+        
+        If scrollAmount > 0 Then
+            moveValueDown True
+        Else
+            moveValueUp True
+        End If
+        
+        'If the mouse is over the scroll bar, wheel actions may cause the thumb to move into (and/or out of) the
+        ' cursor's position.  As such, we must update that value here.
+        If m_MouseOverThumb <> isPointInRectF(x, y, thumbRect) Then
+            m_MouseOverThumb = Not m_MouseOverThumb
+            redrawBackBuffer
+        End If
+        
+    End If
+    
+End Sub
+
+Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+    RelayMouseWheelEvent True, Button, Shift, x, y, scrollAmount
+End Sub
+
 'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
 ' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
 Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
