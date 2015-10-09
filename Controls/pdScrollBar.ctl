@@ -177,12 +177,17 @@ Private m_ThumbSize As Single
 'Mouse state for the up/down buttons and thumb.  These are important for not just rendering, but in the case of the buttons,
 ' for controlling a timer that enables "press and hold" behavior.
 Private m_MouseDownThumb As Boolean, m_MouseOverThumb As Boolean
+Private m_MouseDownTrack As Boolean, m_MouseOverTrack As Boolean
 Private m_MouseDownUpButton As Boolean, m_MouseDownDownButton As Boolean
 Private m_MouseOverUpButton As Boolean, m_MouseOverDownButton As Boolean
 
 'When the user click-drags the thumb, we need to store a couple of offsets at MouseDown time, to ensure that the thumb moves
 ' relative to the initial mouse position (as opposed to "snapping" its top-left point to the new mouse coordinates).
 Private m_InitMouseX As Single, m_InitMouseY As Single, m_initValue As Double, m_initMouseValue As Double
+
+'Similarly, when the user mouse-downs on the track (but *not* the thumb), we want to cache those values uniquely.
+' Once the thumb meets that location, we can turn off the timers.
+Private m_TrackX As Single, m_TrackY As Single, m_initTrackValue As Double
 
 'When right-clicking to raise a scrollbar context menu, we need to cache the current (x, y) values for the
 ' "Scroll here" context menu option.  These are kept separate from the m_InitMouseX and m_InitMouseY values, above,
@@ -360,6 +365,10 @@ Private Sub makeLostFocusUIChanges()
     If m_FocusRectActive Or m_MouseInsideUC Then
         m_FocusRectActive = False
         m_MouseInsideUC = False
+        m_MouseOverUpButton = False
+        m_MouseOverDownButton = False
+        m_MouseOverThumb = False
+        m_MouseOverTrack = False
         redrawBackBuffer
     End If
     
@@ -429,7 +438,35 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                     m_initMouseValue = getValueFromMouseCoords(x, y)
                     
                 Else
+                
                     m_MouseDownThumb = False
+                    
+                    'Now we perform a special check for the mouse being inside the track area.  (We do it here so that
+                    ' the mouse being over the thumb (which lies *inside* the track) doesn't set this to TRUE.)
+                    If Math_Functions.isPointInRectL(x, y, trackRect) Then
+                        
+                        m_MouseDownTrack = True
+                        
+                        'Cache the mouse positions, so we know when to deactivate the associated timers
+                        m_TrackX = x
+                        m_TrackY = y
+                        m_initTrackValue = getValueFromMouseCoords(x, y, True)
+                        
+                        'Activate the auto-scroll timers
+                        If m_initTrackValue < m_Value Then
+                            moveValueDown True
+                            tmrUpButton.Interval = Interface.GetKeyboardDelay() * 1000
+                            tmrUpButton.Enabled = True
+                        Else
+                            moveValueUp True
+                            tmrDownButton.Interval = Interface.GetKeyboardDelay() * 1000
+                            tmrDownButton.Enabled = True
+                        End If
+                        
+                    Else
+                        m_MouseDownTrack = False
+                    End If
+                    
                 End If
                 
                 'Request a redraw
@@ -464,7 +501,8 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
         m_MouseOverUpButton = False
         m_MouseOverDownButton = False
         m_MouseOverThumb = False
-        
+        m_MouseOverTrack = False
+                
         m_MouseInsideUC = False
         redrawBackBuffer
         
@@ -499,24 +537,40 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         'Determine mouse hover state for the up and down button areas
         If Math_Functions.isPointInRectL(x, y, upLeftRect) Then
             m_MouseOverUpButton = True
+            m_MouseOverTrack = False
         Else
             m_MouseOverUpButton = False
         End If
         
         If Math_Functions.isPointInRectL(x, y, downRightRect) Then
             m_MouseOverDownButton = True
+            m_MouseOverTrack = False
         Else
             m_MouseOverDownButton = False
         End If
             
         If Math_Functions.isPointInRectF(x, y, thumbRect) Then
             m_MouseOverThumb = True
+            m_MouseOverTrack = False
         Else
             m_MouseOverThumb = False
+            
+            'Do a special check for the track now
+            If Math_Functions.isPointInRectL(x, y, trackRect) Then
+                m_MouseOverTrack = True
+                
+                'Cache the mouse positions, so we know where to draw the orientation dot
+                m_TrackX = x
+                m_TrackY = y
+                m_initTrackValue = getValueFromMouseCoords(x, y, True)
+            
+            Else
+                m_MouseOverTrack = False
+            End If
+            
         End If
         
         'Repaint the control
-        ' TODO: potentially add conditional checks, as moves only require a redraw if the above booleans actually change
         redrawBackBuffer
         
     End If
@@ -530,6 +584,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
         m_MouseDownUpButton = False
         m_MouseDownDownButton = False
         m_MouseDownThumb = False
+        m_MouseDownTrack = False
         
         tmrUpButton.Enabled = False
         tmrDownButton.Enabled = False
@@ -695,7 +750,13 @@ Private Sub tmrDownButton_Timer()
     End If
     
     'It's a little counter-intuitive, but the DOWN button actually moves the control value UP
-    moveValueUp
+    moveValueUp m_MouseDownTrack
+    
+    'If the timer was activated because the user is clicking on the mouse track (and not a button), deactivate the
+    ' timer once the value equals the value under the mouse.
+    If m_MouseDownTrack Then
+        If Math_Functions.isPointInRectF(m_TrackX, m_TrackY, thumbRect) Or (m_Value > m_initTrackValue) Then tmrDownButton.Enabled = False
+    End If
 
 End Sub
 
@@ -708,7 +769,13 @@ Private Sub tmrUpButton_Timer()
     End If
     
     'It's a little counter-intuitive, but the UP button actually moves the control value DOWN
-    moveValueDown
+    moveValueDown m_MouseDownTrack
+    
+    'If the timer was activated because the user is clicking on the mouse track (and not a button), deactivate the
+    ' timer once the value equals the value under the mouse.
+    If m_MouseDownTrack Then
+        If Math_Functions.isPointInRectF(m_TrackX, m_TrackY, thumbRect) Or (m_Value < m_initTrackValue) Then tmrUpButton.Enabled = False
+    End If
     
 End Sub
 
@@ -933,7 +1000,7 @@ Private Sub redrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         
         'Track first
         GDI_Plus.GDIPlusFillDIBRectL m_BackBuffer, trackRect, trackBackColor
-        
+                
         'Up button
         GDI_Plus.GDIPlusFillDIBRectL m_BackBuffer, upLeftRect, upButtonFillColor
         GDI_Plus.GDIPlusDrawRectLOutlineToDC m_BackBuffer.getDIBDC, upLeftRect, upButtonBorderColor, , , False
@@ -999,7 +1066,7 @@ Private Sub redrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
         
         GDI_Plus.GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, downButtonArrowColor, 255, 2, True, LineCapRound
         GDI_Plus.GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, downButtonArrowColor, 255, 2, True, LineCapRound
-    
+        
     'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
     Else
     
@@ -1180,6 +1247,9 @@ Private Function getValueFromMouseCoords(ByVal x As Single, ByVal y As Single, O
         End If
         
     End If
+    
+    'Just like the .Value property, for integer-only scroll bars, clamp values to their integer range
+    If m_significantDigits = 0 Then getValueFromMouseCoords = Int(getValueFromMouseCoords)
     
 End Function
 
