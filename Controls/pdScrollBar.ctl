@@ -29,6 +29,50 @@ Begin VB.UserControl pdScrollBar
       Left            =   0
       Top             =   0
    End
+   Begin VB.Menu MnuScrollPopup 
+      Caption         =   "Scroll"
+      Visible         =   0   'False
+      Begin VB.Menu MnuScroll 
+         Caption         =   "Scroll here"
+         Index           =   0
+      End
+      Begin VB.Menu MnuScroll 
+         Caption         =   "-"
+         Index           =   1
+      End
+      Begin VB.Menu MnuScroll 
+         Caption         =   "Top"
+         Index           =   2
+      End
+      Begin VB.Menu MnuScroll 
+         Caption         =   "Bottom"
+         Index           =   3
+      End
+      Begin VB.Menu MnuScroll 
+         Caption         =   "-"
+         Index           =   4
+      End
+      Begin VB.Menu MnuScroll 
+         Caption         =   "Page up"
+         Index           =   5
+      End
+      Begin VB.Menu MnuScroll 
+         Caption         =   "Page down"
+         Index           =   6
+      End
+      Begin VB.Menu MnuScroll 
+         Caption         =   "-"
+         Index           =   7
+      End
+      Begin VB.Menu MnuScroll 
+         Caption         =   "Scroll up"
+         Index           =   8
+      End
+      Begin VB.Menu MnuScroll 
+         Caption         =   "Scroll down"
+         Index           =   9
+      End
+   End
 End
 Attribute VB_Name = "pdScrollBar"
 Attribute VB_GlobalNameSpace = False
@@ -111,8 +155,9 @@ Private m_ControlIsVisible As Boolean
 'The scrollbar's orientation is cached at creation time, in case subsequent functions need it
 Private m_OrientationHorizontal As Boolean
 
-'Current scroll bar values, range, etc
-Private m_Value As Double, m_Min As Double, m_Max As Double, m_SmallChange As Double, m_LargeChange As Double
+'Current scroll bar values, range, etc.  Note that by design, this scroll bar does not support a "small change" property.
+' The small change value is automatically calculated based on the current significant digit setting.
+Private m_Value As Double, m_Min As Double, m_Max As Double, m_LargeChange As Double
 
 'The number of significant digits for this control.  0 means integer values.
 Private m_significantDigits As Long
@@ -138,6 +183,11 @@ Private m_MouseOverUpButton As Boolean, m_MouseOverDownButton As Boolean
 'When the user click-drags the thumb, we need to store a couple of offsets at MouseDown time, to ensure that the thumb moves
 ' relative to the initial mouse position (as opposed to "snapping" its top-left point to the new mouse coordinates).
 Private m_InitMouseX As Single, m_InitMouseY As Single, m_initValue As Double, m_initMouseValue As Double
+
+'When right-clicking to raise a scrollbar context menu, we need to cache the current (x, y) values for the
+' "Scroll here" context menu option.  These are kept separate from the m_InitMouseX and m_InitMouseY values, above,
+' for the extremely rare occasion where the user right-clicks when the LMB is already down.
+Private m_ContextMenuX As Single, m_ContextMenuY As Single
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
@@ -170,11 +220,18 @@ Public Property Get OrientationHorizontal() As Boolean
 End Property
 
 Public Property Let OrientationHorizontal(ByVal newState As Boolean)
+    
     If m_OrientationHorizontal <> newState Then
         m_OrientationHorizontal = newState
+        
+        'Update the popup menu text to match the new layout
+        updatePopupText
+        
+        'Update the positioning of the buttons, track, thumb, etc
         updateControlLayout
         PropertyChanged "OrientationHorizontal"
     End If
+    
 End Property
 
 Public Property Get Value() As Double
@@ -269,15 +326,6 @@ Public Property Let SigDigits(ByVal newValue As Long)
     PropertyChanged "SigDigits"
 End Property
 
-Public Property Get SmallChange() As Long
-    SmallChange = m_SmallChange
-End Property
-
-Public Property Let SmallChange(ByVal newValue As Long)
-    m_SmallChange = newValue
-    PropertyChanged "SmallChange"
-End Property
-
 Public Property Get LargeChange() As Long
     LargeChange = m_LargeChange
 End Property
@@ -336,57 +384,69 @@ End Sub
 'Only left clicks raise Click() events
 Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
-    If Me.Enabled And ((Button And pdLeftButton) <> 0) Then
+    If Me.Enabled Then
     
         'Ensure that a focus event has been raised, if it wasn't already
         If Not cFocusDetector.HasFocus Then cFocusDetector.setFocusManually
         
-        'Right button isn't currently handled, but it should probably raise a context menu...?
-        If (Button = pdLeftButton) And Me.Enabled Then
-            
-            'Determine mouse button state for the up and down button areas
-            If Math_Functions.isPointInRectL(x, y, upLeftRect) Then
-                m_MouseDownUpButton = True
-                
-                'Adjust the value immediately
-                moveValueDown
-                
-                'Start the repeat timer as well
-                tmrUpButton.Interval = Interface.GetKeyboardDelay() * 1000
-                tmrUpButton.Enabled = True
-                
-            Else
-                m_MouseDownUpButton = False
-            End If
-            
-            If Math_Functions.isPointInRectL(x, y, downRightRect) Then
-                m_MouseDownDownButton = True
-                moveValueUp
-                tmrDownButton.Interval = Interface.GetKeyboardDelay() * 1000
-                tmrDownButton.Enabled = True
-            Else
-                m_MouseDownDownButton = False
-            End If
-            
-            'Determine button state for the thumb
-            If Math_Functions.isPointInRectF(x, y, thumbRect) Then
-                m_MouseDownThumb = True
-                
-                'Store initial x/y/value values at this location
-                m_InitMouseX = x
-                m_InitMouseY = y
-                m_initValue = m_Value
-                m_initMouseValue = getValueFromMouseCoords(x, y)
-                
-            Else
-                m_MouseDownThumb = False
-            End If
-            
-            'Request a redraw
-            redrawBackBuffer
-            
-        End If
+        'Separate further handling by button
+        Select Case Button
         
+            Case pdLeftButton
+                
+                'Determine mouse button state for the up and down button areas
+                If Math_Functions.isPointInRectL(x, y, upLeftRect) Then
+                    m_MouseDownUpButton = True
+                    
+                    'Adjust the value immediately
+                    moveValueDown
+                    
+                    'Start the repeat timer as well
+                    tmrUpButton.Interval = Interface.GetKeyboardDelay() * 1000
+                    tmrUpButton.Enabled = True
+                    
+                Else
+                    m_MouseDownUpButton = False
+                End If
+                
+                If Math_Functions.isPointInRectL(x, y, downRightRect) Then
+                    m_MouseDownDownButton = True
+                    moveValueUp
+                    tmrDownButton.Interval = Interface.GetKeyboardDelay() * 1000
+                    tmrDownButton.Enabled = True
+                Else
+                    m_MouseDownDownButton = False
+                End If
+                
+                'Determine button state for the thumb
+                If Math_Functions.isPointInRectF(x, y, thumbRect) Then
+                    m_MouseDownThumb = True
+                    
+                    'Store initial x/y/value values at this location
+                    m_InitMouseX = x
+                    m_InitMouseY = y
+                    m_initValue = m_Value
+                    m_initMouseValue = getValueFromMouseCoords(x, y)
+                    
+                Else
+                    m_MouseDownThumb = False
+                End If
+                
+                'Request a redraw
+                redrawBackBuffer
+                    
+            'Right button raises the default scroll context menu
+            Case pdRightButton
+                
+                'Cache the current (x, y) values, because the context menu needs them for the "scroll here" option
+                m_ContextMenuX = x
+                m_ContextMenuY = y
+                
+                UserControl.PopupMenu MnuScrollPopup, x:=x, y:=y
+        
+        End Select
+        
+    'End (If Me.Enabled...)
     End If
     
 End Sub
@@ -496,6 +556,52 @@ Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, By
     
 End Sub
 
+Private Sub MnuScroll_Click(Index As Integer)
+    
+    Select Case Index
+        
+        'Scroll here
+        Case 0
+            'Change the value to the corresponding value of the context menu position
+            Value = getValueFromMouseCoords(m_ContextMenuX, m_ContextMenuY)
+            
+        '(separator)
+        Case 1
+        
+        'Top
+        Case 2
+            Value = Min
+        
+        'Bottom
+        Case 3
+            Value = Max
+        
+        '(separator)
+        Case 4
+        
+        'Page up
+        Case 5
+            moveValueDown True
+            
+        'Page down
+        Case 6
+            moveValueUp True
+        
+        '(separator)
+        Case 7
+        
+        'Scroll up
+        Case 8
+            moveValueDown
+        
+        'Scroll down
+        Case 9
+            moveValueUp
+    
+    End Select
+    
+End Sub
+
 Private Sub UserControl_Hide()
     m_ControlIsVisible = False
 End Sub
@@ -543,7 +649,6 @@ Private Sub UserControl_InitProperties()
     Min = 0
     Max = 10
     Value = 0
-    SmallChange = 1
     LargeChange = 1
     SigDigits = 0
     OrientationHorizontal = False
@@ -568,7 +673,6 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         Min = .ReadProperty("Min", 0)
         Max = .ReadProperty("Max", 10)
         Value = .ReadProperty("Value", 0)
-        SmallChange = .ReadProperty("SmallChange", 1)
         LargeChange = .ReadProperty("LargeChange", 1)
         SigDigits = .ReadProperty("SignificantDigits", 0)
         OrientationHorizontal = .ReadProperty("OrientationHorizontal", False)
@@ -609,13 +713,21 @@ Private Sub tmrUpButton_Timer()
 End Sub
 
 'When the control value is INCREASED, this function is called
-Private Sub moveValueUp()
-    Value = m_Value + (1 / (10 ^ m_significantDigits))
+Private Sub moveValueUp(Optional ByVal useLargeChange As Boolean = False)
+    If useLargeChange Then
+        Value = m_Value + m_LargeChange
+    Else
+        Value = m_Value + (1 / (10 ^ m_significantDigits))
+    End If
 End Sub
 
 'When the control value is DECREASED, this function is called
-Private Sub moveValueDown()
-    Value = m_Value - (1 / (10 ^ m_significantDigits))
+Private Sub moveValueDown(Optional ByVal useLargeChange As Boolean = False)
+    If useLargeChange Then
+        Value = m_Value - m_LargeChange
+    Else
+        Value = m_Value - (1 / (10 ^ m_significantDigits))
+    End If
 End Sub
 
 'Any changes to size (or control orientation) must call this function to recalculate the positions of all button and
@@ -713,22 +825,10 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "Min", m_Min, 0
         .WriteProperty "Max", m_Max, 10
         .WriteProperty "Value", m_Value, 0
-        .WriteProperty "SmallChange", m_SmallChange, 1
         .WriteProperty "LargeChange", m_LargeChange, 1
         .WriteProperty "SignificantDigits", m_significantDigits, 0
         .WriteProperty "OrientationHorizontal", m_OrientationHorizontal, False
     End With
-    
-End Sub
-
-'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub updateAgainstCurrentTheme()
-    
-    'Make sure the tooltip (if any) is valid
-    toolTipManager.updateAgainstCurrentTheme
-    
-    'Redraw the control, which will also cause a resync against any theme changes
-    updateControlLayout
     
 End Sub
 
@@ -1082,6 +1182,52 @@ Private Function getValueFromMouseCoords(ByVal x As Single, ByVal y As Single, O
     End If
     
 End Function
+
+'When either...
+' 1) the scroll bar orientation changes, or...
+' 2) the active translation changes...
+' ...the popup menu text needs to be updated to match
+Private Sub updatePopupText()
+    
+    'The text of the scroll bar context menu changes depending on orientation.  We match the verbiage and layout
+    ' of the default Windows context menu.
+    If g_IsProgramRunning And Not (g_Language Is Nothing) Then
+    
+        If m_OrientationHorizontal Then
+            MnuScroll(0).Caption = g_Language.TranslateMessage("Scroll here")
+            MnuScroll(2).Caption = g_Language.TranslateMessage("Left edge")
+            MnuScroll(3).Caption = g_Language.TranslateMessage("Right edge")
+            MnuScroll(5).Caption = g_Language.TranslateMessage("Page left")
+            MnuScroll(6).Caption = g_Language.TranslateMessage("Page right")
+            MnuScroll(8).Caption = g_Language.TranslateMessage("Scroll left")
+            MnuScroll(9).Caption = g_Language.TranslateMessage("Scroll right")
+        Else
+            MnuScroll(0).Caption = g_Language.TranslateMessage("Scroll here")
+            MnuScroll(2).Caption = g_Language.TranslateMessage("Top")
+            MnuScroll(3).Caption = g_Language.TranslateMessage("Bottom")
+            MnuScroll(5).Caption = g_Language.TranslateMessage("Page up")
+            MnuScroll(6).Caption = g_Language.TranslateMessage("Page down")
+            MnuScroll(8).Caption = g_Language.TranslateMessage("Scroll up")
+            MnuScroll(9).Caption = g_Language.TranslateMessage("Scroll down")
+        End If
+        
+    End If
+    
+End Sub
+
+'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
+Public Sub updateAgainstCurrentTheme()
+    
+    'Update popup menu captions to match the active translation
+    updatePopupText
+    
+    'Make sure the tooltip (if any) is valid
+    toolTipManager.updateAgainstCurrentTheme
+    
+    'Redraw the control, which will also cause a resync against any theme changes
+    updateControlLayout
+    
+End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
