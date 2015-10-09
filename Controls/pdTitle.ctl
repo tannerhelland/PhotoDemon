@@ -322,7 +322,7 @@ Private Sub UserControl_Initialize()
         cMouseEvents.setSystemCursor IDC_HAND
         
         Set cKeyEvents = New pdInputKeyboard
-        cKeyEvents.createKeyboardTracker "Toolbox button UC", Me.hWnd, VK_SPACE
+        cKeyEvents.createKeyboardTracker "pdTitle", Me.hWnd, VK_SPACE
         
         'Also start a flicker-free window painter
         Set cPainter = New pdWindowPainter
@@ -630,13 +630,6 @@ Private Sub redrawBackBuffer()
     'Paint the buffer to the screen
     If g_IsProgramRunning Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
 
-End Sub
-
-'The color selector dialog has the unique need of capturing colors from anywhere on the screen, using a custom hook solution.  For it to work,
-' the pdInputMouse class inside this button control must forcibly release its capture.
-Public Sub overrideMouseCapture(ByVal newState As Boolean)
-    cMouseEvents.setCaptureOverride newState
-    cMouseEvents.setCursorOverrideState newState
 End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.

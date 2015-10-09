@@ -17,6 +17,7 @@ Attribute VB_Name = "Math_Functions"
 Option Explicit
 
 Private Declare Function PtInRect Lib "user32" (ByRef lpRect As RECT, ByVal x As Long, ByVal y As Long) As Long
+Private Declare Function PtInRectL Lib "user32" Alias "PtInRect" (ByRef lpRect As RECTL, ByVal x As Long, ByVal y As Long) As Long
 
 'See if a point lies inside a rect (integer)
 Public Function isPointInRect(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RECT) As Boolean
@@ -25,6 +26,17 @@ Public Function isPointInRect(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRec
         isPointInRect = False
     Else
         isPointInRect = True
+    End If
+
+End Function
+
+'See if a point lies inside a RectL struct
+Public Function isPointInRectL(ByVal ptX As Long, ByVal ptY As Long, ByRef srcRect As RECTL) As Boolean
+
+    If PtInRectL(srcRect, ptX, ptY) = 0 Then
+        isPointInRectL = False
+    Else
+        isPointInRectL = True
     End If
 
 End Function

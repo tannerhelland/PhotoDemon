@@ -254,7 +254,10 @@ Private Function getDefaultPDColor(ByVal colorType As PD_THEME_COLOR) As Long
                 getDefaultPDColor = Color_Functions.getRGBLongFromHex("#ffffff")
                 
             Case PDTC_BACKGROUND_CANVAS
+                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#a0a0a0")
+                
             Case PDTC_BACKGROUND_COMMANDBAR
+                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#dcdce1")
             
             'Text variations
             Case PDTC_TEXT_DEFAULT
