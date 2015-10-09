@@ -48,9 +48,9 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   1
       Top             =   60
       Width           =   3495
-      _extentx        =   6165
-      _extenty        =   476
-      caption         =   "overview"
+      _ExtentX        =   6165
+      _ExtentY        =   476
+      Caption         =   "overview"
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -74,9 +74,9 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   3
       Top             =   480
       Width           =   3495
-      _extentx        =   6165
-      _extenty        =   476
-      caption         =   "layers"
+      _ExtentX        =   6165
+      _ExtentY        =   476
+      Caption         =   "layers"
    End
    Begin VB.Line lnSeparatorLeft 
       X1              =   0
@@ -212,7 +212,11 @@ End Sub
 ' specialized handling for the vertical direction; vertically, the only change we handle is resizing the layer box itself
 ' to fill whatever vertical space is available.
 Private Sub reflowInterface()
-
+    
+    'If the form is invisible (due to minimize or somethign else), just exit now
+    If Not Me.Visible Then Exit Sub
+    If (Me.ScaleHeight = 0) Or (Me.ScaleWidth = 0) Then Exit Sub
+    
     'When the parent form is resized, resize the layer list (and other items) to properly fill the
     ' available horizontal and vertical space.
     
