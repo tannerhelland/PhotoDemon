@@ -232,6 +232,10 @@ Private m_InternalResizeActive As Boolean
 'If the control is currently visible, this will be set to TRUE.  This can be used to suppress redraw requests for hidden controls.
 Private m_ControlIsVisible As Boolean
 
+'For UI purposes, we track whether the mouse is over the slider, or the background track.  Note that these are
+' mutually exclusive; if the mouse is over the slider, it will *not* be marked as over the background track.
+Private m_MouseOverSlider As Boolean, m_MouseOverSliderTrack As Boolean, m_MouseTrackX As Single
+
 'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
 ' if present, will not be processed until run-time.
 ' IMPORTANT NOTE: only the ENGLISH caption is returned.  I don't have a reason for returning a translated caption (if any),
@@ -555,7 +559,10 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
         'Check to see if the mouse is over a) the slider control button, or b) the background track
         If isMouseOverSlider(x, y) Then
         
+            'Track various states to make UI rendering easier
             m_MouseDown = True
+            m_MouseOverSlider = True
+            m_MouseOverSliderTrack = False
             
             'Calculate a new control value.  This will cause the slider to "jump" to the current position.
             Value = (controlMax - controlMin) * ((x - getTrackMinPos) / (getTrackMaxPos - getTrackMinPos)) + controlMin
@@ -567,7 +574,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
             m_InitY = y - sliderY
             
             'Force an immediate redraw (instead of waiting for WM_PAINT to process)
-            BitBlt picScroll.hDC, 0, 0, m_BackBufferSlider.getDIBWidth, m_BackBufferSlider.getDIBHeight, m_BackBufferSlider.getDIBDC, 0, 0, vbSrcCopy
+            cSliderPainter.requestRepaint True
             
         End If
     
@@ -576,28 +583,52 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
 End Sub
 
 Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    'Reset all hover indicators
+    m_MouseOverSlider = False
+    m_MouseOverSliderTrack = False
+    redrawSlider
+    
+    'Reset the mouse pointer as well
     cMouseEvents.setSystemCursor IDC_ARROW
+    
 End Sub
 
 Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     'If the mouse is down, adjust the current control value accordingly.
     If m_MouseDown Then
-                
-        'Calculate a new control value relative to the current mouse position
+        
+        'Because the slider will be tracking the mouse's motion, we automatically assume the mouse is over it
+        ' (and not the background track).
+        m_MouseOverSlider = True
+        m_MouseOverSliderTrack = False
+        
+        'Calculate a new control value relative to the current mouse position.  (This will automatically force a button redraw.)
         Value = (controlMax - controlMin) * (((x + m_InitX) - getTrackMinPos) / (getTrackMaxPos - getTrackMinPos)) + controlMin
         
         'Force an immediate redraw (instead of waiting for WM_PAINT to process)
-        BitBlt picScroll.hDC, 0, 0, m_BackBufferSlider.getDIBWidth, m_BackBufferSlider.getDIBHeight, m_BackBufferSlider.getDIBDC, 0, 0, vbSrcCopy
+        cSliderPainter.requestRepaint True
         
     'If the LMB is not down, modify the cursor according to its position relative to the slider
     Else
-    
-        If isMouseOverSlider(x, y) Then
+        
+        m_MouseOverSlider = isMouseOverSlider(x, y, False)
+        If m_MouseOverSlider Then
+            m_MouseOverSliderTrack = False
+        Else
+            m_MouseOverSliderTrack = isMouseOverSlider(x, y, True)
+            m_MouseTrackX = x
+        End If
+        
+        If m_MouseOverSlider Or m_MouseOverSliderTrack Then
             cMouseEvents.setSystemCursor IDC_HAND
         Else
             cMouseEvents.setSystemCursor IDC_ARROW
         End If
+        
+        'Redraw the button to match the new hover state, if any
+        redrawSlider
     
     End If
 
@@ -624,7 +655,7 @@ Private Function isMouseOverSlider(ByVal mouseX As Single, ByVal mouseY As Singl
     getSliderCoordinates sliderX, sliderY
     
     'See if the mouse is within distance of the slider's center
-    If distanceTwoPoints(sliderX, sliderY, mouseX, mouseY) < fixDPI(SLIDER_DIAMETER) \ 2 Then
+    If distanceTwoPoints(sliderX, sliderY, mouseX, mouseY) < FixDPI(SLIDER_DIAMETER) \ 2 Then
         isMouseOverSlider = True
     Else
         
@@ -710,8 +741,8 @@ Private Sub UserControl_Initialize()
     End If
     
     'Update the control-level track and slider diameters to reflect current screen DPI
-    m_trackDiameter = fixDPI(TRACK_DIAMETER)
-    m_sliderDiameter = fixDPI(SLIDER_DIAMETER)
+    m_trackDiameter = FixDPI(TRACK_DIAMETER)
+    m_sliderDiameter = FixDPI(SLIDER_DIAMETER)
     
     'Set slider area width/height
     m_SliderAreaWidth = picScroll.ScaleWidth
@@ -874,17 +905,17 @@ Private Sub updateControlLayout()
         ' (height of text up/down) + (2 px padding around text up/down) + (height of caption) + (1 px padding around caption)
         Dim textHeight As Long
         textHeight = m_Caption.getCaptionHeight()
-        newControlHeight = tudPrimary.Height + fixDPI(4) + textHeight + fixDPI(2)
+        newControlHeight = tudPrimary.Height + FixDPI(4) + textHeight + FixDPI(2)
         
         'Calculate a new top position for the slider box (which will be vertically centered in the space below the caption)
-        newTop_Slider = ((newControlHeight - (textHeight + fixDPI(4))) - tudPrimary.Height) \ 2
-        newTop_Slider = textHeight + fixDPI(4) + newTop_Slider
+        newTop_Slider = ((newControlHeight - (textHeight + FixDPI(4))) - tudPrimary.Height) \ 2
+        newTop_Slider = textHeight + FixDPI(4) + newTop_Slider
         
     'When a slider lacks a caption, we hard-code its height to preset values
     Else
         
         'Start by setting the control height
-        newControlHeight = tudPrimary.Height + fixDPI(4)
+        newControlHeight = tudPrimary.Height + FixDPI(4)
         
         'Center the slider box inside the newly calculated height
         newTop_Slider = (newControlHeight - picScroll.Height) \ 2
@@ -912,11 +943,11 @@ Private Sub updateControlLayout()
     If m_Caption.isCaptionActive Then m_Caption.drawCaption m_BackBufferControl.getDIBDC, 1, 1
     
     'With height correctly set, we next want to left-align the TUD against the slider region
-    newLeft_TUD = UserControl.ScaleWidth - (tudPrimary.Width + fixDPI(2))
+    newLeft_TUD = UserControl.ScaleWidth - (tudPrimary.Width + FixDPI(2))
     
     'If the slider width changes, we need to redraw the entire custom control, so we track this value specifically.
     Dim widthChanged As Boolean
-    newWidth_Slider = newLeft_TUD - fixDPI(10)
+    newWidth_Slider = newLeft_TUD - FixDPI(10)
     If (newWidth_Slider > 0) And (picScroll.Width <> newWidth_Slider) Then widthChanged = True Else widthChanged = False
     
     'We now know enough to reposition the slider picture box
@@ -959,7 +990,7 @@ End Sub
 
 'Render a custom slider to the slider area picture box.  Note that the background gradient, if any, should already have been created
 ' in a separate redrawInternalGradientDIB request.
-Private Sub redrawSlider()
+Private Sub redrawSlider(Optional ByVal refreshImmediately As Boolean = False)
 
     'Drawing is done in several stages.  The bulk of the slider is rendered to a persistent slider-only DIB, which contains everything
     ' but the knob.  The knob is rendered in a separate step, as it is the most common update required, and we can shortcut by not
@@ -986,11 +1017,11 @@ Private Sub redrawSlider()
     '     Its width is constant from a programmatic standpoint, though it does get updated at run-time to account for screen DPI.
     
     'Pull relevant colors from the global themer object
-    Dim trackColor As Long, sliderBackgroundColor As Long, sliderEdgeColor As Long
+    Dim trackColor As Long
     If g_IsProgramRunning Then
         trackColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
-        sliderBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-        sliderEdgeColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
+    Else
+        trackColor = RGB(127, 127, 127)
     End If
     
     'Retrieve the current slider x/y position.  Floating-point values are used so we can support sub-pixel positioning!
@@ -1052,12 +1083,12 @@ Private Sub redrawSlider()
     End With
         
     'The slider background is now ready for action.  As a final step, pass control to the knob renderer function.
-    drawSliderKnob
+    drawSliderKnob refreshImmediately
         
 End Sub
 
 'Composite the knob atop the final slider background, and keep the entire thing inside a persitent back buffer.
-Private Sub drawSliderKnob()
+Private Sub drawSliderKnob(Optional ByVal refreshImmediately As Boolean = False)
 
     'Copy the background DIB into the back buffer
     BitBlt m_BackBufferSlider.getDIBDC, 0, 0, m_BackBufferSlider.getDIBWidth, m_BackBufferSlider.getDIBHeight, m_SliderBackgroundDIB.getDIBDC, 0, 0, vbSrcCopy
@@ -1066,10 +1097,27 @@ Private Sub drawSliderKnob()
     If Me.Enabled Then
         
         'Retrieve colors from the global themer object
+        Dim trackEffectColor As Long, trackJumpIndicatorColor As Long
         Dim sliderBackgroundColor As Long, sliderEdgeColor As Long
+        
         If g_IsProgramRunning Then
-            sliderBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-            sliderEdgeColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
+        
+            trackEffectColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
+            trackJumpIndicatorColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+            
+            If m_MouseOverSlider Then
+                sliderEdgeColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+                sliderBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+            Else
+                sliderEdgeColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
+                sliderBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+            End If
+            
+        Else
+            sliderBackgroundColor = vbWhite
+            sliderEdgeColor = vbBlue
+            trackEffectColor = vbBlue
+            trackJumpIndicatorColor = vbBlue
         End If
         
         'Retrieve the current slider x/y position.  Floating-point values are used so we can support sub-pixel positioning!
@@ -1096,7 +1144,18 @@ Private Sub drawSliderKnob()
             getCustomValueCoordinates relevantMin, customX, customY
             
             'Draw a highlighted line between the slider position and our calculated relevant minimum
-            GDI_Plus.GDIPlusDrawLineToDC m_BackBufferSlider.getDIBDC, customX, customY, relevantSliderPosX, customY, sliderEdgeColor, 255, m_trackDiameter + 1, True, LineCapRound
+            GDI_Plus.GDIPlusDrawLineToDC m_BackBufferSlider.getDIBDC, customX, customY, relevantSliderPosX, customY, trackEffectColor, 255, m_trackDiameter + 1, True, LineCapRound
+            
+        End If
+        
+        'If the mouse is *not* over the slider, draw a small dot on the background track to indicate where the slider will "jump"
+        ' if the mouse is clicked.
+        If m_MouseOverSliderTrack Then
+            
+            Dim jumpIndicatorDiameter As Single
+            jumpIndicatorDiameter = m_trackDiameter
+            
+            GDI_Plus.GDIPlusFillEllipseToDC m_BackBufferSlider.getDIBDC, m_MouseTrackX - (jumpIndicatorDiameter / 2), (m_SliderAreaHeight \ 2) - (jumpIndicatorDiameter / 2), jumpIndicatorDiameter, jumpIndicatorDiameter, trackJumpIndicatorColor, True
             
         End If
         
@@ -1104,12 +1163,16 @@ Private Sub drawSliderKnob()
         GDI_Plus.GDIPlusFillEllipseToDC m_BackBufferSlider.getDIBDC, relevantSliderPosX - (m_sliderDiameter \ 2), relevantSliderPosY - (m_sliderDiameter \ 2), m_sliderDiameter, m_sliderDiameter, sliderBackgroundColor, True
         
         'Draw the edge (exterior) circle around the slider
-        GDI_Plus.GDIPlusDrawCircleToDC m_BackBufferSlider.getDIBDC, relevantSliderPosX, relevantSliderPosY, m_sliderDiameter \ 2, sliderEdgeColor, 255, 1.5, True
+        If m_MouseOverSlider Then
+            GDI_Plus.GDIPlusDrawCircleToDC m_BackBufferSlider.getDIBDC, relevantSliderPosX, relevantSliderPosY, m_sliderDiameter \ 2, sliderEdgeColor, 255, 2, True
+        Else
+            GDI_Plus.GDIPlusDrawCircleToDC m_BackBufferSlider.getDIBDC, relevantSliderPosX, relevantSliderPosY, m_sliderDiameter \ 2, sliderEdgeColor, 255, 1.5, True
+        End If
         
     End If
     
     'Paint the buffer to the screen
-    If g_IsProgramRunning Then cSliderPainter.requestRepaint Else BitBlt picScroll.hDC, 0, 0, picScroll.ScaleWidth, picScroll.ScaleHeight, m_BackBufferSlider.getDIBDC, 0, 0, vbSrcCopy
+    If g_IsProgramRunning Then cSliderPainter.requestRepaint refreshImmediately Else BitBlt picScroll.hDC, 0, 0, picScroll.ScaleWidth, picScroll.ScaleHeight, m_BackBufferSlider.getDIBDC, 0, 0, vbSrcCopy
     
 End Sub
 
