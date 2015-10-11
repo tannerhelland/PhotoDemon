@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.93</langversion>
+<langversion>6.7.94</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -2963,12 +2963,6 @@ Geef een numerieke waarde.</translation>
 
 <!-- END text for pdSelection.cls-->
 
-<!-- BEGIN text for pdShadow.cls -->
-
-<!-- pdShadow.cls contains 0 phrases. -->
-
-<!-- END text for pdShadow.cls-->
-
 <!-- BEGIN text for pdStringStack.cls -->
 
 <!-- pdStringStack.cls contains 0 phrases. -->
@@ -3498,6 +3492,82 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdLabel.ctl-->
+
+<!-- BEGIN text for pdScrollBar.ctl -->
+
+<phrase>
+<original>Scroll</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Scroll here</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Top</original>
+<translation>Boven</translation>
+</phrase>
+
+<phrase>
+<original>Bottom</original>
+<translation>Onder</translation>
+</phrase>
+
+<phrase>
+<original>Page up</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Page down</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Scroll up</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Scroll down</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Left edge</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Right edge</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Page left</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Page right</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Scroll left</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Scroll right</original>
+<translation></translation>
+</phrase>
+
+<!-- pdScrollBar.ctl contains 36 phrases. 22 were duplicates of existing phrases, so only 14 new phrases were written to file. -->
+
+<!-- END text for pdScrollBar.ctl-->
 
 <!-- BEGIN text for pdTextBox.ctl -->
 
@@ -4966,18 +5036,8 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
-<original>Top</original>
-<translation>Boven</translation>
-</phrase>
-
-<phrase>
 <original>Right</original>
 <translation>Rechts</translation>
-</phrase>
-
-<phrase>
-<original>Bottom</original>
-<translation>Onder</translation>
 </phrase>
 
 <phrase>
@@ -5596,7 +5656,7 @@ Nota: enkele kleine programmateksten kunnen niet live worden  bijgewerkt. Een de
 <translation>Verwijder alfakanaal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 559 phrases. 174 were duplicates of existing phrases, so only 385 new phrases were written to file. -->
+<!-- MainWindow.frm contains 559 phrases. 176 were duplicates of existing phrases, so only 383 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -7851,6 +7911,42 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <!-- Effects_Artistic_FiguredGlass.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_FiguredGlass.frm-->
+
+<!-- BEGIN text for Effects_Artistic_FilmNoir.frm (FormFilmNoir) -->
+
+<phrase>
+<original>shadow cut-off</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>contrast boost</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>highlight cut-off</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>contrast midpoint</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>film grain</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Asking Sam Spade for help</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Artistic_FilmNoir.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+
+<!-- END text for Effects_Artistic_FilmNoir.frm-->
 
 <!-- BEGIN text for Effects_Artistic_GlassTiles.frm (FormGlassTiles) -->
 
@@ -14176,48 +14272,12 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for Effects_Artistic_FilmNoir.frm (FormFilmNoir) -->
-
-<phrase>
-<original>shadow cut-off</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>contrast boost</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>highlight cut-off</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>contrast midpoint</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>film grain</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Asking Sam Spade for help</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Artistic_FilmNoir.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
-
-<!-- END text for Effects_Artistic_FilmNoir.frm-->
-
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2446</phrasecount>
+<phrasecount>2458</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4182 phrases. -->
-<!-- 1736 are duplicates, so only 2446 unique phrases have been written to file. -->
-<!-- These 2446 phrases contain approximately 13271 total words. -->
+<!-- As of this build, PhotoDemon contains 4218 phrases. -->
+<!-- 1760 are duplicates, so only 2458 unique phrases have been written to file. -->
+<!-- These 2458 phrases contain approximately 13294 total words. -->
 
 </pdData>

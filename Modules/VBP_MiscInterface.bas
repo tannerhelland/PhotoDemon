@@ -1333,9 +1333,13 @@ Public Sub MakeFormPretty(ByRef tForm As Form, Optional ByVal useDoEvents As Boo
         'PhotoDemon's custom controls now provide universal support for an updateAgainstCurrentTheme function.  This updates two things:
         ' 1) The control's visual appearance (to reflect any changes to visual themes)
         ' 2) The translated caption, or other text (to reflect any changes to the active language)
-        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Or (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is buttonStripVertical) Or (TypeOf eControl Is pdButton) Or (TypeOf eControl Is pdButtonToolbox) Or (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is pdHyperlink) Or (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Or (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Or (TypeOf eControl Is pdCanvas) Or (TypeOf eControl Is colorSelector) Then
-            eControl.updateAgainstCurrentTheme
-        End If
+        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then eControl.updateAgainstCurrentTheme
+        If (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is buttonStripVertical) Then eControl.updateAgainstCurrentTheme
+        If (TypeOf eControl Is pdButton) Or (TypeOf eControl Is pdButtonToolbox) Then eControl.updateAgainstCurrentTheme
+        If (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is pdHyperlink) Then eControl.updateAgainstCurrentTheme
+        If (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Then eControl.updateAgainstCurrentTheme
+        If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Then eControl.updateAgainstCurrentTheme
+        If (TypeOf eControl Is pdCanvas) Or (TypeOf eControl Is colorSelector) Or (TypeOf eControl Is pdScrollBar) Then eControl.updateAgainstCurrentTheme
         
         'STEP 3: remove TabStop from each picture box.  They should never receive focus, but I often forget to change this
         ' at design-time.

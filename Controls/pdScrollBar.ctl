@@ -914,7 +914,6 @@ Private Sub updateControlLayout()
     
     If (m_BackBuffer.getDIBWidth <> UserControl.ScaleWidth) Or (m_BackBuffer.getDIBHeight <> UserControl.ScaleHeight) Then
         m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, m_BackColor
-        Debug.Print "Recreating back buffer: " & m_BackBuffer.getDIBWidth & ", " & m_BackBuffer.getDIBHeight
     Else
         GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackColor
     End If
