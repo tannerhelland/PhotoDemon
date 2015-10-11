@@ -453,10 +453,6 @@ Public Sub LoadTheProgram()
     
     LoadMessage "Initializing user interface..."
     
-    'Initialize the drop shadow engine
-    Set g_CanvasShadow = New pdShadow
-    g_CanvasShadow.initializeSquareShadow PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSTRENGTH, g_CanvasBackground
-        
     'Use the API to give PhotoDemon's main form a 32-bit icon (VB is too old to support 32bpp icons)
     SetIcon FormMain.hWnd, "AAA", True
     
