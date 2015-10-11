@@ -23,6 +23,29 @@ Begin VB.UserControl pdCanvas
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   886
    ToolboxBitmap   =   "pdCanvas.ctx":0000
+   Begin PhotoDemon.pdScrollBar hScroll 
+      Height          =   255
+      Left            =   360
+      TabIndex        =   10
+      Top             =   5640
+      Width           =   4575
+      _ExtentX        =   8070
+      _ExtentY        =   450
+      BackColor       =   0
+      OrientationHorizontal=   -1  'True
+      VisualStyle     =   1
+   End
+   Begin PhotoDemon.pdScrollBar vScroll 
+      Height          =   4935
+      Left            =   5040
+      TabIndex        =   9
+      Top             =   600
+      Width           =   255
+      _ExtentX        =   450
+      _ExtentY        =   8705
+      BackColor       =   0
+      VisualStyle     =   1
+   End
    Begin VB.PictureBox picProgressBar 
       Align           =   2  'Align Bottom
       Appearance      =   0  'Flat
@@ -33,7 +56,7 @@ Begin VB.UserControl pdCanvas
       ScaleHeight     =   17
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   886
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   7095
       Visible         =   0   'False
       Width           =   13290
@@ -56,32 +79,6 @@ Begin VB.UserControl pdCanvas
       Top             =   600
       Width           =   4575
    End
-   Begin VB.PictureBox picScrollV 
-      Appearance      =   0  'Flat
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   5415
-      Left            =   5520
-      ScaleHeight     =   361
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   17
-      TabIndex        =   3
-      Top             =   480
-      Width           =   255
-   End
-   Begin VB.PictureBox picScrollH 
-      Appearance      =   0  'Flat
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   255
-      Left            =   120
-      ScaleHeight     =   17
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   361
-      TabIndex        =   2
-      Top             =   5880
-      Width           =   5415
-   End
    Begin VB.PictureBox picStatusBar 
       Align           =   2  'Align Bottom
       Appearance      =   0  'Flat
@@ -101,7 +98,7 @@ Begin VB.UserControl pdCanvas
       Begin PhotoDemon.pdComboBox cmbSizeUnit 
          Height          =   315
          Left            =   3630
-         TabIndex        =   10
+         TabIndex        =   8
          Top             =   15
          Width           =   660
          _ExtentX        =   1164
@@ -111,7 +108,7 @@ Begin VB.UserControl pdCanvas
       Begin PhotoDemon.pdComboBox cmbZoom 
          Height          =   360
          Left            =   840
-         TabIndex        =   9
+         TabIndex        =   7
          Top             =   15
          Width           =   1290
          _ExtentX        =   2275
@@ -134,7 +131,7 @@ Begin VB.UserControl pdCanvas
       Begin PhotoDemon.pdButtonToolbox cmdZoomFit 
          Height          =   345
          Left            =   0
-         TabIndex        =   5
+         TabIndex        =   3
          Top             =   0
          Width           =   390
          _ExtentX        =   688
@@ -144,7 +141,7 @@ Begin VB.UserControl pdCanvas
       Begin PhotoDemon.pdButtonToolbox cmdZoomOut 
          Height          =   345
          Left            =   390
-         TabIndex        =   6
+         TabIndex        =   4
          Top             =   0
          Width           =   390
          _ExtentX        =   688
@@ -155,7 +152,7 @@ Begin VB.UserControl pdCanvas
       Begin PhotoDemon.pdButtonToolbox cmdZoomIn 
          Height          =   345
          Left            =   2190
-         TabIndex        =   7
+         TabIndex        =   5
          Top             =   0
          Width           =   390
          _ExtentX        =   688
@@ -166,7 +163,7 @@ Begin VB.UserControl pdCanvas
       Begin PhotoDemon.pdButtonToolbox cmdImgSize 
          Height          =   345
          Left            =   2790
-         TabIndex        =   8
+         TabIndex        =   6
          Top             =   0
          Width           =   390
          _ExtentX        =   688
@@ -313,12 +310,6 @@ Attribute cKeyEvents.VB_VarHelpID = -1
 'To improve performance, we can ask the canvas to not refresh itself until we say so.
 Private m_SuspendRedraws As Boolean
 
-'API scroll bars are used in place of crappy VB ones
-Private WithEvents HScroll As pdScrollAPI
-Attribute HScroll.VB_VarHelpID = -1
-Private WithEvents VScroll As pdScrollAPI
-Attribute VScroll.VB_VarHelpID = -1
-
 'Icons rendered to the scroll bar.  Rather than constantly reloading them from file, we cache them at initialization.
 Dim sbIconSize As pdDIB, sbIconCoords As pdDIB, sbIconNetwork As pdDIB
 
@@ -345,13 +336,12 @@ Private m_NetworkAccessActive As Boolean
 ' last requested state internally, in case we need to internally refresh the status bar for some reason.
 Private m_LastEnabledState As Boolean
 
-
 'External functions can call this to set the current network state (which in turn, draws a relevant icon to the status bar)
-Public Sub setNetworkState(ByVal NewState As Boolean)
+Public Sub setNetworkState(ByVal newState As Boolean)
     
     'When the state changes, update a module-level variable and redraw the icon.
-    If NewState <> m_NetworkAccessActive Then
-        m_NetworkAccessActive = NewState
+    If newState <> m_NetworkAccessActive Then
+        m_NetworkAccessActive = newState
         drawStatusBarIcons m_LastEnabledState
     End If
     
@@ -463,9 +453,9 @@ End Sub
 Public Function getScrollValue(ByVal barType As PD_ORIENTATION) As Long
 
     If barType = PD_HORIZONTAL Then
-        getScrollValue = HScroll.Value
+        getScrollValue = hScroll.Value
     Else
-        getScrollValue = VScroll.Value
+        getScrollValue = vScroll.Value
     End If
 
 End Function
@@ -475,14 +465,14 @@ Public Sub setScrollValue(ByVal barType As PD_ORIENTATION, ByVal newValue As Lon
     Select Case barType
     
         Case PD_HORIZONTAL
-            HScroll.Value = newValue
+            hScroll.Value = newValue
             
         Case PD_VERTICAL
-            VScroll.Value = newValue
+            vScroll.Value = newValue
         
         Case PD_BOTH
-            HScroll.Value = newValue
-            VScroll.Value = newValue
+            hScroll.Value = newValue
+            vScroll.Value = newValue
         
     End Select
     
@@ -492,9 +482,9 @@ End Sub
 Public Function getScrollMax(ByVal barType As PD_ORIENTATION) As Long
 
     If barType = PD_HORIZONTAL Then
-        getScrollMax = HScroll.Max
+        getScrollMax = hScroll.Max
     Else
-        getScrollMax = VScroll.Max
+        getScrollMax = vScroll.Max
     End If
 
 End Function
@@ -502,9 +492,9 @@ End Function
 Public Function getScrollMin(ByVal barType As PD_ORIENTATION) As Long
 
     If barType = PD_HORIZONTAL Then
-        getScrollMin = HScroll.Min
+        getScrollMin = hScroll.Min
     Else
-        getScrollMin = VScroll.Min
+        getScrollMin = vScroll.Min
     End If
 
 End Function
@@ -512,9 +502,9 @@ End Function
 Public Sub setScrollMax(ByVal barType As PD_ORIENTATION, ByVal newMax As Long)
     
     If barType = PD_HORIZONTAL Then
-        HScroll.Max = newMax
+        hScroll.Max = newMax
     Else
-        VScroll.Max = newMax
+        vScroll.Max = newMax
     End If
     
 End Sub
@@ -522,9 +512,9 @@ End Sub
 Public Sub setScrollMin(ByVal barType As PD_ORIENTATION, ByVal newMin As Long)
     
     If barType = PD_HORIZONTAL Then
-        HScroll.Min = newMin
+        hScroll.Min = newMin
     Else
-        VScroll.Min = newMin
+        vScroll.Min = newMin
     End If
     
 End Sub
@@ -533,9 +523,9 @@ End Sub
 Public Sub setScrollLargeChange(ByVal barType As PD_ORIENTATION, ByVal newLargeChange As Long)
         
     If barType = PD_HORIZONTAL Then
-        HScroll.LargeChange = newLargeChange
+        hScroll.LargeChange = newLargeChange
     Else
-        VScroll.LargeChange = newLargeChange
+        vScroll.LargeChange = newLargeChange
     End If
         
 End Sub
@@ -551,21 +541,21 @@ Public Sub setScrollVisibility(ByVal barType As PD_ORIENTATION, ByVal newVisibil
     Select Case barType
     
         Case PD_HORIZONTAL
-            If newVisibility <> picScrollH.Visible Then
-                picScrollH.Visible = newVisibility
+            If newVisibility <> hScroll.Visible Then
+                hScroll.Visible = newVisibility
                 changesMade = True
             End If
         
         Case PD_VERTICAL
-            If newVisibility <> picScrollV.Visible Then
-                picScrollV.Visible = newVisibility
+            If newVisibility <> vScroll.Visible Then
+                vScroll.Visible = newVisibility
                 changesMade = True
             End If
         
         Case PD_BOTH
-            If (newVisibility <> picScrollH.Visible) Or (newVisibility <> picScrollV.Visible) Then
-                picScrollH.Visible = newVisibility
-                picScrollV.Visible = newVisibility
+            If (newVisibility <> hScroll.Visible) Or (newVisibility <> vScroll.Visible) Then
+                hScroll.Visible = newVisibility
+                vScroll.Visible = newVisibility
                 changesMade = True
             End If
     
@@ -735,16 +725,16 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
                 m_SuspendRedraws = True
                 
                 'If scrollbars are visible, nudge the canvas in the direction of the arrows.
-                If VScroll.Enabled Then
+                If vScroll.Enabled Then
                     If (vkCode = VK_UP) Or (vkCode = VK_DOWN) Then canvasUpdateRequired = True
-                    If (vkCode = VK_UP) Then VScroll.Value = VScroll.Value - 1
-                    If (vkCode = VK_DOWN) Then VScroll.Value = VScroll.Value + 1
+                    If (vkCode = VK_UP) Then vScroll.Value = vScroll.Value - 1
+                    If (vkCode = VK_DOWN) Then vScroll.Value = vScroll.Value + 1
                 End If
                 
-                If HScroll.Enabled Then
+                If hScroll.Enabled Then
                     If (vkCode = VK_LEFT) Or (vkCode = VK_RIGHT) Then canvasUpdateRequired = True
-                    If (vkCode = VK_LEFT) Then HScroll.Value = HScroll.Value - 1
-                    If (vkCode = VK_RIGHT) Then HScroll.Value = HScroll.Value + 1
+                    If (vkCode = VK_LEFT) Then hScroll.Value = hScroll.Value - 1
+                    If (vkCode = VK_RIGHT) Then hScroll.Value = hScroll.Value + 1
                 End If
                 
                 'Re-enable automatic redraws
@@ -1834,38 +1824,8 @@ Public Sub cMouseEvents_MouseWheelHorizontal(ByVal Button As PDMouseButtonConsta
     
     'Horizontal scrolling - only trigger if the horizontal scroll bar is visible AND a shift key has been pressed BUT a ctrl
     ' button has not been pressed.
-    If picScrollH.Visible Then
-        
-        If scrollAmount > 0 Then
-        
-            m_SuspendRedraws = True
-            
-            If HScroll.Value + HScroll.LargeChange > HScroll.Max Then
-                HScroll.Value = HScroll.Max
-            Else
-                HScroll.Value = HScroll.Value + HScroll.LargeChange
-            End If
-            
-            m_SuspendRedraws = False
-            
-            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
-        
-        ElseIf scrollAmount < 0 Then
-        
-            m_SuspendRedraws = True
-            
-            If HScroll.Value - HScroll.LargeChange < HScroll.Min Then
-                HScroll.Value = HScroll.Min
-            Else
-                HScroll.Value = HScroll.Value - HScroll.LargeChange
-            End If
-            
-            m_SuspendRedraws = False
-            
-            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
-            
-        End If
-        
+    If hScroll.Visible Then
+        hScroll.RelayMouseWheelEvent False, Button, Shift, x, y, scrollAmount
     End If
 
 End Sub
@@ -1880,38 +1840,9 @@ Public Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstant
     'PhotoDemon uses the standard photo editor convention of Ctrl+Wheel = zoom, Shift+Wheel = h_scroll, and Wheel = v_scroll.
     ' Some users (for reasons I don't understand??) expect plain mousewheel to zoom the image.  For these users, we now
     ' display a helpful message telling them to use the damn Ctrl modifier like everyone else.
-    If picScrollV.Visible Then
-  
-        If scrollAmount < 0 Then
-            
-            m_SuspendRedraws = True
-            
-            If VScroll.Value + VScroll.LargeChange > VScroll.Max Then
-                VScroll.Value = VScroll.Max
-            Else
-                VScroll.Value = VScroll.Value + VScroll.LargeChange
-            End If
-            
-            m_SuspendRedraws = False
-            
-            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
+    If vScroll.Visible Then
+        vScroll.RelayMouseWheelEvent True, Button, Shift, x, y, scrollAmount
         
-        ElseIf scrollAmount > 0 Then
-            
-            m_SuspendRedraws = True
-            
-            If VScroll.Value - VScroll.LargeChange < VScroll.Min Then
-                VScroll.Value = VScroll.Min
-            Else
-                VScroll.Value = VScroll.Value - VScroll.LargeChange
-            End If
-            
-            m_SuspendRedraws = False
-            
-            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), Me
-            
-        End If
-
     'The user is using the mousewheel without Ctrl/Shift modifiers, even without a visible scrollbar.
     ' Display a message about how mousewheels are supposed to work.
     Else
@@ -2005,15 +1936,8 @@ Private Sub UserControl_Initialize()
         m_SuspendRedraws = False
         
         'Set scroll bar size to match the current system default (which changes based on DPI, theming, and other factors)
-        picScrollH.Height = GetSystemMetrics(SM_CYHSCROLL)
-        picScrollV.Width = GetSystemMetrics(SM_CXVSCROLL)
-        
-        'Initialize scroll bars
-        Set HScroll = New pdScrollAPI
-        Set VScroll = New pdScrollAPI
-        
-        HScroll.initializeScrollBarWindow picScrollH.hWnd, True, 0, 10, 0, 1, 1
-        VScroll.initializeScrollBarWindow picScrollV.hWnd, False, 0, 10, 0, 1, 1
+        hScroll.Height = GetSystemMetrics(SM_CYHSCROLL)
+        vScroll.Width = GetSystemMetrics(SM_CXVSCROLL)
         
         'Align the main picture box
         alignCanvasPictureBox
@@ -2054,11 +1978,11 @@ Private Sub UserControl_KeyUp(KeyCode As Integer, Shift As Integer)
     
 End Sub
 
-Private Sub HScroll_Scroll()
+Private Sub HScroll_Scroll(ByVal eventIsCritical As Boolean)
     
     'Regardless of viewport state, cache the current scroll bar value inside the current image
     If Not pdImages(g_CurrentImage) Is Nothing Then
-        pdImages(g_CurrentImage).imgViewport.setHScrollValue HScroll.Value
+        pdImages(g_CurrentImage).imgViewport.setHScrollValue hScroll.Value
     End If
     
     If (Not m_SuspendRedraws) Then
@@ -2092,9 +2016,9 @@ Public Sub alignCanvasPictureBox()
     ' scroll behavior like GIMP).
     Dim hScrollTop As Long, hScrollLeft As Long, vScrollTop As Long, vScrollLeft As Long
     hScrollLeft = 0
-    hScrollTop = UserControl.ScaleHeight - (Me.getStatusBarHeight + picScrollH.Height)
+    hScrollTop = UserControl.ScaleHeight - (Me.getStatusBarHeight + hScroll.Height)
     
-    vScrollLeft = UserControl.ScaleWidth - picScrollV.ScaleWidth
+    vScrollLeft = UserControl.ScaleWidth - vScroll.Width
     vScrollTop = 0
     
     'With scroll bar positions calculated, calculate width/height values for the main canvas picture box
@@ -2116,12 +2040,12 @@ Public Sub alignCanvasPictureBox()
     End If
     
     '...Followed by the scrollbars
-    If (picScrollH.Left <> hScrollLeft) Or (picScrollH.Top <> hScrollTop) Or (picScrollH.Width <> picWidth) Then
-        If picWidth > 0 Then picScrollH.Move hScrollLeft, hScrollTop, picWidth
+    If (hScroll.Left <> hScrollLeft) Or (hScroll.Top <> hScrollTop) Or (hScroll.Width <> picWidth) Then
+        If picWidth > 0 Then hScroll.Move hScrollLeft, hScrollTop, picWidth
     End If
     
-    If (picScrollV.Left <> vScrollLeft) Or (picScrollV.Top <> vScrollTop) Or (picScrollV.Height <> picHeight) Then
-        If picHeight > 0 Then picScrollV.Move vScrollLeft, vScrollTop, picScrollV.Width, picHeight
+    If (vScroll.Left <> vScrollLeft) Or (vScroll.Top <> vScrollTop) Or (vScroll.Height <> picHeight) Then
+        If picHeight > 0 Then vScroll.Move vScrollLeft, vScrollTop, vScroll.Width, picHeight
     End If
     
 End Sub
@@ -2178,11 +2102,11 @@ CanvasShowError:
 
 End Sub
 
-Private Sub VScroll_Scroll()
+Private Sub VScroll_Scroll(ByVal eventIsCritical As Boolean)
         
     'Regardless of viewport state, cache the current scroll bar value inside the current image
     If Not pdImages(g_CurrentImage) Is Nothing Then
-        pdImages(g_CurrentImage).imgViewport.setVScrollValue VScroll.Value
+        pdImages(g_CurrentImage).imgViewport.setVScrollValue vScroll.Value
     End If
         
     If (Not m_SuspendRedraws) Then

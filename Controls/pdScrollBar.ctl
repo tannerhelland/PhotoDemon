@@ -1016,7 +1016,7 @@ Private Sub redrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
             If m_VisualStyle = SBVS_Standard Then
                 trackBackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
             Else
-                trackBackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_CANVAS)
+                trackBackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
             End If
             
             'Thumb
@@ -1026,7 +1026,7 @@ Private Sub redrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                     thumbBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
                     thumbFillColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
                 Else
-                    thumbBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+                    thumbBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
                     thumbFillColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
                 End If
                 
@@ -1038,50 +1038,74 @@ Private Sub redrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                         thumbFillColor = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
                     Else
                         thumbBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                        thumbFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
+                        thumbFillColor = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
                     End If
                 Else
                     If m_VisualStyle = SBVS_Standard Then
                         thumbBorderColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
                         thumbFillColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
                     Else
-                        thumbBorderColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
-                        thumbFillColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
+                        thumbBorderColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+                        thumbFillColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
                     End If
                 End If
                 
             End If
             
-            If m_MouseOverUpButton Then
-                If m_MouseDownUpButton Then
-                    upButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-                    upButtonArrowColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
-                    upButtonFillColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-                Else
-                    upButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
-                    upButtonArrowColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-                    upButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-                End If
+            If m_MouseDownUpButton Then
+                upButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+                upButtonArrowColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
+                upButtonFillColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
             Else
-                upButtonBorderColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-                upButtonArrowColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
-                upButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                If m_MouseOverUpButton Then
+                    If m_VisualStyle = SBVS_Standard Then
+                        upButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+                        upButtonArrowColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+                        upButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                    Else
+                        upButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
+                        upButtonArrowColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+                        upButtonFillColor = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
+                    End If
+                Else
+                    If m_VisualStyle = SBVS_Standard Then
+                        upButtonBorderColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                        upButtonArrowColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
+                        upButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                    Else
+                        upButtonBorderColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
+                        upButtonArrowColor = g_Themer.getThemeColor(PDTC_GRAY_SHADOW)
+                        upButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
+                    End If
+                End If
             End If
             
-            If m_MouseOverDownButton Then
-                If m_MouseDownDownButton Then
-                    downButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-                    downButtonArrowColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
-                    downButtonFillColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-                Else
-                    downButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
-                    downButtonArrowColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-                    downButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-                End If
+            If m_MouseDownDownButton Then
+                downButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+                downButtonArrowColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
+                downButtonFillColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
             Else
-                downButtonBorderColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-                downButtonArrowColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
-                downButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                If m_MouseOverDownButton Then
+                    If m_VisualStyle = SBVS_Standard Then
+                        downButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+                        downButtonArrowColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+                        downButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                    Else
+                        downButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
+                        downButtonArrowColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+                        downButtonFillColor = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
+                    End If
+                Else
+                    If m_VisualStyle = SBVS_Standard Then
+                        downButtonBorderColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                        downButtonArrowColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
+                        downButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                    Else
+                        downButtonBorderColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
+                        downButtonArrowColor = g_Themer.getThemeColor(PDTC_GRAY_SHADOW)
+                        downButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
+                    End If
+                End If
             End If
         
         Else
