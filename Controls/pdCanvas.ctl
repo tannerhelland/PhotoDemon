@@ -389,6 +389,9 @@ Public Sub updateAgainstCurrentTheme()
     cmbZoom.updateAgainstCurrentTheme
     cmbSizeUnit.updateAgainstCurrentTheme
     
+    hScroll.updateAgainstCurrentTheme
+    vScroll.updateAgainstCurrentTheme
+    
     'Fix combo box positioning (important on high-DPI displays, or if the active font has changed)
     cmbZoom.Top = (picStatusBar.ScaleHeight - cmbZoom.Height) \ 2
     cmbSizeUnit.Top = (picStatusBar.ScaleHeight - cmbSizeUnit.Height) \ 2
