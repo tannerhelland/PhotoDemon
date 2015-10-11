@@ -586,20 +586,12 @@ Public Sub Stage1_InitializeBuffer(ByRef srcImage As pdImage, ByRef dstCanvas As
     ' We basically want to allow the user to scroll long enough that they can create a "mostly empty" canvas.  How many pixels are required
     ' for this depends on the size of the image, relative to the canvas.
     
-    'Start by using the easiest measurement, and the one used by old versions of PD: the difference between the image's size (zoomed),
-    ' and the canvas.
+    'Start by calculating the *required* scroll bar maximum: the amount of the image that cannot physically fit inside the canvas.
     Dim hScrollMin As Long, hScrollMax As Long, vScrollMin As Long, vScrollMax As Long
-    hScrollMax = ImageRect_CanvasCoords.Width - CanvasRect_ActualPixels.Width
-    vScrollMax = ImageRect_CanvasCoords.Height - CanvasRect_ActualPixels.Height
+    hScrollMax = (srcImage.Width - CanvasRect_ImageCoords.Width)
+    vScrollMax = (srcImage.Height - CanvasRect_ImageCoords.Height)
     
-    'Because subpixel scrolling is only active when zoomed out, we must account for zoom when zoomed in (because scrolling occurs in
-    ' discrete image-space pixel measurements).
-    If m_ZoomRatio > 1 Then
-        hScrollMax = hScrollMax / m_ZoomRatio
-        vScrollMax = vScrollMax / m_ZoomRatio
-    End If
-    
-    'Minimum values are similarly easy; let the user scroll the image halfway off the screen
+    'Minimum values are easy to calculate; let the user scroll the image halfway off the screen
     hScrollMin = -1 * (CanvasRect_ImageCoords.Width * 0.5)
     vScrollMin = -1 * (CanvasRect_ImageCoords.Height * 0.5)
     
