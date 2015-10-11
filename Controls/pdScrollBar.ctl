@@ -83,8 +83,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Scrollbar control
 'Copyright 2015-2015 by Tanner Helland
 'Created: 07/October/15
-'Last updated: 07/October/15
-'Last update: initial build
+'Last updated: 11/October/15
+'Last update: wrap up initial build
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -96,12 +96,15 @@ Attribute VB_Exposed = False
 'A few notes on this scroll bar control, specifically:
 '
 ' 1) Unlike traditional scroll bars, only a single "Scroll" event is raised (vs Scroll and Change events).  This event
-'    includes a parameter that lets you know what kind of scroll is occurring.
+'    includes a parameter that lets you know whether the event is "crucial", e.g. whether VB would call it a "Change"
+'    event instead of a "Scroll" event.
 ' 2) High DPI settings are handled automatically.
 ' 3) A hand cursor is automatically applied.
 ' 4) Coloration is automatically handled by PD's internal theming engine.
 ' 5) This control represents both horizontal and vertical orientations.  Set the corresponding property to match,
 '     but be forwarned that this does *not* automatically change the control's size to match!  This is by design.
+'     (Although I don't know why it would ever be wise to do this, note thatn you can technically change orientation
+'      at run-time, without penalty, as a side-effect of this implementation decision.)
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -1063,7 +1066,7 @@ Private Sub redrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                         upButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
                     Else
                         upButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                        upButtonArrowColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+                        upButtonArrowColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
                         upButtonFillColor = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
                     End If
                 Else
@@ -1091,7 +1094,7 @@ Private Sub redrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
                         downButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
                     Else
                         downButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                        downButtonArrowColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+                        downButtonArrowColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
                         downButtonFillColor = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
                     End If
                 Else
