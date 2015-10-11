@@ -737,7 +737,7 @@ Private Sub updateControlSize()
         'If a button has an image, we have to alter its sizing somewhat.  To make sure word-wrap is calculated correctly,
         ' remove the width of the image, plus padding, in advance.
         If m_ImagesActive Then
-            buttonWidth = buttonWidth - (m_ImageSize + fixDPI(IMG_TEXT_PADDING) * 2)
+            buttonWidth = buttonWidth - (m_ImageSize + FixDPI(IMG_TEXT_PADDING) * 2)
         End If
         
         'Retrieve the expected size of the string, in pixels
@@ -796,7 +796,7 @@ Private Sub updateControlSize()
                 'If strWidth < buttonWidth Then
                 '    .btCaptionRect.Left = .btBounds.Left + m_ImageSize + fixDPI(IMG_TEXT_PADDING)
                 'Else
-                    .btCaptionRect.Left = .btBounds.Left + m_ImageSize + fixDPI(IMG_TEXT_PADDING) * 2
+                    .btCaptionRect.Left = .btBounds.Left + m_ImageSize + FixDPI(IMG_TEXT_PADDING) * 2
                 'End If
                 
                 '.btCaptionRect.Left = .btBounds.Left + fixDPI(IMG_TEXT_PADDING) * 2 + m_Buttons(i).btImage.getDIBWidth
@@ -813,7 +813,7 @@ Private Sub updateControlSize()
                 'If strWidth < buttonWidth Then
                 '    .btImageCoords.x = .btBounds.Left + ((.btCaptionRect.Right - .btCaptionRect.Left) - strWidth) \ 2
                 'Else
-                    .btImageCoords.x = .btBounds.Left + fixDPI(IMG_TEXT_PADDING)
+                    .btImageCoords.x = .btBounds.Left + FixDPI(IMG_TEXT_PADDING)
                 'End If
                 
                 .btImageCoords.y = .btBounds.Top + (buttonHeight - m_ImageSize) \ 2
@@ -853,7 +853,7 @@ Private Sub redrawBackBuffer()
     End If
     
     'Colors used throughout this paint function are determined primarily control enablement
-    Dim btnColorActiveBorder As Long, btnColorActiveFill As Long
+    Dim btnColorActiveBorder As Long, btnColorActiveFill As Long, btnColorHoverBorder As Long
     Dim btnColorInactiveBorder As Long, btnColorInactiveFill As Long
     Dim fontColorActive As Long, fontColorInactive As Long, fontColorHover As Long
     Dim curColor As Long
@@ -865,6 +865,7 @@ Private Sub redrawBackBuffer()
         btnColorInactiveFill = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
         btnColorActiveBorder = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
         btnColorActiveFill = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+        btnColorHoverBorder = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
         
         fontColorInactive = g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
         fontColorActive = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
@@ -876,6 +877,7 @@ Private Sub redrawBackBuffer()
         btnColorInactiveFill = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
         btnColorActiveBorder = g_Themer.getThemeColor(PDTC_DISABLED)
         btnColorActiveFill = g_Themer.getThemeColor(PDTC_DISABLED)
+        btnColorHoverBorder = g_Themer.getThemeColor(PDTC_DISABLED)
         
         fontColorInactive = g_Themer.getThemeColor(PDTC_DISABLED)
         fontColorActive = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
@@ -914,6 +916,11 @@ Private Sub redrawBackBuffer()
                     'If this is the active button, paint it with a special border.
                     If i = m_ButtonIndex Then
                         GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right, .btBounds.Bottom + 1, btnColorActiveBorder, 255, 1
+                    
+                    'If this control is hovered by the mouse, paint it with an extra-thick border
+                    ElseIf (i = m_ButtonHoverIndex) Then
+                        GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, .btBounds.Left, .btBounds.Top, .btBounds.Right, .btBounds.Bottom + 1, btnColorHoverBorder, 255, 2, False, LineJoinMiter
+                    
                     End If
                     
                     'If this button has received focus via keyboard, paint it with a special interior border

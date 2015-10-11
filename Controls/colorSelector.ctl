@@ -458,9 +458,9 @@ Private Sub redrawBackBuffer()
             If outlineSize > 1 Then
                 Dim outlineModifier As Single
                 outlineModifier = outlineSize / 2
-                GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, .Left + outlineModifier, .Top + outlineModifier, .Right - outlineModifier + 1, .Bottom - outlineModifier + 1, outlineColor, 255, outlineSize, False
+                GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, .Left + outlineModifier, .Top + outlineModifier, .Right - outlineModifier + 1, .Bottom - outlineModifier + 1, outlineColor, 255, outlineSize, False, LineJoinMiter
             Else
-                GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, .Left, .Top, .Right, .Bottom, outlineColor, 255, outlineSize
+                GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, .Left, .Top, .Right, .Bottom, outlineColor, 255, outlineSize, False, LineJoinMiter
             End If
         End With
         
