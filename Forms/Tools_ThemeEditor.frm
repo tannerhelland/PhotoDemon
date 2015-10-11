@@ -30,10 +30,10 @@ Begin VB.Form FormThemeEditor
       Left            =   10320
       Top             =   1320
       Width           =   1335
-      _extentx        =   2355
-      _extenty        =   503
-      alignment       =   2
-      caption         =   ""
+      _ExtentX        =   2355
+      _ExtentY        =   503
+      Alignment       =   2
+      Caption         =   ""
    End
    Begin PhotoDemon.pdScrollBar hScroll1 
       Height          =   255
@@ -286,6 +286,7 @@ Begin VB.Form FormThemeEditor
       BackColor       =   0
       Max             =   100
       OrientationHorizontal=   -1  'True
+      VisualStyle     =   1
    End
    Begin PhotoDemon.pdScrollBar vScroll1 
       Height          =   2775
@@ -310,6 +311,7 @@ Begin VB.Form FormThemeEditor
       _ExtentY        =   450
       BackColor       =   0
       Max             =   100
+      VisualStyle     =   1
    End
    Begin PhotoDemon.pdLabel lblHScroll 
       Height          =   255
