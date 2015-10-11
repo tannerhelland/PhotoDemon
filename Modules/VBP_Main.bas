@@ -102,7 +102,6 @@ Public Sub finalShutdown()
     Set g_Displays = Nothing
     Set g_CheckerboardPattern = Nothing
     Set g_Zoom = Nothing
-    Set g_CanvasShadow = Nothing
     Set g_WindowManager = Nothing
     
     Dim i As Long

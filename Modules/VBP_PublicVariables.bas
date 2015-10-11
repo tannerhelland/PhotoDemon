@@ -69,9 +69,6 @@ Public g_FreeImageHandle As Long
 'How to draw the background of image forms; -1 is checkerboard, any other value is treated as an RGB long
 Public g_CanvasBackground As Long
 
-'g_canvasShadow contains a pdShadow object that helps us render a drop shadow around the image, if the user requests it
-Public g_CanvasShadow As pdShadow
-
 'Does the user want us to prompt them when they try to close unsaved images?
 Public g_ConfirmClosingUnsaved As Boolean
 

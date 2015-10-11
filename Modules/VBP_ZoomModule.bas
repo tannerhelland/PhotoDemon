@@ -89,8 +89,8 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
     ' we redraw the screen.  I do not like this any more than you do, but we risk losing our DC's settings otherwise.
     If (Not (g_UseSystemColorProfile And g_IsSystemColorProfileSRGB)) Or (m_TargetDC <> dstCanvas.hDC) Then
         m_TargetDC = dstCanvas.hDC
-        assignDefaultColorProfileToObject dstCanvas.hWnd, m_TargetDC
-        turnOnColorManagementForDC m_TargetDC
+        AssignDefaultColorProfileToObject dstCanvas.hWnd, m_TargetDC
+        TurnOnColorManagementForDC m_TargetDC
     End If
     
     'Flip the front buffer to the screen
@@ -179,50 +179,11 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
         BitBlt frontBuffer.getDIBDC, 0, 0, srcImage.canvasBuffer.getDIBWidth, srcImage.canvasBuffer.getDIBHeight, srcImage.canvasBuffer.getDIBDC, 0, 0, vbSrcCopy
     End If
     
-    'Retrieve a copy of the intersected viewport rect, which determines where we place the shadow beneath the image.
+    'Retrieve a copy of the intersected viewport rect, which we forward to the selection engine (if a selection is active)
     Dim viewportIntersectRect As RECTF
     srcImage.imgViewport.getIntersectRectCanvas viewportIntersectRect
     
-    'If the user's performance preferences allow for interface decorations, render them next
-    If g_InterfacePerformance <> PD_PERF_FASTEST Then
-        
-        Dim shadowRect As RECTF, xDiff As Single, yDiff As Single
-        With shadowRect
-            xDiff = viewportIntersectRect.Left - Int(viewportIntersectRect.Left)
-            yDiff = viewportIntersectRect.Top - Int(viewportIntersectRect.Top)
-            .Left = Int(viewportIntersectRect.Left + 0.9999)
-            .Top = Int(viewportIntersectRect.Top + 0.9999)
-            .Width = Int(viewportIntersectRect.Width - xDiff)
-            .Height = Int(viewportIntersectRect.Height - yDiff)
-        End With
-        
-        'Check each edge in turn, and mark whether or not it's visible on the viewport
-        Dim vTopShadow As Boolean, vBottomShadow As Boolean, vRightShadow As Boolean, vLeftShadow As Boolean
-
-        If srcImage.imgViewport.getIntersectState Then
-            vTopShadow = CBool(shadowRect.Top > 0)
-            vBottomShadow = CBool(shadowRect.Top + shadowRect.Height < srcImage.canvasBuffer.getDIBHeight)
-            vLeftShadow = CBool(shadowRect.Left > 0)
-            vRightShadow = CBool(shadowRect.Left + shadowRect.Width < srcImage.canvasBuffer.getDIBWidth)
-        End If
-
-        If vTopShadow Then StretchBlt frontBuffer.getDIBDC, shadowRect.Left, shadowRect.Top - PD_CANVASSHADOWSIZE, shadowRect.Width, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(0), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
-        If vBottomShadow Then StretchBlt frontBuffer.getDIBDC, shadowRect.Left, shadowRect.Top + shadowRect.Height, shadowRect.Width, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(1), 0, 0, 1, PD_CANVASSHADOWSIZE, vbSrcCopy
-        If vLeftShadow Then StretchBlt frontBuffer.getDIBDC, shadowRect.Left - PD_CANVASSHADOWSIZE, shadowRect.Top, PD_CANVASSHADOWSIZE, shadowRect.Height, g_CanvasShadow.getShadowDC(2), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
-        If vRightShadow Then StretchBlt frontBuffer.getDIBDC, shadowRect.Left + shadowRect.Width, shadowRect.Top, PD_CANVASSHADOWSIZE, shadowRect.Height, g_CanvasShadow.getShadowDC(3), 0, 0, PD_CANVASSHADOWSIZE, 1, vbSrcCopy
-
-        'Finally, the corners, which I've commented as they're a little confusing
-
-        'NW corner
-        If vTopShadow And vLeftShadow Then StretchBlt frontBuffer.getDIBDC, shadowRect.Left - PD_CANVASSHADOWSIZE, shadowRect.Top - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(4), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
-        'NE corner
-        If vTopShadow And vRightShadow Then StretchBlt frontBuffer.getDIBDC, shadowRect.Left + shadowRect.Width, shadowRect.Top - PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(5), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
-        'SW corner
-        If vBottomShadow And vLeftShadow Then StretchBlt frontBuffer.getDIBDC, shadowRect.Left - PD_CANVASSHADOWSIZE, shadowRect.Top + shadowRect.Height, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(6), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
-        'SE corner
-        If vBottomShadow And vRightShadow Then StretchBlt frontBuffer.getDIBDC, shadowRect.Left + shadowRect.Width, shadowRect.Top + shadowRect.Height, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, g_CanvasShadow.getShadowDC(7), 0, 0, PD_CANVASSHADOWSIZE, PD_CANVASSHADOWSIZE, vbSrcCopy
-
-    End If
+    'TODO: fix comments, as a lot of things have changed in this function!
     
     'Because both scrollbars are likely active, we need to copy a gray square over the small space between them
     
@@ -771,7 +732,7 @@ ViewportPipeline_Stage1_Error:
     
         'Out of memory
         Case 480
-            pdMsgBox "There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.", vbExclamation + vbOKOnly, "Out of memory"
+            PDMsgBox "There is not enough memory available to continue this operation.  Please free up system memory (RAM) and try again.  If the problem persists, reduce the zoom value and try again.", vbExclamation + vbOKOnly, "Out of memory"
             SetProgBarVal 0
             releaseProgressBar
             Message "Operation halted."
