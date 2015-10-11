@@ -194,6 +194,30 @@ Private m_TrackX As Single, m_TrackY As Single, m_initTrackValue As Double
 ' for the extremely rare occasion where the user right-clicks when the LMB is already down.
 Private m_ContextMenuX As Single, m_ContextMenuY As Single
 
+'The scrollbars around the main canvas are colored a little differently, by design.  Rather than exposing a crapload of
+' color properties, a single "VisualStyle" property is exposed, and it controls all colors during painting.
+Public Enum ScrollBarVisualStyle
+    SBVS_Standard = 0
+    SBVS_Canvas = 1
+End Enum
+
+#If False Then
+    Private Const SBVS_Standard = 0, SBVS_Canvas = 1
+#End If
+
+Private m_VisualStyle As ScrollBarVisualStyle
+
+'Container hWnd must be exposed for external tooltip handling
+Public Property Get containerHwnd() As Long
+    containerHwnd = UserControl.containerHwnd
+End Property
+
+'hWnds aren't exposed by default
+Public Property Get hWnd() As Long
+Attribute hWnd.VB_UserMemId = -515
+    hWnd = UserControl.hWnd
+End Property
+
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
 Attribute Enabled.VB_UserMemId = -514
@@ -210,16 +234,68 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     
 End Property
 
-'hWnds aren't exposed by default
-Public Property Get hWnd() As Long
-    hWnd = UserControl.hWnd
+'Only a LargeChange value is provided; SmallChange is handled automatically by the scroll bar, depending on the SigDigits
+' property (e.g. "one" significant digit means the SmallChange is .1 increments, "two" significant digits = .01, etc)
+Public Property Get LargeChange() As Long
+    LargeChange = m_LargeChange
 End Property
 
-'Container hWnd must be exposed for external tooltip handling
-Public Property Get containerHwnd() As Long
-    containerHwnd = UserControl.containerHwnd
+Public Property Let LargeChange(ByVal newValue As Long)
+    m_LargeChange = newValue
+    PropertyChanged "LargeChange"
 End Property
 
+'Note: the control's maximum value is settable at run-time; the Value property will automatically be brought in-bounds,
+' as necessary.
+Public Property Get Max() As Double
+    Max = m_Max
+End Property
+
+Public Property Let Max(ByVal newValue As Double)
+        
+    m_Max = newValue
+    
+    'If the current control .Value is greater than the new max, change it to match
+    If m_Value > m_Max Then
+        m_Value = m_Max
+        RaiseEvent Scroll(True)
+    End If
+    
+    'Recalculate thumb size and position
+    determineThumbSize
+    If g_IsProgramRunning Then cPainter.requestRepaint
+    
+    PropertyChanged "Max"
+    
+End Property
+
+'Note: the control's minimum value is settable at run-time; the Value property will automatically be brought in-bounds,
+' as necessary.
+Public Property Get Min() As Double
+    Min = m_Min
+End Property
+
+Public Property Let Min(ByVal newValue As Double)
+        
+    m_Min = newValue
+    
+    'If the current control .Value is less than the new minimum, change it to match
+    If m_Value < m_Min Then
+        m_Value = m_Min
+        RaiseEvent Scroll(True)
+    End If
+    
+    'Recalculate thumb size and position, then redraw the button to match
+    determineThumbSize
+    If g_IsProgramRunning Then cPainter.requestRepaint
+    
+    PropertyChanged "Min"
+    
+End Property
+
+'Unlike system scroll bars, PD provides horizontal and visual scrollbars from the same control.  You can change this
+' style at run-time, but note that the control does not resize itself, by design.  You must manually resize the control
+' to match the new orientation.
 Public Property Get OrientationHorizontal() As Boolean
     OrientationHorizontal = m_OrientationHorizontal
 End Property
@@ -239,6 +315,18 @@ Public Property Let OrientationHorizontal(ByVal newState As Boolean)
     
 End Property
 
+'Significant digits determines whether the control allows float values or int values (and with how much precision)
+Public Property Get SigDigits() As Long
+    SigDigits = m_significantDigits
+End Property
+
+Public Property Let SigDigits(ByVal newValue As Long)
+    m_significantDigits = newValue
+    PropertyChanged "SigDigits"
+End Property
+
+'Value supports floating-point or integer values, but it is always stored and returned as a Double-type.  PD will automatically
+' manage accuracy for you; set the SigDigits property to control the resolution of the scrollbar.
 Public Property Get Value() As Double
     Value = m_Value
 End Property
@@ -275,69 +363,19 @@ Public Property Let Value(ByVal newValue As Double)
                 
 End Property
 
-'Note: the control's minimum value is settable at run-time
-Public Property Get Min() As Double
-    Min = m_Min
+'Visual style controls colors (but nothing else, at present)
+Public Property Get VisualStyle() As ScrollBarVisualStyle
+    VisualStyle = m_VisualStyle
 End Property
 
-Public Property Let Min(ByVal newValue As Double)
-        
-    m_Min = newValue
+Public Property Let VisualStyle(ByVal newStyle As ScrollBarVisualStyle)
     
-    'If the current control .Value is less than the new minimum, change it to match
-    If m_Value < m_Min Then
-        m_Value = m_Min
-        RaiseEvent Scroll(True)
+    If newStyle <> m_VisualStyle Then
+        m_VisualStyle = newStyle
+        redrawBackBuffer
+        PropertyChanged "VisualStyle"
     End If
     
-    'Recalculate thumb size and position, then redraw the button to match
-    determineThumbSize
-    If g_IsProgramRunning Then cPainter.requestRepaint
-    
-    PropertyChanged "Min"
-    
-End Property
-
-'Note: the control's maximum value is settable at run-time
-Public Property Get Max() As Double
-    Max = m_Max
-End Property
-
-Public Property Let Max(ByVal newValue As Double)
-        
-    m_Max = newValue
-    
-    'If the current control .Value is greater than the new max, change it to match
-    If m_Value > m_Max Then
-        m_Value = m_Max
-        RaiseEvent Scroll(True)
-    End If
-    
-    'Recalculate thumb size and position
-    determineThumbSize
-    If g_IsProgramRunning Then cPainter.requestRepaint
-    
-    PropertyChanged "Max"
-    
-End Property
-
-'Significant digits determines whether the control allows float values or int values (and with how much precision)
-Public Property Get SigDigits() As Long
-    SigDigits = m_significantDigits
-End Property
-
-Public Property Let SigDigits(ByVal newValue As Long)
-    m_significantDigits = newValue
-    PropertyChanged "SigDigits"
-End Property
-
-Public Property Get LargeChange() As Long
-    LargeChange = m_LargeChange
-End Property
-
-Public Property Let LargeChange(ByVal newValue As Long)
-    m_LargeChange = newValue
-    PropertyChanged "LargeChange"
 End Property
 
 'When the control receives focus, if the focus isn't received via mouse click, display a focus rect
@@ -754,6 +792,7 @@ Private Sub UserControl_InitProperties()
     LargeChange = 1
     SigDigits = 0
     OrientationHorizontal = False
+    VisualStyle = SBVS_Standard
 End Sub
 
 Private Sub UserControl_LostFocus()
@@ -778,6 +817,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         LargeChange = .ReadProperty("LargeChange", 1)
         SigDigits = .ReadProperty("SignificantDigits", 0)
         OrientationHorizontal = .ReadProperty("OrientationHorizontal", False)
+        VisualStyle = .ReadProperty("VisualStyle", SBVS_Standard)
     End With
 
 End Sub
@@ -785,6 +825,27 @@ End Sub
 'The control dynamically resizes each button to match the dimensions of their relative captions.
 Private Sub UserControl_Resize()
     updateControlLayout
+End Sub
+
+Private Sub UserControl_Show()
+    m_ControlIsVisible = True
+    updateControlLayout
+End Sub
+
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+
+    'Store all associated properties
+    With PropBag
+        .WriteProperty "BackColor", m_BackColor, vbWhite
+        .WriteProperty "Min", m_Min, 0
+        .WriteProperty "Max", m_Max, 10
+        .WriteProperty "Value", m_Value, 0
+        .WriteProperty "LargeChange", m_LargeChange, 1
+        .WriteProperty "SignificantDigits", m_significantDigits, 0
+        .WriteProperty "OrientationHorizontal", m_OrientationHorizontal, False
+        .WriteProperty "VisualStyle", m_VisualStyle, SBVS_Standard
+    End With
+    
 End Sub
 
 'Timers control repeat value changes when the mouse is held down on an up/down button
@@ -925,27 +986,6 @@ Private Sub updateControlLayout()
             
 End Sub
 
-Private Sub UserControl_Show()
-    m_ControlIsVisible = True
-    Debug.Print "showing scroll bar"
-    updateControlLayout
-End Sub
-
-Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
-
-    'Store all associated properties
-    With PropBag
-        .WriteProperty "BackColor", m_BackColor, vbWhite
-        .WriteProperty "Min", m_Min, 0
-        .WriteProperty "Max", m_Max, 10
-        .WriteProperty "Value", m_Value, 0
-        .WriteProperty "LargeChange", m_LargeChange, 1
-        .WriteProperty "SignificantDigits", m_significantDigits, 0
-        .WriteProperty "OrientationHorizontal", m_OrientationHorizontal, False
-    End With
-    
-End Sub
-
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
 Private Sub redrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False)
@@ -968,20 +1008,48 @@ Private Sub redrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     If Not (g_Themer Is Nothing) Then
         
         If Me.Enabled Then
-        
-            trackBackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_CANVAS)
             
-            If m_MouseOverThumb Then
-                If m_MouseDownThumb Then
+            'Throughout this function, you'll notice branching behavior based on the control's VisualStyle property.
+            ' PD's main canvas scrollbars look different than other scrollbars throughout the program, by design.
+            
+            'Track
+            If m_VisualStyle = SBVS_Standard Then
+                trackBackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
+            Else
+                trackBackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_CANVAS)
+            End If
+            
+            'Thumb
+            If m_MouseDownThumb Then
+                
+                If m_VisualStyle = SBVS_Standard Then
+                    thumbBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+                    thumbFillColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
+                Else
                     thumbBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
                     thumbFillColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-                Else
-                    thumbBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                    thumbFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
                 End If
+                
             Else
-                thumbBorderColor = g_Themer.getThemeColor(PDTC_GRAY_SHADOW)
-                thumbFillColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+            
+                If m_MouseOverThumb Then
+                    If m_VisualStyle = SBVS_Standard Then
+                        thumbBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
+                        thumbFillColor = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
+                    Else
+                        thumbBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
+                        thumbFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
+                    End If
+                Else
+                    If m_VisualStyle = SBVS_Standard Then
+                        thumbBorderColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+                        thumbFillColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+                    Else
+                        thumbBorderColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
+                        thumbFillColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
+                    End If
+                End If
+                
             End If
             
             If m_MouseOverUpButton Then
