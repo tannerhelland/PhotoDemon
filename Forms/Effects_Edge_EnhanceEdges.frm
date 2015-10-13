@@ -296,7 +296,7 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
         tmpEdgeDIB.setAlphaPremultiplication True
         
         'Use the pdCompositor class to blend the results of the second edge detection pass with the first pass.
-        cComposite.compositeDIBs edgeDIB, tmpEdgeDIB, BL_SCREEN, 0, 0
+        cComposite.quickMergeTwoDibsOfEqualSize edgeDIB, tmpEdgeDIB, BL_SCREEN
         
         'Remove premultiplication
         edgeDIB.setAlphaPremultiplication False

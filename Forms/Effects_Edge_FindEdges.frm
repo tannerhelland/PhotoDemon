@@ -322,9 +322,9 @@ Public Sub ApplyEdgeDetection(ByVal edgeDetectionType As PD_EDGE_DETECTION, Opti
     Set cComposite = New pdCompositor
     
     If blackBackground Then
-        cComposite.compositeDIBs workingDIB, secondDstDIB, BL_SCREEN, 0, 0
+        cComposite.quickMergeTwoDibsOfEqualSize workingDIB, secondDstDIB, BL_SCREEN
     Else
-        cComposite.compositeDIBs workingDIB, secondDstDIB, BL_MULTIPLY, 0, 0
+        cComposite.quickMergeTwoDibsOfEqualSize workingDIB, secondDstDIB, BL_MULTIPLY
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
@@ -332,7 +332,7 @@ Public Sub ApplyEdgeDetection(ByVal edgeDetectionType As PD_EDGE_DETECTION, Opti
 
 End Sub
 
-'Return the naem of an edge detection type as a human-readable string
+'Return the name of an edge detection type as a human-readable string
 Private Function getNameOfEdgeDetector(ByVal edgeDetectionType As PD_EDGE_DETECTION) As String
 
     Select Case edgeDetectionType

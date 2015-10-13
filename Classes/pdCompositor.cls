@@ -71,14 +71,14 @@ Private m_PlgPointsDst() As POINTFLOAT
 Private m_Blender As pdPixelBlender
 
 'Composite two DIBs using the requested blend mode.  An offset can be specified for the top DIB, relative to the bottom DIB.
-' Note that the top DIB is treated as the destination, because after all compositing is done, the top DIB still needs
-' to be alpha-blended with the bottom DIB (to account for net opacity).
+' Per the function name, the *top DIB* is treated as the destination.  After compositing, the caller would need to alpha-blend
+' the finished top DIB over the bottom DIB to achieve full composition.
 '
 'TODO: profile an integer-based implementation.
-Friend Sub compositeDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaMode As LAYER_ALPHAMODE = LA_NORMAL)
+Friend Sub compositeDIBsWithoutBlending(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaMode As LAYER_ALPHAMODE = LA_NORMAL)
 
     'The pixel blender class handles this for us
-    m_Blender.blendDIBs_TopResult topDIB, bottomDIB, blendMode, dstX, dstY, alphaMode
+    m_Blender.blendDIBs topDIB, bottomDIB, blendMode, dstX, dstY, 1, alphaMode, False
 
 End Sub
 
@@ -96,7 +96,7 @@ End Sub
 Friend Sub compositeAndBlendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaModifier As Double = 1#, Optional ByVal alphaMode As LAYER_ALPHAMODE = LA_NORMAL)
     
     'The blend class handles this for us
-    m_Blender.blendDIBs_BottomResult topDIB, bottomDIB, blendMode, dstX, dstY, alphaModifier, alphaMode
+    m_Blender.blendDIBs topDIB, bottomDIB, blendMode, dstX, dstY, alphaModifier, alphaMode, True
     
 End Sub
 
@@ -291,7 +291,7 @@ End Sub
 Friend Sub quickMergeTwoDibsOfEqualSize(ByRef bottomDIB As pdDIB, ByRef topDIB As pdDIB, Optional ByVal blendMode As LAYER_BLENDMODE = BL_NORMAL, Optional ByVal topLayerOpacity As Double = 100#)
 
     'Composite the two DIBs
-    If blendMode <> BL_NORMAL Then compositeDIBs topDIB, bottomDIB, blendMode, 0, 0
+    If blendMode <> BL_NORMAL Then Me.compositeDIBsWithoutBlending topDIB, bottomDIB, blendMode, 0, 0
     
     'With compositing complete, apply the final step, which is alpha-blending the layer downward while accounting for layer opacity.
     topDIB.alphaBlendToDC bottomDIB.getDIBDC, topLayerOpacity * 2.55
