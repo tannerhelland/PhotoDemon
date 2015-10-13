@@ -217,8 +217,8 @@ Public Function getAlphaPremultiplication() As Boolean
     getAlphaPremultiplication = m_IsAlphaPremultiplied
 End Function
 
-Public Sub setInitialAlphaPremultiplicationState(ByVal NewState As Boolean)
-    m_IsAlphaPremultiplied = NewState
+Public Sub setInitialAlphaPremultiplicationState(ByVal newState As Boolean)
+    m_IsAlphaPremultiplied = newState
 End Sub
 
 'Get/set original color depth.  Note that this is set after tone-mapping and other actions have been applied
@@ -1718,9 +1718,8 @@ Public Sub setAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
     Next y
     Next x
     
-    'With our alpha channel complete, point iData() away from the DIB and deallocate it
+    'With our alpha channel complete, point iData() away from the DIB
     CopyMemory ByVal VarPtrArray(iData), 0&, 4
-    Erase iData
     
     'Mark the new premultiplication state
     m_IsAlphaPremultiplied = applyPremultiplication
@@ -1739,7 +1738,7 @@ Public Sub alphaBlendToDC(ByVal dstDC As Long, Optional ByVal customAlpha As Lon
         
         'Also, raise a warning if premultiplication is not set
         If Not m_IsAlphaPremultiplied Then
-            Debug.Print "WARNING!  Premultiplied alpha state is unmarked, but the AlphaBlend API is being called (via alphaBlendToDC)!"
+            Debug.Print "WARNING!  Premultiplied alpha state unmarked, but alphaBlendToDC being called (" & m_dibWidth & ", " & m_dibHeight & ")!"
         End If
     
     Else
@@ -1763,7 +1762,7 @@ Public Sub alphaBlendToDCEx(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY 
         
         'Raise a warning if premultiplication is not set
         If Not m_IsAlphaPremultiplied Then
-            Debug.Print "WARNING!  Premultiplied alpha state is unmarked, but the AlphaBlend API is being called (via alphaBlendToDCEx)!"
+            Debug.Print "WARNING!  Premultiplied alpha state unmarked, but alphaBlendToDCEx being called (" & m_dibWidth & ", " & m_dibHeight & ")!"
         End If
     
     Else
