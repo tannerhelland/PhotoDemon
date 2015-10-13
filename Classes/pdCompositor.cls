@@ -40,10 +40,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Some API functions are used to simplify the process of things like merging layers
-Private Declare Function UnionRect Lib "user32" (ByRef lpDestRect As RECT, ByRef lpSrc1Rect As RECT, ByRef lpSrc2Rect As RECT) As Long
-Private Declare Function IntersectRect Lib "user32" (ByRef lpDestRect As RECT, ByRef lpSrc1Rect As RECT, ByRef lpSrc2Rect As RECT) As Long
-
 'Compositing requires a temporary assembly DIB at the size of the destination image (viewport).  All compositing must be done to this DIB,
 ' and as the final step, the composited DIB is alpha-blended onto the DIB passed by the caller.  Why not composite directly onto the DIB
 ' passed by the caller?  The caller is allowed to provide any background (color, checkerboard, etc) based on their intended purpose.

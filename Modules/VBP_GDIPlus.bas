@@ -2279,46 +2279,7 @@ Public Function IntersectRectF(ByRef dstRect As RECTF, ByRef srcRect1 As RECTF, 
         End If
     
     End With
-
-
-'    'PURE GDI+ SOLUTION FOLLOWS
-
-'    'First, let's check to see if the rects intersect.  If they do not, we don't have to return an intersection.
-'    Dim hRegion As Long
-'    GdipCreateRegionRect srcRect1, hRegion
-'
-'    Dim intersectResult As Long
-'    GdipIsVisibleRegionRect hRegion, srcRect2.Left, srcRect2.Top, srcRect2.Width, srcRect2.Height, 0, intersectResult
-'
-'    If intersectResult = 0 Then
-'
-'        'The rects do not overlap.  Return a blank rect.
-'        With dstRect
-'            .Left = 0
-'            .Top = 0
-'            .Width = 0
-'            .Height = 0
-'        End With
-'
-'        IntersectRectF = False
-'
-'    Else
-'
-'        'The rects overlap.  Calculate the intersection.
-'        GdipCombineRegionRect hRegion, srcRect2, CombineModeIntersect
-'
-'        'Retrieve the new region's boundaries into the target rect.  Note that a dummy container is required, which supplies world transforms
-'        ' (if any).
-'        GdipGetRegionBounds hRegion, m_TransformGraphics, dstRect
-'
-'        'Release the region
-'        GdipDeleteRegion hRegion
-'
-'        'Return TRUE
-'        IntersectRectF = True
-'
-'    End If
-
+    
 End Function
 
 'Given an arbitrary array of points, use GDI+ to find a bounding rect for the region created from the closed shape formed by the points.

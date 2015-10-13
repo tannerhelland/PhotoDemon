@@ -1708,7 +1708,7 @@ Public Function CreateGaussianBlurDIB(ByVal userRadius As Double, ByRef srcDIB A
         
         tmpDstSA.pvData = dstDIBPointer + scanlineSize * y
         CopyMemory ByVal VarPtrArray(tmpDstImageData()), VarPtr(tmpDstSA), 4
-                
+        
     For x = initX To finalX
         
         QuickVal = x * qvDepth
