@@ -751,9 +751,9 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
             End With
             
             'Precalculate dimensions of any temporary DIBs we need to create.  These can have fractional offsets on either side, so we need
-            ' to make sure the DIB is at least large enough to contain 0.99 offsets on either side.
-            dibWidthCalc = Int(dstRect.Width + (dstRect.Left - Int(dstRect.Left)) + 0.99)
-            dibHeightCalc = Int(dstRect.Height + (dstRect.Top - Int(dstRect.Top)) + 0.99)
+            ' to make sure the DIB is at least large enough to contain 0.999 offsets on either side.
+            dibWidthCalc = Int(dstRect.Width + (dstRect.Left - Int(dstRect.Left)) + 0.999)
+            dibHeightCalc = Int(dstRect.Height + (dstRect.Top - Int(dstRect.Top)) + 0.999)
             
             'With all coordinate math complete, we now proceed with the actual compositing!
             
@@ -992,8 +992,8 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
             ' to make sure the DIB is at least large enough to contain 0.99 offsets on either side.
             'dibWidthCalc = dstRect.Width + 0.999 + (dstRect.Left - Int(dstRect.Left))
             'dibHeightCalc = dstRect.Height + 0.999 + (dstRect.Top - Int(dstRect.Top))
-            dibWidthCalc = dstViewportRect.Width
-            dibHeightCalc = dstViewportRect.Height
+            dibWidthCalc = Int(dstViewportRect.Width + 0.9999)
+            dibHeightCalc = Int(dstViewportRect.Height + 0.9999)
             
             'While the layer provides its own hash (representing whether internal layer settings have changed), we also append some viewport-specific
             ' bits to the hash.  This way, if the layer OR the viewport changes, we regenerate the viewport-specific cache for this layer.  However,
@@ -1385,6 +1385,21 @@ Private Function getDstRectFromSrcRectF(ByRef dstRect As RECTF, ByRef srcRect As
     End With
 
 End Function
+
+'In order to render complex images quickly, this class must generate a lot of temporary objects.  If PD is under memory pressure, call this function
+' to forcibly release as many temporary objects as possible.  (It should be obvious, but subsequent render calls will result in temporary objects
+' being recreated, as necessary.)
+Public Sub attemptToFreeMemory()
+    
+    'Start by clearing our own internal caches
+    m_dstDIB.eraseDIB
+    m_tmpDIB.eraseDIB
+    m_NDFXDIB.eraseDIB
+    
+    'Ask the pixel blender to release memory too, if it can
+    m_Blender.attemptToFreeMemory
+    
+End Sub
 
 Private Sub Class_Initialize()
     Set m_dstDIB = New pdDIB
