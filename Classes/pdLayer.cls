@@ -107,6 +107,18 @@ End Enum
     Const LRQ_NEAREST_NEIGHBOR = 0, LRQ_BILINEAR_NORMAL = 1, LRQ_BICUBIC_NORMAL = 2
 #End If
 
+'PD supports the notion "alpha modes", including "inheritance," where a layer "inherits" the alpha of a layer beneath it,
+' (https://userbase.kde.org/Krita/Tutorial_2#Inherit_Alpha_.28alpha_.3D_transparency.29).  I may or may not choose to
+' address masking via this property as well... I'm still deciding the best way to do it.
+Public Enum LAYER_ALPHAMODE
+    LA_NORMAL = 0
+    LA_INHERIT = 1
+End Enum
+
+#If False Then
+    Const LA_NORMAL = 0, LA_INHERIT = 1
+#End If
+
 'Canonical ID value for this layer.  This value is set once, at layer creation time, and can never be changed again.  It is
 ' persistent for the life of the layer, the life of the parent pdImage object (meaning no other layer in that image will
 ' ever be assigned this ID value), and the life of any copies of the parent pdImage saved to file.
@@ -2330,7 +2342,7 @@ Public Function getViewportHash_Theoretical(ParamArray allParams() As Variant) A
     Dim tmpHash As Long
     
     With myLayerData
-        tmpHash = (.l_Angle * 360000) Xor (.l_CanvasXModifier * 8091) Xor (.l_CanvasYModifier * 4095)
+        tmpHash = (.l_Angle * 359013) Xor (.l_CanvasXModifier * 8091) Xor (.l_CanvasYModifier * 4095)
         tmpHash = tmpHash Xor (.l_OffsetX * 10) Xor (.l_OffsetY * 25)
         tmpHash = tmpHash Xor (.l_ResizeQuality * 620)
         tmpHash = tmpHash Xor (.l_Opacity * 65535)
