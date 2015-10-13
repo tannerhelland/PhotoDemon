@@ -233,9 +233,12 @@ Private myTextRenderer As pdTextRenderer
 ' This is typically handled by a called to the parent's .notifyImageChanged function, and passing the relevant layer index.
 Public layerDIB As pdDIB
 
-'Temporary compositing DIB.  This DIB is only used under certain circumstances.  The pdLayer object itself has no use for it,
-' but because it's often necessary for the compositor to generate temporary DIBs on a per-layer basis, this can save us a lot
-' of time during performance-crucial operations (e.g. painting).
+'Temporary compositing DIB(s).  These DIBs are only used under certain circumstances.  The pdLayer object itself does not
+' use these; instead, they are reserved for external functions that process the layer (primarily pdCompositor).  Because it's
+' often necessary to generate temporary DIBs on a per-layer basis, these can save us a lot of time during performance-crucial
+' operations (e.g. painting).  Additionally, as PD gains an increasing number of new features (layer masks, layer styles,
+' advanced alpha modes), being able to cache intermediary display copies at various stages are a huge performance boon, and a
+' necessity for rapid rendering under VB.
 Public tmpDIB As pdDIB
 
 'Layer thumbnail.  This 256x256 DIB is cached locally, then passed to external functions only when necessary.  Note that requests
@@ -2362,7 +2365,7 @@ Public Function getViewportHash_Theoretical(ParamArray allParams() As Variant) A
     
         Dim i As Long
         For i = LBound(allParams) To UBound(allParams)
-            tmpHash = tmpHash Xor allParams(i) * (i + 1)
+            tmpHash = tmpHash Xor allParams(i) * ((i + 1) * 127)
         Next i
     
     End If

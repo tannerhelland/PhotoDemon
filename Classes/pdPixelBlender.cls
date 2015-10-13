@@ -37,6 +37,10 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'Temporary blending DIB.  We try to minimize how often we create this, but it allows us for much better organization throughout the class,
+' because we aren't forced to modify the source DIBs we are passed if the caller doesn't want us to.
+Private m_topDIBCopy As pdDIB
+
 'Given two DIBs, blend them together and place the result inside the top DIB.
 ' IMPORTANT NOTES FOR THIS FUNCTION:
 ' - Because the top DIB is receiving the result, *no alpha-blending will occur*.  Only blend mode and alpha inheritance
@@ -46,11 +50,11 @@ Option Explicit
 Friend Sub blendDIBs_TopResult(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal dstX As Single, ByVal dstY As Single, Optional ByVal alphaMode As LAYER_ALPHAMODE = LA_NORMAL)
     
     'We will be doing a lot of int/float conversions.  To speed things up, use a persistent look-up table.
-    Dim IntToFloat() As Single
-    ReDim IntToFloat(0 To 255) As Single
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        IntToFloat(i) = i / 255
+        intToFloat(i) = i / 255
     Next i
     
     'Calculate bounds for the loop.  These are relative to the top layer, which may lay outside the bounds
@@ -77,7 +81,7 @@ Friend Sub blendDIBs_TopResult(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, 
     Dim bottomSA As SAFEARRAY2D
     prepSafeArray bottomSA, bottomDIB
     CopyMemory ByVal VarPtrArray(bImageData()), VarPtr(bottomSA), 4
-
+    
     Dim tImageData() As Byte
     Dim topSA As SAFEARRAY2D
     prepSafeArray topSA, topDIB
@@ -103,24 +107,24 @@ Friend Sub blendDIBs_TopResult(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, 
         quickBottomY = Int(dstY) + y
         
         'Retrieve top layer RGBA values
-        topA = IntToFloat(tImageData(QuickX + 3, y))
+        topA = intToFloat(tImageData(QuickX + 3, y))
         
         'Ignore transparent pixels
         If topA <> 0 Then
         
-            topR = IntToFloat(tImageData(QuickX + 2, y))
-            topG = IntToFloat(tImageData(QuickX + 1, y))
-            topB = IntToFloat(tImageData(QuickX, y))
+            topR = intToFloat(tImageData(QuickX + 2, y))
+            topG = intToFloat(tImageData(QuickX + 1, y))
+            topB = intToFloat(tImageData(QuickX, y))
             
             'Retrieve bottom layer RGB values
-            bottomA = IntToFloat(bImageData(quickBottomX + 3, quickBottomY))
+            bottomA = intToFloat(bImageData(quickBottomX + 3, quickBottomY))
             
             'Again, ignore transparent pixels
             If bottomA <> 0 Then
             
-                bottomR = IntToFloat(bImageData(quickBottomX + 2, quickBottomY))
-                bottomG = IntToFloat(bImageData(quickBottomX + 1, quickBottomY))
-                bottomB = IntToFloat(bImageData(quickBottomX, quickBottomY))
+                bottomR = intToFloat(bImageData(quickBottomX + 2, quickBottomY))
+                bottomG = intToFloat(bImageData(quickBottomX + 1, quickBottomY))
+                bottomB = intToFloat(bImageData(quickBottomX, quickBottomY))
                 
                 'Un-premultiply all RGB values
                 If topA <> 1 Then
@@ -370,7 +374,7 @@ Friend Sub blendDIBs_BottomResult(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     ' the top layer is transparent in those regions, e.g. we ignore them.)
     
     'Start by finding the intersection between the top DIB rect and the bottom DIB rect.
-    Dim topRect As RECTF, bottomRect As RECTF, intersectRect As RECTF
+    Dim topRect As RECTF, bottomRect As RECTF, IntersectRect As RECTF
     With topRect
         .Left = 0
         .Top = 0
@@ -386,7 +390,7 @@ Friend Sub blendDIBs_BottomResult(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     End With
     
     Dim dibsOverlap As Boolean
-    dibsOverlap = IntersectRectF(intersectRect, topRect, bottomRect)
+    dibsOverlap = IntersectRectF(IntersectRect, topRect, bottomRect)
     
     'If the DIBs do not overlap, there's not much we can do here!
     ' (This should not technically be possible, but better safe than sorry)
@@ -395,10 +399,10 @@ Friend Sub blendDIBs_BottomResult(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
         'From the intersection rect, create integer-only bounds relative to the top DIB.
         Dim initX As Long, initY As Long
         Dim finalX As Long, finalY As Long
-        initX = Int(intersectRect.Left)
-        initY = Int(intersectRect.Top)
-        finalX = Int(intersectRect.Left + intersectRect.Width + 0.9999)
-        finalY = Int(intersectRect.Top + intersectRect.Height + 0.9999)
+        initX = Int(IntersectRect.Left)
+        initY = Int(IntersectRect.Top)
+        finalX = Int(IntersectRect.Left + IntersectRect.Width + 0.9999)
+        finalY = Int(IntersectRect.Top + IntersectRect.Height + 0.9999)
         If finalX > (topDIB.getDIBWidth - 1) Then finalX = topDIB.getDIBWidth - 1
         If finalY > (topDIB.getDIBHeight - 1) Then finalY = topDIB.getDIBHeight - 1
         
@@ -407,10 +411,27 @@ Friend Sub blendDIBs_BottomResult(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
         xOffsetBottom = Fix(dstX)
         yOffsetBottom = Fix(dstY)
         
-        'With loop bounds correctly calculated, we now apply a pre-pass if alpha inheritance is active.  This pre-pass resets alpha values
-        ' in the bottom layer in locations where it does not overlap the top layer.
+        'As a failsafe, make sure the new offsets don't lie outside the *bottom* DIB
+        If (xOffsetBottom + finalX) > (bottomDIB.getDIBWidth - 1) Then finalX = (bottomDIB.getDIBWidth - 1) - xOffsetBottom
+        If (yOffsetBottom + finalY) > (bottomDIB.getDIBHeight - 1) Then finalY = (bottomDIB.getDIBHeight - 1) - yOffsetBottom
         
-        'TODO: write alpha inheritance code!
+        'With loop bounds correctly calculated, we can now proceed with blending.
+        
+        'Because we are potentially doing a *lot* of calculations here, we need to make a temporary copy of the top DIB.  (Our copy will
+        ' be a beaten, mangled mess by the end of this function, and we aren't allowed to make changes to the caller's copy.)
+        If (m_topDIBCopy.getDIBWidth < topDIB.getDIBWidth) Or (m_topDIBCopy.getDIBHeight < topDIB.getDIBHeight) Then
+            m_topDIBCopy.createBlank topDIB.getDIBWidth, topDIB.getDIBHeight, 32, 0, 0
+        End If
+        BitBlt m_topDIBCopy.getDIBDC, 0, 0, topDIB.getDIBWidth, topDIB.getDIBHeight, topDIB.getDIBDC, 0, 0, vbSrcCopy
+        
+        'To keep our individual blend functions as simple as possible, we apply a pre-processing alpha pass that handles several things:
+        ' 1) Apply an alpha modifier (e.g. custom layer opacity, if any)
+        ' 2) Apply layer masks (if any)
+        ' 2) Apply alpha inheritance (if any)
+        
+        'Note that we can skip these steps if none of these steps are relevant.
+        
+        'TODO: actually write the alpha preprocessor!
         
         'With alpha inheritance successfully applied to non-overlapping regions of the bottom layer, we can now forward further handling to
         ' one of several dedicated blend-mode compositor subs.  These subs apply the actual per-pixel blending loops, using the bounds we have
@@ -419,13 +440,16 @@ Friend Sub blendDIBs_BottomResult(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
             
             'Blend modes with already-optimized functions are listed here
             Case BL_DARKEN
-                applyBlendMode_Darken topDIB, bottomDIB, alphaModifier, alphaMode, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom, True
+                applyBlendMode_Darken m_topDIBCopy, bottomDIB, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
             
             'Some blendmodes don't have dedicated, optimized subs just yet.  This catch-all function handles their code for now.
             Case Else
-                applyBlendMode_Generic topDIB, bottomDIB, blendMode, alphaModifier, alphaMode, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
+                applyBlendMode_Generic m_topDIBCopy, bottomDIB, blendMode, alphaMode, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom
         
         End Select
+        
+        'Composited results will have been stored in the top DIB.  Apply the final blend now!
+        m_topDIBCopy.alphaBlendToDC bottomDIB.getDIBDC, alphaModifier * 255, xOffsetBottom, yOffsetBottom
         
         'That's all there is to it!
 
@@ -433,21 +457,143 @@ Friend Sub blendDIBs_BottomResult(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
 
 End Sub
 
-'Current catch-all for unoptimized blend mode calculations.  The goal is to move as many of these as possible to dedicated subs, where we can make
-' things like dedicated lookup tables, contingent on the actual blend mode being applied.
-Private Sub applyBlendMode_Generic(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal alphaModifier As Double, ByVal alphaMode As LAYER_ALPHAMODE, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
-
-    'In this generic blend sub, we will potentially be doing a lot of int/float conversions.  To speed things up, use a persistent look-up table.
-    Dim IntToFloat() As Single
-    ReDim IntToFloat(0 To 255) As Single
+'Prior to blending two DIBs, call this function preprocess any alpha-specific effects (masks, inheritance, etc).  This greatly simplifies
+' the actual blending code inside each blend function.
+Private Sub preProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal alphaMode As LAYER_ALPHAMODE, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal returnResultsUnpremultiplied As Boolean = False)
+    
+    'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    initX = initX * 4
+    finalX = finalX * 4
+    xOffset = xOffset * 4
+        
+    'Alpha requires a lot of floating-point math.  To speed things up, we use a persistent look-up table.
+    ' TODO: profile this to see if it actually buys us any extra time.
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    
     Dim i As Long
     For i = 0 To 255
-        IntToFloat(i) = i / 255
+        intToFloat(i) = i / 255
     Next i
+        
+    'In the inner loop, we'll be doing a bunch of compositing relative to newly calculated alpha value.  Storing some intermediate terms
+    ' allows this to go much faster.
+    Dim bottomAlphaIntermediate As Double
     
-    'Also create an integer version of the alpha-modifier value
-    Dim alphaModifierInt As Long
-    alphaModifierInt = alphaModifier * 255
+    '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
+    ' which we reset between scanlines.
+    Dim bottomScanlineSize As Long, topScanlineSize As Long
+    bottomScanlineSize = bottomDIB.getDIBArrayWidth
+    topScanlineSize = topDIB.getDIBArrayWidth
+    
+    Dim bottomDIBPointer As Long, topDIBPointer As Long
+    bottomDIBPointer = bottomDIB.getActualDIBBits
+    topDIBPointer = topDIB.getActualDIBBits
+    
+    Dim bottomPixels() As Byte
+    Dim bottomSA As SAFEARRAY1D
+    With bottomSA
+        .cbElements = 1
+        .cDims = 1
+        .lBound = 0
+        .cElements = bottomScanlineSize
+        .pvData = bottomDIBPointer
+    End With
+        
+    Dim topPixels() As Byte
+    Dim topSA As SAFEARRAY1D
+    With topSA
+        .cbElements = 1
+        .cDims = 1
+        .lBound = 0
+        .cElements = topScanlineSize
+        .pvData = topDIBPointer
+    End With
+    
+    'We won't actually copy the SafeArray structs into place until the loops start
+    
+    'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
+    Dim x As Long, y As Long, bottomX As Long, bottomY As Long
+    
+    'New and old RGB values
+    Dim topR As Single, topG As Single, topB As Single, topA As Single
+    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single
+    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    
+    For y = initY To finalY
+        
+        'Point a 1D pixel array at the proper scanline of the top image
+        topSA.pvData = topDIBPointer + topScanlineSize * y
+        CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
+        
+        'We can completely ignore the bottom image during standard alpha processing
+        If alphaMode <> LA_NORMAL Then
+        
+            'The main (x, y) variables point into the top image's coordinate space.  We need to calculate corresponding offsets
+            ' into the bottom DIB's coordinate space.
+            bottomY = yOffset + y
+            bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+            CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+            
+        End If
+        
+    For x = initX To finalX Step 4
+        
+        bottomX = (xOffset + x)
+        
+        'Retrieve top layer RGBA values
+        topA = topPixels(x + 3)
+            
+        'Ignore transparent pixels.
+        ' (NOTE: if alpha inheritance is active, we can't ignote transparent pixels; we may want to address that ability separately...)
+        If topA <> 0 Then
+                
+            'Retrieve color and alpha from the *top* image, apply the passed alpha modifier (if any), and convert to floating-point
+            topB = intToFloat(topPixels(x))
+            topG = intToFloat(topPixels(x + 1))
+            topR = intToFloat(topPixels(x + 2))
+            topA = intToFloat(topPixels(x + 3))
+            
+            'If the caller wants our results un-premultiplied, unpremultiply alpha now.
+            If returnResultsUnpremultiplied Then
+                If topA <> 1 Then
+                    topB = topB / topA
+                    topG = topG / topA
+                    topB = topB / topA
+                End If
+            End If
+            
+            'Store the newly modified values into the top DIB.
+            topPixels(x) = topB * 255
+            topPixels(x + 1) = topG * 255
+            topPixels(x + 2) = topB * 255
+            topPixels(x + 3) = topA * 255
+                
+        End If
+        
+    Next x
+    Next y
+    
+    'Clear all array references
+    CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
+    CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
+    
+    'At present, this function only ever modifies the top DIB.
+    topDIB.setInitialAlphaPremultiplicationState (Not returnResultsUnpremultiplied)
+    
+End Sub
+
+'Current catch-all for unoptimized blend mode calculations.  The goal is to move as many of these as possible to dedicated subs, where we can make
+' things like dedicated lookup tables, contingent on the actual blend mode being applied.
+Private Sub applyBlendMode_Generic(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blendMode As LAYER_BLENDMODE, ByVal alphaMode As LAYER_ALPHAMODE, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
+
+    'In this generic blend sub, we will potentially be doing a lot of int/float conversions.  To speed things up, use a persistent look-up table.
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
+    Dim i As Long
+    For i = 0 To 255
+        intToFloat(i) = i / 255
+    Next i
     
     'In the inner loop, we'll be doing a bunch of compositing relative to newly calculated alpha value.  Storing some intermediate terms
     ' allows this to go much faster.
@@ -497,35 +643,25 @@ Private Sub applyBlendMode_Generic(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
             'Retrieve bottom layer alpha
             bottomA = bImageData(quickBottomX + 3, quickBottomY)
             
-            'Again, ignore transparent pixels
+            'If the bottom layer is transparent, we can simply copy over the top layer as-is
             If bottomA = 0 Then
-            
-                'We must apply layer opacity here, as this function both composites AND performs the final blend between layers
-                If alphaModifierInt = 255 Then
-                    bImageData(quickBottomX, quickBottomY) = topB
-                    bImageData(quickBottomX + 1, quickBottomY) = topG
-                    bImageData(quickBottomX + 2, quickBottomY) = topR
-                    bImageData(quickBottomX + 3, quickBottomY) = topA
-                Else
-                    bImageData(quickBottomX, quickBottomY) = topB * alphaModifier
-                    bImageData(quickBottomX + 1, quickBottomY) = topG * alphaModifier
-                    bImageData(quickBottomX + 2, quickBottomY) = topR * alphaModifier
-                    bImageData(quickBottomX + 3, quickBottomY) = topA * alphaModifier
-                End If
-                
+                bImageData(quickBottomX, quickBottomY) = topB
+                bImageData(quickBottomX + 1, quickBottomY) = topG
+                bImageData(quickBottomX + 2, quickBottomY) = topR
+                bImageData(quickBottomX + 3, quickBottomY) = topA
             Else
                 
                 'Convert to floating-point
-                topR = IntToFloat(topR)
-                topG = IntToFloat(topG)
-                topB = IntToFloat(topB)
-                topA = IntToFloat(topA)
+                topR = intToFloat(topR)
+                topG = intToFloat(topG)
+                topB = intToFloat(topB)
+                topA = intToFloat(topA)
                 
                 'Retrieve bottom layer values
-                bottomA = IntToFloat(bottomA)
-                bottomR = IntToFloat(bImageData(quickBottomX + 2, quickBottomY))
-                bottomG = IntToFloat(bImageData(quickBottomX + 1, quickBottomY))
-                bottomB = IntToFloat(bImageData(quickBottomX, quickBottomY))
+                bottomA = intToFloat(bottomA)
+                bottomR = intToFloat(bImageData(quickBottomX + 2, quickBottomY))
+                bottomG = intToFloat(bImageData(quickBottomX + 1, quickBottomY))
+                bottomB = intToFloat(bImageData(quickBottomX, quickBottomY))
                 
                 'Un-premultiply all RGB values
                 If topA <> 1 Then
@@ -724,41 +860,25 @@ Private Sub applyBlendMode_Generic(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
                         newB = topB
                 
                 End Select
-                                
-                'Calculate a new alpha for the top layer, using the supplied alpha modifier
-                topA = topA * alphaModifier
                 
-                'If alpha inheritance is active, it would be handled here, FYI.
-                
-                'Calculate a new destination alpha value
-                bottomAlphaIntermediate = bottomA * (1 - topA)
-                newA = topA + bottomAlphaIntermediate
-                
-                'If the bottom layer contains transparency, we pre-blend the composited RGB values against the original top layer
-                ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                ' (This is how Paint.NET behaves, and I like the end result.)
+                'Alpha blend the original color with the new color, per the lower image's alpha.  (This way,
+                ' if the bottom image is transparent, the top image is unchanged, regardless of blend mode.)
+                '
+                'Note that GIMP actually factors alpha into its compositing order, which I find odd and unintuitive.  However, it might be
+                ' nice to someday provide a toggle for that behavior; I'm waiting to see if anyone actually requests it before
+                ' embarking, however.
                 If bottomA <> 1 Then
-                    
-                    'Reduce the strength of the blend mode result, proportionate to the bottom layer's alpha value.
                     newR = (newR * bottomA) + (topR * (1 - bottomA))
                     newG = (newG * bottomA) + (topG * (1 - bottomA))
                     newB = (newB * bottomA) + (topB * (1 - bottomA))
-                    
                 End If
                 
-                'Perform a final blend.  Note that the new alpha value does not factor into this; see http://en.wikipedia.org/wiki/Alpha_compositing
-                ' for a lengthy derivation of the required formulas.
-                newR = newR * topA + bottomR * bottomAlphaIntermediate
-                newG = newG * topA + bottomG * bottomAlphaIntermediate
-                newB = newB * topA + bottomB * bottomAlphaIntermediate
-                
-                'Perform an alpha-blend with the top and bottom colors.  (Note that premultiplication has already been applied.)
-                bImageData(quickBottomX, quickBottomY) = newB * 255
-                bImageData(quickBottomX + 1, quickBottomY) = newG * 255
-                bImageData(quickBottomX + 2, quickBottomY) = newR * 255
-                
-                'Apply alpha as well
-                bImageData(quickBottomX + 3, quickBottomY) = newA * 255
+                'Copy the final values into the top layer, and premultiply them.  Note that alpha remains unchanged; the final blend
+                ' is handled by a separate function.
+                topA = topA * 255
+                tImageData(QuickX + 2, y) = newR * topA
+                tImageData(QuickX + 1, y) = newG * topA
+                tImageData(QuickX, y) = newB * topA
                     
             End If
             
@@ -772,15 +892,15 @@ Private Sub applyBlendMode_Generic(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     CopyMemory ByVal VarPtrArray(tImageData), 0&, 4
     
     'DIBs must be premultiplied for this function to work, and they'll always leave the function in a premultiplied state.
-    bottomDIB.setInitialAlphaPremultiplicationState True
+    topDIB.setInitialAlphaPremultiplicationState True
 
 End Sub
 
 'Optimized "darken" blend mode function.  Supports storage of the end result in either the top DIB (allowing the caller to apply the final
 ' alpha blend in some later step), or the bottom DIB (and this function will handle blending for you).
 '
-'32-bpp DIBs are required.  Other color depths will crash.
-Private Sub applyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal alphaModifier As Double, ByVal alphaMode As LAYER_ALPHAMODE, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal storeResultInBottomDIB As Boolean = True)
+'32-bpp DIBs are required.  Other color depths (including 24-bpp) will crash.
+Private Sub applyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long)
     
     'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
     initX = initX * 4
@@ -788,20 +908,12 @@ Private Sub applyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     xOffset = xOffset * 4
     
     'In this generic blend sub, we will potentially be doing a lot of int/float conversions.  To speed things up, use a persistent look-up table.
-    Dim IntToFloat() As Single
-    ReDim IntToFloat(0 To 255) As Single
+    Dim intToFloat() As Single
+    ReDim intToFloat(0 To 255) As Single
     Dim i As Long
     For i = 0 To 255
-        IntToFloat(i) = i / 255
+        intToFloat(i) = i / 255
     Next i
-    
-    'Also create an integer version of the alpha-modifier value
-    Dim alphaModifierInt As Long
-    alphaModifierInt = alphaModifier * 255
-    
-    'In the inner loop, we'll be doing a bunch of compositing relative to newly calculated alpha value.  Storing some intermediate terms
-    ' allows this to go much faster.
-    Dim bottomAlphaIntermediate As Double
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
@@ -833,7 +945,7 @@ Private Sub applyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
         .pvData = topDIBPointer
     End With
     
-    'We won't actually copy the SafeArray structs into place until the loops start
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
@@ -873,42 +985,29 @@ Private Sub applyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
             'Retrieve bottom layer alpha
             bottomA = bottomPixels(bottomX + 3)
             
-            'Again, ignore transparent pixels
+            'If the bottom pixel is transparent, we can simply copy over the top pixel as-is
             If bottomA = 0 Then
+                bottomPixels(bottomX) = topB
+                bottomPixels(bottomX + 1) = topG
+                bottomPixels(bottomX + 2) = topR
+                bottomPixels(bottomX + 3) = topA
                 
-                'Swap handling based on top or bottom DIB destinations
-                If storeResultInBottomDIB Then
-                
-                    'We must apply layer opacity here, as this function both composites AND performs the final blend between layers
-                    If alphaModifierInt = 255 Then
-                        bottomPixels(bottomX) = topB
-                        bottomPixels(bottomX + 1) = topG
-                        bottomPixels(bottomX + 2) = topR
-                        bottomPixels(bottomX + 3) = topA
-                    Else
-                        bottomPixels(bottomX) = topB * alphaModifier
-                        bottomPixels(bottomX + 1) = topG * alphaModifier
-                        bottomPixels(bottomX + 2) = topR * alphaModifier
-                        bottomPixels(bottomX + 3) = topA * alphaModifier
-                    End If
-                    
-                End If
-                
+            'If the bottom pixel is *not* transparent, our work is more involved
             Else
                 
                 'Convert to floating-point
-                topR = IntToFloat(topR)
-                topG = IntToFloat(topG)
-                topB = IntToFloat(topB)
-                topA = IntToFloat(topA)
+                topR = intToFloat(topR)
+                topG = intToFloat(topG)
+                topB = intToFloat(topB)
+                topA = intToFloat(topA)
                 
                 'Retrieve bottom layer values
-                bottomA = IntToFloat(bottomA)
-                bottomR = IntToFloat(bottomPixels(bottomX + 2))
-                bottomG = IntToFloat(bottomPixels(bottomX + 1))
-                bottomB = IntToFloat(bottomPixels(bottomX))
+                bottomA = intToFloat(bottomA)
+                bottomR = intToFloat(bottomPixels(bottomX + 2))
+                bottomG = intToFloat(bottomPixels(bottomX + 1))
+                bottomB = intToFloat(bottomPixels(bottomX))
                 
-                'Un-premultiply all RGB values
+                'Un-premultiply all RGB values.  Note that alpha values cannot physically be zero, as we've already checked for that.
                 If topA <> 1 Then
                     topR = topR / topA
                     topG = topG / topA
@@ -925,73 +1024,25 @@ Private Sub applyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
                 If bottomR < topR Then newR = bottomR Else newR = topR
                 If bottomG < topG Then newG = bottomG Else newG = topG
                 If bottomB < topB Then newB = bottomB Else newB = topB
-                
-                'Swap handling based on top/bottom DIB storage
-                If storeResultInBottomDIB Then
                     
-                    'Calculate a new alpha for the top layer, using the supplied alpha modifier
-                    topA = topA * alphaModifier
-                    
-                    'If alpha inheritance is active, it would be handled here, FYI.
-                    
-                    'Calculate a new destination alpha value
-                    bottomAlphaIntermediate = bottomA * (1 - topA)
-                    newA = topA + bottomAlphaIntermediate
-                    
-                    'If the bottom layer contains transparency, we pre-blend the composited RGB values against the original top layer
-                    ' RGB values.  This reduces the strength of the blend mode result, proportional to the bottom layer's alpha.
-                    ' (This is how Paint.NET behaves, and I like the end result.)
-                    If bottomA <> 1 Then
-                        
-                        'Reduce the strength of the blend mode result, proportionate to the bottom layer's alpha value.
-                        newR = (newR * bottomA) + (topR * (1 - bottomA))
-                        newG = (newG * bottomA) + (topG * (1 - bottomA))
-                        newB = (newB * bottomA) + (topB * (1 - bottomA))
-                        
-                    End If
-                    
-                    'Perform a final blend.  Note that the new alpha value does not factor into this; see http://en.wikipedia.org/wiki/Alpha_compositing
-                    ' for a lengthy derivation of the required formulas.
-                    newR = newR * topA + bottomR * bottomAlphaIntermediate
-                    newG = newG * topA + bottomG * bottomAlphaIntermediate
-                    newB = newB * topA + bottomB * bottomAlphaIntermediate
-                    
-                    'Perform an alpha-blend with the top and bottom colors.  (Note that premultiplication has already been applied.)
-                    bottomPixels(bottomX) = newB * 255
-                    bottomPixels(bottomX + 1) = newG * 255
-                    bottomPixels(bottomX + 2) = newR * 255
-                    
-                    'Apply alpha as well
-                    bottomPixels(bottomX + 3) = newA * 255
-                    
-                Else
-                    
-                    'Alpha blend the original color with the new color, per the lower image's alpha.  (This way,
-                    ' if the bottom image is transparent, the top image is unchanged, regardless of blend mode.)
-                    '
-                    'Note that GIMP actually factors alpha into its compositing order, which I find odd and unintuitive.  However, it might be
-                    ' nice to someday provide a toggle for that behavior; I'm waiting to see if anyone actually requests it before
-                    ' embarking, however.
-                    If bottomA <> 1 Then
-                        newR = (newR * bottomA) + (topR * (1 - bottomA))
-                        newG = (newG * bottomA) + (topG * (1 - bottomA))
-                        newB = (newB * bottomA) + (topB * (1 - bottomA))
-                    End If
-                    
-                    'NOTE!  I've tried to write the compositor so that additional bounds checks are not needed.
-                    ' If errors ever occur in the future, you can start debugging by enabling the checks below.
-                    'If newR > 1 Then newR = 1
-                    'If newG > 1 Then newG = 1
-                    'If newB > 1 Then newB = 1
-                    
-                    'Copy the new values into the bottom layer, and premultiply them.  Note that alpha remains unchanged.
-                    ' (TODO: add support for alpha inheritance!)
-                    topA = topA * 255
-                    topPixels(x + 2) = newR * topA
-                    topPixels(x + 1) = newG * topA
-                    topPixels(x) = newB * topA
-                    
+                'Alpha blend the original color with the new color, per the lower image's alpha.  (This way,
+                ' if the bottom image is transparent, the top image is unchanged, regardless of blend mode.)
+                '
+                'Note that GIMP actually factors alpha into its compositing order, which I find odd and unintuitive.  However, it might be
+                ' nice to someday provide a toggle for that behavior; I'm waiting to see if anyone actually requests it before
+                ' embarking, however.
+                If bottomA <> 1 Then
+                    newR = (newR * bottomA) + (topR * (1 - bottomA))
+                    newG = (newG * bottomA) + (topG * (1 - bottomA))
+                    newB = (newB * bottomA) + (topB * (1 - bottomA))
                 End If
+                
+                'Copy the final values into the top layer, and premultiply them.  Note that alpha remains unchanged; the final alpha blend
+                ' is handled by a separate function.
+                topA = topA * 255
+                topPixels(x + 2) = newR * topA
+                topPixels(x + 1) = newG * topA
+                topPixels(x) = newB * topA
                     
             End If
             
@@ -1006,7 +1057,7 @@ Private Sub applyBlendMode_Darken(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDI
     
     'DIBs must be premultiplied for this function to work, and the target DIB generated by this function will always be
     ' premultiplied as well.
-    bottomDIB.setInitialAlphaPremultiplicationState True
+    topDIB.setInitialAlphaPremultiplicationState True
     
 End Sub
 
@@ -1146,3 +1197,20 @@ Private Function fMin3(rR As Single, rG As Single, rB As Single) As Single
    End If
 End Function
 
+'In order to render complex images quickly, this class must generate a lot of temporary objects.  If PD is under memory pressure, call this function
+' to forcibly release as many temporary objects as possible.  (It should be obvious, but subsequent render calls will result in temporary objects
+' being recreated, as necessary.)
+Public Sub attemptToFreeMemory()
+    
+    'Erase any temporary DIBs we may have created
+    m_topDIBCopy.eraseDIB
+    
+End Sub
+
+Private Sub Class_Initialize()
+    Set m_topDIBCopy = New pdDIB
+End Sub
+
+Private Sub Class_Terminate()
+    Set m_topDIBCopy = Nothing
+End Sub
