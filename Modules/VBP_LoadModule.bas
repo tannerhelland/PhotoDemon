@@ -1921,6 +1921,9 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
                 Dim tmpDIBPointer As Long, tmpDIBLength As Long
                 dstImage.getLayerByIndex(i).layerDIB.retrieveDIBPointerAndSize tmpDIBPointer, tmpDIBLength
                 
+                'At present, all pdPackage layers will contain premultiplied alpha, so force the corresponding state now
+                dstImage.getLayerByIndex(i).layerDIB.setInitialAlphaPremultiplicationState True
+                
                 nodeLoadedSuccessfully = pdiReader.getNodeDataByIndex_UnsafeDstPointer(i + 1, False, tmpDIBPointer, sourceIsUndoFile)
             
             'Text and other vector layers
