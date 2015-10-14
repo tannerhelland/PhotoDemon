@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.94</langversion>
+<langversion>6.7.95</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -14270,6 +14270,12 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 <!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdPixelBlender.cls -->
+
+<!-- pdPixelBlender.cls contains 0 phrases. -->
+
+<!-- END text for pdPixelBlender.cls-->
 
 <!-- Automatic text extraction complete. -->
 

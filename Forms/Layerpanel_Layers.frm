@@ -28,14 +28,14 @@ Begin VB.Form layerpanel_Layers
       BackColor       =   &H80000005&
       ClipControls    =   0   'False
       ForeColor       =   &H80000008&
-      Height          =   4935
+      Height          =   4695
       Left            =   0
       OLEDropMode     =   1  'Manual
-      ScaleHeight     =   327
+      ScaleHeight     =   311
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   215
       TabIndex        =   8
-      Top             =   1080
+      Top             =   1320
       Width           =   3255
    End
    Begin VB.PictureBox picLayerButtons 
@@ -99,19 +99,19 @@ Begin VB.Form layerpanel_Layers
       End
    End
    Begin VB.VScrollBar vsLayer 
-      Height          =   4905
+      Height          =   4665
       LargeChange     =   32
       Left            =   3345
       Max             =   100
       TabIndex        =   2
-      Top             =   1080
+      Top             =   1320
       Width           =   285
    End
    Begin PhotoDemon.pdComboBox cboBlendMode 
       Height          =   360
       Left            =   945
       TabIndex        =   0
-      Top             =   555
+      Top             =   480
       Width           =   2775
       _ExtentX        =   4895
       _ExtentY        =   635
@@ -154,12 +154,32 @@ Begin VB.Form layerpanel_Layers
       Height          =   240
       Index           =   1
       Left            =   0
-      Top             =   600
+      Top             =   540
       Width           =   540
       _ExtentX        =   953
       _ExtentY        =   423
       Caption         =   "blend:"
       Layout          =   2
+   End
+   Begin PhotoDemon.pdLabel lblLayerSettings 
+      Height          =   240
+      Index           =   2
+      Left            =   0
+      Top             =   960
+      Width           =   540
+      _ExtentX        =   953
+      _ExtentY        =   423
+      Caption         =   "alpha:"
+      Layout          =   2
+   End
+   Begin PhotoDemon.pdComboBox cboAlphaMode 
+      Height          =   360
+      Left            =   960
+      TabIndex        =   10
+      Top             =   900
+      Width           =   2775
+      _ExtentX        =   4895
+      _ExtentY        =   635
    End
 End
 Attribute VB_Name = "layerpanel_Layers"
@@ -302,8 +322,9 @@ Public Sub forceRedraw(Optional ByVal refreshThumbnailCache As Boolean = True)
                 'Synchronize the opacity scroll bar to the active layer
                 sltLayerOpacity.Value = pdImages(g_CurrentImage).getActiveLayer.getLayerOpacity
                 
-                'Synchronize the blend mode to the active layer
+                'Synchronize the blend and alpha modes to the active layer
                 cboBlendMode.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getLayerBlendMode
+                cboAlphaMode.ListIndex = pdImages(g_CurrentImage).getActiveLayer.getLayerAlphaMode
             
             End If
         End If
@@ -361,6 +382,35 @@ Private Sub checkButtonEnablement()
         
     End If
     
+End Sub
+
+'Change the alpha mode of the active layer
+Private Sub cboAlphaMode_Click()
+
+    'By default, changing the drop-down will automatically update the alpha mode of the selected layer, and the main viewport
+    ' will be redrawn.  When changing the alpha mode programmatically, set m_DisableRedraws to TRUE to prevent cylical redraws.
+    If m_DisableRedraws Then Exit Sub
+
+    If g_OpenImageCount > 0 Then
+    
+        If Not pdImages(g_CurrentImage).getActiveLayer Is Nothing Then
+        
+            pdImages(g_CurrentImage).getActiveLayer.setLayerAlphaMode cboAlphaMode.ListIndex
+            Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        
+        End If
+    
+    End If
+
+End Sub
+
+Private Sub cboAlphaMode_GotFocusAPI()
+    If g_OpenImageCount = 0 Then Exit Sub
+    Processor.flagInitialNDFXState_Generic pgp_AlphaMode, cboAlphaMode.ListIndex, pdImages(g_CurrentImage).getActiveLayerID
+End Sub
+
+Private Sub cboAlphaMode_LostFocusAPI()
+    If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Generic pgp_AlphaMode, cboAlphaMode.ListIndex
 End Sub
 
 'Change the blend mode of the active layer
@@ -867,8 +917,12 @@ End Sub
 
 Private Sub Form_Load()
         
-    'Populate the blend mode box
+    'Populate the alpha and blend mode boxes
     Interface.PopulateBlendModeComboBox cboBlendMode, BL_NORMAL
+    
+    cboAlphaMode.AddItem "Normal", 0
+    cboAlphaMode.AddItem "Inherit", 1
+    cboAlphaMode.ListIndex = 0
     
     'Reset the thumbnail array
     numOfThumbnails = 0
@@ -1483,14 +1537,15 @@ Private Sub reflowInterface()
     
     'Vertical resizing has now been covered successfully.  Time to handle horizontal resizing.
     
-    'Left-align the opacity and blend mode controls against their respective labels.
+    'Left-align the opacity, blend and alpha mode controls against their respective labels.
     sltLayerOpacity.Left = lblLayerSettings(0).Left + lblLayerSettings(0).InternalWidth + FixDPI(4)
     cboBlendMode.Left = lblLayerSettings(1).Left + lblLayerSettings(1).InternalWidth + FixDPI(12)
+    cboAlphaMode.Left = lblLayerSettings(2).Left + lblLayerSettings(2).InternalWidth + FixDPI(12)
     
-    'Horizontally stretch the opacity and blend mode UI objects
+    'Horizontally stretch the opacity, blend, and alpha mode UI inputs
     sltLayerOpacity.Width = Me.ScaleWidth - (sltLayerOpacity.Left + FixDPI(5))
-    
     cboBlendMode.requestNewWidth Me.ScaleWidth - (cboBlendMode.Left + FixDPI(7))
+    cboAlphaMode.requestNewWidth Me.ScaleWidth - (cboAlphaMode.Left + FixDPI(7))
     
     'Resize the layer box and associated scrollbar
     vsLayer.Left = Me.ScaleWidth - vsLayer.Width - FixDPI(7)

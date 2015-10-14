@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.94</langversion>
+<langversion>6.7.95</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -14271,6 +14271,12 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdPixelBlender.cls -->
+
+<!-- pdPixelBlender.cls contains 0 phrases. -->
+
+<!-- END text for pdPixelBlender.cls-->
 
 <!-- Automatic text extraction complete. -->
 

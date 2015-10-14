@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Pixel Blender class
 'Copyright 2014-2015 by Tanner Helland
 'Created: 01/May/14
-'Last updated: 13/October/15
-'Last update: finish major refactoring of the class, and continue creating dedicated, highly optimized blendmode routines
+'Last updated: 14/October/15
+'Last update: implement alpha inheritance
 '
 'This class exists for a single purpose: blending colors from two DIBs, using any of the blend and/or alpha modes
 ' supported by PD.
@@ -65,13 +65,14 @@ Friend Sub blendDIBs(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal blen
         BitBlt m_topDIBCopy.getDIBDC, 0, 0, topDIB.getDIBWidth, topDIB.getDIBHeight, topDIB.getDIBDC, 0, 0, vbSrcCopy
         
         'To keep our individual blend functions as simple as possible, we apply a pre-processing alpha pass that handles several things:
-        ' 1) Apply an alpha modifier (e.g. custom layer opacity, if any)
-        ' 2) Apply layer masks (if any)
+        ' 1) Apply layer masks (if any)
         ' 2) Apply alpha inheritance (if any)
         
-        'Note that we can skip these steps if none of these steps are relevant.
+        'Note that we can skip these steps if none of these special alpha modes are active for the top DIB.
         
-        'TODO: actually write the alpha preprocessor!
+        If (alphaMode <> LA_NORMAL) Then
+            preProcessAlphaEffects m_topDIBCopy, bottomDIB, alphaMode, initX, initY, finalX, finalY, xOffsetBottom, yOffsetBottom, False
+        End If
         
         'With alpha inheritance successfully applied to non-overlapping regions of the bottom layer, we can now forward further handling to
         ' one of several dedicated blend-mode compositor subs.  These subs apply the actual per-pixel blending loops, using the bounds we have
@@ -162,128 +163,118 @@ Private Function calculateDIBOverlap(ByRef topDIB As pdDIB, ByRef bottomDIB As p
 End Function
 
 'Prior to blending two DIBs, call this function preprocess any alpha-specific effects (masks, inheritance, etc).  This greatly simplifies
-' the actual blending code inside each blend function.
+' the actual blending code inside each blend function, because special alpha handling is never required.
 Private Sub preProcessAlphaEffects(ByRef topDIB As pdDIB, ByRef bottomDIB As pdDIB, ByVal alphaMode As LAYER_ALPHAMODE, ByVal initX As Long, ByVal initY As Long, ByVal finalX As Long, ByVal finalY As Long, ByVal xOffset As Long, ByVal yOffset As Long, Optional ByVal returnResultsUnpremultiplied As Boolean = False)
     
     'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
+    ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
     initX = initX * 4
     finalX = finalX * 4
     xOffset = xOffset * 4
-        
-    'Alpha requires a lot of floating-point math.  To speed things up, we use a persistent look-up table.
-    ' TODO: profile this to see if it actually buys us any extra time.
+    
+    'Blending requires a lot of int/float conversions.  To speed things up, we'll use a persistent look-up table for converting
+    ' single bytes on the range [0, 255] to 4-byte floats on the range [0, 1].
     Dim intToFloat() As Single
     ReDim intToFloat(0 To 255) As Single
-    
     Dim i As Long
     For i = 0 To 255
         intToFloat(i) = i / 255
     Next i
-        
-    'In the inner loop, we'll be doing a bunch of compositing relative to newly calculated alpha value.  Storing some intermediate terms
-    ' allows this to go much faster.
-    Dim bottomAlphaIntermediate As Double
     
     '2D array access is slow (because VB must apply multiplication "behind-the-scenes" on each access), so we cheat and use 1D arrays,
     ' which we reset between scanlines.
-    Dim bottomScanlineSize As Long, topScanlineSize As Long
-    bottomScanlineSize = bottomDIB.getDIBArrayWidth
-    topScanlineSize = topDIB.getDIBArrayWidth
+    Dim bottomScanlineSize As Long, bottomDIBPointer As Long
+    bottomScanlineSize = bottomDIB.getDIBArrayWidth:  bottomDIBPointer = bottomDIB.getActualDIBBits
     
-    Dim bottomDIBPointer As Long, topDIBPointer As Long
-    bottomDIBPointer = bottomDIB.getActualDIBBits
-    topDIBPointer = topDIB.getActualDIBBits
+    Dim topScanlineSize As Long, topDIBPointer As Long
+    topScanlineSize = topDIB.getDIBArrayWidth:  topDIBPointer = topDIB.getActualDIBBits
     
-    Dim bottomPixels() As Byte
-    Dim bottomSA As SAFEARRAY1D
-    With bottomSA
-        .cbElements = 1
-        .cDims = 1
-        .lBound = 0
-        .cElements = bottomScanlineSize
-        .pvData = bottomDIBPointer
-    End With
+    Dim bottomPixels() As Byte, bottomSA As SAFEARRAY1D
+    prepInternalSafeArray1D bottomSA, bottomDIB
     
-    Dim topPixels() As Byte
-    Dim topSA As SAFEARRAY1D
-    With topSA
-        .cbElements = 1
-        .cDims = 1
-        .lBound = 0
-        .cElements = topScanlineSize
-        .pvData = topDIBPointer
-    End With
+    Dim topPixels() As Byte, topSA As SAFEARRAY1D
+    prepInternalSafeArray1D topSA, topDIB
     
-    'We won't actually copy the SafeArray structs into place until the loops start
+    'Note: we don't actually copy the SafeArray structs into place until the loops start.
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
     Dim x As Long, y As Long, bottomX As Long, bottomY As Long
     
     'New and old RGB values
-    Dim topR As Single, topG As Single, topB As Single, topA As Single
-    Dim bottomR As Single, bottomG As Single, bottomB As Single, bottomA As Single
-    Dim newR As Single, newG As Single, newB As Single, newA As Single
+    Dim topR As Single, topG As Single, topB As Single, topA As Single, topAInt As Byte
+    Dim bottomA As Single, bottomAInt As Byte
     
     For y = initY To finalY
         
-        'Point a 1D pixel array at the proper scanline of the top image
+        'These core (x, y) parameters reference the top image's coordinate space.  We also need to calculate corresponding offsets
+        ' into the bottom DIB's coordinate space.
+        bottomY = yOffset + y
+        
+        'Point each 1D pixel array at the proper scanline
+        bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
+        CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
+        
         topSA.pvData = topDIBPointer + topScanlineSize * y
         CopyMemory ByVal VarPtrArray(topPixels()), VarPtr(topSA), 4
-        
-        'We can completely ignore the bottom image during standard alpha processing
-        If alphaMode <> LA_NORMAL Then
-        
-            'The main (x, y) variables point into the top image's coordinate space.  We need to calculate corresponding offsets
-            ' into the bottom DIB's coordinate space.
-            bottomY = yOffset + y
-            bottomSA.pvData = bottomDIBPointer + bottomScanlineSize * bottomY
-            CopyMemory ByVal VarPtrArray(bottomPixels()), VarPtr(bottomSA), 4
-            
-        End If
         
     For x = initX To finalX Step 4
         
         bottomX = (xOffset + x)
         
         'Retrieve top layer RGBA values
-        topA = topPixels(x + 3)
-            
-        'Ignore transparent pixels.
-        ' (NOTE: if alpha inheritance is active, we can't ignrte transparent pixels; we may want to address that case separately...)
-        If topA <> 0 Then
-                
-            'Retrieve color and alpha from the *top* image, apply the passed alpha modifier (if any), and convert to floating-point
-            topB = intToFloat(topPixels(x))
-            topG = intToFloat(topPixels(x + 1))
-            topR = intToFloat(topPixels(x + 2))
-            topA = intToFloat(topPixels(x + 3))
-            
-            'If the caller wants our results un-premultiplied, unpremultiply alpha now.
-            If returnResultsUnpremultiplied Then
-                If topA <> 1 Then
-                    topB = topB / topA
-                    topG = topG / topA
-                    topB = topB / topA
-                End If
-            End If
-            
-            'Store the newly modified values into the top DIB.
-            topPixels(x) = topB * 255
-            topPixels(x + 1) = topG * 255
-            topPixels(x + 2) = topB * 255
-            topPixels(x + 3) = topA * 255
-                
-        End If
+        topAInt = topPixels(x + 3)
         
+        'Ignore transparent pixels completely; they go untouched.
+        If topAInt <> 0 Then
+            
+            'Retrieve bottom layer alpha
+            bottomAInt = bottomPixels(bottomX + 3)
+            
+            'Alpha inheritance can only make pixels *more* transparent, not *less* transparent.  This means we can ignore opaque pixels,
+            ' as they have no effect on the top layer.
+            If bottomAInt < 255 Then
+            
+                'If the bottom pixel is transparent, we can simply erase the top pixel in this location
+                If bottomAInt = 0 Then
+                    topPixels(x) = 0
+                    topPixels(x + 1) = 0
+                    topPixels(x + 2) = 0
+                    topPixels(x + 3) = 0
+                    
+                'If the bottom pixel is *not* transparent, our work is more involved
+                Else
+                    
+                    'Retrieve the top layer's color and alpha values and convert them to floating-point
+                    topA = intToFloat(topAInt)
+                    topB = intToFloat(topPixels(x)): topG = intToFloat(topPixels(x + 1)): topR = intToFloat(topPixels(x + 2))
+                    
+                    'We don't need to premultiply the values here; all we need to do is multiply everything by the bottom alpha value.
+                    bottomA = intToFloat(bottomAInt)
+                    topA = topA * bottomA
+                    topB = topB * bottomA
+                    topG = topG * bottomA
+                    topR = topR * bottomA
+                    
+                    'Copy the final RGB values into the top layer, and premultiply them.
+                    topPixels(x) = topB * 255: topPixels(x + 1) = topG * 255: topPixels(x + 2) = topR * 255: topPixels(x + 3) = topA * 255
+                    
+                End If
+            
+            'End "If bottomAInt < 255..."
+            End If
+        
+        'End "If topAInt <> 0..."
+        End If
+    
     Next x
     Next y
     
-    'Clear all array references
+    'Clear all temporary array references
     CopyMemory ByVal VarPtrArray(bottomPixels), 0&, 4
     CopyMemory ByVal VarPtrArray(topPixels), 0&, 4
     
-    'At present, this function only ever modifies the top DIB.
-    topDIB.setInitialAlphaPremultiplicationState (Not returnResultsUnpremultiplied)
+    'All blend mode functions return premultiplied DIBs, by design.
+    topDIB.setInitialAlphaPremultiplicationState True
     
 End Sub
 
