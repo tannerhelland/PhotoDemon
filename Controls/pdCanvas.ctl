@@ -1283,11 +1283,6 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                         Layer_Handler.addNewLayer pdImages(g_CurrentImage).getActiveLayerIndex, PDL_TYPOGRAPHY, 0, 0, 0, True, "", imgX, imgY, True
                     End If
                     
-                    'Mirror existing opacity and blend mode values onto the new layer, but only if the values are reasonable.
-                    ' (I'm not entirely sold on the utility of this, but I may revisit in the future.)
-                    'If toolbar_Layers.sltLayerOpacity.Value > 0 Then pdImages(g_CurrentImage).getActiveLayer.setLayerOpacity toolbar_Layers.sltLayerOpacity.Value
-                    'pdImages(g_CurrentImage).getActiveLayer.setLayerBlendMode toolbar_Layers.cboBlendMode.ListIndex
-                    
                     'Use a special initialization command that basically copies all existing text properties into the newly created layer.
                     Tool_Support.syncCurrentLayerToToolOptionsUI
                     

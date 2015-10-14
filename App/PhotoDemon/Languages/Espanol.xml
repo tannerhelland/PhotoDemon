@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.97</langversion>
+<langversion>6.7.98</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -14272,6 +14272,12 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <!-- Tools_PluginManager.frm contains 78 phrases. 29 were duplicates of existing phrases, so only 49 new phrases were written to file. -->
 
 <!-- END text for Tools_PluginManager.frm-->
+
+<!-- BEGIN text for pdPixelBlender.cls -->
+
+<!-- pdPixelBlender.cls contains 0 phrases. -->
+
+<!-- END text for pdPixelBlender.cls-->
 
 <!-- Automatic text extraction complete. -->
 

@@ -142,8 +142,9 @@ Private Type LayerData
     l_Visibility As Boolean             'Layer visibility
     l_NonDestructiveFXActive As Boolean 'Are any non-destructive edits or other FX active?
     l_ResizeQuality As LAYER_RESIZE_QUALITY   'Resampling algorithm used when non-destructive resizes are active
-    l_ShearX As Double                   'Layer shear (added in PD 7.0)
+    l_ShearX As Double                  'Layer shear (added in PD 7.0)
     l_ShearY As Double
+    l_AlphaMode As LAYER_ALPHAMODE      'Layer alpha mode; defaults to LA_NORMAL
 End Type
 
 'Local instance of layer data for this layer
@@ -166,12 +167,13 @@ Public Enum PDLAYER_GENERIC_PROPERTY
     pgp_ResizeQuality = 11
     pgp_ShearX = 12
     pgp_ShearY = 13
+    pgp_AlphaMode = 14
 End Enum
 
 #If False Then
     Const pgp_Name = 0, pgp_GroupID = 1, pgp_Opacity = 2, pgp_BlendMode = 3, pgp_OffsetX = 4, pgp_OffsetY = 5, pgp_CanvasXModifier = 6
     Const pgp_CanvasYModifier = 7, pgp_Angle = 8, pgp_Visibility = 9, pgp_NonDestructiveFXActive = 10, pgp_ResizeQuality = 11
-    Const pgp_ShearX = 12, pgp_ShearY = 13
+    Const pgp_ShearX = 12, pgp_ShearY = 13, pgp_AlphaMode = 14
 #End If
 
 'Non-destructive edits currently supported by the program.
@@ -411,7 +413,15 @@ Public Sub setLayerOpacity(ByVal newLayerOpacity As Long)
     
 End Sub
 
-'Get/set blend mode
+'Get/set alpha and blend modes
+Public Function getLayerAlphaMode() As LAYER_ALPHAMODE
+    getLayerAlphaMode = myLayerData.l_AlphaMode
+End Function
+
+Public Sub setLayerAlphaMode(ByVal newLayerAlphaMode As LAYER_ALPHAMODE)
+    myLayerData.l_AlphaMode = newLayerAlphaMode
+End Sub
+
 Public Function getLayerBlendMode() As LAYER_BLENDMODE
     getLayerBlendMode = myLayerData.l_BlendMode
 End Function
@@ -808,6 +818,9 @@ Friend Function getGenericLayerProperty(ByVal desiredProperty As PDLAYER_GENERIC
             
         Case pgp_ShearY
             getGenericLayerProperty = myLayerData.l_ShearY
+            
+        Case pgp_AlphaMode
+            getGenericLayerProperty = myLayerData.l_AlphaMode
     
     End Select
 
@@ -858,6 +871,9 @@ Friend Sub setGenericLayerProperty(ByVal desiredProperty As PDLAYER_GENERIC_PROP
             
         Case pgp_ShearY
             If myLayerData.l_ShearY <> CDbl(newValue) Then myLayerData.l_ShearY = CDbl(newValue)
+            
+        Case pgp_AlphaMode
+            If myLayerData.l_AlphaMode <> CLng(newValue) Then myLayerData.l_AlphaMode = CLng(newValue)
         
     End Select
     
@@ -1313,6 +1329,7 @@ Private Sub Class_Initialize()
         .l_ResizeQuality = LRQ_BICUBIC_NORMAL
         .l_ShearX = 0
         .l_ShearY = 0
+        .l_AlphaMode = LA_NORMAL
     End With
     
     With myNonDestructiveFX
@@ -1400,6 +1417,7 @@ Public Function getLayerHeaderAsXML(Optional ByVal avoidFluffEntries As Boolean 
         xmlEngine.writeTag "ResizeQuality", .l_ResizeQuality
         xmlEngine.writeTag "ShearX", .l_ShearX
         xmlEngine.writeTag "ShearY", .l_ShearY
+        xmlEngine.writeTag "AlphaMode", .l_AlphaMode
     End With
     
     'Next, write out any non-destructive FX parameters
@@ -1437,7 +1455,7 @@ Public Function getLayerHeaderAsParamString() As String
 
     'Start by compiling a layer header
     With myLayerData
-        getLayerHeaderAsParamString = buildParams(.l_Name, .l_GroupID, .l_Opacity, .l_BlendMode, .l_OffsetX, .l_OffsetY, .l_CanvasXModifier, .l_CanvasYModifier, .l_Angle, .l_Visibility, .l_NonDestructiveFXActive, .l_ResizeQuality, .l_ShearX, .l_ShearY)
+        getLayerHeaderAsParamString = buildParams(.l_Name, .l_GroupID, .l_Opacity, .l_BlendMode, .l_OffsetX, .l_OffsetY, .l_CanvasXModifier, .l_CanvasYModifier, .l_Angle, .l_Visibility, .l_NonDestructiveFXActive, .l_ResizeQuality, .l_ShearX, .l_ShearY, .l_AlphaMode)
     End With
     
     'Next, add any non-destructive FX parameters
@@ -1472,6 +1490,7 @@ Public Sub setLayerHeaderFromParamString(ByVal srcParamString As String)
         .l_ResizeQuality = cParams.GetLong(12)
         .l_ShearX = cParams.GetDouble(13, 0)
         .l_ShearY = cParams.GetDouble(14, 0)
+        .l_AlphaMode = cParams.GetLong(15, 0)
     End With
     
     'After the layer header comes non-destructive FX settings.  Make sure to adjust these indices if new values get added to
@@ -1522,7 +1541,7 @@ Public Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
             .l_Name = xmlEngine.getUniqueTag_String("Name")
             .l_GroupID = xmlEngine.getUniqueTag_Long("GroupID")
             .l_Opacity = xmlEngine.getUniqueTag_Long("Opacity")
-            .l_BlendMode = xmlEngine.getUniqueTag_Long("BlendMode")
+            .l_BlendMode = xmlEngine.getUniqueTag_Long("BlendMode", BL_NORMAL)
             .l_OffsetX = xmlEngine.getUniqueTag_Double("OffsetX")
             .l_OffsetY = xmlEngine.getUniqueTag_Double("OffsetY")
             .l_CanvasXModifier = xmlEngine.getUniqueTag_Double("CanvasXModifier", 1)
@@ -1533,6 +1552,7 @@ Public Function CreateNewLayerFromXML(ByRef xmlString As String, Optional ByVal 
             .l_ResizeQuality = xmlEngine.getUniqueTag_Long("ResizeQuality", LRQ_BILINEAR_NORMAL)
             .l_ShearX = xmlEngine.getUniqueTag_Double("ShearX", 0)
             .l_ShearY = xmlEngine.getUniqueTag_Double("ShearY", 0)
+            .l_AlphaMode = xmlEngine.getUniqueTag_Long("AlphaMode", LA_NORMAL)
         End With
         
         'Read in the contents of the non-destructive FX chunk
@@ -1694,6 +1714,7 @@ Public Sub InitializeNewLayer(ByVal newLayerType As LAYER_TYPE, Optional ByVal n
         .l_ResizeQuality = LRQ_BILINEAR_NORMAL
         .l_ShearX = 0
         .l_ShearY = 0
+        .l_AlphaMode = LA_NORMAL
     End With
     
     'Reset any non-destructive fx parameters
@@ -1753,6 +1774,7 @@ Public Sub CopyExistingLayer(ByRef srcLayer As pdLayer)
         .l_ResizeQuality = srcLayer.getLayerResizeQuality
         .l_ShearX = srcLayer.getLayerShearX
         .l_ShearY = srcLayer.getLayerShearY
+        .l_AlphaMode = srcLayer.getLayerAlphaMode
     End With
     
     'Next, copy any non-destructive FX parameters
@@ -2230,6 +2252,7 @@ Public Sub resetLayerParameters()
         .l_ResizeQuality = LRQ_BILINEAR_NORMAL
         .l_ShearX = 0
         .l_ShearY = 0
+        .l_AlphaMode = LA_NORMAL
     End With
     
     'Assign default values to the non-destructive FX params
@@ -2350,7 +2373,7 @@ Public Function getViewportHash_Theoretical(ParamArray allParams() As Variant) A
         tmpHash = tmpHash Xor (.l_ResizeQuality * 620)
         tmpHash = tmpHash Xor (.l_Opacity * 65535)
         tmpHash = tmpHash Xor (.l_ShearX * 524287) Xor (.l_ShearY * 1048575)
-        tmpHash = tmpHash Xor (.l_BlendMode * 63)
+        tmpHash = tmpHash Xor ((.l_BlendMode + 1) * 63) Xor ((.l_AlphaMode + 1) * 511)
     End With
     
     'Next, add any non-destructive FX parameters to the hash

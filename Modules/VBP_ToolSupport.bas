@@ -57,8 +57,8 @@ Public Function getToolBusyState() As Boolean
     getToolBusyState = m_ToolIsBusy
 End Function
 
-Public Sub setToolBusyState(ByVal NewState As Boolean)
-    m_ToolIsBusy = NewState
+Public Sub setToolBusyState(ByVal newState As Boolean)
+    m_ToolIsBusy = newState
 End Sub
 
 Public Function getCustomToolState() As Long
@@ -66,8 +66,8 @@ Public Function getCustomToolState() As Long
     m_CustomToolMarker = 0
 End Function
 
-Public Sub setCustomToolState(ByVal NewState As Long)
-    m_CustomToolMarker = NewState
+Public Sub setCustomToolState(ByVal newState As Long)
+    m_CustomToolMarker = newState
 End Sub
 
 'When a tool is finished processing, it can call this function to release all tool tracking variables

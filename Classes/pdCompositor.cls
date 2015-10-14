@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Compositor class
 'Copyright 2014-2015 by Tanner Helland
 'Created: 01/May/14
-'Last updated: 12/October/15
-'Last update: as part of optimizing blendmode calculations, split off blending code into pdPixelBlender.
+'Last updated: 14/October/15
+'Last update: implement alpha inheritance
 '
 'Image compositing is a fairly arduous process, especially when dealing with stuff like custom blend modes.
 ' Previously, the pdImage class handled all compositing on its own, but as PD's compositing needs have
@@ -27,9 +27,9 @@ Attribute VB_Exposed = False
 ' present the parent pdImage object always passes a self-reference to this class when a compositing operation
 ' is requested.  (This is simpler than dealing with persistent circular references.)
 '
-'As of 20 June '14, this class also supports the processing of non-destructive edits for a given layer.  At present,
-' PD's stock layer edit functions are used, but it may be worthwhile to write ultra-fast versions specific to this
-' class.  I'll investigate further as more non-destructive effects are implemented.
+'As of 20 June '14, this class also supports the processing of non-destructive edits for a given layer.  Many
+' optimizations have been made to try and improve the performance of non-destructive edits, and those optimizations
+' comprise a large portion of the class.
 '
 'Many thanks to expert contributor Audioglider for his help implementing PhotoDemon's many supported blend modes.
 '
@@ -237,10 +237,10 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
     If Not topLayer.affineTransformsActive(True) Then
         
         'We don't even need a temporary DIB - just composite the current layer as-is
-        If topLayer.getLayerBlendMode = BL_NORMAL Then
+        If (topLayer.getLayerBlendMode = BL_NORMAL) And (topLayer.getLayerAlphaMode = LA_NORMAL) Then
             topLayer.layerDIB.alphaBlendToDC bottomLayer.layerDIB.getDIBDC, topLayer.getLayerOpacity * 2.55, xOffset, yOffset
         Else
-            compositeAndBlendDIBs topLayer.layerDIB, bottomLayer.layerDIB, topLayer.getLayerBlendMode, xOffset, yOffset, topLayer.getLayerOpacity / 100
+            compositeAndBlendDIBs topLayer.layerDIB, bottomLayer.layerDIB, topLayer.getLayerBlendMode, xOffset, yOffset, topLayer.getLayerOpacity / 100, topLayer.getLayerAlphaMode
         End If
     
     'Non-destructive transforms are active, so we must prep a temporary DIB for the top layer (containing a transformed copy of its DIB)
@@ -269,10 +269,10 @@ Public Sub mergeLayers(ByRef topLayer As pdLayer, ByRef bottomLayer As pdLayer, 
         End If
         
         'With all non-destructive options accounted for, we can finally calculate composited layer data!
-        If topLayer.getLayerBlendMode = BL_NORMAL Then
+        If (topLayer.getLayerBlendMode = BL_NORMAL) And (topLayer.getLayerAlphaMode = LA_NORMAL) Then
             tmpDIB.alphaBlendToDC bottomLayer.layerDIB.getDIBDC, topLayer.getLayerOpacity * 2.55, xOffset, yOffset
         Else
-            compositeAndBlendDIBs tmpDIB, bottomLayer.layerDIB, topLayer.getLayerBlendMode, xOffset, yOffset, topLayer.getLayerOpacity / 100
+            compositeAndBlendDIBs tmpDIB, bottomLayer.layerDIB, topLayer.getLayerBlendMode, xOffset, yOffset, topLayer.getLayerOpacity / 100, topLayer.getLayerAlphaMode
         End If
                 
     End If
@@ -288,10 +288,10 @@ End Sub
 'IMPORTANT NOTE!  Both the top and bottom DIBs will be modified by this function, per standard merge rules.  The top DIB must be modified because it
 '                  contains the intermediate results of the merge.  The bottom DIB must be modified because it contains the final result.  As such,
 '                  use temp copies of DIBs you can't afford to lose.
-Friend Sub quickMergeTwoDibsOfEqualSize(ByRef bottomDIB As pdDIB, ByRef topDIB As pdDIB, Optional ByVal blendMode As LAYER_BLENDMODE = BL_NORMAL, Optional ByVal topLayerOpacity As Double = 100#)
+Friend Sub quickMergeTwoDibsOfEqualSize(ByRef bottomDIB As pdDIB, ByRef topDIB As pdDIB, Optional ByVal blendMode As LAYER_BLENDMODE = BL_NORMAL, Optional ByVal topLayerOpacity As Double = 100#, Optional ByVal alphaMode As LAYER_ALPHAMODE = LA_NORMAL)
 
     'Composite the two DIBs
-    If blendMode <> BL_NORMAL Then Me.compositeDIBsWithoutBlending topDIB, bottomDIB, blendMode, 0, 0
+    If (blendMode <> BL_NORMAL) Or (alphaMode <> LA_NORMAL) Then Me.compositeDIBsWithoutBlending topDIB, bottomDIB, blendMode, 0, 0, alphaMode
     
     'With compositing complete, apply the final step, which is alpha-blending the layer downward while accounting for layer opacity.
     topDIB.alphaBlendToDC bottomDIB.getDIBDC, topLayerOpacity * 2.55
@@ -367,14 +367,14 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
     'If this layer is a vector layer, make sure its DIB is properly synchronized.  (If it's *not* a vector layer, this action does nothing.)
     srcLayer.syncInternalDIB
     
-    'Custom blend-modes are applied to all layers but the base one.  If the normal blend mode is active, we can shortcut a lot of
-    ' the compositing pipeline.
-    Dim standardBlendModeActive As Boolean
+    'Custom blend-modes and alpha-modes are available to all layers but the base one.  If the normal blend mode is active, we can shortcut
+    ' a lot of the compositing pipeline.
+    Dim standardBlendingActive As Boolean
     
     If srcLayerIndex = 0 Then
-        standardBlendModeActive = True
+        standardBlendingActive = True
     Else
-        standardBlendModeActive = CBool(srcLayer.getLayerBlendMode = BL_NORMAL)
+        standardBlendingActive = CBool(srcLayer.getLayerBlendMode = BL_NORMAL) And CBool(srcLayer.getLayerAlphaMode = LA_NORMAL)
     End If
     
     'Start by separating our handling into "simple" and "complex" branches.  Basic layers with no non-destructive effects or much easier
@@ -385,7 +385,7 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
         
         'Next, check for custom blend modes.  These require an intermediate DIB copy of the image, because PD must internally render the
         ' blend modes (as GDI+ can't do it for us).
-        If standardBlendModeActive Then
+        If standardBlendingActive Then
         
             'Custom blend modes are not active.  Yay!
             
@@ -431,7 +431,7 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
                 If (Not .affineTransformsActive(True)) Then
                 
                     'Perform an all-in-one composite and blend using PD's awesome all-in-one function
-                    compositeAndBlendDIBs .layerDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY, .getLayerOpacity / 100
+                    compositeAndBlendDIBs .layerDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY, .getLayerOpacity / 100, .getLayerAlphaMode
                 
                 'One or more affine transforms are present.  We have no choice but to create a temporary intermediate DIB,
                 ' prior to full compositing.
@@ -441,7 +441,7 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
                     layerBoundariesOkay = .getAffineTransformedDIB(m_tmpDIB, intLayerOffsetX, intLayerOffsetY, dstDIB.getDIBWidth, dstDIB.getDIBHeight)
                 
                     'Next, perform an all-in-one composite + blend using our awesome new compositeAndBlendDIBs function
-                    If layerBoundariesOkay Then compositeAndBlendDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, intLayerOffsetX, intLayerOffsetY, .getLayerOpacity / 100
+                    If layerBoundariesOkay Then compositeAndBlendDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, intLayerOffsetX, intLayerOffsetY, .getLayerOpacity / 100, .getLayerAlphaMode
                     
                 End If
                 
@@ -472,8 +472,9 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
             
             With srcLayer
                 
-                'Next, check the active blend mode.  NORMAL blend mode can be handled by GDI's AlphaBlend for a performance boost
-                If .getLayerBlendMode = BL_NORMAL Then
+                'Next, check the active blend and alpha modes.  NORMAL blend and NORMAL alpha mode can be handled by GDI's AlphaBlend
+                ' for a nice performance boost.
+                If standardBlendingActive Then
                 
                     If .affineTransformsActive(False) Then
                         m_tmpDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, intLayerOffsetX, intLayerOffsetY
@@ -481,13 +482,14 @@ Private Sub getCompositedImage_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcLayer
                         m_tmpDIB.alphaBlendToDC dstDIB.getDIBDC, .getLayerOpacity * 2.55, .getLayerOffsetX, .getLayerOffsetY
                     End If
                 
-                'Custom blend modes are active.  Perform a single pass composite + blend operation using our awesome new all-in-one function.
+                'Custom blend and/or alpha modes are active.  Perform a single pass composite + blend operation using our awesome
+                ' all-in-one function.
                 Else
                 
                     If .affineTransformsActive(False) Then
-                        compositeAndBlendDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, intLayerOffsetX, intLayerOffsetY, .getLayerOpacity / 100
+                        compositeAndBlendDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, intLayerOffsetX, intLayerOffsetY, .getLayerOpacity / 100, .getLayerAlphaMode
                     Else
-                        compositeAndBlendDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY, .getLayerOpacity / 100
+                        compositeAndBlendDIBs m_tmpDIB, dstDIB, .getLayerBlendMode, .getLayerOffsetX, .getLayerOffsetY, .getLayerOpacity / 100, .getLayerAlphaMode
                     End If
             
                 End If
@@ -693,16 +695,19 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
         'Several conditions require us to create a temporary DIB prior to actually compositing this layer:
         ' 1) Non-destructive effects
         ' 2) Non-standard blend modes (on layers other than the background layer; the background layer blend mode is ignored)
-        ' 3) Affine transformations (rotate, skew, etc).  These may cover complicated sub-sections of the base image, so they require
+        ' 3) Non-standard alpha modes (on layers other than the background layer; the background layer alpha mode is ignored)
+        ' 4) Affine transformations (rotate, skew, etc).  These may cover complicated sub-sections of the base image, so they require
         '     a lot of extra work; in fact, their calculations form a completely separate rendering pipeline.
+        ' 5) In the future, features like layer masks and styles will also affect this calculation.
                 
-        'Check for non-standard blend-modes now, because the resulting calculation affects all subsequent branches.
-        Dim nonStandardBlendModeActive As Boolean
+        'First, check for non-standard alpha and blend-modes now, because those features affect all subsequent branches.  (We have to use
+        ' PD's internal renderers for those features, as they are not supported by any core Windows libraries.)
+        Dim nonStandardBlendingActive As Boolean
         
         If isBaseLayer Then
-            nonStandardBlendModeActive = False
+            nonStandardBlendingActive = False
         Else
-            nonStandardBlendModeActive = CBool(srcLayer.getLayerBlendMode <> BL_NORMAL)
+            nonStandardBlendingActive = CBool(srcLayer.getLayerBlendMode <> BL_NORMAL) Or CBool(srcLayer.getLayerAlphaMode <> LA_NORMAL)
         End If
         
         'To improve performance, this function also calculates and checks a dedicated "viewport hash" of the layer.  If the layer AND viewport
@@ -763,9 +768,9 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
             
             'We know affine transforms (aside from scaling) are not active.  Proceed with our highly optimized rendering chain.
             
-            'Non-destructive effects and blend-modes require creation of a temporary DIB, because we must perform our own compositing
-            ' (as GDI+ can't do it for us).  Check for those states now.
-            If srcLayer.getLayerNonDestructiveFXState Or nonStandardBlendModeActive Then
+            'Non-destructive effects, custom blend-modes, and custom alpha-modes require creation of a temporary DIB, because we must perform
+            ' our own compositing (as GDI/GDI+ can't do it for us).  Check for those states now.
+            If srcLayer.getLayerNonDestructiveFXState Or nonStandardBlendingActive Then
             
                 'One way or another, we will be using integer-based offsets to render the final image.  Calculate them now.
                 xOffsetInt = Int(dstRect.Left - dstViewportRect.Left)
@@ -869,13 +874,13 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
                 ' and subpixel positioning already accounted for.
                 
                 ' Time to composite it!
-                If nonStandardBlendModeActive Then
+                If nonStandardBlendingActive Then
                     
                     'Composite and blend in one fell swoop
-                    compositeAndBlendDIBs srcLayer.tmpDIB, m_dstDIB, srcLayer.getLayerBlendMode, xOffsetInt, yOffsetInt, srcLayer.getLayerOpacity / 100
+                    compositeAndBlendDIBs srcLayer.tmpDIB, m_dstDIB, srcLayer.getLayerBlendMode, xOffsetInt, yOffsetInt, srcLayer.getLayerOpacity / 100, srcLayer.getLayerAlphaMode
                     
                 'If no wacky blend modes are in use, we can use GDI's AlphaBlend for a performance boost.
-                ' (Note that this is only possible because subpixel offsets have already been accounted for, when creating the temp DIB.)
+                ' (Note that this is only possible because subpixel offsets have already been accounted for, when creating the temporary DIB.)
                 Else
                     srcLayer.tmpDIB.alphaBlendToDC m_dstDIB.getDIBDC, srcLayer.getLayerOpacity * 2.55, xOffsetInt, yOffsetInt
                 End If
@@ -1042,8 +1047,8 @@ Private Sub getCompositedRect_LayerHelper(ByRef dstDIB As pdDIB, ByRef srcImage 
             ' non-destructive edits applied to it.  The only thing left to do is composite it!
                 
             'Non-standard blend modes must be handled by our internal compositor
-            If nonStandardBlendModeActive Then
-                compositeAndBlendDIBs srcLayer.tmpDIB, m_dstDIB, srcLayer.getLayerBlendMode, 0, 0, srcLayer.getLayerOpacity / 100
+            If nonStandardBlendingActive Then
+                compositeAndBlendDIBs srcLayer.tmpDIB, m_dstDIB, srcLayer.getLayerBlendMode, 0, 0, srcLayer.getLayerOpacity / 100, srcLayer.getLayerAlphaMode
                 
             'If no wacky blend modes are in use, we can use GDI's AlphaBlend for a performance boost
             Else
