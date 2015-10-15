@@ -28,7 +28,7 @@ Begin VB.Form FormPreferences
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   63
+      TabIndex        =   62
       Top             =   6870
       Width           =   11505
       _ExtentX        =   20294
@@ -38,7 +38,7 @@ Begin VB.Form FormPreferences
    Begin PhotoDemon.buttonStripVertical btsvCategory 
       Height          =   6675
       Left            =   120
-      TabIndex        =   59
+      TabIndex        =   58
       Top             =   120
       Width           =   2625
       _ExtentX        =   4630
@@ -62,7 +62,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdButton cmdReset 
          Height          =   600
          Left            =   240
-         TabIndex        =   62
+         TabIndex        =   61
          Top             =   6000
          Width           =   7935
          _ExtentX        =   13996
@@ -72,7 +72,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdButton cmdTmpPath 
          Height          =   450
          Left            =   7680
-         TabIndex        =   61
+         TabIndex        =   60
          Top             =   435
          Width           =   525
          _ExtentX        =   926
@@ -82,7 +82,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdButtonToolbox cmdCopyReportClipboard 
          Height          =   570
          Left            =   7650
-         TabIndex        =   57
+         TabIndex        =   56
          Top             =   3315
          Width           =   570
          _ExtentX        =   1005
@@ -300,7 +300,7 @@ Begin VB.Form FormPreferences
          Height          =   330
          Index           =   2
          Left            =   240
-         TabIndex        =   58
+         TabIndex        =   57
          Top             =   3240
          Width           =   7935
          _ExtentX        =   13996
@@ -489,7 +489,7 @@ Begin VB.Form FormPreferences
       Begin PhotoDemon.pdButton cmdColorProfilePath 
          Height          =   375
          Left            =   7380
-         TabIndex        =   60
+         TabIndex        =   59
          Top             =   2760
          Width           =   810
          _ExtentX        =   1429
@@ -553,16 +553,6 @@ Begin VB.Form FormPreferences
          Width           =   945
          _ExtentX        =   1667
          _ExtentY        =   767
-      End
-      Begin PhotoDemon.smartCheckBox chkValidateAlpha 
-         Height          =   330
-         Left            =   240
-         TabIndex        =   53
-         Top             =   5760
-         Width           =   7920
-         _ExtentX        =   13970
-         _ExtentY        =   582
-         Caption         =   "automatically validate all incoming alpha channels"
       End
       Begin PhotoDemon.colorSelector csAlphaTwo 
          Height          =   435
@@ -747,7 +737,7 @@ Begin VB.Form FormPreferences
          Begin PhotoDemon.smartCheckBox chkTIFFCMYK 
             Height          =   330
             Left            =   360
-            TabIndex        =   54
+            TabIndex        =   53
             Top             =   1560
             Width           =   7500
             _ExtentX        =   13229
@@ -841,7 +831,7 @@ Begin VB.Form FormPreferences
          Begin PhotoDemon.smartCheckBox chkPNGBackground 
             Height          =   330
             Left            =   360
-            TabIndex        =   56
+            TabIndex        =   55
             Top             =   2520
             Width           =   7500
             _ExtentX        =   13229
@@ -851,7 +841,7 @@ Begin VB.Form FormPreferences
          Begin PhotoDemon.smartCheckBox chkPNGInterlacing 
             Height          =   330
             Left            =   360
-            TabIndex        =   55
+            TabIndex        =   54
             Top             =   2040
             Width           =   7500
             _ExtentX        =   13229
@@ -1886,9 +1876,6 @@ Private Sub cmdBarMini_OKClick()
             
         'END alpha checkerboard size
     
-        'START/END validate incoming alpha channel data
-            g_UserPreferences.SetPref_Boolean "Transparency", "Validate Alpha Channels", CBool(chkValidateAlpha)
-    
     'END Color and Transparency preferences
     
     '***************************************************************************
@@ -2428,10 +2415,6 @@ Private Sub LoadAllPreferences()
             cboAlphaCheckSize.assignTooltip "If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's size."
         'END alpha-channel checkerboard size
         
-        'START/END validate incoming alpha channels
-            If g_UserPreferences.GetPref_Boolean("Transparency", "Validate Alpha Channels", True) Then chkValidateAlpha.Value = vbChecked Else chkValidateAlpha.Value = vbUnchecked
-            chkValidateAlpha.assignTooltip "When checked, this option allows PhotoDemon to automatically remove empty alpha channels from imported images. This improves program performance, reduces RAM usage, and improves file size on exported files."
-
     'END Color and Transparency preferences
     
     '***************************************************************************

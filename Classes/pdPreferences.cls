@@ -556,7 +556,6 @@ Private Sub createNewPreferencesFile()
         xmlEngine.writeTag "AlphaCheckOne", Trim$(Str(RGB(255, 255, 255)))
         xmlEngine.writeTag "AlphaCheckTwo", Trim$(Str(RGB(204, 204, 204)))
         xmlEngine.writeTag "AlphaCheckSize", "1"
-        xmlEngine.writeTag "ValidateAlphaChannels", "True"
     xmlEngine.closeTag "Transparency"
     xmlEngine.writeBlankLine
     
