@@ -32,6 +32,21 @@ Begin VB.Form toolbar_Layers
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   735
+      Index           =   2
+      Left            =   240
+      ScaleHeight     =   49
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   121
+      TabIndex        =   5
+      Top             =   3960
+      Width           =   1815
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   735
       Index           =   1
       Left            =   360
       ScaleHeight     =   49
@@ -51,6 +66,7 @@ Begin VB.Form toolbar_Layers
       _ExtentX        =   6165
       _ExtentY        =   476
       Caption         =   "overview"
+      Value           =   0   'False
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -69,14 +85,26 @@ Begin VB.Form toolbar_Layers
    End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   270
-      Index           =   1
+      Index           =   2
       Left            =   120
       TabIndex        =   3
-      Top             =   480
+      Top             =   960
       Width           =   3495
       _ExtentX        =   6165
       _ExtentY        =   476
       Caption         =   "layers"
+   End
+   Begin PhotoDemon.pdTitle ttlPanel 
+      Height          =   270
+      Index           =   1
+      Left            =   120
+      TabIndex        =   4
+      Top             =   480
+      Width           =   3495
+      _ExtentX        =   6165
+      _ExtentY        =   476
+      Caption         =   "color selector"
+      Value           =   0   'False
    End
    Begin VB.Line lnSeparatorLeft 
       X1              =   0
@@ -145,6 +173,7 @@ Private Sub Form_Load()
     ' (Note that we do not calculate a hard-coded size for the final panel (layers).  It is autosized to fill whatever
     '  space remains after other panels are positioned.)
     m_defaultPanelHeight(0) = FixDPI(100)
+    m_defaultPanelHeight(1) = FixDPI(100)
     
     'Prep a mouse handler
     Set m_MouseEvents = New pdInputMouse
@@ -154,7 +183,7 @@ Private Sub Form_Load()
     Set m_WindowSync = New pdWindowSync
     
     Load layerpanel_Layers
-    m_WindowSync.SynchronizeWindows picContainer(1).hWnd, layerpanel_Layers.hWnd
+    m_WindowSync.SynchronizeWindows picContainer(picContainer.UBound).hWnd, layerpanel_Layers.hWnd
     layerpanel_Layers.Show
     
     'Load any last-used settings for this form
