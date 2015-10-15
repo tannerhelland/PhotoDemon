@@ -172,6 +172,8 @@ Private Sub Form_Load()
     'Some panel heights are hard-coded.  Calculate those now.
     ' (Note that we do not calculate a hard-coded size for the final panel (layers).  It is autosized to fill whatever
     '  space remains after other panels are positioned.)
+    ' (Also, in a perfect world the user could resize each panel vertically.  I'm writing each sub-panel UI so that
+    '  it technically supports this behavior, but there's no framework for that kind of resizing just yet.)
     m_defaultPanelHeight(0) = FixDPI(100)
     m_defaultPanelHeight(1) = FixDPI(100)
     
@@ -179,8 +181,12 @@ Private Sub Form_Load()
     Set m_MouseEvents = New pdInputMouse
     m_MouseEvents.addInputTracker Me.hWnd, True, True, , True, True
     
-    'Prep a window synchronizer and add the default layer panel(s) to it
+    'Prep a window synchronizer and add the various subpanel(s) to it
     Set m_WindowSync = New pdWindowSync
+    
+    Load layerpanel_Navigator
+    m_WindowSync.SynchronizeWindows picContainer(0).hWnd, layerpanel_Navigator.hWnd
+    layerpanel_Navigator.Show
     
     Load layerpanel_Layers
     m_WindowSync.SynchronizeWindows picContainer(picContainer.UBound).hWnd, layerpanel_Layers.hWnd
@@ -221,6 +227,7 @@ Private Sub Form_Unload(Cancel As Integer)
         Set m_WindowSync = Nothing
         
         'Unload all child forms
+        Unload layerpanel_Navigator
         Unload layerpanel_Layers
         
         'Release our custom mouse handler
