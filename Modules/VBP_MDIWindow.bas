@@ -108,12 +108,32 @@ Public Sub FitOnScreen()
     
 End Sub
 
+'Center the current image onscreen without changing zoom
+Public Sub CenterOnScreen()
+    
+    If g_OpenImageCount = 0 Then Exit Sub
+        
+    'Prevent the viewport from auto-updating on scroll bar events
+    FormMain.mainCanvas(0).setRedrawSuspension True
+    
+    'Set both canvas scrollbars to their midpoint
+    FormMain.mainCanvas(0).setScrollValue PD_HORIZONTAL, (FormMain.mainCanvas(0).getScrollMin(PD_HORIZONTAL) + FormMain.mainCanvas(0).getScrollMax(PD_HORIZONTAL)) / 2
+    FormMain.mainCanvas(0).setScrollValue PD_VERTICAL, (FormMain.mainCanvas(0).getScrollMin(PD_VERTICAL) + FormMain.mainCanvas(0).getScrollMax(PD_VERTICAL)) / 2
+    
+    'Re-enable scrolling
+    FormMain.mainCanvas(0).setRedrawSuspension False
+        
+    'Now fix scrollbars and everything
+    Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+End Sub
+
 'Previously, we could unload images by just unloading their containing form.  As image canvases are all custom-drawn now, this shortcut
 ' is no longer possible , so we must unload images using our own functions.
 ' (Note that this function simply wraps the imitation QueryUnload and Unload functions, below.)
 '
 'This function returns TRUE if the image was unloaded, FALSE if it was canceled.
-Public Function fullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawScreen As Boolean = True) As Boolean
+Public Function FullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawScreen As Boolean = True) As Boolean
 
     Dim toCancel As Integer
     Dim tmpUnloadMode As Integer
@@ -122,14 +142,14 @@ Public Function fullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
     QueryUnloadPDImage toCancel, tmpUnloadMode, imageID
     
     If CBool(toCancel) Then
-        fullPDImageUnload = False
+        FullPDImageUnload = False
         Exit Function
     End If
     
     UnloadPDImage toCancel, imageID, redrawScreen
     
     If CBool(toCancel) Then
-        fullPDImageUnload = False
+        FullPDImageUnload = False
     Else
         
         'Redraw the screen
@@ -143,7 +163,7 @@ Public Function fullPDImageUnload(ByVal imageID As Long, Optional ByVal redrawSc
             
         End If
         
-        fullPDImageUnload = True
+        FullPDImageUnload = True
     End If
     
     'If no images are open, take additional steps to free memory
@@ -201,7 +221,7 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
                 End If
             
                 'Before displaying the "do you want to save this image?" dialog, bring the image in question to the foreground.
-                If FormMain.Enabled Then activatePDImage imageID, "unsaved changes dialog required", True
+                If FormMain.Enabled Then ActivatePDImage imageID, "unsaved changes dialog required", True
                 
                 'Show the "do you want to save this image?" dialog. On that form, the number of unsaved images will be
                 ' displayed and the user will be given an option to apply their choice to all unsaved images.
@@ -230,7 +250,7 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
                 
                 'If the form being saved is enabled, bring that image to the foreground. (If a "Save As" is required, this
                 ' helps show the user which image the Save As form is referencing.)
-                If FormMain.Enabled Then activatePDImage imageID, "image being saved during shutdown", True
+                If FormMain.Enabled Then ActivatePDImage imageID, "image being saved during shutdown", True
                 
                 'Attempt to save. Note that the user can still cancel at this point, and we want to honor their cancellation
                 Dim saveSuccessful As Boolean
@@ -298,7 +318,7 @@ Public Function UnloadPDImage(Cancel As Integer, ByVal imageID As Long, Optional
             
                 If (Not pdImages(i) Is Nothing) Then
                     If pdImages(i).IsActive Then
-                        activatePDImage i, "previous image unloaded", resyncInterface
+                        ActivatePDImage i, "previous image unloaded", resyncInterface
                         Exit Do
                     End If
                 End If
@@ -329,7 +349,7 @@ End Function
 
 'Previously, images could be activated by clicking on their window.  Now that all images are rendered to a single
 ' user control on the main form, we must activate them manually.
-Public Sub activatePDImage(ByVal imageID As Long, Optional ByRef reasonForActivation As String = "", Optional ByVal refreshScreen As Boolean = True)
+Public Sub ActivatePDImage(ByVal imageID As Long, Optional ByRef reasonForActivation As String = "", Optional ByVal refreshScreen As Boolean = True)
 
     'If this form is already the active image, don't waste time re-activating it
     If g_CurrentImage <> imageID Then

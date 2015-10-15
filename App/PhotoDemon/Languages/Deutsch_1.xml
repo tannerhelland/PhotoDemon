@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.95</langversion>
+<langversion>6.7.97</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -3357,6 +3357,11 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 </phrase>
 
 <phrase>
+<original>Center the image inside the viewport</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Delete layer</original>
 <translation>Ebene löschen</translation>
 </phrase>
@@ -3447,7 +3452,7 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <translation>cm</translation>
 </phrase>
 
-<!-- pdCanvas.ctl contains 54 phrases. 29 were duplicates of existing phrases, so only 25 new phrases were written to file. -->
+<!-- pdCanvas.ctl contains 55 phrases. 29 were duplicates of existing phrases, so only 26 new phrases were written to file. -->
 
 <!-- END text for pdCanvas.ctl-->
 
@@ -11769,6 +11774,11 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 </phrase>
 
 <phrase>
+<original>Inherit</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>(hidden)</original>
 <translation>(ausgeblendet)</translation>
 </phrase>
@@ -11803,7 +11813,7 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 <translation>Ebene nach unten</translation>
 </phrase>
 
-<!-- Layerpanel_Layers.frm contains 40 phrases. 22 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Layerpanel_Layers.frm contains 43 phrases. 24 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
 
@@ -14279,10 +14289,10 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2458</phrasecount>
+<phrasecount>2460</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4218 phrases. -->
-<!-- 1760 are duplicates, so only 2458 unique phrases have been written to file. -->
-<!-- These 2458 phrases contain approximately 13294 total words. -->
+<!-- As of this build, PhotoDemon contains 4222 phrases. -->
+<!-- 1762 are duplicates, so only 2460 unique phrases have been written to file. -->
+<!-- These 2460 phrases contain approximately 13301 total words. -->
 
 </pdData>

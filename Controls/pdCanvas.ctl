@@ -23,6 +23,17 @@ Begin VB.UserControl pdCanvas
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   886
    ToolboxBitmap   =   "pdCanvas.ctx":0000
+   Begin PhotoDemon.pdButtonToolbox cmdCenter 
+      Height          =   255
+      Left            =   5040
+      TabIndex        =   11
+      Top             =   5640
+      Width           =   255
+      _ExtentX        =   450
+      _ExtentY        =   450
+      BackColor       =   -2147483626
+      AutoToggle      =   -1  'True
+   End
    Begin PhotoDemon.pdScrollBar hScroll 
       Height          =   255
       Left            =   360
@@ -375,6 +386,8 @@ Public Sub updateAgainstCurrentTheme()
     cmdImgSize.assignTooltip "Resize image"
     cmbZoom.assignTooltip "Change viewport zoom"
     cmbSizeUnit.assignTooltip "Change the image size unit displayed to the left of this box"
+    cmdCenter.assignTooltip "Center the image inside the viewport"
+    If Not (g_Themer Is Nothing) Then cmdCenter.BackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
     
     'Request visual updates from all supported controls
     lblCoordinates.updateAgainstCurrentTheme
@@ -563,6 +576,9 @@ Public Sub setScrollVisibility(ByVal barType As PD_ORIENTATION, ByVal newVisibil
             End If
     
     End Select
+    
+    'The "center" button between the scroll bars has the same visibility as the scrollbars; it's only visible if both bars are visible
+    cmdCenter.Visible = CBool(hScroll.Visible And vScroll.Visible)
     
     'When scroll bar visibility is changed, we must move the main canvas picture box to match
     If changesMade Then alignCanvasPictureBox
@@ -1017,6 +1033,10 @@ Private Sub CmbZoom_Click()
         
     End If
 
+End Sub
+
+Private Sub cmdCenter_Click()
+    Image_Canvas_Handler.CenterOnScreen
 End Sub
 
 Private Sub cmdImgSize_Click()
@@ -2046,6 +2066,11 @@ Public Sub alignCanvasPictureBox()
         If picHeight > 0 Then vScroll.Move vScrollLeft, vScrollTop, vScroll.Width, picHeight
     End If
     
+    '...Followed by the "center" button (which sits between the scroll bars)
+    If (cmdCenter.Left <> vScrollLeft) Or (cmdCenter.Top <> hScrollTop) Then
+        cmdCenter.Move vScrollLeft, hScrollTop
+    End If
+    
 End Sub
 
 Private Sub UserControl_Show()
@@ -2057,6 +2082,7 @@ Private Sub UserControl_Show()
         cmdZoomIn.AssignImage "SB_ZOOM_IN"
         cmdZoomOut.AssignImage "SB_ZOOM_OUT"
         cmdImgSize.AssignImage "SB_IMG_SIZE"
+        cmdCenter.AssignImage "SB_ZOOM_CENTER"
                 
         'Load various status bar icons from the resource file
         Set sbIconSize = New pdDIB
@@ -2146,7 +2172,7 @@ Public Sub fixChromeLayout()
             'Hide scrollbars if they aren't already
             setScrollVisibility PD_HORIZONTAL, False
             setScrollVisibility PD_VERTICAL, False
-    
+                        
             Dim tmpDIB As pdDIB
             Set tmpDIB = New pdDIB
             tmpDIB.createBlank picCanvas.ScaleWidth, picCanvas.ScaleHeight, 24, g_CanvasBackground
