@@ -307,6 +307,7 @@ Form=Forms\Tools_ThemeEditor.frm
 Class=pdPixelBlender; Classes\pdPixelBlender.cls
 Form=Forms\Layerpanel_Navigator.frm
 ResFile32="Resources\PD_icons.RES"
+Form=Forms\Layerpanel_Colors.frm
 IconForm="FormMain"
 Startup="Sub Main"
 HelpFile=""

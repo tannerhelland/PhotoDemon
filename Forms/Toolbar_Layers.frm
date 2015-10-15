@@ -181,12 +181,16 @@ Private Sub Form_Load()
     Set m_MouseEvents = New pdInputMouse
     m_MouseEvents.addInputTracker Me.hWnd, True, True, , True, True
     
-    'Prep a window synchronizer and add the various subpanel(s) to it
+    'Prep a window synchronizer and add each subpanel to it
     Set m_WindowSync = New pdWindowSync
     
     Load layerpanel_Navigator
     m_WindowSync.SynchronizeWindows picContainer(0).hWnd, layerpanel_Navigator.hWnd
     layerpanel_Navigator.Show
+    
+    Load layerpanel_Colors
+    m_WindowSync.SynchronizeWindows picContainer(1).hWnd, layerpanel_Colors.hWnd
+    layerpanel_Colors.Show
     
     Load layerpanel_Layers
     m_WindowSync.SynchronizeWindows picContainer(picContainer.UBound).hWnd, layerpanel_Layers.hWnd
@@ -228,6 +232,7 @@ Private Sub Form_Unload(Cancel As Integer)
         
         'Unload all child forms
         Unload layerpanel_Navigator
+        Unload layerpanel_Colors
         Unload layerpanel_Layers
         
         'Release our custom mouse handler
@@ -249,7 +254,7 @@ End Sub
 ' to fill whatever vertical space is available.
 Private Sub reflowInterface()
     
-    'If the form is invisible (due to minimize or somethign else), just exit now
+    'If the form is invisible (due to minimize or something else), just exit now
     If Not Me.Visible Then Exit Sub
     If (Me.ScaleHeight = 0) Or (Me.ScaleWidth = 0) Then Exit Sub
     
@@ -328,6 +333,8 @@ Public Sub updateAgainstCurrentTheme()
     End If
     
     'TODO: pass along the request to any active child forms.
+    If Not (layerpanel_Navigator) Is Nothing Then layerpanel_Layers.updateAgainstCurrentTheme
+    If Not (layerpanel_Colors) Is Nothing Then layerpanel_Layers.updateAgainstCurrentTheme
     If Not (layerpanel_Layers) Is Nothing Then layerpanel_Layers.updateAgainstCurrentTheme
     
     'Reflow the interface, to account for any language changes.  (This will also trigger a redraw of the layer list box.)
