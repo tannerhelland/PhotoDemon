@@ -63,10 +63,10 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   1
       Top             =   60
       Width           =   3495
-      _extentx        =   6165
-      _extenty        =   476
-      caption         =   "overview"
-      value           =   0   'False
+      _ExtentX        =   6165
+      _ExtentY        =   476
+      Caption         =   "overview"
+      Value           =   0   'False
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -90,9 +90,9 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   3
       Top             =   960
       Width           =   3495
-      _extentx        =   6165
-      _extenty        =   476
-      caption         =   "layers"
+      _ExtentX        =   6165
+      _ExtentY        =   476
+      Caption         =   "layers"
    End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   270
@@ -101,10 +101,10 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   4
       Top             =   480
       Width           =   3495
-      _extentx        =   6165
-      _extenty        =   476
-      caption         =   "color selector"
-      value           =   0   'False
+      _ExtentX        =   6165
+      _ExtentY        =   476
+      Caption         =   "color selector"
+      Value           =   0   'False
    End
    Begin VB.Line lnSeparatorLeft 
       X1              =   0
@@ -283,7 +283,7 @@ Private Sub reflowInterface()
         ttlPanel(i).Move xOffset, yOffset, xWidth - xOffset + FixDPI(2)
         
         'Move the yOffset beneath the panel
-        yOffset = yOffset + ttlPanel(i).Height + FixDPI(1)
+        yOffset = yOffset + ttlPanel(i).Height + FixDPI(2)
         
         'If the title bar state is TRUE, open its corresponding panel.
         If ttlPanel(i).Value Then
@@ -400,7 +400,13 @@ Private Sub m_MouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, 
 End Sub
 
 Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
+    
+    'If a panel is opening, redraw any elements that have may been suppressed while the panel was invisible
+    If newState Then NotifyLayerChange
+    
+    'Reflow the interface to account for the changed size
     reflowInterface
+    
 End Sub
 
 'When one or more layers are modified (via painting, effects, whatever), PD's various interface control functions
@@ -413,9 +419,9 @@ End Sub
 Public Sub NotifyLayerChange(Optional ByVal layerID As Long = -1)
 
     'Optimizing the layer listbox is TODO!
-    layerpanel_Layers.forceRedraw True
+    If ttlPanel(2).Value Then layerpanel_Layers.forceRedraw True
     
     'Redraw the navigator to match
-    layerpanel_Navigator.nvgMain.NotifyNewThumbNeeded
+    If ttlPanel(0).Value Then layerpanel_Navigator.nvgMain.NotifyNewThumbNeeded
 
 End Sub

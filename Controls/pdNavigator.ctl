@@ -59,7 +59,7 @@ Option Explicit
 
 'If the control is resized at run-time, it will request a new thumbnail via this function.  The passed DIB will already
 ' be sized to the
-Public Event RequestUpdatedThumbnail(ByRef thumbDIB As pdDIB)
+Public Event RequestUpdatedThumbnail(ByRef thumbDIB As pdDIB, ByRef thumbX As Single, ByRef thumbY As Single)
 
 'When the user interacts with the navigation box, the (x, y) coordinates *in image space* will be returned in this event.
 Public Event NewViewportLocation(ByVal imgX As Single, ByVal imgY As Single)
@@ -98,8 +98,12 @@ Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect A
 ' at run-time.
 Private Const THUMB_PADDING As Long = 3
 
+'When the control raises a request for a new thumbnail image, that function will supply an (optional?) (x, y) pair detailing
+' where the thumb is centered within the navigator.  We use this to know where the image lies inside the thumb.
+Private m_ThumbEventX As Single, m_ThumbEventY As Single
+
 'The rect where the image thumbnail has been drawn.  This is calculated by the DrawNavigator function.
-Private m_ThumbRect As RECTF
+Private m_ThumbRect As RECTF, m_ImageRegion As RECTF
 
 Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
@@ -188,34 +192,30 @@ Private Sub UpdateControlSize()
     'For now, we simply sync the navigator box to the size of the control
     picNavigator.Move 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight
     
-    'Whenever the navigator is resized, we must resize the thumbnail and back buffer to match.  Start with the thumb.
-    Dim thumbSize As Long
-    If picNavigator.Width < picNavigator.Height Then
-        thumbSize = picNavigator.Width
-    Else
-        thumbSize = picNavigator.Height
-    End If
-    
-    'Pad the thumb, so we have some empty space around it for borders and the like
-    thumbSize = thumbSize - FixDPIFloat(THUMB_PADDING) * 2
-    
-    'Try to optimize re-creating the thumbnail, so we only do it when absolutely necessary
-    If m_ImageThumbnail Is Nothing Then Set m_ImageThumbnail = New pdDIB
-    If (m_ImageThumbnail.getDIBWidth <> thumbSize) Or (m_ImageThumbnail.getDIBHeight <> thumbSize) Then
-        m_ImageThumbnail.createBlank thumbSize, thumbSize, 32, 0, 0
-    Else
-        m_ImageThumbnail.resetDIB 0
-    End If
-    
-    RaiseEvent RequestUpdatedThumbnail(m_ImageThumbnail)
-    
-    'The back buffer itself must also be resized to match the navigator container dimensions.
+    'Resize the back buffer to match the navigator container dimensions.
     If m_BackBuffer Is Nothing Then Set m_BackBuffer = New pdDIB
     If (m_BackBuffer.getDIBWidth <> picNavigator.Width) Or (m_BackBuffer.getDIBHeight <> picNavigator.Height) Then
         m_BackBuffer.createBlank picNavigator.Width, picNavigator.Height, 24
     Else
         m_BackBuffer.resetDIB 0
     End If
+    
+    'Whenever the navigator is resized, we must also resize the image thumbnail to match.
+    
+    'At present, we pad the thumbnail by a few pixels so we have room for a border.
+    Dim thumbWidth As Long, thumbHeight As Long
+    thumbWidth = m_BackBuffer.getDIBWidth - FixDPIFloat(THUMB_PADDING) * 2
+    thumbHeight = m_BackBuffer.getDIBHeight - FixDPIFloat(THUMB_PADDING) * 2
+    
+    'Try to optimize re-creating the thumbnail, so we only do it when absolutely necessary
+    If m_ImageThumbnail Is Nothing Then Set m_ImageThumbnail = New pdDIB
+    If (m_ImageThumbnail.getDIBWidth <> thumbWidth) Or (m_ImageThumbnail.getDIBHeight <> thumbHeight) Then
+        m_ImageThumbnail.createBlank thumbWidth, thumbHeight, 32, 0, 0
+    Else
+        m_ImageThumbnail.resetDIB 0
+    End If
+    
+    RaiseEvent RequestUpdatedThumbnail(m_ImageThumbnail, m_ThumbEventX, m_ThumbEventY)
     
     'With the backbuffer and image thumbnail successfully created, we can finally redraw the new navigator window
     DrawNavigator
@@ -247,7 +247,7 @@ Private Sub DrawNavigator()
             End With
             
         Else
-        
+            
             'Determine a position rect for the image thumbnail
             With m_ThumbRect
                 .Width = m_ImageThumbnail.getDIBWidth
@@ -256,13 +256,28 @@ Private Sub DrawNavigator()
                 .Top = (m_BackBuffer.getDIBHeight - m_ImageThumbnail.getDIBHeight) / 2
             End With
             
-            'Paint a checkerboard background, then the thumbnail.
-            With m_ThumbRect
+            'Offset that top-left corner by the thumbnail's position, and cache it to a module-level rect so we can use it for
+            ' hit-detection during mouse events.
+            With m_ImageRegion
+                .Left = m_ThumbRect.Left + m_ThumbEventX
+                .Top = m_ThumbRect.Top + m_ThumbEventY
+                .Width = m_ImageThumbnail.getDIBWidth - (m_ThumbEventX * 2)
+                .Height = m_ImageThumbnail.getDIBHeight - (m_ThumbEventY * 2)
+            End With
+            
+            'Paint a checkerboard background only over the relevant image region
+            With m_ImageRegion
                 GDI_Plus.GDIPlusFillDIBRect_Pattern m_BackBuffer, .Left, .Top, .Width, .Height, g_CheckerboardPattern, , True
             End With
             
+            'Paint the thumb rect without regard for the image region (as it will always be a square)
             With m_ThumbRect
                 GDI_Plus.GDIPlus_StretchBlt m_BackBuffer, .Left, .Top, .Width, .Height, m_ImageThumbnail, 0, 0, .Width, .Height, , InterpolationModeHighQualityBicubic
+            End With
+            
+            'Trace the preview area with a thin border
+            With m_ThumbRect
+                GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, .Left - 1, .Top - 1, .Left + .Width, .Top + .Height, g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
             End With
             
             'TODO: rect for the current viewport
@@ -302,7 +317,7 @@ Public Sub NotifyNewThumbNeeded()
         UpdateControlSize
     Else
         m_ImageThumbnail.resetDIB 0
-        RaiseEvent RequestUpdatedThumbnail(m_ImageThumbnail)
+        RaiseEvent RequestUpdatedThumbnail(m_ImageThumbnail, m_ThumbEventX, m_ThumbEventY)
         DrawNavigator
     End If
     

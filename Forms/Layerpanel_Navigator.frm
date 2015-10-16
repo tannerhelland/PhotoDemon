@@ -82,7 +82,9 @@ End Sub
 Private Sub reflowInterface()
 
     'For now, make the navigator UC the same size as the underlying form
-    nvgMain.Move 0, 0, Me.ScaleWidth, Me.ScaleHeight
+    If Me.ScaleWidth > 10 Then
+        nvgMain.Move 0, 0, Me.ScaleWidth - FixDPI(10), Me.ScaleHeight
+    End If
     
 End Sub
 
@@ -108,10 +110,50 @@ Private Sub Form_Resize()
 End Sub
 
 'The navigator will periodically request new thumbnails.  Supply them whenever requested.
-Private Sub nvgMain_RequestUpdatedThumbnail(thumbDIB As pdDIB)
+Private Sub nvgMain_RequestUpdatedThumbnail(thumbDIB As pdDIB, thumbX As Single, thumbY As Single)
     
     If g_OpenImageCount > 0 Then
-        pdImages(g_CurrentImage).requestThumbnail thumbDIB, thumbDIB.getDIBWidth
+        
+        'The thumbDIB passed to this function will always be sized to the largest size the navigator can physically support.
+        ' Our job is to place a composited copy of the current image inside that DIB, automatically centered as necessary.
+        Dim thumbImageWidth As Long, thumbImageHeight As Long
+        
+        'Start by determining proper dimensions for the resized thumbnail image.
+        Math_Functions.convertAspectRatio pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, thumbDIB.getDIBWidth, thumbDIB.getDIBHeight, thumbImageWidth, thumbImageHeight
+        
+        'From there, solve for the top-left corner of the centered image
+        If thumbImageWidth < thumbDIB.getDIBWidth Then
+            thumbX = (thumbDIB.getDIBWidth - thumbImageWidth) / 2
+        Else
+            thumbX = 0
+        End If
+        
+        If thumbImageHeight < thumbDIB.getDIBHeight Then
+            thumbY = (thumbDIB.getDIBHeight - thumbImageHeight) / 2
+        Else
+            thumbY = 0
+        End If
+        
+        'Request the actual thumbnail now
+        Dim iQuality As InterpolationMode
+        Select Case g_InterfacePerformance
+        
+            Case PD_PERF_FASTEST
+                iQuality = InterpolationModeNearestNeighbor
+            
+            Case PD_PERF_BALANCED
+                iQuality = InterpolationModeBilinear
+            
+            Case PD_PERF_BESTQUALITY
+                iQuality = InterpolationModeHighQualityBicubic
+        
+        End Select
+        
+        pdImages(g_CurrentImage).getCompositedRect thumbDIB, thumbX, thumbY, thumbImageWidth, thumbImageHeight, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, iQuality
+    
+    Else
+        thumbX = 0
+        thumbY = 0
     End If
     
 End Sub

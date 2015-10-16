@@ -784,7 +784,7 @@ Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     Dim tIcoWidth As Long, tIcoHeight As Long, tX As Double, tY As Double
     
     'Start by determining proper dimensions for the resized thumbnail image.
-    convertAspectRatio Me.Width, Me.Height, thumbnailSize, thumbnailSize, tIcoWidth, tIcoHeight
+    Math_Functions.convertAspectRatio Me.Width, Me.Height, thumbnailSize, thumbnailSize, tIcoWidth, tIcoHeight
     
     'If the form is wider than it is tall, center the thumbnail vertically
     If tIcoWidth > tIcoHeight Then
@@ -810,7 +810,12 @@ Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     End If
     
     'Prepare the destination DIB
-    dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
+    If dstThumbnailDIB Is Nothing Then Set dstThumbnailDIB = New pdDIB
+    If (dstThumbnailDIB.getDIBWidth <> thumbnailSize) Or (dstThumbnailDIB.getDIBHeight <> thumbnailSize) Then
+        dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
+    Else
+        dstThumbnailDIB.resetDIB 0
+    End If
     
     'There are two possible ways to create a thumbnail image.  If FreeImage is available, we prefer to use it, as it
     ' provides superior results with better performance, but if it is not available, GDI+ will suffice.
