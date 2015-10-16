@@ -2111,12 +2111,16 @@ Public Function requestThumbnail(ByRef dstThumbnailDIB As pdDIB, Optional ByVal 
     If Not m_IsThumbClean Then updateInternalThumbnail
     
     'Clear the destination thumbnail
-    Set dstThumbnailDIB = New pdDIB
+    If dstThumbnailDIB Is Nothing Then Set dstThumbnailDIB = New pdDIB
     
     'If the requested thumbnail size differs from our cached version, resize the thumbnail prior to passing it along
     If thumbnailSize <> LAYER_THUMB_SIZE Then
         
-        dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
+        If (dstThumbnailDIB.getDIBWidth <> thumbnailSize) Or (dstThumbnailDIB.getDIBHeight <> thumbnailSize) Then
+            dstThumbnailDIB.createBlank thumbnailSize, thumbnailSize, 32, 0
+        Else
+            dstThumbnailDIB.resetDIB 0
+        End If
         
         If g_ImageFormats.FreeImageEnabled Then
             FreeImageResizeDIBFast dstThumbnailDIB, 0, 0, thumbnailSize, thumbnailSize, layerThumbnail, IIf(g_ThumbnailPerformance = PD_PERF_FASTEST, FILTER_BOX, FILTER_BILINEAR), True
