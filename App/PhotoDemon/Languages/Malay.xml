@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.97</langversion>
+<langversion>6.7.98</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -11960,7 +11960,12 @@ To membolehkan sokongan untuk ciri ini, sila menyalin fail FreeImage.dll ke dala
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_Layers.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<phrase>
+<original>color selector</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_Layers.frm contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolbar_Layers.frm-->
 
@@ -13246,11 +13251,6 @@ To terus, sila muat turun salinan langsung dari PhotoDemon photodemon.org.</tran
 </phrase>
 
 <phrase>
-<original>automatically validate all incoming alpha channels</original>
-<translation>secara automatik mengesahkan semua saluran alpha masuk</translation>
-</phrase>
-
-<phrase>
 <original>use one or more custom color profiles</original>
 <translation>menggunakan satu atau lebih profil warna adat</translation>
 </phrase>
@@ -13800,11 +13800,6 @@ Are anda pasti anda mahu teruskan?</translation>
 </phrase>
 
 <phrase>
-<original>When checked, this option allows PhotoDemon to automatically remove empty alpha channels from imported images. This improves program performance, reduces RAM usage, and improves file size on exported files.</original>
-<translation>Apabila diperiksa, pilihan ini membenarkan PhotoDemon untuk menghapuskan saluran alpha kosong secara automatik dari imej-imej yang diimport. Ini meningkatkan prestasi program, mengurangkan penggunaan RAM, dan meningkatkan saiz fail pada fail dieksport.</translation>
-</phrase>
-
-<phrase>
 <original>each session</original>
 <translation>setiap sesi</translation>
 </phrase>
@@ -14028,7 +14023,7 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 <translation>AMARAN: folder ini adalah tidak sah (akses dilarang). Sila berikan folder yang sah. Jika tiada folder baru disediakan, PhotoDemon akan menggunakan lokasi temp lalai sistem.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 246 phrases. 67 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 244 phrases. 67 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14289,12 +14284,24 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for pdPixelBlender.cls-->
 
+<!-- BEGIN text for Layerpanel_Navigator.frm (layerpanel_Navigator) -->
+
+<!-- Layerpanel_Navigator.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Navigator.frm-->
+
+<!-- BEGIN text for Layerpanel_Colors.frm (layerpanel_Colors) -->
+
+<!-- Layerpanel_Colors.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Colors.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2460</phrasecount>
+<phrasecount>2459</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4222 phrases. -->
-<!-- 1762 are duplicates, so only 2460 unique phrases have been written to file. -->
-<!-- These 2460 phrases contain approximately 13301 total words. -->
+<!-- As of this build, PhotoDemon contains 4221 phrases. -->
+<!-- 1762 are duplicates, so only 2459 unique phrases have been written to file. -->
+<!-- These 2459 phrases contain approximately 13268 total words. -->
 
 </pdData>

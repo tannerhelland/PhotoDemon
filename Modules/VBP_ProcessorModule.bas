@@ -1943,7 +1943,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     'If a filter or tool was just used, return focus to the active form.  This will make it "flash" to catch the user's attention.
     If (createUndo <> UNDO_NOTHING) Then
     
-        If g_OpenImageCount > 0 Then activatePDImage g_CurrentImage, "processor call complete"
+        If g_OpenImageCount > 0 Then ActivatePDImage g_CurrentImage, "processor call complete"
     
         'Also, re-enable drag and drop operations
         g_AllowDragAndDrop = True
@@ -1952,7 +1952,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     End If
     
     'The interface will automatically be synched if an image is open and some undo-related action was applied,
-    ' but if either of those did not occur, sync the interface now
+    ' but if either of those did not occur, sync the interface now.
     SyncInterfaceToCurrentImage
     
     'Restore focus to whichever control had it previously

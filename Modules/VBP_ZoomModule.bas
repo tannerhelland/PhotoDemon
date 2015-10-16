@@ -53,9 +53,6 @@ Private m_ZoomRatio As Double
 'frontBuffer holds the final composited image, including any non-interactive overlays (like selection highlight/lightbox effects)
 Private frontBuffer As pdDIB
 
-'cornerFix holds a small gray box that is copied over the corner between the horizontal and vertical scrollbars, if they exist
-Private cornerFix As pdDIB
-
 'To avoid re-applying certain settings, we cache the target viewport's DC between calls.
 Private m_TargetDC As Long
 
@@ -184,17 +181,6 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     srcImage.imgViewport.getIntersectRectCanvas viewportIntersectRect
     
     'TODO: fix comments, as a lot of things have changed in this function!
-    
-    'Because both scrollbars are likely active, we need to copy a gray square over the small space between them
-    
-    'Only initialize the corner fix image once
-    If cornerFix Is Nothing Then
-        Set cornerFix = New pdDIB
-        'cornerFix.createBlank dstCanvas.getScrollWidth(PD_VERTICAL), dstCanvas.getScrollHeight(PD_HORIZONTAL), 24, vbButtonFace
-    End If
-    
-    'Draw the square over any exposed parts of the image in the bottom-right of the image, between the scroll bars
-    'BitBlt dstCanvas.hDC, dstCanvas.getScrollLeft(PD_VERTICAL), dstCanvas.getScrollTop(PD_HORIZONTAL), cornerFix.getDIBWidth, cornerFix.getDIBHeight, cornerFix.getDIBDC, 0, 0, vbSrcCopy
     
     'Check to see if a selection is active.
     If srcImage.selectionActive Then

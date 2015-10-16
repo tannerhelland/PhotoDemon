@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.97</langversion>
+<langversion>6.7.98</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -11959,7 +11959,12 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_Layers.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<phrase>
+<original>color selector</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_Layers.frm contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolbar_Layers.frm-->
 
@@ -13245,11 +13250,6 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 </phrase>
 
 <phrase>
-<original>automatically validate all incoming alpha channels</original>
-<translation>automatisch valideren van alle inkomende alfakanalen</translation>
-</phrase>
-
-<phrase>
 <original>use one or more custom color profiles</original>
 <translation>gebruik één of meer kleurprofielen</translation>
 </phrase>
@@ -13799,11 +13799,6 @@ Weet u zeker dat u wilt doorgaan?</translation>
 </phrase>
 
 <phrase>
-<original>When checked, this option allows PhotoDemon to automatically remove empty alpha channels from imported images. This improves program performance, reduces RAM usage, and improves file size on exported files.</original>
-<translation>Wanneer aangevinkt, geeft deze optie aan PhotoDemon de mogelijkheid om automatisch lege alpha kanalen uit geïmporteerde afbeeldingen te verwijderen. Dit verbetert de prestaties van het programma, vermindert RAM-gebruik, en verbetert de bestandsgrootte op geëxporteerde bestanden.</translation>
-</phrase>
-
-<phrase>
 <original>each session</original>
 <translation>elke sessie</translation>
 </phrase>
@@ -14027,7 +14022,7 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <translation>WAARSCHUWING: deze map is ongeldig (toegang verboden). Geef een geldige map op. Als er geen nieuwe map wordt voorzien, zal PhotoDemon gebruik maken van de systeem standaard temp locatie.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 246 phrases. 67 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 244 phrases. 67 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14288,12 +14283,24 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- END text for pdPixelBlender.cls-->
 
+<!-- BEGIN text for Layerpanel_Navigator.frm (layerpanel_Navigator) -->
+
+<!-- Layerpanel_Navigator.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Navigator.frm-->
+
+<!-- BEGIN text for Layerpanel_Colors.frm (layerpanel_Colors) -->
+
+<!-- Layerpanel_Colors.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Colors.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2460</phrasecount>
+<phrasecount>2459</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4222 phrases. -->
-<!-- 1762 are duplicates, so only 2460 unique phrases have been written to file. -->
-<!-- These 2460 phrases contain approximately 13301 total words. -->
+<!-- As of this build, PhotoDemon contains 4221 phrases. -->
+<!-- 1762 are duplicates, so only 2459 unique phrases have been written to file. -->
+<!-- These 2459 phrases contain approximately 13268 total words. -->
 
 </pdData>

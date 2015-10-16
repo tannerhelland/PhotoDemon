@@ -44,7 +44,7 @@ Public Sub addBlankLayer(ByVal dLayerIndex As Long, Optional ByVal newLayerType 
     pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE_VECTORSAFE
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
-    If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw True
+    toolbar_Layers.NotifyLayerChange
     
     'Render the new image to screen (not technically necessary, but doesn't hurt)
     Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -184,7 +184,7 @@ Public Sub addNewLayer(ByVal dLayerIndex As Long, ByVal dLayerType As LAYER_TYPE
         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
     
         'Redraw the layer box, and note that thumbnails need to be re-cached
-        If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw True
+        toolbar_Layers.NotifyLayerChange
         
     End If
     
@@ -330,7 +330,7 @@ Public Sub setLayerVisibilityByIndex(ByVal dLayerIndex As Long, ByVal layerVisib
     pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYERHEADER, dLayerIndex
     
     'Redraw the layer box, but note that thumbnails don't need to be re-cached
-    If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw False
+    toolbar_Layers.NotifyLayerChange pdImages(g_CurrentImage).getLayerByIndex(dLayerIndex).getLayerID
     
     'Synchronize the interface to the new image
     SyncInterfaceToCurrentImage
@@ -370,7 +370,7 @@ Public Sub duplicateLayerByIndex(ByVal dLayerIndex As Long)
     pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE_VECTORSAFE
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
-    If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw True
+    toolbar_Layers.NotifyLayerChange
     
     'Render the new image to screen
     Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -429,7 +429,7 @@ Public Sub mergeLayerAdjacent(ByVal dLayerIndex As Long, ByVal mergeDown As Bool
         End If
                 
         'Redraw the layer box, and note that thumbnails need to be re-cached
-        If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw True
+        toolbar_Layers.NotifyLayerChange
         
         'Redraw the viewport
         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -518,7 +518,7 @@ Public Sub deleteLayer(ByVal dLayerIndex As Long)
     pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE_VECTORSAFE
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
-    If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw True
+    toolbar_Layers.NotifyLayerChange
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -569,7 +569,7 @@ Public Sub deleteHiddenLayers()
     pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE_VECTORSAFE
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
-    If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw True
+    toolbar_Layers.NotifyLayerChange
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -595,7 +595,7 @@ Public Sub moveLayerAdjacent(ByVal dLayerIndex As Long, ByVal directionIsUp As B
     If updateInterface Then
         
         'Redraw the layer box, and note that thumbnails need to be re-cached
-        If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw True
+        toolbar_Layers.NotifyLayerChange
         
         'Redraw the viewport
         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -643,7 +643,7 @@ Public Sub moveLayerToEndOfStack(ByVal dLayerIndex As Long, ByVal moveToTopOfSta
     If updateInterface Then
     
         'Redraw the layer box, and note that thumbnails need to be re-cached
-        If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw True
+        toolbar_Layers.NotifyLayerChange
         
         'Redraw the viewport
         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -689,7 +689,7 @@ Public Sub flattenImage()
     pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
-    If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw True
+    toolbar_Layers.NotifyLayerChange
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
@@ -752,7 +752,7 @@ Public Sub mergeVisibleLayers()
     pdImages(g_CurrentImage).notifyImageChanged UNDO_IMAGE
     
     'Redraw the layer box, and note that thumbnails need to be re-cached
-    If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw True
+    toolbar_Layers.NotifyLayerChange
     
     'Redraw the viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)

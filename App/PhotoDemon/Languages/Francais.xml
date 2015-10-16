@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.97</langversion>
+<langversion>6.7.98</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -11959,7 +11959,12 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation></translation>
 </phrase>
 
-<!-- Toolbar_Layers.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<phrase>
+<original>color selector</original>
+<translation></translation>
+</phrase>
+
+<!-- Toolbar_Layers.frm contains 4 phrases.  One was a duplicate of an existing phrase, so only 3 new phrases were written to file. -->
 
 <!-- END text for Toolbar_Layers.frm-->
 
@@ -13246,11 +13251,6 @@ Pour continuer, veuillez télécharger une nouvelle copie de PhotoDemon de photo
 </phrase>
 
 <phrase>
-<original>automatically validate all incoming alpha channels</original>
-<translation>valider automatiquement tous les canaux alpha entrants</translation>
-</phrase>
-
-<phrase>
 <original>use one or more custom color profiles</original>
 <translation>utiliser un ou plusieurs profils de couleurs personnalisés</translation>
 </phrase>
@@ -13800,11 +13800,6 @@ Are you sure you want to continue?</original>
 </phrase>
 
 <phrase>
-<original>When checked, this option allows PhotoDemon to automatically remove empty alpha channels from imported images. This improves program performance, reduces RAM usage, and improves file size on exported files.</original>
-<translation>Lorsqu'elle est cochée, cette option permet de supprimer automatiquement PhotoDemon canaux alpha vides à partir d'images importées. Cela améliore les performances du programme, réduit la consommation de RAM, et améliore la taille du fichier sur les fichiers exportés.</translation>
-</phrase>
-
-<phrase>
 <original>each session</original>
 <translation>chaque session</translation>
 </phrase>
@@ -14028,7 +14023,7 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 <translation>ATTENTION: ce dossier est invalide (accès interdit). S'il vous plaît fournir un dossier valide. Si aucun nouveau dossier est fourni, PhotoDemon va utiliser l'emplacement par défaut du système temp.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 246 phrases. 67 were duplicates of existing phrases, so only 179 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 244 phrases. 67 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14289,12 +14284,24 @@ If vous choisissez toujours désactiver les mises à jour, ne oubliez pas de vis
 
 <!-- END text for pdPixelBlender.cls-->
 
+<!-- BEGIN text for Layerpanel_Navigator.frm (layerpanel_Navigator) -->
+
+<!-- Layerpanel_Navigator.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Navigator.frm-->
+
+<!-- BEGIN text for Layerpanel_Colors.frm (layerpanel_Colors) -->
+
+<!-- Layerpanel_Colors.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Colors.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2460</phrasecount>
+<phrasecount>2459</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4222 phrases. -->
-<!-- 1762 are duplicates, so only 2460 unique phrases have been written to file. -->
-<!-- These 2460 phrases contain approximately 13301 total words. -->
+<!-- As of this build, PhotoDemon contains 4221 phrases. -->
+<!-- 1762 are duplicates, so only 2459 unique phrases have been written to file. -->
+<!-- These 2459 phrases contain approximately 13268 total words. -->
 
 </pdData>
