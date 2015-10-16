@@ -71,7 +71,7 @@ Private Sub Form_Load()
     lastUsedSettings.loadAllControlValues
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
-    UpdateAgainstCurrentTheme
+    updateAgainstCurrentTheme
     
     'Reflow the interface to match its current size
     reflowInterface
@@ -94,7 +94,7 @@ End Sub
 ' 3) MakeFormPretty is called, which redraws the form itself according to any theme and/or system settings.
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
-Public Sub UpdateAgainstCurrentTheme()
+Public Sub updateAgainstCurrentTheme()
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
@@ -149,7 +149,7 @@ Private Sub nvgMain_RequestUpdatedThumbnail(thumbDIB As pdDIB, thumbX As Single,
         
         End Select
         
-        pdImages(g_CurrentImage).getCompositedRect thumbDIB, thumbX, thumbY, thumbImageWidth, thumbImageHeight, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, iQuality
+        pdImages(g_CurrentImage).getCompositedRect thumbDIB, thumbX, thumbY, thumbImageWidth, thumbImageHeight, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, iQuality, , CLC_Thumbnail
     
     Else
         thumbX = 0

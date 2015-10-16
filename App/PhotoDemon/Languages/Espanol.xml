@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.101</langversion>
+<langversion>6.7.102</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -716,18 +716,8 @@ You puede utilizar el MenuTest () sub en el módulo Filters_Miscellaneous para p
 </phrase>
 
 <phrase>
-<original>Undo last action</original>
-<translation>Deshacer la última acción</translation>
-</phrase>
-
-<phrase>
 <original>Redo</original>
 <translation>rehacer</translation>
-</phrase>
-
-<phrase>
-<original>Redo previous action</original>
-<translation>Rehacer la acción anterior</translation>
 </phrase>
 
 <phrase>
@@ -895,7 +885,7 @@ You puede utilizar el MenuTest () sub en el módulo Filters_Miscellaneous para p
 <translation></translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 61 phrases. 17 were duplicates of existing phrases, so only 44 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 58 phrases. 16 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -14296,12 +14286,18 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- END text for Layerpanel_Colors.frm-->
 
+<!-- BEGIN text for pdNavigator.ctl -->
+
+<!-- pdNavigator.ctl contains 0 phrases. -->
+
+<!-- END text for pdNavigator.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2459</phrasecount>
+<phrasecount>2457</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4221 phrases. -->
-<!-- 1762 are duplicates, so only 2459 unique phrases have been written to file. -->
-<!-- These 2459 phrases contain approximately 13268 total words. -->
+<!-- As of this build, PhotoDemon contains 4218 phrases. -->
+<!-- 1761 are duplicates, so only 2457 unique phrases have been written to file. -->
+<!-- These 2457 phrases contain approximately 13262 total words. -->
 
 </pdData>
