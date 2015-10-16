@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.40</langversion>
+<langversion>6.6.41</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -716,18 +716,8 @@ Anda boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk m
 </phrase>
 
 <phrase>
-<original>Undo last action</original>
-<translation>Buat asal tindakan</translation>
-</phrase>
-
-<phrase>
 <original>Redo</original>
 <translation>mengulang</translation>
-</phrase>
-
-<phrase>
-<original>Redo previous action</original>
-<translation>Buat semula tindakan sebelumnya</translation>
 </phrase>
 
 <phrase>
@@ -895,7 +885,7 @@ Anda boleh menggunakan MenuTest () sub dalam modul Filters_Miscellaneous untuk m
 <translation></translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 61 phrases. 17 were duplicates of existing phrases, so only 44 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 58 phrases. 16 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -14301,12 +14291,18 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- END text for Layerpanel_Colors.frm-->
 
+<!-- BEGIN text for pdNavigator.ctl -->
+
+<!-- pdNavigator.ctl contains 0 phrases. -->
+
+<!-- END text for pdNavigator.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2459</phrasecount>
+<phrasecount>2457</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4221 phrases. -->
-<!-- 1762 are duplicates, so only 2459 unique phrases have been written to file. -->
-<!-- These 2459 phrases contain approximately 13268 total words. -->
+<!-- As of this build, PhotoDemon contains 4218 phrases. -->
+<!-- 1761 are duplicates, so only 2457 unique phrases have been written to file. -->
+<!-- These 2457 phrases contain approximately 13262 total words. -->
 
 </pdData>

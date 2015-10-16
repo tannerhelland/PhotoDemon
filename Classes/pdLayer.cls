@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Layers class
 'Copyright 2012-2015 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 19/June/15
-'Last update: add support for affine-transformed layers
+'Last updated: 16/October/15
+'Last update: implement LOD caching for use by pdCompositor
 '
 'Once upon a time, the pdLayer class was simply a DIB wrapper.  Once PhotoDemon moved to a fully layer-compatible
 ' image editor, however, it became necessary to separate Layer-specific functions from generic DIB functions.
@@ -235,13 +235,10 @@ Private myTextRenderer As pdTextRenderer
 ' This is typically handled by a called to the parent's .notifyImageChanged function, and passing the relevant layer index.
 Public layerDIB As pdDIB
 
-'Temporary compositing DIB(s).  These DIBs are only used under certain circumstances.  The pdLayer object itself does not
-' use these; instead, they are reserved for external functions that process the layer (primarily pdCompositor).  Because it's
-' often necessary to generate temporary DIBs on a per-layer basis, these can save us a lot of time during performance-crucial
-' operations (e.g. painting).  Additionally, as PD gains an increasing number of new features (layer masks, layer styles,
-' advanced alpha modes), being able to cache intermediary display copies at various stages are a huge performance boon, and a
-' necessity for rapid rendering under VB.
-Public tmpDIB As pdDIB
+'Temporary level-of-detail (LOD) compositing DIB(s).  These DIBs are only used under certain circumstances; at present, they are
+' restricted to use by the pdCompositor class.  Because it's often necessary to generate temporary DIBs on a per-layer basis,
+' these level-of-detail DIBs can save us a ton of time during performance-crucial operations (e.g. painting).
+Private lodDIB() As pdDIB
 
 'Layer thumbnail.  This 256x256 DIB is cached locally, then passed to external functions only when necessary.  Note that requests
 ' for sizes larger than 256x256 (in either dimension) will force creation of a custom thumbnail from scratch, so try to avoid that
@@ -254,13 +251,14 @@ Private layerThumbnail As pdDIB
 Private m_IsThumbClean As Boolean
 
 'For some parts of the rendering pipeline, we can cache intermediate copies of the layer, cropped and stretched and prepped for
-' viewport rendering.  To simplify the work performed by the compositor, layer's can generate a quick-and-dirty "viewport state hash"
-' that represents viewport settings.  This hash can be used to detect changes to the layer, which in turn tells us if we need to
-' regenerate the temporary compositing DIB, or if we can just use the existing copy.
-Private m_ViewportStateHash As Long
+' viewport rendering.  To simplify the work performed by the compositor, layers can generate a quick-and-dirty "viewport state hash"
+' that represents current layer state.  This hash can be used to detect changes to the layer, which in turn tells us if we need to
+' regenerate the relevant LOD DIB, or if we can just use the existing copy.
+Private m_ViewportStateHashes() As Long
 
-'If a layer has changed since the last hash cache, we must still recomposite the DIB, even though its on-screen position hasn't changed
-Private m_DIBChangedSinceLastHashRequest As Boolean
+'If a layer has changed since the last hash cache, we must still recomposite the DIB, even though the automatic hash function won't
+' generate a new value (because it primarily relies on layer metadata, not actual DIB contents)
+Private m_DIBChangedSinceLastHash() As Boolean
 
 'If a layer has non-destructive, non-standard transformations active (e.g. rotation, skew), we use a special, parallelogram-based rendering function.
 ' To cut down on variable declarations, we declare this array once, and initialize it when a compositor instance is initialized.
@@ -284,7 +282,10 @@ Public Sub notifyOfDestructiveChanges()
     m_IsThumbClean = False
     
     'Note that the layer has changed since a past hash request
-    m_DIBChangedSinceLastHashRequest = True
+    Dim i As Long
+    For i = 0 To NUM_OF_LOD_CACHES - 1
+        m_DIBChangedSinceLastHash(i) = True
+    Next i
     
     'If this is a vector layer, note that the backing DIB is now out of sync
     m_VectorDIBSynched = False
@@ -905,8 +906,8 @@ Public Sub makeCanvasTransformsPermanent(Optional ByVal maxWidth As Long = 0, Op
     If Me.affineTransformsActive(True) Then
         
         'Unfortunately, a temporary DIB will be required for the rescale operation
-        Dim tmpDIB As pdDIB
-        Set tmpDIB = New pdDIB
+        Dim tmpTransformDIB As pdDIB
+        Set tmpTransformDIB = New pdDIB
         
         'If complex affine transforms are active (e.g. rotation), this step becomes more complicated.
         If Me.affineTransformsActive(False) Then
@@ -915,10 +916,10 @@ Public Sub makeCanvasTransformsPermanent(Optional ByVal maxWidth As Long = 0, Op
             Dim newOffsetX As Long, newOffsetY As Long
             
             'Retrieve a copy of the current DIB using the layer's automated affine-transformation function
-            Me.getAffineTransformedDIB tmpDIB, newOffsetX, newOffsetY, maxWidth, maxHeight
+            Me.getAffineTransformedDIB tmpTransformDIB, newOffsetX, newOffsetY, maxWidth, maxHeight
             
             'Update our internal DIB and offsets to match
-            Set Me.layerDIB = tmpDIB
+            Set Me.layerDIB = tmpTransformDIB
             With myLayerData
                 .l_OffsetX = newOffsetX
                 .l_OffsetY = newOffsetY
@@ -932,10 +933,12 @@ Public Sub makeCanvasTransformsPermanent(Optional ByVal maxWidth As Long = 0, Op
         'If rescaling is the only active transform, we can shortcut this function
         Else
             
-            tmpDIB.createBlank getLayerWidth(True), getLayerHeight(True), 32, 0
-            GDIPlusResizeDIB tmpDIB, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, layerDIB, 0, 0, getLayerWidth(False), getLayerHeight(False), Me.getLayerResizeQuality_GDIPlus
+            With tmpTransformDIB
+                .createBlank getLayerWidth(True), getLayerHeight(True), 32, 0
+                GDIPlusResizeDIB tmpTransformDIB, 0, 0, .getDIBWidth, .getDIBHeight, layerDIB, 0, 0, getLayerWidth(False), getLayerHeight(False), Me.getLayerResizeQuality_GDIPlus
+            End With
             
-            Set Me.layerDIB = tmpDIB
+            Set Me.layerDIB = tmpTransformDIB
             
             'Reset the width/height modifiers for this layer
             With myLayerData
@@ -1352,8 +1355,15 @@ Private Sub Class_Initialize()
     'Initialize the layer's DIB
     Set layerDIB = New pdDIB
     
-    'Initialize the temporary compositing DIB
-    Set tmpDIB = New pdDIB
+    'Initialize all temporary LOD compositing DIBs and corresponding hashes
+    ReDim m_ViewportStateHashes(0 To NUM_OF_LOD_CACHES - 1) As Long
+    ReDim m_DIBChangedSinceLastHash(0 To NUM_OF_LOD_CACHES - 1) As Boolean
+    
+    ReDim lodDIB(0 To NUM_OF_LOD_CACHES - 1) As pdDIB
+    Dim i As Long
+    For i = 0 To NUM_OF_LOD_CACHES - 1
+        Set lodDIB(i) = New pdDIB
+    Next i
     
     'Initialize the layer thumbnail and note that it is not clean, which will force a regeneration when the thumbnail is next requested.
     Set layerThumbnail = New pdDIB
@@ -1975,14 +1985,14 @@ Public Function cropNullPaddedLayer() As Boolean
         Else
         
             'Trimmable borders were found.  Use the calculated values to crop the image to its smallest relevant size.
-            Dim tmpDIB As pdDIB
-            Set tmpDIB = New pdDIB
-            tmpDIB.createBlank newRight - newLeft + 1, newBottom - newTop + 1, 32, 0
+            Dim tmpCropDIB As pdDIB
+            Set tmpCropDIB = New pdDIB
+            tmpCropDIB.createBlank newRight - newLeft + 1, newBottom - newTop + 1, 32, 0
             Debug.Print "Crop rect: (" & newLeft & "," & newTop & ") - (" & newRight & "," & newBottom & ")"
-            BitBlt tmpDIB.getDIBDC, 0, 0, newRight - newLeft + 1, newBottom - newTop + 1, layerDIB.getDIBDC, newLeft, newTop, vbSrcCopy
+            BitBlt tmpCropDIB.getDIBDC, 0, 0, newRight - newLeft + 1, newBottom - newTop + 1, layerDIB.getDIBDC, newLeft, newTop, vbSrcCopy
             
             'Replace the current layer DIB with our temporary DIB
-            layerDIB.createFromExistingDIB tmpDIB
+            layerDIB.createFromExistingDIB tmpCropDIB
             
             'Modify our layer offsets to reflect our new size
             myLayerData.l_OffsetX = newLeft
@@ -2031,15 +2041,15 @@ Public Sub convertToNullPaddedLayer(ByVal parentImageWidth As Long, ByVal parent
     If Not nullPaddingUnnecessary Then
         
         'Create a blank destination DIB at the size of the parent image
-        Dim tmpDIB As pdDIB
-        Set tmpDIB = New pdDIB
-        tmpDIB.createBlank parentImageWidth, parentImageHeight, 32, 0
+        Dim tmpPaddingDIB As pdDIB
+        Set tmpPaddingDIB = New pdDIB
+        tmpPaddingDIB.createBlank parentImageWidth, parentImageHeight, 32, 0
     
         'Copy the current layer into the temporary DIB, with proper offsets applied
-        BitBlt tmpDIB.getDIBDC, myLayerData.l_OffsetX, myLayerData.l_OffsetY, layerDIB.getDIBWidth, layerDIB.getDIBHeight, layerDIB.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt tmpPaddingDIB.getDIBDC, myLayerData.l_OffsetX, myLayerData.l_OffsetY, layerDIB.getDIBWidth, layerDIB.getDIBHeight, layerDIB.getDIBDC, 0, 0, vbSrcCopy
     
         'Replace our current layer DIB with the temporary DIB
-        Set Me.layerDIB = tmpDIB
+        Set Me.layerDIB = tmpPaddingDIB
         Me.layerDIB.setInitialAlphaPremultiplicationState True
     
         'Reset layer offset values
@@ -2285,11 +2295,11 @@ End Sub
 'For raster DIBs, returns TRUE if the image has changed since the last viewport hash was set; FALSE otherwise.
 '
 'If the return value is TRUE, any DIBs derived from this layer (e.g. viewport ones) must be recreated
-Public Function syncInternalDIB() As Boolean
+Public Function syncInternalDIB(Optional ByVal levelOfDetail As COMPOSITOR_LOD_CLUE = CLC_Generic) As Boolean
 
     'If this is not a vector layer, rely on the "DIB has changed since last hash request" marker.
     If myLayerType = PDL_IMAGE Then
-        syncInternalDIB = m_DIBChangedSinceLastHashRequest
+        syncInternalDIB = m_DIBChangedSinceLastHash(levelOfDetail)
         Exit Function
     End If
     
@@ -2338,8 +2348,12 @@ Public Function estimateRAMUsage() As Double
 
     'Calculate the raw memory size of both the layer and the cached thumbnail DIB, if any
     If Not (layerDIB Is Nothing) Then estimateRAMUsage = layerDIB.getDIBArrayWidth * layerDIB.getDIBHeight
-    If Not (tmpDIB Is Nothing) Then estimateRAMUsage = estimateRAMUsage + tmpDIB.getDIBArrayWidth * tmpDIB.getDIBHeight
     If Not (layerThumbnail Is Nothing) Then estimateRAMUsage = estimateRAMUsage + layerThumbnail.getDIBArrayWidth * layerThumbnail.getDIBHeight
+    
+    Dim i As Long
+    For i = 0 To NUM_OF_LOD_CACHES - 1
+        If Not (lodDIB(i) Is Nothing) Then estimateRAMUsage = estimateRAMUsage + lodDIB(i).getDIBArrayWidth * lodDIB(i).getDIBHeight
+    Next i
     
     'Assume a 10% overhead for this class instance and other miscellaneous layer data
     estimateRAMUsage = estimateRAMUsage * 1.1
@@ -2347,20 +2361,20 @@ Public Function estimateRAMUsage() As Double
 End Function
 
 'Update the layer's current "viewport state hash".  This is used by the compositor, only.
-Public Sub setViewportHash(ParamArray allParams() As Variant)
-    m_ViewportStateHash = getViewportHash_Theoretical(allParams)
-    m_DIBChangedSinceLastHashRequest = False
+Public Sub setViewportHash(ByVal cacheID As COMPOSITOR_LOD_CLUE, ParamArray allParams() As Variant)
+    m_ViewportStateHashes(cacheID) = getViewportHash_Theoretical(allParams)
+    m_DIBChangedSinceLastHash(cacheID) = False
 End Sub
 
 'If the viewport generates a hash via getViewportHash_Theoretical(), it can pass that hash directly to this function to improve performance
-Public Sub setViewportHash_FromLong(ByVal newHash As Long)
-    m_ViewportStateHash = newHash
-    m_DIBChangedSinceLastHashRequest = False
+Public Sub setViewportHash_FromLong(ByVal cacheID As COMPOSITOR_LOD_CLUE, ByVal newHash As Long)
+    m_ViewportStateHashes(cacheID) = newHash
+    m_DIBChangedSinceLastHash(cacheID) = False
 End Sub
 
 'Retrieve the layer's current viewport hash
-Public Function getViewportHash() As Long
-    getViewportHash = m_ViewportStateHash
+Public Function getViewportHash(ByVal cacheID As COMPOSITOR_LOD_CLUE) As Long
+    getViewportHash = m_ViewportStateHashes(cacheID)
 End Function
 
 'Given a set of caller-specified parameters, generate a matching viewport hash.  This is used by the compositor to detect changes to the current layer.
@@ -2401,9 +2415,21 @@ Public Function getViewportHash_Theoretical(ParamArray allParams() As Variant) A
     
 End Function
 
+'Access a specific level-of-detail (LOD) cache.
+Friend Function tmpLODDIB(Optional ByVal cacheID As COMPOSITOR_LOD_CLUE = CLC_Generic) As pdDIB
+    Set tmpLODDIB = lodDIB(cacheID)
+End Function
+
 Private Sub Class_Terminate()
     Set layerDIB = Nothing
-    Set tmpDIB = Nothing
     Set layerThumbnail = Nothing
     Set myTextRenderer = Nothing
+    
+    Dim i As Long
+    For i = 0 To NUM_OF_LOD_CACHES - 1
+        If Not (lodDIB(i) Is Nothing) Then
+            lodDIB(i).eraseDIB
+            Set lodDIB(i) = Nothing
+        End If
+    Next i
 End Sub

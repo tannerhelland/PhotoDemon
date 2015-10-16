@@ -78,7 +78,7 @@ End Enum
     Const FILE_UNDO = 6, FILE_FADE = 7, FILE_REDO = 8
 #End If
 
-'How should the selection be rendered?
+'How should a selection be rendered?
 Public Enum SelectionRender
     SELECTION_RENDER_HIGHLIGHT = 0
     SELECTION_RENDER_LIGHTBOX = 1
@@ -405,3 +405,18 @@ Public Type pdGradientPoint
     pdgp_Opacity As Single
     pdgp_Position As Single
 End Type
+
+'pdCompositor makes heavy use of level-of-detail (LOD) caches stored inside individual pdLayer objects.  Callers need to
+' identify compositor requests with one of these IDs, which tells the compositor which cache to preferentially use.
+' Correct LOD tags greatly improve performance, particularly on the primary canvas.
+Public Enum COMPOSITOR_LOD_CLUE
+    CLC_Generic = 0
+    CLC_Viewport = 1
+    CLC_Thumbnail = 2
+End Enum
+
+#If False Then
+    Private Const CLC_Generic = 0, CLC_Viewport = 1, CLC_Thumbnail = 2
+#End If
+
+Public Const NUM_OF_LOD_CACHES As Long = 3

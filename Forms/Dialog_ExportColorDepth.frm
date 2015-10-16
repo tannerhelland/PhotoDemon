@@ -189,7 +189,7 @@ Public Sub showDialog()
         
         Dim imgWidth As Long, imgHeight As Long
         convertAspectRatio pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, 512, 512, imgWidth, imgHeight
-        pdImages(g_CurrentImage).getCompositedRect tmpDIB, 0, 0, imgWidth, imgHeight, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, InterpolationModeHighQualityBicubic
+        pdImages(g_CurrentImage).getCompositedRect tmpDIB, 0, 0, imgWidth, imgHeight, 0, 0, pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height, InterpolationModeHighQualityBicubic, , CLC_Generic
         
     Else
         pdImages(g_CurrentImage).getCompositedImage tmpDIB

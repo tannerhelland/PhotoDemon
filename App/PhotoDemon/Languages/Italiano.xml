@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.98</langversion>
+<langversion>6.7.99</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -716,18 +716,8 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 </phrase>
 
 <phrase>
-<original>Undo last action</original>
-<translation>Annulla l'ultima azione</translation>
-</phrase>
-
-<phrase>
 <original>Redo</original>
 <translation>Ripeti</translation>
-</phrase>
-
-<phrase>
-<original>Redo previous action</original>
-<translation>Ripeti l'azione precedente</translation>
 </phrase>
 
 <phrase>
@@ -895,7 +885,7 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 <translation></translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 61 phrases. 17 were duplicates of existing phrases, so only 44 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 58 phrases. 16 were duplicates of existing phrases, so only 42 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -14293,12 +14283,18 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- END text for Layerpanel_Colors.frm-->
 
+<!-- BEGIN text for pdNavigator.ctl -->
+
+<!-- pdNavigator.ctl contains 0 phrases. -->
+
+<!-- END text for pdNavigator.ctl-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2459</phrasecount>
+<phrasecount>2457</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4221 phrases. -->
-<!-- 1762 are duplicates, so only 2459 unique phrases have been written to file. -->
-<!-- These 2459 phrases contain approximately 13268 total words. -->
+<!-- As of this build, PhotoDemon contains 4218 phrases. -->
+<!-- 1761 are duplicates, so only 2457 unique phrases have been written to file. -->
+<!-- These 2457 phrases contain approximately 13262 total words. -->
 
 </pdData>

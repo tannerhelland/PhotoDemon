@@ -311,13 +311,13 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
                 
                 'When we've been asked to maximize performance, use nearest neighbor for all zoom modes
                 If g_ViewportPerformance = PD_PERF_FASTEST Then
-                    srcImage.getCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, InterpolationModeNearestNeighbor, pipelineOriginatedAtStageOne
+                    srcImage.getCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, InterpolationModeNearestNeighbor, pipelineOriginatedAtStageOne, CLC_Viewport
                     
                 'Otherwise, switch dynamically between high-quality and low-quality interpolation depending on the current zoom.
                 ' Note that the compositor will perform some additional checks, and if the image is zoomed-in, it will switch to nearest-neighbor
                 ' automatically (regardless of what method we request).
                 Else
-                    srcImage.getCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor), pipelineOriginatedAtStageOne
+                    srcImage.getCompositedRect srcImage.canvasBuffer, viewportRect.Left, viewportRect.Top, viewportRect.Width, viewportRect.Height, srcLeft, srcTop, srcWidth, srcHeight, IIf(m_ZoomRatio <= 1, InterpolationModeHighQualityBicubic, InterpolationModeNearestNeighbor), pipelineOriginatedAtStageOne, CLC_Viewport
                 End If
                 
             End If
