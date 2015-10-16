@@ -360,7 +360,7 @@ End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
 ' and/or retranslating all button captions against the current language.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
     
     'Suspend redraws until all theme updates are complete
     m_SuspendRedraws = True
@@ -380,30 +380,30 @@ Public Sub updateAgainstCurrentTheme()
     cmbSizeUnit.requestNewWidth 0, True
     
     'Reassign tooltips to any relevant controls.  (This also triggers a re-translation against language changes.)
-    cmdZoomFit.assignTooltip "Fit the image on-screen"
-    cmdZoomIn.assignTooltip "Zoom in"
-    cmdZoomOut.assignTooltip "Zoom out"
-    cmdImgSize.assignTooltip "Resize image"
-    cmbZoom.assignTooltip "Change viewport zoom"
-    cmbSizeUnit.assignTooltip "Change the image size unit displayed to the left of this box"
-    cmdCenter.assignTooltip "Center the image inside the viewport"
+    cmdZoomFit.AssignTooltip "Fit the image on-screen"
+    cmdZoomIn.AssignTooltip "Zoom in"
+    cmdZoomOut.AssignTooltip "Zoom out"
+    cmdImgSize.AssignTooltip "Resize image"
+    cmbZoom.AssignTooltip "Change viewport zoom"
+    cmbSizeUnit.AssignTooltip "Change the image size unit displayed to the left of this box"
+    cmdCenter.AssignTooltip "Center the image inside the viewport"
     If Not (g_Themer Is Nothing) Then cmdCenter.BackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
     
     'Request visual updates from all supported controls
-    lblCoordinates.updateAgainstCurrentTheme
-    lblImgSize.updateAgainstCurrentTheme
-    lblMessages.updateAgainstCurrentTheme
+    lblCoordinates.UpdateAgainstCurrentTheme
+    lblImgSize.UpdateAgainstCurrentTheme
+    lblMessages.UpdateAgainstCurrentTheme
     
-    cmdZoomFit.updateAgainstCurrentTheme
-    cmdZoomIn.updateAgainstCurrentTheme
-    cmdZoomOut.updateAgainstCurrentTheme
-    cmdImgSize.updateAgainstCurrentTheme
+    cmdZoomFit.UpdateAgainstCurrentTheme
+    cmdZoomIn.UpdateAgainstCurrentTheme
+    cmdZoomOut.UpdateAgainstCurrentTheme
+    cmdImgSize.UpdateAgainstCurrentTheme
     
-    cmbZoom.updateAgainstCurrentTheme
-    cmbSizeUnit.updateAgainstCurrentTheme
+    cmbZoom.UpdateAgainstCurrentTheme
+    cmbSizeUnit.UpdateAgainstCurrentTheme
     
-    hScroll.updateAgainstCurrentTheme
-    vScroll.updateAgainstCurrentTheme
+    hScroll.UpdateAgainstCurrentTheme
+    vScroll.UpdateAgainstCurrentTheme
     
     'Fix combo box positioning (important on high-DPI displays, or if the active font has changed)
     cmbZoom.Top = (picStatusBar.ScaleHeight - cmbZoom.Height) \ 2
@@ -491,6 +491,9 @@ Public Sub setScrollValue(ByVal barType As PD_ORIENTATION, ByVal newValue As Lon
             vScroll.Value = newValue
         
     End Select
+    
+    'If automatic redraws are suspended, the scroll bars change events won't fire, so we must manually notify external UI elements
+    If m_SuspendRedraws Then RelayViewportChanges
     
 End Sub
 
@@ -626,7 +629,7 @@ Public Sub displayImageSize(ByRef srcImage As pdImage, Optional ByVal clearSize 
         End Select
         
         lblImgSize.Caption = sizeString
-        lblImgSize.updateAgainstCurrentTheme
+        lblImgSize.UpdateAgainstCurrentTheme
         drawStatusBarIcons True
         
     End If
@@ -1029,7 +1032,14 @@ Private Sub CmbZoom_Click()
         
         'Redraw the viewport (if allowed; some functions will prevent us from doing this, as they plan to request their own
         ' refresh after additional processing occurs)
-        If g_AllowViewportRendering Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_PreservePointPosition, centerXCanvas, centerYCanvas, centerXImage, centerYImage
+        If g_AllowViewportRendering Then
+            
+            Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_PreservePointPosition, centerXCanvas, centerYCanvas, centerXImage, centerYImage
+        
+            'Notify any other relevant UI elements
+            RelayViewportChanges
+            
+        End If
         
     End If
 
@@ -1906,6 +1916,9 @@ Public Sub cMouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants, B
     'Request a manual redraw from Viewport_Engine.Stage1_InitializeBuffer, while supplying our x/y coordinates so that it can preserve mouse position
     ' relative to the underlying image.
     Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_PreservePointPosition, x, y, imgX, imgY
+    
+    'Notify external UI elements of the change
+    RelayViewportChanges
 
 End Sub
 
@@ -2008,6 +2021,9 @@ Private Sub HScroll_Scroll(ByVal eventIsCritical As Boolean)
         'Request the scroll-specific viewport pipeline stage
         Viewport_Engine.Stage3_ExtractRelevantRegion pdImages(g_CurrentImage), Me
         
+        'Notify any other relevant UI elements
+        RelayViewportChanges
+        
     End If
     
 End Sub
@@ -2109,7 +2125,7 @@ Private Sub UserControl_Show()
         If Len(g_InterfaceFont) = 0 Then g_InterfaceFont = "Segoe UI"
         
         'Request an update against the current theme
-        Me.updateAgainstCurrentTheme
+        Me.UpdateAgainstCurrentTheme
         
 CanvasShowError:
         
@@ -2137,6 +2153,9 @@ Private Sub VScroll_Scroll(ByVal eventIsCritical As Boolean)
     
         'Request the scroll-specific viewport pipeline stage
         Viewport_Engine.Stage3_ExtractRelevantRegion pdImages(g_CurrentImage), Me
+        
+        'Notify any other relevant UI elements
+        RelayViewportChanges
         
     End If
     
@@ -2612,3 +2631,9 @@ Private Function isCanvasInteractionAllowed() As Boolean
     If Processor.Processing Then isCanvasInteractionAllowed = False
     
 End Function
+
+'If the viewport experiences changes to scroll or zoom values, this function will be automatically called.  Any relays to external functions
+' should be handled here.
+Public Sub RelayViewportChanges()
+    toolbar_Layers.NotifyViewportChange
+End Sub

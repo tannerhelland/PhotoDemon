@@ -86,6 +86,9 @@ Public Sub FitImageToViewport(Optional ByVal suppressRendering As Boolean = Fals
     'Now fix scrollbars and everything
     If Not suppressRendering Then Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
     
+    'Notify external UI elements of the change
+    FormMain.mainCanvas(0).RelayViewportChanges
+    
 End Sub
 
 'Fit the current image onscreen at as large a size as possible (including possibility of zoomed-in)
@@ -106,6 +109,9 @@ Public Sub FitOnScreen()
     'Now fix scrollbars and everything
     Viewport_Engine.Stage1_InitializeBuffer pdImages(g_CurrentImage), FormMain.mainCanvas(0), VSR_ResetToZero
     
+    'Notify external UI elements of the change
+    FormMain.mainCanvas(0).RelayViewportChanges
+    
 End Sub
 
 'Center the current image onscreen without changing zoom
@@ -125,6 +131,9 @@ Public Sub CenterOnScreen()
         
     'Now fix scrollbars and everything
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+    
+    'Notify external UI elements of the change
+    FormMain.mainCanvas(0).RelayViewportChanges
     
 End Sub
 
