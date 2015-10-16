@@ -49,13 +49,12 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 
-
 Option Explicit
 
 'This control doesn't really do anything interesting, besides allow a color to be selected.
 Public Event ColorChanged()
 
-'A specialized mouse class is used to handle the hand cursor for this control
+'A specialized class handles mouse input for this control
 Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
 
@@ -163,7 +162,6 @@ Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
 
-'Container hWnd must be exposed for external tooltip handling
 Public Property Get containerHwnd() As Long
     containerHwnd = UserControl.containerHwnd
 End Property

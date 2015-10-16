@@ -109,6 +109,8 @@ End Function
 'Previously, various PD functions had to manually enable/disable button and menu state based on their actions.  This is no longer necessary.
 ' Simply call this function whenever an action has done something that will potentially affect the interface, and this function will iterate
 ' through all potential image/interface interactions, dis/enabling buttons and menus as necessary.
+'
+'TODO: look at having an optional "layerID" parameter, so we can skip certain steps if only a single layer is affected by a change.
 Public Sub SyncInterfaceToCurrentImage()
     
     Dim i As Long
@@ -189,7 +191,8 @@ Public Sub SyncInterfaceToCurrentImage()
             
         End If
                 
-        'Erase any remaining viewport buffer
+        'Erase any remaining viewport buffer.  (This is temporarily disabled because the RAM gain is small, and it potentially introduces
+        ' errors into functions that expect an activate viewport pipeline.  Further investigation TBD.)
         'eraseViewportBuffers
     
     'If one or more images are loaded, our job is trickier.  Some controls (such as Copy to Clipboard) are enabled no matter what,
@@ -485,7 +488,7 @@ Public Sub SyncInterfaceToCurrentImage()
     End If
         
     'Redraw the layer box
-    If Not (layerpanel_Layers Is Nothing) Then layerpanel_Layers.forceRedraw
+    toolbar_Layers.NotifyLayerChange
         
 End Sub
 
@@ -512,7 +515,7 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
         
         FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
         FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
-        toolbar_Toolbox.cmdFile(FILE_FADE).assignTooltip g_Language.TranslateMessage("Fade last action")
+        toolbar_Toolbox.cmdFile(FILE_FADE).AssignTooltip g_Language.TranslateMessage("Fade last action")
         
         'Redraw menu icons as requested
         If Not suspendAssociatedRedraws Then resetMenuIcons
@@ -544,7 +547,7 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
             If pdImages(g_CurrentImage).undoManager.fillDIBWithLastUndoCopy(tmpDIB, tmpLayerIndex, tmpActionName, True) Then
                 FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat: %1", g_Language.TranslateMessage(tmpActionName))
                 FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade: %1...", g_Language.TranslateMessage(tmpActionName))
-                toolbar_Toolbox.cmdFile(FILE_FADE).assignTooltip pdImages(g_CurrentImage).undoManager.getUndoProcessID, "Fade last action"
+                toolbar_Toolbox.cmdFile(FILE_FADE).AssignTooltip pdImages(g_CurrentImage).undoManager.getUndoProcessID, "Fade last action"
                 
                 toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = True
                 FormMain.MnuEdit(4).Enabled = True
@@ -552,7 +555,7 @@ Public Sub SyncUndoRedoInterfaceElements(Optional ByVal suspendAssociatedRedraws
             Else
                 FormMain.MnuEdit(4).Caption = g_Language.TranslateMessage("Repeat")
                 FormMain.MnuEdit(5).Caption = g_Language.TranslateMessage("Fade...")
-                toolbar_Toolbox.cmdFile(FILE_FADE).assignTooltip "Fade last action"
+                toolbar_Toolbox.cmdFile(FILE_FADE).AssignTooltip "Fade last action"
                 
                 toolbar_Toolbox.cmdFile(FILE_FADE).Enabled = False
                 FormMain.MnuEdit(4).Enabled = False
@@ -620,10 +623,10 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             
             'If Undo is being enabled, change the text to match the relevant action that created this Undo file
             If newState Then
-                toolbar_Toolbox.cmdFile(FILE_UNDO).assignTooltip pdImages(g_CurrentImage).undoManager.getUndoProcessID, "Undo"
+                toolbar_Toolbox.cmdFile(FILE_UNDO).AssignTooltip pdImages(g_CurrentImage).undoManager.getUndoProcessID, "Undo"
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getUndoProcessID) & vbTab & g_Language.TranslateMessage("Ctrl") & "+Z"
             Else
-                toolbar_Toolbox.cmdFile(FILE_UNDO).assignTooltip "Undo last action"
+                toolbar_Toolbox.cmdFile(FILE_UNDO).AssignTooltip "Undo last action"
                 FormMain.MnuEdit(0).Caption = g_Language.TranslateMessage("Undo") & vbTab & g_Language.TranslateMessage("Ctrl") & "+Z"
             End If
             
@@ -639,10 +642,10 @@ Public Sub MetaToggle(ByVal metaItem As metaInitializer, ByVal newState As Boole
             
             'If Redo is being enabled, change the menu text to match the relevant action that created this Undo file
             If newState Then
-                toolbar_Toolbox.cmdFile(FILE_REDO).assignTooltip pdImages(g_CurrentImage).undoManager.getRedoProcessID, "Redo"
+                toolbar_Toolbox.cmdFile(FILE_REDO).AssignTooltip pdImages(g_CurrentImage).undoManager.getRedoProcessID, "Redo"
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo:") & " " & g_Language.TranslateMessage(pdImages(g_CurrentImage).undoManager.getRedoProcessID) & vbTab & g_Language.TranslateMessage("Ctrl") & "+Y"
             Else
-                toolbar_Toolbox.cmdFile(FILE_REDO).assignTooltip "Redo previous action"
+                toolbar_Toolbox.cmdFile(FILE_REDO).AssignTooltip "Redo previous action"
                 FormMain.MnuEdit(1).Caption = g_Language.TranslateMessage("Redo") & vbTab & g_Language.TranslateMessage("Ctrl") & "+Y"
             End If
             
@@ -1333,13 +1336,13 @@ Public Sub MakeFormPretty(ByRef tForm As Form, Optional ByVal useDoEvents As Boo
         'PhotoDemon's custom controls now provide universal support for an updateAgainstCurrentTheme function.  This updates two things:
         ' 1) The control's visual appearance (to reflect any changes to visual themes)
         ' 2) The translated caption, or other text (to reflect any changes to the active language)
-        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then eControl.updateAgainstCurrentTheme
-        If (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is buttonStripVertical) Then eControl.updateAgainstCurrentTheme
-        If (TypeOf eControl Is pdButton) Or (TypeOf eControl Is pdButtonToolbox) Then eControl.updateAgainstCurrentTheme
-        If (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is pdHyperlink) Then eControl.updateAgainstCurrentTheme
-        If (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Then eControl.updateAgainstCurrentTheme
-        If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Then eControl.updateAgainstCurrentTheme
-        If (TypeOf eControl Is pdCanvas) Or (TypeOf eControl Is colorSelector) Or (TypeOf eControl Is pdScrollBar) Then eControl.updateAgainstCurrentTheme
+        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is buttonStripVertical) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdButton) Or (TypeOf eControl Is pdButtonToolbox) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is pdHyperlink) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdCanvas) Or (TypeOf eControl Is colorSelector) Or (TypeOf eControl Is pdScrollBar) Then eControl.UpdateAgainstCurrentTheme
         
         'STEP 3: remove TabStop from each picture box.  They should never receive focus, but I often forget to change this
         ' at design-time.
@@ -1550,9 +1553,11 @@ Public Sub Message(ByVal mString As String, ParamArray ExtraText() As Variant)
     tmpDupeCheckString = mString
     
     If UBound(ExtraText) >= LBound(ExtraText) Then
-                    
+        
         For i = LBound(ExtraText) To UBound(ExtraText)
-            tmpDupeCheckString = Replace$(tmpDupeCheckString, "%" & CStr(i + 1), CStr(ExtraText(i)))
+            If StrComp(UCase(ExtraText(i)), "DONOTLOG", vbBinaryCompare) <> 0 Then
+                tmpDupeCheckString = Replace$(tmpDupeCheckString, "%" & CStr(i + 1), CStr(ExtraText(i)))
+            End If
         Next i
         
     End If
@@ -1801,3 +1806,5 @@ Public Function APIHeight(ByVal srcHwnd As Long) As Long
     GetWindowRect srcHwnd, tmpRect
     APIHeight = tmpRect.y2 - tmpRect.y1
 End Function
+
+'

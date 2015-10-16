@@ -52,7 +52,7 @@ Option Explicit
 'This control doesn't really do anything interesting, besides allow a gradient to be selected.
 Public Event GradientChanged()
 
-'A specialized mouse class is used to handle the hand cursor for this control
+'A specialized class handles mouse input for this control
 Private WithEvents cMouseEvents As pdInputMouse
 Attribute cMouseEvents.VB_VarHelpID = -1
 

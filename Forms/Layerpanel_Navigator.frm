@@ -22,6 +22,15 @@ Begin VB.Form layerpanel_Navigator
    ScaleWidth      =   304
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdNavigator nvgMain 
+      Height          =   735
+      Left            =   120
+      TabIndex        =   0
+      Top             =   120
+      Width           =   975
+      _ExtentX        =   1720
+      _ExtentY        =   1296
+   End
 End
 Attribute VB_Name = "layerpanel_Navigator"
 Attribute VB_GlobalNameSpace = False
@@ -62,7 +71,7 @@ Private Sub Form_Load()
     lastUsedSettings.loadAllControlValues
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
-    updateAgainstCurrentTheme
+    UpdateAgainstCurrentTheme
     
     'Reflow the interface to match its current size
     reflowInterface
@@ -72,6 +81,9 @@ End Sub
 'Whenever this panel is resized, we must reflow all objects to fit the available space.
 Private Sub reflowInterface()
 
+    'For now, make the navigator UC the same size as the underlying form
+    nvgMain.Move 0, 0, Me.ScaleWidth, Me.ScaleHeight
+    
 End Sub
 
 'Updating against the current theme accomplishes a number of things:
@@ -80,7 +92,7 @@ End Sub
 ' 3) MakeFormPretty is called, which redraws the form itself according to any theme and/or system settings.
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
@@ -91,3 +103,15 @@ Public Sub updateAgainstCurrentTheme()
     
 End Sub
 
+Private Sub Form_Resize()
+    reflowInterface
+End Sub
+
+'The navigator will periodically request new thumbnails.  Supply them whenever requested.
+Private Sub nvgMain_RequestUpdatedThumbnail(thumbDIB As pdDIB)
+    
+    If g_OpenImageCount > 0 Then
+        pdImages(g_CurrentImage).requestThumbnail thumbDIB, thumbDIB.getDIBWidth
+    End If
+    
+End Sub

@@ -1387,7 +1387,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
             
             'Move stuff around
             Case NAV_MOVE
-                Message "Shift key: preserve layer aspect ratio"
+                Message "Shift key: preserve layer aspect ratio", "DONOTLOG"
                 transformCurrentLayer imgX, imgY, pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, FormMain.mainCanvas(0), (Shift And vbShiftMask)
         
             'Basic selection tools

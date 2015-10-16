@@ -63,10 +63,10 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   1
       Top             =   60
       Width           =   3495
-      _ExtentX        =   6165
-      _ExtentY        =   476
-      Caption         =   "overview"
-      Value           =   0   'False
+      _extentx        =   6165
+      _extenty        =   476
+      caption         =   "overview"
+      value           =   0   'False
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -90,9 +90,9 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   3
       Top             =   960
       Width           =   3495
-      _ExtentX        =   6165
-      _ExtentY        =   476
-      Caption         =   "layers"
+      _extentx        =   6165
+      _extenty        =   476
+      caption         =   "layers"
    End
    Begin PhotoDemon.pdTitle ttlPanel 
       Height          =   270
@@ -101,10 +101,10 @@ Begin VB.Form toolbar_Layers
       TabIndex        =   4
       Top             =   480
       Width           =   3495
-      _ExtentX        =   6165
-      _ExtentY        =   476
-      Caption         =   "color selector"
-      Value           =   0   'False
+      _extentx        =   6165
+      _extenty        =   476
+      caption         =   "color selector"
+      value           =   0   'False
    End
    Begin VB.Line lnSeparatorLeft 
       X1              =   0
@@ -202,7 +202,7 @@ Private Sub Form_Load()
     m_lastUsedSettings.loadAllControlValues
     
     'Theme everything
-    updateAgainstCurrentTheme
+    UpdateAgainstCurrentTheme
     
     'Reflow the interface to match its current size
     reflowInterface
@@ -319,7 +319,7 @@ End Sub
 ' 3) MakeFormPretty is called, which redraws the form itself according to any theme and/or system settings.
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
@@ -333,9 +333,9 @@ Public Sub updateAgainstCurrentTheme()
     End If
     
     'TODO: pass along the request to any active child forms.
-    If Not (layerpanel_Navigator) Is Nothing Then layerpanel_Layers.updateAgainstCurrentTheme
-    If Not (layerpanel_Colors) Is Nothing Then layerpanel_Layers.updateAgainstCurrentTheme
-    If Not (layerpanel_Layers) Is Nothing Then layerpanel_Layers.updateAgainstCurrentTheme
+    If Not (layerpanel_Navigator) Is Nothing Then layerpanel_Layers.UpdateAgainstCurrentTheme
+    If Not (layerpanel_Colors) Is Nothing Then layerpanel_Layers.UpdateAgainstCurrentTheme
+    If Not (layerpanel_Layers) Is Nothing Then layerpanel_Layers.UpdateAgainstCurrentTheme
     
     'Reflow the interface, to account for any language changes.  (This will also trigger a redraw of the layer list box.)
     reflowInterface
@@ -401,4 +401,21 @@ End Sub
 
 Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
     reflowInterface
+End Sub
+
+'When one or more layers are modified (via painting, effects, whatever), PD's various interface control functions
+' will notify this toolbar via this function.  The toolbar will then redraw individual panels as necessary.
+'
+'Note that a layerID of -1 means multiple/all layers have changed, while a value >= 0 tells you which layer changed,
+' perhaps sparing the amount of redraw work required.
+'
+'TODO: optimize drawing if relevant panels are closed
+Public Sub NotifyLayerChange(Optional ByVal layerID As Long = -1)
+
+    'Optimizing the layer listbox is TODO!
+    layerpanel_Layers.forceRedraw True
+    
+    'Redraw the navigator to match
+    layerpanel_Navigator.nvgMain.NotifyNewThumbNeeded
+
 End Sub
