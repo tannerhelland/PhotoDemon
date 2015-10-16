@@ -716,7 +716,7 @@ End Function
 'When all nodes have been successfully added, the user can finally write out their data to file.  This function will return TRUE
 ' if successful, FALSE if unsuccessful.  (Note that it assumes the caller has done some basic validation on the file path, like
 ' obtaining permission from the user to overwrite an existing file.)
-Public Function writePackageToFile(ByVal dstFilename As String, Optional ByVal secondPassDirectoryCompression As Boolean = False, Optional ByVal secondPassDataCompression As Boolean = False) As Boolean
+Public Function writePackageToFile(ByVal dstFilename As String, Optional ByVal secondPassDirectoryCompression As Boolean = False, Optional ByVal secondPassDataCompression As Boolean = False, Optional ByVal thisIsATempFile As Boolean = False) As Boolean
     
     'Start by updating the file header.  Most of this will have been done when the class was initialized, but some values
     ' can't be set until all nodes have been added.
@@ -765,8 +765,15 @@ Public Function writePackageToFile(ByVal dstFilename As String, Optional ByVal s
     If m_File.FileExist(dstFilename) Then m_File.KillFile dstFilename
     
     'Retrieve a writable handle
-    Dim hFile As Long
-    If m_File.CreateFileHandle(dstFilename, hFile, True, True, OptimizeSequentialAccess) Then
+    Dim hFile As Long, createSuccess As Boolean
+    
+    If thisIsATempFile Then
+        createSuccess = m_File.CreateFileHandle(dstFilename, hFile, True, True, OptimizeTempFile)
+    Else
+        createSuccess = m_File.CreateFileHandle(dstFilename, hFile, True, True, OptimizeSequentialAccess)
+    End If
+    
+    If createSuccess Then
     
         'Writing out the three crucial pieces of data: the header, the directory, and the data
         With m_File
