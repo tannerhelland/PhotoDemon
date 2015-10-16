@@ -180,8 +180,6 @@ Public Sub Stage4_CompositeCanvas(ByRef srcImage As pdImage, ByRef dstCanvas As 
     Dim viewportIntersectRect As RECTF
     srcImage.imgViewport.getIntersectRectCanvas viewportIntersectRect
     
-    'TODO: fix comments, as a lot of things have changed in this function!
-    
     'Check to see if a selection is active.
     If srcImage.selectionActive Then
     
@@ -341,7 +339,13 @@ Public Sub Stage3_ExtractRelevantRegion(ByRef srcImage As pdImage, ByRef dstCanv
     Else
     
     End If
-        
+    
+    'Note that calls to this function may need to be relayed to other UI elements.  (For example, viewport rulers need to
+    ' be repositioned, and if the navigator panel is open, it needs to reflect the new scroll position, if any.)
+    
+    'Such relays are not handled here, but if you're calling this pipeline function directly, be aware of the UI repercussions.
+    ' Examining the pdCanvas class, particularly its scrollbars, is a good place to start for seeing what needs to be notified.
+    
     'Pass control to the next stage of the pipeline.
     Stage4_CompositeCanvas srcImage, dstCanvas, curPOI
 

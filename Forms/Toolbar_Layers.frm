@@ -205,7 +205,7 @@ Private Sub Form_Load()
     UpdateAgainstCurrentTheme
     
     'Reflow the interface to match its current size
-    reflowInterface
+    ReflowInterface
     
 End Sub
 
@@ -217,7 +217,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
 End Sub
 
 Private Sub Form_Resize()
-    reflowInterface
+    ReflowInterface
 End Sub
 
 'Toolbars can never be unloaded, EXCEPT when the whole program is going down.  Check for the program-wide closing flag prior
@@ -252,7 +252,7 @@ End Sub
 'Whenever the layer toolbox is resized, we must reflow all objects to fill the available space.  Note that we do not do
 ' specialized handling for the vertical direction; vertically, the only change we handle is resizing the layer box itself
 ' to fill whatever vertical space is available.
-Private Sub reflowInterface()
+Private Sub ReflowInterface()
     
     'If the form is invisible (due to minimize or something else), just exit now
     If Not Me.Visible Then Exit Sub
@@ -338,7 +338,7 @@ Public Sub UpdateAgainstCurrentTheme()
     If Not (layerpanel_Layers) Is Nothing Then layerpanel_Layers.UpdateAgainstCurrentTheme
     
     'Reflow the interface, to account for any language changes.  (This will also trigger a redraw of the layer list box.)
-    reflowInterface
+    ReflowInterface
     
 End Sub
 
@@ -405,7 +405,7 @@ Private Sub ttlPanel_Click(Index As Integer, ByVal newState As Boolean)
     If newState Then NotifyLayerChange
     
     'Reflow the interface to account for the changed size
-    reflowInterface
+    ReflowInterface
     
 End Sub
 
@@ -414,8 +414,6 @@ End Sub
 '
 'Note that a layerID of -1 means multiple/all layers have changed, while a value >= 0 tells you which layer changed,
 ' perhaps sparing the amount of redraw work required.
-'
-'TODO: optimize drawing if relevant panels are closed
 Public Sub NotifyLayerChange(Optional ByVal layerID As Long = -1)
 
     'Optimizing the layer listbox is TODO!
@@ -424,4 +422,10 @@ Public Sub NotifyLayerChange(Optional ByVal layerID As Long = -1)
     'Redraw the navigator to match
     If ttlPanel(0).Value Then layerpanel_Navigator.nvgMain.NotifyNewThumbNeeded
 
+End Sub
+
+'If the current viewport position and/or size changes, this toolbar will be notified.  At present, the only subpanel
+' affected by viewport changes is the navigator panel.
+Public Sub NotifyViewportChange()
+    If ttlPanel(0).Value Then layerpanel_Navigator.nvgMain.NotifyNewViewportPosition
 End Sub

@@ -280,7 +280,32 @@ Private Sub DrawNavigator()
                 GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, .Left - 1, .Top - 1, .Left + .Width, .Top + .Height, g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
             End With
             
-            'TODO: rect for the current viewport
+            'Query the active image for a copy of the intersection rect of the viewport, and the image itself, in image coordinate space
+            Dim viewportRect As RECTF
+            pdImages(g_CurrentImage).imgViewport.getIntersectRectImage viewportRect
+            
+            'We now want to convert the viewport rect into our little navigator coordinate space.  Start by converting the viewport
+            ' dimensions to a 1-based system, relative to the original image's width and height.
+            Dim relativeRect As RECTF
+            With relativeRect
+                .Left = viewportRect.Left / pdImages(g_CurrentImage).Width
+                .Top = viewportRect.Top / pdImages(g_CurrentImage).Height
+                .Width = viewportRect.Width / pdImages(g_CurrentImage).Width
+                .Height = viewportRect.Height / pdImages(g_CurrentImage).Height
+            
+                'Next, scale those 1-based values by the navigator's current size
+                .Left = .Left * m_ImageRegion.Width
+                .Top = .Top * m_ImageRegion.Height
+                .Width = .Width * m_ImageRegion.Width
+                .Height = .Height * m_ImageRegion.Height
+                
+                'Finally, scale the values by the offsets of the image region
+                .Left = .Left + m_ImageRegion.Left
+                .Top = .Top + m_ImageRegion.Top
+            End With
+            
+            'Draw a canvas-style border around the relevant viewport rect
+            GDI_Plus.GDIPlusDrawCanvasRectF m_BackBuffer.getDIBDC, relativeRect
             
         End If
     
@@ -321,6 +346,12 @@ Public Sub NotifyNewThumbNeeded()
         DrawNavigator
     End If
     
+End Sub
+
+'Call this when the viewport position has changed.  This function operates independently of the NotifyNewThumbNeeded() function,
+' because the viewport and thumbnail are unlikely to change simultaneously.
+Public Sub NotifyNewViewportPosition()
+    DrawNavigator
 End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
