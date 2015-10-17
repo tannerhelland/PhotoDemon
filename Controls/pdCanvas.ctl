@@ -348,11 +348,11 @@ Private m_NetworkAccessActive As Boolean
 Private m_LastEnabledState As Boolean
 
 'External functions can call this to set the current network state (which in turn, draws a relevant icon to the status bar)
-Public Sub setNetworkState(ByVal newState As Boolean)
+Public Sub SetNetworkState(ByVal newNetworkState As Boolean)
     
     'When the state changes, update a module-level variable and redraw the icon.
-    If newState <> m_NetworkAccessActive Then
-        m_NetworkAccessActive = newState
+    If newNetworkState <> m_NetworkAccessActive Then
+        m_NetworkAccessActive = newNetworkState
         drawStatusBarIcons m_LastEnabledState
     End If
     
@@ -373,20 +373,20 @@ Public Sub UpdateAgainstCurrentTheme()
     'Repopulate zoom dropdown text
     If Not (g_Zoom Is Nothing) Then g_Zoom.initializeViewportEngine
     If Not (g_Zoom Is Nothing) Then g_Zoom.populateZoomComboBox cmbZoom, backupZoomIndex
-    Me.populateSizeUnits
+    Me.PopulateSizeUnits
     
     'Auto-size the newly populated combo boxes, according to the width of their longest entries
     cmbZoom.requestNewWidth 0, True
     cmbSizeUnit.requestNewWidth 0, True
     
     'Reassign tooltips to any relevant controls.  (This also triggers a re-translation against language changes.)
-    cmdZoomFit.AssignTooltip "Fit the image on-screen"
-    cmdZoomIn.AssignTooltip "Zoom in"
-    cmdZoomOut.AssignTooltip "Zoom out"
-    cmdImgSize.AssignTooltip "Resize image"
-    cmbZoom.AssignTooltip "Change viewport zoom"
-    cmbSizeUnit.AssignTooltip "Change the image size unit displayed to the left of this box"
-    cmdCenter.AssignTooltip "Center the image inside the viewport"
+    cmdZoomFit.assignTooltip "Fit the image on-screen"
+    cmdZoomIn.assignTooltip "Zoom in"
+    cmdZoomOut.assignTooltip "Zoom out"
+    cmdImgSize.assignTooltip "Resize image"
+    cmbZoom.assignTooltip "Change viewport zoom"
+    cmbSizeUnit.assignTooltip "Change the image size unit displayed to the left of this box"
+    cmdCenter.assignTooltip "Center the image inside the viewport"
     If Not (g_Themer Is Nothing) Then cmdCenter.BackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
     
     'Request visual updates from all supported controls
@@ -665,7 +665,7 @@ Public Sub displayCanvasCoordinates(ByVal xCoord As Long, ByVal yCoord As Long, 
         
 End Sub
 
-Public Sub requestBufferSync()
+Public Sub RequestBufferSync()
     picCanvas.Picture = picCanvas.Image
     picCanvas.Refresh
 End Sub
@@ -2238,7 +2238,7 @@ Public Sub fixChromeLayout()
             End If
             
             BitBlt picCanvas.hDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
-            requestBufferSync
+            RequestBufferSync
             Set tmpDIB = Nothing
             
         End If
@@ -2321,7 +2321,7 @@ Public Sub drawStatusBarIcons(ByVal enabledState As Boolean)
 End Sub
 
 'Fill the "size units" drop-down.  We must do this later in the load process, as we have to wait for the translation engine to load.
-Public Function populateSizeUnits()
+Public Function PopulateSizeUnits()
 
     'Add size units to the size unit drop-down box
     cmbSizeUnit.Clear
