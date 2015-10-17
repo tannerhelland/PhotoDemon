@@ -1432,7 +1432,7 @@ Private Sub processFile(ByVal srcFile As String)
             
             '3b) Check for tooltip text that has been manually assigned to a custom PhotoDemon object.  Note that we (obviously) avoid .assignToolTip
             '     function declarations themselves.
-            If (InStr(1, curLineText, ".assignTooltip """) > 0) And (InStr(1, curLineText, "ByVal") = 0) Then
+            If (InStr(1, UCase$(curLineText), ".ASSIGNTOOLTIP """) > 0) And (InStr(1, curLineText, "ByVal") = 0) Then
                 
                 'Process the tooltip text itself
                 processedText = findTooltipMessage(fileLines, curLineNumber, False, toolTipSecondCheckNeeded)
@@ -1444,7 +1444,7 @@ Private Sub processFile(ByVal srcFile As String)
             
             '3b) Check for tooltip text that has been manually assigned to a PhotoDemon pdToolTip object.  Note that we (obviously) avoid
             '     .setToolTip function declarations themselves.
-            If (InStr(1, curLineText, ".setTooltip") > 0) And (InStr(1, curLineText, "ByVal") = 0) Then
+            If (InStr(1, UCase$(curLineText), ".SETTOOLTIP") > 0) And (InStr(1, curLineText, "ByVal") = 0) Then
                 
                 'Process the tooltip text itself
                 processedText = findTooltipMessage(fileLines, curLineNumber, False, toolTipSecondCheckNeeded)
@@ -1468,7 +1468,7 @@ Private Sub processFile(ByVal srcFile As String)
             processedText = findCaptionInQuotes(fileLines, curLineNumber)
         
         '6) Check for message box text, including 7) message box titles (which must also be translated)
-        ElseIf (InStr(1, curLineText, "pdMsgBox", vbTextCompare) <> 0) Then
+        ElseIf (InStr(1, UCase$(curLineText), "PDMSGBOX", vbTextCompare) <> 0) Then
         
             'First, retrieve the message box text itself
             processedText = findMsgBoxText(fileLines, curLineNumber)
@@ -1709,17 +1709,17 @@ Private Function findTooltipMessage(ByRef srcLines() As String, ByRef lineNumber
     
     Dim initPosition As Long
     If inReverse Then
-        initPosition = InStrRev(srcLines(lineNumber), ".assignTooltip """)
+        initPosition = InStrRev(UCase$(srcLines(lineNumber)), ".ASSIGNTOOLTIP """)
     Else
-        initPosition = InStr(1, srcLines(lineNumber), ".assignTooltip """)
+        initPosition = InStr(1, UCase$(srcLines(lineNumber)), ".ASSIGNTOOLTIP """)
     End If
     
     'If text is not found, try again, using a different tooltip assignment command
     If initPosition = 0 Then
         If inReverse Then
-            initPosition = InStrRev(srcLines(lineNumber), ".setTooltip")
+            initPosition = InStrRev(UCase$(srcLines(lineNumber)), ".SETTOOLTIP")
         Else
-            initPosition = InStr(1, srcLines(lineNumber), ".setTooltip")
+            initPosition = InStr(1, UCase$(srcLines(lineNumber)), ".SETTOOLTIP")
         End If
     End If
     
