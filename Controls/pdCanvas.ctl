@@ -380,13 +380,13 @@ Public Sub UpdateAgainstCurrentTheme()
     cmbSizeUnit.requestNewWidth 0, True
     
     'Reassign tooltips to any relevant controls.  (This also triggers a re-translation against language changes.)
-    cmdZoomFit.assignTooltip "Fit the image on-screen"
-    cmdZoomIn.assignTooltip "Zoom in"
-    cmdZoomOut.assignTooltip "Zoom out"
-    cmdImgSize.assignTooltip "Resize image"
-    cmbZoom.assignTooltip "Change viewport zoom"
-    cmbSizeUnit.assignTooltip "Change the image size unit displayed to the left of this box"
-    cmdCenter.assignTooltip "Center the image inside the viewport"
+    cmdZoomFit.AssignTooltip "Fit the image on-screen"
+    cmdZoomIn.AssignTooltip "Zoom in"
+    cmdZoomOut.AssignTooltip "Zoom out"
+    cmdImgSize.AssignTooltip "Resize image"
+    cmbZoom.AssignTooltip "Change viewport zoom"
+    cmbSizeUnit.AssignTooltip "Change the image size unit displayed to the left of this box"
+    cmdCenter.AssignTooltip "Center the image inside the viewport"
     If Not (g_Themer Is Nothing) Then cmdCenter.BackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
     
     'Request visual updates from all supported controls
@@ -1121,7 +1121,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     Drawing.convertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, imgX, imgY, layerX, layerY
     
     'Display a relevant cursor for the current action
-    setCanvasCursor pMouseUp, Button, x, y, imgX, imgY, layerX, layerY
+    SetCanvasCursor pMouseUp, Button, x, y, imgX, imgY, layerX, layerY
     
     'Selection tools all use the same variable for tracking POIs
     Dim sCheck As Long
@@ -1458,7 +1458,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     Else
         
         'Display a relevant cursor for the current action
-        setCanvasCursor pMouseUp, Button, x, y, imgX, imgY, layerX, layerY
+        SetCanvasCursor pMouseUp, Button, x, y, imgX, imgY, layerX, layerY
     
         Select Case g_CurrentTool
         
@@ -1530,7 +1530,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
     Drawing.convertImageCoordsToLayerCoords pdImages(g_CurrentImage), pdImages(g_CurrentImage).getActiveLayer, imgX, imgY, layerX, layerY
     
     'Display a relevant cursor for the current action
-    setCanvasCursor pMouseUp, Button, x, y, imgX, imgY, layerX, layerY
+    SetCanvasCursor pMouseUp, Button, x, y, imgX, imgY, layerX, layerY
     
     'Check mouse buttons
     If Button = vbLeftButton Then
@@ -2336,7 +2336,7 @@ End Function
 ' is added, make sure to visit this sub and make any necessary cursor changes!
 '
 'A lot of extra values are passed to this function.  Individual tools can use those at their leisure to customize their cursor requests.
-Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button As Integer, ByVal x As Single, ByVal y As Single, ByVal imgX As Double, ByVal imgY As Double, ByVal layerX As Double, ByVal layerY As Double)
+Private Sub SetCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button As Integer, ByVal x As Single, ByVal y As Single, ByVal imgX As Double, ByVal imgY As Double, ByVal layerX As Double, ByVal layerY As Double)
 
     'Some cursor functions operate on a POI basis
     Dim curPOI As Long
@@ -2555,13 +2555,13 @@ Private Sub setCanvasCursor(ByVal curMouseEvent As PD_MOUSEEVENT, ByVal Button A
                     Case 1
                         cMouseEvents.setSystemCursor IDC_SIZENESW
                     
-                    'Mouse is over the bottom-right corner
-                    Case 2
-                        cMouseEvents.setSystemCursor IDC_SIZENWSE
-                    
                     'Mouse is over the bottom-left corner
-                    Case 3
+                    Case 2
                         cMouseEvents.setSystemCursor IDC_SIZENESW
+                    
+                    'Mouse is over the bottom-right corner
+                    Case 3
+                        cMouseEvents.setSystemCursor IDC_SIZENWSE
                         
                     'Mouse is over a rotation handle
                     Case 4 To 7
