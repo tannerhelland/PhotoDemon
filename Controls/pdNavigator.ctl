@@ -105,6 +105,9 @@ Private m_ThumbEventX As Single, m_ThumbEventY As Single
 'The rect where the image thumbnail has been drawn.  This is calculated by the DrawNavigator function.
 Private m_ThumbRect As RECTF, m_ImageRegion As RECTF
 
+'Last mouse (x, y) values.  We track these so we know whether to highlight the region box inside the navigator.
+Private m_LastMouseX As Single, m_LastMouseY As Single
+
 Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
@@ -113,15 +116,22 @@ Public Property Get ContainerHwnd() As Long
     ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
+Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    'If the mouse button is clicked inside the image portion of the navigator, scroll to that (x, y) position
+    If (Button And pdLeftButton) <> 0 Then
+        If Math_Functions.isPointInRectF(x, y, m_ImageRegion) Then ScrollToXY x, y
+    End If
+    
+End Sub
+
 Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseInsideBox = True
-    DrawNavigator
-    cMouseEvents.setSystemCursor IDC_HAND
 End Sub
 
 Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseInsideBox = False
-    DrawNavigator
+    m_LastMouseX = -1: m_LastMouseY = -1
     cMouseEvents.setSystemCursor IDC_DEFAULT
 End Sub
 
@@ -133,6 +143,59 @@ End Sub
 'When the control loses focus, relay the event externally
 Private Sub cFocusDetector_LostFocusReliable()
     RaiseEvent LostFocusAPI
+End Sub
+
+Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    m_LastMouseX = x: m_LastMouseY = y
+    
+    'Set the cursor depending on whether the mouse is inside the image portion of the navigator control
+    If Math_Functions.isPointInRectF(x, y, m_ImageRegion) Then
+        cMouseEvents.setSystemCursor IDC_HAND
+    Else
+        cMouseEvents.setSystemCursor IDC_DEFAULT
+    End If
+    
+    'If the mouse button is down, scroll to that (x, y) position.  Note that we don't care if the cursor is in-bounds;
+    ' the ScrollToXY function will automatically fix that for us.
+    If (Button And pdLeftButton) <> 0 Then
+        ScrollToXY x, y
+    Else
+        DrawNavigator
+    End If
+    
+End Sub
+
+'Given an (x, y) coordinate in the navigator, scroll to the matching (x, y) in the image.
+Private Sub ScrollToXY(ByVal x As Single, ByVal y As Single)
+
+    'Make sure the image region has been successfully created, or this is all for naught
+    If (g_OpenImageCount > 0) And (m_ImageRegion.Width <> 0) And (m_ImageRegion.Height <> 0) Then
+    
+        'Convert the (x, y) to the [0, 1] range
+        Dim xRatio As Double, yRatio As Double
+        xRatio = (x - m_ImageRegion.Left) / m_ImageRegion.Width
+        yRatio = (y - m_ImageRegion.Top) / m_ImageRegion.Height
+        If xRatio < 0 Then xRatio = 0: If xRatio > 1 Then xRatio = 1
+        If yRatio < 0 Then yRatio = 0: If yRatio > 1 Then yRatio = 1
+        
+        'Next, convert those to the (min, max) scale of the current viewport scrollbars
+        Dim hScrollRange As Double, vScrollRange As Double, newHScroll As Double, newVscroll As Double
+        hScrollRange = FormMain.mainCanvas(0).getScrollMax(PD_HORIZONTAL) - FormMain.mainCanvas(0).getScrollMin(PD_HORIZONTAL)
+        vScrollRange = FormMain.mainCanvas(0).getScrollMax(PD_VERTICAL) - FormMain.mainCanvas(0).getScrollMin(PD_VERTICAL)
+        newHScroll = (xRatio * hScrollRange) + FormMain.mainCanvas(0).getScrollMin(PD_HORIZONTAL)
+        newVscroll = (yRatio * vScrollRange) + FormMain.mainCanvas(0).getScrollMin(PD_VERTICAL)
+        
+        'Assign the new scrollbar values, then request a viewport refresh
+        FormMain.mainCanvas(0).setRedrawSuspension True
+        FormMain.mainCanvas(0).setScrollValue PD_HORIZONTAL, newHScroll
+        FormMain.mainCanvas(0).setScrollValue PD_VERTICAL, newVscroll
+        FormMain.mainCanvas(0).setRedrawSuspension False
+        
+        Viewport_Engine.Stage3_ExtractRelevantRegion pdImages(g_CurrentImage), FormMain.mainCanvas(0)
+        
+    End If
+
 End Sub
 
 'The pdWindowPaint class raises this event when the navigator box needs to be redrawn.  The passed coordinates contain
@@ -286,26 +349,40 @@ Private Sub DrawNavigator()
             
             'We now want to convert the viewport rect into our little navigator coordinate space.  Start by converting the viewport
             ' dimensions to a 1-based system, relative to the original image's width and height.
-            Dim relativeRect As RECTF
-            With relativeRect
-                .Left = viewportRect.Left / pdImages(g_CurrentImage).Width
-                .Top = viewportRect.Top / pdImages(g_CurrentImage).Height
-                .Width = viewportRect.Width / pdImages(g_CurrentImage).Width
-                .Height = viewportRect.Height / pdImages(g_CurrentImage).Height
-            
-                'Next, scale those 1-based values by the navigator's current size
-                .Left = .Left * m_ImageRegion.Width
-                .Top = .Top * m_ImageRegion.Height
-                .Width = .Width * m_ImageRegion.Width
-                .Height = .Height * m_ImageRegion.Height
+            If (pdImages(g_CurrentImage).Width > 0) And (pdImages(g_CurrentImage).Height > 0) Then
                 
-                'Finally, scale the values by the offsets of the image region
-                .Left = .Left + m_ImageRegion.Left
-                .Top = .Top + m_ImageRegion.Top
-            End With
+                Dim relativeRect As RECTF
+                With relativeRect
+                    .Left = viewportRect.Left / pdImages(g_CurrentImage).Width
+                    .Top = viewportRect.Top / pdImages(g_CurrentImage).Height
+                    .Width = viewportRect.Width / pdImages(g_CurrentImage).Width
+                    .Height = viewportRect.Height / pdImages(g_CurrentImage).Height
+                
+                    'Next, scale those 1-based values by the navigator's current size
+                    .Left = .Left * m_ImageRegion.Width
+                    .Top = .Top * m_ImageRegion.Height
+                    .Width = .Width * m_ImageRegion.Width
+                    .Height = .Height * m_ImageRegion.Height
+                    
+                    'Finally, scale the values by the offsets of the image region
+                    .Left = .Left + m_ImageRegion.Left
+                    .Top = .Top + m_ImageRegion.Top
+                End With
+                
+                'If the mouse is inside the control, figure out if the last mouse coordinates are inside the region box.
+                ' If they are, we want to highlight it.
+                Dim useHighlightColor As Boolean
+                
+                If m_MouseInsideBox Then
+                    useHighlightColor = Math_Functions.isPointInRectF(m_LastMouseX, m_LastMouseY, relativeRect)
+                Else
+                    useHighlightColor = False
+                End If
+                
+                'Draw a canvas-style border around the relevant viewport rect
+                GDI_Plus.GDIPlusDrawCanvasRectF m_BackBuffer.getDIBDC, relativeRect, , useHighlightColor
             
-            'Draw a canvas-style border around the relevant viewport rect
-            GDI_Plus.GDIPlusDrawCanvasRectF m_BackBuffer.getDIBDC, relativeRect
+            End If
             
         End If
     
