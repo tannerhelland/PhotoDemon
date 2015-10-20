@@ -22,6 +22,15 @@ Begin VB.Form layerpanel_Colors
    ScaleWidth      =   304
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.pdColorWheel clrWheel 
+      Height          =   975
+      Left            =   120
+      TabIndex        =   0
+      Top             =   120
+      Width           =   1215
+      _extentx        =   2143
+      _extenty        =   1720
+   End
 End
 Attribute VB_Name = "layerpanel_Colors"
 Attribute VB_GlobalNameSpace = False
@@ -32,8 +41,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Color Selector Tool Panel
 'Copyright 2015-2015 by Tanner Helland
 'Created: 15/October/15
-'Last updated: 15/October/15
-'Last update: initial build
+'Last updated: 20/October/15
+'Last update: actually implement color selection controls!
 '
 'As part of the 7.0 release, PD's right-side panel gained a lot of new functionality.  To simplify the code for
 ' the new panel, each chunk of related settings (e.g. layer, nav, color selector) was moved to its own subpanel.
@@ -59,15 +68,20 @@ Private Sub Form_Load()
     lastUsedSettings.loadAllControlValues
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
-    updateAgainstCurrentTheme
+    UpdateAgainstCurrentTheme
     
     'Reflow the interface to match its current size
-    reflowInterface
+    ReflowInterface
     
 End Sub
 
 'Whenever this panel is resized, we must reflow all objects to fit the available space.
-Private Sub reflowInterface()
+Private Sub ReflowInterface()
+
+    'For now, make the color wheel UC the same size as the underlying form
+    If Me.ScaleWidth > 10 Then
+        clrWheel.Move 0, 0, Me.ScaleWidth - FixDPI(10), Me.ScaleHeight
+    End If
 
 End Sub
 
@@ -77,14 +91,17 @@ End Sub
 ' 3) MakeFormPretty is called, which redraws the form itself according to any theme and/or system settings.
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
     MakeFormPretty Me
     
     'Reflow the interface, to account for any language changes.
-    reflowInterface
+    ReflowInterface
     
 End Sub
 
+Private Sub Form_Resize()
+    ReflowInterface
+End Sub
