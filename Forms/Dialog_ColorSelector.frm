@@ -930,7 +930,7 @@ Public Sub showDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     
     'Apply extra tooltips to certain controls
     cmdCapture.AssignImage "CS_FROM_SCREEN"
-    cmdCapture.assignTooltip "Click this button to enable color capturing from anywhere on the screen."
+    cmdCapture.AssignTooltip "Click this button to enable color capturing from anywhere on the screen."
     
     'Apply translations and visual themes
     MakeFormPretty Me
@@ -1178,7 +1178,7 @@ Private Sub drawHueBox()
         'Based on our x-position, gradient a value between -1 and 5
         hVal = y / hueBox.getDIBHeight
         
-        'Generate a hue for this position (the 1 and 0.5 correspond to full saturation and half luminance, respectively)
+        'Generate a full-saturation hue for this position
         HSVtoRGB hVal, 1, 1, r, g, b
         
         'Draw the color
