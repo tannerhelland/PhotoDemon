@@ -496,6 +496,18 @@ Public Function convertArbitraryListToFurthestRoundedInt(ParamArray listOfValues
 
 End Function
 
+Public Sub convertPolarToCartesian(ByVal srcAngle As Double, ByVal srcRadius As Double, ByRef dstX As Double, ByRef dstY As Double, Optional ByVal centerX As Double = 0#, Optional ByVal centerY As Double = 0#)
+
+    'Calculate the new (x, y)
+    dstX = srcRadius * Cos(srcAngle)
+    dstY = srcRadius * Sin(srcAngle)
+    
+    'Offset by the supplied center (x, y)
+    dstX = dstX + centerX
+    dstY = dstY + centerY
+
+End Sub
+
 'This is a modified module function; it handles negative values specially to ensure they work with certain distort functions
 Public Function Modulo(ByVal Quotient As Double, ByVal Divisor As Double) As Double
     Modulo = Quotient - Fix(Quotient / Divisor) * Divisor

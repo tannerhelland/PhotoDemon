@@ -464,6 +464,7 @@ Private Declare Function GdipDisposeImageAttributes Lib "gdiplus" (ByVal hImageA
 Private Declare Function GdipSetImageAttributesWrapMode Lib "gdiplus" (ByVal hImageAttr As Long, ByVal mWrap As WrapMode, ByVal argbConst As Long, ByVal bClamp As Long) As Long
 Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal mGraphics As Long, ByVal pixOffsetMode As PixelOffsetMode) As Long
 Private Declare Function GdipImageRotateFlip Lib "gdiplus" (ByVal hImage As Long, ByVal rfType As RotateFlipType) As Long
+Private Declare Function GdipDrawArc Lib "gdiplus" (ByVal hGraphics As Long, ByVal hPen As Long, ByVal x As Single, ByVal y As Single, ByVal nWidth As Single, ByVal nHeight As Single, ByVal startAngle As Single, ByVal sweepAngle As Single) As Long
 Private Declare Function GdipDrawCurve Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipDrawCurveI Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointLongArrayPtr As Long, ByVal nPoints As Long) As Long
 Private Declare Function GdipDrawCurve2 Lib "gdiplus" (ByVal mGraphics As Long, ByVal hPen As Long, ByVal pointFloatArrayPtr As Long, ByVal nPoints As Long, ByVal curveTension As Single) As Long
@@ -946,25 +947,25 @@ Public Function GDIPlusBlurDIB(ByRef dstDIB As pdDIB, ByVal blurRadius As Long, 
 End Function
 
 'Use GDI+ to render a series of white-black-white circles, which are preferable for on-canvas controls with good readability
-Public Function GDIPlusDrawCanvasCircle(ByVal dstDC As Long, ByVal cX As Single, ByVal cY As Single, ByVal cRadius As Single, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
+Public Function GDIPlusDrawCanvasCircle(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
 
-    GDIPlusDrawCircleToDC dstDC, cX, cY, cRadius, RGB(0, 0, 0), cTransparency, 3, True
+    GDIPlusDrawCircleToDC dstDC, cx, cy, cRadius, RGB(0, 0, 0), cTransparency, 3, True
     
     Dim topColor As Long
     If useHighlightColor Then topColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT) Else topColor = RGB(255, 255, 255)
-    GDIPlusDrawCircleToDC dstDC, cX, cY, cRadius, topColor, 220, 1, True
+    GDIPlusDrawCircleToDC dstDC, cx, cy, cRadius, topColor, 220, 1, True
     
 End Function
 
 'Identical function to GdiPlusDrawCanvasCircle, above, but a rect is used instead.  Note that it's inconvenient to the user to display
 ' a square but use circles for hit-detection, so plan accordingly!
-Public Function GDIPlusDrawCanvasSquare(ByVal dstDC As Long, ByVal cX As Single, ByVal cY As Single, ByVal cRadius As Single, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
+Public Function GDIPlusDrawCanvasSquare(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
 
-    GDI_Plus.GDIPlusDrawRectOutlineToDC dstDC, cX - cRadius, cY - cRadius, cX + cRadius, cY + cRadius, RGB(0, 0, 0), cTransparency, 3, True, LineCapRound, True
+    GDI_Plus.GDIPlusDrawRectOutlineToDC dstDC, cx - cRadius, cy - cRadius, cx + cRadius, cy + cRadius, RGB(0, 0, 0), cTransparency, 3, True, LineCapRound, True
     
     Dim topColor As Long
     If useHighlightColor Then topColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT) Else topColor = RGB(255, 255, 255)
-    GDI_Plus.GDIPlusDrawRectOutlineToDC dstDC, cX - cRadius, cY - cRadius, cX + cRadius, cY + cRadius, topColor, 220, 1.6, True, LineCapRound, True
+    GDI_Plus.GDIPlusDrawRectOutlineToDC dstDC, cx - cRadius, cy - cRadius, cx + cRadius, cy + cRadius, topColor, 220, 1.6, True, LineCapRound, True
     
 End Function
 
@@ -990,10 +991,43 @@ Public Function GDIPlusDrawCanvasRectF(ByVal dstDC As Long, ByRef srcRect As REC
     
 End Function
 
+'Use GDI+ to render overlapping black-white-black arcs, which are preferable for on-canvas controls with good readability
+Public Function GDIPlusDrawCanvasArc(ByVal dstDC As Long, ByVal centerX As Single, ByVal centerY As Single, ByVal arcRadius As Single, ByVal startAngle As Single, ByVal sweepAngle As Single, Optional ByVal cTransparency As Long = 190, Optional ByVal useHighlightColor As Boolean = False) As Boolean
+
+    GDIPlusDrawArcCircular dstDC, centerX, centerY, arcRadius, startAngle, sweepAngle, RGB(0, 0, 0), cTransparency, 3, True
+    
+    Dim topColor As Long
+    If useHighlightColor Then topColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT) Else topColor = RGB(255, 255, 255)
+    GDIPlusDrawArcCircular dstDC, centerX, centerY, arcRadius, startAngle, sweepAngle, topColor, 220, 1, True
+    
+End Function
+
+'Use GDI+ to render a series of white-black-white circles, which are preferable for on-canvas controls with good readability
+Public Function GDIPlusDrawArcCircular(ByVal dstDC As Long, ByVal centerX As Single, ByVal centerY As Single, ByVal arcRadius As Single, ByVal startAngle As Single, ByVal sweepAngle As Single, ByVal arcColor As Long, Optional ByVal arcTransparency As Long = 255, Optional ByVal drawRadius As Single = 1#, Optional ByVal useAA As Boolean = True) As Boolean
+    
+    'Create a GDI+ copy of the image and request matching AA behavior
+    Dim dstGraphics As Long
+    GdipCreateFromHDC dstDC, dstGraphics
+    If useAA Then GdipSetSmoothingMode dstGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode dstGraphics, SmoothingModeNone
+    
+    'Create a pen, which will be used to stroke the arc
+    Dim hPen As Long
+    GdipCreatePen1 fillQuadWithVBRGB(arcColor, arcTransparency), drawRadius, UnitPixel, hPen
+    
+    'GDI+ arcs use bounding boxes to describe their placement.  As such, we must convert the incoming centerX/Y and radius values
+    ' to bounding box coordinates.
+    GDIPlusDrawArcCircular = CBool(GdipDrawArc(dstGraphics, hPen, centerX - arcRadius, centerY - arcRadius, arcRadius * 2, arcRadius * 2, startAngle, sweepAngle) = 0)
+        
+    'Release all created objects
+    GdipDeletePen hPen
+    GdipDeleteGraphics dstGraphics
+    
+End Function
+
 'Retrieve a persistent handle to a GDI+-format graphics container.  Optionally, a smoothing mode can be specified so that it does
 ' not have to be repeatedly specified by a caller function.  (GDI+ sets smoothing mode by graphics container, not by function call.)
 Public Function getGDIPlusGraphicsFromDC(ByVal srcDC As Long, Optional ByVal useAA As Boolean = True) As Long
-
+    
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
     GdipCreateFromHDC srcDC, iGraphics
@@ -1263,7 +1297,7 @@ Public Function GDIPlusDrawRectFOutlineToDC(ByVal dstDC As Long, ByRef srcRectF 
 End Function
 
 'Use GDI+ to render a hollow circle, with optional color, opacity, and antialiasing
-Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cX As Single, ByVal cY As Single, ByVal cRadius As Single, ByVal edgeColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal drawRadius As Single = 1, Optional ByVal useAA As Boolean = True) As Boolean
+Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, ByVal edgeColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal drawRadius As Single = 1, Optional ByVal useAA As Boolean = True) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
@@ -1275,7 +1309,7 @@ Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cX As Single, B
     GdipCreatePen1 fillQuadWithVBRGB(edgeColor, cTransparency), drawRadius, UnitPixel, iPen
     
     'Render the circle
-    GdipDrawEllipse iGraphics, iPen, cX - cRadius, cY - cRadius, cRadius * 2, cRadius * 2
+    GdipDrawEllipse iGraphics, iPen, cx - cRadius, cy - cRadius, cRadius * 2, cRadius * 2
         
     'Release all created objects
     GdipDeletePen iPen
@@ -1284,7 +1318,7 @@ Public Function GDIPlusDrawCircleToDC(ByVal dstDC As Long, ByVal cX As Single, B
 End Function
 
 'Use GDI+ to render a filled circle, with optional color, opacity, and antialiasing
-Public Function GDIPlusFillCircleToDC(ByVal dstDC As Long, ByVal cX As Single, ByVal cY As Single, ByVal cRadius As Single, ByVal fillColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal useAA As Boolean = True) As Boolean
+Public Function GDIPlusFillCircleToDC(ByVal dstDC As Long, ByVal cx As Single, ByVal cy As Single, ByVal cRadius As Single, ByVal fillColor As Long, Optional ByVal cTransparency As Long = 255, Optional ByVal useAA As Boolean = True) As Boolean
 
     'Create a GDI+ copy of the image and request matching AA behavior
     Dim iGraphics As Long
@@ -1296,7 +1330,7 @@ Public Function GDIPlusFillCircleToDC(ByVal dstDC As Long, ByVal cX As Single, B
     hBrush = GDI_Plus.getGDIPlusSolidBrushHandle(fillColor, cTransparency)
     
     'Render the circle
-    GDIPlusFillCircleToDC = CBool(GdipFillEllipse(iGraphics, hBrush, cX - cRadius, cY - cRadius, cRadius * 2, cRadius * 2) = 0)
+    GDIPlusFillCircleToDC = CBool(GdipFillEllipse(iGraphics, hBrush, cx - cRadius, cy - cRadius, cRadius * 2, cRadius * 2) = 0)
     
     'Release all created objects
     GDI_Plus.releaseGDIPlusBrush hBrush

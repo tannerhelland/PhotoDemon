@@ -73,8 +73,9 @@ Private m_BackBuffer As pdDIB
 ' (particularly the hue wheel), creating them from scratch is costly, so reuse is advisable.
 Private m_WheelBuffer As pdDIB
 
-'These values will be TRUE while the mouse is inside various parts of the UC
+'These values will be TRUE while the mouse is inside various parts of the UC.
 Private m_MouseInsideWheel As Boolean, m_MouseInsideBox As Boolean
+Private m_MouseDownWheel As Boolean
 
 'API technique for drawing a focus rectangle; used only for designer mode (see the Paint method for details)
 Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
@@ -87,9 +88,17 @@ Private Const WHEEL_PADDING As Long = 3
 'Width (in pixels) of the hue wheel.  This width is applied along the radial axis.
 Private Const WHEEL_WIDTH As Single = 15#
 
-'The inner and outer radius of the hue wheel.  These are calculated by the CreateColorWheel function and cached here,
-' as a convenience for subsequent mouse hit-testing.
+'Various hue wheel positioning values.  These are calculated by the CreateColorWheel function and cached here, as a convenience
+' for subsequent hit-testing and rendering.
+Private m_HueWheelCenterX As Single, m_HueWheelCenterY As Single
 Private m_HueRadiusInner As Single, m_HueRadiusOuter As Single
+
+'Current control hue value, on the range [0, 1].  Make sure to update this if a new color is supplied externally.
+Private m_Hue As Double
+
+'If the mouse is currently over the hue wheel, but the left mouse button is *not* down, this will be set to a value >= 0.
+' We can use this to help orient the user.
+Private m_HueHover As Double
 
 Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
@@ -107,6 +116,124 @@ End Sub
 'When the control loses focus, relay the event externally
 Private Sub cFocusDetector_LostFocusReliable()
     RaiseEvent LostFocusAPI
+End Sub
+
+Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    'Right now, only left-clicks are addressed
+    If (Button And pdLeftButton) <> 0 Then
+    
+        'See if the mouse cursor is inside the hue wheel
+        Dim tmpHue As Double
+        m_MouseDownWheel = isMouseInsideHueWheel(x, y, True, tmpHue)
+        
+        'If the mouse is down inside the wheel area, assign a new hue value to the control
+        If m_MouseDownWheel Then
+            
+            'Store the new hue value, and reset the hover value
+            m_Hue = tmpHue
+            m_HueHover = -1
+            
+            'Set a persistent hand cursor
+            cMouseEvents.setSystemCursor IDC_HAND
+            
+            'Redraw the control to match
+            DrawUC
+            
+        End If
+        
+    End If
+    
+End Sub
+
+Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    cMouseEvents.setSystemCursor IDC_DEFAULT
+End Sub
+
+Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    Dim tmpHue As Double
+    
+    'If the mouse button was originally clicked inside the hue wheel, continue re-calculating hue, regardless of mouse position.
+    If m_MouseDownWheel Then
+        
+        'Calculate a corresponding hue for this mouse position
+        isMouseInsideHueWheel x, y, True, tmpHue
+        
+        'Store this as the active hue, and erase the hover hue (if any)
+        m_Hue = tmpHue
+        m_HueHover = -1
+        
+    'The mouse was not originally clicked inside the wheel.  Update the cursor as necessary.
+    Else
+    
+        'Reset cursor and hover behavior accordingly
+        m_MouseInsideWheel = isMouseInsideHueWheel(x, y, True, tmpHue)
+        
+        If m_MouseInsideWheel Then
+            cMouseEvents.setSystemCursor IDC_HAND
+            m_HueHover = tmpHue
+        Else
+            cMouseEvents.setSystemCursor IDC_DEFAULT
+            m_HueHover = -1
+        End If
+        
+    End If
+    
+    'Redraw the UC to match
+    DrawUC
+    
+End Sub
+
+Private Function isMouseInsideHueWheel(ByVal x As Single, ByVal y As Single, Optional ByVal calculateHue As Boolean = False, Optional ByRef dstHue As Double) As Boolean
+    
+    'Start by re-centering the (x, y) pair around the hue wheel's center point
+    x = x - m_HueWheelCenterX
+    y = y - m_HueWheelCenterY
+    
+    'Calculate a radius for the current position
+    Dim pxRadius As Double
+    pxRadius = Sqr(x * x + y * y)
+    
+    'If the radius lies between the outer and inner hue wheel radii, return true.
+    isMouseInsideHueWheel = CBool((pxRadius <= m_HueRadiusOuter) And (pxRadius >= m_HueRadiusInner))
+    
+    'If the caller wants us to calculate hue for them, do so now.  Note that we can successfully do this, even if the mouse is
+    ' outside the hue wheel - this is important for enabling convenient click-drag behavior!
+    If calculateHue Then
+        
+        'Calculate an angle for this pixel
+        Dim pxAngle As Double
+        pxAngle = Math_Functions.Atan2(y, x)
+        
+        'ATan2() returns an angle that is positive for counter-clockwise angles (y > 0), and negative for
+        ' clockwise angles (y < 0), on the range [-Pi, +Pi].  Convert this angle to the absolute range [0, 1],
+        ' which is the range used by PD's HSV conversion functions.
+        dstHue = (pxAngle + PI) / PI_DOUBLE
+        
+    End If
+    
+End Function
+
+Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+    
+    m_MouseDownWheel = False
+    
+    'Reset the cursor and hover behavior accordingly
+    Dim tmpHue As Double
+    m_MouseInsideWheel = isMouseInsideHueWheel(x, y, True, tmpHue)
+    
+    If m_MouseInsideWheel Then
+        cMouseEvents.setSystemCursor IDC_HAND
+        m_HueHover = tmpHue
+    Else
+        cMouseEvents.setSystemCursor IDC_DEFAULT
+        m_HueHover = -1
+    End If
+    
+    'Redraw the control to match
+    DrawUC
+    
 End Sub
 
 'The pdWindowPaint class raises this event when the navigator box needs to be redrawn.  The passed coordinates contain
@@ -207,11 +334,10 @@ Private Sub CreateColorWheel()
         ' already a black square, and atop that we're going to draw a white circle at the outer radius size, and a black circle
         ' at the inner radius size.  Both will be antialiased.  Black pixels will then be made transparent, while white pixels
         ' are fully opaque.  Gray pixels will be shaded on-the-fly.
-        Dim cX As Single, cY As Single
-        cX = wheelDiameter / 2: cY = cX
+        m_HueWheelCenterX = wheelDiameter / 2: m_HueWheelCenterY = m_HueWheelCenterX
         
-        GDI_Plus.GDIPlusFillCircleToDC m_WheelBuffer.getDIBDC, cX, cY, m_HueRadiusOuter, RGB(255, 255, 255), 255
-        GDI_Plus.GDIPlusFillCircleToDC m_WheelBuffer.getDIBDC, cX, cY, m_HueRadiusInner, RGB(0, 0, 0), 255
+        GDI_Plus.GDIPlusFillCircleToDC m_WheelBuffer.getDIBDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter, RGB(255, 255, 255), 255
+        GDI_Plus.GDIPlusFillCircleToDC m_WheelBuffer.getDIBDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner, RGB(0, 0, 0), 255
         
         'With our "alpha guidance" pixels drawn, we can now loop through the image, rendering actual hue colors as we go.
         ' For convenience, we will place hue 0 at angle 0.
@@ -247,8 +373,8 @@ Private Sub CreateColorWheel()
             Else
             
                 'Remap the coordinates so that (0, 0) represents the center of the image
-                nX = (x \ 4) - cX
-                nY = y - cY
+                nX = (x \ 4) - m_HueWheelCenterX
+                nY = y - m_HueWheelCenterY
                 
                 'Calculate an angle for this pixel
                 pxAngle = Math_Functions.Atan2(nY, nX)
@@ -284,6 +410,9 @@ Private Sub CreateColorWheel()
         'With our work complete, point the array away from the DIB before VB attempts to deallocate it
         CopyMemory ByVal VarPtrArray(hPixels), 0&, 4
         
+        'Mark the wheel DIB's premultiplied alpha state
+        m_WheelBuffer.setInitialAlphaPremultiplicationState True
+        
     End If
     
 End Sub
@@ -301,6 +430,21 @@ Private Sub DrawUC()
         
         'Paint the hue wheel (currently left-aligned)
         If Not (m_WheelBuffer Is Nothing) Then m_WheelBuffer.alphaBlendToDC m_BackBuffer.getDIBDC
+        
+        'Draw a "pie-slice" outline around the current hue value.  This is somewhat complicated, as we must reverse-engineer the
+        ' angle of the current hue.
+        
+        'TEMPORARY DEBUG: draw a clock-like line for testing
+        
+        'Retrieve the UI angle of the current hue value
+        Dim hueAngle As Single
+        hueAngle = getUIAngleOfHue(m_Hue)
+        
+        'Convert that to an (x, y) pair
+        Dim dstX As Double, dstY As Double
+        Math_Functions.convertPolarToCartesian hueAngle, m_HueRadiusOuter, dstX, dstY, m_HueWheelCenterX, m_HueWheelCenterY
+        
+        GDI_Plus.GDIPlusDrawCanvasLine m_BackBuffer.getDIBDC, m_HueWheelCenterX, m_HueWheelCenterY, dstX, dstY
         
     'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
     Else
@@ -325,6 +469,14 @@ Private Sub DrawUC()
     End If
 
 End Sub
+
+'Given a hue on the range [0, 1], return a GDIPlus-friendly UI angle for the hue wheel
+Private Function getUIAngleOfHue(ByVal srcHue As Single) As Single
+    
+    'A hue of "0" corresponds to an angle of Pi.  A hue of "1" corresponds to an angle of -Pi (hue is circular).
+    getUIAngleOfHue = (srcHue * PI_DOUBLE) - PI
+    
+End Function
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)

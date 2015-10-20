@@ -78,9 +78,9 @@ End Sub
 'Whenever this panel is resized, we must reflow all objects to fit the available space.
 Private Sub ReflowInterface()
 
-    'For now, make the color wheel UC the same size as the underlying form
+    'For now, left-align the color wheel UC
     If Me.ScaleWidth > 10 Then
-        clrWheel.Move 0, 0, Me.ScaleWidth - FixDPI(10), Me.ScaleHeight
+        clrWheel.Move 0, 0, Me.ScaleHeight, Me.ScaleHeight
     End If
 
 End Sub
