@@ -23,6 +23,21 @@ Begin VB.UserControl pdCanvas
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   886
    ToolboxBitmap   =   "pdCanvas.ctx":0000
+   Begin VB.PictureBox picProgressBar 
+      Align           =   2  'Align Bottom
+      Appearance      =   0  'Flat
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   255
+      Left            =   0
+      ScaleHeight     =   17
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   886
+      TabIndex        =   2
+      Top             =   7095
+      Visible         =   0   'False
+      Width           =   13290
+   End
    Begin PhotoDemon.pdButtonToolbox cmdCenter 
       Height          =   255
       Left            =   5040
@@ -56,21 +71,6 @@ Begin VB.UserControl pdCanvas
       _ExtentY        =   8705
       BackColor       =   0
       VisualStyle     =   1
-   End
-   Begin VB.PictureBox picProgressBar 
-      Align           =   2  'Align Bottom
-      Appearance      =   0  'Flat
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   255
-      Left            =   0
-      ScaleHeight     =   17
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   886
-      TabIndex        =   2
-      Top             =   7095
-      Visible         =   0   'False
-      Width           =   13290
    End
    Begin VB.PictureBox picCanvas 
       Appearance      =   0  'Flat
