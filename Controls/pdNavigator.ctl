@@ -17,6 +17,7 @@ Begin VB.UserControl pdNavigator
    ScaleHeight     =   79
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   103
+   ToolboxBitmap   =   "pdNavigator.ctx":0000
    Begin VB.PictureBox picNavigator 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
@@ -41,8 +42,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Navigation custom control
 'Copyright 2015-2015 by Tanner Helland
 'Created: 16/October/15
-'Last updated: 16/October/15
-'Last update: initial build
+'Last updated: 17/October/15
+'Last update: wrap up initial build
 '
 'In 7.0, a "navigation" panel was added to the right-side toolbar.  This user control provides the actual "navigation"
 ' behavior, where the user can click anywhere on the image thumbnail to move the viewport over that location.
@@ -116,6 +117,16 @@ Public Property Get ContainerHwnd() As Long
     ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
+'When the control receives focus, relay the event externally
+Private Sub cFocusDetector_GotFocusReliable()
+    RaiseEvent GotFocusAPI
+End Sub
+
+'When the control loses focus, relay the event externally
+Private Sub cFocusDetector_LostFocusReliable()
+    RaiseEvent LostFocusAPI
+End Sub
+
 Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     'If the mouse button is clicked inside the image portion of the navigator, scroll to that (x, y) position
@@ -133,16 +144,6 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
     m_MouseInsideBox = False
     m_LastMouseX = -1: m_LastMouseY = -1
     cMouseEvents.setSystemCursor IDC_DEFAULT
-End Sub
-
-'When the control receives focus, relay the event externally
-Private Sub cFocusDetector_GotFocusReliable()
-    RaiseEvent GotFocusAPI
-End Sub
-
-'When the control loses focus, relay the event externally
-Private Sub cFocusDetector_LostFocusReliable()
-    RaiseEvent LostFocusAPI
 End Sub
 
 Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -337,12 +338,7 @@ Private Sub DrawNavigator()
             With m_ThumbRect
                 GDI_Plus.GDIPlus_StretchBlt m_BackBuffer, .Left, .Top, .Width, .Height, m_ImageThumbnail, 0, 0, .Width, .Height, , InterpolationModeHighQualityBicubic
             End With
-            
-            'Trace the preview area with a thin border
-            With m_ThumbRect
-                GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, .Left - 1, .Top - 1, .Left + .Width, .Top + .Height, g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
-            End With
-            
+                        
             'Query the active image for a copy of the intersection rect of the viewport, and the image itself, in image coordinate space
             Dim viewportRect As RECTF
             pdImages(g_CurrentImage).imgViewport.getIntersectRectImage viewportRect
