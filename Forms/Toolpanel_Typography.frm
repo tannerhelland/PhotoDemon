@@ -516,7 +516,7 @@ Begin VB.Form toolpanel_FancyText
          End
          Begin PhotoDemon.sliderTextCombo sltCharSpacing 
             CausesValidation=   0   'False
-            Height          =   495
+            Height          =   405
             Left            =   1200
             TabIndex        =   30
             Top             =   420
@@ -541,7 +541,7 @@ Begin VB.Form toolpanel_FancyText
          End
          Begin PhotoDemon.sliderTextCombo sltCharOrientation 
             CausesValidation=   0   'False
-            Height          =   495
+            Height          =   405
             Left            =   1200
             TabIndex        =   31
             Top             =   900
@@ -611,7 +611,7 @@ Begin VB.Form toolpanel_FancyText
          End
          Begin PhotoDemon.sliderTextCombo sltCharInflation 
             CausesValidation=   0   'False
-            Height          =   495
+            Height          =   405
             Left            =   5160
             TabIndex        =   35
             Top             =   420
@@ -1435,7 +1435,7 @@ Private Sub Form_Load()
         lastUsedSettings.loadAllControlValues
         
         'Update everything against the current theme.  This will also set tooltips for various controls.
-        updateAgainstCurrentTheme
+        UpdateAgainstCurrentTheme
         
     End If
 
@@ -1471,7 +1471,7 @@ Private Sub lblConvertLayerConfirm_Click()
     'Hide the warning panel and redraw both the viewport, and the UI (as new UI options may now be available)
     Me.updateAgainstCurrentLayer
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    syncInterfaceToCurrentImage
+    SyncInterfaceToCurrentImage
     
 End Sub
 
@@ -1871,10 +1871,10 @@ End Sub
 ' 3) MakeFormPretty is called, which redraws the form itself according to any theme and/or system settings.
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
 
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
-    makeFormPretty Me
+    MakeFormPretty Me
 
 End Sub

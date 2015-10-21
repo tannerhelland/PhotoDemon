@@ -838,7 +838,7 @@ Private Sub UserControl_Show()
         
     'When the control is first made visible, remove the control's tooltip property and reassign it to the checkbox
     ' using a custom solution (which allows for linebreaks and theming).
-    If Len(Extender.ToolTipText) <> 0 Then assignTooltip Extender.ToolTipText
+    If Len(Extender.ToolTipText) <> 0 Then AssignTooltip Extender.ToolTipText
     
     'If the track style is some kind of custom gradient, recreate our internal gradient DIB now
     If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Or (curSliderStyle = HueSpectrum360) Then redrawInternalGradientDIB
@@ -1465,18 +1465,18 @@ Private Sub evaluateFocusCount(ByVal focusCountJustIncremented As Boolean)
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
     
     'The text up/down can redraw itself
-    tudPrimary.updateAgainstCurrentTheme
+    tudPrimary.UpdateAgainstCurrentTheme
     
     If g_IsProgramRunning Then
             
         'Our tooltip object must also be refreshed (in case the language has changed)
-        toolTipManager.updateAgainstCurrentTheme
+        toolTipManager.UpdateAgainstCurrentTheme
         
         'The caption manager will also refresh itself
-        m_Caption.updateAgainstCurrentTheme
+        m_Caption.UpdateAgainstCurrentTheme
         
     End If
     
@@ -1490,7 +1490,7 @@ End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
-Public Sub assignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     toolTipManager.setTooltip Me.hWnd, UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
     toolTipManager.setTooltip picScroll.hWnd, UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub

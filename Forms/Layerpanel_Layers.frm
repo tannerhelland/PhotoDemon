@@ -991,15 +991,15 @@ Private Sub Form_Load()
     lastUsedSettings.loadAllControlValues
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
-    updateAgainstCurrentTheme
+    UpdateAgainstCurrentTheme
     
     'Reflow the interface to match its current size
-    reflowInterface
+    ReflowInterface
     
 End Sub
 
 Private Sub Form_Resize()
-    reflowInterface
+    ReflowInterface
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
@@ -1516,7 +1516,7 @@ End Sub
 'Whenever the layer toolbox is resized, we must reflow all objects to fill the available space.  Note that we do not do
 ' specialized handling for the vertical direction; vertically, the only change we handle is resizing the layer box itself
 ' to fill whatever vertical space is available.
-Private Sub reflowInterface()
+Private Sub ReflowInterface()
 
     'When the parent form is resized, resize the layer list (and other items) to properly fill the
     ' available horizontal and vertical space.
@@ -1577,7 +1577,7 @@ End Sub
 ' 3) MakeFormPretty is called, which redraws the form itself according to any theme and/or system settings.
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
@@ -1585,13 +1585,13 @@ Public Sub updateAgainstCurrentTheme()
     
     'Recreate tooltips (necessary to support run-time language changes)
     'Add helpful tooltips to the layer action buttons at the bottom of the toolbox
-    cmdLayerAction(0).assignTooltip "Add a blank layer to the image.", "New layer"
-    cmdLayerAction(1).assignTooltip "Delete the currently selected layer.", "Delete layer"
-    cmdLayerAction(2).assignTooltip "Move the current layer upward in the layer stack.", "Move layer up"
-    cmdLayerAction(3).assignTooltip "Move the current layer downward in the layer stack.", "Move layer down"
+    cmdLayerAction(0).AssignTooltip "Add a blank layer to the image.", "New layer"
+    cmdLayerAction(1).AssignTooltip "Delete the currently selected layer.", "Delete layer"
+    cmdLayerAction(2).AssignTooltip "Move the current layer upward in the layer stack.", "Move layer up"
+    cmdLayerAction(3).AssignTooltip "Move the current layer downward in the layer stack.", "Move layer down"
     
     'Reflow the interface, to account for any language changes.  (This will also trigger a redraw of the layer list box.)
-    reflowInterface
+    ReflowInterface
     
 End Sub
 

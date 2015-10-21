@@ -754,10 +754,10 @@ Private Sub UserControl_Show()
         cmdAspectRatio.AssignImage_Pressed "LOCK_32"
         
         'Add tooltips to the controls that natively support them
-        cmdAspectRatio.assignTooltip "Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.", "Preserve aspect ratio"
-        cmbWidthUnit.assignTooltip "Change the unit of measurement used to resize the image."
-        cmbHeightUnit.assignTooltip "Change the unit of measurement used to resize the image."
-        cmbResolution.assignTooltip "Change the unit of measurement used for image resolution (pixel density)."
+        cmdAspectRatio.AssignTooltip "Preserve aspect ratio (sometimes called Constrain Proportions).  Use this option to resize an image while keeping the width and height in sync.", "Preserve aspect ratio"
+        cmbWidthUnit.AssignTooltip "Change the unit of measurement used to resize the image."
+        cmbHeightUnit.AssignTooltip "Change the unit of measurement used to resize the image."
+        cmbResolution.AssignTooltip "Change the unit of measurement used for image resolution (pixel density)."
                 
     End If
 

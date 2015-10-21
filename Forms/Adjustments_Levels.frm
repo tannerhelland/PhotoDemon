@@ -1124,8 +1124,8 @@ Private Sub Form_Load()
     'Add button images
     cmdColorSelect(0).AssignImage "EYE_DROPPER_GENERIC"
     cmdColorSelect(1).AssignImage "EYE_DROPPER_GENERIC"
-    cmdColorSelect(0).assignTooltip "When this button is active, you can set the shadow input level color by right-clicking a color in the preview window."
-    cmdColorSelect(1).assignTooltip "When this button is active, you can set the highlight input level color by right-clicking a color in the preview window."
+    cmdColorSelect(0).AssignTooltip "When this button is active, you can set the shadow input level color by right-clicking a color in the preview window."
+    cmdColorSelect(1).AssignTooltip "When this button is active, you can set the highlight input level color by right-clicking a color in the preview window."
     cmdColorSelect(0).Value = True
     
     'Apply translations and visual themes

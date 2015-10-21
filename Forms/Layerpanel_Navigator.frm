@@ -71,15 +71,15 @@ Private Sub Form_Load()
     lastUsedSettings.loadAllControlValues
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
-    updateAgainstCurrentTheme
+    UpdateAgainstCurrentTheme
     
     'Reflow the interface to match its current size
-    reflowInterface
+    ReflowInterface
     
 End Sub
 
 'Whenever this panel is resized, we must reflow all objects to fit the available space.
-Private Sub reflowInterface()
+Private Sub ReflowInterface()
 
     'For now, make the navigator UC the same size as the underlying form
     If Me.ScaleWidth > 10 Then
@@ -94,19 +94,19 @@ End Sub
 ' 3) MakeFormPretty is called, which redraws the form itself according to any theme and/or system settings.
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
     MakeFormPretty Me
     
     'Reflow the interface, to account for any language changes.
-    reflowInterface
+    ReflowInterface
     
 End Sub
 
 Private Sub Form_Resize()
-    reflowInterface
+    ReflowInterface
 End Sub
 
 'The navigator will periodically request new thumbnails.  Supply them whenever requested.

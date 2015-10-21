@@ -58,7 +58,7 @@ Private Sub Form_Load()
     Dim i As Long
         
     'Update everything against the current theme.  This will also set tooltips for various controls.
-    updateAgainstCurrentTheme
+    UpdateAgainstCurrentTheme
     
 End Sub
 
@@ -69,10 +69,10 @@ Private Sub Form_Unload(Cancel As Integer)
     
     If g_ProgramShuttingDown Then
         ReleaseFormTheming Me
-        g_WindowManager.unregisterForm Me
+        g_WindowManager.UnregisterForm Me
     Else
         Cancel = True
-        toggleToolbarVisibility TOOLS_TOOLBOX
+        ToggleToolbarVisibility TOOLS_TOOLBOX
     End If
     
 End Sub
@@ -83,11 +83,11 @@ End Sub
 ' 3) MakeFormPretty is called, which redraws the form itself according to any theme and/or system settings.
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'The top separator line is colored according to the current shadow accent color
     If Not g_Themer Is Nothing Then

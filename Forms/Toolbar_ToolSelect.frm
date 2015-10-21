@@ -544,7 +544,7 @@ Private Sub Form_Load()
     ' position are loaded from the user's preference file.
     
     'As a final step, redraw everything against the current theme.
-    updateAgainstCurrentTheme
+    UpdateAgainstCurrentTheme
     
 End Sub
 
@@ -1075,7 +1075,7 @@ End Sub
 ' 3) MakeFormPretty is called, which redraws the form itself according to any theme and/or system settings.
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
 
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
@@ -1085,40 +1085,40 @@ Public Sub updateAgainstCurrentTheme()
     ' between two non-English languages at run-time.
     
     'File tool buttons come first
-    cmdFile(FILE_NEW).assignTooltip "This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.", "New Image"
-    cmdFile(FILE_OPEN).assignTooltip "Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.", "Open one or more images for editing"
+    cmdFile(FILE_NEW).AssignTooltip "This option will create a blank image.  Other ways to create new images can be found in the File -> Import menu.", "New Image"
+    cmdFile(FILE_OPEN).AssignTooltip "Another way to open images is dragging them from your desktop or Windows Explorer and dropping them onto PhotoDemon.", "Open one or more images for editing"
     
     If g_ConfirmClosingUnsaved Then
-        cmdFile(FILE_CLOSE).assignTooltip "If the current image has not been saved, you will receive a prompt to save it before it closes.", "Close the current image"
+        cmdFile(FILE_CLOSE).AssignTooltip "If the current image has not been saved, you will receive a prompt to save it before it closes.", "Close the current image"
     Else
-        cmdFile(FILE_CLOSE).assignTooltip "Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.", "Close the current image"
+        cmdFile(FILE_CLOSE).AssignTooltip "Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.", "Close the current image"
     End If
     
     If g_UserPreferences.GetPref_Long("Saving", "Overwrite Or Copy", 0) = 0 Then
-        cmdFile(FILE_SAVE).assignTooltip "WARNING: this will overwrite the current image file.  To save to a different file, use the ""Save As"" button.", "Save image in current format"
+        cmdFile(FILE_SAVE).AssignTooltip "WARNING: this will overwrite the current image file.  To save to a different file, use the ""Save As"" button.", "Save image in current format"
     Else
-        cmdFile(FILE_SAVE).assignTooltip "You have specified ""safe"" save mode, which means that each save will create a new file with an auto-incremented filename.", "Save image in current format"
+        cmdFile(FILE_SAVE).AssignTooltip "You have specified ""safe"" save mode, which means that each save will create a new file with an auto-incremented filename.", "Save image in current format"
     End If
     
-    cmdFile(FILE_SAVEAS_LAYERS).assignTooltip "Use this to quickly save a lossless copy of the current image.  The lossless copy will be saved in PDI format, in the image's current folder, using the current filename (plus an auto-incremented number, as necessary).", "Save lossless copy"
-    cmdFile(FILE_SAVEAS_FLAT).assignTooltip "The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image.", "Save As (export to new format or filename)"
+    cmdFile(FILE_SAVEAS_LAYERS).AssignTooltip "Use this to quickly save a lossless copy of the current image.  The lossless copy will be saved in PDI format, in the image's current folder, using the current filename (plus an auto-incremented number, as necessary).", "Save lossless copy"
+    cmdFile(FILE_SAVEAS_FLAT).AssignTooltip "The Save As command always raises a dialog, so you can specify a new file name, folder, and/or image format for the current image.", "Save As (export to new format or filename)"
         
     'Non-destructive tool buttons are next
-    cmdTools(NAV_DRAG).assignTooltip "Hand (click-and-drag image scrolling)"
-    cmdTools(NAV_MOVE).assignTooltip "Move and resize image layers"
-    cmdTools(QUICK_FIX_LIGHTING).assignTooltip "Apply non-destructive lighting adjustments"
+    cmdTools(NAV_DRAG).AssignTooltip "Hand (click-and-drag image scrolling)"
+    cmdTools(NAV_MOVE).AssignTooltip "Move and resize image layers"
+    cmdTools(QUICK_FIX_LIGHTING).AssignTooltip "Apply non-destructive lighting adjustments"
     
     '...then selections...
-    cmdTools(SELECT_RECT).assignTooltip "Rectangular Selection"
-    cmdTools(SELECT_CIRC).assignTooltip "Elliptical (Oval) Selection"
-    cmdTools(SELECT_LINE).assignTooltip "Line Selection"
-    cmdTools(SELECT_POLYGON).assignTooltip "Polygon Selection"
-    cmdTools(SELECT_LASSO).assignTooltip "Lasso (Freehand) Selection"
-    cmdTools(SELECT_WAND).assignTooltip "Magic Wand Selection"
+    cmdTools(SELECT_RECT).AssignTooltip "Rectangular Selection"
+    cmdTools(SELECT_CIRC).AssignTooltip "Elliptical (Oval) Selection"
+    cmdTools(SELECT_LINE).AssignTooltip "Line Selection"
+    cmdTools(SELECT_POLYGON).AssignTooltip "Polygon Selection"
+    cmdTools(SELECT_LASSO).AssignTooltip "Lasso (Freehand) Selection"
+    cmdTools(SELECT_WAND).AssignTooltip "Magic Wand Selection"
     
     '...then vector tools...
-    cmdTools(VECTOR_TEXT).assignTooltip "Text (basic)"
-    cmdTools(VECTOR_FANCYTEXT).assignTooltip "Typography (advanced)"
+    cmdTools(VECTOR_TEXT).AssignTooltip "Text (basic)"
+    cmdTools(VECTOR_FANCYTEXT).AssignTooltip "Typography (advanced)"
     
     'The right separator line is colored according to the current shadow accent color
     If Not g_Themer Is Nothing Then

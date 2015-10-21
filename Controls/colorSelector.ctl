@@ -486,15 +486,15 @@ Public Sub notifyOfLiveColorChange(ByVal newColor As Long)
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
     
     If g_IsProgramRunning Then
             
         'Our tooltip object must also be refreshed (in case the language has changed)
-        toolTipManager.updateAgainstCurrentTheme
+        toolTipManager.UpdateAgainstCurrentTheme
         
         'The caption manager will also refresh itself
-        m_Caption.updateAgainstCurrentTheme
+        m_Caption.UpdateAgainstCurrentTheme
         
         'Re-enable color management for the underlying UC
         Color_Management.TurnOnDefaultColorManagement UserControl.hDC, UserControl.hWnd
@@ -511,6 +511,6 @@ End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
-Public Sub assignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     toolTipManager.setTooltip Me.hWnd, UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub

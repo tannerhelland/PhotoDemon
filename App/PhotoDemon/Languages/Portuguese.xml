@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.100</langversion>
+<langversion>6.7.101</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -2923,6 +2923,12 @@ Please válidos inserir um valor numérico.</translation>
 
 <!-- END text for pdParamXML.cls-->
 
+<!-- BEGIN text for pdPixelBlender.cls -->
+
+<!-- pdPixelBlender.cls contains 0 phrases. -->
+
+<!-- END text for pdPixelBlender.cls-->
+
 <!-- BEGIN text for pdPreferences.cls -->
 
 <!-- pdPreferences.cls contains 0 phrases. -->
@@ -3498,6 +3504,12 @@ or os menus File> Open e File> Import.</translation>
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdLabel.ctl-->
+
+<!-- BEGIN text for pdNavigator.ctl -->
+
+<!-- pdNavigator.ctl contains 0 phrases. -->
+
+<!-- END text for pdNavigator.ctl-->
 
 <!-- BEGIN text for pdScrollBar.ctl -->
 
@@ -11718,6 +11730,12 @@ To ativar o suporte para esse recurso, copie o arquivo FreeImage.dll para o plug
 
 <!-- END text for Layer_Transparency_RemoveTransparency.frm-->
 
+<!-- BEGIN text for Layerpanel_Colors.frm (layerpanel_Colors) -->
+
+<!-- Layerpanel_Colors.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Colors.frm-->
+
 <!-- BEGIN text for Layerpanel_Layers.frm (layerpanel_Layers) -->
 
 <phrase>
@@ -11818,6 +11836,12 @@ To ativar o suporte para esse recurso, copie o arquivo FreeImage.dll para o plug
 <!-- Layerpanel_Layers.frm contains 43 phrases. 24 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
+
+<!-- BEGIN text for Layerpanel_Navigator.frm (layerpanel_Navigator) -->
+
+<!-- Layerpanel_Navigator.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Navigator.frm-->
 
 <!-- BEGIN text for Select_GenericModification.frm (FormSelectionDialogs) -->
 
@@ -14278,29 +14302,11 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdPixelBlender.cls -->
+<!-- BEGIN text for pdColorWheel.ctl -->
 
-<!-- pdPixelBlender.cls contains 0 phrases. -->
+<!-- pdColorWheel.ctl contains 0 phrases. -->
 
-<!-- END text for pdPixelBlender.cls-->
-
-<!-- BEGIN text for Layerpanel_Navigator.frm (layerpanel_Navigator) -->
-
-<!-- Layerpanel_Navigator.frm contains 0 phrases. -->
-
-<!-- END text for Layerpanel_Navigator.frm-->
-
-<!-- BEGIN text for Layerpanel_Colors.frm (layerpanel_Colors) -->
-
-<!-- Layerpanel_Colors.frm contains 0 phrases. -->
-
-<!-- END text for Layerpanel_Colors.frm-->
-
-<!-- BEGIN text for pdNavigator.ctl -->
-
-<!-- pdNavigator.ctl contains 0 phrases. -->
-
-<!-- END text for pdNavigator.ctl-->
+<!-- END text for pdColorWheel.ctl-->
 
 <!-- Automatic text extraction complete. -->
 

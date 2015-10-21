@@ -169,19 +169,19 @@ Public Sub showDialog(ByRef ownerForm As Form)
         
     'If the image has been saved before, update the tooltip text on the "Save" button accordingly
     If Len(pdImages(imageBeingClosed).locationOnDisk) <> 0 Then
-        cmdAnswer(0).assignTooltip "NOTE: if you click 'Save', PhotoDemon will save this image using its current file name." & vbCrLf & vbCrLf & "If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item."
+        cmdAnswer(0).AssignTooltip "NOTE: if you click 'Save', PhotoDemon will save this image using its current file name." & vbCrLf & vbCrLf & "If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item."
     Else
-        cmdAnswer(0).assignTooltip "Because this image has not been saved before, you will be prompted to provide a file name for it."
+        cmdAnswer(0).AssignTooltip "Because this image has not been saved before, you will be prompted to provide a file name for it."
     End If
     
-    cmdAnswer(1).assignTooltip "If you do not save this image, any changes you have made will be permanently lost."
-    cmdAnswer(2).assignTooltip "Canceling will return you to the main PhotoDemon window."
+    cmdAnswer(1).AssignTooltip "If you do not save this image, any changes you have made will be permanently lost."
+    cmdAnswer(2).AssignTooltip "Canceling will return you to the main PhotoDemon window."
     
     'Automatically draw a warning icon using the system icon set
     Dim iconY As Long
-    iconY = fixDPI(24)
-    If g_UseFancyFonts Then iconY = iconY + fixDPI(2)
-    DrawSystemIcon IDI_EXCLAMATION, Me.hDC, fixDPI(277), iconY
+    iconY = FixDPI(24)
+    If g_UseFancyFonts Then iconY = iconY + FixDPI(2)
+    DrawSystemIcon IDI_EXCLAMATION, Me.hDC, FixDPI(277), iconY
     
     'Provide a default answer of "cancel" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbCancel
@@ -219,15 +219,15 @@ Public Sub showDialog(ByRef ownerForm As Form)
     'When translations are active, some lengthy language may push the check box caption completely off-screen.
     ' To prevent this, give the check box a large buffer space if translations are active.
     If g_Language.translationActive Then
-        chkRepeat.Left = fixDPI(8)
-        chkRepeat.Width = Me.ScaleWidth - fixDPI(16)
+        chkRepeat.Left = FixDPI(8)
+        chkRepeat.Width = Me.ScaleWidth - FixDPI(16)
     End If
     
     'Apply any custom styles to the form
-    makeFormPretty Me
+    MakeFormPretty Me
         
     'Display the form
-    showPDDialog vbModal, Me, True
+    ShowPDDialog vbModal, Me, True
 
 End Sub
 

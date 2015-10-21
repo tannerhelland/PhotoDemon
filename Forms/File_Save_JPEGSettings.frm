@@ -523,7 +523,7 @@ Public Sub showDialog()
     cmbAutoQuality.ToolTipText = g_Language.TranslateMessage("PhotoDemon can automatically choose a JPEG quality setting for you.  The statistical analyses it uses are designed around photographs; synthetic images or images with large regions of solid color may not work as well.")
     
     chkColorMatching.Value = vbUnchecked
-    chkColorMatching.assignTooltip "Perceptive color matching uses the CIE L*a*b* color space for highly accurate color modeling.  Enabling this setting may increase processing time by several seconds."
+    chkColorMatching.AssignTooltip "Perceptive color matching uses the CIE L*a*b* color space for highly accurate color modeling.  Enabling this setting may increase processing time by several seconds."
     
     'Populate the custom subsampling combo box as well
     cboSubsample.Clear
@@ -565,7 +565,7 @@ Public Sub showDialog()
     
     lblCurMetadata.Caption = curMDString
     
-    cboMetadata.assignTooltip "Image metadata is extra data placed in an image file by a camera or photo software.  This data can include things like the make and model of the camera, the GPS coordinates where a photo was taken, or many other items.  To view an image's metadata, use the Image -> Metadata menu."
+    cboMetadata.AssignTooltip "Image metadata is extra data placed in an image file by a camera or photo software.  This data can include things like the make and model of the camera, the GPS coordinates where a photo was taken, or many other items.  To view an image's metadata, use the Image -> Metadata menu."
     
     'If the image being saved is the primary image in the main PhotoDemon window, the user can choose to review the image's metadata
     If imageBeingExported.imageID = g_CurrentImage Then
@@ -598,10 +598,10 @@ Public Sub showDialog()
     End If
         
     'Apply some checkbox tooltips manually (so the translation engine can find them)
-    chkOptimize.assignTooltip "Optimization is highly recommended.  This option allows the JPEG encoder to compute an optimal Huffman coding table for the file.  It does not affect image quality - only file size."
-    chkProgressive.assignTooltip "Progressive encoding is sometimes used for JPEG files that will be used on the Internet.  It saves the image in three steps, which can be used to gradually fade-in the image on a slow Internet connection."
-    chkThumbnail.assignTooltip "Embedded thumbnails increase file size, but they help previews of the image appear more quickly in other software (e.g. Windows Explorer)."
-    chkSubsample.assignTooltip "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
+    chkOptimize.AssignTooltip "Optimization is highly recommended.  This option allows the JPEG encoder to compute an optimal Huffman coding table for the file.  It does not affect image quality - only file size."
+    chkProgressive.AssignTooltip "Progressive encoding is sometimes used for JPEG files that will be used on the Internet.  It saves the image in three steps, which can be used to gradually fade-in the image on a slow Internet connection."
+    chkThumbnail.AssignTooltip "Embedded thumbnails increase file size, but they help previews of the image appear more quickly in other software (e.g. Windows Explorer)."
+    chkSubsample.AssignTooltip "Subsampling affects the way the JPEG encoder compresses image luminance.  4:2:0 (moderate) is the default value."
     
     'FreeImage is required to perform the JPEG transformation.  We could use GDI+, but FreeImage is
     ' much easier to interface with.  If FreeImage is not available, warn the user.

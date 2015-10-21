@@ -139,7 +139,7 @@ Private Type buttonEntry
     btFontSize As Single            'If a button caption fits just fine, this value is 0.  If a translation is active and a button caption must be shrunk,
                                     ' this value will be non-zero, and the button renderer must use it when rendering the button.
     btToolTipText As String         'This control supports per-button tooltips.  This behavior can be overridden by not supplying an index to the
-                                    ' assignTooltip function.
+                                    ' AssignTooltip function.
     btToolTipTitle As String        'See above comments for btToolTipText
     btToolTipIcon As TT_ICON_TYPE  'See above comments for btToolTipText
 End Type
@@ -539,7 +539,7 @@ End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
 ' and/or retranslating all button captions against the current language.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
     
     'Determine if translations are active.  If they are, retrieve translated captions for all buttons within the control.
     If g_IsProgramRunning Then
@@ -573,7 +573,7 @@ Public Sub updateAgainstCurrentTheme()
     End If
     
     'Update our tooltip object as well
-    If g_IsProgramRunning Then toolTipManager.updateAgainstCurrentTheme
+    If g_IsProgramRunning Then toolTipManager.UpdateAgainstCurrentTheme
         
     'Because translations will change text layout, we need to recalculate font metrics prior to redrawing the button
     updateControlSize
@@ -1011,7 +1011,7 @@ End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
-Public Sub assignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE, Optional ByVal toolTipIndex As Long = -1)
+Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE, Optional ByVal toolTipIndex As Long = -1)
     
     'If toolTipIndex = -1, all buttons receive the same tooltip
     If toolTipIndex = -1 Then

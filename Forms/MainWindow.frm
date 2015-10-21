@@ -1634,7 +1634,7 @@ Private Sub asyncDownloader_FinishedAllItems(ByVal allDownloadsSuccessful As Boo
     asyncDownloader.freeResourcesForItem "PROGRAM_UPDATE_CHECK_USER"
     'asyncDownloader.Reset
     
-    FormMain.mainCanvas(0).setNetworkState False
+    FormMain.mainCanvas(0).SetNetworkState False
     Debug.Print "All downloads complete."
     
 End Sub
@@ -1742,13 +1742,13 @@ End Sub
 
 'External functions can request asynchronous downloads via this function.
 Public Function requestAsynchronousDownload(ByVal downloadKey As String, ByVal urlString As String, Optional ByVal OptionalDownloadType As Long = 0, Optional ByVal asyncFlags As AsyncReadConstants = vbAsyncReadResynchronize, Optional ByVal startDownloadImmediately As Boolean = False, Optional ByVal saveToThisFileWhenComplete As String = "", Optional ByVal checksumToVerify As Long = 0) As Boolean
-    FormMain.mainCanvas(0).setNetworkState True
+    FormMain.mainCanvas(0).SetNetworkState True
     requestAsynchronousDownload = Me.asyncDownloader.addToQueue(downloadKey, urlString, OptionalDownloadType, asyncFlags, startDownloadImmediately, saveToThisFileWhenComplete, checksumToVerify)
 End Function
 
 'External functions can use this to initiate any pending downloads (e.g. downloads they may have added via requestAsynchronousDownload, above)
 Public Sub triggerPendingAsynchronousDownloads()
-    FormMain.mainCanvas(0).setNetworkState True
+    FormMain.mainCanvas(0).SetNetworkState True
     Me.asyncDownloader.setAutoDownloadMode True
 End Sub
 
@@ -4026,7 +4026,7 @@ Private Sub MnuLoadAllMRU_Click()
     LoadFileAsNewImage sFile
     
     'If the image loaded successfully, activate it and bring it to the foreground
-    If g_OpenImageCount > 0 Then activatePDImage g_CurrentImage, "finished loading all recent images"
+    If g_OpenImageCount > 0 Then ActivatePDImage g_CurrentImage, "finished loading all recent images"
     
 End Sub
 
@@ -4230,7 +4230,7 @@ Public Sub mnuRecDocs_Click(Index As Integer)
     End If
     
     'If the image loaded successfully, activate it and bring it to the foreground
-    If g_OpenImageCount > 0 Then activatePDImage g_CurrentImage, "MRU entry finished loading"
+    If g_OpenImageCount > 0 Then ActivatePDImage g_CurrentImage, "MRU entry finished loading"
     
 End Sub
 
@@ -4666,7 +4666,7 @@ Private Sub moveToNextChildWindow(ByVal moveForward As Boolean)
                 
         If Not pdImages(i) Is Nothing Then
             If pdImages(i).IsActive Then
-                activatePDImage i, "user requested next/previous image"
+                ActivatePDImage i, "user requested next/previous image"
                 Exit Do
             End If
         End If
@@ -4737,7 +4737,7 @@ End Sub
 
 'Update the main form against the current theme.  At present, this is just a thin wrapper against the public makeFormPretty() function,
 ' but once the form's menu is owner-drawn, we will likely need some custom code to handle menu redraws and translations.
-Public Sub updateAgainstCurrentTheme(Optional ByVal useDoEvents As Boolean = False)
+Public Sub UpdateAgainstCurrentTheme(Optional ByVal useDoEvents As Boolean = False)
     MakeFormPretty Me, useDoEvents
 End Sub
 

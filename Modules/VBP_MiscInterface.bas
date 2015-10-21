@@ -1333,7 +1333,7 @@ Public Sub MakeFormPretty(ByRef tForm As Form, Optional ByVal useDoEvents As Boo
             eControl.Font.Name = g_InterfaceFont
         End If
         
-        'PhotoDemon's custom controls now provide universal support for an updateAgainstCurrentTheme function.  This updates two things:
+        'PhotoDemon's custom controls now provide universal support for an UpdateAgainstCurrentTheme function.  This updates two things:
         ' 1) The control's visual appearance (to reflect any changes to visual themes)
         ' 2) The translated caption, or other text (to reflect any changes to the active language)
         If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then eControl.UpdateAgainstCurrentTheme

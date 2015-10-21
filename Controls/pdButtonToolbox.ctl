@@ -148,8 +148,8 @@ Public Property Get DontHighlightDownState() As Boolean
     DontHighlightDownState = m_DontHighlightDownState
 End Property
 
-Public Property Let DontHighlightDownState(ByVal NewState As Boolean)
-    m_DontHighlightDownState = NewState
+Public Property Let DontHighlightDownState(ByVal newState As Boolean)
+    m_DontHighlightDownState = newState
     If Value Then redrawBackBuffer
 End Property
 
@@ -548,7 +548,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
     
     'Redraw the control, which will also cause a resync against any theme changes
     updateControlSize
@@ -663,13 +663,13 @@ End Sub
 
 'The color selector dialog has the unique need of capturing colors from anywhere on the screen, using a custom hook solution.  For it to work,
 ' the pdInputMouse class inside this button control must forcibly release its capture.
-Public Sub overrideMouseCapture(ByVal NewState As Boolean)
-    cMouseEvents.setCaptureOverride NewState
-    cMouseEvents.setCursorOverrideState NewState
+Public Sub overrideMouseCapture(ByVal newState As Boolean)
+    cMouseEvents.setCaptureOverride newState
+    cMouseEvents.setCursorOverrideState newState
 End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
-Public Sub assignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     toolTipManager.setTooltip Me.hWnd, Me.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub

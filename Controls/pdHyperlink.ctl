@@ -99,7 +99,7 @@ Private m_CurFontSize As Long
 
 'Current caption string (persistent within the IDE, but must be set at run-time for Unicode languages).  Note that m_CaptionEn
 ' is the ENGLISH CAPTION ONLY.  A translated caption will be stored in m_CaptionTranslated; the translated copy will be updated
-' by any caption change, or by a call to updateAgainstCurrentTheme.
+' by any caption change, or by a call to UpdateAgainstCurrentTheme.
 Private m_CaptionEn As String
 Private m_CaptionTranslated As String
 
@@ -636,7 +636,7 @@ Private Sub updateControlSize()
                 If g_IsProgramRunning Then
                     MoveWindow Me.hWnd, UserControl.Extender.Left, UserControl.Extender.Top, origWidth, stringHeight, 1
                 Else
-                    UserControl.Size pxToTwipsX(origWidth), pxToTwipsY(stringHeight)
+                    UserControl.Size PXToTwipsX(origWidth), PXToTwipsY(stringHeight)
                 End If
                 
                 'Recreate the backbuffer
@@ -690,7 +690,7 @@ Private Sub updateControlSize()
                 ' but not for .Height (aaarrrggghhh).  Fortunately, we can work around this rather easily by using MoveWindow and
                 ' forcing a repaint at run-time, and reverting to the problematic internal methods only in the IDE.
                 With UserControl
-                    .Size pxToTwipsX(stringWidth), pxToTwipsY(stringHeight)
+                    .Size PXToTwipsX(stringWidth), PXToTwipsY(stringHeight)
                 End With
                 
                 'Recreate the backbuffer
@@ -740,7 +740,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
     
     If g_IsProgramRunning Then
         
@@ -844,6 +844,6 @@ End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
-Public Sub assignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     toolTipManager.setTooltip Me.hWnd, Me.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub

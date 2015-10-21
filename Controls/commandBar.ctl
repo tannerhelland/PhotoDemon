@@ -752,13 +752,13 @@ Private Sub UserControl_Show()
     ' (which allows for linebreaks and theming).
     If g_IsProgramRunning Then
         
-        cmdOK.assignTooltip "Apply this action to the current image.", "OK"
-        cmdCancel.assignTooltip "Exit this tool.  No changes will be made to the image.", "Cancel"
+        cmdOK.AssignTooltip "Apply this action to the current image.", "OK"
+        cmdCancel.AssignTooltip "Exit this tool.  No changes will be made to the image.", "Cancel"
         
-        cmdAction(0).assignTooltip "Reset all settings to their default values.", "Reset"
-        cmdAction(1).assignTooltip "Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.", "Randomize"
-        cmdAction(2).assignTooltip "Save the current settings as a new preset.", "Save preset"
-        cboPreset.assignTooltip "Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right."
+        cmdAction(0).AssignTooltip "Reset all settings to their default values.", "Reset"
+        cmdAction(1).AssignTooltip "Randomly select new settings for this tool.  This is helpful for exploring how different settings affect the image.", "Randomize"
+        cmdAction(2).AssignTooltip "Save the current settings as a new preset.", "Save preset"
+        cboPreset.AssignTooltip "Previously saved presets can be selected here.  You can save the current settings as a new preset by clicking the Save Preset button on the right."
                 
         'Prep a preset file location.  In most cases, this is just the name of the parent form...
         parentToolName = Replace$(UserControl.Parent.Name, "Form", "", , , vbTextCompare)
