@@ -1182,7 +1182,7 @@ Private Sub drawHueBox()
         HSVtoRGB hVal, 1, 1, r, g, b
         
         'Draw the color
-        drawLineToDC hueBox.getDIBDC, 0, y, picHue.ScaleWidth, y, RGB(r, g, b)
+        Drawing.drawLineToDC hueBox.getDIBDC, 0, y, picHue.ScaleWidth, y, RGB(r, g, b)
         
     Next y
     
@@ -1214,30 +1214,41 @@ Private Sub syncInterfaceToCurrentColor()
     Dim tmpR As Long, tmpG As Long, tmpB As Long
     
     Dim loopWidth As Long, loopHeight As Long
-    loopWidth = primaryBox.getDIBWidth - 1
+    loopWidth = (primaryBox.getDIBWidth - 1) * 3
     loopHeight = primaryBox.getDIBHeight - 1
     
-    For x = 0 To loopWidth
-        QuickX = x * 3
-    For y = 0 To loopHeight
+    Dim lineSaturation As Double
     
+    'To improve performance, pre-calculate all value variants
+    Dim valuePresets() As Double
+    ReDim valuePresets(0 To loopWidth) As Double
+    For x = 0 To loopWidth Step 3
+        valuePresets(x) = x / loopWidth
+    Next x
+    
+    For y = 0 To loopHeight
+        
+        'Saturation is consistent for each y-position
+        lineSaturation = (loopHeight - y) / loopHeight
+        
+    For x = 0 To loopWidth Step 3
+        
         'The x-axis position determines value (0 -> 1)
         'The y-axis position determines saturation (1 -> 0)
-        HSVtoRGB curHue, (loopHeight - y) / loopHeight, x / loopWidth, tmpR, tmpG, tmpB
+        HSVtoRGB curHue, lineSaturation, valuePresets(x), tmpR, tmpG, tmpB
         
-        pImageData(QuickX + 2, y) = tmpR
-        pImageData(QuickX + 1, y) = tmpG
-        pImageData(QuickX, y) = tmpB
-    
-    Next y
+        pImageData(x, y) = tmpB
+        pImageData(x + 1, y) = tmpG
+        pImageData(x + 2, y) = tmpR
+        
     Next x
+    Next y
     
     'With our work complete, point the ImageData() array away from the DIBs and deallocate it
     CopyMemory ByVal VarPtrArray(pImageData), 0&, 4
-    Erase pImageData
     
     'We now want to draw a circle around the point where the user's current color resides
-    GDIPlusDrawCanvasCircle primaryBox.getDIBDC, curValue * loopWidth, (1 - curSaturation) * loopHeight, FixDPI(7), 192
+    GDIPlusDrawCanvasCircle primaryBox.getDIBDC, curValue * (loopWidth / 3), (1 - curSaturation) * loopHeight, FixDPI(7)
         
     'Render the primary color box
     primaryBox.renderToPictureBox picColor
@@ -1246,12 +1257,12 @@ Private Sub syncInterfaceToCurrentColor()
     ' not be properly color managed.
     
     If (m_tmpDIB Is Nothing) Then Set m_tmpDIB = New pdDIB
-    
     If (m_tmpDIB.getDIBWidth <> picCurrent.ScaleWidth) Or (m_tmpDIB.getDIBHeight <> picCurrent.ScaleHeight) Then
         m_tmpDIB.createBlank picCurrent.ScaleWidth, picCurrent.ScaleHeight, 24, RGB(curRed, curGreen, curBlue)
     Else
         GDI_Plus.GDIPlusFillDIBRect m_tmpDIB, 0, 0, m_tmpDIB.getDIBWidth, m_tmpDIB.getDIBHeight, RGB(curRed, curGreen, curBlue)
     End If
+    
     m_tmpDIB.renderToPictureBox picCurrent
     
     'Synchronize all text boxes to their current values
@@ -1461,7 +1472,7 @@ Private Sub renderSampleDIB(ByRef dstDIB As pdDIB, ByVal dibColorType As colorCh
         End If
         
         'Draw the color
-        drawLineToDC dstDIB.getDIBDC, x, 0, x, dstDIB.getDIBHeight, RGB(r, g, b)
+        Drawing.drawLineToDC dstDIB.getDIBDC, x, 0, x, dstDIB.getDIBHeight, RGB(r, g, b)
         
     Next x
     
