@@ -73,9 +73,9 @@ Private m_BackBuffer As pdDIB
 ' (particularly the hue wheel), creating them from scratch is costly, so reuse is advisable.
 Private m_WheelBuffer As pdDIB, m_SquareBuffer As pdDIB
 
-'These values will be TRUE while the mouse is inside various parts of the UC.
+'These values help the central renderer know where the mouse is, so we can draw various indicators.
 Private m_MouseInsideWheel As Boolean, m_MouseInsideBox As Boolean
-Private m_MouseDownWheel As Boolean
+Private m_MouseDownWheel As Boolean, m_MouseDownBox As Boolean
 
 'API technique for drawing a focus rectangle; used only for designer mode (see the Paint method for details)
 Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
@@ -96,11 +96,9 @@ Private m_HueRadiusInner As Single, m_HueRadiusOuter As Single
 'Various saturation + value box positioning values.  These are calculated by the CreateSVSquare function and cached here, as a
 ' convenience for subsequent hit-testing and rendering.
 Private m_SVRectF As RECTF
-Private m_SVTopLeftX As Double, m_SVTopLeftY As Double
-Private m_SVWidth As Single, m_SVHeight As Single
 
-'Current control hue value, on the range [0, 1].  Make sure to update this if a new color is supplied externally.
-Private m_Hue As Double
+'Current control HSV values, on the range [0, 1].  Make sure to update these if a new color is supplied externally.
+Private m_Hue As Double, m_Saturation As Double, m_Value As Double
 
 'If the mouse is currently over the hue wheel, but the left mouse button is *not* down, this will be set to a value >= 0.
 ' We can use this to help orient the user.
@@ -136,9 +134,10 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
         'If the mouse is down inside the wheel area, assign a new hue value to the control
         If m_MouseDownWheel Then
             
-            'Store the new hue value, and reset the hover value
+            'Store the new hue value, and reset a number of other mouse values
             m_Hue = tmpHue
             m_HueHover = -1
+            m_MouseDownBox = False
             
             'Set a persistent hand cursor
             cMouseEvents.setSystemCursor IDC_HAND
@@ -148,7 +147,28 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
             
             'Redraw the control to match
             DrawUC
+        
+        Else
             
+            'See if the mouse cursor is inside the saturation + value box
+            Dim tmpSaturation As Double, tmpValue As Double
+            m_MouseDownBox = isMouseInsideSVBox(x, y, True, tmpSaturation, tmpValue)
+            
+            If m_MouseDownBox Then
+                
+                'Store the new saturation and value values, and reset a number of other mouse trackers
+                m_Saturation = tmpSaturation
+                m_Value = tmpValue
+                m_MouseDownWheel = False
+                
+                'Set a persistent hand cursor
+                cMouseEvents.setSystemCursor IDC_HAND
+                
+                'Redraw the control to match
+                DrawUC
+            
+            End If
+        
         End If
         
     End If
@@ -161,7 +181,7 @@ End Sub
 
 Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
-    Dim tmpHue As Double
+    Dim tmpHue As Double, tmpSaturation As Double, tmpValue As Double
     
     'If the mouse button was originally clicked inside the hue wheel, continue re-calculating hue, regardless of mouse position.
     If m_MouseDownWheel Then
@@ -169,25 +189,51 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         'Calculate a corresponding hue for this mouse position
         isMouseInsideHueWheel x, y, True, tmpHue
         
-        'Store this as the active hue, and erase the hover hue (if any)
+        'Store this as the active hue, and reset box parameters
         m_Hue = tmpHue
         m_HueHover = -1
+        m_MouseDownBox = False
+        m_MouseInsideBox = False
         
         'Any time the hue changes, the SV square must be redrawn
         CreateSVSquare
         
-    'The mouse was not originally clicked inside the wheel.  Update the cursor as necessary.
+    'The mouse was not originally clicked inside the wheel.  See if the mouse was clicked inside the box
+    ElseIf m_MouseDownBox Then
+    
+        'Calculate corresponding saturation and value values for this mouse position
+        isMouseInsideSVBox x, y, True, tmpSaturation, tmpValue
+        
+        'Store these as the active saturation+value, and reset wheel parameters
+        m_Saturation = tmpSaturation
+        m_Value = tmpValue
+        m_MouseDownWheel = False
+        m_MouseInsideWheel = False
+        m_HueHover = -1
+        
+    'The mouse was not clicked inside the box or wheel.  Ignore other clicks, and update the cursor as necessary.
     Else
     
-        'Reset cursor and hover behavior accordingly
+        'Wheel first
         m_MouseInsideWheel = isMouseInsideHueWheel(x, y, True, tmpHue)
         
         If m_MouseInsideWheel Then
             cMouseEvents.setSystemCursor IDC_HAND
             m_HueHover = tmpHue
+            m_MouseInsideBox = False
         Else
-            cMouseEvents.setSystemCursor IDC_DEFAULT
+            
             m_HueHover = -1
+            
+            'Box second
+            m_MouseInsideBox = isMouseInsideSVBox(x, y, True, tmpSaturation, tmpValue)
+            
+            If m_MouseInsideBox Then
+                cMouseEvents.setSystemCursor IDC_HAND
+            Else
+                cMouseEvents.setSystemCursor IDC_DEFAULT
+            End If
+            
         End If
         
     End If
@@ -197,6 +243,8 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     
 End Sub
 
+'Returns TRUE if the passed (x, y) coordinates lie inside the hue wheel.  An optional output parameter can be provided,
+' and this function will automatically fill it with the hue value at that (x, y) position.
 Private Function isMouseInsideHueWheel(ByVal x As Single, ByVal y As Single, Optional ByVal calculateHue As Boolean = False, Optional ByRef dstHue As Double) As Boolean
     
     'Start by re-centering the (x, y) pair around the hue wheel's center point
@@ -227,20 +275,57 @@ Private Function isMouseInsideHueWheel(ByVal x As Single, ByVal y As Single, Opt
     
 End Function
 
+'Returns TRUE if the passed (x, y) coordinates lie inside the saturation + value box.  Optional output parameters can be
+' provided, and this function will automatically fill them with the SV values at that (x, y) position.
+Private Function isMouseInsideSVBox(ByVal x As Single, ByVal y As Single, Optional ByVal calculateSV As Boolean = False, Optional ByRef dstSaturation As Double, Optional ByRef dstValue As Double) As Boolean
+    
+    'Hit-detection is easy, since we cache the box coordinates when recreating the corresponding DIB
+    isMouseInsideSVBox = Math_Functions.isPointInRectF(x, y, m_SVRectF)
+    
+    'If the caller wants us to calculate saturation and value outputs, do so now
+    If calculateSV Then
+        
+        'In the current design, X controls saturation while Y controls value.  The values are also reversed in the
+        ' on-screen display, so that the color itself sits closest to the canvas.
+        dstSaturation = 1 - ((x - m_SVRectF.Left) / m_SVRectF.Width)
+        dstValue = 1 - ((y - m_SVRectF.Top) / m_SVRectF.Height)
+        
+        'To prevent errors, clamp saturation and value now
+        If dstSaturation < 0 Then dstSaturation = 0
+        If dstSaturation > 1 Then dstSaturation = 1
+        If dstValue < 0 Then dstValue = 0
+        If dstValue > 1 Then dstValue = 1
+        
+        'The y-value is squared during rendering, to decrease the amount of space taken up by extremely dark color variants
+        If dstValue > 0 Then dstValue = Sqr(dstValue)
+        
+    End If
+    
+End Function
+
 Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
     
     m_MouseDownWheel = False
+    m_MouseDownBox = False
     
     'Reset the cursor and hover behavior accordingly
-    Dim tmpHue As Double
+    Dim tmpHue As Double, tmpSaturation As Double, tmpValue As Double
     m_MouseInsideWheel = isMouseInsideHueWheel(x, y, True, tmpHue)
     
     If m_MouseInsideWheel Then
         cMouseEvents.setSystemCursor IDC_HAND
         m_HueHover = tmpHue
     Else
-        cMouseEvents.setSystemCursor IDC_DEFAULT
+        
         m_HueHover = -1
+        
+        m_MouseInsideBox = isMouseInsideSVBox(x, y, True, tmpSaturation, tmpValue)
+        If m_MouseInsideBox Then
+            cMouseEvents.setSystemCursor IDC_HAND
+        Else
+            cMouseEvents.setSystemCursor IDC_DEFAULT
+        End If
+        
     End If
     
     'Redraw the control to match
@@ -454,10 +539,8 @@ Private Sub CreateSVSquare()
         If Not g_IsProgramRunning Then Exit Sub
         
         'We now need to fill the square with all possible saturation and value variants, in a pattern where...
-        ' - The y-axis position determines saturation (1 -> 0)
-        ' - The x-axis position determines value (0 -> 1)
-        '
-        'This produces a nice SV square similar to other software.
+        ' - The y-axis position determines value (1 -> 0)
+        ' - The x-axis position determines saturation (1 -> 0)
         Dim svPixels() As Byte
         Dim svSA As SAFEARRAY2D
         prepSafeArray svSA, m_SquareBuffer
@@ -488,8 +571,8 @@ Private Sub CreateSVSquare()
             
         For x = 0 To loopWidth Step 3
             
-            'The x-axis position determines value (0 -> 1)
-            'The y-axis position determines saturation (1 -> 0)
+            'The x-axis position determines saturation (1 -> 0)
+            'The y-axis position determines value (1 -> 0)
             HSVtoRGB m_Hue, xPresets(x), lineValue, r, g, b
             
             svPixels(x, y) = b
@@ -577,6 +660,16 @@ Private Sub DrawUC()
         
         'Render the completed slice onto the overlay
         slicePath.strokePathToDIB_UIStyle m_BackBuffer, , , , m_MouseDownWheel
+        
+        'Lastly, let's draw a circle around the current saturation + value point.
+        
+        'Convert the saturation + value point to an (x, y) pair
+        Dim svX As Double, svY As Double
+        svX = m_SVRectF.Left + m_SVRectF.Width * (1 - m_Saturation)
+        svY = m_SVRectF.Top + m_SVRectF.Height * (1 - m_Value * m_Value)
+        
+        'Draw a canvas-style circle around that point
+        GDI_Plus.GDIPlusDrawCanvasCircle m_BackBuffer.getDIBDC, svX, svY, 5, , m_MouseDownBox
         
     'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
     Else
