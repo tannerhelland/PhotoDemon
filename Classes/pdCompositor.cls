@@ -289,13 +289,7 @@ End Sub
 '                  contains the intermediate results of the merge.  The bottom DIB must be modified because it contains the final result.  As such,
 '                  use temp copies of DIBs you can't afford to lose.
 Friend Sub quickMergeTwoDibsOfEqualSize(ByRef bottomDIB As pdDIB, ByRef topDIB As pdDIB, Optional ByVal blendMode As LAYER_BLENDMODE = BL_NORMAL, Optional ByVal topLayerOpacity As Double = 100#, Optional ByVal alphaMode As LAYER_ALPHAMODE = LA_NORMAL)
-
-    'Composite the two DIBs
-    If (blendMode <> BL_NORMAL) Or (alphaMode <> LA_NORMAL) Then Me.compositeDIBsWithoutBlending topDIB, bottomDIB, blendMode, 0, 0, alphaMode
-    
-    'With compositing complete, apply the final step, which is alpha-blending the layer downward while accounting for layer opacity.
-    topDIB.alphaBlendToDC bottomDIB.getDIBDC, topLayerOpacity * 2.55
-
+    Me.compositeAndBlendDIBs topDIB, bottomDIB, blendMode, 0, 0, topLayerOpacity / 100, alphaMode
 End Sub
 
 'Returns all layers of the image as a single, composited image (in pdDIB format, of course).  Because of the way VB handles
