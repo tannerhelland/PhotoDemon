@@ -28,8 +28,8 @@ Begin VB.Form layerpanel_Navigator
       TabIndex        =   0
       Top             =   120
       Width           =   975
-      _ExtentX        =   1720
-      _ExtentY        =   1296
+      _extentx        =   1720
+      _extenty        =   1296
    End
 End
 Attribute VB_Name = "layerpanel_Navigator"
@@ -102,6 +102,14 @@ Public Sub UpdateAgainstCurrentTheme()
     
     'Reflow the interface, to account for any language changes.
     ReflowInterface
+    
+End Sub
+
+Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+    
+    'Save all last-used settings to file
+    lastUsedSettings.saveAllControlValues
+    lastUsedSettings.setParentForm Nothing
     
 End Sub
 
