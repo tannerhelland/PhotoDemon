@@ -27,9 +27,9 @@ Begin VB.UserControl commandBar
       TabIndex        =   0
       Top             =   120
       Width           =   1365
-      _ExtentX        =   2408
-      _ExtentY        =   900
-      Caption         =   "&OK"
+      _extentx        =   2408
+      _extenty        =   900
+      caption         =   "&OK"
    End
    Begin PhotoDemon.pdButtonToolbox cmdAction 
       Height          =   570
@@ -38,9 +38,9 @@ Begin VB.UserControl commandBar
       TabIndex        =   2
       Top             =   90
       Width           =   630
-      _ExtentX        =   1111
-      _ExtentY        =   1005
-      AutoToggle      =   -1  'True
+      _extentx        =   1111
+      _extenty        =   1005
+      autotoggle      =   -1
    End
    Begin PhotoDemon.pdComboBox cboPreset 
       Height          =   345
@@ -48,8 +48,8 @@ Begin VB.UserControl commandBar
       TabIndex        =   4
       Top             =   195
       Width           =   3135
-      _ExtentX        =   5530
-      _ExtentY        =   609
+      _extentx        =   5530
+      _extenty        =   609
    End
    Begin PhotoDemon.pdButtonToolbox cmdAction 
       Height          =   570
@@ -58,9 +58,9 @@ Begin VB.UserControl commandBar
       TabIndex        =   3
       Top             =   90
       Width           =   630
-      _ExtentX        =   1111
-      _ExtentY        =   1005
-      AutoToggle      =   -1  'True
+      _extentx        =   1111
+      _extenty        =   1005
+      autotoggle      =   -1
    End
    Begin PhotoDemon.pdButtonToolbox cmdAction 
       Height          =   570
@@ -69,9 +69,9 @@ Begin VB.UserControl commandBar
       TabIndex        =   5
       Top             =   90
       Width           =   630
-      _ExtentX        =   1111
-      _ExtentY        =   1005
-      AutoToggle      =   -1  'True
+      _extentx        =   1111
+      _extenty        =   1005
+      autotoggle      =   -1
    End
    Begin PhotoDemon.pdButton cmdCancel 
       Height          =   510
@@ -79,9 +79,9 @@ Begin VB.UserControl commandBar
       TabIndex        =   1
       Top             =   120
       Width           =   1365
-      _ExtentX        =   2408
-      _ExtentY        =   900
-      Caption         =   "&Cancel"
+      _extentx        =   2408
+      _extenty        =   900
+      caption         =   "&Cancel"
    End
 End
 Attribute VB_Name = "commandBar"
@@ -350,7 +350,7 @@ Private Sub RandomizeSettings()
                                             
                 End Select
             
-            Case "colorSelector"
+            Case "colorSelector", "pdColorWheel"
                 eControl.Color = Rnd * 16777216
             
             'Check boxes have a 50/50 chance of being set to checked
@@ -602,7 +602,7 @@ Private Sub ResetSettings()
                 End If
                 
             'Color pickers are turned white
-            Case "colorSelector"
+            Case "colorSelector", "pdColorWheel"
                 eControl.Color = RGB(255, 255, 255)
             
             'Check boxes are always checked
@@ -870,7 +870,7 @@ Private Sub storePreset(Optional ByVal presetName As String = "last-used setting
                 controlValue = Str(eControl.ListIndex)
             
             'Various PD controls have their own custom "value"-type properties.
-            Case "colorSelector"
+            Case "colorSelector", "pdColorWheel"
                 controlValue = Str(eControl.Color)
             
             Case "brushSelector"
@@ -1056,7 +1056,7 @@ Private Function loadPreset(Optional ByVal presetName As String = "last-used set
                         End If
                     
                     'Various PD controls have their own custom "value"-type properties.
-                    Case "colorSelector"
+                    Case "colorSelector", "pdColorWheel"
                         eControl.Color = CLng(controlValue)
                                
                     Case "brushSelector"

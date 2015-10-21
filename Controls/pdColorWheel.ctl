@@ -47,7 +47,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Just like PD's old color selector, this control will raise a ColorChanged event after user interactions.
-Public Event ColorChanged()
+Public Event ColorChanged(ByVal newColor As Long)
 
 'A specialized class handles mouse input for this control
 Private WithEvents cMouseEvents As pdInputMouse
@@ -112,6 +112,19 @@ Public Property Get containerHwnd() As Long
     containerHwnd = UserControl.containerHwnd
 End Property
 
+Public Property Get Color() As Long
+    Color = GetCurrentRGB()
+End Property
+
+Public Property Let Color(ByVal newColor As Long)
+    
+    'Extract matching HSV values, then redraw the control to match
+    Color_Functions.RGBtoHSV Color_Functions.ExtractR(newColor), Color_Functions.ExtractG(newColor), Color_Functions.ExtractB(newColor), m_Hue, m_Saturation, m_Value
+    CreateSVSquare
+    DrawUC
+    
+End Property
+
 'When the control receives focus, relay the event externally
 Private Sub cFocusDetector_GotFocusReliable()
     RaiseEvent GotFocusAPI
@@ -147,6 +160,9 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
             
             'Redraw the control to match
             DrawUC
+            
+            'Return the newly selected color
+            RaiseEvent ColorChanged(Me.Color)
         
         Else
             
@@ -166,6 +182,9 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 
                 'Redraw the control to match
                 DrawUC
+                
+                'Return the newly selected color
+                RaiseEvent ColorChanged(Me.Color)
             
             End If
         
@@ -240,6 +259,9 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     
     'Redraw the UC to match
     DrawUC
+    
+    'If the LMB is down, raise an event to match
+    If m_MouseDownWheel Or m_MouseDownBox Then RaiseEvent ColorChanged(Me.Color)
     
 End Sub
 
@@ -372,6 +394,10 @@ Private Sub UserControl_Initialize()
     
 End Sub
 
+Private Sub UserControl_InitProperties()
+    Color = vbRed
+End Sub
+
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
     
@@ -380,8 +406,18 @@ Private Sub UserControl_Paint()
     
 End Sub
 
+Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
+    Me.Color = PropBag.ReadProperty("Color", vbRed)
+End Sub
+
 Private Sub UserControl_Resize()
     UpdateControlSize
+End Sub
+    
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+    With PropBag
+        .WriteProperty "Color", Me.Color, vbRed
+    End With
 End Sub
 
 'Call this to recreate all buffers against a changed control size.
@@ -629,7 +665,7 @@ Private Sub DrawUC()
         
         'Draw a "pie-slice" outline around the current hue value.  Start by retrieving the UI angle of the current hue value
         Dim hueAngle As Single
-        hueAngle = getUIAngleOfHue(m_Hue)
+        hueAngle = GetUIAngleOfHue(m_Hue)
         
         'We are now going to construct a "slice-like" overlay for the current hue position.
         Dim slicePath As pdGraphicsPath
@@ -665,11 +701,25 @@ Private Sub DrawUC()
         
         'Convert the saturation + value point to an (x, y) pair
         Dim svX As Double, svY As Double
-        svX = m_SVRectF.Left + m_SVRectF.Width * (1 - m_Saturation)
-        svY = m_SVRectF.Top + m_SVRectF.Height * (1 - m_Value * m_Value)
+        svX = m_SVRectF.Width * (1 - m_Saturation)
+        svY = m_SVRectF.Height * (1 - m_Value * m_Value)
+        
+        'The (x, y) pair we've calculated will lie well outside the SV square's borders as-is.  Trim the edges a bit,
+        ' to make it look better.
+        Dim COLOR_CIRCLE_RADIUS As Single, COLOR_CIRCLE_CHECK As Single
+        COLOR_CIRCLE_RADIUS = FixDPIFloat(5#)
+        COLOR_CIRCLE_CHECK = COLOR_CIRCLE_RADIUS - FixDPIFloat(3#)
+        If svX < COLOR_CIRCLE_CHECK Then svX = COLOR_CIRCLE_CHECK
+        If svY < COLOR_CIRCLE_CHECK Then svY = COLOR_CIRCLE_CHECK
+        If svX > (m_SVRectF.Width - (COLOR_CIRCLE_CHECK + 1)) Then svX = (m_SVRectF.Width - (COLOR_CIRCLE_CHECK + 1))
+        If svY > (m_SVRectF.Height - (COLOR_CIRCLE_CHECK + 1)) Then svY = (m_SVRectF.Height - (COLOR_CIRCLE_CHECK + 1))
+        
+        'Pad the circle by the current SV square's offset
+        svX = svX + m_SVRectF.Left
+        svY = svY + m_SVRectF.Top
         
         'Draw a canvas-style circle around that point
-        GDI_Plus.GDIPlusDrawCanvasCircle m_BackBuffer.getDIBDC, svX, svY, 5, , m_MouseDownBox
+        GDI_Plus.GDIPlusDrawCanvasCircle m_BackBuffer.getDIBDC, svX, svY, COLOR_CIRCLE_RADIUS, , m_MouseDownBox
         
     'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
     Else
@@ -696,11 +746,18 @@ Private Sub DrawUC()
 End Sub
 
 'Given a hue on the range [0, 1], return a GDIPlus-friendly UI angle for the hue wheel
-Private Function getUIAngleOfHue(ByVal srcHue As Single) As Single
+Private Function GetUIAngleOfHue(ByVal srcHue As Single) As Single
     
     'A hue of "0" corresponds to an angle of Pi.  A hue of "1" corresponds to an angle of -Pi (hue is circular).
-    getUIAngleOfHue = (srcHue * PI_DOUBLE) - PI
+    GetUIAngleOfHue = (srcHue * PI_DOUBLE) - PI
     
+End Function
+
+'Convert the control's current HSV triplet into a corresponding RGB long
+Private Function GetCurrentRGB() As Long
+    Dim r As Long, g As Long, b As Long
+    Color_Functions.HSVtoRGB m_Hue, m_Saturation, m_Value, r, g, b
+    GetCurrentRGB = RGB(r, g, b)
 End Function
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
@@ -720,4 +777,3 @@ Public Sub UpdateAgainstCurrentTheme()
     UpdateControlSize
     
 End Sub
-    
