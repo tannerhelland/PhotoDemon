@@ -654,7 +654,7 @@ Public Sub displayCanvasCoordinates(ByVal xCoord As Long, ByVal yCoord As Long, 
     
     'Normally, the custom label control will not repaint until Windows requests it, but because we require its true size in order
     ' to reflow the status bar, we must request an immediate update.
-    'lblCoordinates.updateAgainstCurrentTheme
+    'lblCoordinates.UpdateAgainstCurrentTheme
     
     'Align the right-hand line control with the newly captioned label
     lineStatusBar(2).x1 = lblCoordinates.Left + lblCoordinates.PixelWidth + FixDPI(10)

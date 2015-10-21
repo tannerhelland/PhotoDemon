@@ -50,7 +50,7 @@ Begin VB.Form toolpanel_Selections
       End
       Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
          CausesValidation=   0   'False
-         Height          =   495
+         Height          =   405
          Index           =   1
          Left            =   0
          TabIndex        =   36
@@ -167,7 +167,7 @@ Begin VB.Form toolpanel_Selections
       End
       Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
          CausesValidation=   0   'False
-         Height          =   495
+         Height          =   405
          Index           =   2
          Left            =   0
          TabIndex        =   28
@@ -229,7 +229,7 @@ Begin VB.Form toolpanel_Selections
       End
       Begin PhotoDemon.sliderTextCombo sltSelectionLineWidth 
          CausesValidation=   0   'False
-         Height          =   495
+         Height          =   405
          Left            =   5880
          TabIndex        =   33
          Top             =   360
@@ -307,7 +307,7 @@ Begin VB.Form toolpanel_Selections
       End
       Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
          CausesValidation=   0   'False
-         Height          =   495
+         Height          =   405
          Index           =   3
          Left            =   0
          TabIndex        =   24
@@ -321,7 +321,7 @@ Begin VB.Form toolpanel_Selections
       End
       Begin PhotoDemon.sliderTextCombo sltPolygonCurvature 
          CausesValidation=   0   'False
-         Height          =   495
+         Height          =   405
          Left            =   2760
          TabIndex        =   25
          Top             =   360
@@ -378,7 +378,7 @@ Begin VB.Form toolpanel_Selections
       End
       Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
          CausesValidation=   0   'False
-         Height          =   495
+         Height          =   405
          Index           =   4
          Left            =   0
          TabIndex        =   20
@@ -392,7 +392,7 @@ Begin VB.Form toolpanel_Selections
       End
       Begin PhotoDemon.sliderTextCombo sltSmoothStroke 
          CausesValidation=   0   'False
-         Height          =   495
+         Height          =   405
          Left            =   2760
          TabIndex        =   21
          Top             =   360
@@ -459,7 +459,7 @@ Begin VB.Form toolpanel_Selections
       End
       Begin PhotoDemon.sliderTextCombo sltWandTolerance 
          CausesValidation=   0   'False
-         Height          =   495
+         Height          =   405
          Left            =   3120
          TabIndex        =   16
          Top             =   360
@@ -535,7 +535,7 @@ Begin VB.Form toolpanel_Selections
       End
       Begin PhotoDemon.sliderTextCombo sltSelectionBorder 
          CausesValidation=   0   'False
-         Height          =   495
+         Height          =   405
          Index           =   0
          Left            =   0
          TabIndex        =   7
@@ -597,7 +597,7 @@ Begin VB.Form toolpanel_Selections
       End
       Begin PhotoDemon.sliderTextCombo sltCornerRounding 
          CausesValidation=   0   'False
-         Height          =   495
+         Height          =   405
          Left            =   5760
          TabIndex        =   12
          Top             =   345
@@ -676,7 +676,7 @@ Begin VB.Form toolpanel_Selections
    End
    Begin PhotoDemon.sliderTextCombo sltSelectionFeathering 
       CausesValidation=   0   'False
-      Height          =   495
+      Height          =   405
       Left            =   2640
       TabIndex        =   4
       Top             =   840
@@ -875,7 +875,7 @@ Private Sub Form_Load()
     lastUsedSettings.loadAllControlValues
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
-    updateAgainstCurrentTheme
+    UpdateAgainstCurrentTheme
 
 End Sub
 
@@ -1013,34 +1013,34 @@ End Sub
 ' 3) MakeFormPretty is called, which redraws the form itself according to any theme and/or system settings.
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
 
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Tooltips must be manually re-assigned according to the current language.  This is a necessary evil, if the user switches
     ' between two non-English languages at run-time.
-    cboSelRender.assignTooltip "Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing."
-    cboSelSmoothing.assignTooltip "This option controls how smoothly a selection blends with its surroundings."
+    cboSelRender.AssignTooltip "Click to change the way selections are rendered onto the image canvas.  This has no bearing on selection contents - only the way they appear while editing."
+    cboSelSmoothing.AssignTooltip "This option controls how smoothly a selection blends with its surroundings."
         
     Dim i As Long
     For i = 0 To cboSelArea.Count - 1
-        cboSelArea(i).assignTooltip "These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu."
-        sltSelectionBorder(i).assignTooltip "This option adjusts the width of the selection border."
+        cboSelArea(i).AssignTooltip "These options control the area affected by a selection.  The selection can be modified on-canvas while any of these settings are active.  For more advanced selection adjustments, use the Select menu."
+        sltSelectionBorder(i).AssignTooltip "This option adjusts the width of the selection border."
     Next i
     
-    sltSelectionFeathering.assignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
-    sltCornerRounding.assignTooltip "This option adjusts the roundness of a rectangular selection's corners."
-    sltSelectionLineWidth.assignTooltip "This option adjusts the width of a line selection."
+    sltSelectionFeathering.AssignTooltip "This feathering slider allows for immediate feathering adjustments.  For performance reasons, it is limited to small radii.  For larger feathering radii, please use the Select -> Feathering menu."
+    sltCornerRounding.AssignTooltip "This option adjusts the roundness of a rectangular selection's corners."
+    sltSelectionLineWidth.AssignTooltip "This option adjusts the width of a line selection."
     
-    sltPolygonCurvature.assignTooltip "This option adjusts the curvature, if any, of a polygon selection's sides."
-    sltSmoothStroke.assignTooltip "This option increases the smoothness of a hand-drawn lasso selection."
-    sltWandTolerance.assignTooltip "Tolerance controls how similar two pixels must be before adding them to a magic wand selection."
+    sltPolygonCurvature.AssignTooltip "This option adjusts the curvature, if any, of a polygon selection's sides."
+    sltSmoothStroke.AssignTooltip "This option increases the smoothness of a hand-drawn lasso selection."
+    sltWandTolerance.AssignTooltip "Tolerance controls how similar two pixels must be before adding them to a magic wand selection."
     
-    btsWandMerge.assignTooltip "The magic wand can operate on the entire image, or just the active layer."
-    btsWandArea.assignTooltip "Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuity."
+    btsWandMerge.AssignTooltip "The magic wand can operate on the entire image, or just the active layer."
+    btsWandArea.AssignTooltip "Normally, the magic wand will spread out from the target pixel, adding neighboring pixels to the selection as it goes.  You can alternatively set it to search the entire image, without regards for continuity."
     
-    cboWandCompare.assignTooltip "This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection."
+    cboWandCompare.AssignTooltip "This option controls which criteria the magic wand uses to determine whether a pixel should be added to the current selection."
 
 End Sub

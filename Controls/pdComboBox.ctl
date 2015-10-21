@@ -938,7 +938,7 @@ Private Sub UserControl_Show()
         
         'When the control is first made visible, remove the control's tooltip property and reassign it to the checkbox
         ' using a custom solution (which allows for linebreaks and theming).
-        If Len(Extender.ToolTipText) <> 0 Then assignTooltip Extender.ToolTipText
+        If Len(Extender.ToolTipText) <> 0 Then AssignTooltip Extender.ToolTipText
         
     End If
     
@@ -1223,7 +1223,7 @@ End Function
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
-Public Sub assignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     
     'If the tooltip is assigned prior to key components being created (or if a property change results in hWnd changes),
     ' we need to cache the tooltip string, so we can reassign it in the future.
@@ -1294,7 +1294,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
     
     If g_IsProgramRunning Then
         

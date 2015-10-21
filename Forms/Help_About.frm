@@ -263,9 +263,9 @@ Private Sub Form_Load()
     cmdSpeed(2).AssignImage "ABOUT_PAUSE"
     
     'Load button tooltips
-    cmdSpeed(0).assignTooltip "Decrease speed"
-    cmdSpeed(1).assignTooltip "Increase speed"
-    cmdSpeed(2).assignTooltip "Pause scrolling"
+    cmdSpeed(0).AssignTooltip "Decrease speed"
+    cmdSpeed(1).AssignTooltip "Increase speed"
+    cmdSpeed(2).AssignTooltip "Pause scrolling"
     
     'Reset the mouse coordinates and currently hovered entry
     mouseX = -1

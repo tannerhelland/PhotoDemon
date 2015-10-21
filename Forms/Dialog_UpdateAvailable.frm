@@ -161,17 +161,17 @@ Private Sub Form_Load()
     End If
     
     'Automatically draw a relevant icon using the system icon set
-    DrawSystemIcon IDI_ASTERISK, Me.hDC, fixDPI(16), fixDPI(12)
+    DrawSystemIcon IDI_ASTERISK, Me.hDC, FixDPI(16), FixDPI(12)
     
     'Display the update message.  (pdLabel automatically handles translations, as necessary.)
     lblUpdate.Caption = "A new version of PhotoDemon is available.  Restart the program to complete the update process."
     
     'Add a few tooltips
-    cmdUpdate(0).assignTooltip "Restart now to access to the latest version of the program.", "Apply update now"
-    cmdUpdate(1).assignTooltip "If you're in the middle of something, feel free to keep working.  The update process will automatically complete whenever you next use the program.", "Apply update later"
+    cmdUpdate(0).AssignTooltip "Restart now to access to the latest version of the program.", "Apply update now"
+    cmdUpdate(1).AssignTooltip "If you're in the middle of something, feel free to keep working.  The update process will automatically complete whenever you next use the program.", "Apply update later"
     
     'Theme the dialog
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Position the form at the bottom-right corner of the main program window.
     Me.Move (FormMain.Left + FormMain.Width) - (Me.Width + 90), (FormMain.Top + FormMain.Height) - (Me.Height + 90)

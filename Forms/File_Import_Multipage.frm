@@ -32,9 +32,9 @@ Begin VB.Form dialog_MultiImage
       TabIndex        =   0
       Top             =   1320
       Width           =   5100
-      _extentx        =   8996
-      _extenty        =   1296
-      caption         =   "Load each page as its own image"
+      _ExtentX        =   8996
+      _ExtentY        =   1296
+      Caption         =   "Load each page as its own image"
    End
    Begin PhotoDemon.smartCheckBox chkRepeat 
       Height          =   300
@@ -42,9 +42,9 @@ Begin VB.Form dialog_MultiImage
       TabIndex        =   2
       Top             =   3120
       Width           =   5055
-      _extentx        =   8916
-      _extenty        =   582
-      caption         =   "always apply this action to multi-image files"
+      _ExtentX        =   8916
+      _ExtentY        =   582
+      Caption         =   "always apply this action to multi-image files"
    End
    Begin PhotoDemon.pdButton cmdAnswer 
       Height          =   735
@@ -53,9 +53,9 @@ Begin VB.Form dialog_MultiImage
       TabIndex        =   1
       Top             =   2100
       Width           =   5100
-      _extentx        =   8996
-      _extenty        =   1296
-      caption         =   "Load only the first page"
+      _ExtentX        =   8996
+      _ExtentY        =   1296
+      Caption         =   "Load only the first page"
    End
    Begin VB.Label lblWarning 
       BackStyle       =   0  'Transparent
@@ -130,9 +130,9 @@ Public Sub showDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
 
     'Automatically draw a warning icon using the system icon set
     Dim iconY As Long
-    iconY = fixDPI(18)
-    If g_UseFancyFonts Then iconY = iconY + fixDPI(2)
-    DrawSystemIcon IDI_QUESTION, Me.hDC, fixDPI(22), iconY
+    iconY = FixDPI(18)
+    If g_UseFancyFonts Then iconY = iconY + FixDPI(2)
+    DrawSystemIcon IDI_QUESTION, Me.hDC, FixDPI(22), iconY
     
     'Provide a default answer of "first image only" (in the event that the user clicks the "x" button in the top-right)
     userAnswer = vbNo
@@ -143,28 +143,28 @@ Public Sub showDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
     If UCase(FileExtension) = "GIF" Then
         lblWarning.Caption = g_Language.TranslateMessage("%1 is an animated GIF file (%2 frames total).  How would you like to proceed?", GetFilename(srcFilename), numOfImages)
         cmdAnswer(0).Caption = "Load each frame as a separate image"
-        cmdAnswer(0).assignTooltip "This option will load every frame in the animated GIF file as an individual image."
+        cmdAnswer(0).AssignTooltip "This option will load every frame in the animated GIF file as an individual image."
         cmdAnswer(1).Caption = "Load only the first frame"
-        cmdAnswer(1).assignTooltip "This option will only load a single frame from the animated GIF file, effectively treating at as a non-animated GIF file."
+        cmdAnswer(1).AssignTooltip "This option will only load a single frame from the animated GIF file, effectively treating at as a non-animated GIF file."
     ElseIf UCase(FileExtension) = "ICO" Then
         lblWarning.Caption = g_Language.TranslateMessage("%1 contains multiple icons (%2 in total).  How would you like to proceed?", GetFilename(srcFilename), numOfImages)
         cmdAnswer(0).Caption = "Load each icon as a separate image"
-        cmdAnswer(0).assignTooltip "This option will load every icon in the ICO file as an individual image."
+        cmdAnswer(0).AssignTooltip "This option will load every icon in the ICO file as an individual image."
         cmdAnswer(1).Caption = "Load only the first icon"
-        cmdAnswer(1).assignTooltip "This option will only load a single icon from the ICO file."
+        cmdAnswer(1).AssignTooltip "This option will only load a single icon from the ICO file."
     Else
         lblWarning.Caption = g_Language.TranslateMessage("%1 contains multiple pages (%2 in total).  How would you like to proceed?", GetFilename(srcFilename), numOfImages)
         cmdAnswer(0).Caption = "Load each page as a separate image"
-        cmdAnswer(0).assignTooltip "This option will load every page in the TIFF file as an individual image."
+        cmdAnswer(0).AssignTooltip "This option will load every page in the TIFF file as an individual image."
         cmdAnswer(1).Caption = "Load only the first page"
-        cmdAnswer(1).assignTooltip "This option will only load a single page from the TIFF file."
+        cmdAnswer(1).AssignTooltip "This option will only load a single page from the TIFF file."
     End If
     
     'Apply any custom styles to the form
-    makeFormPretty Me
+    MakeFormPretty Me
 
     'Display the form
-    showPDDialog vbModal, Me, True
+    ShowPDDialog vbModal, Me, True
 
 End Sub
 

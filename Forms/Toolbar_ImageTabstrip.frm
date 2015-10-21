@@ -306,9 +306,9 @@ Public Sub notifyUpdatedImage(ByVal pdImagesIndex As Long)
             If Not (pdImages(pdImagesIndex) Is Nothing) Then
             
                 If verticalLayout Then
-                    pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbDIB, thumbHeight - (fixDPI(thumbBorder) * 2)
+                    pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbDIB, thumbHeight - (FixDPI(thumbBorder) * 2)
                 Else
-                    pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbDIB, thumbWidth - (fixDPI(thumbBorder) * 2)
+                    pdImages(pdImagesIndex).requestThumbnail imgThumbnails(i).thumbDIB, thumbWidth - (FixDPI(thumbBorder) * 2)
                 End If
                 
             End If
@@ -330,9 +330,9 @@ Public Sub registerNewImage(ByVal pdImagesIndex As Long)
     Set imgThumbnails(numOfThumbnails).thumbDIB = New pdDIB
     
     If verticalLayout Then
-        pdImages(pdImagesIndex).requestThumbnail imgThumbnails(numOfThumbnails).thumbDIB, thumbHeight - (fixDPI(thumbBorder) * 2)
+        pdImages(pdImagesIndex).requestThumbnail imgThumbnails(numOfThumbnails).thumbDIB, thumbHeight - (FixDPI(thumbBorder) * 2)
     Else
-        pdImages(pdImagesIndex).requestThumbnail imgThumbnails(numOfThumbnails).thumbDIB, thumbWidth - (fixDPI(thumbBorder) * 2)
+        pdImages(pdImagesIndex).requestThumbnail imgThumbnails(numOfThumbnails).thumbDIB, thumbWidth - (FixDPI(thumbBorder) * 2)
     End If
     
     'Create a matching shadow DIB
@@ -458,8 +458,8 @@ Private Function getThumbWithCloseIconAtPosition(ByVal x As Long, ByVal y As Lon
             thumbnailStartOffsetY = 0
         End If
         
-        closeButtonStartOffsetX = thumbnailStartOffsetX + (thumbWidth - (fixDPI(thumbBorder) + m_CloseIconGray.getDIBWidth + fixDPI(2)))
-        closeButtonStartOffsetY = thumbnailStartOffsetY + fixDPI(thumbBorder) + fixDPI(2)
+        closeButtonStartOffsetX = thumbnailStartOffsetX + (thumbWidth - (FixDPI(thumbBorder) + m_CloseIconGray.getDIBWidth + FixDPI(2)))
+        closeButtonStartOffsetY = thumbnailStartOffsetY + FixDPI(thumbBorder) + FixDPI(2)
         clickboundaryX = x - closeButtonStartOffsetX
         clickBoundaryY = y - closeButtonStartOffsetY
         
@@ -478,9 +478,9 @@ Private Function isMouseOverResizeBorder(ByVal mouseX As Single, ByVal mouseY As
     'How close does the mouse have to be to the form border to allow resizing?  We currently use 7 pixels, while accounting
     ' for DPI variance (e.g. 7 pixels at 96 dpi)
     Dim resizeBorderAllowance As Long
-    resizeBorderAllowance = fixDPI(7)
+    resizeBorderAllowance = FixDPI(7)
     
-    Select Case g_WindowManager.getImageTabstripAlignment
+    Select Case g_WindowManager.GetImageTabstripAlignment
     
         Case vbAlignLeft
             If (mouseY > 0) And (mouseY < Me.ScaleHeight) And (mouseX > Me.ScaleWidth - resizeBorderAllowance) Then isMouseOverResizeBorder = True
@@ -518,7 +518,7 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
                 ' scrolling the list.
                 If (potentialNewThumb >= 0) And (Not m_ScrollingOccured) Then
                     curThumb = potentialNewThumb
-                    activatePDImage imgThumbnails(curThumb).indexInPDImages, "user clicked image thumbnail"
+                    ActivatePDImage imgThumbnails(curThumb).indexInPDImages, "user clicked image thumbnail"
                 End If
                 
             'If the mouse *IS* over a close icon, close the image in question
@@ -529,7 +529,7 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
                     
                     'fullPDImageUnload will take care of refreshing the UI, activating the next thumbnail if the active one is
                     ' closed, showing a dialog before closing an unsaved image, etc.
-                    Image_Canvas_Handler.fullPDImageUnload imgThumbnails(m_CloseTriggeredOnThumbnail).indexInPDImages
+                    Image_Canvas_Handler.FullPDImageUnload imgThumbnails(m_CloseTriggeredOnThumbnail).indexInPDImages
                     
                 End If
     
@@ -548,7 +548,7 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
                 
                     'Activate the image, which triggers a redraw and resets all of PD's internal image tracking data
                     curThumb = m_RightClickedThumbnail
-                    activatePDImage imgThumbnails(curThumb).indexInPDImages, "user right-clicked image thumbnail"
+                    ActivatePDImage imgThumbnails(curThumb).indexInPDImages, "user right-clicked image thumbnail"
                      
                     'Enable various pop-up menu entries.  Wherever possible, we simply want to mimic the official PD menu, which saves
                     ' us having to supply our own heuristics for menu enablement.
@@ -653,7 +653,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
                 'Figure out which resize message to send to Windows; this varies by tabstrip orientation (obviously)
                 Dim hitCode As Long
     
-                Select Case g_WindowManager.getImageTabstripAlignment
+                Select Case g_WindowManager.GetImageTabstripAlignment
                 
                     Case vbAlignLeft
                         hitCode = HTRIGHT
@@ -864,7 +864,7 @@ Private Sub Form_Load()
     cMouseEvents.setSystemCursor IDC_HAND
     
     'Detect initial alignment
-    If (g_WindowManager.getImageTabstripAlignment = vbAlignLeft) Or (g_WindowManager.getImageTabstripAlignment = vbAlignRight) Then
+    If (g_WindowManager.GetImageTabstripAlignment = vbAlignLeft) Or (g_WindowManager.GetImageTabstripAlignment = vbAlignRight) Then
         verticalLayout = True
     Else
         verticalLayout = False
@@ -872,10 +872,10 @@ Private Sub Form_Load()
     
     'Set default thumbnail sizes
     If verticalLayout Then
-        thumbWidth = g_WindowManager.getClientWidth(Me.hWnd)
+        thumbWidth = g_WindowManager.GetClientWidth(Me.hWnd)
         thumbHeight = thumbWidth
     Else
-        thumbHeight = g_WindowManager.getClientHeight(Me.hWnd)
+        thumbHeight = g_WindowManager.GetClientHeight(Me.hWnd)
         thumbWidth = thumbHeight
     End If
     
@@ -895,7 +895,7 @@ Private Sub Form_Load()
     loadResourceToDIB "CLOSE_MINI_GRAY", m_CloseIconGray
     
     'Update the drop-shadow blur radius to account for DPI
-    shadowBlurRadius = fixDPI(2)
+    shadowBlurRadius = FixDPI(2)
     
     'Generate a drop-shadow for the X.  (We can use the same one for both red and gray, obviously.)
     Set m_CloseIconShadow = New pdDIB
@@ -909,8 +909,8 @@ Private Sub Form_Load()
     Set cFilter = New pdFilterLUT
     cFilter.fillLUT_Invert tmpLUT
     
-    padDIB m_CloseIconShadow, fixDPI(thumbBorder)
-    quickBlurDIB m_CloseIconShadow, fixDPI(2), False
+    padDIB m_CloseIconShadow, FixDPI(thumbBorder)
+    quickBlurDIB m_CloseIconShadow, FixDPI(2), False
     cFilter.applyLUTToAllColorChannels m_CloseIconShadow, tmpLUT, True
     
     m_CloseIconShadow.setAlphaPremultiplication True
@@ -929,7 +929,7 @@ Private Sub Form_Load()
     Set toolTipManager = New pdToolTip
     
     'As a final step, redraw everything against the current theme.
-    updateAgainstCurrentTheme
+    UpdateAgainstCurrentTheme
     
 End Sub
 
@@ -966,7 +966,7 @@ End Sub
 Private Sub Form_Resize()
 
     'Detect alignment changes (if any)
-    If (g_WindowManager.getImageTabstripAlignment = vbAlignLeft) Or (g_WindowManager.getImageTabstripAlignment = vbAlignRight) Then
+    If (g_WindowManager.GetImageTabstripAlignment = vbAlignLeft) Or (g_WindowManager.GetImageTabstripAlignment = vbAlignRight) Then
         verticalLayout = True
     Else
         verticalLayout = False
@@ -975,26 +975,26 @@ Private Sub Form_Resize()
     Dim i As Long
 
     'If the tabstrip is horizontal and the window's height is changing, we need to recreate all image thumbnails
-    If ((Not verticalLayout) And (thumbHeight <> g_WindowManager.getClientHeight(Me.hWnd) - 2)) Then
+    If ((Not verticalLayout) And (thumbHeight <> g_WindowManager.GetClientHeight(Me.hWnd) - 2)) Then
         
-        thumbHeight = g_WindowManager.getClientHeight(Me.hWnd) - 2
+        thumbHeight = g_WindowManager.GetClientHeight(Me.hWnd) - 2
     
         For i = 0 To numOfThumbnails - 1
             imgThumbnails(i).thumbDIB.eraseDIB
-            pdImages(imgThumbnails(i).indexInPDImages).requestThumbnail imgThumbnails(i).thumbDIB, thumbHeight - (fixDPI(thumbBorder) * 2)
+            pdImages(imgThumbnails(i).indexInPDImages).requestThumbnail imgThumbnails(i).thumbDIB, thumbHeight - (FixDPI(thumbBorder) * 2)
             If g_InterfacePerformance <> PD_PERF_FASTEST Then updateShadowDIB i
         Next i
     
     End If
     
     'If the tabstrip is vertical and the window's with is changing, we need to recreate all image thumbnails
-    If (verticalLayout And (thumbWidth <> g_WindowManager.getClientWidth(Me.hWnd) - 2)) Then
+    If (verticalLayout And (thumbWidth <> g_WindowManager.GetClientWidth(Me.hWnd) - 2)) Then
     
-        thumbWidth = g_WindowManager.getClientWidth(Me.hWnd) - 2
+        thumbWidth = g_WindowManager.GetClientWidth(Me.hWnd) - 2
         
         For i = 0 To numOfThumbnails - 1
             imgThumbnails(i).thumbDIB.eraseDIB
-            pdImages(imgThumbnails(i).indexInPDImages).requestThumbnail imgThumbnails(i).thumbDIB, thumbWidth - (fixDPI(thumbBorder) * 2)
+            pdImages(imgThumbnails(i).indexInPDImages).requestThumbnail imgThumbnails(i).thumbDIB, thumbWidth - (FixDPI(thumbBorder) * 2)
             If g_InterfacePerformance <> PD_PERF_FASTEST Then updateShadowDIB i
         Next i
     
@@ -1002,29 +1002,29 @@ Private Sub Form_Resize()
     
     'Update thumbnail sizes
     If verticalLayout Then
-        thumbWidth = g_WindowManager.getClientWidth(Me.hWnd) - 2
+        thumbWidth = g_WindowManager.GetClientWidth(Me.hWnd) - 2
         thumbHeight = thumbWidth
     Else
-        thumbHeight = g_WindowManager.getClientHeight(Me.hWnd) - 2
+        thumbHeight = g_WindowManager.GetClientHeight(Me.hWnd) - 2
         thumbWidth = thumbHeight
     End If
         
     'Create a background buffer the same size as this window
-    m_BufferWidth = g_WindowManager.getClientWidth(Me.hWnd)
-    m_BufferHeight = g_WindowManager.getClientHeight(Me.hWnd)
+    m_BufferWidth = g_WindowManager.GetClientWidth(Me.hWnd)
+    m_BufferHeight = g_WindowManager.GetClientHeight(Me.hWnd)
     
     'Redraw the toolbar
     redrawToolbar
     
     'Notify the window manager that the tab strip has been resized; it will resize image windows to match
     'If Not weAreResponsibleForResize Then
-    g_WindowManager.notifyImageTabStripResized
+    g_WindowManager.NotifyImageTabStripResized
     
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-    g_WindowManager.unregisterForm Me
+    g_WindowManager.UnregisterForm Me
     Set cMouseEvents = Nothing
 End Sub
 
@@ -1081,13 +1081,13 @@ Private Sub redrawToolbar(Optional ByVal fitCurrentThumbOnScreen As Boolean = Fa
         Dim i As Long
         For i = 0 To numOfThumbnails - 1
             If verticalLayout Then
-                If g_WindowManager.getImageTabstripAlignment = vbAlignLeft Then
+                If g_WindowManager.GetImageTabstripAlignment = vbAlignLeft Then
                     renderThumbTab i, 0, (i * thumbHeight) - scrollOffset
                 Else
                     renderThumbTab i, 2, (i * thumbHeight) - scrollOffset
                 End If
             Else
-                If g_WindowManager.getImageTabstripAlignment = vbAlignTop Then
+                If g_WindowManager.GetImageTabstripAlignment = vbAlignTop Then
                     renderThumbTab i, (i * thumbWidth) - scrollOffset, 0
                 Else
                     renderThumbTab i, (i * thumbWidth) - scrollOffset, 2
@@ -1096,7 +1096,7 @@ Private Sub redrawToolbar(Optional ByVal fitCurrentThumbOnScreen As Boolean = Fa
         Next i
         
         'Eventually we'll do something nicer, but for now, draw a line across the edge of the tabstrip nearest the image.
-        Select Case g_WindowManager.getImageTabstripAlignment
+        Select Case g_WindowManager.GetImageTabstripAlignment
         
             Case vbAlignLeft
                 GDIPlusDrawLineToDC bufferDIB.getDIBDC, m_BufferWidth - 1, 0, m_BufferWidth - 1, m_BufferHeight, ConvertSystemColor(vb3DLight), 255, 2, False
@@ -1115,8 +1115,8 @@ Private Sub redrawToolbar(Optional ByVal fitCurrentThumbOnScreen As Boolean = Fa
     End If
     
     'Activate color management for our form
-    assignDefaultColorProfileToObject Me.hWnd, Me.hDC
-    turnOnColorManagementForDC Me.hDC
+    AssignDefaultColorProfileToObject Me.hWnd, Me.hDC
+    TurnOnColorManagementForDC Me.hDC
     
     'Copy the buffer to the form
     BitBlt Me.hDC, 0, 0, m_BufferWidth, m_BufferHeight, bufferDIB.getDIBDC, 0, 0, vbSrcCopy
@@ -1162,14 +1162,14 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
         End If
     
         'Render the matching thumbnail shadow and thumbnail into this block
-        If g_InterfacePerformance <> PD_PERF_FASTEST Then imgThumbnails(thumbIndex).thumbShadow.alphaBlendToDC bufferDIB.getDIBDC, 192, offsetX, offsetY + fixDPI(1)
-        imgThumbnails(thumbIndex).thumbDIB.alphaBlendToDC bufferDIB.getDIBDC, 255, offsetX + fixDPI(thumbBorder), offsetY + fixDPI(thumbBorder)
+        If g_InterfacePerformance <> PD_PERF_FASTEST Then imgThumbnails(thumbIndex).thumbShadow.alphaBlendToDC bufferDIB.getDIBDC, 192, offsetX, offsetY + FixDPI(1)
+        imgThumbnails(thumbIndex).thumbDIB.alphaBlendToDC bufferDIB.getDIBDC, 255, offsetX + FixDPI(thumbBorder), offsetY + FixDPI(thumbBorder)
         
         'If the parent image has unsaved changes, also render a notification icon.
         ' (When the program is shutting down, this value may not be available, so we must check it first.
         If Not (pdImages(imgThumbnails(thumbIndex).indexInPDImages) Is Nothing) Then
             If Not pdImages(imgThumbnails(thumbIndex).indexInPDImages).getSaveState(pdSE_AnySave) Then
-                unsavedChangesDIB.alphaBlendToDC bufferDIB.getDIBDC, 230, offsetX + fixDPI(thumbBorder) + fixDPI(2), offsetY + thumbHeight - fixDPI(thumbBorder) - unsavedChangesDIB.getDIBHeight - fixDPI(2)
+                unsavedChangesDIB.alphaBlendToDC bufferDIB.getDIBDC, 230, offsetX + FixDPI(thumbBorder) + FixDPI(2), offsetY + thumbHeight - FixDPI(thumbBorder) - unsavedChangesDIB.getDIBHeight - FixDPI(2)
             End If
         End If
         
@@ -1177,13 +1177,13 @@ Private Sub renderThumbTab(ByVal thumbIndex As Long, ByVal offsetX As Long, ByVa
         If (thumbIndex = curThumbHover) Then
         
             'Render a shadow, regardless
-            m_CloseIconShadow.alphaBlendToDC bufferDIB.getDIBDC, 230, offsetX + (thumbWidth - (fixDPI(thumbBorder) * 2 + m_CloseIconRed.getDIBWidth + fixDPI(2))), offsetY + fixDPI(2)
+            m_CloseIconShadow.alphaBlendToDC bufferDIB.getDIBDC, 230, offsetX + (thumbWidth - (FixDPI(thumbBorder) * 2 + m_CloseIconRed.getDIBWidth + FixDPI(2))), offsetY + FixDPI(2)
             
             'Render a red icon if the close icon is actually hovered; gray, otherwise
             If (thumbIndex = m_CloseIconHovered) Then
-                m_CloseIconRed.alphaBlendToDC bufferDIB.getDIBDC, 230, offsetX + (thumbWidth - (fixDPI(thumbBorder) + m_CloseIconRed.getDIBWidth + fixDPI(2))), offsetY + fixDPI(thumbBorder) + fixDPI(2)
+                m_CloseIconRed.alphaBlendToDC bufferDIB.getDIBDC, 230, offsetX + (thumbWidth - (FixDPI(thumbBorder) + m_CloseIconRed.getDIBWidth + FixDPI(2))), offsetY + FixDPI(thumbBorder) + FixDPI(2)
             Else
-                m_CloseIconGray.alphaBlendToDC bufferDIB.getDIBDC, 230, offsetX + (thumbWidth - (fixDPI(thumbBorder) + m_CloseIconRed.getDIBWidth + fixDPI(2))), offsetY + fixDPI(thumbBorder) + fixDPI(2)
+                m_CloseIconGray.alphaBlendToDC bufferDIB.getDIBDC, 230, offsetX + (thumbWidth - (FixDPI(thumbBorder) + m_CloseIconRed.getDIBWidth + FixDPI(2))), offsetY + FixDPI(thumbBorder) + FixDPI(2)
             End If
             
         End If
@@ -1200,7 +1200,7 @@ Private Sub updateShadowDIB(ByVal imgThumbnailIndex As Long)
     createShadowDIB imgThumbnails(imgThumbnailIndex).thumbDIB, imgThumbnails(imgThumbnailIndex).thumbShadow
     
     'Pad and blur the DIB
-    padDIB imgThumbnails(imgThumbnailIndex).thumbShadow, fixDPI(thumbBorder)
+    padDIB imgThumbnails(imgThumbnailIndex).thumbShadow, FixDPI(thumbBorder)
     quickBlurDIB imgThumbnails(imgThumbnailIndex).thumbShadow, shadowBlurRadius
     
     'Apply premultiplied alpha (so we can more quickly AlphaBlend the resulting image to the tabstrip)
@@ -1219,7 +1219,7 @@ End Sub
 
 'External functions can use this to re-theme this form at run-time (important when changing languages, for example)
 Public Sub requestMakeFormPretty()
-    makeFormPretty Me
+    MakeFormPretty Me
 End Sub
 
 'All popup menu clicks are handled here
@@ -1265,7 +1265,7 @@ Private Sub mnuTabstripPopup_Click(Index As Integer)
         
         'Close
         Case 7
-            Image_Canvas_Handler.fullPDImageUnload imgThumbnails(m_RightClickedThumbnail).indexInPDImages
+            Image_Canvas_Handler.FullPDImageUnload imgThumbnails(m_RightClickedThumbnail).indexInPDImages
         
         'Close all but this
         Case 8
@@ -1278,7 +1278,7 @@ Private Sub mnuTabstripPopup_Click(Index As Integer)
             
             For i = 0 To lastImageIndex
                 If i <> rightclickedImageIndex And (Not pdImages(i) Is Nothing) Then
-                    fullPDImageUnload i
+                    FullPDImageUnload i
                 End If
             Next i
     
@@ -1292,11 +1292,11 @@ End Sub
 ' 3) MakeFormPretty is called, which redraws the form itself according to any theme and/or system settings.
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
     
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Redraw the tabstrip
     redrawToolbar

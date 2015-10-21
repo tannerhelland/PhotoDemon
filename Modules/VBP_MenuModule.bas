@@ -391,7 +391,7 @@ Public Sub MenuClose()
     'Make sure the correct flag is set so that the MDI Child QueryUnload behaves properly (e.g. note that we
     ' are not closing ALL images - just this one.)
     g_ClosingAllImages = False
-    fullPDImageUnload g_CurrentImage
+    FullPDImageUnload g_CurrentImage
     
     'Reset any relevant parameters
     g_ClosingAllImages = False
@@ -414,7 +414,7 @@ Public Sub MenuCloseAll()
     
         If Not (pdImages(i) Is Nothing) Then
             If pdImages(i).IsActive Then
-                fullPDImageUnload i, False
+                FullPDImageUnload i, False
             End If
         End If
         

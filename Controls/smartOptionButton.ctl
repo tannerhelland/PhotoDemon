@@ -121,7 +121,7 @@ Attribute cMouseEvents.VB_VarHelpID = -1
 
 'Current caption string (persistent within the IDE, but must be set at run-time for Unicode languages).  Note that m_CaptionEn
 ' is the ENGLISH CAPTION ONLY.  A translated caption will be stored in m_CaptionTranslated; the translated copy will be updated
-' by any caption change, or by a call to updateAgainstCurrentTheme.
+' by any caption change, or by a call to UpdateAgainstCurrentTheme.
 Private m_CaptionEn As String
 Private m_CaptionTranslated As String
 
@@ -539,7 +539,7 @@ Private Sub updateControlSize()
     'Our height calculation is pretty simple: the caption size, plus a one-pixel border (for displaying keyboard focus)
     ' and whatever fontY padding is specified at the top of this function.
     Dim newControlHeight As Long
-    newControlHeight = (fontY * 4 + stringHeight + fixDPI(2)) * TwipsPerPixelYFix
+    newControlHeight = (fontY * 4 + stringHeight + FixDPI(2)) * TwipsPerPixelYFix
     
     If controlHeight * TwipsPerPixelYFix <> newControlHeight Then
         m_InternalResizeState = True
@@ -603,7 +603,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
     
     curFont.setFontFace g_InterfaceFont
     curFont.createFontObject
@@ -684,7 +684,7 @@ Private Sub redrawBackBuffer()
     'From the precise font metrics, determine a radio button offset X and Y, and a radio button size.  Note that 1px is manually
     ' added as part of maintaining a 1px border around the user control as a whole.
     Dim offsetX As Long, offsetY As Long, optCircleSize As Long
-    offsetX = 1 + fixDPI(2)
+    offsetX = 1 + FixDPI(2)
     offsetY = fontMetrics.tmInternalLeading + 1
     optCircleSize = captionHeight - fontDescent
     optCircleSize = optCircleSize - fontMetrics.tmInternalLeading
@@ -724,7 +724,7 @@ Private Sub redrawBackBuffer()
     
     'Render the text, appending ellipses as necessary
     Dim xFontOffset As Long
-    xFontOffset = offsetX * 2 + optCircleSize + fixDPI(6)
+    xFontOffset = offsetX * 2 + optCircleSize + FixDPI(6)
     
     If m_FitFailure Then
         curFont.fastRenderTextWithClipping xFontOffset, 1, m_BackBuffer.getDIBWidth - xFontOffset, m_BackBuffer.getDIBHeight, m_CaptionTranslated, True
@@ -736,7 +736,7 @@ Private Sub redrawBackBuffer()
     With clickableRect
         .Left = 0
         .Top = 0
-        .Right = xFontOffset + curFont.getWidthOfString(m_CaptionTranslated) + fixDPI(6)
+        .Right = xFontOffset + curFont.getWidthOfString(m_CaptionTranslated) + FixDPI(6)
         .Bottom = m_BackBuffer.getDIBHeight
     End With
     
@@ -786,7 +786,7 @@ Private Function getRadioButtonPlusCaptionWidth(Optional ByVal relevantCaption A
     'Using the font metrics, determine a check box offset and size.  Note that 1px is manually added as part of maintaining a
     ' 1px border around the user control as a whole (which is used for a focus rect).
     Dim offsetX As Long, offsetY As Long, optCircleSize As Long
-    offsetX = 1 + fixDPI(2)
+    offsetX = 1 + FixDPI(2)
     offsetY = fontMetrics.tmInternalLeading + 1
     optCircleSize = captionHeight - fontDescent
     optCircleSize = optCircleSize - fontMetrics.tmInternalLeading
@@ -799,12 +799,12 @@ Private Function getRadioButtonPlusCaptionWidth(Optional ByVal relevantCaption A
     End If
     
     'Return the determined check box size, plus a 6px extender to separate it from the caption.
-    getRadioButtonPlusCaptionWidth = offsetX * 2 + optCircleSize + fixDPI(6) + captionWidth
+    getRadioButtonPlusCaptionWidth = offsetX * 2 + optCircleSize + FixDPI(6) + captionWidth
 
 End Function
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
-Public Sub assignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     toolTipManager.setTooltip Me.hWnd, Me.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub

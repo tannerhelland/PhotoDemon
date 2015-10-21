@@ -857,13 +857,13 @@ Private Sub evaluateFocusCount(ByVal focusCountJustIncremented As Boolean)
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
     
     'Text boxes handle their own updating
-    If g_IsProgramRunning Then txtPrimary.updateAgainstCurrentTheme
+    If g_IsProgramRunning Then txtPrimary.UpdateAgainstCurrentTheme
     
     'Our tooltip object must also be refreshed (in case the language has changed)
-    If g_IsProgramRunning Then toolTipManager.updateAgainstCurrentTheme
+    If g_IsProgramRunning Then toolTipManager.UpdateAgainstCurrentTheme
     
     'Request a repaint
     If Not cPainter Is Nothing Then cPainter.requestRepaint
@@ -872,7 +872,7 @@ End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
-Public Sub assignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     toolTipManager.setTooltip Me.hWnd, UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
     toolTipManager.setTooltip picScroll.hWnd, UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub

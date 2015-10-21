@@ -37,7 +37,7 @@ Begin VB.Form toolpanel_NDFX
    End
    Begin PhotoDemon.sliderTextCombo sltQuickFix 
       CausesValidation=   0   'False
-      Height          =   495
+      Height          =   405
       Index           =   0
       Left            =   1530
       TabIndex        =   2
@@ -52,7 +52,7 @@ Begin VB.Form toolpanel_NDFX
    End
    Begin PhotoDemon.sliderTextCombo sltQuickFix 
       CausesValidation=   0   'False
-      Height          =   495
+      Height          =   405
       Index           =   1
       Left            =   1530
       TabIndex        =   3
@@ -65,7 +65,7 @@ Begin VB.Form toolpanel_NDFX
    End
    Begin PhotoDemon.sliderTextCombo sltQuickFix 
       CausesValidation=   0   'False
-      Height          =   495
+      Height          =   405
       Index           =   2
       Left            =   5520
       TabIndex        =   4
@@ -78,7 +78,7 @@ Begin VB.Form toolpanel_NDFX
    End
    Begin PhotoDemon.sliderTextCombo sltQuickFix 
       CausesValidation=   0   'False
-      Height          =   495
+      Height          =   405
       Index           =   3
       Left            =   5520
       TabIndex        =   5
@@ -91,7 +91,7 @@ Begin VB.Form toolpanel_NDFX
    End
    Begin PhotoDemon.sliderTextCombo sltQuickFix 
       CausesValidation=   0   'False
-      Height          =   495
+      Height          =   405
       Index           =   4
       Left            =   9660
       TabIndex        =   6
@@ -108,7 +108,7 @@ Begin VB.Form toolpanel_NDFX
    End
    Begin PhotoDemon.sliderTextCombo sltQuickFix 
       CausesValidation=   0   'False
-      Height          =   495
+      Height          =   405
       Index           =   5
       Left            =   9660
       TabIndex        =   7
@@ -307,8 +307,8 @@ Private Sub Form_Load()
     cmdQuickFix(0).AssignImage "CMDBAR_RESET", , 50
     cmdQuickFix(1).AssignImage "TO_APPLY", , 50
     
-    cmdQuickFix(0).assignTooltip "Reset all quick-fix adjustment values"
-    cmdQuickFix(1).assignTooltip "Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance."
+    cmdQuickFix(0).AssignTooltip "Reset all quick-fix adjustment values"
+    cmdQuickFix(1).AssignTooltip "Make quick-fix adjustments permanent.  This action is never required, but if viewport rendering is sluggish and many quick-fix adjustments are active, it may improve performance."
     
     'Load any last-used settings for this form
     Set lastUsedSettings = New pdLastUsedSettings
@@ -316,7 +316,7 @@ Private Sub Form_Load()
     lastUsedSettings.loadAllControlValues
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
-    updateAgainstCurrentTheme
+    UpdateAgainstCurrentTheme
     
     'Allow non-destructive effects
     m_NonDestructiveFXAllowed = True
@@ -366,7 +366,7 @@ Private Sub sltQuickFix_Change(Index As Integer)
         'Even though this action is not destructive, we want to allow the user to save after making non-destructive changes.
         If pdImages(g_CurrentImage).getSaveState(pdSE_AnySave) And (pdImages(g_CurrentImage).getActiveLayer.getLayerNonDestructiveFXState <> initFXState) Then
             pdImages(g_CurrentImage).setSaveState False, pdSE_AnySave
-            syncInterfaceToCurrentImage
+            SyncInterfaceToCurrentImage
         End If
         
     End If
@@ -379,11 +379,11 @@ End Sub
 ' 3) MakeFormPretty is called, which redraws the form itself according to any theme and/or system settings.
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
 
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
-    makeFormPretty Me
+    MakeFormPretty Me
 
 End Sub
 

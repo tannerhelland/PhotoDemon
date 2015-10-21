@@ -1768,9 +1768,9 @@ Private Sub cmdBarMini_OKClick()
             g_UserPreferences.SetPref_Boolean "Saving", "Confirm Closing Unsaved", g_ConfirmClosingUnsaved
     
             If g_ConfirmClosingUnsaved Then
-                toolbar_Toolbox.cmdFile(FILE_CLOSE).assignTooltip "If the current image has not been saved, you will receive a prompt to save it before it closes.", "Close the current image"
+                toolbar_Toolbox.cmdFile(FILE_CLOSE).AssignTooltip "If the current image has not been saved, you will receive a prompt to save it before it closes.", "Close the current image"
             Else
-                toolbar_Toolbox.cmdFile(FILE_CLOSE).assignTooltip "Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.", "Close the current image"
+                toolbar_Toolbox.cmdFile(FILE_CLOSE).AssignTooltip "Because you have turned off save prompts (via Edit -> Preferences), you WILL NOT receive a prompt to save this image before it closes.", "Close the current image"
             End If
     
         'END prompt on unsaved images
@@ -2066,7 +2066,7 @@ Private Sub LoadAllPreferences()
             csCanvasColor.Color = g_CanvasBackground
                         
             'Finally, provide helpful tooltips for the canvas items
-            cboCanvas.assignTooltip "The image canvas sits ""behind"" the image on the screen.  Dark colors are generally preferable, as they help the image stand out while you work on it."
+            cboCanvas.AssignTooltip "The image canvas sits ""behind"" the image on the screen.  Dark colors are generally preferable, as they help the image stand out while you work on it."
             csCanvasColor.ToolTipText = g_Language.TranslateMessage("Click to change the image window background color")
         
         'END canvas background
@@ -2076,12 +2076,12 @@ Private Sub LoadAllPreferences()
             cboImageCaption.AddItem " compact - file name only", 0
             cboImageCaption.AddItem " descriptive - full location, including folder(s)", 1
             cboImageCaption.ListIndex = g_UserPreferences.GetPref_Long("Interface", "Window Caption Length", 0)
-            cboImageCaption.assignTooltip "Image windows tend to be large, so feel free to display each image's full location in the image window title bars."
+            cboImageCaption.AssignTooltip "Image windows tend to be large, so feel free to display each image's full location in the image window title bars."
         'END image window caption length
         
         'START mouse and pen input
             If g_UserPreferences.GetPref_Boolean("Interface", "High Resolution Input", True) Then chkMouseHighResolution.Value = vbChecked Else chkMouseHighResolution.Value = vbUnchecked
-            chkMouseHighResolution.assignTooltip "High-resolution tracking allows PhotoDemon to more accurately reproduce mouse and pen movement.  On some older PCs, the system may struggle to keep up with the extra tracking data, so you can disable this if necessary."
+            chkMouseHighResolution.AssignTooltip "High-resolution tracking allows PhotoDemon to more accurately reproduce mouse and pen movement.  On some older PCs, the system may struggle to keep up with the extra tracking data, so you can disable this if necessary."
         
         'START Recent file max count
             lblRecentFileCount.Caption = g_Language.TranslateMessage("maximum number of recent file entries: ")
@@ -2094,7 +2094,7 @@ Private Sub LoadAllPreferences()
             cboMRUCaption.AddItem " compact - file names only", 0
             cboMRUCaption.AddItem " descriptive - full locations, including folder(s)", 1
             cboMRUCaption.ListIndex = g_UserPreferences.GetPref_Long("Interface", "MRU Caption Length", 0)
-            cboMRUCaption.assignTooltip "The ""Recent Files"" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations."
+            cboMRUCaption.AssignTooltip "The ""Recent Files"" menu width is limited by Windows.  To prevent this menu from overflowing, PhotoDemon can display image names only instead of full image locations."
         'END MRU caption length
 
         
@@ -2106,7 +2106,7 @@ Private Sub LoadAllPreferences()
     
         'START count unique colors at load time
             If g_UserPreferences.GetPref_Boolean("Loading", "Verify Initial Color Depth", True) Then chkInitialColorDepth.Value = vbChecked Else chkInitialColorDepth.Value = vbUnchecked
-            chkInitialColorDepth.assignTooltip "This option allows PhotoDemon to scan incoming images to determine the most appropriate color depth on a case-by-case basis (rather than relying on the source image file's color depth, which may have been chosen arbitrarily)."
+            chkInitialColorDepth.AssignTooltip "This option allows PhotoDemon to scan incoming images to determine the most appropriate color depth on a case-by-case basis (rather than relying on the source image file's color depth, which may have been chosen arbitrarily)."
         'END count unique colors at load time
         
         'START tone-mapping HDR images at load time
@@ -2119,12 +2119,12 @@ Private Sub LoadAllPreferences()
                 chkToneMapping.Enabled = False
             End If
             
-            chkToneMapping.assignTooltip "HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data."
+            chkToneMapping.AssignTooltip "HDR and RAW images contain more colors than PC screens can physically display.  Before displaying such images, a tone mapping operation must be applied to the original image data."
         'END tone-mapping HDR images at load time
         
         'START auto-rotate according to EXIF data
             If g_UserPreferences.GetPref_Boolean("Loading", "EXIF Auto Rotate", True) Then chkLoadingOrientation.Value = vbChecked Else chkLoadingOrientation.Value = vbUnchecked
-            chkLoadingOrientation.assignTooltip "Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature."
+            chkLoadingOrientation.AssignTooltip "Most digital photos include rotation instructions (EXIF orientation metadata), which PhotoDemon will use to automatically rotate photos.  Some older smartphones and cameras may not write these instructions correctly, so if your photos are being imported sideways or upside-down, you can try disabling the auto-rotate feature."
         'END auto-rotate according to EXIF data
         
         'START initial image zoom
@@ -2133,7 +2133,7 @@ Private Sub LoadAllPreferences()
             cboLargeImages.AddItem " 1:1 (100% zoom, or ""actual size"")", 1
             cboLargeImages.ListIndex = g_UserPreferences.GetPref_Long("Loading", "Initial Image Zoom", 0)
             
-            cboLargeImages.assignTooltip "Any photo larger than 2 megapixels is too big to fit on an average computer monitor.  PhotoDemon can automatically zoom out on large photographs so that the entire image is viewable."
+            cboLargeImages.AssignTooltip "Any photo larger than 2 megapixels is too big to fit on an average computer monitor.  PhotoDemon can automatically zoom out on large photographs so that the entire image is viewable."
         'END initial image zoom
     
     'END Loading preferences
@@ -2152,7 +2152,7 @@ Private Sub LoadAllPreferences()
             cboExportColorDepth.AddItem " by asking me what color depth I want to use", 2
             cboExportColorDepth.ListIndex = g_UserPreferences.GetPref_Long("Saving", "Outgoing Color Depth", 1)
         
-            cboExportColorDepth.assignTooltip "Some image file types support multiple color depths.  PhotoDemon's developers suggest letting the software choose the best color depth for you, unless you have reason to choose otherwise."
+            cboExportColorDepth.AssignTooltip "Some image file types support multiple color depths.  PhotoDemon's developers suggest letting the software choose the best color depth for you, unless you have reason to choose otherwise."
         'END exported color depth handling
             
         'START suggested save as format
@@ -2161,7 +2161,7 @@ Private Sub LoadAllPreferences()
             cboDefaultSaveFormat.AddItem " the last image format I used in the ""Save As"" screen", 1
             cboDefaultSaveFormat.ListIndex = g_UserPreferences.GetPref_Long("Saving", "Suggested Format", 0)
             
-            cboDefaultSaveFormat.assignTooltip "Most photo editors use the format of the current image as the default in the ""Save As"" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the ""last used"" option."
+            cboDefaultSaveFormat.AssignTooltip "Most photo editors use the format of the current image as the default in the ""Save As"" screen.  When working with RAW images that will eventually be saved to JPEG, it is useful to have PhotoDemon remember that - hence the ""last used"" option."
         'END suggested save as format
         
         'START overwrite vs copy when saving
@@ -2170,7 +2170,7 @@ Private Sub LoadAllPreferences()
             cboSaveBehavior.AddItem " save a new copy, e.g. ""filename (2).jpg"" (safe behavior)", 1
             cboSaveBehavior.ListIndex = g_UserPreferences.GetPref_Long("Saving", "Overwrite Or Copy", 0)
             
-            cboSaveBehavior.assignTooltip "In most photo editors, the ""Save"" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a ""safer"" option, where each save results in a new copy of the file."
+            cboSaveBehavior.AssignTooltip "In most photo editors, the ""Save"" command saves the image over its original version, erasing that copy forever.  PhotoDemon provides a ""safer"" option, where each save results in a new copy of the file."
         'END overwrite vs copy when saving
                
         'START metadata export
@@ -2187,7 +2187,7 @@ Private Sub LoadAllPreferences()
             If tmpPreferenceLong > 0 Then tmpPreferenceLong = tmpPreferenceLong - 1
             cboMetadata.ListIndex = tmpPreferenceLong
             
-            cboMetadata.assignTooltip "Image metadata is extra data placed in an image file by a camera or photo software.  This data can include things like the make and model of the camera, the GPS coordinates where a photo was taken, or many other items.  To view an image's metadata, use the Image -> Metadata menu."
+            cboMetadata.AssignTooltip "Image metadata is extra data placed in an image file by a camera or photo software.  This data can include things like the make and model of the camera, the GPS coordinates where a photo was taken, or many other items.  To view an image's metadata, use the Image -> Metadata menu."
         'END metadata export
     
     'END Saving preferences
@@ -2205,13 +2205,13 @@ Private Sub LoadAllPreferences()
             cboFiletype.AddItem "TIFF - Tagged Image File Format", 4
             cboFiletype.ListIndex = 0
             
-            cboFiletype.assignTooltip "Some image file types support additional parameters when importing and exporting.  By default, PhotoDemon will manage these for you, but you can specify different parameters if necessary."
+            cboFiletype.AssignTooltip "Some image file types support additional parameters when importing and exporting.  By default, PhotoDemon will manage these for you, but you can specify different parameters if necessary."
             
         'BMP
         
             'START/END RLE encoding for bitmaps
                 If g_UserPreferences.GetPref_Boolean("File Formats", "Bitmap RLE", False) Then chkBMPRLE.Value = vbChecked Else chkBMPRLE.Value = vbUnchecked
-                chkBMPRLE.assignTooltip "Bitmap files only support one type of compression, and they only support it for certain color depths.  PhotoDemon can apply simple RLE compression when saving 8bpp images."
+                chkBMPRLE.AssignTooltip "Bitmap files only support one type of compression, and they only support it for certain color depths.  PhotoDemon can apply simple RLE compression when saving 8bpp images."
         
         'PNG
         
@@ -2220,11 +2220,11 @@ Private Sub LoadAllPreferences()
     
             'START/END interlacing
                 If g_UserPreferences.GetPref_Boolean("File Formats", "PNG Interlacing", False) Then chkPNGInterlacing.Value = vbChecked Else chkPNGInterlacing.Value = vbUnchecked
-                chkPNGInterlacing.assignTooltip "PNG interlacing is similar to ""progressive scan"" on JPEGs.  Interlacing slightly increases file size, but an interlaced image can ""fade-in"" while it downloads."
+                chkPNGInterlacing.AssignTooltip "PNG interlacing is similar to ""progressive scan"" on JPEGs.  Interlacing slightly increases file size, but an interlaced image can ""fade-in"" while it downloads."
             
             'START/END background color preservation
                 If g_UserPreferences.GetPref_Boolean("File Formats", "PNG Background Color", True) Then chkPNGBackground.Value = vbChecked Else chkPNGBackground.Value = vbUnchecked
-                chkPNGBackground.assignTooltip "PNG files can contain a background color parameter.  This takes up extra space in the file, so feel free to disable it if you don't need background colors."
+                chkPNGBackground.AssignTooltip "PNG files can contain a background color parameter.  This takes up extra space in the file, so feel free to disable it if you don't need background colors."
         
         'PPM
     
@@ -2234,14 +2234,14 @@ Private Sub LoadAllPreferences()
                 cboPPMFormat.AddItem " ASCII encoding (human-readable, multi-platform)", 1
                 cboPPMFormat.ListIndex = g_UserPreferences.GetPref_Long("File Formats", "PPM Export Format", 0)
                 
-                cboPPMFormat.assignTooltip "Binary encoding of PPM files is strongly suggested.  (In other words, don't change this setting unless you are certain that ASCII encoding is what you want. :)"
+                cboPPMFormat.AssignTooltip "Binary encoding of PPM files is strongly suggested.  (In other words, don't change this setting unless you are certain that ASCII encoding is what you want. :)"
             'END PPM export format
     
         'TGA
     
             'START/END TGA RLE encoding
                 If g_UserPreferences.GetPref_Boolean("File Formats", "TGA RLE", False) Then chkTGARLE.Value = vbChecked Else chkTGARLE.Value = vbUnchecked
-                chkTGARLE.assignTooltip "TGA files only support one type of compression.  PhotoDemon can apply simple RLE compression when saving TGA images."
+                chkTGARLE.AssignTooltip "TGA files only support one type of compression.  PhotoDemon can apply simple RLE compression when saving TGA images."
         
         'TIFF
     
@@ -2259,12 +2259,12 @@ Private Sub LoadAllPreferences()
                 
                 cboTiffCompression.ListIndex = g_UserPreferences.GetPref_Long("File Formats", "TIFF Compression", 0)
                 
-                cboTiffCompression.assignTooltip "TIFFs support a variety of compression techniques.  Some of these techniques are limited to specific color depths, so make sure you pick one that matches the images you plan on saving."
+                cboTiffCompression.AssignTooltip "TIFFs support a variety of compression techniques.  Some of these techniques are limited to specific color depths, so make sure you pick one that matches the images you plan on saving."
             'END TIFF compression
                 
             'START/END TIFF CMYK encoding
                 If g_UserPreferences.GetPref_Boolean("File Formats", "TIFF CMYK", False) Then chkTIFFCMYK.Value = vbChecked Else chkTIFFCMYK.Value = vbUnchecked
-                chkTIFFCMYK.assignTooltip "TIFFs support both RGB and CMYK color spaces.  RGB is used by default, but if a TIFF file is going to be used in printed document, CMYK is sometimes required."
+                chkTIFFCMYK.AssignTooltip "TIFFs support both RGB and CMYK color spaces.  RGB is used by default, but if a TIFF file is going to be used in printed document, CMYK is sometimes required."
         
     'END File format preferences
     
@@ -2293,22 +2293,22 @@ Private Sub LoadAllPreferences()
         
         'START Color management accuracy v performance
             cboPerformance(0).ListIndex = g_ColorPerformance
-            cboPerformance(0).assignTooltip "Like any photo editor, PhotoDemon frequently converts colors between different reference spaces.  The accuracy of these conversions can be limited to improve performance."
+            cboPerformance(0).AssignTooltip "Like any photo editor, PhotoDemon frequently converts colors between different reference spaces.  The accuracy of these conversions can be limited to improve performance."
         'END Color management accuracy v performance
         
         'START Interface decorations performance
             cboPerformance(1).ListIndex = g_InterfacePerformance
-            cboPerformance(1).assignTooltip "Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost."
+            cboPerformance(1).AssignTooltip "Some interface elements receive custom decorations (like drop shadows).  On older PCs, these decorations can be suspended for a small performance boost."
         'END Interface decorations performance
         
         'START Thumbnail rendering performance
             cboPerformance(2).ListIndex = g_ThumbnailPerformance
-            cboPerformance(2).assignTooltip "PhotoDemon has to generate a lot of thumbnail images, especially when images contain multiple layers.  The quality of these thumbnails can be lowered in order to improve performance."
+            cboPerformance(2).AssignTooltip "PhotoDemon has to generate a lot of thumbnail images, especially when images contain multiple layers.  The quality of these thumbnails can be lowered in order to improve performance."
         'END Thumbnail rendering performance
         
         'START Viewport rendering performance
             cboPerformance(3).ListIndex = g_ViewportPerformance
-            cboPerformance(3).assignTooltip "Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance."
+            cboPerformance(3).AssignTooltip "Rendering the primary image canvas is a common bottleneck for PhotoDemon's performance.  The automatic setting is recommended, but for older PCs, you can manually select the Maximize Performance option to sacrifice quality for raw performance."
         'END Viewport rendering performance
         
         'START Undo data compression
@@ -2376,10 +2376,10 @@ Private Sub LoadAllPreferences()
             cboMonitors.ListIndex = primaryIndex
             
             'Add tooltips to all color-profile-related controls
-            optColorManagement(0).assignTooltip "This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting."
-            optColorManagement(1).assignTooltip "To configure custom color profiles on a per-monitor basis, please use this setting."
+            optColorManagement(0).AssignTooltip "This setting is the best choice for most users.  If you have no idea what color management is, use this setting.  If you have correctly configured a display profile via the Windows Control Panel, also use this setting."
+            optColorManagement(1).AssignTooltip "To configure custom color profiles on a per-monitor basis, please use this setting."
             
-            cboMonitors.assignTooltip "Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor."
+            cboMonitors.AssignTooltip "Please specify a color profile for each monitor currently attached to the system.  Note that the text in parentheses is the display adapter driving the named monitor."
             cmdColorProfilePath.ToolTipText = g_Language.TranslateMessage("Click this button to bring up a ""browse for color profile"" dialog.")
         
         'END color management preferences
@@ -2397,7 +2397,7 @@ Private Sub LoadAllPreferences()
             csAlphaOne.Color = g_UserPreferences.GetPref_Long("Transparency", "Alpha Check One", RGB(255, 255, 255))
             csAlphaTwo.Color = g_UserPreferences.GetPref_Long("Transparency", "Alpha Check Two", RGB(204, 204, 204))
             
-            cboAlphaCheck.assignTooltip "If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's colors."
+            cboAlphaCheck.AssignTooltip "If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's colors."
             csAlphaOne.ToolTipText = g_Language.TranslateMessage("Click to change the first checkerboard background color for alpha channels")
             csAlphaTwo.ToolTipText = g_Language.TranslateMessage("Click to change the second checkerboard background color for alpha channels")
             
@@ -2412,7 +2412,7 @@ Private Sub LoadAllPreferences()
             
             cboAlphaCheckSize.ListIndex = g_UserPreferences.GetPref_Long("Transparency", "Alpha Check Size", 1)
             
-            cboAlphaCheckSize.assignTooltip "If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's size."
+            cboAlphaCheckSize.AssignTooltip "If an image has transparent areas, a checkerboard is typically displayed ""behind"" the image.  This box lets you change the checkerboard's size."
         'END alpha-channel checkerboard size
         
     'END Color and Transparency preferences
@@ -2446,7 +2446,7 @@ Private Sub LoadAllPreferences()
             
             'Retrieve the current preference
             cboUpdates(0).ListIndex = g_UserPreferences.GetPref_Long("Updates", "Update Frequency", PDUF_EACH_SESSION)
-            cboUpdates(0).assignTooltip "Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired."
+            cboUpdates(0).AssignTooltip "Because PhotoDemon is a portable application, it can only check for updates when the program is running.  By default, PhotoDemon will check for updates whenever the program is launched, but you can reduce this frequency if desired."
         'END update frequency
         
         'START update track
@@ -2457,22 +2457,22 @@ Private Sub LoadAllPreferences()
             
             'Retrieve the current preference
             cboUpdates(1).ListIndex = g_UserPreferences.GetPref_Long("Updates", "Update Track", PDUT_BETA)
-            cboUpdates(1).assignTooltip "One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)"
+            cboUpdates(1).AssignTooltip "One of the best ways to support PhotoDemon is to help test new releases.  By default, PhotoDemon will suggest both stable and beta releases, but the truly adventurous can also try developer releases.  (Developer releases give you immediate access to the latest program enhancements, but you might encounter some bugs.)"
         'END update track
             
         'START update language files independently
             If g_UserPreferences.GetPref_Boolean("Updates", "Update Languages Independently", True) Then chkUpdates(0).Value = vbChecked Else chkUpdates(0).Value = vbUnchecked
-            chkUpdates(0).assignTooltip "PhotoDemon's volunteer translators regularly update the program's language files.  PhotoDemon can automatically download these updates separate from the main program, ensuring that you always have the most up-to-date language files."
+            chkUpdates(0).AssignTooltip "PhotoDemon's volunteer translators regularly update the program's language files.  PhotoDemon can automatically download these updates separate from the main program, ensuring that you always have the most up-to-date language files."
         'END update language files independently
             
         'START update plugins independently
             If g_UserPreferences.GetPref_Boolean("Updates", "Update Plugins Independently", True) Then chkUpdates(1).Value = vbChecked Else chkUpdates(1).Value = vbUnchecked
-            chkUpdates(1).assignTooltip "PhotoDemon uses some 3rd-party plugins.  Sometimes, the authors of these plugins fix bugs or add new features.  Instead of waiting for the next PhotoDemon release, you can receive plugin updates as soon as they become available."
+            chkUpdates(1).AssignTooltip "PhotoDemon uses some 3rd-party plugins.  Sometimes, the authors of these plugins fix bugs or add new features.  Instead of waiting for the next PhotoDemon release, you can receive plugin updates as soon as they become available."
         'END update plugins independently
         
         'START notify when updates are ready for patching
             If g_UserPreferences.GetPref_Boolean("Updates", "Update Notifications", True) Then chkUpdates(2).Value = vbChecked Else chkUpdates(2).Value = vbUnchecked
-            chkUpdates(2).assignTooltip "PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately."
+            chkUpdates(2).AssignTooltip "PhotoDemon can notify you when it's ready to apply an update.  This allows you to use the updated version immediately."
         'END notify when updates are ready for patching
         
         'Populate the network access disclaimer in the "Update" panel
@@ -2491,7 +2491,7 @@ Private Sub LoadAllPreferences()
             txtHardware = cSysInfo.GetDeviceCapsString()
             
         '...and give the "copy to clipboard" button a tooltip
-            cmdCopyReportClipboard.assignTooltip "Copy the report to the system clipboard"
+            cmdCopyReportClipboard.AssignTooltip "Copy the report to the system clipboard"
         
         'Display what we know about PD's memory usage
             lblMemoryUsageCurrent.Caption = g_Language.TranslateMessage("current PhotoDemon memory usage:") & " " & Format(Str(cSysInfo.GetPhotoDemonMemoryUsage()), "###,###,###,###") & " K"
@@ -2601,14 +2601,14 @@ Private Sub Form_Load()
         .AddItem "Advanced", 7
         
         'Next, add tooltips to each button
-        .assignTooltip "Interface options include settings for the main PhotoDemon interface, including things like canvas settings, font selection, and positioning.", "Interface Options", , 0
-        .assignTooltip "Load options allow you to customize the way image files enter the application.", "Load (Import) Options", , 1
-        .assignTooltip "Save options allow you to customize the way image files leave the application.", "Save (Export) Options", , 2
-        .assignTooltip "File format options control how PhotoDemon handles certain types of images.", "File Format Options", , 3
-        .assignTooltip "Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.", "Performance Options", , 4
-        .assignTooltip "Color and transparency options include settings for color management (ICC profiles), and alpha channel handling.", "Color and Transparency Options", , 5
-        .assignTooltip "Update options control how frequently PhotoDemon checks for updated versions, and how it handles the download of missing plugins.", "Update Options", , 6
-        .assignTooltip "Advanced options can be safely ignored by regular users. Testers and developers may, however, find these settings useful.", "Advanced Options", , 7
+        .AssignTooltip "Interface options include settings for the main PhotoDemon interface, including things like canvas settings, font selection, and positioning.", "Interface Options", , 0
+        .AssignTooltip "Load options allow you to customize the way image files enter the application.", "Load (Import) Options", , 1
+        .AssignTooltip "Save options allow you to customize the way image files leave the application.", "Save (Export) Options", , 2
+        .AssignTooltip "File format options control how PhotoDemon handles certain types of images.", "File Format Options", , 3
+        .AssignTooltip "Performance options allow you to control whether PhotoDemon emphasizes speed or quality when performing certain tasks.", "Performance Options", , 4
+        .AssignTooltip "Color and transparency options include settings for color management (ICC profiles), and alpha channel handling.", "Color and Transparency Options", , 5
+        .AssignTooltip "Update options control how frequently PhotoDemon checks for updated versions, and how it handles the download of missing plugins.", "Update Options", , 6
+        .AssignTooltip "Advanced options can be safely ignored by regular users. Testers and developers may, however, find these settings useful.", "Advanced Options", , 7
         
         'Next, add images to each button
         .AssignImageToItem 0, "PREF_INTERFACE"
@@ -2621,7 +2621,7 @@ Private Sub Form_Load()
         .AssignImageToItem 7, "PREF_ADVANCED"
         
         'Finally, synchronize the tooltip manager against the current theme
-        .updateAgainstCurrentTheme
+        .UpdateAgainstCurrentTheme
         
     End With
     

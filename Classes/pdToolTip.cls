@@ -468,7 +468,7 @@ End Sub
 
 'If the theme or language is changed at run-time, the caller should call this function.  It will refresh all tooltips in
 ' its collection against the current language and theme, without requiring any special input or parameters.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
 
     'This function is simple: just iterate through all tooltips, and re-add them to the collection.  This will automatically
     ' trigger re-translation as necessary.

@@ -48,7 +48,7 @@ Begin VB.Form toolpanel_MoveSize
       Top             =   0
       Width           =   14055
       Begin PhotoDemon.sliderTextCombo sltLayerAngle 
-         Height          =   480
+         Height          =   405
          Left            =   120
          TabIndex        =   15
          Top             =   420
@@ -80,7 +80,7 @@ Begin VB.Form toolpanel_MoveSize
          AutoToggle      =   -1  'True
       End
       Begin PhotoDemon.sliderTextCombo sltLayerShearX 
-         Height          =   480
+         Height          =   405
          Left            =   5400
          TabIndex        =   18
          Top             =   420
@@ -123,7 +123,7 @@ Begin VB.Form toolpanel_MoveSize
          AutoToggle      =   -1  'True
       End
       Begin PhotoDemon.sliderTextCombo sltLayerShearY 
-         Height          =   480
+         Height          =   405
          Left            =   5400
          TabIndex        =   21
          Top             =   930
@@ -501,18 +501,18 @@ Private Sub Form_Load()
     'Several reset/apply buttons on this form use identical images (and nearly identical tooltips)
     cmdLayerMove(0).AssignImage "CMDBAR_RESET", , 50
     cmdLayerMove(1).AssignImage "TO_APPLY", , 50
-    cmdLayerMove(0).assignTooltip "Reset layer to original size"
-    cmdLayerMove(1).assignTooltip "Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
+    cmdLayerMove(0).AssignTooltip "Reset layer to original size"
+    cmdLayerMove(1).AssignTooltip "Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
     
     cmdLayerAngleReset.AssignImage "CMDBAR_RESET", , 50
-    cmdLayerAngleReset.assignTooltip "Reset layer angle to zero"
+    cmdLayerAngleReset.AssignTooltip "Reset layer angle to zero"
     
     cmdLayerShearReset(0).AssignImage "CMDBAR_RESET", , 50
     cmdLayerShearReset(1).AssignImage "CMDBAR_RESET", , 50
-    cmdLayerShearReset(0).assignTooltip "Reset horizontal layer shear to zero"
-    cmdLayerShearReset(1).assignTooltip "Reset vertical layer shear to zero"
+    cmdLayerShearReset(0).AssignTooltip "Reset horizontal layer shear to zero"
+    cmdLayerShearReset(1).AssignTooltip "Reset vertical layer shear to zero"
     cmdLayerAffinePermanent.AssignImage "TO_APPLY", , 50
-    cmdLayerAffinePermanent.assignTooltip "Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
+    cmdLayerAffinePermanent.AssignTooltip "Make current layer transforms (size, angle, and shear) permanent.  This action is never required, but if viewport rendering is sluggish, it may improve performance."
     
     cboLayerResizeQuality.Clear
     cboLayerResizeQuality.AddItem "Nearest neighbor", 0
@@ -526,7 +526,7 @@ Private Sub Form_Load()
     lastUsedSettings.loadAllControlValues
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
-    updateAgainstCurrentTheme
+    UpdateAgainstCurrentTheme
     
 End Sub
 
@@ -694,7 +694,7 @@ Private Sub tudLayerMove_Change(Index As Integer)
 End Sub
 
 'Non-destructive resizing requires the synchronization of several menus, as well.  Because it's time-consuming to invoke
-' syncInterfaceToCurrentImage, we only call it when the user releases the mouse.
+' SyncInterfaceToCurrentImage, we only call it when the user releases the mouse.
 Private Sub tudLayerMove_FinalChange(Index As Integer)
     
     'If tool changes are not allowed, exit.
@@ -704,7 +704,7 @@ Private Sub tudLayerMove_FinalChange(Index As Integer)
     Select Case Index
         
         Case 2, 3
-            syncInterfaceToCurrentImage
+            SyncInterfaceToCurrentImage
         
         Case Else
         
@@ -718,10 +718,10 @@ End Sub
 ' 3) MakeFormPretty is called, which redraws the form itself according to any theme and/or system settings.
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
 
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
-    makeFormPretty Me
+    MakeFormPretty Me
 
 End Sub

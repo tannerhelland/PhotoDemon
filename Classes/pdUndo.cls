@@ -26,7 +26,7 @@ Attribute VB_Exposed = False
 'In 2013, I finally had enough of the program's shoddy Undo/Redo code, so I merged all the various Undo/Redo subs
 ' into a single class, and gave each pdImage a copy of said class.  As part of the rewrite, the Undo/Redo engine
 ' itself was rewritten in a much cleaner fashion, including moving all interface-related code outside the class.
-' (Specifically, UI considerations were handed off to PD's central syncInterfaceToCurrentImage function.)
+' (Specifically, UI considerations were handed off to PD's central SyncInterfaceToCurrentImage function.)
 '
 'In 2014, as part of adding Layers support, the Undo/Redo engine was further modified from a lazy implementation to
 ' an active one.  What does this mean?  Basically, the previous "lazy" implementation did not create Undo/Redo data
@@ -218,32 +218,32 @@ Public Sub createUndoData(ByVal processID As String, ByVal pParamString As Strin
     Select Case processType
     
         Case UNDO_NOTHING
-            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, fixDPI(UNDO_THUMB_LARGE)
+            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, FixDPI(UNDO_THUMB_LARGE)
         
         Case UNDO_EVERYTHING
-            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, fixDPI(UNDO_THUMB_LARGE)
+            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, FixDPI(UNDO_THUMB_LARGE)
             
         Case UNDO_IMAGE, UNDO_IMAGE_VECTORSAFE
-            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, fixDPI(UNDO_THUMB_LARGE)
+            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, FixDPI(UNDO_THUMB_LARGE)
         
         Case UNDO_IMAGEHEADER
-            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, fixDPI(UNDO_THUMB_LARGE)
+            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, FixDPI(UNDO_THUMB_LARGE)
         
         Case UNDO_LAYER, UNDO_LAYER_VECTORSAFE
-            parentPDImage.getLayerByID(targetLayerID).requestThumbnail undoStack(undoNum).thumbnailLarge, fixDPI(UNDO_THUMB_LARGE)
+            parentPDImage.getLayerByID(targetLayerID).requestThumbnail undoStack(undoNum).thumbnailLarge, FixDPI(UNDO_THUMB_LARGE)
         
         Case UNDO_LAYERHEADER
-            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, fixDPI(UNDO_THUMB_LARGE)
+            parentPDImage.requestThumbnail undoStack(undoNum).thumbnailLarge, FixDPI(UNDO_THUMB_LARGE)
         
         Case UNDO_SELECTION
-            parentPDImage.mainSelection.requestThumbnail undoStack(undoNum).thumbnailLarge, fixDPI(UNDO_THUMB_LARGE)
+            parentPDImage.mainSelection.requestThumbnail undoStack(undoNum).thumbnailLarge, FixDPI(UNDO_THUMB_LARGE)
             
     End Select
     
     'Next, create a smaller copy of the thumbnail using FreeImage resize.  (This is much faster than regenerating
     ' the thumbnail from scratch, especially if an image has many layers.)
     Set undoStack(undoNum).thumbnailSmall = New pdDIB
-    undoStack(undoNum).thumbnailSmall.createBlank fixDPI(UNDO_THUMB_SMALL), fixDPI(UNDO_THUMB_SMALL), 32, 0
+    undoStack(undoNum).thumbnailSmall.createBlank FixDPI(UNDO_THUMB_SMALL), FixDPI(UNDO_THUMB_SMALL), 32, 0
     FreeImageResizeDIBFast undoStack(undoNum).thumbnailSmall, 0, 0, undoStack(undoNum).thumbnailSmall.getDIBWidth, undoStack(undoNum).thumbnailSmall.getDIBHeight, undoStack(undoNum).thumbnailLarge, FILTER_BILINEAR, True
     
     'Increase our Undo count
@@ -777,7 +777,7 @@ Public Function fillDIBWithLastUndoCopy(ByRef dstDIB As pdDIB, ByRef affectedLay
     'If a relevant layer was found, actionFound will be set to TRUE.  If a relevant layer was not found, return FALSE and exit.
     If actionFound Then
         
-        'Some functions, like syncInterfaceToCurrentImage, only care if a recent Layer modification exists.  They don't actually need
+        'Some functions, like SyncInterfaceToCurrentImage, only care if a recent Layer modification exists.  They don't actually need
         ' us to return the relevant DIB.  If checkStateOnly = TRUE, exit now.
         If checkStateOnly Then
             fillDIBWithLastUndoCopy = True

@@ -381,7 +381,7 @@ Public Sub LoadTheProgram()
     g_Zoom.populateZoomComboBox FormMain.mainCanvas(0).getZoomDropDownReference()
     
     'Populate the main canvas's size unit dropdown
-    FormMain.mainCanvas(0).populateSizeUnits
+    FormMain.mainCanvas(0).PopulateSizeUnits
     
     
     
@@ -489,7 +489,7 @@ Public Sub LoadTheProgram()
     g_MouseAccuracy = FixDPIFloat(6)
     
     'Apply visual styles
-    FormMain.updateAgainstCurrentTheme False
+    FormMain.UpdateAgainstCurrentTheme False
     
     
     
@@ -1059,7 +1059,7 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             
             'Deactivate the (now useless) pdImage object, and forcibly unload whatever resources it has claimed
             targetImage.deactivateImage
-            fullPDImageUnload targetImage.imageID, False
+            FullPDImageUnload targetImage.imageID, False
             
             GoTo PreloadMoreImages
 

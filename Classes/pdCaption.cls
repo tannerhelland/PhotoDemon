@@ -44,7 +44,7 @@ Private m_FontSizeCaption As Single
 
 'Current caption string (persistent within the IDE, but must be set at run-time for Unicode languages).  Note that m_CaptionEn
 ' is the ENGLISH CAPTION ONLY.  A translated caption will be stored in m_CaptionTranslated; the translated copy will be updated
-' by any caption change, or by a call to updateAgainstCurrentTheme.
+' by any caption change, or by a call to UpdateAgainstCurrentTheme.
 Private m_CaptionEn As String
 Private m_CaptionTranslated As String
 
@@ -419,7 +419,7 @@ End Sub
 
 'If the theme or language is changed at run-time, the caller should call this function.  It will refresh all tooltips in
 ' its collection against the current language and theme, without requiring any special input or parameters.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
     
     Dim oldTranslatedText As String
     oldTranslatedText = m_CaptionTranslated

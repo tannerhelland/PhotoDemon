@@ -829,7 +829,7 @@ Private Sub UserControl_Show()
         
         'When the control is first made visible, remove the control's tooltip property and reassign it to the checkbox
         ' using a custom solution (which allows for linebreaks and theming).
-        If Len(Extender.ToolTipText) <> 0 Then assignTooltip Extender.ToolTipText
+        If Len(Extender.ToolTipText) <> 0 Then AssignTooltip Extender.ToolTipText
         
     End If
     
@@ -957,7 +957,7 @@ Private Function createComboBox() As Boolean
         'If the program is running (e.g. NOT design-time) resize the user control to match.  This improves compile-time performance, as there
         ' are a lot of instances in this control, and their size events will be fired during compilation.
         If g_IsProgramRunning Then
-            UserControl.Height = pxToTwipsY(idealHeight + 8)
+            UserControl.Height = PXToTwipsY(idealHeight + 8)
         End If
         
         m_InternalResizeState = False
@@ -1083,7 +1083,7 @@ End Function
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
-Public Sub assignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     
     'If the tooltip is assigned prior to key components being created (or if a property change results in hWnd changes),
     ' we need to cache the tooltip string, so we can reassign it in the future.
@@ -1172,7 +1172,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
     
     If g_IsProgramRunning Then
                 
@@ -1357,14 +1357,14 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                 Dim buttonPt1 As POINTFLOAT, buttonPt2 As POINTFLOAT, buttonPt3 As POINTFLOAT
                 
                 'Start with the downward-pointing arrow
-                buttonPt1.x = fullWinRect.Right - fixDPIFloat(16)
-                buttonPt1.y = (fullWinRect.Bottom - fullWinRect.Top) / 2 - fixDPIFloat(1)
+                buttonPt1.x = fullWinRect.Right - FixDPIFloat(16)
+                buttonPt1.y = (fullWinRect.Bottom - fullWinRect.Top) / 2 - FixDPIFloat(1)
                 
-                buttonPt3.x = fullWinRect.Right - fixDPIFloat(8)
+                buttonPt3.x = fullWinRect.Right - FixDPIFloat(8)
                 buttonPt3.y = buttonPt1.y
                 
                 buttonPt2.x = buttonPt1.x + (buttonPt3.x - buttonPt1.x) / 2
-                buttonPt2.y = buttonPt1.y + fixDPIFloat(3)
+                buttonPt2.y = buttonPt1.y + FixDPIFloat(3)
                 
                 GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt1.x, buttonPt1.y, buttonPt2.x, buttonPt2.y, cboButtonColor, 255, 2, True, LineCapRound
                 GDI_Plus.GDIPlusDrawLineToDC targetDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, cboButtonColor, 255, 2, True, LineCapRound
@@ -1442,7 +1442,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
                 yOffset = srcDIS.rcItem.Top + yOffset / 2
                 
                 With srcDIS.rcItem
-                    curFont.fastRenderTextWithClipping .Left + 4, yOffset, (.Right - .Left) - fixDPIFloat(8), (.Bottom - .Top) - 2, tmpString, False
+                    curFont.fastRenderTextWithClipping .Left + 4, yOffset, (.Right - .Left) - FixDPIFloat(8), (.Bottom - .Top) - 2, tmpString, False
                 End With
                 
                 curFont.releaseFromDC
@@ -1535,7 +1535,7 @@ Private Sub syncUserControlSizeToComboSize()
         With UserControl
         
             If (comboRect.Bottom - comboRect.Top) <> .ScaleHeight Or (comboRect.Right - comboRect.Left) <> .ScaleWidth Then
-                .Size pxToTwipsX(comboRect.Right - comboRect.Left), pxToTwipsY(comboRect.Bottom - comboRect.Top)
+                .Size PXToTwipsX(comboRect.Right - comboRect.Left), PXToTwipsY(comboRect.Bottom - comboRect.Top)
             End If
         
         End With
@@ -1592,7 +1592,7 @@ Private Sub moveDropDownIntoPosition(ByRef editRect As RECTL, ByRef listRect As 
     finalReportedHeight = m_DropDownCalculatedHeight
     
     'If the drop down is gonna extend past the bottom edge of the screen, display it above the edit box (instead of below).
-    If editRect.Bottom + m_DropDownCalculatedHeight > g_Displays.getDesktopHeight Then
+    If editRect.Bottom + m_DropDownCalculatedHeight > g_Displays.GetDesktopHeight Then
         listRect.Top = editRect.Top - m_DropDownCalculatedHeight + 1
         
         'Perform a second check; if the box *still* extends past the edge of the screen, we have no choice but to shrink it
@@ -1600,7 +1600,7 @@ Private Sub moveDropDownIntoPosition(ByRef editRect As RECTL, ByRef listRect As 
         If listRect.Top < 0 Then
         
             'Find the greater available area, up or down, and use that as our extension dimension.
-            If Abs(listRect.Top) < Abs(g_Displays.getDesktopHeight - (editRect.Bottom + m_DropDownCalculatedHeight)) Then
+            If Abs(listRect.Top) < Abs(g_Displays.GetDesktopHeight - (editRect.Bottom + m_DropDownCalculatedHeight)) Then
                 
                 'Top is larger; use it
                 listRect.Top = 0
@@ -1610,7 +1610,7 @@ Private Sub moveDropDownIntoPosition(ByRef editRect As RECTL, ByRef listRect As 
             
                 'Bottom is larger; use it
                 listRect.Top = editRect.Bottom
-                finalReportedHeight = g_Displays.getDesktopHeight - listRect.Top
+                finalReportedHeight = g_Displays.GetDesktopHeight - listRect.Top
             
             End If
         
@@ -1622,8 +1622,8 @@ Private Sub moveDropDownIntoPosition(ByRef editRect As RECTL, ByRef listRect As 
     
     'Repeat the above steps, but for the right edge of the screen.  Note that this is much simpler, as we simply need to "bump"
     ' the list over.
-    If editRect.Left + m_DropDownCalculatedWidth > g_Displays.getDesktopWidth Then
-        listRect.Left = g_Displays.getDesktopWidth - m_DropDownCalculatedWidth
+    If editRect.Left + m_DropDownCalculatedWidth > g_Displays.GetDesktopWidth Then
+        listRect.Left = g_Displays.GetDesktopWidth - m_DropDownCalculatedWidth
     End If
     
     'Complete the rect by using our calculated left/right values, and width/height values

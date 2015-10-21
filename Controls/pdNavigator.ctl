@@ -113,8 +113,8 @@ Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
 
-Public Property Get ContainerHwnd() As Long
-    ContainerHwnd = UserControl.ContainerHwnd
+Public Property Get containerHwnd() As Long
+    containerHwnd = UserControl.containerHwnd
 End Property
 
 'When the control receives focus, relay the event externally
@@ -234,7 +234,7 @@ Private Sub UserControl_Initialize()
     End If
     
     'Draw the control at least once
-    UpdateControlSize
+    updateControlSize
     
 End Sub
 
@@ -247,11 +247,11 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_Resize()
-    UpdateControlSize
+    updateControlSize
 End Sub
 
 'Call this to recreate all buffers against a changed control size.
-Private Sub UpdateControlSize()
+Private Sub updateControlSize()
     
     'For now, we simply sync the navigator box to the size of the control
     picNavigator.Move 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight
@@ -412,7 +412,7 @@ Public Sub NotifyNewThumbNeeded()
     
     'Wipe the existing thumbnail, and request a new one.
     If m_ImageThumbnail Is Nothing Then
-        UpdateControlSize
+        updateControlSize
     Else
         m_ImageThumbnail.resetDIB 0
         RaiseEvent RequestUpdatedThumbnail(m_ImageThumbnail, m_ThumbEventX, m_ThumbEventY)
@@ -430,7 +430,7 @@ End Sub
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    toolTipManager.setTooltip Me.hWnd, Me.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    toolTipManager.setTooltip Me.hWnd, Me.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
@@ -441,7 +441,7 @@ Public Sub UpdateAgainstCurrentTheme()
     If g_IsProgramRunning Then toolTipManager.UpdateAgainstCurrentTheme
         
     'Redraw the control (in case anything has changed)
-    UpdateControlSize
+    updateControlSize
     
 End Sub
     

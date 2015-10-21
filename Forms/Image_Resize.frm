@@ -451,10 +451,10 @@ Private Sub Form_Load()
     End Select
     
     'Add some tooltips
-    cboResampleFriendly.assignTooltip "Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia."
-    cboResampleTechnical.assignTooltip "Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia."
-    chkNames.assignTooltip "By default, descriptive names are used in place of technical ones.  Advanced users can toggle this option to expose more resampling techniques."
-    cmbFit.assignTooltip "When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead."
+    cboResampleFriendly.AssignTooltip "Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia."
+    cboResampleTechnical.AssignTooltip "Resampling affects the quality of a resized image.  For a good summary of resampling techniques, visit the Image Resampling article on Wikipedia."
+    chkNames.AssignTooltip "By default, descriptive names are used in place of technical ones.  Advanced users can toggle this option to expose more resampling techniques."
+    cmbFit.AssignTooltip "When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead."
     
     'Apply translations and visual themes
     MakeFormPretty Me

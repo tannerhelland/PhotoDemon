@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.100</langversion>
+<langversion>6.7.101</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -2920,6 +2920,12 @@ Per favore inserisci un valore numerico.</translation>
 
 <!-- END text for pdParamXML.cls-->
 
+<!-- BEGIN text for pdPixelBlender.cls -->
+
+<!-- pdPixelBlender.cls contains 0 phrases. -->
+
+<!-- END text for pdPixelBlender.cls-->
+
 <!-- BEGIN text for pdPreferences.cls -->
 
 <!-- pdPreferences.cls contains 0 phrases. -->
@@ -3495,6 +3501,12 @@ o il menù File > Apri e File > Importa.</translation>
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdLabel.ctl-->
+
+<!-- BEGIN text for pdNavigator.ctl -->
+
+<!-- pdNavigator.ctl contains 0 phrases. -->
+
+<!-- END text for pdNavigator.ctl-->
 
 <!-- BEGIN text for pdScrollBar.ctl -->
 
@@ -11715,6 +11727,12 @@ Per attivare il supporto per questa funzionalità, per favore copia il file Free
 
 <!-- END text for Layer_Transparency_RemoveTransparency.frm-->
 
+<!-- BEGIN text for Layerpanel_Colors.frm (layerpanel_Colors) -->
+
+<!-- Layerpanel_Colors.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Colors.frm-->
+
 <!-- BEGIN text for Layerpanel_Layers.frm (layerpanel_Layers) -->
 
 <phrase>
@@ -11815,6 +11833,12 @@ Per attivare il supporto per questa funzionalità, per favore copia il file Free
 <!-- Layerpanel_Layers.frm contains 43 phrases. 24 were duplicates of existing phrases, so only 19 new phrases were written to file. -->
 
 <!-- END text for Layerpanel_Layers.frm-->
+
+<!-- BEGIN text for Layerpanel_Navigator.frm (layerpanel_Navigator) -->
+
+<!-- Layerpanel_Navigator.frm contains 0 phrases. -->
+
+<!-- END text for Layerpanel_Navigator.frm-->
 
 <!-- BEGIN text for Select_GenericModification.frm (FormSelectionDialogs) -->
 
@@ -14275,29 +14299,11 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdPixelBlender.cls -->
+<!-- BEGIN text for pdColorWheel.ctl -->
 
-<!-- pdPixelBlender.cls contains 0 phrases. -->
+<!-- pdColorWheel.ctl contains 0 phrases. -->
 
-<!-- END text for pdPixelBlender.cls-->
-
-<!-- BEGIN text for Layerpanel_Navigator.frm (layerpanel_Navigator) -->
-
-<!-- Layerpanel_Navigator.frm contains 0 phrases. -->
-
-<!-- END text for Layerpanel_Navigator.frm-->
-
-<!-- BEGIN text for Layerpanel_Colors.frm (layerpanel_Colors) -->
-
-<!-- Layerpanel_Colors.frm contains 0 phrases. -->
-
-<!-- END text for Layerpanel_Colors.frm-->
-
-<!-- BEGIN text for pdNavigator.ctl -->
-
-<!-- pdNavigator.ctl contains 0 phrases. -->
-
-<!-- END text for pdNavigator.ctl-->
+<!-- END text for pdColorWheel.ctl-->
 
 <!-- Automatic text extraction complete. -->
 

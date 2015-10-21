@@ -364,18 +364,18 @@ Public Sub ApplyLanguage(Optional ByVal useDoEvents As Boolean = False)
     'Redraw all text on the main form using the new language
     If FormMain.Visible Then
     
-        FormMain.updateAgainstCurrentTheme useDoEvents
+        FormMain.UpdateAgainstCurrentTheme useDoEvents
         DrawAccelerators
         applyAllMenuIcons True
         
         'Resync the interface to redraw any remaining text and/or buttons
-        syncInterfaceToCurrentImage
+        SyncInterfaceToCurrentImage
         
         'Redraw any/all toolbars as well
-        toolbar_Toolbox.updateAgainstCurrentTheme
-        toolbar_Options.updateAgainstCurrentTheme
-        toolbar_Layers.updateAgainstCurrentTheme
-        toolbar_ImageTabs.updateAgainstCurrentTheme
+        toolbar_Toolbox.UpdateAgainstCurrentTheme
+        toolbar_Options.UpdateAgainstCurrentTheme
+        toolbar_Layers.UpdateAgainstCurrentTheme
+        toolbar_ImageTabs.UpdateAgainstCurrentTheme
         
     End If
         

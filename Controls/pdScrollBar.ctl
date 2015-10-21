@@ -1427,13 +1427,13 @@ Private Sub updatePopupText()
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
     
     'Update popup menu captions to match the active translation
     updatePopupText
     
     'Make sure the tooltip (if any) is valid
-    toolTipManager.updateAgainstCurrentTheme
+    toolTipManager.UpdateAgainstCurrentTheme
     
     'Redraw the control, which will also cause a resync against any theme changes
     updateControlLayout
@@ -1442,6 +1442,6 @@ End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
-Public Sub assignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     toolTipManager.setTooltip Me.hWnd, Me.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub

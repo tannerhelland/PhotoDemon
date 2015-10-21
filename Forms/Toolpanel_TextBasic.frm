@@ -93,7 +93,7 @@ Begin VB.Form toolpanel_Text
       StickyToggle    =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltTextClarity 
-      Height          =   435
+      Height          =   405
       Left            =   11880
       TabIndex        =   4
       Top             =   930
@@ -612,7 +612,7 @@ Private Sub Form_Load()
     lastUsedSettings.loadAllControlValues
     
     'Update everything against the current theme.  This will also set tooltips for various controls.
-    updateAgainstCurrentTheme
+    UpdateAgainstCurrentTheme
     
 End Sub
 
@@ -637,7 +637,7 @@ Private Sub lblConvertLayerConfirm_Click()
     'Hide the warning panel and redraw both the viewport, and the UI (as new UI options may now be available)
     Me.updateAgainstCurrentLayer
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
-    syncInterfaceToCurrentImage
+    SyncInterfaceToCurrentImage
     
 End Sub
 
@@ -785,10 +785,10 @@ End Sub
 ' 3) MakeFormPretty is called, which redraws the form itself according to any theme and/or system settings.
 '
 'This function is called at least once, at Form_Load, but can be called again if the active language or theme changes.
-Public Sub updateAgainstCurrentTheme()
+Public Sub UpdateAgainstCurrentTheme()
 
     'Start by redrawing the form according to current theme and translation settings.  (This function also takes care of
     ' any common controls that may still exist in the program.)
-    makeFormPretty Me
+    MakeFormPretty Me
 
 End Sub
