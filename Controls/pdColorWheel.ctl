@@ -71,7 +71,7 @@ Private m_BackBuffer As pdDIB
 
 'Individual UI components are rendered to their own DIBs, and composited only when necessary.  For some elements
 ' (particularly the hue wheel), creating them from scratch is costly, so reuse is advisable.
-Private m_WheelBuffer As pdDIB
+Private m_WheelBuffer As pdDIB, m_SquareBuffer As pdDIB
 
 'These values will be TRUE while the mouse is inside various parts of the UC.
 Private m_MouseInsideWheel As Boolean, m_MouseInsideBox As Boolean
@@ -93,6 +93,12 @@ Private Const WHEEL_WIDTH As Single = 15#
 Private m_HueWheelCenterX As Single, m_HueWheelCenterY As Single
 Private m_HueRadiusInner As Single, m_HueRadiusOuter As Single
 
+'Various saturation + value box positioning values.  These are calculated by the CreateSVSquare function and cached here, as a
+' convenience for subsequent hit-testing and rendering.
+Private m_SVRectF As RECTF
+Private m_SVTopLeftX As Double, m_SVTopLeftY As Double
+Private m_SVWidth As Single, m_SVHeight As Single
+
 'Current control hue value, on the range [0, 1].  Make sure to update this if a new color is supplied externally.
 Private m_Hue As Double
 
@@ -104,8 +110,8 @@ Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
 
-Public Property Get ContainerHwnd() As Long
-    ContainerHwnd = UserControl.ContainerHwnd
+Public Property Get containerHwnd() As Long
+    containerHwnd = UserControl.containerHwnd
 End Property
 
 'When the control receives focus, relay the event externally
@@ -137,6 +143,9 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
             'Set a persistent hand cursor
             cMouseEvents.setSystemCursor IDC_HAND
             
+            'Any time the hue changes, the SV square must be redrawn
+            CreateSVSquare
+            
             'Redraw the control to match
             DrawUC
             
@@ -163,6 +172,9 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         'Store this as the active hue, and erase the hover hue (if any)
         m_Hue = tmpHue
         m_HueHover = -1
+        
+        'Any time the hue changes, the SV square must be redrawn
+        CreateSVSquare
         
     'The mouse was not originally clicked inside the wheel.  Update the cursor as necessary.
     Else
@@ -301,6 +313,9 @@ Private Sub UpdateControlSize()
     'Recreate the color wheel, as its size is dependent on the container size
     If g_IsProgramRunning Then CreateColorWheel
     
+    'Any time the hue wheel changes, the SV square must be redrawn to match
+    CreateSVSquare
+    
     'With the backbuffer and color wheel successfully created, we can finally redraw the rest of the control
     DrawUC
     
@@ -313,7 +328,7 @@ Private Sub CreateColorWheel()
     'Make sure the backbuffer exists
     If (m_BackBuffer.getDIBWidth <> 0) And (m_BackBuffer.getDIBHeight <> 0) Then
     
-        'For now, the color wheel is always a square, sized to fit the smallest dimension of the back buffer
+        'For now, the color wheel DIB is always square, sized to fit the smallest dimension of the back buffer
         Dim wheelDiameter As Long
         If m_BackBuffer.getDIBWidth < m_BackBuffer.getDIBHeight Then wheelDiameter = m_BackBuffer.getDIBWidth Else wheelDiameter = m_BackBuffer.getDIBHeight
         
@@ -417,6 +432,87 @@ Private Sub CreateColorWheel()
     
 End Sub
 
+'Create a new Saturation + Value square (the square in the middle of the UC).  The square must be redrawn whenever
+' hue changes, because the hue value determines the square's appearance.
+Private Sub CreateSVSquare()
+    
+    'Make sure the backbuffer exists
+    If (m_BackBuffer.getDIBWidth <> 0) And (m_BackBuffer.getDIBHeight <> 0) Then
+    
+        'The SV square is a square that fits (inclusively) within the color wheel.  Basic geometry tells us that one side of the square
+        ' is equal to hypotenuse * sin(45), and we know the hypotenuse already because it's the inner radius of the hue wheel.
+        m_SVRectF.Width = (m_HueRadiusInner * 2) * Sin(PI / 4): m_SVRectF.Height = m_SVRectF.Width
+        
+        If (m_SquareBuffer Is Nothing) Then Set m_SquareBuffer = New pdDIB
+        If (m_SquareBuffer.getDIBWidth <> CLng(m_SVRectF.Width)) Or (m_SquareBuffer.getDIBHeight <> CLng(m_SVRectF.Height)) Then
+            m_SquareBuffer.createBlank CLng(m_SVRectF.Width), CLng(m_SVRectF.Height), 24
+        Else
+            m_SquareBuffer.resetDIB 0
+        End If
+        
+        'To prevent IDE crashes, bail now during compilation
+        If Not g_IsProgramRunning Then Exit Sub
+        
+        'We now need to fill the square with all possible saturation and value variants, in a pattern where...
+        ' - The y-axis position determines saturation (1 -> 0)
+        ' - The x-axis position determines value (0 -> 1)
+        '
+        'This produces a nice SV square similar to other software.
+        Dim svPixels() As Byte
+        Dim svSA As SAFEARRAY2D
+        prepSafeArray svSA, m_SquareBuffer
+        CopyMemory ByVal VarPtrArray(svPixels()), VarPtr(svSA), 4
+        
+        Dim x As Long, y As Long
+        Dim r As Long, g As Long, b As Long
+        
+        Dim loopWidth As Long, loopHeight As Long
+        loopWidth = (m_SquareBuffer.getDIBWidth - 1) * 3
+        loopHeight = (m_SquareBuffer.getDIBHeight - 1)
+        
+        Dim lineValue As Double
+        
+        'To improve performance, pre-calculate all value variants, so we don't need to re-calculate them in the inner loop.
+        ' (They are constant for each line.)
+        Dim xPresets() As Double
+        ReDim xPresets(0 To loopWidth) As Double
+        For x = 0 To loopWidth Step 3
+            xPresets(x) = (loopWidth - x) / loopWidth
+        Next x
+        
+        For y = 0 To loopHeight
+            
+            'Y-values are (obviously) consistent for each y-position
+            lineValue = (loopHeight - y) / loopHeight
+            lineValue = Sqr(lineValue)
+            
+        For x = 0 To loopWidth Step 3
+            
+            'The x-axis position determines value (0 -> 1)
+            'The y-axis position determines saturation (1 -> 0)
+            HSVtoRGB m_Hue, xPresets(x), lineValue, r, g, b
+            
+            svPixels(x, y) = b
+            svPixels(x + 1, y) = g
+            svPixels(x + 2, y) = r
+            
+        Next x
+        Next y
+        
+        'With our work complete, point the ImageData() array away from the DIBs and deallocate it
+        CopyMemory ByVal VarPtrArray(svPixels), 0&, 4
+        
+        'While we're here, let's also calculate the top-left rendering origin for the square, so we don't have to do it in the core
+        ' rendering function.
+        Dim tmpX As Double, tmpY As Double
+        Math_Functions.convertPolarToCartesian -(3 * PI) / 4, m_HueRadiusInner, tmpX, tmpY, m_HueWheelCenterX, m_HueWheelCenterY
+        m_SVRectF.Left = tmpX
+        m_SVRectF.Top = tmpY
+        
+    End If
+
+End Sub
+
 'Redraw the UC.  Note that some UI elements must be created prior to calling this function (e.g. the color wheel).
 Private Sub DrawUC()
 
@@ -431,20 +527,56 @@ Private Sub DrawUC()
         'Paint the hue wheel (currently left-aligned)
         If Not (m_WheelBuffer Is Nothing) Then m_WheelBuffer.alphaBlendToDC m_BackBuffer.getDIBDC
         
-        'Draw a "pie-slice" outline around the current hue value.  This is somewhat complicated, as we must reverse-engineer the
-        ' angle of the current hue.
+        'Trace the edges of the hue wheel, to help separate the bright portions from the background.
+        GDI_Plus.GDIPlusDrawCircleToDC m_BackBuffer.getDIBDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter, RGB(128, 128, 128), 128
+        GDI_Plus.GDIPlusDrawCircleToDC m_BackBuffer.getDIBDC, m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner, RGB(128, 128, 128), 128
         
-        'TEMPORARY DEBUG: draw a clock-like line for testing
+        'Paint the saturation+value square
+        If Not (m_SquareBuffer Is Nothing) Then
+            
+            'Copy the square into place.  Note that we must use GDI+ to support subpixel positioning.
+            With m_SVRectF
+                GDI_Plus.GDIPlus_StretchBlt m_BackBuffer, .Left, .Top, .Width, .Height, m_SquareBuffer, 0, 0, m_SquareBuffer.getDIBWidth, m_SquareBuffer.getDIBHeight, , InterpolationModeBilinear
+            End With
+            
+            'Trace the edges of the square, to help separate the bright portions from the background
+            GDI_Plus.GDIPlusDrawRectFOutlineToDC m_BackBuffer.getDIBDC, m_SVRectF, RGB(128, 128, 128), 128, 1, True, LineJoinRound, True
+            
+        End If
         
-        'Retrieve the UI angle of the current hue value
+        'Draw a "pie-slice" outline around the current hue value.  Start by retrieving the UI angle of the current hue value
         Dim hueAngle As Single
         hueAngle = getUIAngleOfHue(m_Hue)
         
-        'Convert that to an (x, y) pair
-        Dim dstX As Double, dstY As Double
-        Math_Functions.convertPolarToCartesian hueAngle, m_HueRadiusOuter, dstX, dstY, m_HueWheelCenterX, m_HueWheelCenterY
+        'We are now going to construct a "slice-like" overlay for the current hue position.
+        Dim slicePath As pdGraphicsPath
+        Set slicePath = New pdGraphicsPath
         
-        GDI_Plus.GDIPlusDrawCanvasLine m_BackBuffer.getDIBDC, m_HueWheelCenterX, m_HueWheelCenterY, dstX, dstY
+        'The sweep of the slice should really be contingent on the radius, but for this first draft, we'll simply hard-code it.
+        Dim sliceSweep As Single
+        sliceSweep = 0.18
+        
+        'Also, the slice will extend beyond the interior and exterior edges of the hue wheel by some fixed amount (currently 0.5 pixels)
+        Dim sliceExtend As Single
+        sliceExtend = 0.5
+        
+        'Next, calculate (x, y) coordinates for the four corners of the slice.  We use these as the endpoints for the radial lines
+        ' marking either side of the "slice".
+        Dim x1 As Double, x2 As Double, x3 As Double, x4 As Double, y1 As Double, y2 As Double, y3 As Double, y4 As Double
+        Math_Functions.convertPolarToCartesian hueAngle - (sliceSweep / 2), m_HueRadiusInner - sliceExtend, x1, y1, m_HueWheelCenterX, m_HueWheelCenterY
+        Math_Functions.convertPolarToCartesian hueAngle - (sliceSweep / 2), m_HueRadiusOuter + sliceExtend, x2, y2, m_HueWheelCenterX, m_HueWheelCenterY
+        Math_Functions.convertPolarToCartesian hueAngle + (sliceSweep / 2), m_HueRadiusInner - sliceExtend, x3, y3, m_HueWheelCenterX, m_HueWheelCenterY
+        Math_Functions.convertPolarToCartesian hueAngle + (sliceSweep / 2), m_HueRadiusOuter + sliceExtend, x4, y4, m_HueWheelCenterX, m_HueWheelCenterY
+        
+        'Add those two lines to the path object, and place connecting arcs between them
+        slicePath.addLine x1, y1, x2, y2
+        slicePath.addArcCircular m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusOuter + sliceExtend, RadiansToDegrees(hueAngle - (sliceSweep / 2)), RadiansToDegrees(sliceSweep)
+        slicePath.addLine x4, y4, x3, y3
+        slicePath.addArcCircular m_HueWheelCenterX, m_HueWheelCenterY, m_HueRadiusInner - sliceExtend, RadiansToDegrees(hueAngle + (sliceSweep / 2)), RadiansToDegrees(-sliceSweep)
+        slicePath.closeCurrentFigure
+        
+        'Render the completed slice onto the overlay
+        slicePath.strokePathToDIB_UIStyle m_BackBuffer, , , , m_MouseDownWheel
         
     'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
     Else
@@ -481,7 +613,7 @@ End Function
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    toolTipManager.setTooltip Me.hWnd, Me.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    toolTipManager.setTooltip Me.hWnd, Me.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,

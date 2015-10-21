@@ -131,7 +131,7 @@ Private Type buttonEntry
     btCaptionEn As String           'Current button caption, in its original English
     btCaptionTranslated As String   'Current button caption, translated into the active language (if English is active, this is a copy of btCaptionEn)
     btBounds As RECT                'Boundaries of this button (full clickable area, inclusive - meaning 1px border NOT included)
-    btCaptionRect As RECT           'Bounding rect of the caption.  This is dynamically calculated by the updateControlSize function
+    btCaptionRect As RECT           'Bounding rect of the caption.  This is dynamically calculated by the UpdateControlSize function
     btImage As pdDIB                'Optional image to use with the button.
     btImageDisabled As pdDIB        'Auto-created disabled version of the image
     btImageHover As pdDIB           'Auto-created hover (glow) version of the image
@@ -241,7 +241,7 @@ Private Sub refreshFont()
     If fontRefreshRequired Then curFont.createFontObject
         
     'Also, each button needs to be rebuilt to reflect the new font metrics
-    updateControlSize
+    UpdateControlSize
 
 End Sub
 
@@ -502,7 +502,7 @@ Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long =
     Set m_Buttons(i).btImageHover = Nothing
     
     'Before we can redraw the control, we need to recalculate all button positions - do that now!
-    updateControlSize
+    UpdateControlSize
 
 End Sub
 
@@ -533,7 +533,7 @@ Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As 
     'Note that images are now active; this causes alignment changes, so we must reflow the button strip
     m_ImagesActive = True
     If srcDIB.getDIBWidth > m_ImageSize Then m_ImageSize = srcDIB.getDIBWidth
-    updateControlSize
+    UpdateControlSize
 
 End Sub
 
@@ -576,7 +576,7 @@ Public Sub UpdateAgainstCurrentTheme()
     If g_IsProgramRunning Then toolTipManager.UpdateAgainstCurrentTheme
         
     'Because translations will change text layout, we need to recalculate font metrics prior to redrawing the button
-    updateControlSize
+    UpdateControlSize
     
 End Sub
 
@@ -621,7 +621,7 @@ Private Sub UserControl_Initialize()
     m_LastToolTipIndex = -1
     
     'Update the control size parameters at least once
-    updateControlSize
+    UpdateControlSize
                 
 End Sub
 
@@ -657,12 +657,12 @@ End Sub
 
 'The control dynamically resizes each button to match the dimensions of their relative captions.
 Private Sub UserControl_Resize()
-    updateControlSize
+    UpdateControlSize
 End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
 ' of internal sizing metrics whenever the control size changes.
-Private Sub updateControlSize()
+Private Sub UpdateControlSize()
 
     'Remove our font object from the buffer DC, because we are about to recreate it
     curFont.releaseFromDC

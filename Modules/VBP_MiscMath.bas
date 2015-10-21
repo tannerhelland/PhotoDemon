@@ -694,3 +694,6 @@ Public Sub findCornersOfRotatedRect(ByVal srcWidth As Double, ByVal srcHeight As
     
 End Sub
 
+Public Function RadiansToDegrees(ByVal srcRadian As Double) As Double
+    RadiansToDegrees = (srcRadian * 180) / PI
+End Function

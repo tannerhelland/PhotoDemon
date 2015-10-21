@@ -205,7 +205,7 @@ Private Sub refreshFont()
     If fontRefreshRequired Then curFont.createFontObject
     
     'Also, the back buffer needs to be rebuilt to reflect the new font metrics
-    updateControlSize
+    UpdateControlSize
 
 End Sub
 
@@ -389,7 +389,7 @@ Attribute Caption.VB_UserMemId = -518
         
         'Captions are a bit strange; because the caption is auto-fitted to the control's width, changing the caption requires
         ' us to recalculate a number of layout metrics.
-        updateControlSize
+        UpdateControlSize
         
     End If
     
@@ -428,7 +428,7 @@ Private Sub UserControl_Initialize()
     m_FocusRectActive = False
         
     'Update the control size parameters at least once
-    updateControlSize
+    UpdateControlSize
     
 End Sub
 
@@ -469,12 +469,12 @@ End Sub
 
 'The control dynamically resizes to match the dimensions of the caption.  The size cannot be set by the user.
 Private Sub UserControl_Resize()
-    If (Not m_InternalResizeState) Then updateControlSize
+    If (Not m_InternalResizeState) Then UpdateControlSize
 End Sub
 
 'Whenever the size of the control changes (because the control is auto-sized, this is typically from font or caption changes),
 ' we must recalculate some internal rendering metrics.
-Private Sub updateControlSize()
+Private Sub UpdateControlSize()
     
     'Remove our font object from the buffer DC, because we are about to recreate it
     curFont.releaseFromDC
