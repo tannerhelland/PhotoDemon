@@ -234,7 +234,7 @@ Private Sub UserControl_Initialize()
     End If
     
     'Draw the control at least once
-    updateControlSize
+    UpdateControlSize
     
 End Sub
 
@@ -247,11 +247,11 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_Resize()
-    updateControlSize
+    UpdateControlSize
 End Sub
 
 'Call this to recreate all buffers against a changed control size.
-Private Sub updateControlSize()
+Private Sub UpdateControlSize()
     
     'For now, we simply sync the navigator box to the size of the control
     picNavigator.Move 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight
@@ -412,7 +412,7 @@ Public Sub NotifyNewThumbNeeded()
     
     'Wipe the existing thumbnail, and request a new one.
     If m_ImageThumbnail Is Nothing Then
-        updateControlSize
+        UpdateControlSize
     Else
         m_ImageThumbnail.resetDIB 0
         RaiseEvent RequestUpdatedThumbnail(m_ImageThumbnail, m_ThumbEventX, m_ThumbEventY)
@@ -441,7 +441,7 @@ Public Sub UpdateAgainstCurrentTheme()
     If g_IsProgramRunning Then toolTipManager.UpdateAgainstCurrentTheme
         
     'Redraw the control (in case anything has changed)
-    updateControlSize
+    UpdateControlSize
     
 End Sub
     

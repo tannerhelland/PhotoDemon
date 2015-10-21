@@ -149,7 +149,7 @@ End Property
 
 Public Property Let Alignment(ByVal newAlignment As AlignmentConstants)
     m_Alignment = newAlignment
-    If g_IsProgramRunning Then m_BufferDirty = True Else updateControlSize
+    If g_IsProgramRunning Then m_BufferDirty = True Else UpdateControlSize
 End Property
 
 Public Property Get BackColor() As OLE_COLOR
@@ -207,7 +207,7 @@ Public Property Let Caption(ByRef newCaption As String)
         
         PropertyChanged "Caption"
         
-        updateControlSize
+        UpdateControlSize
         
     End If
         
@@ -287,7 +287,7 @@ End Property
 
 Public Property Let Layout(ByVal newLayout As PD_LABEL_LAYOUT)
     m_Layout = newLayout
-    If g_IsProgramRunning Then m_BufferDirty = True Else updateControlSize
+    If g_IsProgramRunning Then m_BufferDirty = True Else UpdateControlSize
 End Property
 
 'Because there can be a delay between window resize events and VB processing the related message (and updating its internal properties),
@@ -329,7 +329,7 @@ Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, By
     'Recreate the buffer as necessary
     If (Not m_InternalResizeState) Then
         
-        If m_BufferDirty Then updateControlSize
+        If m_BufferDirty Then UpdateControlSize
         
         'Flip the relevant chunk of the buffer to the screen
         BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
@@ -375,7 +375,7 @@ Private Sub refreshFont()
     If fontRefreshRequired Then curFont.createFontObject
     
     'Also, the back buffer needs to be rebuilt to reflect the new font metrics
-    updateControlSize
+    UpdateControlSize
 
 End Sub
 
@@ -393,7 +393,7 @@ End Property
 'When the API detects a resize, update ourselves accordingly.
 Private Sub cResize_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
     If g_IsProgramRunning Then
-        If (Not m_InternalResizeState) Then updateControlSize
+        If (Not m_InternalResizeState) Then UpdateControlSize
     End If
 End Sub
 
@@ -505,7 +505,7 @@ Private Sub UserControl_Paint()
     
     'Provide minimal painting within the designer
     If Not g_IsProgramRunning Then
-        If m_BufferDirty Then updateControlSize Else redrawBackBuffer
+        If m_BufferDirty Then UpdateControlSize Else redrawBackBuffer
     End If
     
 End Sub
@@ -530,13 +530,13 @@ End Sub
 'The control dynamically resizes each button to match the dimensions of their relative captions.
 Private Sub UserControl_Resize()
     If Not g_IsProgramRunning Then
-        If (Not m_InternalResizeState) Then updateControlSize
+        If (Not m_InternalResizeState) Then UpdateControlSize
     End If
 End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
 ' of internal sizing metrics whenever the control size changes.
-Private Sub updateControlSize()
+Private Sub UpdateControlSize()
     
     'Because we will be recreating the back buffer now, it is no longer dirty!
     m_BufferDirty = False
@@ -690,7 +690,7 @@ Private Sub updateControlSize()
         Case AutoSizeControl
         
             'Because we will likely be resizing the control as part of our calculation, we must disable the
-            ' resize event's default behavior (calling this updateControlSize function).
+            ' resize event's default behavior (calling this UpdateControlSize function).
             m_InternalResizeState = True
         
             'Measure the font relative to the current control size
@@ -727,7 +727,7 @@ Private Sub updateControlSize()
         Case AutoSizeControlPlusWordWrap
         
             'Because we will likely be resizing the control as part of our calculation, we must disable the
-            ' resize event's default behavior (calling this updateControlSize function).
+            ' resize event's default behavior (calling this UpdateControlSize function).
             m_InternalResizeState = True
         
             'Measure the font relative to the current control size
@@ -828,7 +828,7 @@ Public Sub UpdateAgainstCurrentTheme()
         
         'Force an immediate repaint.  (I think we can avoid this manual size request, because refreshFont will prompt one already
         ' if the font settings have changed in any way.)
-        ' updateControlSize
+        ' UpdateControlSize
                 
     End If
     

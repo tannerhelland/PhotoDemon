@@ -387,7 +387,7 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
     End If
     
     'Request a control size update, which will also calculate a centered position for the new image
-    updateControlSize
+    UpdateControlSize
 
 End Sub
 
@@ -465,7 +465,7 @@ Private Sub UserControl_Initialize()
     m_FocusRectActive = False
         
     'Update the control size parameters at least once
-    updateControlSize
+    UpdateControlSize
                 
 End Sub
 
@@ -513,12 +513,12 @@ End Sub
 
 'The control dynamically resizes each button to match the dimensions of their relative captions.
 Private Sub UserControl_Resize()
-    updateControlSize
+    UpdateControlSize
 End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
 ' of internal sizing metrics whenever the control size changes.
-Private Sub updateControlSize()
+Private Sub UpdateControlSize()
     
     'Reset the back buffer
     Set m_BackBuffer = New pdDIB
@@ -551,7 +551,7 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme()
     
     'Redraw the control, which will also cause a resync against any theme changes
-    updateControlSize
+    UpdateControlSize
     
 End Sub
 

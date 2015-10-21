@@ -677,7 +677,7 @@ Private Sub UserControl_Resize()
         End If
         
         'Redraw the control background
-        updateControlSize
+        UpdateControlSize
                 
     End If
     
@@ -689,7 +689,7 @@ End Sub
 Private Sub UserControl_Show()
     
     'Redraw the control
-    'updateControlSize
+    'UpdateControlSize
     
     'If we have not yet created the edit box, do so now
     If m_EditBoxHwnd = 0 Then
@@ -902,7 +902,7 @@ Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
         If m_EditBoxHwnd <> 0 Then SendMessage m_EditBoxHwnd, WM_SETFONT, curFont.getFontHandle, IIf(UserControl.Extender.Visible, 1, 0)
             
         'Also, the back buffer needs to be rebuilt to reflect the new font metrics
-        updateControlSize
+        UpdateControlSize
             
     End If
     
@@ -933,7 +933,7 @@ Public Sub UpdateAgainstCurrentTheme()
         refreshFont
         
         'Force an immediate repaint
-        updateControlSize
+        UpdateControlSize
                 
     End If
     
@@ -942,7 +942,7 @@ End Sub
 'When the control is resized, several things need to happen:
 ' 1) We need to forward the resize request to the API edit window
 ' 2) We need to resize the button's back buffer, then redraw it
-Private Sub updateControlSize()
+Private Sub UpdateControlSize()
 
     'Reset our back buffer, and reassign the font to it
     If m_BackBuffer Is Nothing Then Set m_BackBuffer = New pdDIB

@@ -45,6 +45,7 @@ Private Declare Function GdipGetPathWorldBounds Lib "gdiplus" (ByVal hPath As Lo
 'Path property changes (both destructive and non-destructive)
 Private Declare Function GdipSetPathFillMode Lib "gdiplus" (ByVal hPath As Long, ByVal newBrushMode As GDIFillMode) As Long
 Private Declare Function GdipSetSmoothingMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal newSmoothingMode As SmoothingMode) As Long
+Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal hGraphics As Long, ByVal pixOffsetMode As PixelOffsetMode) As Long
 Private Declare Function GdipWidenPath Lib "gdiplus" (ByVal hPath As Long, ByVal hPen As Long, ByVal hTransformMatrix As Long, ByVal widenFlatness As Single) As Long
 Private Declare Function GdipWindingModeOutline Lib "gdiplus" (ByVal hPath As Long, ByVal hTransformationMatrix As Long, ByVal outlineFlatness As Single) As Long
 
@@ -118,6 +119,10 @@ Friend Sub addArc(ByRef ellipseBoundRect As RECTF, ByVal startAngle As Single, B
     With ellipseBoundRect
         GdipAddPathArc m_PathHandle, .Left, .Top, .Width, .Height, startAngle, sweepAngle
     End With
+End Sub
+
+Public Sub addArcCircular(ByVal centerX As Single, ByVal centerY As Single, ByVal arcRadius As Single, ByVal startAngle As Single, ByVal sweepAngle As Single)
+    GdipAddPathArc m_PathHandle, centerX - arcRadius, centerY - arcRadius, arcRadius * 2, arcRadius * 2, startAngle, sweepAngle
 End Sub
 
 Public Sub addPolygon(ByVal numOfPoints As Long, ByVal ptrToFloatArray As Long, ByVal autoCloseShape As Boolean, Optional ByVal useCurveAlgorithm As Boolean = False, Optional ByVal curvatureTension As Single = 0.5)
@@ -529,7 +534,7 @@ End Sub
 ' BEGIN: DRAWING FUNCTIONS
 
 'Stroke the current path, using the default arrangement for PD's current theme
-Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal useCustomStartCap As LineCap = LineCapRound, Optional ByVal useCustomEndCap As LineCap = LineCapRound)
+Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal useCustomStartCap As LineCap = LineCapRound, Optional ByVal useCustomEndCap As LineCap = LineCapRound, Optional ByVal useHighlightColor As Boolean = False)
 
     'PD's default behavior for UI-related paths is to stroke a path twice; once with a thickness of 2px
     ' (which actually ends up being more like 1px along the path, and 0.5 px along either side)
@@ -551,10 +556,18 @@ Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB, Optional ByVal useThis
     'Activate AA
     GdipSetSmoothingMode hGraphics, SmoothingModeAntiAlias
     
+    'CURRENTLY TESTING: activate high-quality offsets
+    GdipSetPixelOffsetMode hGraphics, PixelOffsetModeHighQuality
+    
     'Create two pens, each of which will be used to stroke the line
     Dim hBlackPen As Long, hWhitePen As Long
-    GdipCreatePen1 fillQuadWithVBRGB(RGB(0, 0, 0), 192), 2, gdipUnitPixel, hBlackPen
-    GdipCreatePen1 fillQuadWithVBRGB(RGB(255, 255, 255), 192), 1, gdipUnitPixel, hWhitePen
+    GdipCreatePen1 fillQuadWithVBRGB(RGB(0, 0, 0), 192), 3#, gdipUnitPixel, hBlackPen
+    
+    If useHighlightColor Then
+        GdipCreatePen1 fillQuadWithVBRGB(g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT), 192), 1.6, gdipUnitPixel, hWhitePen
+    Else
+        GdipCreatePen1 fillQuadWithVBRGB(RGB(255, 255, 255), 192), 1.6, gdipUnitPixel, hWhitePen
+    End If
     
     'Populate line end and join parameters
     GdipSetPenLineCap hBlackPen, useCustomStartCap, useCustomEndCap, DashCapRound

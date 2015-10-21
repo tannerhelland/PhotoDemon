@@ -28,8 +28,8 @@ Begin VB.Form layerpanel_Colors
       TabIndex        =   0
       Top             =   120
       Width           =   1215
-      _extentx        =   2143
-      _extenty        =   1720
+      _ExtentX        =   2143
+      _ExtentY        =   1720
    End
 End
 Attribute VB_Name = "layerpanel_Colors"
