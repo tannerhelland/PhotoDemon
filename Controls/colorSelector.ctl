@@ -167,7 +167,7 @@ Public Property Get containerHwnd() As Long
 End Property
 
 'Call this to force a display of the color window.  Note that it's *public*, so outside callers can raise dialogs, too.
-Public Sub displayColorSelection()
+Public Sub DisplayColorSelection()
     
     isDialogLive = True
     
@@ -194,7 +194,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     'Ensure that a focus event has been raised, if it wasn't already
     If Not cFocusDetector.HasFocus Then cFocusDetector.setFocusManually
     
-    If isMouseInButtonArea() And ((Button Or pdLeftButton) <> 0) Then displayColorSelection
+    If isMouseInButtonArea() And ((Button Or pdLeftButton) <> 0) Then DisplayColorSelection
     
 End Sub
 

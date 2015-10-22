@@ -29,8 +29,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "Color Wheel" color selector
 'Copyright 2015-2015 by Tanner Helland
 'Created: 19/October/15
-'Last updated: 19/October/15
-'Last update: start initial build
+'Last updated: 22/October/15
+'Last update: wrap up initial build
 '
 'In 7.0, a "color selector" panel was added to the right-side toolbar.  Unlike PD's single-color color selector,
 ' this control is designed to provide a quick, on-canvas-friendly mechanism for rapidly switching colors.  The basic
@@ -47,7 +47,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Just like PD's old color selector, this control will raise a ColorChanged event after user interactions.
-Public Event ColorChanged(ByVal newColor As Long)
+Public Event ColorChanged(ByVal newColor As Long, ByVal srcIsInternal As Boolean)
 
 'A specialized class handles mouse input for this control
 Private WithEvents cMouseEvents As pdInputMouse
@@ -123,6 +123,9 @@ Public Property Let Color(ByVal newColor As Long)
     CreateSVSquare
     DrawUC
     
+    'Raise a matching event, and note that the source was external
+    RaiseEvent ColorChanged(newColor, False)
+    
 End Property
 
 'When the control receives focus, relay the event externally
@@ -162,7 +165,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
             DrawUC
             
             'Return the newly selected color
-            RaiseEvent ColorChanged(Me.Color)
+            RaiseEvent ColorChanged(Me.Color, True)
         
         Else
             
@@ -184,7 +187,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 DrawUC
                 
                 'Return the newly selected color
-                RaiseEvent ColorChanged(Me.Color)
+                RaiseEvent ColorChanged(Me.Color, True)
             
             End If
         
@@ -261,7 +264,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     DrawUC
     
     'If the LMB is down, raise an event to match
-    If m_MouseDownWheel Or m_MouseDownBox Then RaiseEvent ColorChanged(Me.Color)
+    If m_MouseDownWheel Or m_MouseDownBox Then RaiseEvent ColorChanged(Me.Color, True)
     
 End Sub
 
@@ -432,10 +435,14 @@ Private Sub UpdateControlSize()
     End If
     
     'Recreate the color wheel, as its size is dependent on the container size
-    If g_IsProgramRunning Then CreateColorWheel
+    If g_IsProgramRunning Then
     
-    'Any time the hue wheel changes, the SV square must be redrawn to match
-    CreateSVSquare
+        CreateColorWheel
+    
+        'Any time the hue wheel changes, the SV square must be redrawn to match
+        CreateSVSquare
+        
+    End If
     
     'With the backbuffer and color wheel successfully created, we can finally redraw the rest of the control
     DrawUC

@@ -157,7 +157,7 @@ Private Sub fillXMLSettings(Optional ByVal presetName As String = "last-used set
                 controlValue = Str(eControl.ListIndex)
                 
             'Various PD controls have their own custom "value"-type properties.
-            Case "colorSelector", "pdColorWheel"
+            Case "colorSelector", "pdColorWheel", "pdColorVariants"
                 controlValue = Str(eControl.Color)
             
             Case "brushSelector"
@@ -305,7 +305,7 @@ Private Function readXMLSettings(Optional ByVal presetName As String = "last-use
                     End If
                 
                 'Various PD controls have their own custom "value"-type properties.
-                Case "colorSelector", "pdColorWheel"
+                Case "colorSelector", "pdColorWheel", "pdColorVariants"
                     eControl.Color = CLng(controlValue)
                     
                 Case "brushSelector"
