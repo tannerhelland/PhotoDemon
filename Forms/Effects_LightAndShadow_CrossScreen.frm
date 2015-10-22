@@ -157,7 +157,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'To reduce churn, we reuse a few different temporary DIBs whenever we can
-Private m_rotateDIB As pdDIB
+Private m_rotateDIB As pdDIB, m_mbDIB As pdDIB, m_mbDIBTemp As pdDIB, m_thresholdDIB As pdDIB
 
 'Apply a cross-screen blur to an image
 'Inputs: 1) luminance threshold for pixels to be considered for filtering
@@ -207,15 +207,13 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     Set cComposite = New pdCompositor
     
     'Temporary DIBs are required to assemble all the composite spokes
-    Dim mbDIB As pdDIB, mbDIBTemp As pdDIB
-    Set mbDIB = New pdDIB
-    Set mbDIBTemp = New pdDIB
+    If m_mbDIB Is Nothing Then Set m_mbDIB = New pdDIB
+    If m_mbDIBTemp Is Nothing Then Set m_mbDIBTemp = New pdDIB
+    If m_thresholdDIB Is Nothing Then Set m_thresholdDIB = New pdDIB
     
     'We start by creating a threshold DIB from the base image.  This threshold DIB will contain only pure black and pure
     ' white pixels, and we use it to determine the regions of the image that need cross-screen filtering.
-    Dim thresholdDIB As pdDIB
-    Set thresholdDIB = New pdDIB
-    thresholdDIB.createFromExistingDIB workingDIB
+    m_thresholdDIB.createFromExistingDIB workingDIB
     
     'Use the ever-excellent pdFilterLUT class to apply the threshold
     Dim cLUT As pdFilterLUT
@@ -223,7 +221,7 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     
     Dim tmpLUT() As Byte
     cLUT.fillLUT_RemappedRange tmpLUT, 255 - csThreshold, 255, 0, 255
-    cLUT.applyLUTsToDIB_Gray thresholdDIB, tmpLUT, True
+    cLUT.applyLUTsToDIB_Gray m_thresholdDIB, tmpLUT, True
     
     'Progress is reported artificially, because it's too complex to handle using normal means
     If Not toPreview Then
@@ -238,10 +236,10 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     ' There are two code paths here, because even-numbered spokes require half as many calculations (as symmetry allows us
     ' to calculate two spokes at once.
     
-    'Both paths share an identical base step, however, when we create the initial spoke and place it inside mbDIB.
-    ' mbDIB serves as the "master" spoke DIB, and we will also be merging subsequent spokes onto it as we go.
-    mbDIB.createFromExistingDIB thresholdDIB
-    getMotionBlurredDIB thresholdDIB, mbDIB, csAngle, csDistance, True, ((csSpokes Mod 2) = 0)
+    'Both paths share an identical base step, however, when we create the initial spoke and place it inside m_mbDIB.
+    ' m_mbDIB serves as the "master" spoke DIB, and we will also be merging subsequent spokes onto it as we go.
+    m_mbDIB.createFromExistingDIB m_thresholdDIB
+    getMotionBlurredDIB m_thresholdDIB, m_mbDIB, csAngle, csDistance, True, ((csSpokes Mod 2) = 0)
     
     If Not toPreview Then
         If userPressedESC() Then GoTo PrematureCrossScreenExit
@@ -251,19 +249,19 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     'Let's do even spokes first, because they are the simplest.
     If (csSpokes Mod 2) = 0 Then
         
-        'For each subsequent pair of spokes, we will render it to its own layer, then merge it down onto the mbDIB layer.
+        'For each subsequent pair of spokes, we will render it to its own layer, then merge it down onto the m_mbDIB layer.
         If csSpokes > 2 Then
         
             numSpokeIterations = (csSpokes \ 2)
             spokeIntervalDegrees = 180 / numSpokeIterations
             
             'Now, repeat a simple pattern: for each subsequent spoke, render it to its own layer, then merge it down onto
-            ' the "master" mbDIB layer.
+            ' the "master" m_mbDIB layer.
             For i = 1 To numSpokeIterations - 1
                 
                 'Create the new spoke layer
-                mbDIBTemp.createFromExistingDIB thresholdDIB
-                getMotionBlurredDIB thresholdDIB, mbDIBTemp, csAngle + (i * spokeIntervalDegrees), csDistance, True, True
+                m_mbDIBTemp.createFromExistingDIB m_thresholdDIB
+                getMotionBlurredDIB m_thresholdDIB, m_mbDIBTemp, csAngle + (i * spokeIntervalDegrees), csDistance, True, True
                 
                 If Not toPreview Then
                     If userPressedESC() Then GoTo PrematureCrossScreenExit
@@ -272,7 +270,7 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
                 
                 'Composite our two motion-blurred images together.  This blend mode is somewhat like alpha-blending, but it
                 ' over-emphasizes bright areas, which gives a nice "bloom" effect.
-                cComposite.quickMergeTwoDibsOfEqualSize mbDIB, mbDIBTemp, BL_LINEARDODGE, 100
+                cComposite.quickMergeTwoDibsOfEqualSize m_mbDIB, m_mbDIBTemp, BL_LINEARDODGE, 100
                 
                 If Not toPreview Then
                     If userPressedESC() Then GoTo PrematureCrossScreenExit
@@ -286,7 +284,7 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     'Odd spokes are more involved...
     Else
     
-        'For each subsequent spoke, we will render it to its own layer, then merge it down onto the mbDIB layer.
+        'For each subsequent spoke, we will render it to its own layer, then merge it down onto the m_mbDIB layer.
         ' (Note that we do not have the luxury of knocking out two spokes at once, as each spoke requires a unique angle.)
         If csSpokes > 1 Then
         
@@ -294,12 +292,12 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
             spokeIntervalDegrees = 360 / numSpokeIterations
             
             'Now, repeat a simple pattern: for each subsequent spoke, render it to its own layer, then merge it down onto
-            ' the "master" mbDIB layer.
+            ' the "master" m_mbDIB layer.
             For i = 1 To numSpokeIterations - 1
                 
                 'Create the new spoke layer
-                mbDIBTemp.createFromExistingDIB thresholdDIB
-                getMotionBlurredDIB thresholdDIB, mbDIBTemp, csAngle + (i * spokeIntervalDegrees), csDistance, True, False
+                m_mbDIBTemp.createFromExistingDIB m_thresholdDIB
+                getMotionBlurredDIB m_thresholdDIB, m_mbDIBTemp, csAngle + (i * spokeIntervalDegrees), csDistance, True, False
                 
                 If Not toPreview Then
                     If userPressedESC() Then GoTo PrematureCrossScreenExit
@@ -308,7 +306,7 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
                 
                 'Composite our two motion-blurred images together.  This blend mode is somewhat like alpha-blending, but it
                 ' over-emphasizes bright areas, which gives a nice "bloom" effect.
-                cComposite.quickMergeTwoDibsOfEqualSize mbDIB, mbDIBTemp, BL_LINEARDODGE, 100
+                cComposite.quickMergeTwoDibsOfEqualSize m_mbDIB, m_mbDIBTemp, BL_LINEARDODGE, 100
                 
                 If Not toPreview Then
                     If userPressedESC() Then GoTo PrematureCrossScreenExit
@@ -322,33 +320,33 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     End If
     
     'Release any backup DIBs used during the motion blur stage
-    If Not (m_rotateDIB Is Nothing) Then m_rotateDIB.eraseDIB
+    If (Not (m_rotateDIB Is Nothing)) And (Not toPreview) Then m_rotateDIB.eraseDIB
     
     'Remove premultipled alpha from the final, fully composited DIB, and release any temporary DIBs that
     ' are no longer needed.
-    If alphaIsRelevant Then mbDIB.setAlphaPremultiplication False
-    thresholdDIB.eraseDIB
-    Set mbDIBTemp = Nothing
+    If alphaIsRelevant Then m_mbDIB.setAlphaPremultiplication False
+    m_thresholdDIB.eraseDIB
+    If Not toPreview Then Set m_mbDIBTemp = Nothing
     
-    'We now need to brighten up mbDIB.
+    'We now need to brighten up m_mbDIB.
     Dim lMax As Long, lMin As Long
-    getDIBMaxMinLuminance mbDIB, lMin, lMax
+    getDIBMaxMinLuminance m_mbDIB, lMin, lMax
     cLUT.fillLUT_RemappedRange tmpLUT, lMin, lMax, 0, 255
     
     'On top of the remapped range (which is most important), we also gamma-correct the DIB according to the input strength parameter
     Dim gammaLUT() As Byte, finalLUT() As Byte
     cLUT.fillLUT_Gamma gammaLUT, 0.5 + (csStrength / 100)
     cLUT.MergeLUTs tmpLUT, gammaLUT, finalLUT
-    cLUT.applyLUTsToDIB_Gray mbDIB, finalLUT, True
+    cLUT.applyLUTsToDIB_Gray m_mbDIB, finalLUT, True
     
     'We also want to apply a slight blur to the final result, to improve the feathering of the light boundaries (as they may be
     ' quite sharp due to the remapping).
     If ((Not toPreview) And (csSoftening > 0)) Or (csSoftening * curDIBValues.previewModifier > 0) Then
         
         If toPreview Then
-            quickBlurDIB mbDIB, csSoftening * curDIBValues.previewModifier
+            quickBlurDIB m_mbDIB, csSoftening * curDIBValues.previewModifier
         Else
-            quickBlurDIB mbDIB, csSoftening
+            quickBlurDIB m_mbDIB, csSoftening
         End If
         
     End If
@@ -358,17 +356,17 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
         SetProgBarVal calculatedProgBarMax - 3
     End If
     
-    'At this point, workingDIB is still intact (phew!).  We are going to mask workingDIB against our newly generate mbDIB image.
+    'At this point, workingDIB is still intact (phew!).  We are going to mask workingDIB against our newly generate m_mbDIB image.
     ' This gives a nice, lightly colored version of the star effect, using luminance from the stars, but colors from the
     ' underlying image.
-    thresholdDIB.createFromExistingDIB workingDIB
+    m_thresholdDIB.createFromExistingDIB workingDIB
     If alphaIsRelevant Then
-        thresholdDIB.setAlphaPremultiplication True
-        mbDIB.setAlphaPremultiplication True
+        m_thresholdDIB.setAlphaPremultiplication True
+        m_mbDIB.setAlphaPremultiplication True
     End If
-    cComposite.quickMergeTwoDibsOfEqualSize thresholdDIB, mbDIB, BL_HARDLIGHT, 100
+    cComposite.quickMergeTwoDibsOfEqualSize m_thresholdDIB, m_mbDIB, BL_HARDLIGHT, 100
     
-    'thresholdDIB now contains the final, fully processed light effect.
+    'm_thresholdDIB now contains the final, fully processed light effect.
     If Not toPreview Then
         If userPressedESC() Then GoTo PrematureCrossScreenExit
         SetProgBarVal calculatedProgBarMax - 2
@@ -377,7 +375,7 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     'The final step is to merge the light effect onto the original image, using the Strength input parameter
     ' to control opacity of the merge.
     If alphaIsRelevant Then workingDIB.setAlphaPremultiplication True
-    cComposite.quickMergeTwoDibsOfEqualSize workingDIB, thresholdDIB, BL_LINEARDODGE, 100
+    cComposite.quickMergeTwoDibsOfEqualSize workingDIB, m_thresholdDIB, BL_LINEARDODGE, 100
     
     If alphaIsRelevant Then
         workingDIB.setAlphaPremultiplication False
@@ -390,9 +388,9 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
         SetProgBarVal calculatedProgBarMax - 1
     End If
     
-    'Clear all temporary DIBs
-    Set mbDIB = Nothing
-    Set thresholdDIB = Nothing
+    'If we're not in preview mode, clear all temporary DIBs prior to exiting
+    If Not toPreview Then Set m_mbDIB = Nothing
+    If Not toPreview Then Set m_thresholdDIB = Nothing
     
 PrematureCrossScreenExit:
     
@@ -466,7 +464,16 @@ Private Sub Form_Load()
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
+        
+    'Release all temporary DIBs
+    If Not m_rotateDIB Is Nothing Then Set m_rotateDIB = Nothing
+    If Not m_mbDIB Is Nothing Then Set m_mbDIB = Nothing
+    If Not m_mbDIBTemp Is Nothing Then Set m_mbDIBTemp = Nothing
+    If Not m_thresholdDIB Is Nothing Then Set m_thresholdDIB = Nothing
+    
+    'Release any subclasses visual theming and translation code
     ReleaseFormTheming Me
+    
 End Sub
 
 'Render a new effect preview
