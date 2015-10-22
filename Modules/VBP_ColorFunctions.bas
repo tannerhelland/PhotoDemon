@@ -315,6 +315,12 @@ Public Function getLuminance(ByVal r As Long, ByVal g As Long, ByVal b As Long) 
     getLuminance = (Max + Min) \ 2
 End Function
 
+'This function will return a well-calculated luminance value of an RGB triplet.  Note that the value will be in
+' the [0,255] range instead of the usual [0,1.0] one.
+Public Function getHQLuminance(ByVal r As Long, ByVal g As Long, ByVal b As Long) As Long
+    getHQLuminance = (213 * r + 715 * g + 72 * b) \ 1000
+End Function
+
 'HSL <-> RGB conversion routines
 Public Sub tRGBToHSL(r As Long, g As Long, b As Long, h As Double, s As Double, l As Double)
     

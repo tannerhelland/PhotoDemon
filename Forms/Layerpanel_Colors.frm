@@ -22,14 +22,23 @@ Begin VB.Form layerpanel_Colors
    ScaleWidth      =   304
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin PhotoDemon.pdColorWheel clrWheel 
+   Begin PhotoDemon.pdColorVariants clrVariants 
       Height          =   975
       Left            =   120
+      TabIndex        =   1
+      Top             =   120
+      Width           =   1335
+      _ExtentX        =   2355
+      _ExtentY        =   1720
+   End
+   Begin PhotoDemon.pdColorWheel clrWheel 
+      Height          =   975
+      Left            =   1680
       TabIndex        =   0
       Top             =   120
       Width           =   1215
-      _extentx        =   2143
-      _extenty        =   1720
+      _ExtentX        =   2143
+      _ExtentY        =   1720
    End
 End
 Attribute VB_Name = "layerpanel_Colors"
@@ -60,6 +69,14 @@ Option Explicit
 Private WithEvents lastUsedSettings As pdLastUsedSettings
 Attribute lastUsedSettings.VB_VarHelpID = -1
 
+Private Sub clrVariants_ColorChanged(ByVal newColor As Long, ByVal srcIsInternal As Boolean)
+    If srcIsInternal Then clrWheel.Color = newColor
+End Sub
+
+Private Sub clrWheel_ColorChanged(ByVal newColor As Long, ByVal srcIsInternal As Boolean)
+    If srcIsInternal Then clrVariants.Color = newColor
+End Sub
+
 Private Sub Form_Load()
     
     'Load any last-used settings for this form
@@ -78,9 +95,15 @@ End Sub
 'Whenever this panel is resized, we must reflow all objects to fit the available space.
 Private Sub ReflowInterface()
 
-    'For now, left-align the color wheel UC
+    'Failsafe to prevent IDE errors
     If Me.ScaleWidth > 10 Then
-        clrWheel.Move 0, 0, Me.ScaleHeight, Me.ScaleHeight
+    
+        'Right-align the color wheel
+        clrWheel.Move Me.ScaleWidth - (Me.ScaleHeight + FixDPI(10)), 0, Me.ScaleHeight, Me.ScaleHeight
+        
+        'Fit the variant selector into the remaining area
+        clrVariants.Move 0, 0, clrWheel.Left - FixDPI(10), Me.ScaleHeight
+        
     End If
 
 End Sub
