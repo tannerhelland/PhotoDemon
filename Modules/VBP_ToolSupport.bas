@@ -487,10 +487,6 @@ Public Sub syncToolOptionsUIToCurrentLayer()
         
     End If
     
-    'To improve performance, we'll only sync the UI if a layer-specific tool is active, and the tool options panel is currently
-    ' set to VISIBLE.
-    If Not toolbar_Options.Visible Then Exit Sub
-    
     Dim layerToolActive As Boolean
     
     Select Case g_CurrentTool
@@ -516,6 +512,10 @@ Public Sub syncToolOptionsUIToCurrentLayer()
             layerToolActive = False
         
     End Select
+    
+    'To improve performance, we'll only sync the UI if a layer-specific tool is active, and the tool options panel is
+    ' currently visible.
+    If (Not toolbar_Options.Visible) And (Not layerToolActive) Then Exit Sub
     
     If layerToolActive Then
         

@@ -1930,7 +1930,7 @@ Public Function LoadPhotoDemonImage(ByVal PDIPath As String, ByRef dstDIB As pdD
             ElseIf dstImage.getLayerByIndex(i).isLayerVector Then
                 
                 #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Vector layer identified.  Retrieving pixel bits..."
+                    pdDebug.LogAction "Vector layer identified.  Retrieving layer XML..."
                 #End If
                 
                 If pdiReader.getNodeDataByIndex(i + 1, False, retBytes, sourceIsUndoFile) Then
