@@ -930,3 +930,18 @@ Public Function getRGBLongFromHex(ByVal srcHex As String) As Long
     getRGBLongFromHex = RGB(r, g, b)
 
 End Function
+
+'Given an RGB triplet (Long-type), return a matching hex representation.
+Public Function getHexStringFromRGB(ByVal srcRGB As Long) As String
+    getHexStringFromRGB = getHexFromByte(ExtractR(srcRGB)) & getHexFromByte(ExtractG(srcRGB)) & getHexFromByte(ExtractB(srcRGB))
+End Function
+
+'HTML hex requires each RGB entry to be two characters wide, but the VB Hex$ function won't add a leading 0.  We do this manually.
+Private Function getHexFromByte(ByVal srcByte As Byte) As String
+    If srcByte < 16 Then
+        getHexFromByte = "0" & LCase(Hex$(srcByte))
+    Else
+        getHexFromByte = LCase(Hex$(srcByte))
+    End If
+End Function
+

@@ -860,7 +860,7 @@ Public Sub drawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
             '
             'In my testing, 80-ish pixels is a reasonably good size across many image dimensions.  Note that we *do* correct for DPI here.
             Dim arcLength As Double
-            arcLength = fixDPIFloat(70)
+            arcLength = FixDPIFloat(70)
             
             'Switching between arc length and sweep is easy; see https://en.wikipedia.org/wiki/Arc_%28geometry%29#Length_of_an_arc_of_a_circle
             Dim arcSweep As Double
@@ -875,7 +875,7 @@ Public Sub drawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
             relevantAngle = srcLayer.getLayerAngle + ((relevantPoint - 1) * 90)
             
             tmpPath.addArc rotateBoundRect, relevantAngle - arcSweep / 2, arcSweep
-            tmpPath.strokePathToDIB_UIStyle Nothing, dstDC, LineCapArrowAnchor, LineCapArrowAnchor
+            tmpPath.strokePathToDIB_UIStyle Nothing, dstDC, False, True, , LineCapArrowAnchor, LineCapArrowAnchor
             
         End If
         
