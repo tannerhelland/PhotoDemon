@@ -701,6 +701,7 @@ Private Sub DrawUC()
             borderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
             borderPen = GDI_Plus.getGDIPlusPenHandle(borderColor, , 3, , LineJoinMiter)
             m_ColorRegions(m_MouseInsideRegion).strokePathToDIB_BarePen borderPen, m_BackBuffer
+            GDI_Plus.releaseGDIPlusPen borderPen
         End If
         
     'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
