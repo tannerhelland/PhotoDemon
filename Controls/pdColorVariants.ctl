@@ -117,6 +117,18 @@ Private m_ColorList() As Long
 ' with almost no changes to the underlying code.
 Private m_ColorRegions() As pdGraphicsPath
 
+'This control supports both rectangular and circular shapes
+Public Enum COLOR_WHEEL_SHAPE
+    CWS_Circular = 0
+    CWS_Rectangular = 1
+End Enum
+
+#If False Then
+    Private Const CWS_Circular = 0, CWS_Rectangular = 1
+#End If
+
+Private m_ControlShape As COLOR_WHEEL_SHAPE
+
 Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
@@ -139,7 +151,20 @@ Public Property Let Color(ByVal newColor As Long)
     DrawUC
     
     RaiseEvent ColorChanged(m_ColorList(0), False)
+    PropertyChanged "Color"
     
+End Property
+
+Public Property Get WheelShape() As COLOR_WHEEL_SHAPE
+    WheelShape = m_ControlShape
+End Property
+
+Public Property Let WheelShape(ByVal newShape As COLOR_WHEEL_SHAPE)
+    If m_ControlShape <> newShape Then
+        m_ControlShape = newShape
+        UpdateControlSize
+        PropertyChanged "WheelShape"
+    End If
 End Property
 
 'When the control receives focus, relay the event externally
@@ -281,6 +306,7 @@ End Sub
 
 Private Sub UserControl_InitProperties()
     Color = vbRed
+    WheelShape = CWS_Circular
 End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -293,6 +319,7 @@ End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     Me.Color = PropBag.ReadProperty("Color", vbRed)
+    Me.WheelShape = PropBag.ReadProperty("WheelShape", CWS_Circular)
 End Sub
 
 Private Sub UserControl_Resize()
@@ -302,6 +329,7 @@ End Sub
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
         .WriteProperty "Color", Me.Color, vbRed
+        .WriteProperty "WheelShape", Me.WheelShape, CWS_Circular
     End With
 End Sub
 
@@ -351,8 +379,11 @@ Private Sub UpdateControlSize()
         ucRight = m_BackBuffer.getDIBWidth - 2
         
         'How we actually create the regions varies depending on the current control orientation.
-        ' (TODO: expose control over this setting!)
-        CreateSubregions_Rectangular ucLeft, ucTop, ucBottom, ucRight
+        If m_ControlShape = CWS_Circular Then
+            CreateSubregions_Circular ucLeft, ucTop, ucBottom, ucRight
+        Else
+            CreateSubregions_Rectangular ucLeft, ucTop, ucBottom, ucRight
+        End If
         
     End If
     
@@ -461,6 +492,65 @@ Private Sub CreateSubregions_Rectangular(ByVal ucLeft As Long, ByVal ucTop As Lo
     'With the color rects successfully constructed, we can now add them to our master path collection
     For i = CV_Primary To NUM_OF_VARIANTS - 1
         m_ColorRegions(i).addRectangle_RectF colorRects(i)
+    Next i
+
+End Sub
+
+Private Sub CreateSubregions_Circular(ByVal ucLeft As Long, ByVal ucTop As Long, ByVal ucBottom As Long, ByVal ucRight As Long)
+
+    'First, make sure our border size is DPI-aware
+    Dim dpiAwareBorderSize As Long
+    dpiAwareBorderSize = FixDPI(VARIANT_BOX_SIZE)
+    
+    'Constructing circular sub-regions actually involves less code than rectangular ones, because they're spaced perfectly evenly,
+    ' so we can easily construct them in a loop.
+    
+    'Start by calculating basic arc and circle values
+    Dim minDimension As Single
+    If ucRight - ucLeft < ucBottom - ucTop Then
+        minDimension = ucRight - ucLeft
+    Else
+        minDimension = ucBottom - ucTop
+    End If
+    
+    Dim centerX As Single, centerY As Single
+    centerX = ucLeft + (ucRight - ucLeft) / 2
+    centerY = ucTop + (ucBottom - ucTop) / 2
+    
+    Dim innerRadius As Double, outerRadius As Double
+    outerRadius = (minDimension / 2)
+    innerRadius = (minDimension / 2) - dpiAwareBorderSize
+    
+    'The primary circle is the only subregion that receives a special construction method.
+    m_ColorRegions(CV_Primary).addCircle centerX, centerY, innerRadius
+    
+    'All subregions are added uniformly, in a loop
+    Dim startAngle As Single, sweepAngle As Single
+    startAngle = 180
+    sweepAngle = 30
+    
+    Dim x1 As Double, x2 As Double, x3 As Double, x4 As Double, y1 As Double, y2 As Double, y3 As Double, y4 As Double
+    
+    Dim i As Long
+    For i = 1 To NUM_OF_VARIANTS - 1
+    
+        'Calculate (x, y) coordinates for the four corners of this subregion.  We use these as the endpoints for the radial lines
+        ' marking either side of the "slice".
+        Math_Functions.convertPolarToCartesian Math_Functions.DegreesToRadians(startAngle), innerRadius, x1, y1, centerX, centerY
+        Math_Functions.convertPolarToCartesian Math_Functions.DegreesToRadians(startAngle), outerRadius, x2, y2, centerX, centerY
+        Math_Functions.convertPolarToCartesian Math_Functions.DegreesToRadians(startAngle + sweepAngle), innerRadius, x3, y3, centerX, centerY
+        Math_Functions.convertPolarToCartesian Math_Functions.DegreesToRadians(startAngle + sweepAngle), outerRadius, x4, y4, centerX, centerY
+        
+        'Add the two divider lines to the current path object, and place connecting arcs between them
+        m_ColorRegions(i).addLine x1, y1, x2, y2
+        m_ColorRegions(i).addArcCircular centerX, centerY, outerRadius, startAngle, sweepAngle
+        m_ColorRegions(i).addLine x4, y4, x3, y3
+        m_ColorRegions(i).addArcCircular centerX, centerY, innerRadius, startAngle + sweepAngle, -sweepAngle
+        m_ColorRegions(i).closeCurrentFigure
+        
+        'Offset the startAngle for the next slice
+        startAngle = startAngle + sweepAngle
+        
     Next i
 
 End Sub
