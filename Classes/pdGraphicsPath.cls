@@ -41,6 +41,7 @@ Private Declare Function GdipDeletePath Lib "gdiplus" (ByVal hPath As Long) As L
 Private Declare Function GdipResetPath Lib "gdiplus" (ByVal hPath As Long) As Long
 Private Declare Function GdipClonePath Lib "gdiplus" (ByVal srcPath As Long, ByRef dstPath As Long) As Long
 Private Declare Function GdipGetPathWorldBounds Lib "gdiplus" (ByVal hPath As Long, ByRef dstBounds As RECTF, ByVal tmpTransformMatrix As Long, ByVal tmpPen As Long) As Long
+Private Declare Function GdipIsVisiblePathPoint Lib "gdiplus" (ByVal hPath As Long, ByVal x As Single, ByVal y As Single, ByVal hGraphicsOptional As Long, ByRef dstResult As Long) As Long
 
 'Path property changes (both destructive and non-destructive)
 Private Declare Function GdipSetPathFillMode Lib "gdiplus" (ByVal hPath As Long, ByVal newBrushMode As GDIFillMode) As Long
@@ -527,6 +528,28 @@ End Sub
 
 
 
+'***************************************************************************
+'
+' BEGIN: HIT-DETECTION FUNCTIONS
+
+Public Function isPointInsidePath(ByVal x As Single, ByVal y As Single) As Boolean
+    
+    Dim gdipReturn As Long, ptInside As Long
+    gdipReturn = GdipIsVisiblePathPoint(m_PathHandle, x, y, 0&, ptInside)
+    
+    If gdipReturn = 0 Then
+        isPointInsidePath = CBool(ptInside <> 0)
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  pdGraphicsPath.isPointInsidePath() failed to call GdipIsVisiblePathPoint(). Failure code " & gdipReturn & "."
+        #End If
+    End If
+    
+End Function
+
+' END: HIT-DETECTION FUNCTIONS
+'
+'***************************************************************************
 
 
 '***************************************************************************
@@ -534,7 +557,7 @@ End Sub
 ' BEGIN: DRAWING FUNCTIONS
 
 'Stroke the current path, using the default arrangement for PD's current theme
-Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal useCustomStartCap As LineCap = LineCapRound, Optional ByVal useCustomEndCap As LineCap = LineCapRound, Optional ByVal useHighlightColor As Boolean = False)
+Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal useHighlightColor As Boolean = False, Optional ByVal useHQOffsets As Boolean = True, Optional ByVal customLineJoin As LineJoin = LineJoinRound, Optional ByVal useCustomStartCap As LineCap = LineCapRound, Optional ByVal useCustomEndCap As LineCap = LineCapRound)
 
     'PD's default behavior for UI-related paths is to stroke a path twice; once with a thickness of 2px
     ' (which actually ends up being more like 1px along the path, and 0.5 px along either side)
@@ -556,25 +579,29 @@ Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB, Optional ByVal useThis
     'Activate AA
     GdipSetSmoothingMode hGraphics, SmoothingModeAntiAlias
     
-    'CURRENTLY TESTING: activate high-quality offsets
-    GdipSetPixelOffsetMode hGraphics, PixelOffsetModeHighQuality
+    'Activate half-pixel offsets
+    If useHQOffsets Then
+        GdipSetPixelOffsetMode hGraphics, PixelOffsetModeHighQuality
+    Else
+        GdipSetPixelOffsetMode hGraphics, PixelOffsetModeHighSpeed
+    End If
     
     'Create two pens, each of which will be used to stroke the line
     Dim hBlackPen As Long, hWhitePen As Long
     GdipCreatePen1 fillQuadWithVBRGB(RGB(0, 0, 0), 192), 3#, gdipUnitPixel, hBlackPen
     
     If useHighlightColor Then
-        GdipCreatePen1 fillQuadWithVBRGB(g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT), 192), 1.6, gdipUnitPixel, hWhitePen
+        GdipCreatePen1 fillQuadWithVBRGB(g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT), 220), 1.6, gdipUnitPixel, hWhitePen
     Else
-        GdipCreatePen1 fillQuadWithVBRGB(RGB(255, 255, 255), 192), 1.6, gdipUnitPixel, hWhitePen
+        GdipCreatePen1 fillQuadWithVBRGB(RGB(255, 255, 255), 220), 1.6, gdipUnitPixel, hWhitePen
     End If
     
     'Populate line end and join parameters
     GdipSetPenLineCap hBlackPen, useCustomStartCap, useCustomEndCap, DashCapRound
     GdipSetPenLineCap hWhitePen, useCustomStartCap, useCustomEndCap, DashCapRound
     
-    GdipSetPenLineJoin hBlackPen, LineJoinRound
-    GdipSetPenLineJoin hWhitePen, LineJoinRound
+    GdipSetPenLineJoin hBlackPen, customLineJoin
+    GdipSetPenLineJoin hWhitePen, customLineJoin
     
     'Stroke the paths in turn
     GdipDrawPath hGraphics, hBlackPen, m_PathHandle

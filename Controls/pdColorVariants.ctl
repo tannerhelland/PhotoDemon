@@ -29,8 +29,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "Color Variants" color selector
 'Copyright 2015-2015 by Tanner Helland
 'Created: 22/October/15
-'Last updated: 22/October/15
-'Last update: initial build
+'Last updated: 23/October/15
+'Last update: switch to a pure path-based system for rendering and hit-detection
 '
 'In 7.0, a "color selector" panel was added to the right-side toolbar.  Unlike PD's single-color color selector,
 ' this panel is designed to provide a quick, on-canvas-friendly mechanism for rapidly switching colors.
@@ -74,7 +74,7 @@ Private m_BackBuffer As pdDIB
 
 'These values help the central renderer know where the mouse is, so we can draw various on-screen indicators.
 ' If set to -1, the mouse is not inside any box.
-Private m_MouseInsideBox As Long
+Private m_MouseInsideRegion As Long
 
 'API technique for drawing a focus rectangle; used only for designer mode (see the Paint method for details)
 Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
@@ -112,9 +112,10 @@ End Enum
 ' to calculate them in the rendering loop.
 Private m_ColorList() As Long
 
-'Rect collection defining the position of all color variants.  This is a crucial part of the primary rendering loop,
-' and it is created only when the underlying usercontrol size changes.
-Private m_ColorRects() As RECTF
+'Initially, we used a collection of RectF objects to house the coordinates for each subregion, but to increase flexibility,
+' these were later moved to generic path objects.  This is how we are able to provide both rectangular and circular appearances,
+' with almost no changes to the underlying code.
+Private m_ColorRegions() As pdGraphicsPath
 
 Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
@@ -131,6 +132,7 @@ End Property
 Public Property Let Color(ByVal newColor As Long)
     
     m_ColorList(0) = newColor
+    MakeNewTooltip CV_Primary
     
     'Recalculate all color variants, then redraw the control
     CalculateVariantColors
@@ -156,18 +158,19 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     If (Button And pdLeftButton) <> 0 Then
     
         'See if the mouse cursor is inside a box
-        m_MouseInsideBox = GetPointRectIndex(x, y)
+        m_MouseInsideRegion = GetRegionFromPoint(x, y)
         
-        If m_MouseInsideBox >= 0 Then
+        If m_MouseInsideRegion >= 0 Then
         
             'If the primary color box is clicked, raise a full color selection dialog
-            If m_MouseInsideBox = 0 Then
+            If m_MouseInsideRegion = 0 Then
                 DisplayColorSelection
             Else
-                m_ColorList(0) = m_ColorList(m_MouseInsideBox)
+                m_ColorList(0) = m_ColorList(m_MouseInsideRegion)
             End If
             
-            'Recalculate all color variants to match the new color
+            'Recalculate all color variants to match the new color (if any)
+            MakeNewTooltip m_MouseInsideRegion
             CalculateVariantColors
             
             'Redraw the control to reflect this new color
@@ -184,7 +187,7 @@ End Sub
 
 Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     cMouseEvents.setSystemCursor IDC_DEFAULT
-    m_MouseInsideBox = -1
+    m_MouseInsideRegion = -1
     DrawUC
 End Sub
 
@@ -192,15 +195,15 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     
     'Calculate a new hovered box ID, if any
     Dim oldMouseIndex As Long
-    oldMouseIndex = m_MouseInsideBox
-    m_MouseInsideBox = GetPointRectIndex(x, y)
+    oldMouseIndex = m_MouseInsideRegion
+    m_MouseInsideRegion = GetRegionFromPoint(x, y)
     
     'Modify the cursor to match
-    If (m_MouseInsideBox >= 0) Then cMouseEvents.setSystemCursor IDC_HAND Else cMouseEvents.setSystemCursor IDC_DEFAULT
+    If (m_MouseInsideRegion >= 0) Then cMouseEvents.setSystemCursor IDC_HAND Else cMouseEvents.setSystemCursor IDC_DEFAULT
     
     'If the box ID has changed, update the tooltip and redraw the control to match
-    If (m_MouseInsideBox <> oldMouseIndex) Then
-        MakeNewTooltip m_MouseInsideBox
+    If (m_MouseInsideRegion <> oldMouseIndex) Then
+        MakeNewTooltip m_MouseInsideRegion
         DrawUC
     End If
     
@@ -208,15 +211,15 @@ End Sub
 
 'Given an (x, y) coordinate pair from the mouse, return the index of the containing rect (if any).
 ' Returns -1 if the point lies outside all rects.
-Private Function GetPointRectIndex(ByVal x As Single, ByVal y As Single) As Long
+Private Function GetRegionFromPoint(ByVal x As Single, ByVal y As Single) As Long
 
-    GetPointRectIndex = -1
+    GetRegionFromPoint = -1
     
     Dim i As Long
-    For i = CV_Primary To CV_RedDown
+    For i = 0 To NUM_OF_VARIANTS - 1
         
-        If Math_Functions.isPointInRectF(x, y, m_ColorRects(i)) Then
-            GetPointRectIndex = i
+        If m_ColorRegions(i).isPointInsidePath(x, y) Then
+            GetRegionFromPoint = i
             Exit Function
         End If
         
@@ -258,11 +261,17 @@ Private Sub UserControl_Initialize()
         If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
     End If
     
-    m_MouseInsideBox = -1
+    m_MouseInsideRegion = -1
     
     'Prep the various color variant lists
     ReDim m_ColorList(0 To NUM_OF_VARIANTS - 1) As Long
-    ReDim m_ColorRects(0 To NUM_OF_VARIANTS - 1) As RECTF
+    ReDim m_ColorRegions(0 To NUM_OF_VARIANTS - 1) As pdGraphicsPath
+    
+    Dim i As Long
+    For i = 0 To NUM_OF_VARIANTS - 1
+        Set m_ColorRegions(i) = New pdGraphicsPath
+    Next i
+    
     CalculateVariantColors
     
     'Draw the control at least once
@@ -302,7 +311,7 @@ Public Sub DisplayColorSelection()
     'Store the current color
     Dim newColor As Long, oldColor As Long
     oldColor = m_ColorList(0)
-    m_MouseInsideBox = -1
+    m_MouseInsideRegion = -1
     
     'Use the default color dialog to select a new color
     If showColorDialog(newColor, oldColor, Nothing) Then
@@ -325,110 +334,135 @@ Private Sub UpdateControlSize()
     End If
     
     If g_IsProgramRunning Then
-    
-        'Recalculate all rect sizes.  This is a little confusing (okay, a LOT confusing), but basically we want to create
-        ' a grid-like border around the central color rect.
         
-        'Start by pre-calculating some helpful values
-        Dim dpiAwareBorderSize As Long
-        dpiAwareBorderSize = FixDPI(VARIANT_BOX_SIZE)
+        'Re-calculate all control subregions.  This is a little confusing (okay, a LOT confusing), but basically we want to
+        ' create an evenly spaced border around the central color rect, with subdivided regions that provide some dynamic
+        ' color variants for the user to choose from.
+        Dim i As Long
+        For i = 0 To NUM_OF_VARIANTS - 1
+            m_ColorRegions(i).resetPath
+        Next i
         
+        'Leave a little room around the control, so we can draw chunky borders around hovered sub-regions.
         Dim ucLeft As Long, ucTop As Long, ucBottom As Long, ucRight As Long
         ucLeft = 1
         ucTop = 1
         ucBottom = m_BackBuffer.getDIBHeight - 2
         ucRight = m_BackBuffer.getDIBWidth - 2
         
-        'Start by calculating the primary color rect.  It is the focus of the control, and its position affects all
-        ' subsequent controls.
-        With m_ColorRects(CV_Primary)
-            .Left = ucLeft + dpiAwareBorderSize
-            .Top = ucTop + dpiAwareBorderSize
-            .Width = (ucRight - dpiAwareBorderSize) - .Left
-            .Height = (ucBottom - dpiAwareBorderSize) - .Top
-        End With
-        
-        'Next, loop through rects that share one or more position values.
-        Dim i As Long
-        
-        For i = CV_HueUp To CV_ValueUp
-            With m_ColorRects(i)
-                .Top = ucTop
-                .Height = dpiAwareBorderSize
-            End With
-        Next i
-        
-        For i = CV_ValueUp To CV_ValueDown
-            With m_ColorRects(i)
-                .Left = m_ColorRects(CV_Primary).Left + m_ColorRects(CV_Primary).Width
-                .Width = dpiAwareBorderSize
-            End With
-        Next i
-        
-        For i = CV_ValueDown To CV_HueDown
-            With m_ColorRects(i)
-                .Top = m_ColorRects(CV_Primary).Top + m_ColorRects(CV_Primary).Height
-                .Height = dpiAwareBorderSize
-            End With
-        Next i
-        
-        For i = CV_HueDown To CV_RedDown
-            With m_ColorRects(i)
-                .Left = ucLeft
-                .Width = dpiAwareBorderSize
-            End With
-        Next i
-        m_ColorRects(CV_HueUp).Left = ucLeft
-        m_ColorRects(CV_HueUp).Width = dpiAwareBorderSize
-        
-        'Next, we must manually calculate all remaining rect positions.
-        
-        'The HSV boxes split their width evenly across the control's available space
-        Dim hsvWidth As Single
-        hsvWidth = (ucRight - ucLeft) / 3
-        
-        For i = CV_HueUp To CV_ValueUp
-            m_ColorRects(i).Width = hsvWidth
-        Next i
-        For i = CV_ValueDown To CV_HueDown
-            m_ColorRects(i).Width = hsvWidth
-        Next i
-        
-        m_ColorRects(CV_HueUp).Left = ucLeft
-        m_ColorRects(CV_SaturationUp).Left = ucLeft + hsvWidth
-        m_ColorRects(CV_ValueUp).Left = ucLeft + hsvWidth * 2
-        m_ColorRects(CV_HueDown).Left = m_ColorRects(CV_HueUp).Left
-        m_ColorRects(CV_SaturationDown).Left = m_ColorRects(CV_SaturationUp).Left
-        m_ColorRects(CV_ValueDown).Left = m_ColorRects(CV_ValueUp).Left
-        
-        'The only remaining rects to calculate are the RGB boxes that sit on either side of the main color box.
-        ' Their vertical positioning is equally split between the 3 boxes, so it is contingent on the control's size
-        ' as a whole.
-        Dim rgbHeight As Single
-        rgbHeight = m_ColorRects(CV_Primary).Height / 3
-        
-        'Start by assigning all boxes a uniform height
-        For i = CV_RedUp To CV_BlueUp
-            m_ColorRects(i).Height = rgbHeight
-        Next i
-        For i = CV_BlueDown To CV_RedDown
-            m_ColorRects(i).Height = rgbHeight
-        Next i
-        
-        'Next, commit the top positions, which vary by index
-        m_ColorRects(CV_RedUp).Top = m_ColorRects(CV_Primary).Top
-        m_ColorRects(CV_GreenUp).Top = m_ColorRects(CV_Primary).Top + rgbHeight
-        m_ColorRects(CV_BlueUp).Top = m_ColorRects(CV_Primary).Top + rgbHeight * 2
-        
-        m_ColorRects(CV_RedDown).Top = m_ColorRects(CV_RedUp).Top
-        m_ColorRects(CV_GreenDown).Top = m_ColorRects(CV_GreenUp).Top
-        m_ColorRects(CV_BlueDown).Top = m_ColorRects(CV_BlueUp).Top
+        'How we actually create the regions varies depending on the current control orientation.
+        ' (TODO: expose control over this setting!)
+        CreateSubregions_Rectangular ucLeft, ucTop, ucBottom, ucRight
         
     End If
     
     'With the backbuffer and rects successfully constructed, we can finally redraw the control
     DrawUC
     
+End Sub
+
+'Create a rectangular grid-based variant control
+Private Sub CreateSubregions_Rectangular(ByVal ucLeft As Long, ByVal ucTop As Long, ByVal ucBottom As Long, ByVal ucRight As Long)
+
+    'First, make sure our border size is DPI-aware
+    Dim dpiAwareBorderSize As Long
+    dpiAwareBorderSize = FixDPI(VARIANT_BOX_SIZE)
+    
+    'For this control layout, we are going to use a temporary rect collection to define the position of all color variants.
+    ' This simplifies things a bit, and when we're done, we'll simply copy all rects into the master pdGraphicsPath array.
+    Dim colorRects() As RECTF
+    ReDim colorRects(0 To NUM_OF_VARIANTS - 1) As RECTF
+    
+    'Start by calculating the primary color rect.  It is the focus of the control, and its position affects all
+    ' subsequent controls.
+    With colorRects(CV_Primary)
+        .Left = ucLeft + dpiAwareBorderSize
+        .Top = ucTop + dpiAwareBorderSize
+        .Width = (ucRight - dpiAwareBorderSize) - .Left
+        .Height = (ucBottom - dpiAwareBorderSize) - .Top
+    End With
+    
+    'Next, loop through rects that share one or more position values.
+    Dim i As Long
+    
+    For i = CV_HueUp To CV_ValueUp
+        With colorRects(i)
+            .Top = ucTop
+            .Height = dpiAwareBorderSize
+        End With
+    Next i
+    
+    For i = CV_ValueUp To CV_ValueDown
+        With colorRects(i)
+            .Left = colorRects(CV_Primary).Left + colorRects(CV_Primary).Width
+            .Width = dpiAwareBorderSize
+        End With
+    Next i
+    
+    For i = CV_ValueDown To CV_HueDown
+        With colorRects(i)
+            .Top = colorRects(CV_Primary).Top + colorRects(CV_Primary).Height
+            .Height = dpiAwareBorderSize
+        End With
+    Next i
+    
+    For i = CV_HueDown To CV_RedDown
+        With colorRects(i)
+            .Left = ucLeft
+            .Width = dpiAwareBorderSize
+        End With
+    Next i
+    colorRects(CV_HueUp).Left = ucLeft
+    colorRects(CV_HueUp).Width = dpiAwareBorderSize
+    
+    'Next, we must manually calculate all remaining rect positions.
+    
+    'The HSV boxes split their width evenly across the control's available space
+    Dim hsvWidth As Single
+    hsvWidth = (ucRight - ucLeft) / 3
+    
+    For i = CV_HueUp To CV_ValueUp
+        colorRects(i).Width = hsvWidth
+    Next i
+    For i = CV_ValueDown To CV_HueDown
+        colorRects(i).Width = hsvWidth
+    Next i
+    
+    colorRects(CV_HueUp).Left = ucLeft
+    colorRects(CV_SaturationUp).Left = ucLeft + hsvWidth
+    colorRects(CV_ValueUp).Left = ucLeft + hsvWidth * 2
+    colorRects(CV_HueDown).Left = colorRects(CV_HueUp).Left
+    colorRects(CV_SaturationDown).Left = colorRects(CV_SaturationUp).Left
+    colorRects(CV_ValueDown).Left = colorRects(CV_ValueUp).Left
+    
+    'The only remaining rects to calculate are the RGB boxes that sit on either side of the main color box.
+    ' Their vertical positioning is equally split between the 3 boxes, so it is contingent on the control's size
+    ' as a whole.
+    Dim rgbHeight As Single
+    rgbHeight = colorRects(CV_Primary).Height / 3
+    
+    'Start by assigning all boxes a uniform height
+    For i = CV_RedUp To CV_BlueUp
+        colorRects(i).Height = rgbHeight
+    Next i
+    For i = CV_BlueDown To CV_RedDown
+        colorRects(i).Height = rgbHeight
+    Next i
+    
+    'Next, commit the top positions, which vary by index
+    colorRects(CV_RedUp).Top = colorRects(CV_Primary).Top
+    colorRects(CV_GreenUp).Top = colorRects(CV_Primary).Top + rgbHeight
+    colorRects(CV_BlueUp).Top = colorRects(CV_Primary).Top + rgbHeight * 2
+    
+    colorRects(CV_RedDown).Top = colorRects(CV_RedUp).Top
+    colorRects(CV_GreenDown).Top = colorRects(CV_GreenUp).Top
+    colorRects(CV_BlueDown).Top = colorRects(CV_BlueUp).Top
+    
+    'With the color rects successfully constructed, we can now add them to our master path collection
+    For i = CV_Primary To NUM_OF_VARIANTS - 1
+        m_ColorRegions(i).addRectangle_RectF colorRects(i)
+    Next i
+
 End Sub
 
 'Any time the primary color changes (for whatever reason, external or internal), new variant colors must be calculated.
@@ -468,7 +502,6 @@ Private Sub CalculateVariantColors()
                 Color_Functions.HSVtoRGB hNew, sNew, vNew, rNew, gNew, bNew
                 
             Case CV_SaturationUp
-                'Color_Functions.HSVtoRGB hNew, Math_Functions.ClampF(sNew + svChange, 0, 1), vNew, rNew, gNew, bNew
                 
                 'Use a fake saturation calculation
                 grayNew = Color_Functions.getHQLuminance(rNew, gNew, bNew)
@@ -480,7 +513,6 @@ Private Sub CalculateVariantColors()
                 bNew = Math_Functions.ClampL(bNew, 0, 255)
             
             Case CV_ValueUp
-                'Color_Functions.HSVtoRGB hNew, sNew, Math_Functions.ClampF(vNew + svChange, 0, 1), rNew, gNew, bNew
                 
                 'Use a fake value calculation
                 rNew = Math_Functions.ClampL(rNew + rgbChange, 0, 255)
@@ -497,7 +529,6 @@ Private Sub CalculateVariantColors()
                 bNew = Math_Functions.ClampL(bNew + rgbChange, 0, 255)
                 
             Case CV_ValueDown
-                'Color_Functions.HSVtoRGB hNew, sNew, Math_Functions.ClampF(vNew - svChange, 0, 1), rNew, gNew, bNew
                 
                 'Use a fake value calculation
                 rNew = Math_Functions.ClampL(rNew - rgbChange, 0, 255)
@@ -505,7 +536,6 @@ Private Sub CalculateVariantColors()
                 bNew = Math_Functions.ClampL(bNew - rgbChange, 0, 255)
             
             Case CV_SaturationDown
-                'Color_Functions.HSVtoRGB hNew, Math_Functions.ClampF(sNew - svChange, 0, 1), vNew, rNew, gNew, bNew
                 
                 'Use a fake saturation calculation
                 grayNew = Color_Functions.getHQLuminance(rNew, gNew, bNew)
@@ -552,26 +582,35 @@ Private Sub DrawUC()
         'Paint the background.
         GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT), 255
         
-        Dim fillColor As Long, borderColor As Long
+        Dim fillColor As Long, borderColor As Long, borderPen As Long
         borderColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
         
-        'Draw each rect in turn, filling it first, then tracing its borders.
-        Dim i As Long
+        'We can reuse a single border pen for all sub-paths
+        borderPen = GDI_Plus.getGDIPlusPenHandle(borderColor, , , , LineJoinMiter)
+        
+        'Draw each subregion in turn, filling it first, then tracing its borders.
+        Dim i As Long, regionBrush As Long
         For i = CV_Primary To CV_RedDown
             
-            fillColor = m_ColorList(i)
-            GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, m_ColorRects(i).Left, m_ColorRects(i).Top, m_ColorRects(i).Width, m_ColorRects(i).Height, fillColor, , , True
-            GDI_Plus.GDIPlusDrawRectFOutlineToDC m_BackBuffer.getDIBDC, m_ColorRects(i), borderColor, , , , LineJoinMiter
+            regionBrush = GDI_Plus.getGDIPlusSolidBrushHandle(m_ColorList(i), 255)
+            m_ColorRegions(i).fillPathToDIB_BareBrush regionBrush, m_BackBuffer
+            GDI_Plus.releaseGDIPlusBrush regionBrush
+            
+            m_ColorRegions(i).strokePathToDIB_BarePen borderPen, m_BackBuffer
             
         Next i
         
-        'Draw a special rect around the primary color, to help it stand out more
-        GDI_Plus.GDIPlusDrawCanvasRectF m_BackBuffer.getDIBDC, m_ColorRects(CV_Primary)
+        'Draw a special outline around the central primary color, to help it stand out more
+        m_ColorRegions(CV_Primary).strokePathToDIB_UIStyle m_BackBuffer, , False, False, LineJoinMiter
         
-        'If a box is currently hovered, trace it with a highlight outline.
-        If m_MouseInsideBox >= 0 Then
+        'Release any remaining GDI+ objects
+        GDI_Plus.releaseGDIPlusPen borderPen
+        
+        'If a subregion is currently hovered, trace it with a highlight outline.
+        If m_MouseInsideRegion >= 0 Then
             borderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-            GDI_Plus.GDIPlusDrawRectFOutlineToDC m_BackBuffer.getDIBDC, m_ColorRects(m_MouseInsideBox), borderColor, , 3, , LineJoinMiter
+            borderPen = GDI_Plus.getGDIPlusPenHandle(borderColor, , 3, , LineJoinMiter)
+            m_ColorRegions(m_MouseInsideRegion).strokePathToDIB_BarePen borderPen, m_BackBuffer
         End If
         
     'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
@@ -601,46 +640,61 @@ End Sub
 'When the currently hovered color variant changes, we want to assign a new tooltip to the control
 Private Sub MakeNewTooltip(ByVal activeIndex As COLOR_VARIANTS)
     
+    'Failsafe for compile-time errors when properties are written
+    If Not g_IsProgramRunning Then Exit Sub
+    
+    Dim toolString As String, hexString As String, rgbString As String
+    
+    If activeIndex >= 0 Then
+        hexString = "#" & UCase(Color_Functions.getHexStringFromRGB(m_ColorList(activeIndex)))
+        rgbString = Color_Functions.ExtractR(m_ColorList(activeIndex)) & ", " & Color_Functions.ExtractG(m_ColorList(activeIndex)) & ", " & Color_Functions.ExtractB(m_ColorList(activeIndex))
+        toolString = hexString & vbCrLf & rgbString
+        If activeIndex = CV_Primary Then toolString = toolString & vbCrLf & g_Language.TranslateMessage("Click to enter a full color selection screen.")
+    End If
+    
     Select Case activeIndex
         
         Case CV_Primary
-            Me.AssignTooltip "The active color.  Click to enter the full color selection screen."
+            Me.AssignTooltip toolString, "Current color"
         
         Case CV_HueUp
-            Me.AssignTooltip "rotate hue clockwise"
+            Me.AssignTooltip toolString, "Rotate hue clockwise"
                 
         Case CV_SaturationUp
-            Me.AssignTooltip "increase saturation"
+            Me.AssignTooltip toolString, "Increase saturation"
             
         Case CV_ValueUp
-            Me.AssignTooltip "increase luminance."
+            Me.AssignTooltip toolString, "Increase luminance"
             
         Case CV_RedUp
-            Me.AssignTooltip "increase red"
+            Me.AssignTooltip toolString, "Increase red"
             
         Case CV_GreenUp
-            Me.AssignTooltip "increase green"
+            Me.AssignTooltip toolString, "Increase green"
             
         Case CV_BlueUp
-            Me.AssignTooltip "increase blue"
+            Me.AssignTooltip toolString, "Increase blue"
             
         Case CV_ValueDown
-            Me.AssignTooltip "decrease luminance"
+            Me.AssignTooltip toolString, "Decrease luminance"
             
         Case CV_SaturationDown
-            Me.AssignTooltip "decrease saturation"
+            Me.AssignTooltip toolString, "Decrease saturation"
             
         Case CV_HueDown
-            Me.AssignTooltip "rotate hue counterclockwise"
+            Me.AssignTooltip toolString, "Rotate hue counterclockwise"
             
         Case CV_BlueDown
-            Me.AssignTooltip "decrease blue"
+            Me.AssignTooltip toolString, "Decrease blue"
             
         Case CV_GreenDown
-            Me.AssignTooltip "decrease green"
+            Me.AssignTooltip toolString, "Decrease green"
             
         Case CV_RedDown
-            Me.AssignTooltip "decrease red"
+            Me.AssignTooltip toolString, "Decrease red"
+        
+        Case Else
+            Me.AssignTooltip ""
                 
     End Select
     

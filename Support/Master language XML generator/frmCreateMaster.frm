@@ -1383,7 +1383,7 @@ Private Sub processFile(ByVal srcFile As String)
         ' 6) As message box text, specifically pdMsgBox (e.g. one of either pdMsgBox("xyz"...) or pdMsgBox "xyz"...)
         ' 7) As a message box title caption (more convoluted to find - basically the 3rd parameter of a pdMsgBox call)
         ' 8) As miscellaneous text manually marked for translation (e.g. g_Language.translateMessage("xyz"))
-        ' 9) As miscellaneous tooltip text manually marked for translation by the assignTooltip function.
+        ' 9) As miscellaneous tooltip text manually marked for translation by the AssignTooltip function.
         ' 10) Process calls, which are relayed to the user in the Undo / Redo menus (e.g. "Undo Blur")
         ' (in some rare cases, text may appear that doesn't fit any of these cases - such text must be added manually)
         
@@ -1432,7 +1432,7 @@ Private Sub processFile(ByVal srcFile As String)
             
             '3b) Check for tooltip text that has been manually assigned to a custom PhotoDemon object.  Note that we (obviously) avoid .assignToolTip
             '     function declarations themselves.
-            If (InStr(1, UCase$(curLineText), ".ASSIGNTOOLTIP """) > 0) And (InStr(1, curLineText, "ByVal") = 0) Then
+            If (InStr(1, UCase$(curLineText), ".ASSIGNTOOLTIP ") > 0) And (InStr(1, curLineText, "ByVal") = 0) Then
                 
                 'Process the tooltip text itself
                 processedText = findTooltipMessage(fileLines, curLineNumber, False, toolTipSecondCheckNeeded)
@@ -1709,17 +1709,17 @@ Private Function findTooltipMessage(ByRef srcLines() As String, ByRef lineNumber
     
     Dim initPosition As Long
     If inReverse Then
-        initPosition = InStrRev(UCase$(srcLines(lineNumber)), ".ASSIGNTOOLTIP """)
+        initPosition = InStrRev(UCase$(srcLines(lineNumber)), ".ASSIGNTOOLTIP ")
     Else
-        initPosition = InStr(1, UCase$(srcLines(lineNumber)), ".ASSIGNTOOLTIP """)
+        initPosition = InStr(1, UCase$(srcLines(lineNumber)), ".ASSIGNTOOLTIP ")
     End If
     
     'If text is not found, try again, using a different tooltip assignment command
     If initPosition = 0 Then
         If inReverse Then
-            initPosition = InStrRev(UCase$(srcLines(lineNumber)), ".SETTOOLTIP")
+            initPosition = InStrRev(UCase$(srcLines(lineNumber)), ".SETTOOLTIP ")
         Else
-            initPosition = InStr(1, UCase$(srcLines(lineNumber)), ".SETTOOLTIP")
+            initPosition = InStr(1, UCase$(srcLines(lineNumber)), ".SETTOOLTIP ")
         End If
     End If
     

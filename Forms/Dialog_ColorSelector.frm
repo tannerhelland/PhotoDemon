@@ -32,9 +32,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   36
       Top             =   5295
       Width           =   11535
-      _ExtentX        =   20346
-      _ExtentY        =   1323
-      BackColor       =   14802140
+      _extentx        =   20346
+      _extenty        =   1323
+      backcolor       =   14802140
    End
    Begin PhotoDemon.pdButtonToolbox cmdCapture 
       Height          =   600
@@ -43,9 +43,9 @@ Begin VB.Form dialog_ColorSelector
       Top             =   3720
       Visible         =   0   'False
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   1058
-      AutoToggle      =   -1  'True
+      _extentx        =   1931
+      _extenty        =   1058
+      autotoggle      =   -1  'True
    End
    Begin PhotoDemon.pdTextBox txtHex 
       Height          =   315
@@ -53,9 +53,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   34
       Top             =   3735
       Width           =   1455
-      _ExtentX        =   2566
-      _ExtentY        =   556
-      Text            =   "abcdef"
+      _extentx        =   2566
+      _extenty        =   556
+      text            =   "abcdef"
    End
    Begin VB.PictureBox picRecColor 
       Appearance      =   0  'Flat
@@ -330,9 +330,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   12
       Top             =   1905
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   255
+      _extentx        =   1931
+      _extenty        =   714
+      max             =   255
    End
    Begin PhotoDemon.textUpDown tudRGB 
       Height          =   345
@@ -341,9 +341,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   14
       Top             =   2505
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   255
+      _extentx        =   1931
+      _extenty        =   714
+      max             =   255
    End
    Begin PhotoDemon.textUpDown tudRGB 
       Height          =   345
@@ -352,9 +352,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   16
       Top             =   3105
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   255
+      _extentx        =   1931
+      _extenty        =   714
+      max             =   255
    End
    Begin PhotoDemon.textUpDown tudHSV 
       Height          =   345
@@ -363,9 +363,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   19
       Top             =   105
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   359
+      _extentx        =   1931
+      _extenty        =   714
+      max             =   359
    End
    Begin PhotoDemon.textUpDown tudHSV 
       Height          =   345
@@ -374,9 +374,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   21
       Top             =   705
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   100
+      _extentx        =   1931
+      _extenty        =   714
+      max             =   100
    End
    Begin PhotoDemon.textUpDown tudHSV 
       Height          =   345
@@ -385,9 +385,9 @@ Begin VB.Form dialog_ColorSelector
       TabIndex        =   23
       Top             =   1305
       Width           =   1095
-      _ExtentX        =   1931
-      _ExtentY        =   714
-      Max             =   100
+      _extentx        =   1931
+      _extenty        =   714
+      max             =   100
    End
    Begin VB.Label lblColor 
       Alignment       =   1  'Right Justify
@@ -1338,7 +1338,7 @@ Private Sub redrawAllTextBoxes()
     sValue.renderToPictureBox picSampleHSV(2)
     
     'Update the hex representation box
-    txtHex = getHexStringFromRGB
+    txtHex = Color_Functions.getHexStringFromRGB(RGB(curRed, curGreen, curBlue))
     
     'Re-enable syncing
     suspendTextResync = False
@@ -1643,20 +1643,6 @@ Private Sub tudRGB_Change(Index As Integer)
 
 End Sub
 
-'Assuming the curRed/Green/Blue values are valid, this function can be used to retrieve a matching hex representation.
-Private Function getHexStringFromRGB() As String
-    getHexStringFromRGB = getHexFromByte(curRed) & getHexFromByte(curGreen) & getHexFromByte(curBlue)
-End Function
-
-'HTML hex requires each RGB entry to be two characters wide, but the VB Hex$ function won't add a leading 0.  We do this manually.
-Private Function getHexFromByte(ByVal srcByte As Byte) As String
-    If srcByte < 16 Then
-        getHexFromByte = "0" & LCase(Hex$(srcByte))
-    Else
-        getHexFromByte = LCase(Hex$(srcByte))
-    End If
-End Function
-
 Private Sub txtHex_LostFocus()
 
     'Before doing anything else, remove all invalid characters from the text box
@@ -1698,7 +1684,7 @@ Private Sub txtHex_LostFocus()
         
         Case Else
             'We can't handle this character string, so reset it
-            newText = getHexStringFromRGB()
+            newText = Color_Functions.getHexStringFromRGB(RGB(curRed, curGreen, curBlue))
     
     End Select
     
