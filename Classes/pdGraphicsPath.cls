@@ -98,6 +98,10 @@ Private m_PathHandle As Long
 ' NOTE: all paths are contiguous by default, so the first point of any added shape will be automatically connected to
 '       the last point of the previous shape.
 
+Public Sub addCircle(ByVal centerX As Single, ByVal centerY As Single, ByVal circleRadius As Single)
+    Me.addEllipse_Absolute centerX - circleRadius, centerY - circleRadius, centerX + circleRadius, centerY + circleRadius
+End Sub
+
 Public Sub addEllipse_Absolute(ByVal x1 As Single, ByVal y1 As Single, ByVal x2 As Single, ByVal y2 As Single)
     GdipAddPathEllipse m_PathHandle, x1, y1, x2 - x1, y2 - y1
 End Sub
@@ -557,7 +561,7 @@ End Function
 ' BEGIN: DRAWING FUNCTIONS
 
 'Stroke the current path, using the default arrangement for PD's current theme
-Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal useHighlightColor As Boolean = False, Optional ByVal useHQOffsets As Boolean = True, Optional ByVal customLineJoin As LineJoin = LineJoinRound, Optional ByVal useCustomStartCap As LineCap = LineCapRound, Optional ByVal useCustomEndCap As LineCap = LineCapRound)
+Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB, Optional ByVal useThisDCInstead As Long = 0, Optional ByVal useHighlightColor As Boolean = False, Optional ByVal useHQOffsets As Boolean = True, Optional ByVal customLinejoin As LineJoin = LineJoinRound, Optional ByVal useCustomStartCap As LineCap = LineCapRound, Optional ByVal useCustomEndCap As LineCap = LineCapRound)
 
     'PD's default behavior for UI-related paths is to stroke a path twice; once with a thickness of 2px
     ' (which actually ends up being more like 1px along the path, and 0.5 px along either side)
@@ -600,8 +604,8 @@ Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB, Optional ByVal useThis
     GdipSetPenLineCap hBlackPen, useCustomStartCap, useCustomEndCap, DashCapRound
     GdipSetPenLineCap hWhitePen, useCustomStartCap, useCustomEndCap, DashCapRound
     
-    GdipSetPenLineJoin hBlackPen, customLineJoin
-    GdipSetPenLineJoin hWhitePen, customLineJoin
+    GdipSetPenLineJoin hBlackPen, customLinejoin
+    GdipSetPenLineJoin hWhitePen, customLinejoin
     
     'Stroke the paths in turn
     GdipDrawPath hGraphics, hBlackPen, m_PathHandle

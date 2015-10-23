@@ -698,6 +698,10 @@ Public Function RadiansToDegrees(ByVal srcRadian As Double) As Double
     RadiansToDegrees = (srcRadian * 180) / PI
 End Function
 
+Public Function DegreesToRadians(ByVal srcDegrees As Double) As Double
+    DegreesToRadians = (srcDegrees * PI) / 180
+End Function
+
 Public Function ClampL(ByVal srcL As Long, ByVal minL As Long, ByVal maxL As Long) As Long
     If srcL < minL Then
         ClampL = minL
