@@ -218,7 +218,6 @@ Private Declare Function MapVirtualKey Lib "user32" Alias "MapVirtualKeyW" (ByVa
 Private Const PM_REMOVE As Long = &H1
 Private Const WM_KEYFIRST As Long = &H100
 Private Const WM_KEYLAST As Long = &H108
-Private Declare Function PostMessage Lib "user32" Alias "PostMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
 Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageW" (ByRef lpMsg As winMsg, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
 Private Declare Function DispatchMessage Lib "user32" Alias "DispatchMessageW" (lpMsg As winMsg) As Long
 

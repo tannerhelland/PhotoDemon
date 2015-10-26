@@ -32,8 +32,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Color Selector custom control
 'Copyright 2013-2015 by Tanner Helland
 'Created: 17/August/13
-'Last updated: 04/September/15
-'Last update: added caption support, to simplify layout code in various effect dialogs
+'Last updated: 25/October/15
+'Last update: start migrating to the new pdUCSupport class, which wraps a ton of extra functionality for us.
 '
 'This thin user control is basically an empty control that when clicked, displays a color selection window.  If a
 ' color is selected (e.g. Cancel is not pressed), it updates its back color to match, and raises a "ColorChanged"
@@ -100,6 +100,10 @@ Private m_InternalResizeActive As Boolean
 
 'If the control is currently visible, this will be set to TRUE.  This can be used to suppress redraw requests for hidden controls.
 Private m_ControlIsVisible As Boolean
+
+'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
+' but I've since attempted to wrap these into a single master UC support class.
+Private WithEvents m_UCSupport As pdUCSupport
 
 'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
 ' if present, will not be processed until run-time.
@@ -249,6 +253,13 @@ Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, By
     BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
 End Sub
 
+Private Sub m_UCSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean)
+    
+    'On program-wide color changes, redraw ourselves accordingly
+    If wMsg = WM_PD_PRIMARY_COLOR_CHANGE Then redrawBackBuffer
+    
+End Sub
+
 Private Sub UserControl_Hide()
     m_ControlIsVisible = False
 End Sub
@@ -260,6 +271,13 @@ Private Sub UserControl_Initialize()
     m_Caption.setWordWrapSupport False
     
     If g_IsProgramRunning Then
+        
+        'Initialize a master user control support class
+        Set m_UCSupport = New pdUCSupport
+        m_UCSupport.RegisterControl UserControl.hWnd, 0&    'UserControl.containerHwnd
+        
+        'This class needs to redraw itself when the primary window color changes.  Register the program-wide color change msg.
+        m_UCSupport.SubclassCustomMessage WM_PD_PRIMARY_COLOR_CHANGE, True
         
         'Initialize mouse handling
         Set cMouseEvents = New pdInputMouse

@@ -28,8 +28,8 @@ Begin VB.Form layerpanel_Colors
       TabIndex        =   1
       Top             =   120
       Width           =   1335
-      _ExtentX        =   2355
-      _ExtentY        =   1720
+      _extentx        =   2355
+      _extenty        =   1720
    End
    Begin PhotoDemon.pdColorWheel clrWheel 
       Height          =   975
@@ -37,8 +37,8 @@ Begin VB.Form layerpanel_Colors
       TabIndex        =   0
       Top             =   120
       Width           =   1215
-      _ExtentX        =   2143
-      _ExtentY        =   1720
+      _extentx        =   2143
+      _extenty        =   1720
    End
 End
 Attribute VB_Name = "layerpanel_Colors"
@@ -70,7 +70,15 @@ Private WithEvents lastUsedSettings As pdLastUsedSettings
 Attribute lastUsedSettings.VB_VarHelpID = -1
 
 Private Sub clrVariants_ColorChanged(ByVal newColor As Long, ByVal srcIsInternal As Boolean)
+    
+    'If the clrVariant control is where the color was actually changed (and it's not just syncing itself to some
+    ' external color change), relay the new color to the neighboring color wheel.
     If srcIsInternal Then clrWheel.Color = newColor
+    
+    'Whenever this primary color changes, we broadcast the change throughout PD, so other color selector controls
+    ' know to redraw themselves accordingly.
+    UserControl_Support.PostPDMessage WM_PD_PRIMARY_COLOR_CHANGE, newColor
+    
 End Sub
 
 Private Sub clrWheel_ColorChanged(ByVal newColor As Long, ByVal srcIsInternal As Boolean)
