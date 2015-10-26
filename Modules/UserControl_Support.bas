@@ -33,6 +33,19 @@ End Enum
     Private Const TabDefaultBehavior = 0, TabRaiseEvent = 1
 #End If
 
+'At times, PD may need to post custom messages to all application windows (e.g. theme changes may eventually be implemented
+' like this).  Do not call PostMessage directly, as it sends messages to the thread's message queue; instead, call the
+' PostPDMessage() function below, which asynchronously relays the request to registered windows via SendNotifyMessage.
+Private Declare Function PostMessage Lib "user32" Alias "PostMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function SendNotifyMessage Lib "user32" Alias "SendNotifyMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+
+'Current list of registered windows and the custom messages they want to receive.  This spares us from having to enumerate
+' all windows, or worse, blast all windows in the system with our internal messages.  (At present, these are naive lists
+' because PD uses so few of them, but in the future, we could look at a hash table.  I've deliberately made the list
+' interactions structure-agnostic to simplify future improvements.)
+Private m_windowList() As Long, m_wMsgList() As Long
+Private m_windowMsgCount As Long
+Private Const INITIAL_WINDOW_MESSAGE_LIST_SIZE As Long = 16&
 
 'Iterate through all sibling controls in our container, and if one is capable of receiving focus, activate it.  I had *really* hoped
 ' to bypass this kind of manual handling by using WM_NEXTDLGCTL, but I failed to get it working reliably with all types of VB windows.
@@ -209,3 +222,63 @@ Public Function IsControlFocusable(ByRef Ctl As Control) As Boolean
     End If
 
 End Function
+
+'PD's various user controls sometimes like to share data via custom window messages.  Instead of calling PostMessage directly,
+' use this wrapper function, which may perform additional maintenance.
+Public Sub PostPDMessage(ByVal wMsg As Long, Optional ByVal wParam As Long = 0&, Optional ByVal lParam As Long = 0&)
+    
+    Dim pmReturn As Long
+    pmReturn = 1
+    
+    'Enumerate all matching, non-zero windows, and post the requested message, without waiting for a response.
+    Dim i As Long
+    For i = 0 To m_windowMsgCount - 1
+        If (m_wMsgList(i) = wMsg) Then
+            If (m_windowList(i) <> 0) Then
+                pmReturn = pmReturn And SendNotifyMessage(m_windowList(i), wMsg, wParam, lParam)
+            End If
+        End If
+    Next i
+    
+    #If DEBUGMODE = 1 Then
+        If pmReturn = 0 Then
+            pdDebug.LogAction "PostPDMessage was unable to post message ID #" & wMsg & " to one or more windows."
+        End If
+    #End If
+    
+End Sub
+
+'Rather than blast all windows with manually raised messages, PD maintains a list of hWnds and registered message requests.
+' Add windows and/or messages via this function, and when the messages need to be raised (via PostPDMessage(), above),
+' the function will automatically notify all registered recipients.
+Public Sub AddMessageRecipient(ByVal targetHwnd As Long, ByVal wMsg As Long)
+    
+    'Prep the storage structure, as necessary.
+    If m_windowMsgCount = 0 Then
+        ReDim m_windowList(0 To INITIAL_WINDOW_MESSAGE_LIST_SIZE - 1) As Long
+        ReDim m_wMsgList(0 To INITIAL_WINDOW_MESSAGE_LIST_SIZE - 1) As Long
+    ElseIf m_windowMsgCount > UBound(m_windowList) Then
+        ReDim m_windowList(0 To (UBound(m_windowList) * 2 + 1)) As Long
+        ReDim m_wMsgList(0 To (UBound(m_wMsgList) * 2 + 1)) As Long
+    End If
+    
+    m_windowList(m_windowMsgCount) = targetHwnd
+    m_wMsgList(m_windowMsgCount) = wMsg
+    
+    m_windowMsgCount = m_windowMsgCount + 1
+    
+End Sub
+
+Public Sub RemoveMessageRecipient(ByVal targetHwnd As Long)
+    
+    'Rather then condensing the list, we simply set all corresponding window entries to zero.
+    Dim i As Long
+    For i = 0 To m_windowMsgCount - 1
+        If m_windowList(i) = targetHwnd Then
+            m_windowList(i) = 0
+            m_wMsgList(i) = 0
+        End If
+    Next i
+    
+End Sub
+

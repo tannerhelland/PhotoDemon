@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.104</langversion>
+<langversion>6.7.105</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -3180,7 +3180,27 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 
 <!-- BEGIN text for colorSelector.ctl -->
 
-<!-- colorSelector.ctl contains 0 phrases. -->
+<phrase>
+<original>Click to enter a full color selection screen.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Active color</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Click to make the main screen's paint color the active color.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Main screen paint color</original>
+<translation></translation>
+</phrase>
+
+<!-- colorSelector.ctl contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for colorSelector.ctl-->
 
@@ -3465,11 +3485,6 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <!-- BEGIN text for pdColorVariants.ctl -->
 
 <phrase>
-<original>Click to enter a full color selection screen.</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Current color</original>
 <translation></translation>
 </phrase>
@@ -3534,7 +3549,7 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <translation></translation>
 </phrase>
 
-<!-- pdColorVariants.ctl contains 15 phrases.  One was a duplicate of an existing phrase, so only 14 new phrases were written to file. -->
+<!-- pdColorVariants.ctl contains 15 phrases. 2 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for pdColorVariants.ctl-->
 
@@ -14384,10 +14399,10 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2473</phrasecount>
+<phrasecount>2476</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4239 phrases. -->
-<!-- 1766 are duplicates, so only 2473 unique phrases have been written to file. -->
-<!-- These 2473 phrases contain approximately 13304 total words. -->
+<!-- As of this build, PhotoDemon contains 4245 phrases. -->
+<!-- 1769 are duplicates, so only 2476 unique phrases have been written to file. -->
+<!-- These 2476 phrases contain approximately 13320 total words. -->
 
 </pdData>

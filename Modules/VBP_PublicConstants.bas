@@ -141,3 +141,7 @@ Public Const VK_9 As Long = &H39
 'Old PDI files were not Unicode friendly.  When loading PDI files, we use this constant to determine whether
 ' ANSI or Unicode string behavior should be used.
 Public Const PDPACKAGE_UNICODE_FRIENDLY_VERSION As Long = 66
+
+'PD uses some of its own window messages to simplify things like notifications.
+Public Const WM_APP As Long = &H8000&
+Public Const WM_PD_PRIMARY_COLOR_CHANGE As Long = (WM_APP + 16&)
