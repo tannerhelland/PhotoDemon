@@ -812,8 +812,19 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
         .ImageSize = m_dibArrayWidth * iHeight
     End With
     
-    'Create a new DC for use with this DIB
-    m_dibDC = CreateCompatibleDC(0)
+    'If we don't already have a compatible DC, create one now
+    If m_dibDC = 0 Then
+        m_dibDC = CreateCompatibleDC(0)
+        
+    'If we already have a DC, empty it
+    Else
+        
+        If m_dibHandle <> 0 Then
+            SelectObject m_dibDC, m_dibHandleOriginal
+            DeleteObject m_dibHandle
+        End If
+        
+    End If
     
     If m_dibDC <> 0 Then
     
@@ -866,7 +877,7 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     
     'Inside debugging mode, increment a global DIB counter.
     #If DEBUGMODE = 1 Then
-        If (m_dibDC <> 0) Then g_DIBsCreated = g_DIBsCreated + 1
+        If (m_dibHandle <> 0) Then g_DIBsCreated = g_DIBsCreated + 1
     #End If
     
     'Return success contingent on whether we have a DIB pointer or not
@@ -875,29 +886,29 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
 End Function
 
 'This will effectively reset everything related to this DIB, including all image data. Use cautiously!
-Public Sub eraseDIB()
+Public Sub eraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
 
     'If we have image data, clear it out
-    If m_dibDC <> 0 Then
+    If m_dibHandle <> 0 Then
         
-        If m_dibHandle <> 0 Then
-            SelectObject m_dibDC, m_dibHandleOriginal
-            DeleteObject m_dibHandle
-        End If
+        If m_dibDC <> 0 Then SelectObject m_dibDC, m_dibHandleOriginal
+        DeleteObject m_dibHandle
         
-        DeleteDC m_dibDC
-        
-        'Inside debugging mode, decrement a global DIB counter
+        'Inside debug mode, decrement a global DIB counter
         #If DEBUGMODE = 1 Then
             g_DIBsDestroyed = g_DIBsDestroyed + 1
         #End If
-        
+    
     End If
-
+    
+    If alsoReleaseDC And (m_dibDC <> 0) Then
+        DeleteDC m_dibDC
+        m_dibDC = 0
+        m_dibHandleOriginal = 0
+    End If
+        
     'Reset all associated DIB section variables
-    m_dibDC = 0
     m_dibHandle = 0
-    m_dibHandleOriginal = 0
     m_dibBits = 0
 
     'Reset DIB size
@@ -942,7 +953,7 @@ End Sub
 'TERMINATE class
 Private Sub Class_Terminate()
     
-    eraseDIB
+    eraseDIB True
     
     'Release the ICC profile manager
     Set ICCProfile = Nothing
