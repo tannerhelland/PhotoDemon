@@ -1305,7 +1305,9 @@ End Sub
 ' This routine is nice because every form calls it at least once, so I can make centralized changes without having to rewrite
 ' code in every individual form.  This is also where run-time translation occurs.
 Public Sub MakeFormPretty(ByRef tForm As Form, Optional ByVal useDoEvents As Boolean = False)
-
+    
+    If Not g_IsProgramRunning Then Exit Sub
+    
     'Before doing anything else, make sure the form's default cursor is set to an arrow
     tForm.MouseIcon = LoadPicture("")
     tForm.MousePointer = 0

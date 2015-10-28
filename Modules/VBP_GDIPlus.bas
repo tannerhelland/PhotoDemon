@@ -1338,6 +1338,32 @@ Public Function GDIPlusFillCircleToDC(ByVal dstDC As Long, ByVal cx As Single, B
 
 End Function
 
+'Use GDI+ to fill a DC with a color and optional alpha value; while not as efficient as using GDI, this allows us to set the full
+' DIB alpha in a single pass, which is important for 32-bpp DIBs.
+Public Function GDIPlusFillRectToDC(ByRef dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As CompositingMode = CompositingModeSourceOver, Optional ByVal useAA As Boolean = False) As Boolean
+
+    'Create a GDI+ copy of the image and request AA
+    Dim hGraphics As Long
+    GdipCreateFromHDC dstDC, hGraphics
+    
+    If useAA Then GdipSetSmoothingMode hGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode hGraphics, SmoothingModeNone
+    GdipSetCompositingMode hGraphics, dstFillMode
+    
+    'Create a solid fill brush using the specified color
+    Dim hBrush As Long
+    GdipCreateSolidFill fillQuadWithVBRGB(eColor, eTransparency), hBrush
+    
+    'Apply the brush
+    GdipFillRectangle hGraphics, hBrush, x1, y1, xWidth, yHeight
+    
+    'Release all created objects
+    GdipDeleteBrush hBrush
+    GdipDeleteGraphics hGraphics
+    
+    GDIPlusFillRectToDC = True
+
+End Function
+
 'Use GDI+ to render a filled ellipse, with optional antialiasing
 Public Function GDIPlusFillEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True, Optional ByVal eTransparency As Byte = 255) As Boolean
 
