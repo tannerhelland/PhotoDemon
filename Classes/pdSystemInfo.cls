@@ -149,6 +149,18 @@ Private Declare Function CreateToolhelp32Snapshot Lib "kernel32" (ByVal lFlags A
 Private Declare Function ProcessFirst Lib "kernel32" Alias "Process32First" (ByVal hSnapShot As Long, uProcess As PROCESSENTRY32) As Long
 Private Declare Function ProcessNext Lib "kernel32" Alias "Process32Next" (ByVal hSnapShot As Long, uProcess As PROCESSENTRY32) As Long
 
+'Similar APIs for retrieving GDI and user objects
+Public Enum GUI_RESOURCE_FLAGS
+    GdiObjects = 0
+    UserObjects = 1
+    GdiObjectsPeak = 2
+    UserObjectsPeak = 4
+End Enum
+#If False Then
+    Private Const GdiObjects = 0, GdiObjectsPeak = 2, UserObjects = 1, UserObjectsPeak = 4
+#End If
+Private Declare Function GetGuiResources Lib "user32" (ByVal hProcess As Long, ByVal resourceToCheck As GUI_RESOURCE_FLAGS) As Long
+
 'Device caps, or "device capabilities", which can be probed using the constants below
 Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As DeviceChecks) As Long
 
@@ -726,7 +738,7 @@ Public Function GetRAMAvailableToPD() As String
     
 End Function
 
-Public Function GetPhotoDemonProcessID() As Long
+Private Function GetPhotoDemonProcessID() As Long
 
     'If we've already retrieved a handle this session, return it immediately
     If (m_PhotoDemonProcID <> 0) Then
@@ -805,45 +817,75 @@ Public Function GetPhotoDemonProcessID() As Long
 
 End Function
 
+'Return a read-and-query-access handle to PD.  Inside the IDE, this will return a handle to vb6.exe instead.
+' The caller is responsible for freeing the handle when done with it.
+Private Function GetPhotoDemonProcessHandle() As Long
+    
+    Dim procID As Long
+    procID = GetPhotoDemonProcessID()
+    
+    If procID <> 0 Then
+        GetPhotoDemonProcessHandle = OpenProcess(PROCESS_QUERY_INFORMATION Or PROCESS_VM_READ, 0&, procID)
+    Else
+        GetPhotoDemonProcessHandle = 0
+    End If
+    
+End Function
+
 'Function for returning PhotoDemon's current memory usage.  Note that this function may not return valid values
 ' while inside the IDE.
 Public Function GetPhotoDemonMemoryUsage(Optional returnPeakValue As Boolean = False) As Long
     
-    'If we can obtain a process ID for PD (or the IDE, as relevant), use it to obtain a memory reading
-    Dim procID As Long
-    procID = Me.GetPhotoDemonProcessID()
-    
-    If procID <> 0 Then
-            
-        'Open a handle to PD's process
-        Dim procHandle As Long
-        procHandle = OpenProcess(PROCESS_QUERY_INFORMATION Or PROCESS_VM_READ, 0&, procID)
+    'Open a handle to PD's active process
+    Dim procHandle As Long
+    procHandle = GetPhotoDemonProcessHandle()
         
-        If procHandle <> 0 Then
-                    
-            'Attempt to retrieve process memory information
-            Dim procMemInfo As PROCESS_MEMORY_COUNTERS
-            procMemInfo.cb = LenB(procMemInfo)
+    If procHandle <> 0 Then
+                
+        'Attempt to retrieve process memory information
+        Dim procMemInfo As PROCESS_MEMORY_COUNTERS
+        procMemInfo.cb = LenB(procMemInfo)
+        
+        If GetProcessMemoryInfo(procHandle, procMemInfo, procMemInfo.cb) <> 0 Then
             
-            If GetProcessMemoryInfo(procHandle, procMemInfo, procMemInfo.cb) <> 0 Then
-                
-                If returnPeakValue Then
-                    GetPhotoDemonMemoryUsage = procMemInfo.PeakWorkingSetSize / 1024
-                Else
-                    GetPhotoDemonMemoryUsage = procMemInfo.WorkingSetSize / 1024
-                End If
-                
+            If returnPeakValue Then
+                GetPhotoDemonMemoryUsage = procMemInfo.PeakWorkingSetSize / 1024
+            Else
+                GetPhotoDemonMemoryUsage = procMemInfo.WorkingSetSize / 1024
             End If
             
-            'Release our process handle
-            CloseHandle procHandle
-            
-        Else
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  pdSystemInfo.GetPDMemoryUsage() failed to open a handle to PD's process."
-            #End If
         End If
         
+        'Release our process handle
+        CloseHandle procHandle
+        
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  pdSystemInfo.GetPDMemoryUsage() failed to open a handle to PD's process."
+        #End If
+    End If
+    
+End Function
+
+'Return PD's current GDI or User object count.  On Win 7 or later, peak usage can also be returned.
+Public Function GetPhotoDemonResourceUsage(Optional ByVal resourceType As GUI_RESOURCE_FLAGS = GdiObjects) As Long
+    
+    'Open a handle to PD's active process
+    Dim procHandle As Long
+    procHandle = GetPhotoDemonProcessHandle()
+        
+    If procHandle <> 0 Then
+                
+        'Attempt to retrieve resource information
+        GetPhotoDemonResourceUsage = GetGuiResources(procHandle, resourceType)
+        
+        'Release our process handle
+        CloseHandle procHandle
+        
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  pdSystemInfo.GetPDMemoryUsage() failed to open a handle to PD's process."
+        #End If
     End If
     
 End Function

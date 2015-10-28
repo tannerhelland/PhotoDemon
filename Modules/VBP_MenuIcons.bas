@@ -160,7 +160,7 @@ End Sub
 
 'Apply (and if necessary, dynamically load) menu icons to their proper menu entries.
 Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
-
+    
     m_refreshOutsideProgressBar = useDoEvents
 
     'Load every icon from the resource file.  (Yes, there are a LOT of icons!)

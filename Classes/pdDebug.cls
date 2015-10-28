@@ -142,11 +142,11 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
             
             debugHeader = debugHeader & "-- SYSTEM INFORMATION --" & vbCrLf & vbCrLf
             
-            debugHeader = debugHeader & "OS: " & cSysInfo.getOSVersionAsString & vbCrLf
-            debugHeader = debugHeader & "Processor cores (logical): " & cSysInfo.getNumLogicalCores & vbCrLf
-            debugHeader = debugHeader & "Processor features: " & cSysInfo.getProcessorFeatures & vbCrLf
-            debugHeader = debugHeader & "System RAM: " & cSysInfo.getTotalSystemRAM & vbCrLf
-            debugHeader = debugHeader & "Max memory available to PhotoDemon: " & cSysInfo.getRAMAvailableToPD & vbCrLf & vbCrLf
+            debugHeader = debugHeader & "OS: " & cSysInfo.GetOSVersionAsString & vbCrLf
+            debugHeader = debugHeader & "Processor cores (logical): " & cSysInfo.GetNumLogicalCores & vbCrLf
+            debugHeader = debugHeader & "Processor features: " & cSysInfo.GetProcessorFeatures & vbCrLf
+            debugHeader = debugHeader & "System RAM: " & cSysInfo.GetTotalSystemRAM & vbCrLf
+            debugHeader = debugHeader & "Max memory available to PhotoDemon: " & cSysInfo.GetRAMAvailableToPD & vbCrLf & vbCrLf
             
             debugHeader = debugHeader & "-- PROGRAM INFORMATION -- " & vbCrLf & vbCrLf
             
@@ -311,6 +311,11 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
             maxMemUsage = cSysInfo.GetPhotoDemonMemoryUsage(True)
             deltaMem = curMemUsage - m_lastMemCheck
             
+            'While here, also grab GDI and user object counts
+            Dim curGDIObjects As Long, curUserObjects As Long
+            curGDIObjects = cSysInfo.GetPhotoDemonResourceUsage(GdiObjects)
+            curUserObjects = cSysInfo.GetPhotoDemonResourceUsage(UserObjects)
+            
             'Format the strings into something more readable
             If curMemUsage <> 0 Then
             
@@ -320,8 +325,13 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
                 deltaMemString = Format$(deltaMem, "###,###,###,##0") & " K"
                 If deltaMem > 0 Then deltaMemString = "+" & deltaMemString
                 
+                Dim gdiUsageString As String, userUsageString As String
+                gdiUsageString = Format$(curGDIObjects, "###,##0")
+                userUsageString = Format$(curUserObjects, "###,##0")
+                
                 'Ignore the supplied action string, and create our own
-                actionString = "CURRENT: " & curMemUsageString & " | DELTA: " & deltaMemString & " | SESSION MAX: " & maxMemUsageString
+                actionString = "CURRENT: " & curMemUsageString & " | DELTA: " & deltaMemString & " | SESSION MAX: " & maxMemUsageString _
+                                & " | GDI: " & gdiUsageString & " | USER: " & userUsageString
                 
             Else
                 actionString = "WARNING: PD was unable to measure its own memory usage.  Please investigate."
