@@ -128,12 +128,12 @@ Public Function setCaption(ByVal newCaption As String) As Boolean
 End Function
 
 'Simplified wrapper for checking if a caption is active
-Public Function isCaptionActive() As Boolean
+Public Function IsCaptionActive() As Boolean
     
     If (Len(m_CaptionEn) <> 0) And (m_FontSizeCaption <> 0) Then
-        isCaptionActive = True
+        IsCaptionActive = True
     Else
-        isCaptionActive = False
+        IsCaptionActive = False
     End If
     
 End Function
