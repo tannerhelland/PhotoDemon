@@ -17,6 +17,7 @@ Begin VB.UserControl colorSelector
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    MousePointer    =   99  'Custom
    ScaleHeight     =   114
    ScaleMode       =   3  'Pixel
@@ -32,8 +33,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Color Selector custom control
 'Copyright 2013-2015 by Tanner Helland
 'Created: 17/August/13
-'Last updated: 25/October/15
-'Last update: start migrating to the new pdUCSupport class, which wraps a ton of extra functionality for us.
+'Last updated: 28/October/15
+'Last update: finish integration with pdUCSupport, which let us cut a ton of redundant code
 '
 'This thin user control is basically an empty control that when clicked, displays a color selection window.  If a
 ' color is selected (e.g. Cancel is not pressed), it updates its back color to match, and raises a "ColorChanged"
@@ -231,10 +232,9 @@ End Sub
 
 Private Sub UserControl_Initialize()
     
-    Set ucSupport = New pdUCSupport
-    
     'Initialize a master user control support class
-    ucSupport.RegisterControl UserControl.hWnd, UserControl.hDC
+    Set ucSupport = New pdUCSupport
+    ucSupport.RegisterControl UserControl.hWnd
     
     'Request some additional input functionality (custom mouse events)
     ucSupport.RequestExtraFunctionality True
@@ -242,12 +242,12 @@ Private Sub UserControl_Initialize()
     'Enable caption support, so we don't need an attached label
     ucSupport.RequestCaptionSupport
     
-    'This class needs to redraw itself when the primary window color changes.  Register the program-wide color change msg.
+    'This class needs to redraw itself when the primary window color changes.  Request notifications from the program-wide color change wMsg.
     ucSupport.SubclassCustomMessage WM_PD_PRIMARY_COLOR_CHANGE, True
-        
-    'In design mode, initialize a base theming class, so our paint function doesn't fail
+    
+    'In design mode, initialize a base theming class, so our paint functions don't fail
     If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
-        
+    
     'Update the control size parameters at least once
     updateControlLayout
     
@@ -261,7 +261,7 @@ End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    If Not g_IsProgramRunning Then ucSupport.requestRepaint True
+    ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -273,7 +273,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If Not g_IsProgramRunning Then ucSupport.requestRepaint True
+    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -362,10 +362,10 @@ Private Sub redrawBackBuffer()
         Dim defaultBorderColor As Long, activeBorderColor As Long
         
         If Me.Enabled Then
-            defaultBorderColor = g_Themer.getThemeColor(PDTC_GRAY_SHADOW)
-            activeBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+            defaultBorderColor = g_Themer.GetThemeColor(PDTC_GRAY_SHADOW)
+            activeBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
         Else
-            defaultBorderColor = g_Themer.getThemeColor(PDTC_DISABLED)
+            defaultBorderColor = g_Themer.GetThemeColor(PDTC_DISABLED)
             activeBorderColor = defaultBorderColor
         End If
         
@@ -394,7 +394,7 @@ Private Sub redrawBackBuffer()
     End If
     
     'Paint the final result to the screen, as relevant
-    ucSupport.requestRepaint
+    ucSupport.RequestRepaint
     
 End Sub
 
@@ -444,12 +444,14 @@ Public Sub UpdateAgainstCurrentTheme()
         'The support class handles most of this for us
         ucSupport.UpdateAgainstThemeAndLanguage
         
-        'Re-enable color management for the underlying UC
+        'Re-enable color management for the underlying UC.
+        ' TODO: move this to the master support class, so we gain support across all UCs.  (However, this has performance implications;
+        '       I'm waiting until the user has a way to disable it if it crushes UI performance.)
         Color_Management.TurnOnDefaultColorManagement UserControl.hDC, UserControl.hWnd
         
     End If
     
-    'If the changes require us to redraw our control, the support class will let us know via WindowResize().
+    'If theme changes require us to redraw our control, the support class will raise additional paint events for us.
     
 End Sub
 

@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.105</langversion>
+<langversion>6.7.106</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -3063,6 +3063,12 @@ Geef een numerieke waarde.</translation>
 <!-- pdTranslate.cls contains 0 phrases. -->
 
 <!-- END text for pdTranslate.cls-->
+
+<!-- BEGIN text for pdUCSupport.cls -->
+
+<!-- pdUCSupport.cls contains 0 phrases. -->
+
+<!-- END text for pdUCSupport.cls-->
 
 <!-- BEGIN text for pdUndo.cls -->
 

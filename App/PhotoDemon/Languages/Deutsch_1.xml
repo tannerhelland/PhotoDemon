@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.105</langversion>
+<langversion>6.7.106</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -3062,6 +3062,12 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 <!-- pdTranslate.cls contains 0 phrases. -->
 
 <!-- END text for pdTranslate.cls-->
+
+<!-- BEGIN text for pdUCSupport.cls -->
+
+<!-- pdUCSupport.cls contains 0 phrases. -->
+
+<!-- END text for pdUCSupport.cls-->
 
 <!-- BEGIN text for pdUndo.cls -->
 

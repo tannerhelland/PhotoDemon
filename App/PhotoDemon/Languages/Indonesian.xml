@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.47</langversion>
+<langversion>6.6.48</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -3064,6 +3064,12 @@ Please masukkan nilai berangka.</translation>
 <!-- pdTranslate.cls contains 0 phrases. -->
 
 <!-- END text for pdTranslate.cls-->
+
+<!-- BEGIN text for pdUCSupport.cls -->
+
+<!-- pdUCSupport.cls contains 0 phrases. -->
+
+<!-- END text for pdUCSupport.cls-->
 
 <!-- BEGIN text for pdUndo.cls -->
 
