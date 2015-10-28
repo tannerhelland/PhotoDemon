@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (rk)</langname>
-<langversion>6.7.106</langversion>
+<langversion>6.7.107</langversion>
 <langstatus>Nicht abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -3064,6 +3064,12 @@ Geben Sie bitte einen numerischen Wert ein.</translation>
 <!-- pdTranslate.cls contains 0 phrases. -->
 
 <!-- END text for pdTranslate.cls-->
+
+<!-- BEGIN text for pdUCSupport.cls -->
+
+<!-- pdUCSupport.cls contains 0 phrases. -->
+
+<!-- END text for pdUCSupport.cls-->
 
 <!-- BEGIN text for pdUndo.cls -->
 

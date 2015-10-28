@@ -117,7 +117,7 @@ Private m_RedrawRequestCount As Long
 
 'The FIRST THING a user control must do is call this sub.  This prepares the support class, applies basic subclassing,
 ' and initializes a bunch of other support modules.
-Public Sub RegisterControl(ByVal hWnd_Control As Long, ByVal hDC_Control As Long)
+Public Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Control As Long = 0)
     
     m_hWnd = hWnd_Control
     m_hDC = hDC_Control
@@ -128,17 +128,21 @@ Public Sub RegisterControl(ByVal hWnd_Control As Long, ByVal hDC_Control As Long
         If g_IsProgramRunning Then m_Subclass.ssc_Subclass m_hWnd, , 1, Me, True, True
     
         'Some functionality is supplied "by default".  The caller does not have to request this behavior; they get it for free.
-        Set m_ToolTipManager = New pdToolTip            'Themed, Unicode-friendly, multiline tooltips
         
-        Set m_Painter = New pdWindowPainter             'Flicker-free double-buffered window painting
-        If g_IsProgramRunning Then m_Painter.startPainter m_hWnd
+        'Themed, Unicode-compatible, multiline tooltips
+        Set m_ToolTipManager = New pdToolTip
         
-        Set m_FocusDetector = New pdFocusDetector       'Reliable, API-based Got/LostFocus detection
+        'Flicker-free double-buffered window painting.  For IDE support of windowless controls, we have no choice but to subclass.
+        Set m_Painter = New pdWindowPainter
+        If g_IsProgramRunning Then m_Painter.StartPainter m_hWnd
+        
+        'Reliable, API-based Got/LostFocus detection
+        Set m_FocusDetector = New pdFocusDetector
         If g_IsProgramRunning Then m_FocusDetector.startFocusTracking m_hWnd
         
-        Set m_MoveSize = New pdWindowSize               'Reliable, API-based, DPI-aware move/size functionality
+        'Reliable, API-based, DPI-aware move/size functionality
+        Set m_MoveSize = New pdWindowSize
         m_MoveSize.AttachToHWnd m_hWnd, g_IsProgramRunning
-        
         CacheWindowDimensions
         
         'Initialize the backbuffer and sync it to the current control size
@@ -294,7 +298,7 @@ Private Function ResetBackBuffer(Optional ByVal newBackColor As Long = -1&, Opti
             newBackColor = RGB(255, 255, 255)
         Else
             If m_BackColor = -1 Then
-                newBackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                newBackColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
             Else
                 newBackColor = m_BackColor
             End If
@@ -475,7 +479,9 @@ End Sub
 'Rather than bother the caller with paint requests, we handle them internally, by flipping the back buffer to the underlying
 ' control's DC.
 Private Sub m_Painter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
-    BitBlt m_hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
+    Dim targetDC As Long
+    If m_hDC <> 0 Then targetDC = m_hDC Else targetDC = m_Painter.GetPaintStructDC
+    BitBlt targetDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
 End Sub
 
 '***************************************************************************
@@ -563,12 +569,32 @@ Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = Fa
     Else
         'Inside the IDE, subclassing is disabled, so we must paint the control manually
         If Not m_BackBuffer Is Nothing Then
+            
             CacheWindowDimensions
             SyncBackBufferSize True
-            BitBlt m_hDC, 0, 0, m_Width, m_Height, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+            
+            Dim targetDC As Long
+            If m_hDC <> 0 Then targetDC = m_hDC Else targetDC = m_Painter.GetPaintStructDC
+            BitBlt targetDC, 0, 0, m_Width, m_Height, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+            
         End If
     End If
     
+End Sub
+
+'To support IDE painting of windowless controls, we have to jump through some unpleasant hoops.  This sub needs to be called from
+' inside the parent user control's _Paint event, and the destination DC *must be passed* as it only exists for the lifetime of
+' the Paint event (and we don't want to subclass inside the designer).
+Public Sub RequestIDERepaint(ByVal targetDC As Long)
+
+    If (Not g_IsProgramRunning) And (m_hDC = 0) Then
+        If Not m_BackBuffer Is Nothing Then
+            CacheWindowDimensions
+            SyncBackBufferSize True
+            BitBlt targetDC, 0, 0, m_Width, m_Height, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+        End If
+    End If
+
 End Sub
 
 'Whenever the caller user control receives an UpdateAgainstTheme/Language request, it needs to relay that to this support

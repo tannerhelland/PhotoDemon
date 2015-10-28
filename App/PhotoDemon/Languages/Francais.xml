@@ -6,7 +6,7 @@
 
 <langid>fr-FR</langid>
 <langname>français</langname>
-<langversion>6.7.105</langversion>
+<langversion>6.7.106</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -3063,6 +3063,12 @@ S'il vous plaît entrer une valeur numérique.</translation>
 <!-- pdTranslate.cls contains 0 phrases. -->
 
 <!-- END text for pdTranslate.cls-->
+
+<!-- BEGIN text for pdUCSupport.cls -->
+
+<!-- pdUCSupport.cls contains 0 phrases. -->
+
+<!-- END text for pdUCSupport.cls-->
 
 <!-- BEGIN text for pdUndo.cls -->
 
