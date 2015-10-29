@@ -1261,17 +1261,17 @@ Public Sub FitWordwrapLabel(ByRef srcLabel As Label, ByRef srcForm As Form)
     'We will use a pdFont object to help us measure the label in question
     Dim tmpFont As pdFont
     Set tmpFont = New pdFont
-    tmpFont.setFontBold srcLabel.FontBold
-    tmpFont.setFontItalic srcLabel.FontItalic
-    tmpFont.setFontFace srcLabel.fontName
-    tmpFont.setFontSize srcLabel.FontSize
-    tmpFont.createFontObject
-    tmpFont.setTextAlignment srcLabel.Alignment
-    tmpFont.attachToDC srcForm.hDC
+    tmpFont.SetFontBold srcLabel.FontBold
+    tmpFont.SetFontItalic srcLabel.FontItalic
+    tmpFont.SetFontFace srcLabel.fontName
+    tmpFont.SetFontSize srcLabel.FontSize
+    tmpFont.CreateFontObject
+    tmpFont.SetTextAlignment srcLabel.Alignment
+    tmpFont.AttachToDC srcForm.hDC
     
     'Retrieve the height from the pdFont class
     Dim lblHeight As Long
-    lblHeight = tmpFont.getHeightOfWordwrapString(srcLabel.Caption, srcLabel.Width - 1)
+    lblHeight = tmpFont.GetHeightOfWordwrapString(srcLabel.Caption, srcLabel.Width - 1)
     
     Dim curFontSize As Long
     curFontSize = srcLabel.FontSize
@@ -1286,14 +1286,17 @@ Public Sub FitWordwrapLabel(ByRef srcLabel As Label, ByRef srcForm As Form)
         
             curFontSize = curFontSize - 1
             
-            tmpFont.setFontSize curFontSize
-            tmpFont.createFontObject
-            tmpFont.attachToDC srcForm.hDC
-            lblHeight = tmpFont.getHeightOfWordwrapString(srcLabel.Caption, srcLabel.Width)
+            tmpFont.ReleaseFromDC
+            tmpFont.SetFontSize curFontSize
+            tmpFont.CreateFontObject
+            tmpFont.AttachToDC srcForm.hDC
+            lblHeight = tmpFont.GetHeightOfWordwrapString(srcLabel.Caption, srcLabel.Width)
             
         Loop
             
     End If
+    
+    tmpFont.ReleaseFromDC
     
     'When an acceptable size is found, set it and exit.
     srcLabel.FontSize = curFontSize
@@ -1767,11 +1770,11 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
         Case PDRUID_CHANNEL_RED, PDRUID_CHANNEL_GREEN, PDRUID_CHANNEL_BLUE
             
             If dibType = PDRUID_CHANNEL_RED Then
-                paintColor = g_Themer.getThemeColor(PDTC_CHANNEL_RED)
+                paintColor = g_Themer.GetThemeColor(PDTC_CHANNEL_RED)
             ElseIf dibType = PDRUID_CHANNEL_GREEN Then
-                paintColor = g_Themer.getThemeColor(PDTC_CHANNEL_GREEN)
+                paintColor = g_Themer.GetThemeColor(PDTC_CHANNEL_GREEN)
             ElseIf dibType = PDRUID_CHANNEL_BLUE Then
-                paintColor = g_Themer.getThemeColor(PDTC_CHANNEL_BLUE)
+                paintColor = g_Themer.GetThemeColor(PDTC_CHANNEL_BLUE)
             End If
             
             'Draw a colored circle just within the bounds of the DIB
@@ -1784,9 +1787,9 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
             Dim circleSize As Long
             circleSize = (dibSize - dibPadding) * 0.55
             
-            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.getDIBDC, dibSize - circleSize - dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.getThemeColor(PDTC_CHANNEL_BLUE), True, 210
-            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.getDIBDC, dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.getThemeColor(PDTC_CHANNEL_GREEN), True, 210
-            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.getDIBDC, dibSize \ 2 - circleSize \ 2, dibPadding, circleSize, circleSize, g_Themer.getThemeColor(PDTC_CHANNEL_RED), True, 210
+            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.getDIBDC, dibSize - circleSize - dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.GetThemeColor(PDTC_CHANNEL_BLUE), True, 210
+            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.getDIBDC, dibPadding, dibSize - circleSize - dibPadding, circleSize, circleSize, g_Themer.GetThemeColor(PDTC_CHANNEL_GREEN), True, 210
+            GDI_Plus.GDIPlusFillEllipseToDC GetRuntimeUIDIB.getDIBDC, dibSize \ 2 - circleSize \ 2, dibPadding, circleSize, circleSize, g_Themer.GetThemeColor(PDTC_CHANNEL_RED), True, 210
     
     End Select
     

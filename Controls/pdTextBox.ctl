@@ -390,9 +390,9 @@ Public Property Let FontSize(ByVal newSize As Single)
         If Not (curFont Is Nothing) Then
             
             'Recreate the font object
-            curFont.releaseFromDC
-            curFont.setFontSize m_FontSize
-            curFont.createFontObject
+            curFont.ReleaseFromDC
+            curFont.SetFontSize m_FontSize
+            curFont.CreateFontObject
             
             'Edit box sizes are ideally set by the system, at creation time, so we don't have a choice but to recreate the box now
             createEditBox
@@ -527,28 +527,7 @@ End Sub
 
 'After curFont has been created, this function can be used to return the "ideal" height of a string rendered via the current font.
 Private Function getIdealStringHeight() As Long
-
-    Dim attachedDC As Long
-    attachedDC = curFont.getAttachedDC
-    curFont.releaseFromDC
-    
-    'Create a temporary DC
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
-    tmpDIB.createBlank 1, 1, 24
-    
-    'Select the current font into that DC
-    curFont.attachToDC tmpDIB.getDIBDC
-    
-    'Determine a standard string height
-    getIdealStringHeight = curFont.getHeightOfString("abc123")
-    
-    'Remove the font and release our temporary DIB
-    curFont.releaseFromDC
-    curFont.attachToDC attachedDC
-    
-    'tmpDIB will be automatically released
-    
+    getIdealStringHeight = curFont.GetHeightOfString("abc123")
 End Function
 
 'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
@@ -612,7 +591,7 @@ Private Sub UserControl_Initialize()
         
         'Start a flicker-free window painter
         Set cPainter = New pdWindowPainter
-        cPainter.startPainter Me.hWnd
+        cPainter.StartPainter Me.hWnd
                 
     'In design mode, initialize a base theming class, so our paint function doesn't fail
     Else
@@ -737,7 +716,7 @@ Private Sub createEditBoxBrush()
     If m_EditBoxBrush <> 0 Then DeleteObject m_EditBoxBrush
     
     If g_IsProgramRunning Then
-        m_EditBoxBrush = CreateSolidBrush(g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT))
+        m_EditBoxBrush = CreateSolidBrush(g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT))
     Else
         m_EditBoxBrush = CreateSolidBrush(RGB(0, 255, 0))
     End If
@@ -875,30 +854,30 @@ End Sub
 Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
     
     Dim fontRefreshRequired As Boolean
-    fontRefreshRequired = curFont.hasFontBeenCreated
+    fontRefreshRequired = curFont.HasFontBeenCreated
     
     'Update each font parameter in turn.  If one (or more) requires a new font object, the font will be recreated as the final step.
     
     'Font face is always set automatically, to match the current program-wide font
-    If (Len(g_InterfaceFont) <> 0) And (StrComp(curFont.getFontFace, g_InterfaceFont, vbBinaryCompare) <> 0) Then
+    If (Len(g_InterfaceFont) <> 0) And (StrComp(curFont.GetFontFace, g_InterfaceFont, vbBinaryCompare) <> 0) Then
         fontRefreshRequired = True
-        curFont.setFontFace g_InterfaceFont
+        curFont.SetFontFace g_InterfaceFont
     End If
     
     'In the future, I may switch to GDI+ for font rendering, as it supports floating-point font sizes.  In the meantime, we check
     ' parity using an Int() conversion, as GDI only supports integer font sizes.
-    If Int(m_FontSize) <> Int(curFont.getFontSize) Then
+    If Int(m_FontSize) <> Int(curFont.GetFontSize) Then
         fontRefreshRequired = True
-        curFont.setFontSize m_FontSize
+        curFont.SetFontSize m_FontSize
     End If
         
     'Request a new font, if one or more settings have changed
     If fontRefreshRequired Or forceRefresh Then
         
-        curFont.createFontObject
+        curFont.CreateFontObject
         
         'Whenever the font is recreated, we need to reassign it to the text box.  This is done via the WM_SETFONT message.
-        If m_EditBoxHwnd <> 0 Then SendMessage m_EditBoxHwnd, WM_SETFONT, curFont.getFontHandle, IIf(UserControl.Extender.Visible, 1, 0)
+        If m_EditBoxHwnd <> 0 Then SendMessage m_EditBoxHwnd, WM_SETFONT, curFont.GetFontHandle, IIf(UserControl.Extender.Visible, 1, 0)
             
         'Also, the back buffer needs to be rebuilt to reflect the new font metrics
         UpdateControlSize
@@ -963,9 +942,9 @@ Private Sub redrawBackBuffer()
         Dim editBoxBackgroundColor As Long
         
         If Me.Enabled Then
-            editBoxBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+            editBoxBackgroundColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
         Else
-            editBoxBackgroundColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+            editBoxBackgroundColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
         End If
         
         GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, editBoxBackgroundColor, 255
@@ -973,7 +952,7 @@ Private Sub redrawBackBuffer()
         'If the control is disabled, the BackColor property actually becomes relevant (because the edit box will allow the back color
         ' to "show through").  As such, set it now, and note that we can use VB's internal property, because it simply wraps the
         ' matching GDI function(s).
-        UserControl.BackColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+        UserControl.BackColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
         
     Else
         m_BackBuffer.createBlank m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, 24, RGB(255, 255, 255)
@@ -983,16 +962,16 @@ Private Sub redrawBackBuffer()
     Dim editBoxBorderColor As Long
     
     If m_HasFocus Then
-        editBoxBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+        editBoxBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
     Else
-        editBoxBorderColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
+        editBoxBorderColor = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
     End If
     
     'Draw the border
     GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, 0, 0, m_BackBuffer.getDIBWidth - 1, m_BackBuffer.getDIBHeight - 1, editBoxBorderColor
     
     'Paint the buffer to the screen
-    If g_IsProgramRunning Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    If g_IsProgramRunning Then cPainter.RequestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
 
 End Sub
 
@@ -1350,7 +1329,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             
                 'We can set the text color directly, using the API
                 If g_IsProgramRunning Then
-                    SetTextColor wParam, g_Themer.getThemeColor(PDTC_TEXT_EDITBOX)
+                    SetTextColor wParam, g_Themer.GetThemeColor(PDTC_TEXT_EDITBOX)
                 Else
                     SetTextColor wParam, RGB(0, 0, 128)
                 End If

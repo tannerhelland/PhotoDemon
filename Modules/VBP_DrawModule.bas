@@ -884,10 +884,24 @@ Public Sub drawLayerRotateNode(ByRef dstCanvas As pdCanvas, ByRef srcImage As pd
 End Sub
 
 'Need a quick and dirty DC for something?  Call this.  (Just remember to free the DC when you're done!)
-Public Function getTemporaryDC() As Long
-    getTemporaryDC = CreateCompatibleDC(0)
+Public Function GetMemoryDC() As Long
+    
+    GetMemoryDC = CreateCompatibleDC(0)
+    
+    'In debug mode, track how many DCs the program requests
+    #If DEBUGMODE = 1 Then
+        g_DCsCreated = g_DCsCreated + 1
+    #End If
+    
 End Function
 
-Public Sub freeTemporaryDC(ByVal srcDC As Long)
+Public Sub FreeMemoryDC(ByVal srcDC As Long)
+    
     If srcDC <> 0 Then DeleteDC srcDC
+    
+    'In debug mode, track how many DCs the program frees
+    #If DEBUGMODE = 1 Then
+        g_DCsDestroyed = g_DCsDestroyed + 1
+    #End If
+    
 End Sub

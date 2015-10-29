@@ -765,9 +765,9 @@ Public Property Let FontSize(ByVal newSize As Single)
         If Not (curFont Is Nothing) And g_IsProgramRunning Then
             
             'Recreate the font object
-            curFont.releaseFromDC
-            curFont.setFontSize m_FontSize
-            curFont.createFontObject
+            curFont.ReleaseFromDC
+            curFont.SetFontSize m_FontSize
+            curFont.CreateFontObject
             
             'Combo box sizes are set by the system, at creation time, so we don't have a choice but to recreate the box now
             createComboBox
@@ -957,27 +957,12 @@ End Sub
 Private Function getIdealStringHeight() As Long
     
     If g_IsProgramRunning Then
-        
-        'Create a temporary DC
-        Dim tmpDIB As pdDIB
-        Set tmpDIB = New pdDIB
-        tmpDIB.createBlank 1, 1, 24
-        
-        'Select the current font into that DC
-        curFont.attachToDC tmpDIB.getDIBDC
-        
-        'Determine a standard string height
-        getIdealStringHeight = curFont.getHeightOfString("FfAaBbCctbpqjy1234567890")
-        
-        'Remove the font and release our temporary DIB
-        curFont.releaseFromDC
+        getIdealStringHeight = curFont.GetHeightOfString("FfAaBbCctbpqjy1234567890")
         
     'Return a dummy value in the IDE
     Else
         getIdealStringHeight = 20
     End If
-    
-    'tmpDIB will be automatically released
     
 End Function
 
@@ -985,27 +970,12 @@ End Function
 Private Function getIdealStringWidth(ByVal srcString As String) As Long
     
     If g_IsProgramRunning Then
-        
-        'Create a temporary DC
-        Dim tmpDIB As pdDIB
-        Set tmpDIB = New pdDIB
-        tmpDIB.createBlank 1, 1, 24
-        
-        'Select the current font into that DC
-        curFont.attachToDC tmpDIB.getDIBDC
-        
-        'Determine a standard string height
-        getIdealStringWidth = curFont.getWidthOfString(srcString)
-        
-        'Remove the font and release our temporary DIB
-        curFont.releaseFromDC
+        getIdealStringWidth = curFont.GetWidthOfString(srcString)
         
     'Return a dummy value in the IDE
     Else
         getIdealStringWidth = 100
     End If
-    
-    'tmpDIB will be automatically released
     
 End Function
 
@@ -1211,20 +1181,20 @@ End Sub
 Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
     
     Dim fontRefreshRequired As Boolean
-    fontRefreshRequired = curFont.hasFontBeenCreated
+    fontRefreshRequired = curFont.HasFontBeenCreated
     
     'Update each font parameter in turn.  If one (or more) requires a new font object, the font will be recreated as the final step.
     
     'Font face is always set automatically, to match the current program-wide font
-    If (Len(g_InterfaceFont) <> 0) And (StrComp(curFont.getFontFace, g_InterfaceFont, vbTextCompare) <> 0) Then
+    If (Len(g_InterfaceFont) <> 0) And (StrComp(curFont.GetFontFace, g_InterfaceFont, vbTextCompare) <> 0) Then
         fontRefreshRequired = True
-        curFont.setFontFace g_InterfaceFont
+        curFont.SetFontFace g_InterfaceFont
     End If
     
     'See if this size differs from the current one
-    If m_FontSize <> curFont.getFontSize Then
+    If m_FontSize <> curFont.GetFontSize Then
         fontRefreshRequired = True
-        curFont.setFontSize m_FontSize
+        curFont.SetFontSize m_FontSize
     End If
     
     'If a forcible refresh isn't required, but the list has changed since our last refresh, refresh it again now
@@ -1234,7 +1204,7 @@ Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
     If (fontRefreshRequired Or forceRefresh) And g_IsProgramRunning Then
         
         'Create the system font copy
-        curFont.createFontObject
+        curFont.CreateFontObject
         
         'Whenever the font is recreated, we need to reassign it to the combo box.  This is done via the WM_SETFONT message.
         'If m_ComboBoxHwnd <> 0 Then SendMessage m_ComboBoxHwnd, WM_SETFONT, curFont.getFontHandle, IIf(UserControl.Extender.Visible, 1, 0)
@@ -1246,19 +1216,18 @@ Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
         m_LargestWidth = 0
         
         'Create a temporary DIB so we don't have to constantly re-select the font into a DC of its own making.
-        Dim tmpDIB As pdDIB
-        Set tmpDIB = New pdDIB
-        tmpDIB.createBlank 4, 4, 32
-        curFont.attachToDC tmpDIB.getDIBDC
+        Dim tmpDC As Long
+        tmpDC = Drawing.GetMemoryDC()
+        curFont.AttachToDC tmpDC
         
         Dim i As Long, tmpWidth As Long
         For i = 0 To m_listOfFonts.getNumOfStrings - 1
-            tmpWidth = curFont.getWidthOfString(m_listOfFonts.GetString(i))
+            tmpWidth = curFont.GetWidthOfString(m_listOfFonts.GetString(i))
             If tmpWidth > m_LargestWidth Then m_LargestWidth = tmpWidth
         Next i
         
-        curFont.releaseFromDC
-        Set tmpDIB = Nothing
+        curFont.ReleaseFromDC
+        Drawing.FreeMemoryDC tmpDC
         
         'The "best" width of the dropdown is a little sketchy, due to the font previews on the right.  At present,
         ' Use the width of the largest font name (which can only be 32 chars), multiplied by 2 (so an equal amount of size is allotted for
@@ -1419,14 +1388,14 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                 'Prepare a font renderer, then render the text
                 If Not curFont Is Nothing Then
                     
-                    curFont.setFontColor cboTextColor
-                    curFont.attachToDC targetDC
+                    curFont.SetFontColor cboTextColor
+                    curFont.AttachToDC targetDC
                     
                     With cbiCombo.rcItem
-                        curFont.fastRenderTextWithClipping .Left + 4, .Top, (.Right - .Left) - FixDPIFloat(8), (.Bottom - .Top) - 2, tmpString, True
+                        curFont.FastRenderTextWithClipping .Left + 4, .Top, (.Right - .Left) - FixDPIFloat(8), (.Bottom - .Top) - 2, tmpString, True
                     End With
                     
-                    curFont.releaseFromDC
+                    curFont.ReleaseFromDC
                     
                 End If
                 
@@ -1512,8 +1481,8 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
             'Prepare a font renderer, then render the font name using the current system font
             If Not (curFont Is Nothing) Then
                 
-                curFont.setFontColor itemTextColor
-                curFont.attachToDC srcDIS.hDC
+                curFont.SetFontColor itemTextColor
+                curFont.AttachToDC srcDIS.hDC
                 
                 Dim fontNameWidth As Long
                 
@@ -1539,7 +1508,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
                 curFont.DrawTextWrapper StrPtr(tmpString), Len(tmpString), tmpRect, DT_LEFT Or DT_VCENTER Or DT_SINGLELINE Or DT_NOPREFIX
                 
                 'Release the UI font from this DC
-                curFont.releaseFromDC
+                curFont.ReleaseFromDC
                 
                 'Next, we want to draw a font preview.  Instead of using a pdFont object, we handle this manually, as there are unique layout needs
                 ' depending on the associated font.

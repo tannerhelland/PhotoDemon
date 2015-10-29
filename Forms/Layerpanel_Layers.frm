@@ -132,8 +132,8 @@ Begin VB.Form layerpanel_Layers
       Left            =   0
       Top             =   120
       Width           =   675
-      _ExtentX        =   1191
-      _ExtentY        =   423
+      _ExtentX        =   1482
+      _ExtentY        =   503
       Caption         =   "opacity:"
       Layout          =   2
    End
@@ -156,8 +156,8 @@ Begin VB.Form layerpanel_Layers
       Left            =   0
       Top             =   540
       Width           =   540
-      _ExtentX        =   953
-      _ExtentY        =   423
+      _ExtentX        =   1191
+      _ExtentY        =   503
       Caption         =   "blend:"
       Layout          =   2
    End
@@ -167,8 +167,8 @@ Begin VB.Form layerpanel_Layers
       Left            =   0
       Top             =   960
       Width           =   540
-      _ExtentX        =   953
-      _ExtentY        =   423
+      _ExtentX        =   1164
+      _ExtentY        =   503
       Caption         =   "alpha:"
       Layout          =   2
    End
@@ -965,11 +965,11 @@ Private Sub Form_Load()
     
     Set layerNameFont = New pdFont
     With layerNameFont
-        .setFontColor layerNameColor
-        .setFontBold False
-        .setFontSize 10
-        .setTextAlignment vbLeftJustify
-        .createFontObject
+        .SetFontColor layerNameColor
+        .SetFontBold False
+        .SetFontSize 10
+        .SetTextAlignment vbLeftJustify
+        .CreateFontObject
     End With
     
     'Load various interface images from the resource
@@ -1186,13 +1186,13 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
                 DeleteObject hBrush
                 
                 'Also, color the fonts with the matching highlighted text color (otherwise they won't be readable)
-                layerNameFont.setFontColor ConvertSystemColor(vbHighlightText)
+                layerNameFont.SetFontColor ConvertSystemColor(vbHighlightText)
             
             'This layer is not the active layer
             Else
             
                 'Render the layer name in a standard, non-highlighted font
-                layerNameFont.setFontColor layerNameColor
+                layerNameFont.SetFontColor layerNameColor
             
                 'If the current layer is mouse-hovered (but not active), render its border with a highlight
                 If (blockIndex = curLayerHover) Then
@@ -1233,14 +1233,14 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
             ' NOTE: not sold on this behavior, but I'm leaving it for a bit to see how it affects workflow.
             If Not tmpLayerRef.getLayerVisibility Then drawString = g_Language.TranslateMessage("(hidden)") & " " & drawString
             
-            layerNameFont.attachToDC bufferDIB.getDIBDC
+            layerNameFont.AttachToDC bufferDIB.getDIBDC
             
             Dim xTextOffset As Long, yTextOffset As Long, xTextWidth As Long, yTextHeight As Long
             xTextOffset = offsetX + thumbWidth + FixDPI(thumbBorder) * 2
             yTextOffset = offsetY + FixDPI(4)
             xTextWidth = m_BufferWidth - xTextOffset - FixDPI(4)
-            yTextHeight = layerNameFont.getHeightOfString(drawString)
-            layerNameFont.fastRenderTextWithClipping xTextOffset, yTextOffset, xTextWidth, yTextHeight, drawString
+            yTextHeight = layerNameFont.GetHeightOfString(drawString)
+            layerNameFont.FastRenderTextWithClipping xTextOffset, yTextOffset, xTextWidth, yTextHeight, drawString
             
             'Store the resulting text area in the text rect; if the user clicks this, they can modify the layer name
             If (blockIndex = curLayerHover) Then
@@ -1255,7 +1255,8 @@ Private Sub renderLayerBlock(ByVal blockIndex As Long, ByVal offsetX As Long, By
             End If
             
             'A few objects still need to be rendered below the current layer.  They all have the same y-offset, so calculate it in advance.
-            yObjOffset = yTextOffset + layerNameFont.getHeightOfString(drawString) + 6
+            yObjOffset = yTextOffset + layerNameFont.GetHeightOfString(drawString) + 6
+            layerNameFont.ReleaseFromDC
             
             'If this layer is currently hovered, draw some extra controls beneath the layer name.  This keeps the
             ' layer box from getting too cluttered, because we only draw relevant controls for the hovered layer.

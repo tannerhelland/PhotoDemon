@@ -57,7 +57,7 @@ Begin VB.Form FormScreenCapture
       Top             =   1050
       Width           =   5115
       _ExtentX        =   9022
-      _ExtentY        =   582
+      _ExtentY        =   661
       Caption         =   "minimize PhotoDemon prior to capture"
    End
    Begin VB.ListBox lstWindows 
@@ -85,7 +85,7 @@ Begin VB.Form FormScreenCapture
       Top             =   600
       Width           =   5370
       _ExtentX        =   9472
-      _ExtentY        =   582
+      _ExtentY        =   661
       Caption         =   "entire desktop"
       Value           =   -1  'True
    End
@@ -97,7 +97,7 @@ Begin VB.Form FormScreenCapture
       Top             =   1680
       Width           =   5370
       _ExtentX        =   9472
-      _ExtentY        =   582
+      _ExtentY        =   661
       Caption         =   "specific program (listed by window title)"
    End
    Begin PhotoDemon.smartCheckBox chkChrome 
@@ -107,7 +107,7 @@ Begin VB.Form FormScreenCapture
       Top             =   5640
       Width           =   4875
       _ExtentX        =   8599
-      _ExtentY        =   582
+      _ExtentY        =   661
       Caption         =   "include window decorations"
    End
    Begin VB.Label lblTitle 
@@ -290,16 +290,17 @@ Private Sub displayScreenCaptureError()
     
     Dim notifyFont As pdFont
     Set notifyFont = New pdFont
-    notifyFont.setFontFace g_InterfaceFont
-    notifyFont.setFontSize 14
-    notifyFont.setFontColor 0
-    notifyFont.setTextAlignment vbCenter
-    notifyFont.createFontObject
-    notifyFont.attachToDC tmpDIB.getDIBDC
+    notifyFont.SetFontFace g_InterfaceFont
+    notifyFont.SetFontSize 14
+    notifyFont.SetFontColor 0
+    notifyFont.SetTextAlignment vbCenter
+    notifyFont.CreateFontObject
+    notifyFont.AttachToDC tmpDIB.getDIBDC
     
-    notifyFont.fastRenderText picPreview.ScaleWidth / 2, picPreview.ScaleHeight / 2 - notifyFont.getHeightOfString("ABCjqy"), g_Language.TranslateMessage("Unfortunately, that program has exited.")
-    notifyFont.fastRenderText picPreview.ScaleWidth / 2, picPreview.ScaleHeight / 2, g_Language.TranslateMessage("Please select another one.")
+    notifyFont.FastRenderText picPreview.ScaleWidth / 2, picPreview.ScaleHeight / 2 - notifyFont.GetHeightOfString("ABCjqy"), g_Language.TranslateMessage("Unfortunately, that program has exited.")
+    notifyFont.FastRenderText picPreview.ScaleWidth / 2, picPreview.ScaleHeight / 2, g_Language.TranslateMessage("Please select another one.")
     tmpDIB.renderToPictureBox picPreview
+    notifyFont.ReleaseFromDC
     Set tmpDIB = Nothing
 
 End Sub
