@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon DIB Wrapper class (formerly known as "pdLayer")
 'Copyright 2012-2015 by Tanner Helland
 'Created: 29/August/12
-'Last updated: 27/March/15
-'Last update: major refactoring and code clean-up
+'Last updated: 28/October/15
+'Last update: if we've already created a DC for this class, attempt to reuse it instead of deleting it and creating a new one
 '
 'This class is the core of PhotoDemon.  Any image interactions are handled through this lightweight Windows DIB wrapper, and as you
 ' might expect, a number of other capabilities are built into the class.
