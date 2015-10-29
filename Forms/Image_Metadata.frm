@@ -413,18 +413,18 @@ Private Sub Form_Load()
     m_SeparatorColor = vbActiveTitleBar
     
     Set m_TitleFont = New pdFont
-    m_TitleFont.setFontColor RGB(64, 64, 64)
-    m_TitleFont.setFontBold True
-    m_TitleFont.setFontSize 10
-    m_TitleFont.createFontObject
-    m_TitleFont.setTextAlignment vbLeftJustify
+    m_TitleFont.SetFontColor RGB(64, 64, 64)
+    m_TitleFont.SetFontBold True
+    m_TitleFont.SetFontSize 10
+    m_TitleFont.CreateFontObject
+    m_TitleFont.SetTextAlignment vbLeftJustify
     
     Set m_DescriptionFont = New pdFont
-    m_DescriptionFont.setFontColor RGB(92, 92, 92)
-    m_DescriptionFont.setFontBold False
-    m_DescriptionFont.setFontSize 10
-    m_DescriptionFont.createFontObject
-    m_DescriptionFont.setTextAlignment vbLeftJustify
+    m_DescriptionFont.SetFontColor RGB(92, 92, 92)
+    m_DescriptionFont.SetFontBold False
+    m_DescriptionFont.SetFontSize 10
+    m_DescriptionFont.CreateFontObject
+    m_DescriptionFont.SetTextAlignment vbLeftJustify
     
     'Make the invisible buffer's font match the rest of PD
     picBuffer.fontName = g_InterfaceFont
@@ -597,11 +597,11 @@ Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long,
         End If
     
         'Start with the simplest field: the tag title (readable form)
-        m_TitleFont.attachToDC m_BackBuffer.getDIBDC
-        m_TitleFont.fastRenderText offsetX + 0, offsetY + 0, numericalPrefix & drawString
+        m_TitleFont.AttachToDC m_BackBuffer.getDIBDC
+        m_TitleFont.FastRenderText offsetX + 0, offsetY + 0, numericalPrefix & drawString
                 
         'Below the tag title, add the human-friendly description
-        mHeight = m_TitleFont.getHeightOfString(drawString) + linePadding
+        mHeight = m_TitleFont.GetHeightOfString(drawString) + linePadding
         
         If (btsTechnical(1).ListIndex = 0) Then
             drawString = thisTag.Value
@@ -613,8 +613,10 @@ Private Sub renderMDBlock(ByVal blockCategory As Long, ByVal blockIndex As Long,
             End If
         End If
         
-        m_DescriptionFont.attachToDC m_BackBuffer.getDIBDC
-        m_DescriptionFont.fastRenderTextWithClipping offsetX + m_TitleFont.getWidthOfString(numericalPrefix), offsetY + mHeight, m_BackBuffer.getDIBWidth - offsetX - FixDPI(17), m_DescriptionFont.getHeightOfString(drawString), drawString
+        m_TitleFont.ReleaseFromDC
+        m_DescriptionFont.AttachToDC m_BackBuffer.getDIBDC
+        m_DescriptionFont.FastRenderTextWithClipping offsetX + m_TitleFont.GetWidthOfString(numericalPrefix), offsetY + mHeight, m_BackBuffer.getDIBWidth - offsetX - FixDPI(17), m_DescriptionFont.GetHeightOfString(drawString), drawString
+        m_DescriptionFont.ReleaseFromDC
         
         'Draw a divider line near the bottom of the metadata block
         Dim lineY As Long

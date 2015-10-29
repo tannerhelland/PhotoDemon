@@ -344,6 +344,7 @@ Friend Sub DrawCaptionCentered(ByVal dstDC As Long, ByRef dstRect As RECT, Optio
     End If
     
     tmpFont.ReleaseFromDC
+    Set tmpFont = Nothing
     
 End Sub
 

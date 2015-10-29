@@ -271,21 +271,19 @@ Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObj
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 
 'Various non-font-specific WAPI functions helpful for font assembly
-Private Const LOGPIXELSX = 88
+Private Const LogPixelsX = 88
 Private Const LOGPIXELSY = 90
 Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
 Private Declare Function MulDiv Lib "kernel32" (ByVal nNumber As Long, ByVal nNumerator As Long, ByVal nDenominator As Long) As Long
 
-'Some system-specific font settings are cached at initialization time, and unchanged for the life of the program
-Private curLogPixelsX As Long, curLogPixelsY As Long
+'Some system-specific font settings are cached at initialization time, and unchanged for the life of the program.
+' (TODO: watch for relevant window messages on Win 8.1+ that may change these.)
+Private m_LogPixelsX As Long, m_LogPixelsY As Long
 
 'Internal font caches.  PD uses these to populate things like font selection dropdowns.
 Private m_PDFontCache As pdStringStack
 Private Const INITIAL_PDFONTCACHE_SIZE As Long = 256
 Private m_LastFontAdded As String
-
-'Temporary DIB (more importantly - DC) for testing and/or applying font settings
-Private m_TestDIB As pdDIB
 
 'Some external functions retrieve specific data from a TextMetrics struct.  We cache our own struct so we can use it
 ' on such function calls.
@@ -372,7 +370,7 @@ End Function
 
 'Want direct access to a UI font instance?  Get one here.  Note that only size, bold, italic, and underline are currently matched,
 ' as PD doesn't use strikethrough fonts anywhere.
-Public Function GetMatchingUIFont(ByVal fontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As pdFont
+Public Function GetMatchingUIFont(ByVal FontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As pdFont
     
     'Inside the designer, we need to make sure the font collection exists
     If Not g_IsProgramRunning Then
@@ -381,7 +379,7 @@ Public Function GetMatchingUIFont(ByVal fontSize As Single, Optional ByVal isBol
     
     'Add this font size+style combination to the collection, as necessary
     Dim fontIndex As Long
-    fontIndex = m_ProgramFontCollection.AddFontToCache(g_InterfaceFont, fontSize, isBold, isItalic, isUnderline)
+    fontIndex = m_ProgramFontCollection.AddFontToCache(g_InterfaceFont, FontSize, isBold, isItalic, isUnderline)
     
     'Return the handle of the newly created (and/or previously cached) pdFont object
     Set GetMatchingUIFont = m_ProgramFontCollection.GetFontObjectByPosition(fontIndex)
@@ -402,13 +400,8 @@ Public Function BuildFontCaches() As Long
     Set m_PDFontCache = New pdStringStack
     Set m_Unicode = New pdUnicode
     
-    'Prep a tiny internal DIB for testing font settings
-    Set m_TestDIB = New pdDIB
-    m_TestDIB.createBlank 4, 4, 32, 0, 0
-    
-    'Use the DIB to retrieve system-specific font conversion values
-    curLogPixelsX = GetDeviceCaps(m_TestDIB.getDIBDC, LOGPIXELSX)
-    curLogPixelsY = GetDeviceCaps(m_TestDIB.getDIBDC, LOGPIXELSY)
+    'Retrieve the current system LOGFONT conversion values
+    UpdateLogFontValues
     
     'Next, prep a full font list for the advanced typography tool.
     '(We won't know the full number of available fonts until the Enum function finishes, so prep an extra-large buffer in advance.)
@@ -431,6 +424,16 @@ Public Function BuildFontCaches() As Long
     InitProgramFontCollection
     
 End Function
+
+'Converting between normal font sizes and GDI font sizes is convoluted, and it relies on a system-specific LOGPIXELSY value.
+' We must cache that value before requesting fonts from the system.
+Private Sub UpdateLogFontValues()
+    Dim tmpDC As Long
+    tmpDC = Drawing.GetMemoryDC()
+    m_LogPixelsX = GetDeviceCaps(tmpDC, LogPixelsX)
+    m_LogPixelsY = GetDeviceCaps(tmpDC, LOGPIXELSY)
+    Drawing.FreeMemoryDC tmpDC
+End Sub
 
 'Prep the program font cache.  Individual functions may need to call this inside the designer, because PD's normal run-time
 ' initialization steps won't have fired.
@@ -457,8 +460,11 @@ Private Function GetAllAvailableFonts() As Boolean
     Dim tmpLogFont As LOGFONTW
     tmpLogFont.lfCharSet = DEFAULT_CHARSET
     
-    'Enumerate font families using our temporary DIB DC
-    EnumFontFamiliesEx m_TestDIB.getDIBDC, tmpLogFont, AddressOf EnumFontFamExProc, ByVal 0, 0
+    'Enumerate font families using a temporary DC
+    Dim tmpDC As Long
+    tmpDC = Drawing.GetMemoryDC()
+    EnumFontFamiliesEx tmpDC, tmpLogFont, AddressOf EnumFontFamExProc, ByVal 0, 0
+    Drawing.FreeMemoryDC tmpDC
     
     'If at least one font was found, return TRUE
     GetAllAvailableFonts = CBool(m_PDFontCache.getNumOfStrings > 0)
@@ -586,7 +592,7 @@ Public Sub FillLogFontW_Basic(ByRef dstLogFontW As LOGFONTW, ByRef srcFontFace A
 End Sub
 
 'Fill a LOGFONTW struct with a matching PD font size (typically in pixels, but points are also supported)
-Public Sub FillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal fontSize As Single, ByVal fontMeasurementUnit As pdFontUnit)
+Public Sub FillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal FontSize As Single, ByVal fontMeasurementUnit As pdFontUnit)
 
     With dstLogFontW
         
@@ -597,14 +603,14 @@ Public Sub FillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal fontSize As Si
             Case pdfu_Pixel
                 
                 'Convert font size to points
-                fontSize = fontSize * 0.75      '(72 / 96, technically, where 96 is the current screen DPI)
+                FontSize = FontSize * 0.75      '(72 / 96, technically, where 96 is the current screen DPI)
                 
                 'Use the standard point-based formula
-                .lfHeight = -1 * Internal_MulDiv(fontSize, curLogPixelsY, 72)
+                .lfHeight = Font_Management.ConvertToGDIFontSize(FontSize)
                 
             'Points are converted using a standard Windows formula; see https://msdn.microsoft.com/en-us/library/dd145037%28v=vs.85%29.aspx
             Case pdfu_Point
-                .lfHeight = -1 * Internal_MulDiv(fontSize, curLogPixelsY, 72)
+                .lfHeight = Font_Management.ConvertToGDIFontSize(FontSize)
         
         End Select
         
@@ -614,6 +620,11 @@ Public Sub FillLogFontW_Size(ByRef dstLogFontW As LOGFONTW, ByVal fontSize As Si
     End With
     
 End Sub
+
+Public Function ConvertToGDIFontSize(ByVal srcFontSize As Single) As Long
+    If m_LogPixelsY = 0 Then UpdateLogFontValues
+    ConvertToGDIFontSize = -1 * Internal_MulDiv(srcFontSize, m_LogPixelsY, 72#)
+End Function
 
 'It really isn't necessary to rely on the system MulDiv values for the sizes used for fonts.  By using CLng, we can mimic
 ' MulDiv's rounding behavior as well.
@@ -699,9 +710,9 @@ End Function
 
 'Given a filled LOGFONTW struct (hopefully filled by the fillLogFontW_* functions above!), attempt to create an actual font object.
 ' Returns TRUE if successful; FALSE otherwise.
-Public Function CreateGDIFont(ByRef srcLogFont As LOGFONTW, ByRef dstFontHandle As Long) As Boolean
+Public Function createGDIFont(ByRef srcLogFont As LOGFONTW, ByRef dstFontHandle As Long) As Boolean
     dstFontHandle = CreateFontIndirect(srcLogFont)
-    CreateGDIFont = CBool(dstFontHandle <> 0)
+    createGDIFont = CBool(dstFontHandle <> 0)
 End Function
 
 'Delete a GDI font; returns TRUE if successful
@@ -726,15 +737,17 @@ Public Function GetABCWidthOfGlyph(ByVal srcFontHandle As Long, ByVal charCodeIn
     'If the user only has a bare font handle, we have to handle the DC step ourselves, unfortunately
     Else
         
-        'Temporarily select the font into our local DC
-        Dim origFont As Long
-        origFont = SelectObject(m_TestDIB.getDIBDC, srcFontHandle)
+        'Temporarily select the font into a local DC
+        Dim origFont As Long, tmpDC As Long
+        tmpDC = Drawing.GetMemoryDC()
+        origFont = SelectObject(tmpDC, srcFontHandle)
         
         'Retrieve the character positioning values
-        gdiReturn = GetCharABCWidthsFloat(m_TestDIB.getDIBDC, charCodeInQuestion, charCodeInQuestion, VarPtr(dstABCFloat))
+        gdiReturn = GetCharABCWidthsFloat(tmpDC, charCodeInQuestion, charCodeInQuestion, VarPtr(dstABCFloat))
         
         'Release the font
-        SelectObject m_TestDIB.getDIBDC, origFont
+        SelectObject tmpDC, origFont
+        Drawing.FreeMemoryDC tmpDC
     
     End If
     
@@ -749,10 +762,10 @@ Public Function QuickCreateFontAndDC(ByRef srcFontName As String, ByRef dstFont 
     
     Dim tmpLogFont As LOGFONTW
     FillLogFontW_Basic tmpLogFont, srcFontName, False, False, False, False
-    If CreateGDIFont(tmpLogFont, dstFont) Then
+    If createGDIFont(tmpLogFont, dstFont) Then
         
         'Create a temporary DC and select the font into it
-        dstDC = Drawing.getTemporaryDC()
+        dstDC = Drawing.GetMemoryDC()
         SelectObject dstDC, dstFont
         
         QuickCreateFontAndDC = True
@@ -770,6 +783,6 @@ Public Sub QuickDeleteFontAndDC(ByRef srcFont As Long, ByRef srcDC As Long)
     
     'Kill both the font and the DC
     DeleteObject srcFont
-    Drawing.freeTemporaryDC srcDC
+    Drawing.FreeMemoryDC srcDC
     
 End Sub

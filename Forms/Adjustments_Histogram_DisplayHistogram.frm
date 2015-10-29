@@ -42,7 +42,7 @@ Begin VB.Form FormHistogram
       Top             =   6000
       Width           =   2985
       _ExtentX        =   5265
-      _ExtentY        =   582
+      _ExtentY        =   661
       Caption         =   "use logarithmic values"
    End
    Begin PhotoDemon.smartCheckBox chkSmooth 
@@ -52,7 +52,7 @@ Begin VB.Form FormHistogram
       Top             =   5040
       Width           =   2985
       _ExtentX        =   5265
-      _ExtentY        =   582
+      _ExtentY        =   661
       Caption         =   "use smooth lines"
    End
    Begin PhotoDemon.smartCheckBox chkChannel 
@@ -63,7 +63,7 @@ Begin VB.Form FormHistogram
       Top             =   5040
       Width           =   2115
       _ExtentX        =   3731
-      _ExtentY        =   582
+      _ExtentY        =   661
       Caption         =   "red"
    End
    Begin VB.PictureBox picH 
@@ -121,7 +121,7 @@ Begin VB.Form FormHistogram
       Top             =   5520
       Width           =   2115
       _ExtentX        =   3731
-      _ExtentY        =   582
+      _ExtentY        =   661
       Caption         =   "green"
    End
    Begin PhotoDemon.smartCheckBox chkChannel 
@@ -132,7 +132,7 @@ Begin VB.Form FormHistogram
       Top             =   6000
       Width           =   2115
       _ExtentX        =   3731
-      _ExtentY        =   582
+      _ExtentY        =   661
       Caption         =   "blue"
    End
    Begin PhotoDemon.smartCheckBox chkChannel 
@@ -143,7 +143,7 @@ Begin VB.Form FormHistogram
       Top             =   6480
       Width           =   2115
       _ExtentX        =   3731
-      _ExtentY        =   582
+      _ExtentY        =   661
       Caption         =   "luminance"
    End
    Begin PhotoDemon.smartCheckBox chkFillCurve 
@@ -153,7 +153,7 @@ Begin VB.Form FormHistogram
       Top             =   5520
       Width           =   2985
       _ExtentX        =   5265
-      _ExtentY        =   582
+      _ExtentY        =   661
       Caption         =   "fill histogram curves"
    End
    Begin VB.Label lblVisibleChannels 
@@ -615,7 +615,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply visual themes and translations
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Cache the translation for several dynamic strings; this is more efficient than retranslating them over and over
     strTotalPixels = g_Language.TranslateMessage("total pixels") & ": "
@@ -630,7 +630,7 @@ Private Sub Form_Activate()
     ' Also, align the value labels with their (potentially translated) corresponding title labels
     Dim i As Long
     For i = 0 To lblValue.Count - 1
-        lblValue(i).Left = lblValueTitle(i).Left + lblValueTitle(i).Width + fixDPI(8)
+        lblValue(i).Left = lblValueTitle(i).Left + lblValueTitle(i).Width + FixDPI(8)
         lblValue(i) = ""
     Next i
     
@@ -809,9 +809,9 @@ End Sub
 'If the form is resized, adjust all the controls to match
 Private Sub Form_Resize()
 
-    picH.Width = Me.ScaleWidth - picH.Left - fixDPI(8)
-    picGradient.Width = Me.ScaleWidth - picGradient.Left - fixDPI(8)
-    cmdOK.Left = Me.ScaleWidth - cmdOK.Width - fixDPI(8)
+    picH.Width = Me.ScaleWidth - picH.Left - FixDPI(8)
+    picGradient.Width = Me.ScaleWidth - picGradient.Left - FixDPI(8)
+    cmdOK.Left = Me.ScaleWidth - cmdOK.Width - FixDPI(8)
     
     'Now draw a little gradient below the histogram window, to help orient the user
     DrawHistogramGradient picGradient, RGB(0, 0, 0), RGB(255, 255, 255)
@@ -1041,16 +1041,18 @@ Public Sub TallyHistogramValues()
     
     Dim notifyFont As pdFont
     Set notifyFont = New pdFont
-    notifyFont.setFontFace g_InterfaceFont
-    notifyFont.setFontSize 14
-    notifyFont.setFontColor 0
-    notifyFont.setFontBold True
-    notifyFont.setTextAlignment vbCenter
-    notifyFont.createFontObject
-    notifyFont.attachToDC tmpDIB.getDIBDC
+    notifyFont.SetFontFace g_InterfaceFont
+    notifyFont.SetFontSize 14
+    notifyFont.SetFontColor 0
+    notifyFont.SetFontBold True
+    notifyFont.SetTextAlignment vbCenter
+    notifyFont.CreateFontObject
+    notifyFont.AttachToDC tmpDIB.getDIBDC
     
-    notifyFont.fastRenderText picH.ScaleWidth / 2, picH.ScaleHeight / 2, g_Language.TranslateMessage("Please wait while the histogram is updated...")
+    notifyFont.FastRenderText picH.ScaleWidth / 2, picH.ScaleHeight / 2, g_Language.TranslateMessage("Please wait while the histogram is updated...")
     tmpDIB.renderToPictureBox picH
+    
+    notifyFont.ReleaseFromDC
     Set tmpDIB = Nothing
 
     Message "Updating histogram..."

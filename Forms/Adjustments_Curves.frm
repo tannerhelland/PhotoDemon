@@ -758,11 +758,11 @@ Private Sub Form_Load()
     Set mouseCoordFont = New pdFont
     
     With mouseCoordFont
-        .setFontColor RGB(25, 25, 25)
-        .setFontBold True
-        .setFontSize 10
-        .createFontObject
-        .setTextAlignment vbLeftJustify
+        .SetFontColor RGB(25, 25, 25)
+        .SetFontBold True
+        .SetFontSize 10
+        .CreateFontObject
+        .SetTextAlignment vbLeftJustify
     End With
     
     'Make the RGB button pressed by default; this will be overridden by the user's last-used settings, if any exist
@@ -942,8 +942,8 @@ skipHistogramRender:
         
         'Find the larger of the two strings
         Dim maxStringWidth As Long
-        maxStringWidth = mouseCoordFont.getWidthOfString(coordStringI)
-        If mouseCoordFont.getWidthOfString(coordStringO) > maxStringWidth Then maxStringWidth = mouseCoordFont.getWidthOfString(coordStringO)
+        maxStringWidth = mouseCoordFont.GetWidthOfString(coordStringI)
+        If mouseCoordFont.GetWidthOfString(coordStringO) > maxStringWidth Then maxStringWidth = mouseCoordFont.GetWidthOfString(coordStringO)
         
         'Concatenate the input and output strings
         coordString = coordStringI & vbCrLf & coordStringO
@@ -952,7 +952,7 @@ skipHistogramRender:
         ' to the larger of the original two strings)
         Dim coordStringWidth As Long, coordStringHeight As Long
         coordStringWidth = maxStringWidth
-        coordStringHeight = mouseCoordFont.getHeightOfWordwrapString(coordString, coordStringWidth + 1)
+        coordStringHeight = mouseCoordFont.GetHeightOfWordwrapString(coordString, coordStringWidth + 1)
         
         'Create a new DIB at the size of the string (with a slight bit of padding on all sides)
         Dim coordBoxWidth As Long, coordBoxHeight As Long
@@ -970,8 +970,9 @@ skipHistogramRender:
         End If
                 
         'Render the coordinate string onto the temporary DIB
-        mouseCoordFont.attachToDC mouseCoordDIB.getDIBDC
-        mouseCoordFont.fastRenderMultilineText FixDPI(4), FixDPI(2), coordString
+        mouseCoordFont.AttachToDC mouseCoordDIB.getDIBDC
+        mouseCoordFont.FastRenderMultilineText FixDPI(4), FixDPI(2), coordString
+        mouseCoordFont.ReleaseFromDC
         
         'Render a 1px border around the coordinate overlay
         GDIPlusDrawRectOutlineToDC mouseCoordDIB.getDIBDC, 0, 0, mouseCoordDIB.getDIBWidth - 1, mouseCoordDIB.getDIBHeight - 1, RGB(25, 25, 25)

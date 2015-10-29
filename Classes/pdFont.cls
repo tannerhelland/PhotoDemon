@@ -57,9 +57,6 @@ Private Type LOGFONT
     lfFaceName As String * 32
 End Type
 
-Private Const LOGPIXELSX = 88
-Private Const LOGPIXELSY = 90
-
 'Previously we only suppored an ANSI charset, but now we want to default to the system value
 Private Const ANSI_CHARSET = 0
 Private Const DEFAULT_CHARSET = 1
@@ -144,13 +141,9 @@ Private Const DT_RTLREADING = &H20000
 Private Const DT_WORD_ELLIPSIS = &H40000
 
 Private Declare Function CreateFontIndirect Lib "gdi32" Alias "CreateFontIndirectA" (ByRef lpLogFont As LOGFONT) As Long
-
-Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
-Private Declare Function MulDiv Lib "kernel32" (ByVal nNumber As Long, ByVal nNumerator As Long, ByVal nDenominator As Long) As Long
-Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 Private Declare Function WindowFromDC Lib "user32" (ByVal hDC As Long) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
+Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
 
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
@@ -158,12 +151,9 @@ Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Lon
 Private Declare Function SetTextColor Lib "gdi32" (ByVal hDC As Long, ByVal crColor As Long) As Long
 Private Declare Function SetTextAlign Lib "gdi32" (ByVal hDC As Long, ByVal wFlags As Long) As Long
 
+Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, ByRef lpRect As RECT, ByVal wFormat As Long) As Long
 Private Declare Function ExtTextOutNoRect Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByVal fakeRectPointer As Long, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
 Private Declare Function ExtTextOut Lib "gdi32" Alias "ExtTextOutW" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal wOptions As Long, ByRef lpRect As RECT, ByVal lpStrPointer As Long, ByVal nCount As Long, ByRef lpDx As Long) As Long
-
-Private Declare Function SetBkMode Lib "gdi32" (ByVal hDC As Long, ByVal nBkMode As Long) As Long
-
-Private Declare Function DrawText Lib "user32" Alias "DrawTextW" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, ByRef lpRect As RECT, ByVal wFormat As Long) As Long
 
 'Used to measure the expected length of a string (single line only; line breaks do not work)
 Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpStrPointer As Long, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
@@ -192,10 +182,6 @@ Private m_origFontFace As String
 Private m_origFontSize As Single
 Private m_origFontBold As Boolean
 Private m_origFontItalic As Boolean
-
-'Sometimes, the caller wants us to measure fonts for them.  GDI requires that a font be selected into a DC prior to calculating
-' specific metrics, so if the caller doesn't hand us a DC of their own, we'll use a temporary internal one.
-Private m_TemporaryDC As Long
 
 'If the user wants to call DrawText manually, they can use this function.  Note that hDC is *not* part of the call, as it's assumed
 ' the caller has already selected this object into the relevant DC!
@@ -374,6 +360,12 @@ End Sub
 ' necessary to keep speed high.  (Also, note the DC so we can do fast font rendering later.)
 Public Sub AttachToDC(ByVal targetDC As Long)
     
+    #If DEBUGMODE = 1 Then
+        If targetDC = 0 Then Debug.Print "WARNING!  pdFont.AttachToDC() was called with targetDC = 0.  Fix this!"
+        If curDC <> 0 Then Debug.Print "WARNING!  pdFont.AttachToDC() was called, but this font is already selected into a DC!"
+        If targetDC = curDC Then Debug.Print "WARNING!  pdFont.AttachToDC() was called, but the specified DC is already the current DC!"
+    #End If
+    
     'Set the font
     If targetDC <> curDC Then
         oldFont = SelectObject(targetDC, curFont)
@@ -401,11 +393,12 @@ End Sub
 Public Function CreateFontObject() As Boolean
 
     'If a font has already been created, delete it now
-    DeleteCurrentFont
+    If curDC <> 0 Then ReleaseFromDC
+    If curFont <> 0 Then DeleteCurrentFont
     
     curFont = CreateFontIndirect(currentLogFont)
     
-    If curFont = 0 Then CreateFontObject = False Else CreateFontObject = True
+    CreateFontObject = CBool(curFont <> 0)
     
     'Inside debug mode, increase a global font counter.  This is extremely helpful for finding font leaks
     #If DEBUGMODE = 1 Then
@@ -460,18 +453,8 @@ End Function
 
 Public Sub SetFontSize(ByVal newFontSize As Single)
     m_origFontSize = newFontSize
-    currentLogFont.lfHeight = ConvertFontSize(newFontSize)
+    currentLogFont.lfHeight = Font_Management.ConvertToGDIFontSize(newFontSize)
 End Sub
-
-Private Function ConvertFontSize(ByVal sizeInPoints As Single) As Long
-    ConvertFontSize = -1 * Internal_MulDiv(sizeInPoints, curLogPixelsY, 72)
-End Function
-
-'It really isn't necessary to rely on the system MulDiv values for the sizes used for fonts.  By using CLng, we can mimic
-' MulDiv's rounding behavior as well.
-Private Function Internal_MulDiv(ByVal srcNumber As Single, ByVal srcNumerator As Single, ByVal srcDenominator As Single) As Long
-    Internal_MulDiv = CLng((srcNumber * srcNumerator) / srcDenominator)
-End Function
 
 Public Sub SetFontStrikeout(ByVal newStrikeout As Boolean)
     currentLogFont.lfStrikeOut = -1 * newStrikeout
@@ -508,15 +491,25 @@ Public Function GetWidthOfString(ByVal srcString As String) As Long
     
     Dim txtSize As POINTAPI
     
-    'If we're not currently selected into a DC, silently plug in our temporary DC
-    If curDC = 0 Then AttachToDC m_TemporaryDC
+    'If we're not currently selected into a DC, silently plug in a temporary DC
+    Dim targetDC As Long, tmpDCActive As Boolean
+    If curDC = 0 Then
+        tmpDCActive = True
+        targetDC = Drawing.GetMemoryDC()
+        AttachToDC targetDC
+    Else
+        targetDC = curDC
+    End If
     
     'Retrieve the string's dimensions
-    GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
+    GetTextExtentPoint32 targetDC, StrPtr(srcString), Len(srcString), txtSize
     GetWidthOfString = txtSize.x
     
     'Release the temporary DC, as necessary
-    If curDC = m_TemporaryDC Then ReleaseFromDC
+    If tmpDCActive Then
+        ReleaseFromDC
+        Drawing.FreeMemoryDC targetDC
+    End If
     
 End Function
 
@@ -526,15 +519,25 @@ Public Function GetHeightOfString(ByVal srcString As String) As Long
     
     Dim txtSize As POINTAPI
     
-    'If we're not currently selected into a DC, silently plug in our temporary DC
-    If curDC = 0 Then AttachToDC m_TemporaryDC
+    'If we're not currently selected into a DC, silently plug in a temporary DC
+    Dim targetDC As Long, tmpDCActive As Boolean
+    If curDC = 0 Then
+        tmpDCActive = True
+        targetDC = Drawing.GetMemoryDC()
+        AttachToDC targetDC
+    Else
+        targetDC = curDC
+    End If
     
     'Retrieve the string's dimensions
-    GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
+    GetTextExtentPoint32 targetDC, StrPtr(srcString), Len(srcString), txtSize
     GetHeightOfString = txtSize.y
     
     'Release the temporary DC, as necessary
-    If curDC = m_TemporaryDC Then ReleaseFromDC
+    If tmpDCActive Then
+        ReleaseFromDC
+        Drawing.FreeMemoryDC targetDC
+    End If
     
 End Function
 
@@ -546,31 +549,35 @@ Public Function GetHeightOfWordwrapString(ByVal srcString As String, ByVal strWi
     tmpRect.Bottom = 0
     tmpRect.Right = strWidth - 1
     
-    'As a convenience to the caller, we'll supply a temporary DC if one isn't set.
-    If curDC = 0 Then AttachToDC m_TemporaryDC
+    'If we're not currently selected into a DC, silently plug in a temporary DC
+    Dim targetDC As Long, tmpDCActive As Boolean
+    If curDC = 0 Then
+        tmpDCActive = True
+        targetDC = Drawing.GetMemoryDC()
+        AttachToDC targetDC
+    Else
+        targetDC = curDC
+    End If
     
     'Retrieve the string's dimensions
-    DrawText curDC, StrPtr(srcString), Len(srcString), tmpRect, DT_LEFT Or DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_NOPREFIX Or DT_TOP
+    DrawText targetDC, StrPtr(srcString), Len(srcString), tmpRect, DT_LEFT Or DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_NOPREFIX Or DT_TOP
     GetHeightOfWordwrapString = tmpRect.Bottom
     
-    'If we used our temporary DC for testing, free it now
-    If curDC = m_TemporaryDC Then ReleaseFromDC
+    'Release the temporary DC, as necessary
+    If tmpDCActive Then
+        ReleaseFromDC
+        Drawing.FreeMemoryDC targetDC
+    End If
 
 End Function
 
 Private Sub Class_Initialize()
     
-    'Determine the proper font point-to-em conversion based on the current screen DPI
-    Dim TmpDC As Long
-    TmpDC = GetDC(0)
-    curLogPixelsY = GetDeviceCaps(TmpDC, LOGPIXELSY)
-    ReleaseDC 0, TmpDC
-    
     'When the class is initialized, set up a default PhotoDemon font.  Face is automatically set per
     ' the current OS, so external functions do not need to set this manually.
     With currentLogFont
     
-        .lfHeight = ConvertFontSize(11)
+        .lfHeight = Font_Management.ConvertToGDIFontSize(11#)
         .lfWidth = 0        'This will automatically set the width based on the height
         
         .lfEscapement = 0   'Used for rotation; not utilized at present
@@ -610,19 +617,14 @@ Private Sub Class_Initialize()
     
     fontColor = 0
     curTextAlignment = TA_LEFT
-    
-    'Also, create a temporary DC we can use for metrics
-    m_TemporaryDC = Drawing.getTemporaryDC()
-    
+        
 End Sub
 
 Private Sub Class_Terminate()
 
     'Free any remaining font resources
+    If curDC <> 0 Then ReleaseFromDC
     DeleteCurrentFont
-    
-    'Free our temporary metrics DC
-    If m_TemporaryDC <> 0 Then Drawing.freeTemporaryDC m_TemporaryDC
     
 End Sub
 
@@ -645,19 +647,21 @@ Public Sub DeleteCurrentFont()
         
         'If the font is inside a DC, remove it (otherwise we can't delete it)
         If curDC <> 0 Then
-            'Debug.Print "HEY!  Font was not removed from DC - please do that before deleting it!"
+            Debug.Print "HEY!  Font was not removed from DC - please do that before deleting it!"
             ReleaseFromDC
         End If
         
         #If DEBUGMODE = 1 Then
             If DeleteObject(curFont) = 0 Then
-                'Debug.Print "WARNING! Could not delete font resource - is it selected into a DC??"
+                Debug.Print "WARNING! Could not delete font resource - is it selected into a DC??"
             Else
                 g_FontsDestroyed = g_FontsDestroyed + 1
             End If
         #Else
             DeleteObject curFont
         #End If
+        
+        curFont = 0
         
     End If
     
@@ -693,14 +697,15 @@ End Function
 'RETURNS: largest font size that fits the string into the desired width.  (7 is the smallest size this function will return, FYI.)
 Public Function GetMaxFontSizeToFitStringWidth(ByVal srcString As String, ByVal desiredWidth As Long, Optional ByVal startingFontSize As Long = 10) As Single
     
-    'Start by determining a targetDC.  A fake DC will be used, as necessary.
+    'Start by determining a targetDC.  A temporary DC will be created and used, as necessary.
     Dim targetDC As Long, backupDC As Long
     backupDC = curDC
     
     If curDC = 0 Then
-        targetDC = m_TemporaryDC
+        targetDC = Drawing.GetMemoryDC()
     Else
-        targetDC = curDC
+        ReleaseFromDC
+        targetDC = backupDC
     End If
     
     'Make a backup of the current font size, if any
@@ -708,7 +713,7 @@ Public Function GetMaxFontSizeToFitStringWidth(ByVal srcString As String, ByVal 
     backupFontSize = m_origFontSize
     
     'Create the font anew, using the default string size we were passed
-    ReleaseFromDC
+    If curFont <> 0 Then DeleteCurrentFont
     m_origFontSize = startingFontSize
     SetFontSize m_origFontSize
     CreateFontObject
@@ -726,6 +731,7 @@ Public Function GetMaxFontSizeToFitStringWidth(ByVal srcString As String, ByVal 
         
         'Recreate the font
         ReleaseFromDC
+        DeleteCurrentFont
         SetFontSize m_origFontSize
         CreateFontObject
         AttachToDC targetDC
@@ -740,12 +746,20 @@ Public Function GetMaxFontSizeToFitStringWidth(ByVal srcString As String, ByVal 
     
     'Before exiting, restore any parameters we changed
     ReleaseFromDC
-    SetFontSize backupFontSize
-    CreateFontObject
     
-    If backupDC <> 0 Then
-        curDC = backupDC
-        AttachToDC curDC
+    If m_origFontSize <> backupFontSize Then
+        DeleteCurrentFont
+        SetFontSize backupFontSize
+        CreateFontObject
+    End If
+    
+    'If we created a temporary DC, free it now
+    If targetDC <> backupDC Then
+        Drawing.FreeMemoryDC targetDC
+    
+    'Conversely, if we were originally selected into a DC, restore that DC now
+    Else
+        If backupDC <> 0 Then AttachToDC backupDC
     End If
     
 End Function
@@ -756,14 +770,15 @@ End Function
 'RETURNS: largest font size that fits the string into the desired width.  (7 is the smallest size this function will return, FYI.)
 Public Function GetMaxFontSizeToFitWordWrap(ByVal srcString As String, ByVal desiredWidth As Long, ByVal desiredHeight As Long, Optional ByVal startingFontSize As Long = 10) As Single
     
-    'Start by determining a targetDC.  A fake DC will be used, as necessary.
+    'Start by determining a targetDC.  A temporary DC will be created and used, as necessary.
     Dim targetDC As Long, backupDC As Long
     backupDC = curDC
     
     If curDC = 0 Then
-        targetDC = m_TemporaryDC
+        targetDC = Drawing.GetMemoryDC()
     Else
-        targetDC = curDC
+        ReleaseFromDC
+        targetDC = backupDC
     End If
     
     'Make a backup of the current font size, if any
@@ -809,9 +824,13 @@ Public Function GetMaxFontSizeToFitWordWrap(ByVal srcString As String, ByVal des
         CreateFontObject
     End If
     
-    If backupDC <> 0 Then
-        curDC = backupDC
-        AttachToDC curDC
+    'If we created a temporary DC, free it now
+    If targetDC <> backupDC Then
+        Drawing.FreeMemoryDC targetDC
+    
+    'Conversely, if we were originally selected into a DC, restore that DC now
+    Else
+        If backupDC <> 0 Then AttachToDC backupDC
     End If
     
 End Function

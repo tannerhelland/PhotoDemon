@@ -108,10 +108,10 @@ Public Sub prepareSplashLogo(ByVal maxProgressValue As Long)
     'Load the inverted logo DIB; this will be blurred and used as a shadow backdrop
     dibsLoadedSuccessfully = dibsLoadedSuccessfully And loadResourceToDIB("PDLOGOBLACK", shadowDIB)
     
-    If fixDPIFloat(1) = 1 Then
+    If FixDPIFloat(1) = 1 Then
         quickBlurDIB shadowDIB, 7, False
     Else
-        quickBlurDIB shadowDIB, 7 * (1 / fixDPIFloat(1)), False
+        quickBlurDIB shadowDIB, 7 * (1 / FixDPIFloat(1)), False
     End If
     
     'Set the StretchBlt mode of the underlying form in advance
@@ -147,7 +147,7 @@ Public Sub prepareRestOfSplash()
         splashDIB.createFromExistingDIB screenDIB
         'GDIPlus_StretchBlt splashDIB, fixDPI(1), fixDPI(1), formWidth, formWidth / logoAspectRatio, shadowDIB, 0, 0, shadowDIB.getDIBWidth, shadowDIB.getDIBHeight
         'GDIPlus_StretchBlt splashDIB, 0, 0, formWidth, formWidth / logoAspectRatio, logoDIB, 0, 0, shadowDIB.getDIBWidth, shadowDIB.getDIBHeight
-        shadowDIB.alphaBlendToDC splashDIB.getDIBDC, , fixDPI(1), fixDPI(1), formWidth, formWidth / logoAspectRatio
+        shadowDIB.alphaBlendToDC splashDIB.getDIBDC, , FixDPI(1), FixDPI(1), formWidth, formWidth / logoAspectRatio
         logoDIB.alphaBlendToDC splashDIB.getDIBDC, , 0, 0, formWidth, formWidth / logoAspectRatio
         
         'Free all intermediate DIBs
@@ -161,24 +161,24 @@ Public Sub prepareRestOfSplash()
         Dim pdLogoTop As Long, pdLogoBottom As Long, pdLogoRight As Long
         
         'FYI: the hard-coded values are for 96 DPI
-        pdLogoTop = fixDPI(60)
-        pdLogoBottom = fixDPI(125)
-        pdLogoRight = fixDPI(755)
+        pdLogoTop = FixDPI(60)
+        pdLogoBottom = FixDPI(125)
+        pdLogoRight = FixDPI(755)
         
         'Next, we need to prepare a font renderer for displaying the current program version
         Set curFontVersion = New pdFont
-        curFontVersion.setFontBold True
-        curFontVersion.setFontSize 14
+        curFontVersion.SetFontBold True
+        curFontVersion.SetFontSize 14
         
         'Non-production builds are tagged RED; normal builds, BLUE.  In the future, this may be tied to the theming engine.
         ' (It's not easy to do it at present, because the themer is loaded late in the program intialization process.)
         If PD_BUILD_QUALITY <> PD_PRODUCTION Then
-            curFontVersion.setFontColor RGB(255, 50, 50)
+            curFontVersion.SetFontColor RGB(255, 50, 50)
         Else
-            curFontVersion.setFontColor RGB(50, 127, 255)
+            curFontVersion.SetFontColor RGB(50, 127, 255)
         End If
         
-        curFontVersion.createFontObject
+        curFontVersion.CreateFontObject
         
         'Assemble the current version and description strings
         Dim versionString As String
@@ -187,11 +187,11 @@ Public Sub prepareRestOfSplash()
         versionString = g_Language.TranslateMessage("version %1", getPhotoDemonVersion)
         
         'Render the version string just below the logo text
-        curFontVersion.attachToDC splashDIB.getDIBDC
-        versionWidth = curFontVersion.getWidthOfString(versionString)
-        versionHeight = curFontVersion.getHeightOfString(versionString)
-        curFontVersion.fastRenderText pdLogoRight - versionWidth, pdLogoBottom + fixDPI(8), versionString
-        curFontVersion.releaseFromDC
+        curFontVersion.AttachToDC splashDIB.getDIBDC
+        versionWidth = curFontVersion.GetWidthOfString(versionString)
+        versionHeight = curFontVersion.GetHeightOfString(versionString)
+        curFontVersion.FastRenderText pdLogoRight - versionWidth, pdLogoBottom + FixDPI(8), versionString
+        curFontVersion.ReleaseFromDC
         
         'Copy the composite image onto the underlying form
         BitBlt Me.hDC, 0, 0, formWidth, formHeight, splashDIB.getDIBDC, 0, 0, vbSrcCopy
@@ -224,8 +224,8 @@ Public Sub updateLoadProgress(ByVal newProgressMarker As Long)
         
         'Draw the progress line using GDI+
         Dim lineRadius As Long, lineY As Long
-        lineRadius = fixDPI(6)
-        lineY = splashDIB.getDIBHeight - fixDPI(2) - lineRadius
+        lineRadius = FixDPI(6)
+        lineY = splashDIB.getDIBHeight - FixDPI(2) - lineRadius
         
         GDI_Plus.GDIPlusDrawLineToDC Me.hDC, lineOffset, lineY, (splashDIB.getDIBWidth - lineOffset) * ((newProgressMarker - m_ProgressAtFirstNotify) / (m_MaxProgress - m_ProgressAtFirstNotify)), lineY, RGB(50, 127, 255), 255, lineRadius, True, LineCapRound
         

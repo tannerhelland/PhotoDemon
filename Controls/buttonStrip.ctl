@@ -235,31 +235,31 @@ End Property
 Private Sub refreshFont()
     
     Dim fontRefreshRequired As Boolean
-    fontRefreshRequired = curFont.hasFontBeenCreated
+    fontRefreshRequired = curFont.HasFontBeenCreated
     
     'Update each font parameter in turn.  If one (or more) requires a new font object, the font will be recreated as the final step.
     
     'Font face is always set automatically, to match the current program-wide font
-    If (Len(g_InterfaceFont) <> 0) And (StrComp(curFont.getFontFace, g_InterfaceFont, vbBinaryCompare) <> 0) Then
+    If (Len(g_InterfaceFont) <> 0) And (StrComp(curFont.GetFontFace, g_InterfaceFont, vbBinaryCompare) <> 0) Then
         fontRefreshRequired = True
-        curFont.setFontFace g_InterfaceFont
+        curFont.SetFontFace g_InterfaceFont
     End If
     
     'In the future, I may switch to GDI+ for font rendering, as it supports floating-point font sizes.  In the meantime, we check
     ' parity using an Int() conversion, as GDI only supports integer font sizes.
-    If Int(m_FontSize) <> Int(curFont.getFontSize) Then
+    If Int(m_FontSize) <> Int(curFont.GetFontSize) Then
         fontRefreshRequired = True
-        curFont.setFontSize m_FontSize
+        curFont.SetFontSize m_FontSize
     End If
     
     'This control currently supports bold text, but not italics
-    If m_FontBold <> curFont.getFontBold Then
+    If m_FontBold <> curFont.GetFontBold Then
         fontRefreshRequired = True
-        curFont.setFontBold m_FontBold
+        curFont.SetFontBold m_FontBold
     End If
         
     'Request a new font, if one or more settings have changed
-    If fontRefreshRequired Then curFont.createFontObject
+    If fontRefreshRequired Then curFont.CreateFontObject
         
     'Also, each button needs to be rebuilt to reflect the new font metrics
     UpdateControlSize
@@ -600,7 +600,7 @@ Private Sub UserControl_Initialize()
     
     'Initialize the internal font object
     Set curFont = New pdFont
-    curFont.setTextAlignment vbLeftJustify
+    curFont.SetTextAlignment vbLeftJustify
     refreshFont
     
     'When not in design mode, initialize a tracker for mouse events
@@ -615,7 +615,7 @@ Private Sub UserControl_Initialize()
         
         'Also start a flicker-free window painter
         Set cPainter = New pdWindowPainter
-        cPainter.startPainter Me.hWnd
+        cPainter.StartPainter Me.hWnd
         
         'Also start a focus detector
         Set cFocusDetector = New pdFocusDetector
@@ -682,12 +682,19 @@ End Sub
 Private Sub UpdateControlSize()
 
     'Remove our font object from the buffer DC, because we are about to recreate it
-    curFont.releaseFromDC
+    curFont.ReleaseFromDC
     
     'Reset our back buffer, and reassign the font to it
-    Set m_BackBuffer = New pdDIB
-    m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
-    curFont.attachToDC m_BackBuffer.getDIBDC
+    If m_BackBuffer Is Nothing Then Set m_BackBuffer = New pdDIB
+    If (m_BackBuffer.getDIBWidth <> UserControl.ScaleWidth) Or (m_BackBuffer.getDIBHeight <> UserControl.ScaleHeight) Then
+        m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
+    Else
+        m_BackBuffer.resetDIB 255
+    End If
+    
+    'We're going to be measuring a lot of fonts, so to spare the font object from repeatedly requesting temporary DCs,
+    ' select it into place now.
+    curFont.AttachToDC m_BackBuffer.getDIBDC
     
     'With the buffer prepared, we now need to figure out the size of individual buttons within the strip.  While we
     ' could make these proportional to the text length of each button, I am instead taking the simpler route for now,
@@ -761,13 +768,13 @@ Private Sub UpdateControlSize()
             End If
             
             'Retrieve the expected size of the string, in pixels
-            strWidth = curFont.getWidthOfString(m_Buttons(i).btCaptionTranslated)
+            strWidth = curFont.GetWidthOfString(m_Buttons(i).btCaptionTranslated)
                     
             'If the string is too long for its containing button, activate word wrap and measure again
             If strWidth > buttonWidth Then
                 
                 strWidth = buttonWidth
-                strHeight = curFont.getHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth)
+                strHeight = curFont.GetHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth)
                 
                 'As a failsafe for ultra-long captions, restrict their size to the button size.  Truncation will (necessarily) occur.
                 If (strHeight > buttonHeight) Then
@@ -775,31 +782,27 @@ Private Sub UpdateControlSize()
                     
                 'As a second failsafe, if word-wrapping didn't solve the problem (because the text is a single word, for example, as is common
                 ' in German), we will forcibly set a smaller font size for this caption alone.
-                ElseIf curFont.getHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth) = curFont.getHeightOfString(m_Buttons(i).btCaptionTranslated) Then
+                ElseIf curFont.GetHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth) = curFont.GetHeightOfString(m_Buttons(i).btCaptionTranslated) Then
                 
                     'Create and initialize the shrinkFont renderer
-                    If (shrinkFont Is Nothing) Then
-                        Set shrinkFont = New pdFont
-                    Else
-                        shrinkFont.releaseFromDC
-                    End If
+                    If (shrinkFont Is Nothing) Then Set shrinkFont = New pdFont
                     
-                    m_Buttons(i).btFontSize = shrinkFont.getMaxFontSizeToFitStringWidth(m_Buttons(i).btCaptionTranslated, buttonWidth, m_FontSize)
+                    m_Buttons(i).btFontSize = shrinkFont.GetMaxFontSizeToFitStringWidth(m_Buttons(i).btCaptionTranslated, buttonWidth, m_FontSize)
                     
                     'The .btFontSize value now contains the font size required to render this button correctly.  In most cases, only a single button
                     ' will require this kind of special treatment, so initialize a matching shrinkFont now.  (If necessary, the object will be
                     ' recreated on the fly for other buttons.)
-                    shrinkFont.setFontBold m_FontBold
-                    shrinkFont.setFontSize m_Buttons(i).btFontSize
-                    shrinkFont.createFontObject
+                    shrinkFont.SetFontBold m_FontBold
+                    shrinkFont.SetFontSize m_Buttons(i).btFontSize
+                    shrinkFont.CreateFontObject
                     
                     'Also note the new string height
-                    strHeight = shrinkFont.getHeightOfString(m_Buttons(i).btCaptionTranslated)
+                    strHeight = shrinkFont.GetHeightOfString(m_Buttons(i).btCaptionTranslated)
                     
                 End If
                 
             Else
-                strHeight = curFont.getHeightOfString(m_Buttons(i).btCaptionTranslated)
+                strHeight = curFont.GetHeightOfString(m_Buttons(i).btCaptionTranslated)
             End If
             
         End If
@@ -882,10 +885,11 @@ Private Sub redrawBackBuffer()
     
     'Start by erasing the back buffer
     If g_IsProgramRunning Then
-        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT), 255
+        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT), 255
     Else
+        curFont.ReleaseFromDC
         m_BackBuffer.createBlank m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, 24, RGB(255, 255, 255)
-        curFont.attachToDC m_BackBuffer.getDIBDC
+        curFont.AttachToDC m_BackBuffer.getDIBDC
     End If
     
     'Colors used throughout this paint function are determined primarily control enablement
@@ -904,37 +908,37 @@ Private Sub redrawBackBuffer()
             
             If m_ColoringMode = CM_DEFAULT Then
             
-                btnColorInactiveBorder = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
-                btnColorInactiveFill = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-                btnColorActiveBorder = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
-                btnColorActiveFill = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-                btnColorHoverBorder = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+                btnColorInactiveBorder = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
+                btnColorInactiveFill = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
+                btnColorActiveBorder = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
+                btnColorActiveFill = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+                btnColorHoverBorder = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
                 
             Else
             
-                btnColorInactiveBorder = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-                btnColorInactiveFill = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-                btnColorActiveBorder = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                btnColorActiveFill = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
-                btnColorHoverBorder = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+                btnColorInactiveBorder = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
+                btnColorInactiveFill = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
+                btnColorActiveBorder = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
+                btnColorActiveFill = g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
+                btnColorHoverBorder = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
             
             End If
             
-            fontColorInactive = g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
-            fontColorActive = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
-            fontColorHover = g_Themer.getThemeColor(PDTC_TEXT_HYPERLINK)
+            fontColorInactive = g_Themer.GetThemeColor(PDTC_TEXT_DEFAULT)
+            fontColorActive = g_Themer.GetThemeColor(PDTC_TEXT_INVERT)
+            fontColorHover = g_Themer.GetThemeColor(PDTC_TEXT_HYPERLINK)
         
         Else
         
-            btnColorInactiveBorder = g_Themer.getThemeColor(PDTC_DISABLED)
-            btnColorInactiveFill = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-            btnColorActiveBorder = g_Themer.getThemeColor(PDTC_DISABLED)
-            btnColorActiveFill = g_Themer.getThemeColor(PDTC_DISABLED)
-            btnColorHoverBorder = g_Themer.getThemeColor(PDTC_DISABLED)
+            btnColorInactiveBorder = g_Themer.GetThemeColor(PDTC_DISABLED)
+            btnColorInactiveFill = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
+            btnColorActiveBorder = g_Themer.GetThemeColor(PDTC_DISABLED)
+            btnColorActiveFill = g_Themer.GetThemeColor(PDTC_DISABLED)
+            btnColorHoverBorder = g_Themer.GetThemeColor(PDTC_DISABLED)
             
-            fontColorInactive = g_Themer.getThemeColor(PDTC_DISABLED)
-            fontColorActive = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
-            fontColorHover = g_Themer.getThemeColor(PDTC_DISABLED)
+            fontColorInactive = g_Themer.GetThemeColor(PDTC_DISABLED)
+            fontColorActive = g_Themer.GetThemeColor(PDTC_TEXT_INVERT)
+            fontColorHover = g_Themer.GetThemeColor(PDTC_DISABLED)
             
         End If
         
@@ -1004,27 +1008,27 @@ Private Sub redrawBackBuffer()
                     End If
                     
                     If .btFontSize = 0 Then
-                        curFont.setFontColor curColor
-                        curFont.drawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
+                        curFont.SetFontColor curColor
+                        curFont.DrawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
                     Else
                     
                         'Release the main font object
-                        curFont.releaseFromDC
+                        curFont.ReleaseFromDC
                     
                         'Recreate shrinkFont as necessary
-                        If shrinkFont.getFontSize <> .btFontSize Then
-                            shrinkFont.setFontSize .btFontSize
-                            shrinkFont.createFontObject
+                        If shrinkFont.GetFontSize <> .btFontSize Then
+                            shrinkFont.SetFontSize .btFontSize
+                            shrinkFont.CreateFontObject
                         End If
                         
                         'Select shrinkFont into the DC and render the text accordingly
-                        shrinkFont.attachToDC m_BackBuffer.getDIBDC
-                        shrinkFont.setFontColor curColor
-                        shrinkFont.drawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
+                        shrinkFont.AttachToDC m_BackBuffer.getDIBDC
+                        shrinkFont.SetFontColor curColor
+                        shrinkFont.DrawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
                         
                         'Restore curFont
-                        shrinkFont.releaseFromDC
-                        curFont.attachToDC m_BackBuffer.getDIBDC
+                        shrinkFont.ReleaseFromDC
+                        curFont.AttachToDC m_BackBuffer.getDIBDC
                         
                     End If
                 
@@ -1069,7 +1073,7 @@ Private Sub redrawBackBuffer()
     End If
     
     'Paint the buffer to the screen
-    If g_IsProgramRunning And (Not cPainter Is Nothing) Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    If g_IsProgramRunning And (Not cPainter Is Nothing) Then cPainter.RequestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
 
 End Sub
 

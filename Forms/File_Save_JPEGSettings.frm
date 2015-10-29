@@ -95,7 +95,7 @@ Begin VB.Form dialog_ExportJPEG
          Top             =   3240
          Width           =   6690
          _ExtentX        =   11800
-         _ExtentY        =   582
+         _ExtentY        =   661
          Caption         =   "embed thumbnail image"
       End
       Begin PhotoDemon.pdLabel lblTitle 
@@ -191,7 +191,7 @@ Begin VB.Form dialog_ExportJPEG
          Top             =   1350
          Width           =   6690
          _ExtentX        =   11800
-         _ExtentY        =   582
+         _ExtentY        =   661
          Caption         =   "optimize compression tables"
       End
       Begin PhotoDemon.smartCheckBox chkProgressive 
@@ -201,7 +201,7 @@ Begin VB.Form dialog_ExportJPEG
          Top             =   1830
          Width           =   6690
          _ExtentX        =   11800
-         _ExtentY        =   582
+         _ExtentY        =   661
          Caption         =   "use progressive encoding"
       End
       Begin PhotoDemon.smartCheckBox chkSubsample 
@@ -211,7 +211,7 @@ Begin VB.Form dialog_ExportJPEG
          Top             =   2310
          Width           =   6690
          _ExtentX        =   11800
-         _ExtentY        =   582
+         _ExtentY        =   661
          Caption         =   "use specific subsampling:"
       End
       Begin PhotoDemon.sliderTextCombo sltQuality 
@@ -235,7 +235,7 @@ Begin VB.Form dialog_ExportJPEG
          Visible         =   0   'False
          Width           =   6690
          _ExtentX        =   11800
-         _ExtentY        =   582
+         _ExtentY        =   661
          Caption         =   "use perceptive color matching (slower, more accurate)"
       End
       Begin PhotoDemon.pdLabel lblTitle 
@@ -613,18 +613,19 @@ Public Sub showDialog()
     
         Dim notifyFont As pdFont
         Set notifyFont = New pdFont
-        notifyFont.setFontFace g_InterfaceFont
-        notifyFont.setFontSize 14
-        notifyFont.setFontColor 0
-        notifyFont.setFontBold True
-        notifyFont.setTextAlignment vbCenter
-        notifyFont.createFontObject
-        notifyFont.attachToDC tmpDIB.getDIBDC
+        notifyFont.SetFontFace g_InterfaceFont
+        notifyFont.SetFontSize 14
+        notifyFont.SetFontColor 0
+        notifyFont.SetFontBold True
+        notifyFont.SetTextAlignment vbCenter
+        notifyFont.CreateFontObject
+        notifyFont.AttachToDC tmpDIB.getDIBDC
     
-        notifyFont.fastRenderText tmpDIB.getDIBWidth \ 2, tmpDIB.getDIBHeight \ 2, g_Language.TranslateMessage("JPEG previews require the FreeImage plugin.")
+        notifyFont.FastRenderText tmpDIB.getDIBWidth \ 2, tmpDIB.getDIBHeight \ 2, g_Language.TranslateMessage("JPEG previews require the FreeImage plugin.")
         fxPreview.setOriginalImage tmpDIB
         fxPreview.setFXImage tmpDIB
         
+        notifyFont.ReleaseFromDC
         Set tmpDIB = Nothing
         
     End If

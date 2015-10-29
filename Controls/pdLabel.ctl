@@ -343,36 +343,36 @@ End Sub
 Private Sub refreshFont()
     
     Dim fontRefreshRequired As Boolean
-    fontRefreshRequired = curFont.hasFontBeenCreated
+    fontRefreshRequired = curFont.HasFontBeenCreated
     
     'Update each font parameter in turn.  If one (or more) requires a new font object, the font will be recreated as the final step.
     
     'Font face is always set automatically, to match the current program-wide font
-    If (Len(g_InterfaceFont) <> 0) And (StrComp(curFont.getFontFace, g_InterfaceFont, vbBinaryCompare) <> 0) Then
+    If (Len(g_InterfaceFont) <> 0) And (StrComp(curFont.GetFontFace, g_InterfaceFont, vbBinaryCompare) <> 0) Then
         fontRefreshRequired = True
-        curFont.setFontFace g_InterfaceFont
+        curFont.SetFontFace g_InterfaceFont
     End If
     
     'In the future, I may switch to GDI+ for font rendering, as it supports floating-point font sizes.  In the meantime, we check
     ' parity using an Int() conversion, as GDI only supports integer font sizes.
-    If Int(m_FontSize) <> Int(curFont.getFontSize) Then
+    If Int(m_FontSize) <> Int(curFont.GetFontSize) Then
         fontRefreshRequired = True
-        curFont.setFontSize m_FontSize
+        curFont.SetFontSize m_FontSize
     End If
     
     'Bold and italic are the simplest settings to handle
-    If m_FontBold <> curFont.getFontBold Then
+    If m_FontBold <> curFont.GetFontBold Then
         fontRefreshRequired = True
-        curFont.setFontBold m_FontBold
+        curFont.SetFontBold m_FontBold
     End If
     
-    If m_FontItalic <> curFont.getFontItalic Then
+    If m_FontItalic <> curFont.GetFontItalic Then
         fontRefreshRequired = True
-        curFont.setFontItalic m_FontItalic
+        curFont.SetFontItalic m_FontItalic
     End If
     
     'Request a new font, if one or more settings have changed
-    If fontRefreshRequired Then curFont.createFontObject
+    If fontRefreshRequired Then curFont.CreateFontObject
     
     'Also, the back buffer needs to be rebuilt to reflect the new font metrics
     UpdateControlSize
@@ -452,7 +452,7 @@ Private Sub UserControl_Initialize()
     
     'Initialize the internal font object
     Set curFont = New pdFont
-    curFont.setTextAlignment vbLeftJustify
+    curFont.SetTextAlignment vbLeftJustify
     
     'Initialize a DPI-aware window resizer.  (Window messages won't be subclassed in the IDE, FYI)
     Set cResize = New pdWindowSize
@@ -463,7 +463,7 @@ Private Sub UserControl_Initialize()
         
         'Start a flicker-free window painter
         Set cPainter = New pdWindowPainter
-        cPainter.startPainter Me.hWnd
+        cPainter.StartPainter Me.hWnd
         
         'Create a tooltip engine
         Set toolTipManager = New pdToolTip
@@ -542,7 +542,7 @@ Private Sub UpdateControlSize()
     m_BufferDirty = False
     
     'Remove our font object from the buffer DC, because we are about to recreate it
-    curFont.releaseFromDC
+    curFont.ReleaseFromDC
     
     'Reset our back buffer, and reassign the font to it.
     If (m_BackBuffer Is Nothing) Then Set m_BackBuffer = New pdDIB
@@ -569,11 +569,11 @@ Private Sub UpdateControlSize()
     
     'Start by setting the current font size to match the font size property value.
     m_CurFontSize = m_FontSize
-    If m_CurFontSize <> Int(curFont.getFontSize) Then
-        curFont.setFontSize m_CurFontSize
-        curFont.createFontObject
+    If m_CurFontSize <> Int(curFont.GetFontSize) Then
+        curFont.SetFontSize m_CurFontSize
+        curFont.CreateFontObject
     End If
-    curFont.attachToDC m_BackBuffer.getDIBDC
+    curFont.AttachToDC m_BackBuffer.getDIBDC
     
     'Different layout styles will modify the control's behavior based on the width (normal labels) or height
     ' (wordwrap labels) of the current caption
@@ -588,7 +588,7 @@ Private Sub UpdateControlSize()
         Case AutoFitCaption
             
             'Measure the font relative to the current control size
-            stringWidth = curFont.getWidthOfString(m_CaptionTranslated)
+            stringWidth = curFont.GetWidthOfString(m_CaptionTranslated)
             
             'If the string does not fit within the control size, shrink the font accordingly.
             Do While (stringWidth > origWidth) And (m_CurFontSize >= 8)
@@ -597,20 +597,20 @@ Private Sub UpdateControlSize()
                 m_CurFontSize = m_CurFontSize - 1
                 
                 'Recreate the font
-                curFont.releaseFromDC
-                curFont.setFontSize m_CurFontSize
-                curFont.createFontObject
-                curFont.attachToDC m_BackBuffer.getDIBDC
+                curFont.ReleaseFromDC
+                curFont.SetFontSize m_CurFontSize
+                curFont.CreateFontObject
+                curFont.AttachToDC m_BackBuffer.getDIBDC
                 
                 'Measure the new size
-                stringWidth = curFont.getWidthOfString(m_CaptionTranslated)
+                stringWidth = curFont.GetWidthOfString(m_CaptionTranslated)
                 
             Loop
             
             'If the font is at normal size, there is a small chance that the label will not be tall enough (vertically)
             ' to hold it.  This is due to rendering differences between Tahoma (on XP) and Segoe UI (on Vista+).  As such,
             ' perform a failsafe check on the label's height, and increase it as necessary.
-            stringHeight = curFont.getHeightOfString(m_CaptionTranslated)
+            stringHeight = curFont.GetHeightOfString(m_CaptionTranslated)
             
             If (stringHeight > origHeight) Then
                 
@@ -627,9 +627,9 @@ Private Sub UpdateControlSize()
                 
                 'Recreate the backbuffer
                 If (cResize.GetWidth() <> m_BackBuffer.getDIBWidth) Or (cResize.GetHeight() <> m_BackBuffer.getDIBHeight) Then
-                    curFont.releaseFromDC
+                    curFont.ReleaseFromDC
                     m_BackBuffer.createBlank cResize.GetWidth(), cResize.GetHeight(), 24
-                    curFont.attachToDC m_BackBuffer.getDIBDC
+                    curFont.AttachToDC m_BackBuffer.getDIBDC
                 End If
                 
                 'Restore normal resize behavior
@@ -639,9 +639,9 @@ Private Sub UpdateControlSize()
             
                 'Create the backbuffer if it hasn't been created before
                 If (cResize.GetWidth() <> m_BackBuffer.getDIBWidth) Or (cResize.GetHeight() > m_BackBuffer.getDIBHeight) Then
-                    curFont.releaseFromDC
+                    curFont.ReleaseFromDC
                     m_BackBuffer.createBlank cResize.GetWidth(), cResize.GetHeight(), 24
-                    curFont.attachToDC m_BackBuffer.getDIBDC
+                    curFont.AttachToDC m_BackBuffer.getDIBDC
                 End If
                 
             End If
@@ -660,7 +660,7 @@ Private Sub UpdateControlSize()
         Case AutoFitCaptionPlusWordWrap
             
             'Measure the font relative to the current control size
-            stringHeight = curFont.getHeightOfWordwrapString(m_CaptionTranslated, origWidth)
+            stringHeight = curFont.GetHeightOfWordwrapString(m_CaptionTranslated, origWidth)
             
             'If the string does not fit within the control size, shrink the font accordingly.
             Do While (stringHeight > origHeight) And (m_CurFontSize >= 8)
@@ -669,21 +669,21 @@ Private Sub UpdateControlSize()
                 m_CurFontSize = m_CurFontSize - 1
                 
                 'Recreate the font
-                curFont.releaseFromDC
-                curFont.setFontSize m_CurFontSize
-                curFont.createFontObject
-                curFont.attachToDC m_BackBuffer.getDIBDC
+                curFont.ReleaseFromDC
+                curFont.SetFontSize m_CurFontSize
+                curFont.CreateFontObject
+                curFont.AttachToDC m_BackBuffer.getDIBDC
                 
                 'Measure the new size
-                stringHeight = curFont.getHeightOfWordwrapString(m_CaptionTranslated, origWidth)
+                stringHeight = curFont.GetHeightOfWordwrapString(m_CaptionTranslated, origWidth)
                 
             Loop
             
             'Create the backbuffer if it hasn't been created before
             If (cResize.GetWidth() <> m_BackBuffer.getDIBWidth) Or (cResize.GetHeight() > m_BackBuffer.getDIBHeight) Then
-                curFont.releaseFromDC
+                curFont.ReleaseFromDC
                 m_BackBuffer.createBlank cResize.GetWidth(), cResize.GetHeight(), 24
-                curFont.attachToDC m_BackBuffer.getDIBDC
+                curFont.AttachToDC m_BackBuffer.getDIBDC
             End If
             
         'Resize the control horizontally to fit the caption, with no changes made to current font size.
@@ -694,8 +694,8 @@ Private Sub UpdateControlSize()
             m_InternalResizeState = True
         
             'Measure the font relative to the current control size
-            stringWidth = curFont.getWidthOfString(m_CaptionTranslated)
-            stringHeight = curFont.getHeightOfString(m_CaptionTranslated)
+            stringWidth = curFont.GetWidthOfString(m_CaptionTranslated)
+            stringHeight = curFont.GetHeightOfString(m_CaptionTranslated)
             
             'We must make the back buffer fit the control's caption precisely.  stringWidth should be accurate;
             ' however, antialiasing may require us to add an additional pixel to the caption, in the event
@@ -714,9 +714,9 @@ Private Sub UpdateControlSize()
                 End If
                 
                 'Recreate the backbuffer
-                curFont.releaseFromDC
+                curFont.ReleaseFromDC
                 m_BackBuffer.createBlank stringWidth, stringHeight, 24
-                curFont.attachToDC m_BackBuffer.getDIBDC
+                curFont.AttachToDC m_BackBuffer.getDIBDC
                 
             End If
             
@@ -731,7 +731,7 @@ Private Sub UpdateControlSize()
             m_InternalResizeState = True
         
             'Measure the font relative to the current control size
-            stringHeight = curFont.getHeightOfWordwrapString(m_CaptionTranslated, m_BackBuffer.getDIBWidth)
+            stringHeight = curFont.GetHeightOfWordwrapString(m_CaptionTranslated, m_BackBuffer.getDIBWidth)
             
             'We must make the back buffer fit the control's caption precisely.  stringWidth should be accurate;
             ' however, antialiasing may require us to add an additional pixel to the caption, in the event
@@ -748,9 +748,9 @@ Private Sub UpdateControlSize()
                 End If
                 
                 'Recreate the backbuffer
-                curFont.releaseFromDC
+                curFont.ReleaseFromDC
                 m_BackBuffer.createBlank cResize.GetWidth(), cResize.GetHeight(), 24
-                curFont.attachToDC m_BackBuffer.getDIBDC
+                curFont.AttachToDC m_BackBuffer.getDIBDC
                 
             End If
             
@@ -850,11 +850,12 @@ Private Sub redrawBackBuffer()
         If m_UseCustomBackColor Then
             GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackColor, 255
         Else
-            GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT), 255
+            GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT), 255
         End If
     Else
+        curFont.ReleaseFromDC
         m_BackBuffer.createBlank m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, 24, RGB(255, 255, 255)
-        curFont.attachToDC m_BackBuffer.getDIBDC
+        curFont.AttachToDC m_BackBuffer.getDIBDC
     End If
     
     'Colors used throughout the label's paint function are simple, and vary only by theme and control enablement
@@ -864,15 +865,15 @@ Private Sub redrawBackBuffer()
         If m_UseCustomForeColor Then
             fontColor = m_ForeColor
         Else
-            fontColor = g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
+            fontColor = g_Themer.GetThemeColor(PDTC_TEXT_DEFAULT)
         End If
     Else
-        fontColor = g_Themer.getThemeColor(PDTC_DISABLED)
+        fontColor = g_Themer.GetThemeColor(PDTC_DISABLED)
     End If
     
     'Pass all font settings to the font renderer
-    curFont.setFontColor fontColor
-    curFont.setTextAlignment m_Alignment
+    curFont.SetFontColor fontColor
+    curFont.SetTextAlignment m_Alignment
     
     'Paint the caption
     Select Case m_Layout
@@ -880,24 +881,24 @@ Private Sub redrawBackBuffer()
         Case AutoFitCaption, AutoSizeControl
             
             If (m_Layout = AutoFitCaption) And m_FitFailure Then
-                curFont.fastRenderTextWithClipping 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_CaptionTranslated, True
+                curFont.FastRenderTextWithClipping 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_CaptionTranslated, True
             Else
-                curFont.fastRenderTextWithClipping 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_CaptionTranslated, False
+                curFont.FastRenderTextWithClipping 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_CaptionTranslated, False
             End If
             
         Case AutoFitCaptionPlusWordWrap, AutoSizeControlPlusWordWrap
-            curFont.fastRenderMultilineTextWithClipping 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_CaptionTranslated
+            curFont.FastRenderMultilineTextWithClipping 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_CaptionTranslated
         
     End Select
     
     'Paint the buffer to the screen
-    If g_IsProgramRunning Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, cResize.GetWidth(), cResize.GetHeight(), m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    If g_IsProgramRunning Then cPainter.RequestRepaint Else BitBlt UserControl.hDC, 0, 0, cResize.GetWidth(), cResize.GetHeight(), m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
 
 End Sub
 
 'Post-translation, we can request an immediate refresh
 Public Sub requestRefresh()
-    cPainter.requestRepaint
+    cPainter.RequestRepaint
 End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.

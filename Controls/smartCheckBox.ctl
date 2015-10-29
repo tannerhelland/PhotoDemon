@@ -181,25 +181,25 @@ End Property
 Private Sub refreshFont()
     
     Dim fontRefreshRequired As Boolean
-    fontRefreshRequired = curFont.hasFontBeenCreated
+    fontRefreshRequired = curFont.HasFontBeenCreated
     
     'Update each font parameter in turn.  If one (or more) requires a new font object, the font will be recreated as the final step.
     
     'Font face is always set automatically, to match the current program-wide font
-    If (Len(g_InterfaceFont) <> 0) And (StrComp(curFont.getFontFace, g_InterfaceFont, vbBinaryCompare) <> 0) Then
+    If (Len(g_InterfaceFont) <> 0) And (StrComp(curFont.GetFontFace, g_InterfaceFont, vbBinaryCompare) <> 0) Then
         fontRefreshRequired = True
-        curFont.setFontFace g_InterfaceFont
+        curFont.SetFontFace g_InterfaceFont
     End If
     
     'In the future, I may switch to GDI+ for font rendering, as it supports floating-point font sizes.  In the meantime, we check
     ' parity using an Int() conversion, as GDI only supports integer font sizes.
-    If Int(m_FontSize) <> Int(curFont.getFontSize) Then
+    If Int(m_FontSize) <> Int(curFont.GetFontSize) Then
         fontRefreshRequired = True
-        curFont.setFontSize m_FontSize
+        curFont.SetFontSize m_FontSize
     End If
     
     'Request a new font, if one or more settings have changed
-    If fontRefreshRequired Then curFont.createFontObject
+    If fontRefreshRequired Then curFont.CreateFontObject
     
     'Also, the back buffer needs to be rebuilt to reflect the new font metrics
     UpdateControlSize
@@ -390,7 +390,7 @@ Private Sub UserControl_Initialize()
     
     'Initialize the internal font object
     Set curFont = New pdFont
-    curFont.setTextAlignment vbLeftJustify
+    curFont.SetTextAlignment vbLeftJustify
     
     'When not in design mode, initialize a tracker for mouse events
     If g_IsProgramRunning Then
@@ -401,7 +401,7 @@ Private Sub UserControl_Initialize()
         
         'Also start a flicker-free window painter
         Set cPainter = New pdWindowPainter
-        cPainter.startPainter Me.hWnd
+        cPainter.StartPainter Me.hWnd
         
         'Also start a focus detector
         Set cFocusDetector = New pdFocusDetector
@@ -468,7 +468,7 @@ End Sub
 Private Sub UpdateControlSize()
     
     'Remove our font object from the buffer DC, because we are about to recreate it
-    curFont.releaseFromDC
+    curFont.ReleaseFromDC
     
     'By adjusting this fontY parameter, we can control the auto-height of a created check box.  (This value is used
     ' as a padding constant, at present.)
@@ -485,11 +485,11 @@ Private Sub UpdateControlSize()
     
     'Always start by setting the current font size to match the default font size property value.
     m_CurFontSize = m_FontSize
-    If m_CurFontSize <> Int(curFont.getFontSize) Then
-        curFont.setFontSize m_CurFontSize
-        curFont.createFontObject
+    If m_CurFontSize <> Int(curFont.GetFontSize) Then
+        curFont.SetFontSize m_CurFontSize
+        curFont.CreateFontObject
     End If
-    curFont.attachToDC m_BackBuffer.getDIBDC
+    curFont.AttachToDC m_BackBuffer.getDIBDC
         
     'Auto-fitting the caption requires us to fit the entire (translated!) caption within the control's pre-set boundaries.
     Dim stringWidth As Long, stringHeight As Long
@@ -510,10 +510,10 @@ Private Sub UpdateControlSize()
         m_CurFontSize = m_CurFontSize - 1
         
         'Recreate the font
-        curFont.releaseFromDC
-        curFont.setFontSize m_CurFontSize
-        curFont.createFontObject
-        curFont.attachToDC m_BackBuffer.getDIBDC
+        curFont.ReleaseFromDC
+        curFont.SetFontSize m_CurFontSize
+        curFont.CreateFontObject
+        curFont.AttachToDC m_BackBuffer.getDIBDC
         
         'Measure the new size
         stringWidth = getCheckboxPlusCaptionWidth(m_CaptionTranslated)
@@ -541,9 +541,9 @@ Private Sub UpdateControlSize()
     
     'We are now ready to recreate the backbuffer to its relevant size.
     If (UserControl.ScaleWidth <> m_BackBuffer.getDIBWidth) Or (UserControl.ScaleHeight <> m_BackBuffer.getDIBHeight) Then
-        curFont.releaseFromDC
+        curFont.ReleaseFromDC
         m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
-        curFont.attachToDC m_BackBuffer.getDIBDC
+        curFont.AttachToDC m_BackBuffer.getDIBDC
     End If
     
     'If the caption still does not fit within the available area (typically because we reached the minimum allowable font
@@ -576,8 +576,8 @@ End Sub
 Public Sub UpdateAgainstCurrentTheme()
     
     'Update the font to reflect the themed font
-    curFont.setFontFace g_InterfaceFont
-    curFont.createFontObject
+    curFont.SetFontFace g_InterfaceFont
+    curFont.CreateFontObject
     
     'Calculate a new translation, as necessary
     If g_IsProgramRunning Then
@@ -618,10 +618,11 @@ Private Sub redrawBackBuffer()
 
     'Start by erasing the back buffer
     If g_IsProgramRunning Then
-        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT), 255
+        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT), 255
     Else
+        curFont.ReleaseFromDC
         m_BackBuffer.createBlank m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, 24, RGB(255, 255, 255)
-        curFont.attachToDC m_BackBuffer.getDIBDC
+        curFont.AttachToDC m_BackBuffer.getDIBDC
     End If
     
     'Colors used throughout this paint function are determined primarily control enablement
@@ -629,23 +630,23 @@ Private Sub redrawBackBuffer()
     If Me.Enabled Then
         
         If m_MouseInsideUC Then
-            chkBoxColorBorder = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
-            chkBoxColorFill = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+            chkBoxColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
+            chkBoxColorFill = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
         Else
-            chkBoxColorBorder = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
-            chkBoxColorFill = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+            chkBoxColorBorder = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
+            chkBoxColorFill = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
         End If
         
     Else
-        chkBoxColorBorder = g_Themer.getThemeColor(PDTC_DISABLED)
-        chkBoxColorFill = g_Themer.getThemeColor(PDTC_DISABLED)
+        chkBoxColorBorder = g_Themer.GetThemeColor(PDTC_DISABLED)
+        chkBoxColorFill = g_Themer.GetThemeColor(PDTC_DISABLED)
     End If
     
     'Next, determine the precise size of our caption, including all internal metrics.  (We need those so we can properly
     ' align the check box with the baseline of the font and the caps (not ascender!) height.
     Dim captionWidth As Long, captionHeight As Long
-    captionWidth = curFont.getWidthOfString(m_CaptionTranslated)
-    captionHeight = curFont.getHeightOfString(m_CaptionTranslated)
+    captionWidth = curFont.GetWidthOfString(m_CaptionTranslated)
+    captionHeight = curFont.GetHeightOfString(m_CaptionTranslated)
     
     'Retrieve the descent of the current font.
     Dim fontDescent As Long, fontMetrics As TEXTMETRIC
@@ -680,18 +681,18 @@ Private Sub redrawBackBuffer()
     If Me.Enabled Then
     
         If m_MouseInsideUC Then
-            curFont.setFontColor g_Themer.getThemeColor(PDTC_TEXT_HYPERLINK)
+            curFont.SetFontColor g_Themer.GetThemeColor(PDTC_TEXT_HYPERLINK)
         Else
-            curFont.setFontColor g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
+            curFont.SetFontColor g_Themer.GetThemeColor(PDTC_TEXT_DEFAULT)
         End If
         
     Else
-        curFont.setFontColor g_Themer.getThemeColor(PDTC_DISABLED)
+        curFont.SetFontColor g_Themer.GetThemeColor(PDTC_DISABLED)
     End If
     
     'Failsafe check for designer mode
     If Not g_IsProgramRunning Then
-        curFont.setFontColor RGB(0, 0, 0)
+        curFont.SetFontColor RGB(0, 0, 0)
     End If
     
     'Render the text, appending ellipses as necessary
@@ -699,16 +700,16 @@ Private Sub redrawBackBuffer()
     xFontOffset = offsetX * 2 + chkBoxSize + FixDPI(6)
     
     If m_FitFailure Then
-        curFont.fastRenderTextWithClipping xFontOffset, 1, m_BackBuffer.getDIBWidth - xFontOffset, m_BackBuffer.getDIBHeight, m_CaptionTranslated, True
+        curFont.FastRenderTextWithClipping xFontOffset, 1, m_BackBuffer.getDIBWidth - xFontOffset, m_BackBuffer.getDIBHeight, m_CaptionTranslated, True
     Else
-        curFont.fastRenderTextWithClipping xFontOffset, 1, m_BackBuffer.getDIBWidth - xFontOffset, m_BackBuffer.getDIBHeight, m_CaptionTranslated, False
+        curFont.FastRenderTextWithClipping xFontOffset, 1, m_BackBuffer.getDIBWidth - xFontOffset, m_BackBuffer.getDIBHeight, m_CaptionTranslated, False
     End If
     
     'Update the clickable rect using the measurements from the final render
     With clickableRect
         .Left = 0
         .Top = 0
-        .Right = xFontOffset + curFont.getWidthOfString(m_CaptionTranslated) + FixDPI(6)
+        .Right = xFontOffset + curFont.GetWidthOfString(m_CaptionTranslated) + FixDPI(6)
         .Bottom = m_BackBuffer.getDIBHeight
     End With
     
@@ -735,7 +736,7 @@ Private Sub redrawBackBuffer()
     End If
     
     'Paint the buffer to the screen
-    If g_IsProgramRunning Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    If g_IsProgramRunning Then cPainter.RequestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
 
 End Sub
 
@@ -747,8 +748,8 @@ Private Function getCheckboxPlusCaptionWidth(Optional ByVal relevantCaption As S
 
     'Start by retrieving caption width and height.  (Checkbox size is proportional to these values.)
     Dim captionWidth As Long, captionHeight As Long
-    captionWidth = curFont.getWidthOfString(relevantCaption)
-    captionHeight = curFont.getHeightOfString(relevantCaption)
+    captionWidth = curFont.GetWidthOfString(relevantCaption)
+    captionHeight = curFont.GetHeightOfString(relevantCaption)
     
     'Retrieve exact size metrics of the caption, as rendered in the current font
     Dim fontDescent As Long, fontMetrics As TEXTMETRIC

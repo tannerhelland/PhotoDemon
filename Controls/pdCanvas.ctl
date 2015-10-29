@@ -131,8 +131,8 @@ Begin VB.UserControl pdCanvas
          Left            =   3240
          Top             =   60
          Width           =   345
-         _ExtentX        =   609
-         _ExtentY        =   370
+         _ExtentX        =   847
+         _ExtentY        =   503
          BackColor       =   -2147483626
          Caption         =   "size:"
          FontSize        =   9
@@ -187,8 +187,8 @@ Begin VB.UserControl pdCanvas
          Left            =   5160
          Top             =   60
          Width           =   345
-         _ExtentX        =   609
-         _ExtentY        =   370
+         _ExtentX        =   847
+         _ExtentY        =   503
          BackColor       =   -2147483626
          Caption         =   "size:"
          FontSize        =   9
@@ -201,7 +201,7 @@ Begin VB.UserControl pdCanvas
          Top             =   60
          Width           =   6825
          _ExtentX        =   12039
-         _ExtentY        =   635
+         _ExtentY        =   503
          Alignment       =   1
          BackColor       =   -2147483626
          Caption         =   "(messages will appear here at run-time)"
@@ -387,7 +387,7 @@ Public Sub UpdateAgainstCurrentTheme()
     cmbZoom.AssignTooltip "Change viewport zoom"
     cmbSizeUnit.AssignTooltip "Change the image size unit displayed to the left of this box"
     cmdCenter.AssignTooltip "Center the image inside the viewport"
-    If Not (g_Themer Is Nothing) Then cmdCenter.BackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
+    If Not (g_Themer Is Nothing) Then cmdCenter.BackColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_COMMANDBAR)
     
     'Request visual updates from all supported controls
     lblCoordinates.UpdateAgainstCurrentTheme
@@ -2198,28 +2198,28 @@ Public Sub fixChromeLayout()
             
             Dim notifyFont As pdFont
             Set notifyFont = New pdFont
-            notifyFont.setFontFace g_InterfaceFont
+            notifyFont.SetFontFace g_InterfaceFont
             
             'Set the font size dynamically.  en-US gets a larger size; other languages, whose text may be longer, use a smaller one.
             If Not (g_Language Is Nothing) Then
             
                 If g_Language.translationActive Then
-                    notifyFont.setFontSize 13
+                    notifyFont.SetFontSize 13
                 Else
-                    notifyFont.setFontSize 14
+                    notifyFont.SetFontSize 14
                 End If
                 
             Else
-                notifyFont.setFontSize 14
+                notifyFont.SetFontSize 14
             End If
             
-            notifyFont.setFontBold False
-            notifyFont.setFontColor RGB(41, 43, 54)
-            notifyFont.setTextAlignment vbCenter
+            notifyFont.SetFontBold False
+            notifyFont.SetFontColor RGB(41, 43, 54)
+            notifyFont.SetTextAlignment vbCenter
             
             'Create the font and attach it to our temporary DIB's DC
-            notifyFont.createFontObject
-            notifyFont.attachToDC tmpDIB.getDIBDC
+            notifyFont.CreateFontObject
+            notifyFont.AttachToDC tmpDIB.getDIBDC
             
             If Not (iconLoadAnImage Is Nothing) Then
             
@@ -2230,7 +2230,7 @@ Public Sub fixChromeLayout()
                 If Not (g_Language Is Nothing) Then
                     loadImageMessage = g_Language.TranslateMessage("Drag an image onto this space to begin editing." & vbCrLf & vbCrLf & "You can also use the Open Image button on the left," & vbCrLf & "or the File > Open and File > Import menus.")
                 End If
-                notifyFont.drawCenteredText loadImageMessage, tmpDIB.getDIBWidth, modifiedHeight
+                notifyFont.DrawCenteredText loadImageMessage, tmpDIB.getDIBWidth, modifiedHeight
                 
                 'Just above the text instructions, add a generic image icon
                 iconLoadAnImage.alphaBlendToDC tmpDIB.getDIBDC, 192, (tmpDIB.getDIBWidth - iconLoadAnImage.getDIBWidth) / 2, (modifiedHeight / 2) - (iconLoadAnImage.getDIBHeight) - FixDPI(20)
@@ -2239,6 +2239,11 @@ Public Sub fixChromeLayout()
             
             BitBlt picCanvas.hDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
             RequestBufferSync
+            
+            notifyFont.ReleaseFromDC
+            notifyFont.DeleteCurrentFont
+            
+            tmpDIB.eraseDIB True
             Set tmpDIB = Nothing
             
         End If

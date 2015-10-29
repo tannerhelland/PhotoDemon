@@ -259,15 +259,14 @@ Public pdDebug As pdDebugger
 ' functions from mistakenly displaying the same message!
 Public g_FreeImageErrorMessages() As String
 
-'As part of an improved memory efficiency initiative in v6.6, these global variables are used (during debug mode only!)
-' to track how many DIBs PD creates and destroys via pdDIB objects.  If I find that certain functions or behaviors produce
-' ridiculous amounts of DIBs, I can start focusing my optimization efforts more precisely!
+'As part of an improved memory efficiency initiative, some global variables are used (during debug mode) to track how many
+' GDI objects PD creates and destroys.
 Public g_DIBsCreated As Long
 Public g_DIBsDestroyed As Long
-
-'During debug mode, we also track the number of fonts created via pdFont
 Public g_FontsCreated As Long
 Public g_FontsDestroyed As Long
+Public g_DCsCreated As Long
+Public g_DCsDestroyed As Long
 
 'If a modal window is active, this value will be set to TRUE.  This is helpful for controlling certain program flow issues.
 Public g_ModalDialogActive As Boolean
