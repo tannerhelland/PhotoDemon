@@ -254,7 +254,7 @@ Public Sub LoadTheProgram()
     
     'If Segoe exists, we mark two variables: a String (which user controls use to create their own font objects), and a Boolean
     ' (which some dialogs use to slightly modify their layout for better alignments).
-    If tmpFontCheck.doesFontExist("Segoe UI") Then
+    If tmpFontCheck.DoesFontExist("Segoe UI") Then
         g_InterfaceFont = "Segoe UI"
         g_UseFancyFonts = True
     Else
@@ -337,7 +337,7 @@ Public Sub LoadTheProgram()
         perfCheck.markEvent "Initialize theme engine"
     #End If
     
-    'Because this class subclasses all forms in the project, it must be loaded very early in the start process
+    'Because this class controls the visual appearance of all forms in the project, it must be loaded early in the boot process
     LoadMessage "Initializing theme engine..."
     
     Set g_Themer = New pdVisualThemes
@@ -354,13 +354,15 @@ Public Sub LoadTheProgram()
     
     LoadMessage "Building font cache..."
         
-    'Previously, two font caches were built: one compatible with GDI+, and a second one, compatible across all fonts.  PD has since been
-    ' modified to generate a single cache, and it will dynamically switch between rendering engines as necessary to support a given font.
-    Font_Management.buildFontCache
+    'PD currently builds two font caches:
+    ' 1) A name-only list of all fonts currently installed.  This is used to populate font dropdown boxes.
+    ' 2) An pdFont-based cache of the current UI font, at various requested sizes.  This cache spares individual controls from needing
+    '     to do their own font management; instead, they can simply request a matching object from the Font_Management module.
+    Font_Management.BuildFontCaches
     
     'Next, build a list of font properties, like supported scripts
-    Font_Management.buildFontCacheProperties
-        
+    Font_Management.BuildFontCacheProperties
+    
     
     '*************************************************************************************************************************************
     ' Get the viewport engine ready

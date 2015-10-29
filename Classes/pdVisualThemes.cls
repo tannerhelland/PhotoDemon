@@ -35,7 +35,7 @@ Private Const WM_PAINT As Long = &HF&
 'I have no idea what colors will actually be used in the final theme format; these are just placeholders for now,
 ' to enable centralized coloration of a few UCs.  The end goal is to provide the smallest possible subset of colors
 ' necessary to render PD's various UI elements.
-Private Const numThemeColors As Long = 23
+Private Const NUM_THEME_COLORS As Long = 23
 
 Public Enum PD_THEME_COLOR
     
@@ -111,24 +111,24 @@ Private cSubclass As cSelfSubHookCallback
 
 'Despite an identical name, this function does *not* use the Win32 API to retrieve a color from the system theme.
 ' Instead, it retrieves a color from PD's current theme color cache.
-Friend Function getThemeColor(ByVal colorType As PD_THEME_COLOR) As Long
+Friend Function GetThemeColor(ByVal colorType As PD_THEME_COLOR) As Long
     
     'Returning a theme color is fairly trivial.  Start by seeing if the requested color is available.
-    getThemeColor = curThemeColors(colorType)
+    GetThemeColor = curThemeColors(colorType)
     
     'If the retrieved value is -1, that means that the current theme does not contain a value for this color.
     ' Return PD's default value for this color.
-    If getThemeColor = -1 Then
+    If GetThemeColor = -1 Then
     
         'Default to the relevant PD default theme value.
-        getThemeColor = getDefaultPDColor(colorType)
+        GetThemeColor = GetDefaultPDColor(colorType)
         
     End If
         
 End Function
 
 'When a container object needs to render contained controls transparently, register it using this function
-Public Sub requestContainerSubclass(ByVal containerHwnd As Long)
+Public Sub RequestContainerSubclass(ByVal containerHwnd As Long)
 
     If (cSubclass Is Nothing) Then
         Set cSubclass = New cSelfSubHookCallback
@@ -140,53 +140,37 @@ Public Sub requestContainerSubclass(ByVal containerHwnd As Long)
 End Sub
 
 'While not strictly required, it is good behavior to unsubclass container objects when they are unloaded
-Public Sub releaseContainerSubclass(ByVal containerHwnd As Long)
+Public Sub ReleaseContainerSubclass(ByVal containerHwnd As Long)
     cSubclass.ssc_UnSubclass containerHwnd
 End Sub
 
-Private Sub Class_Initialize()
-
-    'Prepare our color cache
-    ReDim curThemeColors(0 To numThemeColors - 1) As Long
-    
-    'Reset the color cache.  This is important, because 0 is a valid color, so we can't use it to indicate a
-    ' missing theme entry.  Instead, we use -1 to represent a missing entry.  The color retrieval function
-    ' will automatically cascade to the nearest relevant value if an entry can't be found.
-    resetThemeCache
-    
-    'Populate the color cache with PD's default theme values.  If something goes wrong when attempting to load the
-    ' user's theme of choice, this at least ensures that we have a valid fallback.
-    loadDefaultPDTheme
-
-End Sub
-
 'Reset the theme color cache to all -1 values.
-Private Sub resetThemeCache()
+Private Sub ResetThemeCache()
 
     Dim i As Long
-    For i = 0 To numThemeColors - 1
+    For i = 0 To NUM_THEME_COLORS - 1
         curThemeColors(i) = -1
     Next i
 
 End Sub
 
 'Fill the curThemeColors array with PD's default color scheme
-Private Sub loadDefaultPDTheme()
+Private Sub LoadDefaultPDTheme()
 
     'Default to the light theme
     curThemeContrast = THEME_LIGHT
     
     'Loop through the curThemeColors array, filling each entry with the PD default
     Dim i As Long
-    For i = 0 To numThemeColors - 1
-        curThemeColors(i) = getDefaultPDColor(i)
+    For i = 0 To NUM_THEME_COLORS - 1
+        curThemeColors(i) = GetDefaultPDColor(i)
     Next i
 
 End Sub
 
 'Retrieve a default PD theme color.  These values are hard-coded, and will be superceded by any values supplied
 ' by a user-selected theme.
-Private Function getDefaultPDColor(ByVal colorType As PD_THEME_COLOR) As Long
+Private Function GetDefaultPDColor(ByVal colorType As PD_THEME_COLOR) As Long
 
     'LIGHT THEME DEFAULTS
     If curThemeContrast = THEME_LIGHT Then
@@ -221,75 +205,75 @@ Private Function getDefaultPDColor(ByVal colorType As PD_THEME_COLOR) As Long
             
             'Accent lines, etc
             Case PDTC_ACCENT_DEFAULT
-                getDefaultPDColor = Color_Functions.getRGBLongFromHex("3296dc")
+                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("3296dc")
             
             'Slider track, large contiguous blocks of color
             Case PDTC_ACCENT_HIGHLIGHT
-                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3cafe6")
+                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#3cafe6")
             
             'Background on toolbox images (which can't afford to be as dark as the usual highlight value)
             Case PDTC_ACCENT_ULTRALIGHT
-                getDefaultPDColor = Color_Functions.getRGBLongFromHex("d2f0fa")
+                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("d2f0fa")
             
             'Small or heavily aliased items (e.g. check box check, radio button dot)
             Case PDTC_ACCENT_SHADOW
-                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3270dc")
+                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#3270dc")
             
             
             'Non-interactive variations (used to render control outlines, etc)
             Case PDTC_GRAY_DEFAULT
-                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#929292")
+                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#929292")
                 
             Case PDTC_GRAY_HIGHLIGHT
-                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#bababa")
+                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#bababa")
             
             Case PDTC_GRAY_ULTRALIGHT
-                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#e2e2e2")
+                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#e2e2e2")
             
             Case PDTC_GRAY_SHADOW
-                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#5b5b5b")
+                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#5b5b5b")
             
             'Background variations
             Case PDTC_BACKGROUND_DEFAULT
-                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#ffffff")
+                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#ffffff")
                 
             Case PDTC_BACKGROUND_CANVAS
-                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#a0a0a0")
+                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#a0a0a0")
                 
             Case PDTC_BACKGROUND_COMMANDBAR
-                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#dcdce1")
+                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#dcdce1")
             
             'Text variations
             Case PDTC_TEXT_DEFAULT
-                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#404040")
+                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#404040")
                 
             Case PDTC_TEXT_EDITBOX
-                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#202020")
+                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#202020")
                 
             Case PDTC_TEXT_HYPERLINK
-                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3170c0")
+                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#3170c0")
                 
             Case PDTC_TEXT_TITLE
             
             Case PDTC_TEXT_INVERT
-                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#ffffff")
+                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#ffffff")
             
             'Misc colors
             Case PDTC_DISABLED
-                getDefaultPDColor = Color_Functions.getRGBLongFromHex("#b1bac2")
+                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#b1bac2")
             
             Case PDTC_OK_GREEN
             Case PDTC_CANCEL_RED
             Case PDTC_FOCUS_RECT
             
             Case PDTC_CHANNEL_RED
-                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#dc2824")
+                    GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#dc2824")
                     
             Case PDTC_CHANNEL_GREEN
-                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#3ccf31")
+                    GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#3ccf31")
                     
             Case PDTC_CHANNEL_BLUE
-                    getDefaultPDColor = Color_Functions.getRGBLongFromHex("#317bcf")
+                    GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#317bcf")
             
         End Select
     
@@ -302,6 +286,22 @@ Private Function getDefaultPDColor(ByVal colorType As PD_THEME_COLOR) As Long
     End If
 
 End Function
+
+Private Sub Class_Initialize()
+
+    'Prepare our color cache
+    ReDim curThemeColors(0 To NUM_THEME_COLORS - 1) As Long
+    
+    'Reset the color cache.  This is important, because 0 is a valid color, so we can't use it to indicate a
+    ' missing theme entry.  Instead, we use -1 to represent a missing entry.  The color retrieval function
+    ' will automatically cascade to the nearest relevant value if an entry can't be found.
+    ResetThemeCache
+    
+    'Populate the color cache with PD's default theme values.  If something goes wrong when attempting to load the
+    ' user's theme of choice, this at least ensures that we have a valid fallback.
+    LoadDefaultPDTheme
+    
+End Sub
 
 'All events subclassed by this class are processed here.
 Private Sub myWndProc(ByVal bBefore As Boolean, _

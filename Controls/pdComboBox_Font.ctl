@@ -503,7 +503,7 @@ Public Sub initializeFontList()
     Me.Clear
     
     'Retrieve a copy of the current system font cache
-    Font_Management.getCopyOfFontCache m_listOfFonts
+    Font_Management.GetCopyOfSystemFontList m_listOfFonts
     
     'Add the list of fonts into the API combo box, for accessibility reasons
     copyFontsToComboBox
@@ -648,7 +648,7 @@ Public Property Let ListIndex(ByVal newIndex As Long)
             SendMessage m_ComboBoxHwnd, CB_SETCURSEL, newIndex, ByVal 0&
             
             'Request an immediate repaint; without this, there may be a delay, based on the caller's handling of the Click event
-            If Not (cPainterBox Is Nothing) Then cPainterBox.requestRepaint
+            If Not (cPainterBox Is Nothing) Then cPainterBox.RequestRepaint
             
             'Notify the user of the change
             RaiseEvent Click
@@ -696,7 +696,7 @@ Public Sub setListIndexByString(ByVal listString As String, Optional ByVal compa
                     SendMessage m_ComboBoxHwnd, CB_SETCURSEL, newIndex, ByVal 0&
                     
                     'Request an immediate repaint; without this, there may be a delay, based on the caller's handling of the Click event
-                    If Not (cPainterBox Is Nothing) Then cPainterBox.requestRepaint
+                    If Not (cPainterBox Is Nothing) Then cPainterBox.RequestRepaint
                     
                     'Notify the user of the change
                     RaiseEvent Click
@@ -736,16 +736,16 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     ' matching GDI function(s).
     If g_IsProgramRunning And Not (g_Themer Is Nothing) Then
         If newValue Then
-            UserControl.BackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+            UserControl.BackColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
         Else
-            UserControl.BackColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+            UserControl.BackColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
         End If
     End If
     
     If m_ComboBoxHwnd <> 0 Then EnableWindow m_ComboBoxHwnd, IIf(newValue, 1, 0)
     
     UserControl.Enabled = newValue
-    If Not (cPainterBox Is Nothing) Then cPainterBox.requestRepaint
+    If Not (cPainterBox Is Nothing) Then cPainterBox.RequestRepaint
     
     PropertyChanged "Enabled"
     
@@ -786,7 +786,7 @@ End Property
 Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     m_MouseOverComboBox = True
-    cPainterBox.requestRepaint
+    cPainterBox.RequestRepaint
         
     'Set a hand cursor
     cMouseEvents.setSystemCursor IDC_HAND
@@ -796,7 +796,7 @@ End Sub
 Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     m_MouseOverComboBox = False
-    cPainterBox.requestRepaint
+    cPainterBox.RequestRepaint
     
     'Reset the cursor
     cMouseEvents.setSystemCursor IDC_ARROW
@@ -869,7 +869,7 @@ Private Sub UserControl_Initialize()
     'Initialize our font collection.  This is used to store a copy of each font face, as it's encountered, which we use to render preview
     ' text on the right side of the font dropdown.
     Set m_FontCollection = New pdFontCollection
-    m_FontCollection.setExtendedPropertyCaching True
+    m_FontCollection.SetExtendedPropertyCaching True
     
     'Create demo strings, to be rendered in the drop-down using the current font face
     m_Text_Default = "AaBbCc 123"
@@ -946,7 +946,7 @@ Private Sub createComboBoxBrush()
     If m_ComboBoxBrush <> 0 Then DeleteObject m_ComboBoxBrush
     
     If g_IsProgramRunning And Not (g_Themer Is Nothing) Then
-        m_ComboBoxBrush = CreateSolidBrush(g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT))
+        m_ComboBoxBrush = CreateSolidBrush(g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT))
     Else
         m_ComboBoxBrush = CreateSolidBrush(RGB(128, 255, 255))
     End If
@@ -1121,7 +1121,7 @@ Private Function createComboBox() As Boolean
         
         'Assign a second subclasser for the window painter
         If Not (cPainterBox Is Nothing) Then
-            cPainterBox.startPainter m_ComboBoxHwnd
+            cPainterBox.StartPainter m_ComboBoxHwnd
         End If
         
         '...and a third subclasser for mouse events
@@ -1240,7 +1240,7 @@ Private Sub refreshFont(Optional ByVal forceRefresh As Boolean = False)
         'If m_ComboBoxHwnd <> 0 Then SendMessage m_ComboBoxHwnd, WM_SETFONT, curFont.getFontHandle, IIf(UserControl.Extender.Visible, 1, 0)
         
         'Reset our font cache, as the per-font previews are also invalid now
-        If Not (m_FontCollection Is Nothing) Then m_FontCollection.resetCache
+        If Not (m_FontCollection Is Nothing) Then m_FontCollection.ResetCache
         
         'We also need to recalculate the width of the largest string in the list.  This is used to determine the width of the drop-down box.
         m_LargestWidth = 0
@@ -1295,7 +1295,7 @@ Public Sub UpdateAgainstCurrentTheme()
         createComboBox
         
         'Force an immediate repaint
-        cPainterBox.requestRepaint
+        cPainterBox.RequestRepaint
         
     End If
     
@@ -1348,7 +1348,7 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
             Dim targetDC As Long
             
             If srcIsWMPAINT Then
-                targetDC = cPainterBox.getPaintStructDC()
+                targetDC = cPainterBox.GetPaintStructDC()
             Else
                 targetDC = GetDC(m_ComboBoxHwnd)
             End If
@@ -1362,33 +1362,33 @@ Private Sub drawComboBox(Optional ByVal srcIsWMPAINT As Boolean = True)
                     
                     'When the mouse is over the combo box, the border and drop-down arrow are highlighted
                     If m_MouseOverComboBox Then
-                        cboBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
-                        cboButtonColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+                        cboBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
+                        cboButtonColor = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
                     Else
-                        cboBorderColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
-                        cboButtonColor = g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
+                        cboBorderColor = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
+                        cboButtonColor = g_Themer.GetThemeColor(PDTC_TEXT_DEFAULT)
                     End If
                     
                     If m_HasFocus Then
-                        cboFillColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-                        cboTextColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
+                        cboFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+                        cboTextColor = g_Themer.GetThemeColor(PDTC_TEXT_INVERT)
                         cboButtonColor = cboTextColor
                     Else
-                        cboFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-                        cboTextColor = g_Themer.getThemeColor(PDTC_TEXT_EDITBOX)
+                        cboFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
+                        cboTextColor = g_Themer.GetThemeColor(PDTC_TEXT_EDITBOX)
                     End If
                     
                     'Apply an additional check for mouse over and a srcIsWMPAINT request; this handles hover behavior for
                     ' text in the main combo box (which is handled a little differently).
                     If m_MouseOverComboBox And Not m_HasFocus Then
-                        cboTextColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+                        cboTextColor = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
                     End If
                     
                 Else
                 
-                    cboBorderColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
-                    cboFillColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
-                    cboTextColor = g_Themer.getThemeColor(PDTC_TEXT_DEFAULT)
+                    cboBorderColor = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
+                    cboFillColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
+                    cboTextColor = g_Themer.GetThemeColor(PDTC_TEXT_DEFAULT)
                     cboButtonColor = cboTextColor
                 
                 End If
@@ -1489,13 +1489,13 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
             
             'If the current entry is also the ListIndex, and the control has focus, render it inversely
             If isMouseOverItem And m_HasFocus Then
-                itemTextColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
-                itemBackColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+                itemTextColor = g_Themer.GetThemeColor(PDTC_TEXT_INVERT)
+                itemBackColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
             
             'If this entry is not the ListIndex, or the control does not have focus, render the item normally.
             Else
-                itemTextColor = g_Themer.getThemeColor(PDTC_TEXT_EDITBOX)
-                itemBackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                itemTextColor = g_Themer.GetThemeColor(PDTC_TEXT_EDITBOX)
+                itemBackColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
             End If
             
             'Fill the background
@@ -1546,11 +1546,11 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
                 
                 'Start by creating this font, as necessary
                 Dim fontIndex As Long
-                fontIndex = m_FontCollection.addFontToCache(tmpString, m_FontSize + 4)
+                fontIndex = m_FontCollection.AddFontToCache(tmpString, m_FontSize + 4)
     
                 'Retrieve a handle to the created font
                 Dim fontHandle As Long
-                fontHandle = m_FontCollection.getFontHandleByPosition(fontIndex)
+                fontHandle = m_FontCollection.GetFontHandleByPosition(fontIndex)
     
                 'Select the font into the target DC
                 Dim oldFont As Long
@@ -1586,7 +1586,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
                 If g_InterfacePerformance <> PD_PERF_FASTEST Then
                 
                     Dim tmpProperties As PD_FONT_PROPERTY
-                    If m_FontCollection.getFontPropertiesByPosition(fontIndex, tmpProperties) Then
+                    If m_FontCollection.GetFontPropertiesByPosition(fontIndex, tmpProperties) Then
                     
                         If tmpProperties.Supports_CJK Then
                             sampleText = m_Text_Default & " " & m_Text_CJK
@@ -1618,7 +1618,7 @@ Private Function drawComboBoxEntry(ByRef srcDIS As DRAWITEMSTRUCT) As Boolean
             
             'If the item has focus, draw a rectangular frame around the item.
             If isMouseOverItem Then
-                tmpBackBrush = CreateSolidBrush(g_Themer.getThemeColor(PDTC_ACCENT_SHADOW))
+                tmpBackBrush = CreateSolidBrush(g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW))
                 FrameRect srcDIS.hDC, srcDIS.rcItem, tmpBackBrush
                 DeleteObject tmpBackBrush
             End If
@@ -1707,7 +1707,7 @@ Private Sub syncUserControlSizeToComboSize()
         End With
             
         'Repaint the control
-        If Not (cPainterBox Is Nothing) Then cPainterBox.requestRepaint
+        If Not (cPainterBox Is Nothing) Then cPainterBox.RequestRepaint
         
     End If
 
@@ -1725,7 +1725,7 @@ Private Sub InstallHookConditional()
         
         'Note that this window is now active
         m_HasFocus = True
-        cPainterBox.requestRepaint
+        cPainterBox.RequestRepaint
         
         'No hook exists.  Hook the control now.
         cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, m_ComboBoxHwnd, 2, Me, , True
@@ -1741,7 +1741,7 @@ Private Sub RemoveHookConditional()
         
         'Note that this window is now considered inactive
         m_HasFocus = False
-        cPainterBox.requestRepaint
+        cPainterBox.RequestRepaint
         
         'A hook exists.  Uninstall it now.
         cSubclass.shk_UnHook WH_KEYBOARD
@@ -1958,7 +1958,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 'Check for the CBN_SELCHANGE flag; if present, raise the CLICK event
                 If ((wParam \ &H10000) = CBN_SELCHANGE) Then
                     m_CurrentListIndex = SendMessage(m_ComboBoxHwnd, CB_GETCURSEL, 0, ByVal 0&)
-                    cPainterBox.requestRepaint
+                    cPainterBox.RequestRepaint
                     RaiseEvent Click
                     bHandled = True
                 End If
@@ -2058,7 +2058,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
                 
                 'We can set the text color directly, using the API
                 If g_IsProgramRunning Then
-                    SetTextColor wParam, g_Themer.getThemeColor(PDTC_TEXT_EDITBOX)
+                    SetTextColor wParam, g_Themer.GetThemeColor(PDTC_TEXT_EDITBOX)
                 Else
                     SetTextColor wParam, RGB(0, 0, 128)
                 End If
@@ -2152,7 +2152,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             End If
             
             InstallHookConditional
-            cPainterBox.requestRepaint
+            cPainterBox.RequestRepaint
             
         Case WM_KILLFOCUS
             
@@ -2169,7 +2169,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
             Else
                 RemoveHookConditional
             End If
-            cPainterBox.requestRepaint
+            cPainterBox.RequestRepaint
             
         'Resize messages must be handled manually for the combo box, as we need to dynamically sync the resize state of both parent and child window
         Case WM_SIZE

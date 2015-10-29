@@ -205,7 +205,7 @@ End Function
 
 'This function draws horizontally and vertically centered text onto the attached DC, and it does it without modifying any of the current
 ' font settings (including alignment).  It is designed for one-off renderings of centered text.
-Public Sub drawCenteredText(ByRef srcString As String, Optional ByVal customWidth As Long = -1, Optional ByVal customHeight As Long = -1)
+Public Sub DrawCenteredText(ByRef srcString As String, Optional ByVal customWidth As Long = -1, Optional ByVal customHeight As Long = -1)
 
     'Because DCs are dimensionless abstractions, we need to retrieve the attached window and use it to calculate the output rect.
     ' (Note that this does not work when rendering to a windowless DC, like a DIB.)
@@ -226,9 +226,9 @@ Public Sub drawCenteredText(ByRef srcString As String, Optional ByVal customWidt
     Dim tmpRect As RECT
     
     tmpRect.Left = halfDCWidth
-    tmpRect.Right = tmpRect.Left + getWidthOfString(srcString)
+    tmpRect.Right = tmpRect.Left + GetWidthOfString(srcString)
     tmpRect.Top = halfDCHeight
-    tmpRect.Bottom = tmpRect.Top + getHeightOfWordwrapString(srcString, getWidthOfString(srcString))
+    tmpRect.Bottom = tmpRect.Top + GetHeightOfWordwrapString(srcString, GetWidthOfString(srcString))
     
     'DrawText handles the actual rendering
     DrawText curDC, StrPtr(srcString), Len(srcString), tmpRect, DT_WORDBREAK Or DT_NOCLIP
@@ -237,7 +237,7 @@ End Sub
 
 'This function draws horizontally and vertically centered text within a specified rect, and it does it without modifying any of the current
 ' font settings (including alignment).  It is designed for one-off renderings of centered text.
-Friend Sub drawCenteredTextToRect(ByVal srcString As String, ByRef dstRect As RECT, Optional ByVal centerVertically As Boolean = False)
+Friend Sub DrawCenteredTextToRect(ByVal srcString As String, ByRef dstRect As RECT, Optional ByVal centerVertically As Boolean = False)
     
     Dim dtFlags As Long
     dtFlags = DT_CENTER
@@ -254,12 +254,12 @@ End Sub
 
 'If the font has already been created and set to a DC, this function can be used to quickly render text (because no
 ' additional parameters have to be set)
-Public Sub fastRenderText(ByVal dstX As Long, ByVal dstY As Long, ByRef srcString As String)
+Public Sub FastRenderText(ByVal dstX As Long, ByVal dstY As Long, ByRef srcString As String)
     ExtTextOutNoRect curDC, dstX, dstY, 0, ByVal 0&, StrPtr(srcString), Len(srcString), ByVal 0&
 End Sub
 
 'A roughly identical function to fastRenderText, above, but with a constraining rect
-Public Sub fastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcString As String, Optional ByVal useEllipses As Boolean = True)
+Public Sub FastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcString As String, Optional ByVal useEllipses As Boolean = True)
     
     'IMPORTANT NOTE!  Per MSDN, the following caveat is made regarding the source string pointer:
     '  "A pointer to the string that specifies the text to be drawn. If the nCount parameter is -1, the string must
@@ -316,7 +316,7 @@ Public Sub fastRenderTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, By
 End Sub
 
 'A roughly identical function to fastRenderText, above, but with a constraining rect and expansion to multiple lines as necessary
-Public Sub fastRenderMultilineTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcString As String)
+Public Sub FastRenderMultilineTextWithClipping(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcString As String)
     
     'Multiline text does not need ellipses, so this function is actually simpler than its single-line counterpart
     Dim srcStringLen As Long
@@ -354,7 +354,7 @@ Public Sub fastRenderMultilineTextWithClipping(ByVal dstX As Long, ByVal dstY As
 End Sub
 
 'A roughly identical function to fastRenderText, above, but with support for linebreaks
-Public Sub fastRenderMultilineText(ByVal dstX As Long, ByVal dstY As Long, ByRef srcString As String)
+Public Sub FastRenderMultilineText(ByVal dstX As Long, ByVal dstY As Long, ByRef srcString As String)
         
     'Find the bounding rect of the text
     Dim tmpRect As RECT
@@ -362,8 +362,8 @@ Public Sub fastRenderMultilineText(ByVal dstX As Long, ByVal dstY As Long, ByRef
     'Modify the rect to account for the specified offset
     tmpRect.Left = dstX
     tmpRect.Top = dstY
-    tmpRect.Right = dstX + getWidthOfString(srcString)
-    tmpRect.Bottom = dstY + getHeightOfWordwrapString(srcString, getWidthOfString(srcString))
+    tmpRect.Right = dstX + GetWidthOfString(srcString)
+    tmpRect.Bottom = dstY + GetHeightOfWordwrapString(srcString, GetWidthOfString(srcString))
     
     'If the text is going to extend past the target rect, draw it with ellipses
     DrawText curDC, StrPtr(srcString), Len(srcString), tmpRect, DT_LEFT Or DT_TOP Or DT_WORDBREAK
@@ -372,7 +372,7 @@ End Sub
 
 'Select the current font and other text settings into the specified DC.  Ideally, this should only be done when absolutely
 ' necessary to keep speed high.  (Also, note the DC so we can do fast font rendering later.)
-Public Sub attachToDC(ByVal targetDC As Long)
+Public Sub AttachToDC(ByVal targetDC As Long)
     
     'Set the font
     If targetDC <> curDC Then
@@ -390,7 +390,7 @@ Public Sub attachToDC(ByVal targetDC As Long)
 End Sub
 
 'If we want to detach this font from its current DC, use this call
-Public Sub releaseFromDC()
+Public Sub ReleaseFromDC()
     If curDC <> 0 Then
         SelectObject curDC, oldFont
         curDC = 0
@@ -398,27 +398,27 @@ Public Sub releaseFromDC()
 End Sub
 
 'Create the font object on-demand
-Public Function createFontObject() As Boolean
+Public Function CreateFontObject() As Boolean
 
     'If a font has already been created, delete it now
-    deleteCurrentFont
+    DeleteCurrentFont
     
     curFont = CreateFontIndirect(currentLogFont)
     
-    If curFont = 0 Then createFontObject = False Else createFontObject = True
+    If curFont = 0 Then CreateFontObject = False Else CreateFontObject = True
     
     'Inside debug mode, increase a global font counter.  This is extremely helpful for finding font leaks
     #If DEBUGMODE = 1 Then
-        If createFontObject Then g_FontsCreated = g_FontsCreated + 1
+        If CreateFontObject Then g_FontsCreated = g_FontsCreated + 1
     #End If
 
 End Function
 
-Public Function getFontBold() As Boolean
-    getFontBold = m_origFontBold
+Public Function GetFontBold() As Boolean
+    GetFontBold = m_origFontBold
 End Function
 
-Public Sub setFontBold(ByVal newBold As Boolean)
+Public Sub SetFontBold(ByVal newBold As Boolean)
     m_origFontBold = newBold
     If newBold Then
         currentLogFont.lfWeight = FW_BOLD
@@ -427,7 +427,7 @@ Public Sub setFontBold(ByVal newBold As Boolean)
     End If
 End Sub
 
-Public Sub setFontColor(ByVal newColor As Long)
+Public Sub SetFontColor(ByVal newColor As Long)
     
     fontColor = newColor
     
@@ -436,56 +436,56 @@ Public Sub setFontColor(ByVal newColor As Long)
     
 End Sub
 
-Public Function getFontFace() As String
-    getFontFace = m_origFontFace
+Public Function GetFontFace() As String
+    GetFontFace = m_origFontFace
 End Function
 
-Public Sub setFontFace(ByVal newFace As String)
+Public Sub SetFontFace(ByVal newFace As String)
     m_origFontFace = newFace
     currentLogFont.lfFaceName = newFace & Chr(0)
 End Sub
 
-Public Function getFontItalic() As Boolean
-    getFontItalic = m_origFontItalic
+Public Function GetFontItalic() As Boolean
+    GetFontItalic = m_origFontItalic
 End Function
 
-Public Sub setFontItalic(ByVal newItalic As Boolean)
+Public Sub SetFontItalic(ByVal newItalic As Boolean)
     m_origFontItalic = newItalic
     currentLogFont.lfItalic = -1 * newItalic
 End Sub
 
-Public Function getFontSize() As Single
-    getFontSize = m_origFontSize
+Public Function GetFontSize() As Single
+    GetFontSize = m_origFontSize
 End Function
 
-Public Sub setFontSize(ByVal newFontSize As Single)
+Public Sub SetFontSize(ByVal newFontSize As Single)
     m_origFontSize = newFontSize
-    currentLogFont.lfHeight = convertFontSize(newFontSize)
+    currentLogFont.lfHeight = ConvertFontSize(newFontSize)
 End Sub
 
-Private Function convertFontSize(ByVal sizeInPoints As Single) As Long
-    convertFontSize = -1 * internal_MulDiv(sizeInPoints, curLogPixelsY, 72)
+Private Function ConvertFontSize(ByVal sizeInPoints As Single) As Long
+    ConvertFontSize = -1 * Internal_MulDiv(sizeInPoints, curLogPixelsY, 72)
 End Function
 
 'It really isn't necessary to rely on the system MulDiv values for the sizes used for fonts.  By using CLng, we can mimic
 ' MulDiv's rounding behavior as well.
-Private Function internal_MulDiv(ByVal srcNumber As Single, ByVal srcNumerator As Single, ByVal srcDenominator As Single) As Long
-    internal_MulDiv = CLng((srcNumber * srcNumerator) / srcDenominator)
+Private Function Internal_MulDiv(ByVal srcNumber As Single, ByVal srcNumerator As Single, ByVal srcDenominator As Single) As Long
+    Internal_MulDiv = CLng((srcNumber * srcNumerator) / srcDenominator)
 End Function
 
-Public Sub setFontStrikeout(ByVal newStrikeout As Boolean)
+Public Sub SetFontStrikeout(ByVal newStrikeout As Boolean)
     currentLogFont.lfStrikeOut = -1 * newStrikeout
 End Sub
 
-Public Sub setFontUnderline(ByVal newUnderline As Boolean)
+Public Sub SetFontUnderline(ByVal newUnderline As Boolean)
     currentLogFont.lfUnderline = -1 * newUnderline
 End Sub
 
-Public Function getFontUnderline() As Boolean
-    getFontUnderline = (currentLogFont.lfUnderline * -1)
+Public Function GetFontUnderline() As Boolean
+    GetFontUnderline = (currentLogFont.lfUnderline * -1)
 End Function
 
-Public Sub setTextAlignment(ByVal newAlignment As AlignmentConstants)
+Public Sub SetTextAlignment(ByVal newAlignment As AlignmentConstants)
     
     Select Case newAlignment
         Case vbLeftJustify
@@ -504,41 +504,41 @@ End Sub
 
 'Return the width (and below, height) of a string, in pixels.  This action REQUIRES that a DC be currently set for this
 ' object, as the DC's font settings are used to determine the string's dimensions.
-Public Function getWidthOfString(ByVal srcString As String) As Long
+Public Function GetWidthOfString(ByVal srcString As String) As Long
     
     Dim txtSize As POINTAPI
     
     'If we're not currently selected into a DC, silently plug in our temporary DC
-    If curDC = 0 Then attachToDC m_TemporaryDC
+    If curDC = 0 Then AttachToDC m_TemporaryDC
     
     'Retrieve the string's dimensions
     GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
-    getWidthOfString = txtSize.x
+    GetWidthOfString = txtSize.x
     
     'Release the temporary DC, as necessary
-    If curDC = m_TemporaryDC Then releaseFromDC
+    If curDC = m_TemporaryDC Then ReleaseFromDC
     
 End Function
 
 'With the current font settings, find the height of either a single-line string, or a word-wrapped string.
 ' For convenience, I've separated these into separate functions, as the underlying logic is actually quite different.
-Public Function getHeightOfString(ByVal srcString As String) As Long
+Public Function GetHeightOfString(ByVal srcString As String) As Long
     
     Dim txtSize As POINTAPI
     
     'If we're not currently selected into a DC, silently plug in our temporary DC
-    If curDC = 0 Then attachToDC m_TemporaryDC
+    If curDC = 0 Then AttachToDC m_TemporaryDC
     
     'Retrieve the string's dimensions
     GetTextExtentPoint32 curDC, StrPtr(srcString), Len(srcString), txtSize
-    getHeightOfString = txtSize.y
+    GetHeightOfString = txtSize.y
     
     'Release the temporary DC, as necessary
-    If curDC = m_TemporaryDC Then releaseFromDC
+    If curDC = m_TemporaryDC Then ReleaseFromDC
     
 End Function
 
-Public Function getHeightOfWordwrapString(ByVal srcString As String, ByVal strWidth As Long) As Long
+Public Function GetHeightOfWordwrapString(ByVal srcString As String, ByVal strWidth As Long) As Long
 
     Dim tmpRect As RECT
     tmpRect.Left = 0
@@ -547,14 +547,14 @@ Public Function getHeightOfWordwrapString(ByVal srcString As String, ByVal strWi
     tmpRect.Right = strWidth - 1
     
     'As a convenience to the caller, we'll supply a temporary DC if one isn't set.
-    If curDC = 0 Then attachToDC m_TemporaryDC
+    If curDC = 0 Then AttachToDC m_TemporaryDC
     
     'Retrieve the string's dimensions
     DrawText curDC, StrPtr(srcString), Len(srcString), tmpRect, DT_LEFT Or DT_CALCRECT Or DT_WORDBREAK Or DT_EXTERNALLEADING Or DT_NOPREFIX Or DT_TOP
-    getHeightOfWordwrapString = tmpRect.Bottom
+    GetHeightOfWordwrapString = tmpRect.Bottom
     
     'If we used our temporary DC for testing, free it now
-    If curDC = m_TemporaryDC Then releaseFromDC
+    If curDC = m_TemporaryDC Then ReleaseFromDC
 
 End Function
 
@@ -570,7 +570,7 @@ Private Sub Class_Initialize()
     ' the current OS, so external functions do not need to set this manually.
     With currentLogFont
     
-        .lfHeight = convertFontSize(11)
+        .lfHeight = ConvertFontSize(11)
         .lfWidth = 0        'This will automatically set the width based on the height
         
         .lfEscapement = 0   'Used for rotation; not utilized at present
@@ -619,26 +619,26 @@ End Sub
 Private Sub Class_Terminate()
 
     'Free any remaining font resources
-    deleteCurrentFont
+    DeleteCurrentFont
     
     'Free our temporary metrics DC
     If m_TemporaryDC <> 0 Then Drawing.freeTemporaryDC m_TemporaryDC
     
 End Sub
 
-Public Function hasFontBeenCreated() As Boolean
-    hasFontBeenCreated = (curFont <> 0)
+Public Function HasFontBeenCreated() As Boolean
+    HasFontBeenCreated = (curFont <> 0)
 End Function
 
-Public Function getAttachedDC() As Long
-    getAttachedDC = curDC
+Public Function GetAttachedDC() As Long
+    GetAttachedDC = curDC
 End Function
 
-Public Function getFontHandle() As Long
-    getFontHandle = curFont
+Public Function GetFontHandle() As Long
+    GetFontHandle = curFont
 End Function
 
-Public Sub deleteCurrentFont()
+Public Sub DeleteCurrentFont()
     
     'If a font was created, delete it now
     If curFont <> 0 Then
@@ -646,7 +646,7 @@ Public Sub deleteCurrentFont()
         'If the font is inside a DC, remove it (otherwise we can't delete it)
         If curDC <> 0 Then
             'Debug.Print "HEY!  Font was not removed from DC - please do that before deleting it!"
-            releaseFromDC
+            ReleaseFromDC
         End If
         
         #If DEBUGMODE = 1 Then
@@ -665,7 +665,7 @@ End Sub
 
 'Quick and dirty function for checking font existence.  Does not use API at present, so fonts with Unicode names won't return correct results.
 ' I haven't done a check, but I expect this to be faster than enum-ing all available fonts and looking for a match...
-Public Function doesFontExist(ByVal fontNameToCheck As String, Optional ByRef fontSubstitute As String, Optional ByRef nearestFontSize As Long = 8) As Boolean
+Public Function DoesFontExist(ByVal fontNameToCheck As String, Optional ByRef fontSubstitute As String, Optional ByRef nearestFontSize As Long = 8) As Boolean
 
     'I don't know if this function will throw errors, but better safe than sorry...
     On Error Resume Next
@@ -679,7 +679,7 @@ Public Function doesFontExist(ByVal fontNameToCheck As String, Optional ByRef fo
     tmpFont.Size = nearestFontSize
     
     'See if the font object has the same name.  Windows will automatically substitute a new font if the requested one can't be found.
-    If StrComp(fontNameToCheck, tmpFont.Name, vbTextCompare) = 0 Then doesFontExist = True Else doesFontExist = False
+    If StrComp(fontNameToCheck, tmpFont.Name, vbTextCompare) = 0 Then DoesFontExist = True Else DoesFontExist = False
     
     'Not sure if helpful, but return the replacement font name and nearest supported size
     fontSubstitute = tmpFont.Name
@@ -691,7 +691,7 @@ End Function
 ' Word-wrapping is not used, by design, as it's assumed the caller already tried word-wrapping as a solution.
 '
 'RETURNS: largest font size that fits the string into the desired width.  (7 is the smallest size this function will return, FYI.)
-Public Function getMaxFontSizeToFitStringWidth(ByVal srcString As String, ByVal desiredWidth As Long, Optional ByVal startingFontSize As Long = 10) As Single
+Public Function GetMaxFontSizeToFitStringWidth(ByVal srcString As String, ByVal desiredWidth As Long, Optional ByVal startingFontSize As Long = 10) As Single
     
     'Start by determining a targetDC.  A fake DC will be used, as necessary.
     Dim targetDC As Long, backupDC As Long
@@ -708,15 +708,15 @@ Public Function getMaxFontSizeToFitStringWidth(ByVal srcString As String, ByVal 
     backupFontSize = m_origFontSize
     
     'Create the font anew, using the default string size we were passed
-    releaseFromDC
+    ReleaseFromDC
     m_origFontSize = startingFontSize
-    setFontSize m_origFontSize
-    createFontObject
-    attachToDC targetDC
+    SetFontSize m_origFontSize
+    CreateFontObject
+    AttachToDC targetDC
     
     'Measure the font relative to the current control size
     Dim stringWidth As Long
-    stringWidth = getWidthOfString(srcString)
+    stringWidth = GetWidthOfString(srcString)
     
     'If the string does not fit within the control size, shrink the font accordingly.
     Do While (stringWidth > desiredWidth) And (m_origFontSize >= 7)
@@ -725,27 +725,27 @@ Public Function getMaxFontSizeToFitStringWidth(ByVal srcString As String, ByVal 
         m_origFontSize = m_origFontSize - 0.5
         
         'Recreate the font
-        releaseFromDC
-        setFontSize m_origFontSize
-        createFontObject
-        attachToDC targetDC
+        ReleaseFromDC
+        SetFontSize m_origFontSize
+        CreateFontObject
+        AttachToDC targetDC
         
         'Measure the new size
-        stringWidth = getWidthOfString(srcString)
+        stringWidth = GetWidthOfString(srcString)
         
     Loop
     
     'By this point, m_origFontSize represents the valid size.  Return it.
-    getMaxFontSizeToFitStringWidth = m_origFontSize
+    GetMaxFontSizeToFitStringWidth = m_origFontSize
     
     'Before exiting, restore any parameters we changed
-    releaseFromDC
-    setFontSize backupFontSize
-    createFontObject
+    ReleaseFromDC
+    SetFontSize backupFontSize
+    CreateFontObject
     
     If backupDC <> 0 Then
         curDC = backupDC
-        attachToDC curDC
+        AttachToDC curDC
     End If
     
 End Function
@@ -754,7 +754,7 @@ End Function
 ' that rect.  Word-wrapping will be used.
 '
 'RETURNS: largest font size that fits the string into the desired width.  (7 is the smallest size this function will return, FYI.)
-Public Function getMaxFontSizeToFitWordWrap(ByVal srcString As String, ByVal desiredWidth As Long, ByVal desiredHeight As Long, Optional ByVal startingFontSize As Long = 10) As Single
+Public Function GetMaxFontSizeToFitWordWrap(ByVal srcString As String, ByVal desiredWidth As Long, ByVal desiredHeight As Long, Optional ByVal startingFontSize As Long = 10) As Single
     
     'Start by determining a targetDC.  A fake DC will be used, as necessary.
     Dim targetDC As Long, backupDC As Long
@@ -771,15 +771,15 @@ Public Function getMaxFontSizeToFitWordWrap(ByVal srcString As String, ByVal des
     backupFontSize = m_origFontSize
     
     'Create the font anew, using the default string size we were passed
-    releaseFromDC
+    ReleaseFromDC
     m_origFontSize = startingFontSize
-    setFontSize m_origFontSize
-    createFontObject
-    attachToDC targetDC
+    SetFontSize m_origFontSize
+    CreateFontObject
+    AttachToDC targetDC
     
     'Measure the font relative to the current control size
     Dim stringHeight As Long
-    stringHeight = getHeightOfWordwrapString(srcString, desiredWidth)
+    stringHeight = GetHeightOfWordwrapString(srcString, desiredWidth)
     
     'If the string does not fit within the control size, shrink the font accordingly.
     Do While (stringHeight > desiredHeight) And (m_origFontSize >= 7)
@@ -788,30 +788,30 @@ Public Function getMaxFontSizeToFitWordWrap(ByVal srcString As String, ByVal des
         m_origFontSize = m_origFontSize - 0.5
         
         'Recreate the font
-        releaseFromDC
-        setFontSize m_origFontSize
-        createFontObject
-        attachToDC targetDC
+        ReleaseFromDC
+        SetFontSize m_origFontSize
+        CreateFontObject
+        AttachToDC targetDC
         
         'Measure the new size
-        stringHeight = getHeightOfWordwrapString(srcString, desiredWidth)
+        stringHeight = GetHeightOfWordwrapString(srcString, desiredWidth)
         
     Loop
     
     'By this point, m_origFontSize represents the valid size.  Return it.
-    getMaxFontSizeToFitWordWrap = m_origFontSize
+    GetMaxFontSizeToFitWordWrap = m_origFontSize
     
     'Before exiting, restore any parameters we changed
-    releaseFromDC
+    ReleaseFromDC
     
     If m_origFontSize <> backupFontSize Then
-        setFontSize backupFontSize
-        createFontObject
+        SetFontSize backupFontSize
+        CreateFontObject
     End If
     
     If backupDC <> 0 Then
         curDC = backupDC
-        attachToDC curDC
+        AttachToDC curDC
     End If
     
 End Function
