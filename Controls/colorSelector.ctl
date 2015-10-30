@@ -101,7 +101,7 @@ End Property
 Public Property Let Color(ByVal newColor As OLE_COLOR)
     
     curColor = newColor
-    redrawBackBuffer
+    RedrawBackBuffer
     
     PropertyChanged "Color"
     RaiseEvent ColorChanged
@@ -120,7 +120,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     PropertyChanged "Enabled"
     
     'Redraw the control
-    redrawBackBuffer
+    RedrawBackBuffer
     
 End Property
 
@@ -165,40 +165,40 @@ End Sub
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     'Primary color area raises a dialog; secondary color area copies the color from the main screen
-    If isMouseInPrimaryButton(x, y) And ((Button Or pdLeftButton) <> 0) Then DisplayColorSelection
-    If isMouseInSecondaryButton(x, y) And ((Button Or pdLeftButton) <> 0) Then Me.Color = layerpanel_Colors.clrVariants.Color
+    If IsMouseInPrimaryButton(x, y) And ((Button Or pdLeftButton) <> 0) Then DisplayColorSelection
+    If IsMouseInSecondaryButton(x, y) And ((Button Or pdLeftButton) <> 0) Then Me.Color = layerpanel_Colors.clrVariants.Color
     
 End Sub
 
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    redrawBackBuffer
-    updateCursor x, y
+    RedrawBackBuffer
+    UpdateCursor x, y
 End Sub
 
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseInPrimaryButton = False
     m_MouseInSecondaryButton = False
-    redrawBackBuffer
-    updateCursor -100, -100
+    RedrawBackBuffer
+    UpdateCursor -100, -100
 End Sub
 
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
-    updateCursor x, y
+    UpdateCursor x, y
     Dim redrawRequired As Boolean
     
-    If isMouseInPrimaryButton(x, y) <> m_MouseInPrimaryButton Then
-        m_MouseInPrimaryButton = isMouseInPrimaryButton(x, y)
+    If IsMouseInPrimaryButton(x, y) <> m_MouseInPrimaryButton Then
+        m_MouseInPrimaryButton = IsMouseInPrimaryButton(x, y)
         redrawRequired = True
     End If
     
-    If isMouseInSecondaryButton(x, y) <> m_MouseInSecondaryButton Then
-        m_MouseInSecondaryButton = isMouseInSecondaryButton(x, y)
+    If IsMouseInSecondaryButton(x, y) <> m_MouseInSecondaryButton Then
+        m_MouseInSecondaryButton = IsMouseInSecondaryButton(x, y)
         redrawRequired = True
     End If
     
     If redrawRequired Then
-        redrawBackBuffer
+        RedrawBackBuffer
         MakeNewTooltip
     End If
     
@@ -217,17 +217,17 @@ End Sub
 Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean)
     
     'On program-wide color changes, redraw ourselves accordingly
-    If wMsg = WM_PD_PRIMARY_COLOR_CHANGE Then redrawBackBuffer
+    If wMsg = WM_PD_PRIMARY_COLOR_CHANGE Then RedrawBackBuffer
     
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then updateControlLayout
-    redrawBackBuffer
+    If updateLayoutToo Then UpdateControlLayout
+    RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    updateControlLayout
+    UpdateControlLayout
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -249,7 +249,7 @@ Private Sub UserControl_Initialize()
     If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
     
     'Update the control size parameters at least once
-    updateControlLayout
+    UpdateControlLayout
     
 End Sub
 
@@ -286,7 +286,7 @@ End Sub
 
 'Whenever a control property changes that affects control size or layout (including internal changes, like caption adjustments),
 ' call this function to recalculate the control's layout
-Private Sub updateControlLayout()
+Private Sub UpdateControlLayout()
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
@@ -334,8 +334,8 @@ Private Sub updateControlLayout()
 End Sub
 
 'When the mouse moves, the cursor should be updated to match
-Private Sub updateCursor(ByVal x As Single, ByVal y As Single)
-    If isMouseInPrimaryButton(x, y) Or isMouseInSecondaryButton(x, y) Then
+Private Sub UpdateCursor(ByVal x As Single, ByVal y As Single)
+    If IsMouseInPrimaryButton(x, y) Or IsMouseInSecondaryButton(x, y) Then
         ucSupport.RequestCursor IDC_HAND
     Else
         ucSupport.RequestCursor IDC_DEFAULT
@@ -344,16 +344,16 @@ End Sub
 
 'Returns TRUE if the mouse is inside the clickable region of the primary color selector
 ' (e.g. NOT the caption area, if one exists)
-Private Function isMouseInPrimaryButton(ByVal x As Single, ByVal y As Single) As Boolean
-    isMouseInPrimaryButton = Math_Functions.isPointInRect(x, y, m_PrimaryColorRect)
+Private Function IsMouseInPrimaryButton(ByVal x As Single, ByVal y As Single) As Boolean
+    IsMouseInPrimaryButton = Math_Functions.isPointInRect(x, y, m_PrimaryColorRect)
 End Function
 
-Private Function isMouseInSecondaryButton(ByVal x As Single, ByVal y As Single) As Boolean
-    isMouseInSecondaryButton = Math_Functions.isPointInRect(x, y, m_SecondaryColorRect)
+Private Function IsMouseInSecondaryButton(ByVal x As Single, ByVal y As Single) As Boolean
+    IsMouseInSecondaryButton = Math_Functions.isPointInRect(x, y, m_SecondaryColorRect)
 End Function
 
 'Redraw the entire control, including the caption (if present)
-Private Sub redrawBackBuffer()
+Private Sub RedrawBackBuffer()
     
     'NOTE: if a caption exists, it has already been drawn.  We just need to draw the clickable button portion.
     If g_IsProgramRunning Then
@@ -400,7 +400,7 @@ End Sub
 
 'If a color selection dialog is active, it will pass color updates backward to this function, so that we can let
 ' our parent form display live updates *while the user is playing with colors* - very cool!
-Public Sub notifyOfLiveColorChange(ByVal newColor As Long)
+Public Sub NotifyOfLiveColorChange(ByVal newColor As Long)
     Color = newColor
 End Sub
 

@@ -97,9 +97,7 @@ Public Function AddFontToCache(ByRef fontName As String, ByVal FontSize As Singl
         End With
     
         'Create the font object
-        With m_FontCollection(m_FontPointer)
-            .CreateFontObject
-        End With
+        m_FontCollection(m_FontPointer).CreateFontObject
         
         'If extended font caching is active, retrieve those values now
         If m_ExtendedPropertiesActive Then Uniscribe_Interface.getScriptsSupportedByFont fontName, m_ExtendedProperties(m_FontPointer)

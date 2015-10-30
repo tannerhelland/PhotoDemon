@@ -164,6 +164,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1085
       _ExtentY        =   1085
+      AutoToggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -174,6 +175,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1085
       _ExtentY        =   1085
+      AutoToggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -184,6 +186,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1085
       _ExtentY        =   1085
+      AutoToggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -194,6 +197,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1085
       _ExtentY        =   1085
+      AutoToggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -204,6 +208,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1085
       _ExtentY        =   1085
+      AutoToggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -214,6 +219,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1085
       _ExtentY        =   1085
+      AutoToggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -224,6 +230,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1085
       _ExtentY        =   1085
+      AutoToggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -234,6 +241,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1085
       _ExtentY        =   1085
+      AutoToggle      =   -1  'True
    End
    Begin PhotoDemon.pdButtonToolbox cmdFile 
       Height          =   600
@@ -244,6 +252,7 @@ Begin VB.Form toolbar_Toolbox
       Width           =   720
       _ExtentX        =   1085
       _ExtentY        =   1085
+      AutoToggle      =   -1  'True
    End
    Begin PhotoDemon.pdLabel lblCategories 
       Height          =   240
@@ -431,9 +440,6 @@ Private Sub cmdFile_Click(Index As Integer)
     
     End Select
     
-    cmdFile(Index).notifyFocusLost
-    cmdFile(Index).Value = False
-
 End Sub
 
 'When the mouse leaves this toolbox, reset it to an arrow (so other forms don't magically acquire the west/east resize cursor, as the mouse is
@@ -1122,9 +1128,9 @@ Public Sub UpdateAgainstCurrentTheme()
     
     'The right separator line is colored according to the current shadow accent color
     If Not g_Themer Is Nothing Then
-        lnRightSeparator.BorderColor = g_Themer.getThemeColor(PDTC_GRAY_SHADOW)
+        lnRightSeparator.borderColor = g_Themer.GetThemeColor(PDTC_GRAY_SHADOW)
     Else
-        lnRightSeparator.BorderColor = vbHighlight
+        lnRightSeparator.borderColor = vbHighlight
     End If
     
 End Sub

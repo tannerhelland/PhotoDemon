@@ -1,10 +1,12 @@
 VERSION 5.00
 Begin VB.UserControl pdButtonToolbox 
-   BackColor       =   &H00FFFFFF&
+   Appearance      =   0  'Flat
+   BackColor       =   &H80000005&
    ClientHeight    =   3600
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   4800
+   ClipBehavior    =   0  'None
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   9.75
@@ -14,6 +16,9 @@ Begin VB.UserControl pdButtonToolbox
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
+   HitBehavior     =   0  'None
+   PaletteMode     =   4  'None
    ScaleHeight     =   240
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
@@ -59,26 +64,13 @@ Option Explicit
 'This control really only needs one event raised - Click
 Public Event Click()
 
-'API technique for drawing a focus rectangle; used only for designer mode (see the Paint method for details)
-Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, ByRef lpRect As RECT) As Long
-
-'Mouse and keyboard input handlers
-Private WithEvents cMouseEvents As pdInputMouse
-Attribute cMouseEvents.VB_VarHelpID = -1
-Private WithEvents cKeyEvents As pdInputKeyboard
-Attribute cKeyEvents.VB_VarHelpID = -1
-
-'Flicker-free window painter
-Private WithEvents cPainter As pdWindowPainter
-Attribute cPainter.VB_VarHelpID = -1
-
-'Reliable focus detection requires a specialized subclasser
-Private WithEvents cFocusDetector As pdFocusDetector
-Attribute cFocusDetector.VB_VarHelpID = -1
+'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
+' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
-'Current button state
+'Current button state; TRUE if down, FALSE if up.  Note that this may not correspond with mouse state, depending on
+' button properties (buttons can toggle in various ways).
 Private m_ButtonState As Boolean
 
 'Button images.  (Since this control doesn't support text, you'd better make use of these!)
@@ -93,16 +85,8 @@ Private btImageHover_Pressed As pdDIB   'Auto-created hover (glow) version of th
 '(x, y) position of the button image.  This is auto-calculated by the control.
 Private btImageCoords As POINTAPI
 
-'Persistent back buffer, which we manage internally
-Private m_BackBuffer As pdDIB
-
-'If the mouse is currently INSIDE the control, this will be set to TRUE
-Private m_MouseInsideUC As Boolean
-
-'When the option button receives focus via keyboard (e.g. NOT by mouse events), we draw a focus rect to help orient the user.
-Private m_FocusRectActive As Boolean
-
-'Current back color
+'Current back color.  Because this control sits on a variety of places in PD (like the canvas status bar), its BackColor
+' sometimes needs to be set manually.
 Private m_BackColor As OLE_COLOR
 
 'AutoToggle mode allows the button to operate as a normal button (e.g. no persistent value)
@@ -115,8 +99,10 @@ Private m_StickyToggle As Boolean
 ' highlight state when a button is depressed.
 Private m_DontHighlightDownState As Boolean
 
-'Additional helper for rendering themed and multiline tooltips
-Private toolTipManager As pdToolTip
+'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
+' but I've since attempted to wrap these into a single master control support class.
+Private WithEvents ucSupport As pdUCSupport
+Attribute ucSupport.VB_VarHelpID = -1
 
 'This toolbox button control is designed to be used in a "radio button"-like system, where buttons exist in a group, and the
 ' pressing of one results in the unpressing of any others.  For the rare circumstances where this behavior is undesirable
@@ -139,7 +125,7 @@ End Property
 
 Public Property Let BackColor(ByVal newColor As OLE_COLOR)
     m_BackColor = newColor
-    redrawBackBuffer
+    RedrawBackBuffer
 End Property
 
 'In some circumstances, an image alone is sufficient for indicating "pressed" state.  This value tells the control to *not* render a custom
@@ -150,7 +136,7 @@ End Property
 
 Public Property Let DontHighlightDownState(ByVal newState As Boolean)
     m_DontHighlightDownState = newState
-    If Value Then redrawBackBuffer
+    If Value Then RedrawBackBuffer
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
@@ -165,7 +151,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     PropertyChanged "Enabled"
     
     'Redraw the control
-    redrawBackBuffer
+    RedrawBackBuffer
     
 End Property
 
@@ -180,148 +166,6 @@ Public Property Let StickyToggle(ByVal newValue As Boolean)
     m_StickyToggle = newValue
 End Property
 
-'When the control receives focus, if the focus isn't received via mouse click, display a focus rect
-Private Sub cFocusDetector_GotFocusReliable()
-    
-    'If the mouse is *not* over the user control, assume focus was set via keyboard
-    If Not m_MouseInsideUC Then
-        m_FocusRectActive = True
-        redrawBackBuffer
-    End If
-    
-    RaiseEvent GotFocusAPI
-    
-End Sub
-
-'When the control loses focus, erase any focus rects it may have active
-Private Sub cFocusDetector_LostFocusReliable()
-    
-    'If a focus rect has been drawn, remove it now
-    If m_FocusRectActive Then
-        m_FocusRectActive = False
-        redrawBackBuffer
-    End If
-    
-    RaiseEvent LostFocusAPI
-
-End Sub
-
-'A few key events are also handled
-Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-        
-    'If space is pressed, and our value is not true, raise a click event.
-    If (vkCode = VK_SPACE) Then
-
-        If m_FocusRectActive And Me.Enabled Then
-        
-            'Sticky toggle mode causes the button to toggle between true/false
-            If m_StickyToggle Then
-            
-                Value = Not Value
-                redrawBackBuffer
-                RaiseEvent Click
-            
-            'Other modes behave identically
-            Else
-            
-                If (Not m_ButtonState) Then
-                    Value = True
-                    redrawBackBuffer
-                    RaiseEvent Click
-                End If
-            
-            End If
-            
-        End If
-        
-    End If
-
-End Sub
-
-Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
-
-    'If space was pressed, and AutoToggle is active, remove the button state and redraw it
-    If (vkCode = VK_SPACE) Then
-
-        If Me.Enabled And Value And m_AutoToggle Then
-            Value = False
-            redrawBackBuffer
-        End If
-        
-    End If
-
-End Sub
-
-'To improve responsiveness, MouseDown is used instead of Click
-Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-
-    If Me.Enabled Then
-    
-        'Ensure that a focus event has been raised, if it wasn't already
-        If Not cFocusDetector.HasFocus Then cFocusDetector.setFocusManually
-    
-        'Sticky toggle allows the button to operate as a checkbox
-        If m_StickyToggle Then
-        
-            Value = Not Value
-            redrawBackBuffer
-            RaiseEvent Click
-        
-        'Non-sticky toggle modes will always cause the button to be TRUE on a MouseDown event
-        Else
-        
-            If (Not Value) Then
-                Value = True
-                redrawBackBuffer
-                RaiseEvent Click
-            End If
-            
-        End If
-        
-    End If
-        
-End Sub
-
-Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    m_MouseInsideUC = True
-    cMouseEvents.setSystemCursor IDC_HAND
-    redrawBackBuffer
-End Sub
-
-'When the mouse leaves the UC, we must repaint the button (as it's no longer hovered)
-Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    
-    If m_MouseInsideUC Then
-        m_MouseInsideUC = False
-        redrawBackBuffer
-    End If
-    
-    'Reset the cursor
-    cMouseEvents.setSystemCursor IDC_ARROW
-    
-End Sub
-
-'When the mouse enters the button, we must initiate a repaint (to reflect its hovered state)
-Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    
-    'Repaint the control as necessary
-    If Not m_MouseInsideUC Then
-        m_MouseInsideUC = True
-        redrawBackBuffer
-    End If
-    
-End Sub
-
-Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
-    
-    'If toggle mode is active, remove the button's TRUE state and redraw it
-    If m_AutoToggle And Value Then
-        Value = False
-        redrawBackBuffer
-    End If
-    
-End Sub
-
 'hWnds aren't exposed by default
 Public Property Get hWnd() As Long
 Attribute hWnd.VB_UserMemId = -515
@@ -329,8 +173,8 @@ Attribute hWnd.VB_UserMemId = -515
 End Property
 
 'Container hWnd must be exposed for external tooltip handling
-Public Property Get containerHwnd() As Long
-    containerHwnd = UserControl.containerHwnd
+Public Property Get ContainerHwnd() As Long
+    ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
 'The most relevant part of this control is this Value property, which is important since this button operates as a toggle.
@@ -347,13 +191,13 @@ Public Property Let Value(ByVal newValue As Boolean)
         m_ButtonState = newValue
         
         'Redraw the control to match the new state
-        redrawBackBuffer
+        RedrawBackBuffer
         
         'Note that we don't raise a Click event here.  This is by design.  The toolbox handles all toggle code for these buttons,
         ' and it's more efficient to let it handle this, as it already has a detailed notion of things like program state, which
         ' affects whether buttons are clickable, etc.
         
-        'As such, the Click event is not raised for Value changes alone - only for actions initiated by a user.
+        'As such, the Click event is not raised for Value changes alone - only for actions initiated by actual user input.
         
     End If
     
@@ -386,8 +230,8 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
         ScaleDIBRGBValues btImageHover, customGlowWhenHovered, True
     End If
     
-    'Request a control size update, which will also calculate a centered position for the new image
-    UpdateControlSize
+    'Request a control layout update, which will also calculate a centered position for the new image
+    UpdateControlLayout
 
 End Sub
 
@@ -418,258 +262,290 @@ Public Sub AssignImage_Pressed(Optional ByVal resName As String = "", Optional B
     End If
     
     'If the control is currently pressed, request a redraw
-    If Value Then redrawBackBuffer
+    If Value Then RedrawBackBuffer
 
 End Sub
 
+'A few key events are also handled
+Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+        
+    'If space is pressed, and our value is not true, raise a click event.
+    If (vkCode = VK_SPACE) Then
 
-'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
-' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
-Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
+        If ucSupport.DoIHaveFocus And Me.Enabled Then
+        
+            'Sticky toggle mode causes the button to toggle between true/false
+            If m_StickyToggle Then
+            
+                Value = Not Value
+                RedrawBackBuffer
+                RaiseEvent Click
+            
+            'Other modes behave identically
+            Else
+            
+                If (Not m_ButtonState) Then
+                    Value = True
+                    RedrawBackBuffer
+                    RaiseEvent Click
+                End If
+            
+            End If
+            
+        End If
+        
+    End If
 
-    'Flip the relevant chunk of the buffer to the screen
-    BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
+End Sub
+
+Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+
+    'If space was pressed, and AutoToggle is active, remove the button state and redraw it
+    If (vkCode = VK_SPACE) Then
+
+        If Me.Enabled And Value And m_AutoToggle Then
+            Value = False
+            RedrawBackBuffer
+        End If
+        
+    End If
+
+End Sub
+
+'To improve responsiveness, MouseDown is used instead of Click.
+' (TODO: switch to MouseUp, so we have a chance to draw the down button state and provide some visual feedback)
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+
+    If Me.Enabled Then
+        
+        'Sticky toggle allows the button to operate as a checkbox
+        If m_StickyToggle Then
+            Value = Not Value
+        
+        'Non-sticky toggle modes will always cause the button to be TRUE on a MouseDown event
+        Else
+            If (Not Value) Then Value = True
+        End If
+        
+        RedrawBackBuffer True
+        RaiseEvent Click
+        
+    End If
+        
+End Sub
+
+Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    ucSupport.RequestCursor IDC_HAND
+    RedrawBackBuffer
+End Sub
+
+'When the mouse leaves the UC, we must repaint the button (as it's no longer hovered)
+Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    ucSupport.RequestCursor IDC_DEFAULT
+    RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
     
+    'If toggle mode is active, remove the button's TRUE state and redraw it
+    If m_AutoToggle And Value Then Value = False
+    RedrawBackBuffer
+    
+End Sub
+
+Private Sub ucSupport_GotFocusAPI()
+    RedrawBackBuffer
+    RaiseEvent GotFocusAPI
+End Sub
+
+Private Sub ucSupport_LostFocusAPI()
+    RedrawBackBuffer
+    RaiseEvent LostFocusAPI
+End Sub
+
+Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
+    If updateLayoutToo Then UpdateControlLayout
+    RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    UpdateControlLayout
+    RedrawBackBuffer
 End Sub
 
 'INITIALIZE control
 Private Sub UserControl_Initialize()
     
-    'When not in design mode, initialize trackers for input events
-    If g_IsProgramRunning Then
+    'Initialize a master user control support class
+    Set ucSupport = New pdUCSupport
+    ucSupport.RegisterControl UserControl.hWnd
     
-        Set cMouseEvents = New pdInputMouse
-        cMouseEvents.addInputTracker Me.hWnd, True, True, , True
-        cMouseEvents.setSystemCursor IDC_HAND
-        
-        Set cKeyEvents = New pdInputKeyboard
-        cKeyEvents.createKeyboardTracker "Toolbox button UC", Me.hWnd, VK_SPACE
-        
-        'Also start a flicker-free window painter
-        Set cPainter = New pdWindowPainter
-        cPainter.startPainter Me.hWnd
-        
-        'Also start a focus detector
-        Set cFocusDetector = New pdFocusDetector
-        cFocusDetector.startFocusTracking Me.hWnd
-        
-        'Create a tooltip engine
-        Set toolTipManager = New pdToolTip
-        
-    'In design mode, initialize a base theming class, so our paint function doesn't fail
-    Else
-        Set g_Themer = New pdVisualThemes
-    End If
+    'Request some additional input functionality (custom mouse and key events)
+    ucSupport.RequestExtraFunctionality True, True
+    ucSupport.SpecifyRequiredKeys VK_SPACE
     
-    m_MouseInsideUC = False
-    m_FocusRectActive = False
+    'In design mode, initialize a base theming class, so our paint functions don't fail
+    If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
         
     'Update the control size parameters at least once
-    UpdateControlSize
+    UpdateControlLayout
                 
 End Sub
 
 'Set default properties
 Private Sub UserControl_InitProperties()
-    
     Value = False
     BackColor = vbWhite
     AutoToggle = False
     StickyToggle = False
     DontHighlightDownState = False
-    
 End Sub
 
-'Because VB is very dumb about focus handling, it is sometimes necessary for external functions to notify of focus loss.
-Public Sub notifyFocusLost()
-
-    'If a focus rect has been drawn, remove it now
-    If m_FocusRectActive Or m_MouseInsideUC Then
-        m_FocusRectActive = False
-        m_MouseInsideUC = False
-        redrawBackBuffer
-    End If
-
-End Sub
-
-'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
+'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    
-    'Provide minimal painting within the designer
-    If Not g_IsProgramRunning Then redrawBackBuffer
-    
+    ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-
     With PropBag
         m_BackColor = .ReadProperty("BackColor", vbWhite)
         AutoToggle = .ReadProperty("AutoToggle", False)
         m_DontHighlightDownState = .ReadProperty("DontHighlightDownState", False)
         StickyToggle = .ReadProperty("StickyToggle", False)
     End With
-
 End Sub
 
-'The control dynamically resizes each button to match the dimensions of their relative captions.
 Private Sub UserControl_Resize()
-    UpdateControlSize
-End Sub
-
-'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
-' of internal sizing metrics whenever the control size changes.
-Private Sub UpdateControlSize()
-    
-    'Reset the back buffer
-    Set m_BackBuffer = New pdDIB
-    m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackColor
-    
-    'Determine positioning of the button image, if any
-    If Not (btImage Is Nothing) Then
-        btImageCoords.x = (m_BackBuffer.getDIBWidth - btImage.getDIBWidth) \ 2
-        btImageCoords.y = (m_BackBuffer.getDIBHeight - btImage.getDIBHeight) \ 2
-    End If
-    
-    'No other special preparation is required for this control, so proceed with recreating the back buffer
-    redrawBackBuffer
-            
+    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
-
-    'Store all associated properties
     With PropBag
         .WriteProperty "BackColor", m_BackColor, vbWhite
         .WriteProperty "AutoToggle", m_AutoToggle, False
         .WriteProperty "DontHighlightDownState", m_DontHighlightDownState, False
         .WriteProperty "StickyToggle", m_StickyToggle, False
     End With
-    
 End Sub
 
-'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
-Public Sub UpdateAgainstCurrentTheme()
+'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
+' of internal sizing metrics whenever the control size changes.
+Private Sub UpdateControlLayout()
     
-    'Redraw the control, which will also cause a resync against any theme changes
-    UpdateControlSize
+    'Retrieve DPI-aware control dimensions from the support class
+    Dim bWidth As Long, bHeight As Long
+    bWidth = ucSupport.GetBackBufferWidth
+    bHeight = ucSupport.GetBackBufferHeight
     
+    'Determine positioning of the button image, if any
+    If Not (btImage Is Nothing) Then
+        btImageCoords.x = (bWidth - btImage.getDIBWidth) \ 2
+        btImageCoords.y = (bHeight - btImage.getDIBHeight) \ 2
+    End If
+            
 End Sub
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
-Private Sub redrawBackBuffer()
+Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean = False)
     
-    'Start by erasing the back buffer
     If g_IsProgramRunning Then
-        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackColor, 255
-    Else
-        m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, RGB(255, 255, 255)
-    End If
     
-    'Colors used throughout this paint function are determined by several factors:
-    ' 1) Control enablement (disabled buttons are grayed)
-    ' 2) Hover state (hovered buttons glow)
-    ' 3) Value (pressed buttons have a different appearance, obviously)
-    ' 4) The central themer (which contains default values for all these scenarios)
-    Dim btnColorBorder As Long, btnColorFill As Long
-    Dim curColor As Long
-        
-    If Me.Enabled Then
-    
-        'Is the button pressed?
-        If m_ButtonState And (Not m_DontHighlightDownState) Then
-            btnColorFill = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
-            btnColorBorder = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
-            
-        'The button is not pressed
-        Else
-        
-            'Is the mouse inside the UC?
-            If m_MouseInsideUC Then
-                btnColorFill = m_BackColor
-                btnColorBorder = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-            
-            'The mouse is not inside the UC
-            Else
-                btnColorFill = m_BackColor
-                btnColorBorder = m_BackColor
-            
-            End If
-            
-        End If
-        
-    'The button is disabled
-    Else
-    
-        btnColorFill = m_BackColor
-        btnColorBorder = m_BackColor
-        
-    End If
-    
-    'First, we fill the button interior with the established fill color
-    GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth - 1, m_BackBuffer.getDIBHeight - 1, btnColorFill, 255
-    
-    'A single-pixel border is always drawn around the control
-    GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, 0, 0, m_BackBuffer.getDIBWidth - 1, m_BackBuffer.getDIBHeight - 1, btnColorBorder, 255, 1
-    
-    'Paint the image, if any
-    If Not (btImage Is Nothing) Then
+        'Colors used throughout this paint function are determined by several factors:
+        ' 1) Control enablement (disabled buttons are grayed)
+        ' 2) Hover state (hovered buttons glow)
+        ' 3) Value (pressed buttons have a different appearance, obviously)
+        ' 4) The central themer (which contains default values for all these scenarios)
+        Dim btnColorBorder As Long, btnColorFill As Long
+        Dim curColor As Long
         
         If Me.Enabled Then
-            
-            If Value And (Not (btImage_Pressed Is Nothing)) Then
-            
-                If m_MouseInsideUC Then
-                    btImageHover_Pressed.alphaBlendToDC m_BackBuffer.getDIBDC, 255, btImageCoords.x, btImageCoords.y
-                Else
-                    btImage_Pressed.alphaBlendToDC m_BackBuffer.getDIBDC, 255, btImageCoords.x, btImageCoords.y
-                End If
-            
+        
+            'Is the button pressed?
+            If m_ButtonState And (Not m_DontHighlightDownState) Then
+                btnColorFill = g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
+                btnColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
+                
+            'The button is not pressed
             Else
-                
-                If m_MouseInsideUC Then
-                    btImageHover.alphaBlendToDC m_BackBuffer.getDIBDC, 255, btImageCoords.x, btImageCoords.y
+            
+                'In AutoToggle mode, use mouse state to determine coloring
+                If m_AutoToggle And ucSupport.IsMouseButtonDown(pdLeftButton) Then
+                    btnColorFill = g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
+                    btnColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
                 Else
-                    btImage.alphaBlendToDC m_BackBuffer.getDIBDC, 255, btImageCoords.x, btImageCoords.y
+                    If ucSupport.IsMouseInside Then
+                        btnColorFill = m_BackColor
+                        btnColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+                    Else
+                        btnColorFill = m_BackColor
+                        btnColorBorder = m_BackColor
+                    End If
                 End If
-                
             End If
             
+        'The button is disabled
         Else
-            btImageDisabled.alphaBlendToDC m_BackBuffer.getDIBDC, 255, btImageCoords.x, btImageCoords.y
+            btnColorFill = m_BackColor
+            btnColorBorder = m_BackColor
+        End If
+        
+        'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
+        Dim bufferDC As Long, bWidth As Long, bHeight As Long
+        bufferDC = ucSupport.GetBackBufferDC(True, btnColorFill)
+        bWidth = ucSupport.GetBackBufferWidth
+        bHeight = ucSupport.GetBackBufferHeight
+        
+        'A single-pixel border is always drawn around the control
+        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, btnColorBorder, 255, 1
+        
+        'Paint the image, if any
+        If Not (btImage Is Nothing) Then
+            
+            If Me.Enabled Then
+                If Value And (Not (btImage_Pressed Is Nothing)) Then
+                    If ucSupport.IsMouseInside Then
+                        btImageHover_Pressed.alphaBlendToDC bufferDC, 255, btImageCoords.x, btImageCoords.y
+                    Else
+                        btImage_Pressed.alphaBlendToDC bufferDC, 255, btImageCoords.x, btImageCoords.y
+                    End If
+                Else
+                    If ucSupport.IsMouseInside Then
+                        btImageHover.alphaBlendToDC bufferDC, 255, btImageCoords.x, btImageCoords.y
+                    Else
+                        btImage.alphaBlendToDC bufferDC, 255, btImageCoords.x, btImageCoords.y
+                    End If
+                End If
+            Else
+                btImageDisabled.alphaBlendToDC bufferDC, 255, btImageCoords.x, btImageCoords.y
+            End If
+            
         End If
         
     End If
-        
-    'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
-    If Not g_IsProgramRunning Then
-        
-        Dim tmpRect As RECT
-        With tmpRect
-            .Left = 0
-            .Top = 0
-            .Right = m_BackBuffer.getDIBWidth
-            .Bottom = m_BackBuffer.getDIBHeight
-        End With
-        
-        DrawFocusRect m_BackBuffer.getDIBDC, tmpRect
-
-    End If
     
-    'Paint the buffer to the screen
-    If g_IsProgramRunning Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
-
+    'Paint the final result to the screen, as relevant
+    ucSupport.RequestRepaint raiseImmediateDrawEvent
+    
 End Sub
 
 'The color selector dialog has the unique need of capturing colors from anywhere on the screen, using a custom hook solution.  For it to work,
 ' the pdInputMouse class inside this button control must forcibly release its capture.
-Public Sub overrideMouseCapture(ByVal newState As Boolean)
-    cMouseEvents.setCaptureOverride newState
-    cMouseEvents.setCursorOverrideState newState
+' NOTE: this behavior has been disabled pending additional testing.  It causes some nasty side-effects on Win 10, and it's eclectic enough
+'        that fixing it isn't an immediate priority.
+'Public Sub OverrideMouseCapture(ByVal newState As Boolean)
+'    cMouseEvents.setCaptureOverride newState
+'    cMouseEvents.setCursorOverrideState newState
+'End Sub
+
+'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
+Public Sub UpdateAgainstCurrentTheme()
+    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
 End Sub
 
-'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
-' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
+'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
+' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    toolTipManager.setTooltip Me.hWnd, Me.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
+
