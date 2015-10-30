@@ -875,18 +875,35 @@ Public Function GetMemoryDC() As Long
     
     'In debug mode, track how many DCs the program requests
     #If DEBUGMODE = 1 Then
-        g_DCsCreated = g_DCsCreated + 1
+        If GetMemoryDC <> 0 Then
+            g_DCsCreated = g_DCsCreated + 1
+        Else
+            pdDebug.LogAction "WARNING!  Drawing.GetMemoryDC() failed to create a new memory DC!"
+        End If
     #End If
     
 End Function
 
 Public Sub FreeMemoryDC(ByVal srcDC As Long)
     
-    If srcDC <> 0 Then DeleteDC srcDC
+    If srcDC <> 0 Then
+        
+        Dim delConfirm As Long
+        delConfirm = DeleteDC(srcDC)
     
-    'In debug mode, track how many DCs the program frees
-    #If DEBUGMODE = 1 Then
-        g_DCsDestroyed = g_DCsDestroyed + 1
-    #End If
+        'In debug mode, track how many DCs the program frees
+        #If DEBUGMODE = 1 Then
+            If delConfirm <> 0 Then
+                g_DCsDestroyed = g_DCsDestroyed + 1
+            Else
+                pdDebug.LogAction "WARNING!  Drawing.FreeMemoryDC() failed to release DC #" & srcDC & "."
+            End If
+        #End If
+        
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  Drawing.FreeMemoryDC() was passed a null DC.  Fix this!"
+        #End If
+    End If
     
 End Sub

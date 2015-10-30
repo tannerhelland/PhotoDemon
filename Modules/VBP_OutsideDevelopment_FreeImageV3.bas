@@ -345,12 +345,6 @@ Private Declare Function CreateDIBSection Lib "gdi32.dll" ( _
     ByVal dwOffset As Long) As Long
 
 Private Const CBM_INIT As Long = &H4
-
-Private Declare Function CreateCompatibleDC Lib "gdi32.dll" ( _
-    ByVal hDC As Long) As Long
-    
-Private Declare Function DeleteDC Lib "gdi32.dll" ( _
-    ByVal hDC As Long) As Long
     
 Private Declare Function GetDIBits Lib "gdi32.dll" ( _
     ByVal aHDC As Long, _

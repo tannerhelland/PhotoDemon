@@ -26,9 +26,7 @@ Option Explicit
 
 'API calls for building an icon at run-time
 Private Declare Function CreateBitmap Lib "gdi32" (ByVal nWidth As Long, ByVal nHeight As Long, ByVal cPlanes As Long, ByVal cBitsPerPel As Long, ByVal lpvBits As Long) As Long
-Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function CreateIconIndirect Lib "user32" (icoInfo As ICONINFO) As Long
-Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
@@ -1079,7 +1077,11 @@ Public Function loadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
             GdipGetImagePixelFormat gdipBitmap, gdiPixelFormat
             
             'Create the DIB anew as necessary
-            If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
+            If (dstDIB Is Nothing) Then
+                Set dstDIB = New pdDIB
+            Else
+                dstDIB.eraseDIB
+            End If
             
             'If the image has an alpha channel, create a 32bpp DIB to receive it
             If (gdiPixelFormat And PixelFormatAlpha <> 0) Or (gdiPixelFormat And PixelFormatPAlpha <> 0) Then
