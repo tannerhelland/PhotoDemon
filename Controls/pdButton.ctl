@@ -122,7 +122,7 @@ End Property
 
 Public Property Let BackColor(ByVal newColor As OLE_COLOR)
     m_BackColor = newColor
-    redrawBackBuffer
+    RedrawBackBuffer
 End Property
 
 'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
@@ -136,7 +136,7 @@ End Property
 
 Public Property Let Caption(ByRef newCaption As String)
     
-    If m_Caption.SetCaption(newCaption) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then updateControlLayout
+    If m_Caption.SetCaption(newCaption) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then UpdateControlLayout
     PropertyChanged "Caption"
     
     'Access keys must be handled manually.
@@ -167,7 +167,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     PropertyChanged "Enabled"
     
     'Redraw the control
-    redrawBackBuffer
+    RedrawBackBuffer
     
 End Property
 
@@ -176,7 +176,7 @@ Public Property Get FontSize() As Single
 End Property
 
 Public Property Let FontSize(ByVal newSize As Single)
-    If m_Caption.SetFontSize(newSize) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then updateControlLayout
+    If m_Caption.SetFontSize(newSize) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then UpdateControlLayout
     PropertyChanged "FontSize"
 End Property
 
@@ -196,7 +196,7 @@ Private Sub cFocusDetector_GotFocusReliable()
     'If the mouse is *not* over the user control, assume focus was set via keyboard
     If Not m_MouseInsideUC Then
         m_FocusRectActive = True
-        redrawBackBuffer
+        RedrawBackBuffer
     End If
     
     RaiseEvent GotFocusAPI
@@ -216,7 +216,7 @@ Private Sub makeLostFocusUIChanges()
         m_FocusRectActive = False
         m_ButtonStateDown = False
         m_MouseInsideUC = False
-        redrawBackBuffer
+        RedrawBackBuffer
     End If
     
 End Sub
@@ -229,7 +229,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
 
         If m_FocusRectActive And Me.Enabled Then
             m_ButtonStateDown = True
-            redrawBackBuffer
+            RedrawBackBuffer
             RaiseEvent Click
         End If
         
@@ -244,7 +244,7 @@ Private Sub cKeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode A
 
         If Me.Enabled Then
             m_ButtonStateDown = False
-            redrawBackBuffer
+            RedrawBackBuffer
         End If
         
     End If
@@ -272,7 +272,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
         
         'Set button state and redraw
         m_ButtonStateDown = True
-        redrawBackBuffer
+        RedrawBackBuffer
         
     End If
     
@@ -281,7 +281,7 @@ End Sub
 Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseInsideUC = True
     cMouseEvents.setSystemCursor IDC_HAND
-    redrawBackBuffer
+    RedrawBackBuffer
 End Sub
 
 'When the mouse leaves the UC, we must repaint the button (as it's no longer hovered)
@@ -289,7 +289,7 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
     
     If m_MouseInsideUC Then
         m_MouseInsideUC = False
-        redrawBackBuffer
+        RedrawBackBuffer
     End If
     
     'Reset the cursor
@@ -303,7 +303,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     'Repaint the control as necessary
     If Not m_MouseInsideUC Then
         m_MouseInsideUC = True
-        redrawBackBuffer
+        RedrawBackBuffer
     End If
     
 End Sub
@@ -313,7 +313,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
     'If toggle mode is active, remove the button's TRUE state and redraw it
     If m_ButtonStateDown Then
         m_ButtonStateDown = False
-        redrawBackBuffer
+        RedrawBackBuffer
     End If
     
 End Sub
@@ -355,7 +355,7 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
     End If
     
     'Request a control size update, which will also calculate a centered position for the new image
-    updateControlLayout
+    UpdateControlLayout
 
 End Sub
 
@@ -387,7 +387,7 @@ Private Sub UserControl_Initialize()
         cMouseEvents.setSystemCursor IDC_HAND
         
         Set cKeyEvents = New pdInputKeyboard
-        cKeyEvents.createKeyboardTracker "Toolbox button UC", Me.hWnd, VK_SPACE
+        cKeyEvents.CreateKeyboardTracker "Toolbox button UC", Me.hWnd, VK_SPACE
         
         'Also start a flicker-free window painter
         Set cPainter = New pdWindowPainter
@@ -413,7 +413,7 @@ Private Sub UserControl_Initialize()
     m_Caption.SetWordWrapSupport True
     
     'Update the control size parameters at least once
-    updateControlLayout
+    UpdateControlLayout
                 
 End Sub
 
@@ -424,19 +424,6 @@ Private Sub UserControl_InitProperties()
     FontSize = 10
 End Sub
 
-'Because VB is very dumb about focus handling, it is sometimes necessary for external functions to notify of focus loss.
-' (TODO: revisit in light of the new Got/LostFocusAPI functions)
-Public Sub notifyFocusLost()
-
-    'If a focus rect has been drawn, remove it now
-    If m_FocusRectActive Or m_MouseInsideUC Then
-        m_FocusRectActive = False
-        m_MouseInsideUC = False
-        redrawBackBuffer
-    End If
-
-End Sub
-
 Private Sub UserControl_LostFocus()
     makeLostFocusUIChanges
 End Sub
@@ -445,7 +432,7 @@ End Sub
 Private Sub UserControl_Paint()
     
     'Provide minimal painting within the designer
-    If Not g_IsProgramRunning Then redrawBackBuffer
+    If Not g_IsProgramRunning Then RedrawBackBuffer
     
 End Sub
 
@@ -461,12 +448,12 @@ End Sub
 
 'The control dynamically resizes each button to match the dimensions of their relative captions.
 Private Sub UserControl_Resize()
-    updateControlLayout
+    UpdateControlLayout
 End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
 ' of internal sizing metrics whenever the control size changes.
-Private Sub updateControlLayout()
+Private Sub UpdateControlLayout()
     
     'Reset the back buffer
     If m_BackBuffer Is Nothing Then Set m_BackBuffer = New pdDIB
@@ -522,13 +509,13 @@ Private Sub updateControlLayout()
     End If
         
     'No other special preparation is required for this control, so proceed with recreating the back buffer
-    redrawBackBuffer
+    RedrawBackBuffer
             
 End Sub
 
 Private Sub UserControl_Show()
     m_ControlIsVisible = True
-    updateControlLayout
+    UpdateControlLayout
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -549,13 +536,13 @@ Public Sub UpdateAgainstCurrentTheme()
     m_Caption.UpdateAgainstCurrentTheme
     
     'Redraw the control, which will also cause a resync against any theme changes
-    updateControlLayout
+    UpdateControlLayout
     
 End Sub
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
-Private Sub redrawBackBuffer()
+Private Sub RedrawBackBuffer()
     
     'Start by erasing the back buffer
     If g_IsProgramRunning Then
@@ -665,13 +652,6 @@ Private Sub redrawBackBuffer()
     'Paint the buffer to the screen
     If g_IsProgramRunning Then cPainter.RequestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
 
-End Sub
-
-'The color selector dialog has the unique need of capturing colors from anywhere on the screen, using a custom hook solution.  For it to work,
-' the pdInputMouse class inside this button control must forcibly release its capture.
-Public Sub overrideMouseCapture(ByVal newState As Boolean)
-    cMouseEvents.setCaptureOverride newState
-    cMouseEvents.setCursorOverrideState newState
 End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.

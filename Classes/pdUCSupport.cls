@@ -105,7 +105,8 @@ Private m_CaptionRect As RECT
 
 'Many controls find it useful to know if the mouse is inside the control boundaries.  Rather than force them all to track
 ' this manually, we track it for them.  (Obviously, this value is only valid if they've specifically requested mouse tracking.)
-Private m_MouseInsideUC As Boolean
+' Same goes for mouse buttons.
+Private m_MouseInsideUC As Boolean, m_MouseButtonState As Long
 
 'Visibility is also tracked via the API
 Private m_Visibility As Boolean
@@ -535,9 +536,11 @@ End Sub
 
 Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
+    'Track button state persistently, so the control can easily query it outside of events
+    m_MouseButtonState = m_MouseButtonState Or Button
+    
     'Ensure that a focus event has been raised, if it wasn't already
     If Not m_FocusDetector.HasFocus Then m_FocusDetector.setFocusManually
-    
     RaiseEvent MouseDownCustom(Button, Shift, x, y)
     
 End Sub
@@ -559,6 +562,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
 End Sub
 
 Private Sub m_MouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+    m_MouseButtonState = m_MouseButtonState And (Not Button)
     RaiseEvent MouseUpCustom(Button, Shift, x, y, ClickEventAlsoFiring)
 End Sub
 
@@ -679,6 +683,10 @@ End Function
 
 Public Function IsMouseInside() As Boolean
     IsMouseInside = m_MouseInsideUC
+End Function
+
+Public Function IsMouseButtonDown(ByVal Button As PDMouseButtonConstants) As Boolean
+    IsMouseButtonDown = CBool((Button And m_MouseButtonState) <> 0)
 End Function
 
 Public Sub RequestCursor(Optional ByVal standardCursorType As SystemCursorConstant = IDC_DEFAULT)
