@@ -168,9 +168,9 @@ Public Sub SyncInterfaceToCurrentImage()
         FormMain.mainCanvas(0).drawStatusBarIcons False
         
         'Because dynamic icons are enabled, restore the main program icon and clear the custom image icon cache
-        destroyAllIcons
         setNewTaskbarIcon origIcon32, FormMain.hWnd
         setNewAppIcon origIcon16, origIcon32
+        Icon_and_Cursor_Handler.DestroyAllIcons
         
         'If no images are currently open, but images were open in the past, release any memory associated with those images.
         ' This helps minimize PD's memory usage.

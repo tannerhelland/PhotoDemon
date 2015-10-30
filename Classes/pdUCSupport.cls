@@ -185,13 +185,13 @@ End Sub
 ' the rest.  (Obviously you also need to supply the caption text, font, and other things, but this function lets the class know
 ' that caption support is at least a *possibility*.)
 Public Sub RequestCaptionSupport(Optional ByVal supportWordWrap As Boolean = False)
-    m_Caption.setWordWrapSupport supportWordWrap
+    m_Caption.SetWordWrapSupport supportWordWrap
 End Sub
 
 'Get/Set functions for various caption-specific features.  Note that you can remove caption support by calling SetCaptionText and
 ' supplying a blank string.
 Public Function GetCaptionText() As String
-    GetCaptionText = m_Caption.getCaptionEn()
+    GetCaptionText = m_Caption.GetCaptionEn()
 End Function
 
 Public Sub SetCaptionText(Optional ByVal newCaption As String = "")
@@ -199,7 +199,7 @@ Public Sub SetCaptionText(Optional ByVal newCaption As String = "")
     If m_Caption Is Nothing Then Set m_Caption = New pdCaption
     
     'Pass the string to the pdCaption instance; it handles the actual mess of sizing and rendering text
-    If m_Caption.setCaption(newCaption) Then
+    If m_Caption.SetCaption(newCaption) Then
         
         'Caption changes may require us to resize the control to fit.
         SyncBackBufferSize True
@@ -212,13 +212,13 @@ Public Sub SetCaptionText(Optional ByVal newCaption As String = "")
 End Sub
 
 Public Function GetCaptionFontSize() As Single
-    GetCaptionFontSize = m_Caption.getFontSize
+    GetCaptionFontSize = m_Caption.GetFontSize
 End Function
 
 Public Sub SetCaptionFontSize(ByVal newSize As Single)
     
     'Changes to fontsize require redraws
-    If m_Caption.setFontSize(newSize) Then
+    If m_Caption.SetFontSize(newSize) Then
         SyncBackBufferSize True
         AskForARepaint True
     End If
@@ -350,18 +350,18 @@ Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
         If m_Caption.IsCaptionActive Then
             
             'Notify the caption renderer of our width.  It will auto-fit its font to match.
-            m_Caption.setControlSize m_Width, m_Height
+            m_Caption.SetControlSize m_Width, m_Height
             
             'Retrieve the caption's height
             With m_CaptionRect
                 .Top = 0
                 .Left = 0
                 .Right = m_Width
-                .Bottom = m_Caption.getCaptionHeight() + FixDPI(6)
+                .Bottom = m_Caption.GetCaptionHeight() + FixDPI(6)
             End With
             
             'Paint the caption
-            m_Caption.drawCaption m_BackBuffer.getDIBDC, 1, 1
+            m_Caption.DrawCaption m_BackBuffer.getDIBDC, 1, 1
             
         End If
         

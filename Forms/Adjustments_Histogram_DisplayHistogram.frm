@@ -42,7 +42,7 @@ Begin VB.Form FormHistogram
       Top             =   6000
       Width           =   2985
       _ExtentX        =   5265
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "use logarithmic values"
    End
    Begin PhotoDemon.smartCheckBox chkSmooth 
@@ -52,7 +52,7 @@ Begin VB.Form FormHistogram
       Top             =   5040
       Width           =   2985
       _ExtentX        =   5265
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "use smooth lines"
    End
    Begin PhotoDemon.smartCheckBox chkChannel 
@@ -63,7 +63,7 @@ Begin VB.Form FormHistogram
       Top             =   5040
       Width           =   2115
       _ExtentX        =   3731
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "red"
    End
    Begin VB.PictureBox picH 
@@ -121,7 +121,7 @@ Begin VB.Form FormHistogram
       Top             =   5520
       Width           =   2115
       _ExtentX        =   3731
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "green"
    End
    Begin PhotoDemon.smartCheckBox chkChannel 
@@ -132,7 +132,7 @@ Begin VB.Form FormHistogram
       Top             =   6000
       Width           =   2115
       _ExtentX        =   3731
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "blue"
    End
    Begin PhotoDemon.smartCheckBox chkChannel 
@@ -143,7 +143,7 @@ Begin VB.Form FormHistogram
       Top             =   6480
       Width           =   2115
       _ExtentX        =   3731
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "luminance"
    End
    Begin PhotoDemon.smartCheckBox chkFillCurve 
@@ -153,7 +153,7 @@ Begin VB.Form FormHistogram
       Top             =   5520
       Width           =   2985
       _ExtentX        =   5265
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "fill histogram curves"
    End
    Begin VB.Label lblVisibleChannels 

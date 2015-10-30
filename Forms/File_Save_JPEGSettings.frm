@@ -95,7 +95,7 @@ Begin VB.Form dialog_ExportJPEG
          Top             =   3240
          Width           =   6690
          _ExtentX        =   11800
-         _ExtentY        =   661
+         _ExtentY        =   582
          Caption         =   "embed thumbnail image"
       End
       Begin PhotoDemon.pdLabel lblTitle 
@@ -191,7 +191,7 @@ Begin VB.Form dialog_ExportJPEG
          Top             =   1350
          Width           =   6690
          _ExtentX        =   11800
-         _ExtentY        =   661
+         _ExtentY        =   582
          Caption         =   "optimize compression tables"
       End
       Begin PhotoDemon.smartCheckBox chkProgressive 
@@ -201,7 +201,7 @@ Begin VB.Form dialog_ExportJPEG
          Top             =   1830
          Width           =   6690
          _ExtentX        =   11800
-         _ExtentY        =   661
+         _ExtentY        =   582
          Caption         =   "use progressive encoding"
       End
       Begin PhotoDemon.smartCheckBox chkSubsample 
@@ -211,7 +211,7 @@ Begin VB.Form dialog_ExportJPEG
          Top             =   2310
          Width           =   6690
          _ExtentX        =   11800
-         _ExtentY        =   661
+         _ExtentY        =   582
          Caption         =   "use specific subsampling:"
       End
       Begin PhotoDemon.sliderTextCombo sltQuality 
@@ -235,7 +235,7 @@ Begin VB.Form dialog_ExportJPEG
          Visible         =   0   'False
          Width           =   6690
          _ExtentX        =   11800
-         _ExtentY        =   661
+         _ExtentY        =   582
          Caption         =   "use perceptive color matching (slower, more accurate)"
       End
       Begin PhotoDemon.pdLabel lblTitle 

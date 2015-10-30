@@ -20,7 +20,6 @@ Option Explicit
 Public Declare Function GetDesktopWindow Lib "user32" () As Long
 Public Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Public Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
-Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
@@ -32,7 +31,7 @@ Private Const PW_CLIENTONLY As Long = &H1
 Private Const PW_RENDERFULLCONTENT As Long = &H2    'Win 8.1+ only
 
 'Vista+ only
-Private Declare Function DwmGetWindowAttribute Lib "Dwmapi" (ByVal targethWnd As Long, ByVal dwAttribute As Long, ByVal ptrToRecipient As Long, ByVal sizeOfRecipient As Long) As Long
+Private Declare Function DwmGetWindowAttribute Lib "Dwmapi" (ByVal targetHwnd As Long, ByVal dwAttribute As Long, ByVal ptrToRecipient As Long, ByVal sizeOfRecipient As Long) As Long
 
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
@@ -186,7 +185,7 @@ Public Sub getPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RECTL)
 End Sub
 
 'Copy the visual contents of any hWnd into a DIB; window chrome can be optionally included, if desired
-Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targethWnd As Long, Optional ByVal includeChrome As Boolean = True) As Boolean
+Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targetHwnd As Long, Optional ByVal includeChrome As Boolean = True) As Boolean
 
     'Vista+ defines window boundaries differently, so we have to use a special API to retrieve correct boundaries.
     Dim hLib As Long
@@ -200,14 +199,14 @@ Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targethWnd As 
         
         If g_IsVistaOrLater And (hLib <> 0) Then
             Const DWMWA_EXTENDED_FRAME_BOUNDS = 9
-            DwmGetWindowAttribute targethWnd, DWMWA_EXTENDED_FRAME_BOUNDS, VarPtr(targetRect), 16&
+            DwmGetWindowAttribute targetHwnd, DWMWA_EXTENDED_FRAME_BOUNDS, VarPtr(targetRect), 16&
             FreeLibrary hLib
         Else
-            GetWindowRect targethWnd, targetRect
+            GetWindowRect targetHwnd, targetRect
         End If
         
     Else
-        GetClientRect targethWnd, targetRect
+        GetClientRect targetHwnd, targetRect
     End If
     
     'Check to make sure the window hasn't been unloaded
@@ -229,7 +228,7 @@ Public Function GetHwndContentsAsDIB(ByRef dstDIB As pdDIB, ByVal targethWnd As 
     If Not includeChrome Then printFlags = printFlags Or PW_CLIENTONLY
     If g_IsWin81OrLater Then printFlags = printFlags Or PW_RENDERFULLCONTENT
     
-    GetHwndContentsAsDIB = CBool(PrintWindow(targethWnd, dstDIB.getDIBDC, printFlags) <> 0)
+    GetHwndContentsAsDIB = CBool(PrintWindow(targetHwnd, dstDIB.getDIBDC, printFlags) <> 0)
     
     'DWM-rendered windows have the (bizarre) side-effect of alpha values being set to 0 in some regions of the image.
     ' To circumvent this, we forcibly set all alpha values to opaque, which makes the resulting image okay.

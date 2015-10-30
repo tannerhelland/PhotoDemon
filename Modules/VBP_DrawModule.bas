@@ -63,8 +63,6 @@ Private Declare Function SetROP2 Lib "gdi32" (ByVal hDC As Long, ByVal nDrawMode
 'DC API functions
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
-Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 
 'API for converting between hWnd-specific coordinate spaces.  Note that the function technically accepts an
 ' array of POINTAPI points; the address passed to lpPoints should be the address of the first point in the array
@@ -176,19 +174,6 @@ Public Sub outlineRectToDC(ByVal targetDC As Long, ByVal x1 As Long, ByVal y1 As
     drawLineToDC targetDC, x2, y1, x2, y2, crColor
     drawLineToDC targetDC, x2, y2, x1, y2, crColor
     drawLineToDC targetDC, x1, y2, x1, y1, crColor
-End Sub
-
-'Simplified pure-VB function for rendering text to an object.
-Public Sub drawTextOnObject(ByRef dstObject As Object, ByVal sText As String, ByVal xPos As Long, ByVal yPos As Long, Optional ByVal newFontSize As Long = 12, Optional ByVal newFontColor As Long = 0, Optional ByVal makeFontBold As Boolean = False, Optional ByVal makeFontItalic As Boolean = False)
-
-    dstObject.CurrentX = xPos
-    dstObject.CurrentY = yPos
-    dstObject.FontSize = newFontSize
-    dstObject.ForeColor = newFontColor
-    dstObject.FontBold = makeFontBold
-    dstObject.FontItalic = makeFontItalic
-    dstObject.Print sText
-
 End Sub
 
 'Draw a system icon on the specified device context; this code is adopted from an example by Francesco Balena at http://www.devx.com/vb2themax/Tip/19108
@@ -886,7 +871,7 @@ End Sub
 'Need a quick and dirty DC for something?  Call this.  (Just remember to free the DC when you're done!)
 Public Function GetMemoryDC() As Long
     
-    GetMemoryDC = CreateCompatibleDC(0)
+    GetMemoryDC = CreateCompatibleDC(0&)
     
     'In debug mode, track how many DCs the program requests
     #If DEBUGMODE = 1 Then

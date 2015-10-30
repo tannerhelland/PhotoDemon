@@ -4491,7 +4491,7 @@ Dim bIsTransparent As Boolean
          Dim tBF As BLENDFUNCTION
          Dim lBF As Long
          
-         hMemDC = CreateCompatibleDC(0)
+         hMemDC = Drawing.GetMemoryDC()
          If (hMemDC) Then
             hBitmap = FreeImage_GetBitmap(BITMAP, hMemDC)
             hBitmapOld = SelectObject(hMemDC, hBitmap)
@@ -4511,7 +4511,7 @@ Dim bIsTransparent As Boolean
                             
             Call SelectObject(hMemDC, hBitmapOld)
             Call DeleteObject(hBitmap)
-            Call DeleteDC(hMemDC)
+            Drawing.FreeMemoryDC hMemDC
             If (lpPalette) Then
                Call FreeImage_Unload(BITMAP)
             End If

@@ -132,8 +132,8 @@ Begin VB.Form layerpanel_Layers
       Left            =   0
       Top             =   120
       Width           =   675
-      _ExtentX        =   1482
-      _ExtentY        =   503
+      _ExtentX        =   1191
+      _ExtentY        =   423
       Caption         =   "opacity:"
       Layout          =   2
    End
@@ -156,8 +156,8 @@ Begin VB.Form layerpanel_Layers
       Left            =   0
       Top             =   540
       Width           =   540
-      _ExtentX        =   1191
-      _ExtentY        =   503
+      _ExtentX        =   953
+      _ExtentY        =   423
       Caption         =   "blend:"
       Layout          =   2
    End
@@ -167,8 +167,8 @@ Begin VB.Form layerpanel_Layers
       Left            =   0
       Top             =   960
       Width           =   540
-      _ExtentX        =   1164
-      _ExtentY        =   503
+      _ExtentX        =   953
+      _ExtentY        =   423
       Caption         =   "alpha:"
       Layout          =   2
    End
@@ -376,7 +376,7 @@ Private Sub checkButtonEnablement()
     Else
     
         Dim i As Long
-        For i = cmdLayerAction.lBound To cmdLayerAction.UBound
+        For i = cmdLayerAction.lBound To cmdLayerAction.ubound
             cmdLayerAction(i).Enabled = False
         Next i
         

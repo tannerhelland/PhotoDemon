@@ -87,13 +87,14 @@ End Enum
 
 Private Const GCL_HCURSOR = (-12)
 
-Dim numOfCustomCursors As Long
-Dim customCursorNames() As String
-Dim customCursorHandles() As Long
+Private numOfCustomCursors As Long
+Private customCursorNames() As String
+Private customCursorHandles() As Long
 
 'This array will be used to store our dynamically created icon handles so we can delete them on program exit
-Dim numOfIcons As Long
-Dim iconHandles() As Long
+Private Const INITIAL_ICON_CACHE_SIZE As Long = 16
+Private m_numOfIcons As Long
+Private m_iconHandles() As Long
 
 'This constant is used for testing only.  It should always be set to TRUE for production code.
 Public Const ALLOW_DYNAMIC_ICONS As Boolean = True
@@ -760,14 +761,14 @@ Public Sub createCustomFormIcon(ByRef srcImage As pdImage)
         'setNewTaskbarIcon hIcon32, imgForm.hWnd
 
         '...and remember it in our current icon collection
-        addIconToList hIcon32
+        AddIconToList hIcon32
 
         '...and the current form
         srcImage.curFormIcon32 = hIcon32
 
         'Now repeat the same steps, but for a 16x16 icon to be used in the form's title bar.
         hIcon16 = getIconFromDIB(thumbDIB, 16)
-        addIconToList hIcon16
+        AddIconToList hIcon16
         srcImage.curFormIcon16 = hIcon16
         
     End If
@@ -776,31 +777,33 @@ End Sub
 
 'Needs to be run only once, at the start of the program
 Public Sub initializeIconHandler()
-    numOfIcons = 0
+    m_numOfIcons = 0
+    ReDim m_iconHandles(0 To INITIAL_ICON_CACHE_SIZE - 1) As Long
 End Sub
 
-'Add another icon reference to the list
-Private Sub addIconToList(ByVal hIcon As Long)
-
-    ReDim Preserve iconHandles(0 To numOfIcons) As Long
-    iconHandles(numOfIcons) = hIcon
-    numOfIcons = numOfIcons + 1
+Private Sub AddIconToList(ByVal hIcon As Long)
+    
+    If m_numOfIcons > UBound(m_iconHandles) Then
+        ReDim Preserve m_iconHandles(0 To UBound(m_iconHandles) * 2 + 1) As Long
+    End If
+    
+    m_iconHandles(m_numOfIcons) = hIcon
+    m_numOfIcons = m_numOfIcons + 1
 
 End Sub
 
 'Remove all icons generated since the program launched
-Public Sub destroyAllIcons()
+Public Sub DestroyAllIcons()
 
-    If numOfIcons = 0 Then Exit Sub
+    If m_numOfIcons = 0 Then Exit Sub
     
     Dim i As Long
-    For i = 0 To numOfIcons - 1
-        DestroyIcon iconHandles(i)
+    For i = 0 To m_numOfIcons - 1
+        If m_iconHandles(i) <> 0 Then DestroyIcon m_iconHandles(i)
     Next i
     
-    numOfIcons = 0
-    
-    ReDim iconHandles(0) As Long
+    'Reinitialize the icon handler, which will also reset the icon count and handle array
+    initializeIconHandler
 
 End Sub
 
@@ -1059,22 +1062,21 @@ Public Function loadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
     ImageData() = LoadResData(resTitle, "CUSTOM")
     
     Dim IStream As IUnknown
-    Dim tmpRect As RECTF
-    Dim gdiBitmap As Long, hBitmap As Long
-        
     CreateStreamOnHGlobal ImageData(0), 0&, IStream
     
-    If Not IStream Is Nothing Then
+    If Not (IStream Is Nothing) Then
         
         'Use GDI+ to convert the bytestream into a usable image
         ' (Note that GDI+ will have been initialized already, as part of the core PhotoDemon startup routine)
-        If GdipLoadImageFromStream(IStream, gdiBitmap) = 0 Then
+        Dim gdipBitmap As Long
+        If GdipLoadImageFromStream(IStream, gdipBitmap) = 0 Then
         
             'Retrieve the image's size and pixel format
-            GdipGetImageBounds gdiBitmap, tmpRect, UnitPixel
+            Dim tmpRect As RECTF
+            GdipGetImageBounds gdipBitmap, tmpRect, UnitPixel
             
             Dim gdiPixelFormat As Long
-            GdipGetImagePixelFormat gdiBitmap, gdiPixelFormat
+            GdipGetImagePixelFormat gdipBitmap, gdiPixelFormat
             
             'Create the DIB anew as necessary
             If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
@@ -1088,57 +1090,46 @@ Public Function loadResourceToDIB(ByVal resTitle As String, ByRef dstDIB As pdDI
             End If
             
             'Convert the GDI+ bitmap to a standard Windows hBitmap
-            If GdipCreateHBITMAPFromBitmap(gdiBitmap, hBitmap, vbBlack) = 0 Then
+            Dim hBitmap As Long
+            If GdipCreateHBITMAPFromBitmap(gdipBitmap, hBitmap, vbBlack) = 0 Then
             
-                'Select the hBitmap into a new DC so we can BitBlt it into the DIB
+                'Select the hBitmap into a new DC so we can BitBlt it into the target DIB
                 Dim gdiDC As Long
-                gdiDC = CreateCompatibleDC(0)
-                SelectObject gdiDC, hBitmap
+                gdiDC = Drawing.GetMemoryDC()
+                
+                Dim oldBitmap As Long
+                oldBitmap = SelectObject(gdiDC, hBitmap)
                 
                 'Copy the GDI+ bitmap into the DIB
                 BitBlt dstDIB.getDIBDC, 0, 0, tmpRect.Width, tmpRect.Height, gdiDC, 0, 0, vbSrcCopy
                 
-                'Verify the alpha channel; if it's unnecessary, downsample to 24-bpp.
-                ' NOTE: I've temporarily disabled this to improve performance.  Invalid alpha channels no longer hurt us
-                '       like they did in old PD versions.
-                'If Not DIB_Handler.verifyDIBAlphaChannel(dstDIB) Then dstDIB.convertTo24bpp
-                
-                'Release the Windows-format bitmap and temporary device context
+                'Release the original DDB and temporary device context
+                SelectObject gdiDC, oldBitmap
                 DeleteObject hBitmap
-                DeleteDC gdiDC
-                
-                'Release the GDI+ bitmap as well
-                GdipDisposeImage gdiBitmap
-                
-                'Free the memory stream
-                Set IStream = Nothing
+                Drawing.FreeMemoryDC gdiDC
                 
                 loadResourceToDIB = True
-                Exit Function
-            
+                
             Else
+                loadResourceToDIB = False
                 Debug.Print "GDI+ failed to create an HBITMAP for requested resource " & resTitle & " stream."
             End If
             
-            'Release the GDI+ bitmap and mark the load as failed
-            GdipDisposeImage gdiBitmap
-            loadResourceToDIB = False
-            Exit Function
+            'Release the GDI+ bitmap
+            GdipDisposeImage gdipBitmap
                 
         Else
+            loadResourceToDIB = False
             Debug.Print "GDI+ failed to load requested resource " & resTitle & " stream."
         End If
     
         'Free the memory stream
         Set IStream = Nothing
-        loadResourceToDIB = False
-        Exit Function
-    
+        
     Else
+        loadResourceToDIB = False
         Debug.Print "Could not load requested resource " & resTitle & " from file."
     End If
     
-    loadResourceToDIB = False
-    Exit Function
-        
 End Function
+

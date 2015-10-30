@@ -242,11 +242,11 @@ Private m_MouseOverSlider As Boolean, m_MouseOverSliderTrack As Boolean, m_Mouse
 '                  but I can revisit in the future if it ever becomes relevant.
 Public Property Get Caption() As String
 Attribute Caption.VB_UserMemId = -518
-    Caption = m_Caption.getCaptionEn
+    Caption = m_Caption.GetCaptionEn
 End Property
 
 Public Property Let Caption(ByRef newCaption As String)
-    If m_Caption.setCaption(newCaption) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then updateControlLayout
+    If m_Caption.SetCaption(newCaption) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then updateControlLayout
     PropertyChanged "Caption"
 End Property
 
@@ -270,11 +270,11 @@ Public Property Let Enabled(ByVal newValue As Boolean)
 End Property
 
 Public Property Get FontSizeCaption() As Single
-    FontSizeCaption = m_Caption.getFontSize
+    FontSizeCaption = m_Caption.GetFontSize
 End Property
 
 Public Property Let FontSizeCaption(ByVal newSize As Single)
-    If m_Caption.setFontSize(newSize) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then updateControlLayout
+    If m_Caption.SetFontSize(newSize) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then updateControlLayout
     PropertyChanged "FontSizeCaption"
 End Property
 
@@ -574,7 +574,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
             m_InitY = y - sliderY
             
             'Force an immediate redraw (instead of waiting for WM_PAINT to process)
-            cSliderPainter.requestRepaint True
+            cSliderPainter.RequestRepaint True
             
         End If
     
@@ -608,7 +608,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         Value = (controlMax - controlMin) * (((x + m_InitX) - getTrackMinPos) / (getTrackMaxPos - getTrackMinPos)) + controlMin
         
         'Force an immediate redraw (instead of waiting for WM_PAINT to process)
-        cSliderPainter.requestRepaint True
+        cSliderPainter.RequestRepaint True
         
     'If the LMB is not down, modify the cursor according to its position relative to the slider
     Else
@@ -717,10 +717,10 @@ Private Sub UserControl_Initialize()
         
         'Start our flicker-free window painters
         Set cSliderPainter = New pdWindowPainter
-        cSliderPainter.startPainter picScroll.hWnd
+        cSliderPainter.StartPainter picScroll.hWnd
         
         Set cBackgroundPainter = New pdWindowPainter
-        cBackgroundPainter.startPainter UserControl.hWnd
+        cBackgroundPainter.StartPainter UserControl.hWnd
         
         'Set up mouse events
         Set cMouseEvents = New pdInputMouse
@@ -755,7 +755,7 @@ Private Sub UserControl_Initialize()
     
     'Prep the caption object
     Set m_Caption = New pdCaption
-    m_Caption.setWordWrapSupport False
+    m_Caption.SetWordWrapSupport False
         
 End Sub
 
@@ -852,8 +852,8 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 
     'Store all associated properties
     With PropBag
-        .WriteProperty "Caption", m_Caption.getCaptionEn, ""
-        .WriteProperty "FontSizeCaption", m_Caption.getFontSize, 12
+        .WriteProperty "Caption", m_Caption.GetCaptionEn, ""
+        .WriteProperty "FontSizeCaption", m_Caption.GetFontSize, 12
         .WriteProperty "FontSizeTUD", m_FontSizeTUD, 10
         .WriteProperty "Min", controlMin, 0
         .WriteProperty "Max", controlMax, 10
@@ -892,11 +892,11 @@ Private Sub updateControlLayout()
     
     'The first (and most complicated) size consideration is accounting for the presence of a control caption.  If no caption exists,
     ' we can bypass much of this function.
-    If m_Caption.isCaptionActive Then
+    If m_Caption.IsCaptionActive Then
         
         'Notify the caption renderer of our width.  It will auto-fit its font to match.
         ' (Because this control doesn't support wordwrap, container height is irrelevant; pass 0)
-        m_Caption.setControlSize UserControl.ScaleWidth, 0
+        m_Caption.SetControlSize UserControl.ScaleWidth, 0
         
         'We now have all the information necessary to calculate caption positioning (and by extension, slider and
         ' text up/down positioning, too!)
@@ -904,7 +904,7 @@ Private Sub updateControlLayout()
         'Calculate a new height for the usercontrol as a whole.  This is simple formula:
         ' (height of text up/down) + (2 px padding around text up/down) + (height of caption) + (1 px padding around caption)
         Dim textHeight As Long
-        textHeight = m_Caption.getCaptionHeight()
+        textHeight = m_Caption.GetCaptionHeight()
         newControlHeight = tudPrimary.Height + FixDPI(4) + textHeight + FixDPI(2)
         
         'Calculate a new top position for the slider box (which will be vertically centered in the space below the caption)
@@ -928,7 +928,7 @@ Private Sub updateControlLayout()
     'With the control correctly sized, prep the back buffer to match
     Dim controlBackgroundColor As Long
     If g_IsProgramRunning Then
-        controlBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+        controlBackgroundColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
     Else
         controlBackgroundColor = vbWhite
     End If
@@ -940,7 +940,7 @@ Private Sub updateControlLayout()
     End If
     
     'If text exists, paint it onto the newly created back buffer
-    If m_Caption.isCaptionActive Then m_Caption.drawCaption m_BackBufferControl.getDIBDC, 1, 1
+    If m_Caption.IsCaptionActive Then m_Caption.DrawCaption m_BackBufferControl.getDIBDC, 1, 1
     
     'With height correctly set, we next want to left-align the TUD against the slider region
     newLeft_TUD = UserControl.ScaleWidth - (tudPrimary.Width + FixDPI(2))
@@ -978,7 +978,7 @@ Private Sub updateControlLayout()
     
     'Paint the background text buffer to the screen, as relevant
     If g_IsProgramRunning Then
-        cBackgroundPainter.requestRepaint
+        cBackgroundPainter.RequestRepaint
     Else
         BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBufferControl.getDIBDC, 0, 0, vbSrcCopy
     End If
@@ -1002,7 +1002,7 @@ Private Sub redrawSlider(Optional ByVal refreshImmediately As Boolean = False)
     End If
     
     If g_IsProgramRunning Then
-        GDI_Plus.GDIPlusFillDIBRect m_SliderBackgroundDIB, 0, 0, m_SliderBackgroundDIB.getDIBWidth, m_SliderBackgroundDIB.getDIBHeight, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT), 255
+        GDI_Plus.GDIPlusFillDIBRect m_SliderBackgroundDIB, 0, 0, m_SliderBackgroundDIB.getDIBWidth, m_SliderBackgroundDIB.getDIBHeight, g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT), 255
     End If
     
     'Initialize the back buffer as well
@@ -1019,7 +1019,7 @@ Private Sub redrawSlider(Optional ByVal refreshImmediately As Boolean = False)
     'Pull relevant colors from the global themer object
     Dim trackColor As Long
     If g_IsProgramRunning Then
-        trackColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+        trackColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
     Else
         trackColor = RGB(127, 127, 127)
     End If
@@ -1102,15 +1102,15 @@ Private Sub drawSliderKnob(Optional ByVal refreshImmediately As Boolean = False)
         
         If g_IsProgramRunning Then
         
-            trackEffectColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
-            trackJumpIndicatorColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
+            trackEffectColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
+            trackJumpIndicatorColor = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
             
             If m_MouseOverSlider Then
-                sliderEdgeColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-                sliderBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                sliderEdgeColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+                sliderBackgroundColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
             Else
-                sliderEdgeColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                sliderBackgroundColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                sliderEdgeColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
+                sliderBackgroundColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
             End If
             
         Else
@@ -1172,14 +1172,14 @@ Private Sub drawSliderKnob(Optional ByVal refreshImmediately As Boolean = False)
     End If
     
     'Paint the buffer to the screen
-    If g_IsProgramRunning Then cSliderPainter.requestRepaint refreshImmediately Else BitBlt picScroll.hDC, 0, 0, picScroll.ScaleWidth, picScroll.ScaleHeight, m_BackBufferSlider.getDIBDC, 0, 0, vbSrcCopy
+    If g_IsProgramRunning Then cSliderPainter.RequestRepaint refreshImmediately Else BitBlt picScroll.hDC, 0, 0, picScroll.ScaleWidth, picScroll.ScaleHeight, m_BackBufferSlider.getDIBDC, 0, 0, vbSrcCopy
     
 End Sub
 
 'Post-translation, we can request an immediate refresh
 Public Sub requestRefresh()
-    cBackgroundPainter.requestRepaint
-    cSliderPainter.requestRepaint
+    cBackgroundPainter.RequestRepaint
+    cSliderPainter.RequestRepaint
 End Sub
 
 'Render a slight notch at the specified position on the specified DIB.  Note that this sub WILL automatically convert a custom notch

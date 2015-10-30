@@ -216,12 +216,12 @@ Private Sub renderUndoBlock(ByVal blockIndex As Long, ByVal offsetX As Long, ByV
             DeleteObject hBrush
             
             'Also, color the fonts with the matching highlighted text color (otherwise they won't be readable)
-            firstFont.setFontColor ConvertSystemColor(vbHighlightText)
-            secondFont.setFontColor ConvertSystemColor(vbHighlightText)
+            firstFont.SetFontColor ConvertSystemColor(vbHighlightText)
+            secondFont.SetFontColor ConvertSystemColor(vbHighlightText)
         
         Else
-            firstFont.setFontColor primaryColor
-            secondFont.setFontColor secondaryColor
+            firstFont.SetFontColor primaryColor
+            secondFont.SetFontColor secondaryColor
         End If
         
         'If the current filter is highlighted but not selected, simply render the border with a highlight
@@ -244,17 +244,17 @@ Private Sub renderUndoBlock(ByVal blockIndex As Long, ByVal offsetX As Long, ByV
         undoEntries(blockIndex).thumbnailSmall.alphaBlendToDC bufferDIB.getDIBDC, 255, offsetX + FixDPI(4), offsetY + ((FixDPI(BLOCKHEIGHT) - undoEntries(blockIndex).thumbnailSmall.getDIBHeight) \ 2)
             
         'Render the index and name fields
-        firstFont.attachToDC bufferDIB.getDIBDC
-        firstFont.fastRenderText thumbWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4), drawString
-        firstFont.releaseFromDC
+        firstFont.AttachToDC bufferDIB.getDIBDC
+        firstFont.FastRenderText thumbWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4), drawString
+        firstFont.ReleaseFromDC
                 
         'Below that, add the description text
-        mHeight = firstFont.getHeightOfString(drawString) + linePadding
+        mHeight = firstFont.GetHeightOfString(drawString) + linePadding
         drawString = getStringForUndoType(undoEntries(blockIndex).undoType, undoEntries(blockIndex).undoLayerID)
         
-        secondFont.attachToDC bufferDIB.getDIBDC
-        secondFont.fastRenderText thumbWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4) + mHeight, drawString
-        secondFont.releaseFromDC
+        secondFont.AttachToDC bufferDIB.getDIBDC
+        secondFont.FastRenderText thumbWidth + FixDPI(16) + offsetX, offsetY + FixDPI(4) + mHeight, drawString
+        secondFont.ReleaseFromDC
         
     End If
 
@@ -400,20 +400,20 @@ Private Sub Form_Load()
     'Initialize a custom font object for names
     primaryColor = RGB(64, 64, 64)
     Set firstFont = New pdFont
-    firstFont.setFontColor primaryColor
-    firstFont.setFontBold True
-    firstFont.setFontSize 12
-    firstFont.createFontObject
-    firstFont.setTextAlignment vbLeftJustify
+    firstFont.SetFontColor primaryColor
+    firstFont.SetFontBold True
+    firstFont.SetFontSize 12
+    firstFont.CreateFontObject
+    firstFont.SetTextAlignment vbLeftJustify
     
     '...and a second custom font object for descriptions
     secondaryColor = RGB(92, 92, 92)
     Set secondFont = New pdFont
-    secondFont.setFontColor secondaryColor
-    secondFont.setFontBold False
-    secondFont.setFontSize 10
-    secondFont.createFontObject
-    secondFont.setTextAlignment vbLeftJustify
+    secondFont.SetFontColor secondaryColor
+    secondFont.SetFontBold False
+    secondFont.SetFontSize 10
+    secondFont.CreateFontObject
+    secondFont.SetTextAlignment vbLeftJustify
     
     'Retrieve a copy of all Undo data from the current image's undo manager
     pdImages(g_CurrentImage).undoManager.copyUndoStack numOfUndos, curUndoIndex, undoEntries

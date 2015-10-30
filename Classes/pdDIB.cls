@@ -123,12 +123,6 @@ Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, lpBits
 Private Declare Function GetDIBits Lib "gdi32" (ByVal aHDC As Long, ByVal hBitmap As Long, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As Any, ByVal wUsage As Long) As Long
 Private Declare Function GetObject Lib "gdi32" Alias "GetObjectA" (ByVal hObject As Long, ByVal nCount As Long, ByRef lpObject As Any) As Long
 
-'DC API functions
-Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
-Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
-
 'Object API functions
 Private Const OBJ_BITMAP As Long = 7
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
@@ -731,22 +725,22 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
             If createBlank(tmpBitmap.Width, tmpBitmap.Height, tmpBitmap.BitsPerPixel) Then
             
                 'Create a new DC
-                Dim TmpDC As Long
-                TmpDC = CreateCompatibleDC(0)
+                Dim tmpDC As Long
+                tmpDC = Drawing.GetMemoryDC()
                 
                 'If successful, select the object into that DC
-                If TmpDC <> 0 Then
+                If tmpDC <> 0 Then
                 
                     'Temporary holder for the object selection
                     Dim oldBitmap As Long
-                    oldBitmap = SelectObject(TmpDC, srcPicture.Handle)
+                    oldBitmap = SelectObject(tmpDC, srcPicture.Handle)
                     
                     'Use BitBlt to copy the pixel data to this DIB
-                    BitBlt m_dibDC, 0, 0, m_dibWidth, m_dibHeight, TmpDC, 0, 0, vbSrcCopy
+                    BitBlt m_dibDC, 0, 0, m_dibWidth, m_dibHeight, tmpDC, 0, 0, vbSrcCopy
                     
                     'Now that we have the pixel data, erase all temporary objects
-                    SelectObject TmpDC, oldBitmap
-                    DeleteDC TmpDC
+                    SelectObject tmpDC, oldBitmap
+                    Drawing.FreeMemoryDC tmpDC
                     
                     'Finally, if the copied image contains an alpha channel (icons, PNGs, etc), it will be set against a
                     ' black background. We typically want the background to be white, so perform a composite if requested.
@@ -814,7 +808,7 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     
     'If we don't already have a compatible DC, create one now
     If m_dibDC = 0 Then
-        m_dibDC = CreateCompatibleDC(0)
+        m_dibDC = Drawing.GetMemoryDC()
         
     'If we already have a DC, empty it
     Else
@@ -840,7 +834,12 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
         
         'If successful, select the newly created dib into our DC
         If (m_dibHandle <> 0) Then
-        
+            
+            'Inside debugging mode, increment a global DIB counter.
+            #If DEBUGMODE = 1 Then
+                If (m_dibHandle <> 0) Then g_DIBsCreated = g_DIBsCreated + 1
+            #End If
+            
             'We will later use m_dibHandleOriginal to clear up the memory associated with this DIB
             m_dibHandleOriginal = SelectObject(m_dibDC, m_dibHandle)
         
@@ -875,13 +874,8 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
         
     End If
     
-    'Inside debugging mode, increment a global DIB counter.
-    #If DEBUGMODE = 1 Then
-        If (m_dibHandle <> 0) Then g_DIBsCreated = g_DIBsCreated + 1
-    #End If
-    
     'Return success contingent on whether we have a DIB pointer or not
-    createBlank = (m_dibHandle <> 0)
+    createBlank = CBool(m_dibHandle <> 0)
     
 End Function
 
@@ -902,12 +896,12 @@ Public Sub eraseDIB(Optional ByVal alsoReleaseDC As Boolean = False)
     End If
     
     If alsoReleaseDC And (m_dibDC <> 0) Then
-        DeleteDC m_dibDC
+        Drawing.FreeMemoryDC m_dibDC
         m_dibDC = 0
-        m_dibHandleOriginal = 0
     End If
         
     'Reset all associated DIB section variables
+    m_dibHandleOriginal = 0
     m_dibHandle = 0
     m_dibBits = 0
 
