@@ -131,8 +131,8 @@ Begin VB.UserControl pdCanvas
          Left            =   3240
          Top             =   60
          Width           =   345
-         _ExtentX        =   847
-         _ExtentY        =   503
+         _ExtentX        =   609
+         _ExtentY        =   370
          BackColor       =   -2147483626
          Caption         =   "size:"
          FontSize        =   9
@@ -187,8 +187,8 @@ Begin VB.UserControl pdCanvas
          Left            =   5160
          Top             =   60
          Width           =   345
-         _ExtentX        =   847
-         _ExtentY        =   503
+         _ExtentX        =   609
+         _ExtentY        =   370
          BackColor       =   -2147483626
          Caption         =   "size:"
          FontSize        =   9

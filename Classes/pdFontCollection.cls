@@ -89,16 +89,16 @@ Public Function AddFontToCache(ByRef fontName As String, ByVal FontSize As Singl
         
         'Initialize all the required font properties
         With m_FontCollection(m_FontPointer)
-            .setFontFace fontName
-            .setFontSize FontSize
-            .setFontBold isBold
-            .setFontItalic isItalic
-            .setFontUnderline isUnderline
+            .SetFontFace fontName
+            .SetFontSize FontSize
+            .SetFontBold isBold
+            .SetFontItalic isItalic
+            .SetFontUnderline isUnderline
         End With
     
         'Create the font object
         With m_FontCollection(m_FontPointer)
-            .createFontObject
+            .CreateFontObject
         End With
         
         'If extended font caching is active, retrieve those values now
@@ -137,30 +137,30 @@ Private Function DoesFontExist(ByRef fontName As String, Optional ByVal FontSize
                 Select Case m_CurrentCacheMode
                 
                     Case FCM_NameOnly
-                        If StrComp(fontName, .getFontFace, vbBinaryCompare) = 0 Then
+                        If StrComp(fontName, .GetFontFace, vbBinaryCompare) = 0 Then
                             DoesFontExist = i
                             Exit For
                         End If
                     
                     Case FCM_SizeOnly
-                        If (FontSize = .getFontSize) Then
+                        If (FontSize = .GetFontSize) Then
                             DoesFontExist = i
                             Exit For
                         End If
                     
                     Case FCM_NameAndSize
-                        If StrComp(fontName, .getFontFace, vbBinaryCompare) = 0 Then
-                            If (FontSize = m_FontCollection(i).getFontSize) Then
+                        If StrComp(fontName, .GetFontFace, vbBinaryCompare) = 0 Then
+                            If (FontSize = m_FontCollection(i).GetFontSize) Then
                                 DoesFontExist = i
                                 Exit For
                             End If
                         End If
                     
                     Case FCM_SizeAndStyle
-                        If (FontSize = .getFontSize) Then
-                            If (isBold = .getFontBold) Then
-                                If (isItalic = .getFontItalic) Then
-                                    If (isUnderline = .getFontUnderline) Then
+                        If (FontSize = .GetFontSize) Then
+                            If (isBold = .GetFontBold) Then
+                                If (isItalic = .GetFontItalic) Then
+                                    If (isUnderline = .GetFontUnderline) Then
                                         DoesFontExist = i
                                         Exit For
                                     End If
@@ -169,11 +169,11 @@ Private Function DoesFontExist(ByRef fontName As String, Optional ByVal FontSize
                         End If
                         
                     Case FCM_NameAndSizeAndStyle
-                        If StrComp(fontName, .getFontFace, vbBinaryCompare) = 0 Then
-                            If (FontSize = m_FontCollection(i).getFontSize) Then
-                                If (isBold = .getFontBold) Then
-                                    If (isItalic = .getFontItalic) Then
-                                        If (isUnderline = .getFontUnderline) Then
+                        If StrComp(fontName, .GetFontFace, vbBinaryCompare) = 0 Then
+                            If (FontSize = m_FontCollection(i).GetFontSize) Then
+                                If (isBold = .GetFontBold) Then
+                                    If (isItalic = .GetFontItalic) Then
+                                        If (isUnderline = .GetFontUnderline) Then
                                             DoesFontExist = i
                                             Exit For
                                         End If
@@ -271,7 +271,7 @@ Public Function SetExtendedPropertyCaching(ByVal newSetting As Boolean) As Boole
         Dim i As Long
         For i = 0 To UBound(m_FontCollection)
             If Not m_FontCollection(i) Is Nothing Then
-                Uniscribe_Interface.getScriptsSupportedByFont m_FontCollection(i).getFontFace, m_ExtendedProperties(i)
+                Uniscribe_Interface.getScriptsSupportedByFont m_FontCollection(i).GetFontFace, m_ExtendedProperties(i)
             End If
         Next i
         

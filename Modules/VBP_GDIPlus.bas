@@ -509,11 +509,6 @@ Private Declare Function GdipCreatePenFromBrush Lib "gdiplus" Alias "GdipCreateP
 Private Declare Function GdipRotateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal Angle As Single, ByVal order As Long) As Long
 Private Declare Function GdipTranslateWorldTransform Lib "gdiplus" (ByVal mGraphics As Long, ByVal dx As Single, ByVal dy As Single, ByVal order As Long) As Long
 
-'Helpful GDI functions for moving image data between GDI and GDI+
-Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
-Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
-
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
 Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal HPALETTE As Long, ByRef cColorRef As Long) As Long
 
@@ -952,7 +947,7 @@ Public Function GDIPlusDrawCanvasCircle(ByVal dstDC As Long, ByVal cx As Single,
     GDIPlusDrawCircleToDC dstDC, cx, cy, cRadius, RGB(0, 0, 0), cTransparency, 3, True
     
     Dim topColor As Long
-    If useHighlightColor Then topColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT) Else topColor = RGB(255, 255, 255)
+    If useHighlightColor Then topColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT) Else topColor = RGB(255, 255, 255)
     GDIPlusDrawCircleToDC dstDC, cx, cy, cRadius, topColor, 220, 1, True
     
 End Function
@@ -964,7 +959,7 @@ Public Function GDIPlusDrawCanvasSquare(ByVal dstDC As Long, ByVal cx As Single,
     GDI_Plus.GDIPlusDrawRectOutlineToDC dstDC, cx - cRadius, cy - cRadius, cx + cRadius, cy + cRadius, RGB(0, 0, 0), cTransparency, 3, True, LineCapRound, True
     
     Dim topColor As Long
-    If useHighlightColor Then topColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT) Else topColor = RGB(255, 255, 255)
+    If useHighlightColor Then topColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT) Else topColor = RGB(255, 255, 255)
     GDI_Plus.GDIPlusDrawRectOutlineToDC dstDC, cx - cRadius, cy - cRadius, cx + cRadius, cy + cRadius, topColor, 220, 1.6, True, LineCapRound, True
     
 End Function
@@ -975,7 +970,7 @@ Public Function GDIPlusDrawCanvasLine(ByVal dstDC As Long, ByVal x1 As Single, B
     GDI_Plus.GDIPlusDrawLineToDC dstDC, x1, y1, x2, y2, RGB(0, 0, 0), cTransparency, 3, True, LineCapSquare, True
     
     Dim topColor As Long
-    If useHighlightColor Then topColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT) Else topColor = RGB(255, 255, 255)
+    If useHighlightColor Then topColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT) Else topColor = RGB(255, 255, 255)
     GDI_Plus.GDIPlusDrawLineToDC dstDC, x1, y1, x2, y2, topColor, 220, 1.6, True, LineCapRound, True
     
 End Function
@@ -986,7 +981,7 @@ Public Function GDIPlusDrawCanvasRectF(ByVal dstDC As Long, ByRef srcRect As REC
     GDI_Plus.GDIPlusDrawRectFOutlineToDC dstDC, srcRect, RGB(0, 0, 0), cTransparency, 3, True, LineJoinMiter
     
     Dim topColor As Long
-    If useHighlightColor Then topColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT) Else topColor = RGB(255, 255, 255)
+    If useHighlightColor Then topColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT) Else topColor = RGB(255, 255, 255)
     GDI_Plus.GDIPlusDrawRectFOutlineToDC dstDC, srcRect, topColor, 220, 1.6, True, LineJoinMiter
     
 End Function
@@ -997,7 +992,7 @@ Public Function GDIPlusDrawCanvasArc(ByVal dstDC As Long, ByVal centerX As Singl
     GDIPlusDrawArcCircular dstDC, centerX, centerY, arcRadius, startAngle, sweepAngle, RGB(0, 0, 0), cTransparency, 3, True
     
     Dim topColor As Long
-    If useHighlightColor Then topColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT) Else topColor = RGB(255, 255, 255)
+    If useHighlightColor Then topColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT) Else topColor = RGB(255, 255, 255)
     GDIPlusDrawArcCircular dstDC, centerX, centerY, arcRadius, startAngle, sweepAngle, topColor, 220, 1, True
     
 End Function

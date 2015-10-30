@@ -500,28 +500,28 @@ Public Function getFontColor() As Long
     getFontColor = m_FontColor
 End Function
 
-Public Sub setFontColor(ByVal newColor As Long)
+Public Sub SetFontColor(ByVal newColor As Long)
     m_FontColor = newColor
 End Sub
 
-Public Function getFontBold() As Boolean
-    getFontBold = m_FontBold
+Public Function GetFontBold() As Boolean
+    GetFontBold = m_FontBold
 End Function
 
 Public Function isFontBoldSupported() As Boolean
     isFontBoldSupported = m_BoldSupported
 End Function
 
-Public Function getFontItalic() As Boolean
-    getFontItalic = m_FontItalic
+Public Function GetFontItalic() As Boolean
+    GetFontItalic = m_FontItalic
 End Function
 
 Public Function isFontItalicSupported() As Boolean
     isFontItalicSupported = m_ItalicSupported
 End Function
 
-Public Function getFontUnderline() As Boolean
-    getFontUnderline = m_FontUnderline
+Public Function GetFontUnderline() As Boolean
+    GetFontUnderline = m_FontUnderline
 End Function
 
 Public Function isFontUnderlineSupported() As Boolean
@@ -538,28 +538,28 @@ End Function
 
 'Set functions for various font styles.  Note that these functions reset the current font cache, so please use them
 ' only if necessary.
-Public Sub setFontBold(ByVal newValue As Boolean)
+Public Sub SetFontBold(ByVal newValue As Boolean)
     If newValue <> m_FontBold Then
         m_FontBold = newValue
         m_FontCacheClean = False
     End If
 End Sub
 
-Public Sub setFontItalic(ByVal newValue As Boolean)
+Public Sub SetFontItalic(ByVal newValue As Boolean)
     If newValue <> m_FontItalic Then
         m_FontItalic = newValue
         m_FontCacheClean = False
     End If
 End Sub
 
-Public Sub setFontUnderline(ByVal newValue As Boolean)
+Public Sub SetFontUnderline(ByVal newValue As Boolean)
     If newValue <> m_FontUnderline Then
         m_FontUnderline = newValue
         m_FontCacheClean = False
     End If
 End Sub
 
-Public Sub setFontStrikeout(ByVal newValue As Boolean)
+Public Sub SetFontStrikeout(ByVal newValue As Boolean)
     If newValue <> m_FontStrikeout Then
         m_FontStrikeout = newValue
         m_FontCacheClean = False
@@ -568,22 +568,22 @@ End Sub
 
 'Get/set functions for font size and unit.  By default, this class uses pixels.  Other units may be supported
 ' in the future.
-Public Function getFontSize() As Single
-    getFontSize = m_FontSize
+Public Function GetFontSize() As Single
+    GetFontSize = m_FontSize
 End Function
 
-Public Sub setFontSize(ByVal newValue As Single)
+Public Sub SetFontSize(ByVal newValue As Single)
     If newValue <> m_FontSize Then
         m_FontSize = newValue
         m_FontCacheClean = False
     End If
 End Sub
 
-Friend Function getFontSizeUnit() As pdFontUnit
-    getFontSizeUnit = m_FontSizeUnit
+Friend Function GetFontSizeUnit() As pdFontUnit
+    GetFontSizeUnit = m_FontSizeUnit
 End Function
 
-Friend Sub setFontSizeUnit(ByVal newUnit As pdFontUnit)
+Friend Sub SetFontSizeUnit(ByVal newUnit As pdFontUnit)
     If newUnit <> m_FontSizeUnit Then
         m_FontSizeUnit = newUnit
         m_FontCacheClean = False
@@ -1091,12 +1091,12 @@ Friend Function setGenericTextProperty(ByVal desiredProperty As PD_TEXT_PROPERTY
 End Function
 
 'Get/Set font face.  These are more cumbersome than other font settings.
-Public Function getFontFace() As String
-    getFontFace = m_FontFace
+Public Function GetFontFace() As String
+    GetFontFace = m_FontFace
 End Function
 
 'Set a given font face, as specified by a font name.
-Public Sub setFontFace(ByVal fontName As String)
+Public Sub SetFontFace(ByVal fontName As String)
     
     'If this font face has already been set, ignore this request
     If (StrComp(fontName, m_FontFace, vbBinaryCompare) <> 0) Then
@@ -1123,12 +1123,12 @@ Private Function convertPDFontUnitToGDIPlusFontUnit(ByRef srcPDFontUnit As pdFon
 End Function
 
 'When all font parameters have been set, we can actually create a font!
-Public Function createFontObject() As Boolean
+Public Function CreateFontObject() As Boolean
     
     'If the font cache is clean, this request is redundant; ignore it
     If m_FontCacheClean Then
-        Debug.Print "Font cache is clean; ignoring createFontObject request"
-        createFontObject = True
+        Debug.Print "Font cache is clean; ignoring CreateFontObject request"
+        CreateFontObject = True
         Exit Function
     End If
     
@@ -1165,7 +1165,7 @@ Public Function createFontObject() As Boolean
         Debug.Print "GDI+ is now set as the active font handling backend."
         m_CurrentBackend = fb_GDIPLUS
         m_FontCacheClean = True
-        createFontObject = True
+        CreateFontObject = True
         
         'For text metric purposes, we create a duplicate font in GDI format.  This is a hassle, but it's necessary to retrieve
         ' detailed metrics on individual glyphs, as GDI+ doesn't expose very detailed font information.
@@ -1183,18 +1183,18 @@ Public Function createFontObject() As Boolean
             Debug.Print "GDI is now set as the active font handling backend."
             m_CurrentBackend = fb_GDI
             m_FontCacheClean = True
-            createFontObject = True
+            CreateFontObject = True
             
         Else
         
             'For some reason, this combination of settings doesn't work at all.  I hope this never happens, but you never know.
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "WARNING!  pdTextRenderer's createFontObject failed with both GDI+ and GDI; sorry!"
+                pdDebug.LogAction "WARNING!  pdTextRenderer's CreateFontObject failed with both GDI+ and GDI; sorry!"
             #End If
             
             m_CurrentBackend = fb_UNKNOWN
             m_FontCacheClean = False
-            createFontObject = False
+            CreateFontObject = False
             
         End If
         
@@ -1339,9 +1339,9 @@ Private Function createGDIFont() As Boolean
     Dim tmpLogFont As LOGFONTW
     
     'Use the font management module to populate the struct
-    Font_Management.fillLogFontW_Basic tmpLogFont, m_FontFace, m_FontBold, m_FontItalic, m_FontUnderline, m_FontStrikeout
-    Font_Management.fillLogFontW_Size tmpLogFont, m_FontSize, m_FontSizeUnit
-    Font_Management.fillLogFontW_Quality tmpLogFont, convertTextAAToGdipTextHint
+    Font_Management.FillLogFontW_Basic tmpLogFont, m_FontFace, m_FontBold, m_FontItalic, m_FontUnderline, m_FontStrikeout
+    Font_Management.FillLogFontW_Size tmpLogFont, m_FontSize, m_FontSizeUnit
+    Font_Management.FillLogFontW_Quality tmpLogFont, convertTextAAToGdipTextHint
     
     'Attempt to create a matching GDI font
     If Font_Management.createGDIFont(tmpLogFont, m_GDIFont) Then
@@ -1371,7 +1371,7 @@ Public Function renderTextToDIB(ByRef dstDIB As pdDIB, ByVal x1 As Single, ByVal
     'As a convenience to the user, create the font as necessary
     If (Not m_FontCacheClean) Then
         Debug.Print "Font settings have changed; attempting to recreate font now..."
-        createFontObject
+        CreateFontObject
     End If
     
     'If the font cache *still* isn't clean, something went horribly wrong
@@ -1498,7 +1498,7 @@ Private Function renderTextToDIB_GDIPlus(ByRef dstDIB As pdDIB, ByRef srcString 
     
     'We can, however, use GDI to calculate it instead.  (TODO: cache this value, and only re-check it if the string and/or font changes.)
     Dim firstCharABCWidth As ABCFLOAT
-    If Font_Management.getABCWidthOfGlyph(m_GDIFont, AscW(Left$(srcString, 1)), firstCharABCWidth) Then
+    If Font_Management.GetABCWidthOfGlyph(m_GDIFont, AscW(Left$(srcString, 1)), firstCharABCWidth) Then
         
         'If the offset value is negative, we want to increase our rendering offset proportionally.  (Note that we add an
         ' extra pixel to account for possible antialiasing along the border.)
@@ -1819,7 +1819,7 @@ Private Function renderTextToDIB_GDI(ByRef dstDIB As pdDIB, ByRef srcString As S
     'A left-side overhang is possible on some fonts, particularly fonts where italics have to be synthesized.
     ' There's no automatic way to handle this, so we do it manually (as usual).
     Dim firstCharABCWidth As ABCFLOAT
-    If Font_Management.getABCWidthOfGlyph(m_TmpGdiDIB.getDIBDC, AscW(Left$(srcString, 1)), firstCharABCWidth, True) Then
+    If Font_Management.GetABCWidthOfGlyph(m_TmpGdiDIB.getDIBDC, AscW(Left$(srcString, 1)), firstCharABCWidth, True) Then
         
         'If the offset value is negative, we want to increase our rendering offset proportionally.  (Note that we add an
         ' extra pixel to account for possible antialiasing along the border.)

@@ -57,7 +57,7 @@ Begin VB.Form FormScreenCapture
       Top             =   1050
       Width           =   5115
       _ExtentX        =   9022
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "minimize PhotoDemon prior to capture"
    End
    Begin VB.ListBox lstWindows 
@@ -85,7 +85,7 @@ Begin VB.Form FormScreenCapture
       Top             =   600
       Width           =   5370
       _ExtentX        =   9472
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "entire desktop"
       Value           =   -1  'True
    End
@@ -97,7 +97,7 @@ Begin VB.Form FormScreenCapture
       Top             =   1680
       Width           =   5370
       _ExtentX        =   9472
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "specific program (listed by window title)"
    End
    Begin PhotoDemon.smartCheckBox chkChrome 
@@ -107,7 +107,7 @@ Begin VB.Form FormScreenCapture
       Top             =   5640
       Width           =   4875
       _ExtentX        =   8599
-      _ExtentY        =   661
+      _ExtentY        =   582
       Caption         =   "include window decorations"
    End
    Begin VB.Label lblTitle 

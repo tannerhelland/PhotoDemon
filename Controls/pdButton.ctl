@@ -131,12 +131,12 @@ End Property
 '                  but I can revisit in the future if it ever becomes relevant.
 Public Property Get Caption() As String
 Attribute Caption.VB_UserMemId = -518
-    Caption = m_Caption.getCaptionEn
+    Caption = m_Caption.GetCaptionEn
 End Property
 
 Public Property Let Caption(ByRef newCaption As String)
     
-    If m_Caption.setCaption(newCaption) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then updateControlLayout
+    If m_Caption.SetCaption(newCaption) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then updateControlLayout
     PropertyChanged "Caption"
     
     'Access keys must be handled manually.
@@ -172,11 +172,11 @@ Public Property Let Enabled(ByVal newValue As Boolean)
 End Property
 
 Public Property Get FontSize() As Single
-    FontSize = m_Caption.getFontSize
+    FontSize = m_Caption.GetFontSize
 End Property
 
 Public Property Let FontSize(ByVal newSize As Single)
-    If m_Caption.setFontSize(newSize) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then updateControlLayout
+    If m_Caption.SetFontSize(newSize) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then updateControlLayout
     PropertyChanged "FontSize"
 End Property
 
@@ -391,7 +391,7 @@ Private Sub UserControl_Initialize()
         
         'Also start a flicker-free window painter
         Set cPainter = New pdWindowPainter
-        cPainter.startPainter Me.hWnd
+        cPainter.StartPainter Me.hWnd
         
         'Also start a focus detector
         Set cFocusDetector = New pdFocusDetector
@@ -410,7 +410,7 @@ Private Sub UserControl_Initialize()
     
     'Prep the caption object
     Set m_Caption = New pdCaption
-    m_Caption.setWordWrapSupport True
+    m_Caption.SetWordWrapSupport True
     
     'Update the control size parameters at least once
     updateControlLayout
@@ -480,7 +480,7 @@ Private Sub updateControlLayout()
     ' can get a little complicated.
     
     'Start with the caption
-    If m_Caption.isCaptionActive Then
+    If m_Caption.IsCaptionActive Then
         
         'We need to find the available area for the caption.  The caption class will automatically fit any translated text inside
         ' this rect.
@@ -508,7 +508,7 @@ Private Sub updateControlLayout()
         End If
         
         'Notify the caption renderer of this new caption position, which it will use to automatically adjust its font, as necessary
-        m_Caption.setControlSize m_CaptionRect.Right - m_CaptionRect.Left, m_CaptionRect.Bottom - m_CaptionRect.Top
+        m_Caption.SetControlSize m_CaptionRect.Right - m_CaptionRect.Left, m_CaptionRect.Bottom - m_CaptionRect.Top
     
     'If there's no caption, center the button image on the control
     Else
@@ -536,8 +536,8 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     'Store all associated properties
     With PropBag
         .WriteProperty "BackColor", m_BackColor, vbWhite
-        .WriteProperty "Caption", m_Caption.getCaptionEn, ""
-        .WriteProperty "FontSize", m_Caption.getFontSize, 10
+        .WriteProperty "Caption", m_Caption.GetCaptionEn, ""
+        .WriteProperty "FontSize", m_Caption.GetFontSize, 10
     End With
     
 End Sub
@@ -576,32 +576,32 @@ Private Sub redrawBackBuffer()
     
         'Is the button pressed?
         If m_ButtonStateDown Then
-            btnColorFill = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
-            btnColorBorder = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
-            textColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
+            btnColorFill = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
+            btnColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
+            textColor = g_Themer.GetThemeColor(PDTC_TEXT_INVERT)
             
         'The button is not pressed
         Else
         
             'Is the mouse inside the UC?
             If m_MouseInsideUC Then
-                btnColorFill = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
-                btnColorBorder = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-                textColor = g_Themer.getThemeColor(PDTC_TEXT_TITLE)
+                btnColorFill = g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
+                btnColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+                textColor = g_Themer.GetThemeColor(PDTC_TEXT_TITLE)
             
             'The mouse is not inside the UC
             Else
                 
                 'If focus was received via keyboard, change the border to reflect it
                 If m_FocusRectActive Then
-                    btnColorBorder = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+                    btnColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
                 Else
-                    btnColorBorder = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
+                    btnColorBorder = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
                 End If
                 
                 'Text and fill color is identical regardless of focus
                 btnColorFill = m_BackColor
-                textColor = g_Themer.getThemeColor(PDTC_TEXT_TITLE)
+                textColor = g_Themer.GetThemeColor(PDTC_TEXT_TITLE)
             
             End If
             
@@ -611,8 +611,8 @@ Private Sub redrawBackBuffer()
     Else
     
         btnColorFill = m_BackColor
-        btnColorBorder = g_Themer.getThemeColor(PDTC_DISABLED)
-        textColor = g_Themer.getThemeColor(PDTC_DISABLED)
+        btnColorBorder = g_Themer.GetThemeColor(PDTC_DISABLED)
+        textColor = g_Themer.GetThemeColor(PDTC_DISABLED)
         
     End If
     
@@ -642,9 +642,9 @@ Private Sub redrawBackBuffer()
     End If
     
     'Paint the caption, if any
-    If m_Caption.isCaptionActive Then
-        m_Caption.setCaptionColor textColor
-        m_Caption.drawCaptionCentered m_BackBuffer.getDIBDC, m_CaptionRect
+    If m_Caption.IsCaptionActive Then
+        m_Caption.SetCaptionColor textColor
+        m_Caption.DrawCaptionCentered m_BackBuffer.getDIBDC, m_CaptionRect
     End If
             
     'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
@@ -663,7 +663,7 @@ Private Sub redrawBackBuffer()
     End If
     
     'Paint the buffer to the screen
-    If g_IsProgramRunning Then cPainter.requestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    If g_IsProgramRunning Then cPainter.RequestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
 
 End Sub
 

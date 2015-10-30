@@ -127,7 +127,7 @@ Private Type MEASUREITEMSTRUCT
     itemID As Long
     itemWidth As Long
     itemHeight As Long
-    ItemData As Long
+    itemData As Long
 End Type
 
 Private Type DRAWITEMSTRUCT
@@ -139,7 +139,7 @@ Private Type DRAWITEMSTRUCT
     hWndItem As Long
     hDC As Long
     rcItem As RECT
-    ItemData As Long
+    itemData As Long
 End Type
 
 Private Type ICONINFO
@@ -210,7 +210,7 @@ Private Type GdiplusStartupInput
 End Type
 
 Private Type COLORMATRIX
-    M(0 To 4, 0 To 4) As Single
+    m(0 To 4, 0 To 4) As Single
 End Type
 
 Private Type OSVERSIONINFO
@@ -290,7 +290,7 @@ Private Const WM_ENTERIDLE As Long = &H121
 
 Public Event MenuMessages(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long)
 
-Private m_Hwnd As Long
+Private m_hWnd As Long
 
 Private GdipToken As Long
 Private m_lWidth As Long
@@ -348,7 +348,7 @@ Public Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, P
     Dim v As Variant
     Dim sKey As String
 
-    hMenu = GetMenu(m_Hwnd)
+    hMenu = GetMenu(m_hWnd)
     
     Dim tmpInfo As MENUINFO
     
@@ -397,11 +397,11 @@ Public Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, P
     
     PutImageToVBMenu = SetMenuItemInfo(hSubMenu, MenuPos, True, MII)
    
-    If hSubMenu = hMenu Then DrawMenuBar m_Hwnd
+    If hSubMenu = hMenu Then DrawMenuBar m_hWnd
     
 End Function
 
-Public Function PutImageToApiMenu(ByVal imageID As Long, ByVal hMenu As Long, ByVal MenuPos As Long, Optional ByVal ItemData As Long) As Boolean
+Public Function PutImageToApiMenu(ByVal imageID As Long, ByVal hMenu As Long, ByVal MenuPos As Long, Optional ByVal itemData As Long) As Boolean
 
     Dim MII As MENUITEMINFO
     Dim sKey As String
@@ -430,7 +430,7 @@ Public Function PutImageToApiMenu(ByVal imageID As Long, ByVal hMenu As Long, By
                 cColl.Add imageID, sKey
             End If
         End If
-        .dwItemData = ItemData
+        .dwItemData = itemData
     End With
     
     PutImageToApiMenu = SetMenuItemInfo(hMenu, MenuPos, True, MII)
@@ -455,7 +455,7 @@ Public Sub RemoveMenuCheckVB(ParamArray vSubMenuPos() As Variant)
     Dim hSubMenu As Long
     Dim v As Variant
 
-    hMenu = GetMenu(m_Hwnd)
+    hMenu = GetMenu(m_hWnd)
     
     hSubMenu = hMenu
     
@@ -474,19 +474,19 @@ End Sub
 
 
 Private Sub DrawCheck(ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal x2 As Long, ByVal y2 As Long, bDisabled As Boolean)
-    Dim hPen As Long, OldPen As Long
-    Dim hBrush As Long, OldBrush As Long
+    Dim hPen As Long, oldPen As Long
+    Dim hBrush As Long, oldBrush As Long
     
     hPen = CreatePen(0, 1, GetSysColor(IIf(bDisabled, COLOR_GRAYTEXT, COLOR_APPWORKSPACE)))
     hBrush = GetStockObject(NULL_BRUSH)
     
-    OldPen = SelectObject(hDC, hPen)
-    OldBrush = SelectObject(hDC, hBrush)
+    oldPen = SelectObject(hDC, hPen)
+    oldBrush = SelectObject(hDC, hBrush)
     
     Rectangle hDC, x, y, x + x2, y + y2
     
-    DeleteObject SelectObject(hDC, OldPen)
-    Call SelectObject(hDC, OldBrush)
+    DeleteObject SelectObject(hDC, oldPen)
+    Call SelectObject(hDC, oldBrush)
     
 End Sub
 
@@ -568,17 +568,17 @@ Private Sub DrawDIB(ByVal DestHdc As Long, ByVal x As Long, ByVal y As Long, ByV
                 GdipCreateImageAttributes hAttributes
                 
                 With tMatrixColor
-                    .M(0, 0) = 0.299
-                    .M(1, 0) = .M(0, 0)
-                    .M(2, 0) = .M(0, 0)
-                    .M(0, 1) = 0.587
-                    .M(1, 1) = .M(0, 1)
-                    .M(2, 1) = .M(0, 1)
-                    .M(0, 2) = 0.114
-                    .M(1, 2) = .M(0, 2)
-                    .M(2, 2) = .M(0, 2)
-                    .M(3, 3) = 0.5
-                    .M(4, 4) = 1
+                    .m(0, 0) = 0.299
+                    .m(1, 0) = .m(0, 0)
+                    .m(2, 0) = .m(0, 0)
+                    .m(0, 1) = 0.587
+                    .m(1, 1) = .m(0, 1)
+                    .m(2, 1) = .m(0, 1)
+                    .m(0, 2) = 0.114
+                    .m(1, 2) = .m(0, 2)
+                    .m(2, 2) = .m(0, 2)
+                    .m(3, 3) = 0.5
+                    .m(4, 4) = 1
                 End With
                 
                 GdipSetImageAttributesColorMatrix hAttributes, ColorAdjustTypeDefault, True, tMatrixColor, tMatrixGray, ColorMatrixFlagsDefault
@@ -775,11 +775,11 @@ Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean)
                 GdipCreateImageAttributes hAttributes
                 
                 With tMatrixColor
-                    .M(0, 0) = 1
-                    .M(1, 1) = 1
-                    .M(2, 2) = 1
-                    .M(3, 3) = 0.7
-                    .M(4, 4) = 1
+                    .m(0, 0) = 1
+                    .m(1, 1) = 1
+                    .m(2, 2) = 1
+                    .m(3, 3) = 0.7
+                    .m(4, 4) = 1
 
                 End With
                 
@@ -887,7 +887,7 @@ Public Function Init(ByVal hWnd As Long, imgWidth As Long, ByVal imgHeight As Lo
     
         m_lWidth = imgWidth
         m_lHeight = imgHeight
-        m_Hwnd = hWnd
+        m_hWnd = hWnd
         
         If UBound(mDIB) > 0 Then
            Me.Clear
@@ -920,8 +920,8 @@ End Function
 
 Private Function StopSubclassing() As Boolean
 
-    If m_Hwnd <> 0 Then
-        cSubclass.ssc_UnSubclass m_Hwnd <> 0
+    If m_hWnd <> 0 Then
+        cSubclass.ssc_UnSubclass m_hWnd <> 0
         StopSubclassing = True
     Else
         StopSubclassing = False

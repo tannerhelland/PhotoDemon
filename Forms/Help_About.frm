@@ -424,28 +424,28 @@ Private Sub Form_Load()
     
     'Initialize a custom font objects for names
     Set firstFont = New pdFont
-    firstFont.setFontColor RGB(255, 255, 255)
-    firstFont.setFontBold True
-    firstFont.setFontSize 14
-    firstFont.createFontObject
-    firstFont.setTextAlignment vbRightJustify
+    firstFont.SetFontColor RGB(255, 255, 255)
+    firstFont.SetFontBold True
+    firstFont.SetFontSize 14
+    firstFont.CreateFontObject
+    firstFont.SetTextAlignment vbRightJustify
     
     '...and a second custom font object for URLs
     Set secondFont = New pdFont
-    secondFont.setFontColor RGB(192, 192, 192)
-    secondFont.setFontBold False
-    secondFont.setFontSize 10
-    secondFont.createFontObject
-    secondFont.setTextAlignment vbRightJustify
+    secondFont.SetFontColor RGB(192, 192, 192)
+    secondFont.SetFontBold False
+    secondFont.SetFontSize 10
+    secondFont.CreateFontObject
+    secondFont.SetTextAlignment vbRightJustify
     
     '...and a third custom font object for highlighted text
     Set highlightFont = New pdFont
-    highlightFont.setFontColor ConvertSystemColor(vbHighlight)
-    highlightFont.setFontBold False
-    highlightFont.setFontSize 10
-    highlightFont.setFontUnderline True
-    highlightFont.createFontObject
-    highlightFont.setTextAlignment vbRightJustify
+    highlightFont.SetFontColor ConvertSystemColor(vbHighlight)
+    highlightFont.SetFontBold False
+    highlightFont.SetFontSize 10
+    highlightFont.SetFontUnderline True
+    highlightFont.CreateFontObject
+    highlightFont.SetTextAlignment vbRightJustify
     
     'Render the primary background image to the form
     BitBlt picBuffer.hDC, 0, 0, picBuffer.ScaleWidth, picBuffer.ScaleHeight, logoDIB.getDIBDC, 0, 0, vbSrcCopy
@@ -556,24 +556,24 @@ Private Sub renderCredit(ByVal blockIndex As Long, ByVal offsetX As Long, ByVal 
         If isHovered Then drawString = clickToVisitText & drawString
         
         'Render the "name" field
-        firstFont.attachToDC backDIB.getDIBDC
-        firstFont.fastRenderText m_BufferWidth - offsetX, offsetY, drawString
+        firstFont.AttachToDC backDIB.getDIBDC
+        firstFont.FastRenderText m_BufferWidth - offsetX, offsetY, drawString
                 
         'Below the name, add the URL (or other description)
-        mHeight = firstFont.getHeightOfString(drawString) + linePadding
+        mHeight = firstFont.GetHeightOfString(drawString) + linePadding
         drawString = creditList(blockIndex).URL
         
         'Detach the first font from the DC
-        firstFont.releaseFromDC
+        firstFont.ReleaseFromDC
         
         If isHovered Then
-            highlightFont.attachToDC backDIB.getDIBDC
-            highlightFont.fastRenderText m_BufferWidth - offsetX, offsetY + mHeight, drawString
-            highlightFont.releaseFromDC
+            highlightFont.AttachToDC backDIB.getDIBDC
+            highlightFont.FastRenderText m_BufferWidth - offsetX, offsetY + mHeight, drawString
+            highlightFont.ReleaseFromDC
         Else
-            secondFont.attachToDC backDIB.getDIBDC
-            secondFont.fastRenderText m_BufferWidth - offsetX, offsetY + mHeight, drawString
-            secondFont.releaseFromDC
+            secondFont.AttachToDC backDIB.getDIBDC
+            secondFont.FastRenderText m_BufferWidth - offsetX, offsetY + mHeight, drawString
+            secondFont.ReleaseFromDC
         End If
         
         'If the user's mouse is over the current block, highlight the block

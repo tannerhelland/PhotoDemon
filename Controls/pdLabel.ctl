@@ -472,7 +472,7 @@ Private Sub UserControl_Initialize()
     Else
         Set g_Themer = New pdVisualThemes
     End If
-    
+        
     'Note that we are not currently responsible for any resize events
     m_InternalResizeState = False
     

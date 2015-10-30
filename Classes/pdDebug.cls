@@ -337,12 +337,17 @@ Public Sub LogAction(Optional ByVal actionString As String = vbNullString, Optio
                 Dim dcCountString As String
                 dcCountString = Format$(g_DCsCreated - g_DCsDestroyed, "###,##0")
                 dcCountString = dcCountString & "(" & Format$(g_DCsCreated, "###,##0") & ":" & Format$(g_DCsDestroyed, "###,##0") & ")"
-                actionString = actionString & vbCrLf & Space$(20) & "DCs: " & dcCountString
+                actionString = actionString & vbCrLf & Space$(19) & "DCs: " & dcCountString
                 
                 Dim fontCountString As String
                 fontCountString = Format$(g_FontsCreated - g_FontsDestroyed, "###,##0")
                 fontCountString = fontCountString & "(" & Format$(g_FontsCreated, "###,##0") & ":" & Format$(g_FontsDestroyed, "###,##0") & ")"
                 actionString = actionString & " | FONTS: " & fontCountString
+                
+                Dim dibCountString As String
+                dibCountString = Format$(g_DIBsCreated - g_DIBsDestroyed, "###,##0")
+                dibCountString = dibCountString & "(" & Format$(g_DIBsCreated, "###,##0") & ":" & Format$(g_DIBsDestroyed, "###,##0") & ")"
+                actionString = actionString & " | DIBS: " & dibCountString
                 
             Else
                 actionString = "WARNING: PD was unable to measure its own memory usage.  Please investigate."

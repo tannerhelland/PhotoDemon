@@ -349,13 +349,13 @@ Public Function copyDIBToClipboard(ByRef srcDIB As pdDIB) As Boolean
         
                     'Copy the bitmap to the clipboard, then close and exit
                     clpObject.SetClipboardMemoryHandle CLIPBOARD_FORMAT_BMP, clipboardBMP
-                    DeleteDC clipboardDC
-                    
                     copyDIBToClipboard = True
                     
                 Else
                     copyDIBToClipboard = False
                 End If
+                
+                DeleteDC clipboardDC
                 
             Else
                 copyDIBToClipboard = False
