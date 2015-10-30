@@ -2174,13 +2174,14 @@ Public Sub renderCustom(ByRef dstDIB As pdDIB, ByRef srcImage As pdImage, ByRef 
     
     'Build look-up tables for both the x and y direction.  This is faster than constantly calculating new values for
     ' every pixel inside the loop.  Note also that this code is identical among various selection render methods.
-    Dim newX As Double, newY As Double
+    Dim newX As Double, newY As Double, newXInt As Long
     Dim xLookup() As Long, yLookup() As Long
     
     ReDim xLookup(imgLeft To rightBound) As Long
     For x = imgLeft To rightBound
         Drawing.convertCanvasCoordsToImageCoords FormMain.mainCanvas(0), srcImage, x, imgTop, newX, newY, True
-        xLookup(x) = newX * 3
+        newXInt = newX
+        xLookup(x) = newXInt * 3&
     Next x
     
     ReDim yLookup(imgTop To bottomBound) As Long
