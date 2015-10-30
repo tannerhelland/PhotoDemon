@@ -11,15 +11,16 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'Note: this file has been modified for use within PhotoDemon.  Modifications primarily include bugfixes relating to use under
-' a non-standard Windows theme (e.g. "Classic Theme"), and a full conversion of the subclassing system to a more stable
-' alternative.  These fixes rely on some internal PhotoDemon checks, variables, and objects, so I do not recommend using this
-' copy of the class in your own projects.  You may download the original version of this code from the following link
-' (good as of June '12): http://leandroascierto.com/blog/clsmenuimage/
-
 'This code was originally written by Leandro I. Ascierto.
-
 ' Many thanks to Leandro for providing a way to apply PNG images to program menus in VB6
+'
+'NOTE: this file has been modified for use within PhotoDemon.  Modifications include bugfixes relating to use under non-standard
+' Windows themes (e.g. "Classic Theme" on Win 7 and earlier), a full conversion of the subclassing system to an IDE-stable alternative,
+' and rewriting the class so that persistent DCs are not required for each menu image.  (Instead, we generate them on-the-fly.)
+'
+'These changes rely on a number of internal PhotoDemon checks, variables, and objects, so I do not recommend using PD's
+' version of the class in your own projects.  You may download the original version of this code from the following link
+' (good as of June 2012): http://leandroascierto.com/blog/clsmenuimage/
 
 Option Explicit
 
@@ -40,13 +41,11 @@ Private Declare Function CloseThemeData Lib "uxtheme" (ByVal hTheme As Long) As 
 ' ------------
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
 Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As Long, ByRef pBitmapInfo As BITMAPINFO, ByVal un As Long, ByRef lplpVoid As Long, ByVal Handle As Long, ByVal dw As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function LoadImage Lib "user32" Alias "LoadImageA" (ByVal hInst As Long, ByVal lpsz As String, ByVal dwImageType As Long, ByVal dwDesiredWidth As Long, ByVal dwDesiredHeight As Long, ByVal dwFlags As Long) As Long
 Private Declare Function GetIconInfo Lib "user32" (ByVal hIcon As Long, ByRef piconinfo As ICONINFO) As Long
 Private Declare Function DestroyIcon Lib "user32" (ByVal hIcon As Long) As Long
@@ -224,7 +223,6 @@ End Type
 
 
 Private Type MemoDIB
-    hDC As Long
     hDIB As Long
     Ptr As Long
 End Type
@@ -318,16 +316,12 @@ End Property
 
 
 Public Function RemoveImage(ByVal Index As Long) As Boolean
-
-    Dim i As Long
     
     If Index < 0 Or Index > Me.ImageCount Then Exit Function
     
-    With mDIB(Index)
-        Call DeleteObject(.hDIB)
-        Call DeleteDC(.hDC)
-    End With
-    
+    Call DeleteObject(mDIB(Index).hDIB)
+        
+    Dim i As Long
     For i = Index To Me.ImageCount
         mDIB(i) = mDIB(i + 1)
     Next
@@ -335,8 +329,8 @@ Public Function RemoveImage(ByVal Index As Long) As Boolean
     ReDim Preserve mDIB(Me.ImageCount)
     
     RemoveImage = True
+    
 End Function
-
 
 Public Function PutImageToVBMenu(ByVal imageID As Long, ByVal MenuPos As Long, ParamArray vSubMenuPos() As Variant) As Boolean
     
@@ -492,10 +486,8 @@ End Sub
 
 Private Function CreateNewDib() As Long
 
+    'Prepare a bmp header for the DIB
     Dim tBITMAPINFO As BITMAPINFO
-    Dim Index As Long
-    Dim TempDC As Long
-    
     With tBITMAPINFO.bmiHeader
         .biSize = Len(tBITMAPINFO.bmiHeader)
         .biBitCount = 32
@@ -505,19 +497,16 @@ Private Function CreateNewDib() As Long
         .biSizeImage = .biWidth * .biHeight * 4&
     End With
     
+    Dim Index As Long
     Index = UBound(mDIB)
-    
-    
     
     With mDIB(Index)
     
-        TempDC = GetDC(0&)
-        
-        .hDC = CreateCompatibleDC(TempDC)
-
-        .hDIB = CreateDIBSection(TempDC, tBITMAPINFO, DIB_RGB_COLORS, .Ptr, 0&, 0&)
-        
-        Call ReleaseDC(0&, TempDC)
+        'Create a temporary memory DC, because CreateDIBSection requires a DC for palette matching
+        Dim tmpDC As Long
+        tmpDC = GetDC(0&)
+        .hDIB = CreateDIBSection(tmpDC, tBITMAPINFO, DIB_RGB_COLORS, .Ptr, 0&, 0&)
+        ReleaseDC 0&, tmpDC
         
         If .hDIB <> 0 Then
             CreateNewDib = Index
@@ -537,10 +526,7 @@ Public Function Clear()
     Dim i As Long
     
     For i = 0 To UBound(mDIB) - 1
-        With mDIB(i)
-            Call DeleteObject(.hDIB)
-            Call DeleteDC(.hDC)
-        End With
+        Call DeleteObject(mDIB(i).hDIB)
     Next
     
     ReDim mDIB(0)
@@ -760,10 +746,13 @@ Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean)
         Index = CreateNewDib()
         
         If Index <> -1 Then
-
-            OldhDib = SelectObject(mDIB(Index).hDC, mDIB(Index).hDIB)
+            
+            Dim tmpDC As Long
+            tmpDC = Drawing.GetMemoryDC()
+            
+            OldhDib = SelectObject(tmpDC, mDIB(Index).hDIB)
         
-            GdipCreateFromHDC mDIB(Index).hDC, hGraphics
+            GdipCreateFromHDC tmpDC, hGraphics
         
             GdipGetImageDimension hImage, imgWidth, imgHeight
             
@@ -794,7 +783,8 @@ Private Function pvAddImagen(ByVal hImage As Long, Optional bGhosted As Boolean)
     
             GdipDeleteGraphics hGraphics
             
-            Call SelectObject(mDIB(Index).hDC, OldhDib)
+            Call SelectObject(tmpDC, OldhDib)
+            Drawing.FreeMemoryDC tmpDC
             
             pvAddImagen = True
         
