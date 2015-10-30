@@ -501,8 +501,8 @@ Public Function convertCanvasCoordsToImageCoords(ByRef srcCanvas As pdCanvas, By
         If forceInBounds Then
             If imgX < 0 Then imgX = 0
             If imgY < 0 Then imgY = 0
-            If imgX >= srcImage.Width Then imgX = srcImage.Width - 1
-            If imgY >= srcImage.Height Then imgY = srcImage.Height - 1
+            If imgX >= srcImage.Width - 1 Then imgX = srcImage.Width - 1
+            If imgY >= srcImage.Height - 1 Then imgY = srcImage.Height - 1
         End If
         
         convertCanvasCoordsToImageCoords = True
