@@ -58,6 +58,9 @@ Public Event MouseWheelZoom(ByVal Button As PDMouseButtonConstants, ByVal Shift 
 Public Event ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 Public Event DoubleClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
+Public Event KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
+Public Event KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, ByRef markEventHandled As Boolean)
+
 'API technique for drawing a focus rectangle; used only for designer mode (see the GetBackBufferDC method for details)
 Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, ByRef lpRect As RECT) As Long
 
@@ -68,6 +71,8 @@ Private Const WM_SHOWWINDOW As Long = &H18
 Private m_Subclass As cSelfSubHookCallback
 Private WithEvents m_MouseEvents As pdInputMouse
 Attribute m_MouseEvents.VB_VarHelpID = -1
+Private WithEvents m_KeyEvents As pdInputKeyboard
+Attribute m_KeyEvents.VB_VarHelpID = -1
 Private WithEvents m_FocusDetector As pdFocusDetector
 Attribute m_FocusDetector.VB_VarHelpID = -1
 Private WithEvents m_Painter As pdWindowPainter
@@ -109,6 +114,18 @@ Private m_Visibility As Boolean
 ' control being shown, without any redraw requests being raised.  To prevent this, we use a failsafe check when the control is
 ' shown for the first time.  If no redraw requests have been raised, we raise one then, to ensure the control is shown correctly.
 Private m_RedrawRequestCount As Long
+
+'If the callers asks us for a resize, chances are that they *don't* want a matching resize event fired, because they're already
+' in the middle of some drawing logic.  We use this to note such an event, so we can suppress external resize events.
+Private m_ResizeEventsSuspended As Boolean
+
+'If the caller wants the caption rendered to a non-standard position, these values will store their requested position
+Private m_CustomCaptionRectActive As Boolean
+Private m_CustomCaptionRect As RECT
+
+'By design, this class can handle all caption rendering for the child.  Some controls, however, need to paint the caption in
+' weird ways (e.g. in the middle of other paint operations).  If they require custom painting, this will be set to TRUE.
+Private m_CustomCaptionPaintingActive As Boolean
 
 
 '***************************************************************************
@@ -170,12 +187,39 @@ Public Sub RequestExtraFunctionality(Optional ByVal customMouseEvents As Boolean
         End If
         
         If customKeyEvents Then
-            'TODO:
+            Set m_KeyEvents = New pdInputKeyboard
+            m_KeyEvents.CreateKeyboardTracker "pdUCSupport", m_hWnd
         End If
         
     Else
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "WARNING!  You can't request custom functionality prior to calling pdUCSupport.RegisterControl()!"
+        #End If
+    End If
+    
+End Sub
+
+Public Sub SpecifyRequiredKeys(ParamArray listOfKeys() As Variant)
+    
+    If (Not (m_KeyEvents Is Nothing)) And (m_hWnd <> 0) Then
+        
+        If g_IsProgramRunning Then
+            
+            'Iterate through all requested keys, and add them one-by-one to the tracker
+            If UBound(listOfKeys) >= LBound(listOfKeys) Then
+            
+                Dim i As Variant
+                For Each i In listOfKeys
+                    m_KeyEvents.RequestMoreKeys CLng(i)
+                Next i
+                
+            End If
+    
+        End If
+        
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  You can't request keypresses without first calling pdUCSupport.RequestExtraFunctionality()!"
         #End If
     End If
     
@@ -225,8 +269,63 @@ Public Sub SetCaptionFontSize(ByVal newSize As Single)
     
 End Sub
 
+Public Function GetCaptionFontBold() As Boolean
+    GetCaptionFontBold = m_Caption.GetFontBold
+End Function
+
+Public Sub SetCaptionFontBold(ByVal newState As Boolean)
+    
+    'Changes to fontsize require redraws
+    If m_Caption.SetFontBold(newState) Then
+        SyncBackBufferSize True
+        AskForARepaint True
+    End If
+    
+End Sub
+
+'The caption will be positioned automatically, or the caller can set a custom rect here.
+' To reset to default positioning, call with all zeroes.
+Public Sub SetCaptionCustomPosition(Optional ByVal newLeft As Long = 0, Optional ByVal newTop As Long = 0, Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0)
+    
+    If (newLeft = 0) And (newTop = 0) And (newWidth = 0) And (newHeight = 0) Then
+        m_CustomCaptionRectActive = False
+    Else
+    
+        m_CustomCaptionRectActive = True
+        
+        With m_CustomCaptionRect
+            .Left = newLeft
+            .Top = newTop
+            .Right = newLeft + newWidth
+            .Bottom = newTop + newHeight
+        End With
+        
+    End If
+
+End Sub
+
+'By default, this class manages caption painting for you.  If you want to do it manually, pass this function FALSE.
+Public Sub SetCaptionAutomaticPainting(ByVal newState As Boolean)
+    m_CustomCaptionPaintingActive = Not newState
+End Sub
+
+'If automatic caption painting is turned off, the caller can use this function paint the caption to any location of their choosing.
+Public Sub PaintCaptionManually(Optional ByVal newX As Long = -1, Optional ByVal newY As Long = -1, Optional ByVal customColor As Long = -1)
+    If newX = -1 Then newX = m_CustomCaptionRect.Left
+    If newY = -1 Then newY = m_CustomCaptionRect.Top
+    m_Caption.DrawCaption m_BackBuffer.getDIBDC, m_CaptionRect.Left, m_CaptionRect.Top, customColor
+End Sub
+
+Public Sub SetCaptionCustomColor(ByVal newColor As Long)
+    m_Caption.SetCaptionColor newColor
+End Sub
+
 Public Function GetCaptionBottom() As Long
     GetCaptionBottom = m_CaptionRect.Bottom
+End Function
+
+Public Function GetCaptionHeight() As Long
+    GetCaptionHeight = m_Caption.GetCaptionHeight
 End Function
 
 Public Function IsCaptionActive() As Boolean
@@ -349,19 +448,36 @@ Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
         'If a caption is active, paint it now.
         If m_Caption.IsCaptionActive Then
             
-            'Notify the caption renderer of our width.  It will auto-fit its font to match.
-            m_Caption.SetControlSize m_Width, m_Height
+            If m_CustomCaptionRectActive Then
+                
+                m_Caption.SetControlSize m_CustomCaptionRect.Right - m_CustomCaptionRect.Left, m_CustomCaptionRect.Bottom - m_CustomCaptionRect.Top
+                
+                With m_CaptionRect
+                    .Top = m_CustomCaptionRect.Top
+                    .Left = m_CustomCaptionRect.Left
+                    .Right = m_CustomCaptionRect.Right
+                    .Bottom = m_CustomCaptionRect.Bottom
+                End With
+                
+            Else
             
-            'Retrieve the caption's height
-            With m_CaptionRect
-                .Top = 0
-                .Left = 0
-                .Right = m_Width
-                .Bottom = m_Caption.GetCaptionHeight() + FixDPI(6)
-            End With
+                'Notify the caption renderer of our width.  It will auto-fit its font to match.
+                m_Caption.SetControlSize m_Width, m_Height
+                
+                'Make a copy of the caption's position
+                With m_CaptionRect
+                    .Top = 1
+                    .Left = 1
+                    .Right = m_Width
+                    .Bottom = m_Caption.GetCaptionHeight() + FixDPI(6)
+                End With
+                
+            End If
             
-            'Paint the caption
-            m_Caption.DrawCaption m_BackBuffer.getDIBDC, 1, 1
+            'Paint the caption, as required
+            If Not m_CustomCaptionPaintingActive Then
+                m_Caption.DrawCaption m_BackBuffer.getDIBDC, m_CaptionRect.Left, m_CaptionRect.Top
+            End If
             
         End If
         
@@ -399,6 +515,14 @@ End Sub
 
 Private Sub m_FocusDetector_LostFocusReliable()
     RaiseEvent LostFocusAPI
+End Sub
+
+Private Sub m_KeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+    RaiseEvent KeyDownCustom(Shift, vkCode, markEventHandled)
+End Sub
+
+Private Sub m_KeyEvents_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+    RaiseEvent KeyUpCustom(Shift, vkCode, markEventHandled)
 End Sub
 
 Private Sub m_MouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -466,11 +590,15 @@ Private Sub m_MoveSize_WindowResize(ByVal newWidth As Long, ByVal newHeight As L
         SyncBackBufferSize True
         
         'Let the caller know about the change
-        RaiseEvent WindowResize(newWidth, newHeight)
+        If Not m_ResizeEventsSuspended Then
         
-        'Request a repaint to match.  Normally we would notify the caller that a layout update is also required,
-        ' but since we just raised a resize event (which would trigger the same thing), it's redundant to do it here.
-        AskForARepaint False
+            RaiseEvent WindowResize(newWidth, newHeight)
+        
+            'Request a repaint to match.  Normally we would notify the caller that a layout update is also required,
+            ' but since we just raised a resize event (which would trigger the same thing), it's redundant to do it here.
+            AskForARepaint False
+            
+        End If
         
     End If
     
@@ -526,7 +654,7 @@ Public Function GetBackBufferDC(Optional ByVal repaintBackground As Boolean = Fa
         If repaintBackground Then
             
             'If a caption is active, we manually wipe only the non-caption area
-            If m_Caption.IsCaptionActive Then
+            If m_Caption.IsCaptionActive And (Not m_CustomCaptionPaintingActive) Then
                 ResetBackBuffer newBackColor, -1#, m_CaptionRect.Bottom, m_Width + 2, m_Height + 2
             Else
                 ResetBackBuffer newBackColor
@@ -555,6 +683,20 @@ End Function
 
 Public Sub RequestCursor(Optional ByVal standardCursorType As SystemCursorConstant = IDC_DEFAULT)
     m_MouseEvents.setSystemCursor standardCursorType
+End Sub
+
+'Want a new control size?  No problem.  Request a resize here.  Missing width/height parameters will be set to match the
+' current control width/height.
+Public Sub RequestNewSize(Optional ByVal newWidth As Long = 0, Optional ByVal newHeight As Long = 0, Optional ByVal alsoNotifyMeViaEvent As Boolean = False)
+    
+    'Fill in missing parameters
+    If newWidth = 0 Then newWidth = m_MoveSize.GetWidth
+    If newHeight = 0 Then newHeight = m_MoveSize.GetHeight
+    
+    m_ResizeEventsSuspended = Not alsoNotifyMeViaEvent
+    m_MoveSize.SetSize newWidth, newHeight
+    m_ResizeEventsSuspended = False
+    
 End Sub
 
 'Want a paint event fired?  Call this function.  By default, the painter will add a WM_PAINT message to the stack, and wait

@@ -130,7 +130,7 @@ Private Sub Class_Initialize()
 End Sub
 
 'Request keyboard tracking for a given hWnd.  This function will return TRUE if keyboard tracking was successfully initiated.
-Public Function createKeyboardTracker(ByVal nameOfTarget As String, ByVal targetHwnd As Long, ParamArray listOfKeys() As Variant) As Boolean
+Public Function CreateKeyboardTracker(ByVal nameOfTarget As String, ByVal targetHwnd As Long, ParamArray listOfKeys() As Variant) As Boolean
     
     m_HookedControlName = nameOfTarget
     
@@ -143,7 +143,7 @@ Public Function createKeyboardTracker(ByVal nameOfTarget As String, ByVal target
         If Not cSubclass.ssc_Subclass(targetHwnd, , 1, Me) Then
             
             Debug.Print "WARNING: keyboard subclasser failed to subclass " & m_HookedControlName & ".  Fix it!"
-            createKeyboardTracker = False
+            CreateKeyboardTracker = False
             Exit Function
         
         End If
@@ -192,21 +192,48 @@ Public Function createKeyboardTracker(ByVal nameOfTarget As String, ByVal target
             Next i
         
         Else
-            Debug.Print "WARNING: keyboard tracking requested for " & m_HookedControlName & ", but no keycodes suplied.  Fix it!"
-            createKeyboardTracker = False
-            Exit Function
+            
+            'It's okay to not supply keys here; the caller is allowed to postpone key requests until later
+            ReDim m_TrackedKeys(0) As Long
+            
         End If
     
     'The calling function didn't supply an hWnd.  Warn and exit.
     Else
         Debug.Print "WARNING: a function just requested keyboard tracking, but didn't supply an hWnd.  Fix it!"
-        createKeyboardTracker = False
+        CreateKeyboardTracker = False
         Exit Function
     End If
     
-    createKeyboardTracker = True
+    CreateKeyboardTracker = True
     
 End Function
+
+'Request keyboard tracking for a given hWnd.  This function will return TRUE if keyboard tracking was successfully initiated.
+Public Sub RequestMoreKeys(ParamArray listOfKeys() As Variant)
+    
+    'See comments in the previous function (createKeyboardTracker) for details
+    If UBound(listOfKeys) >= LBound(listOfKeys) Then
+        
+        Dim curKeyIndex As Long
+        curKeyIndex = m_NumOfTrackedKeys
+        
+        m_NumOfTrackedKeys = m_NumOfTrackedKeys + (UBound(listOfKeys) - LBound(listOfKeys) + 1)
+        
+        ReDim Preserve m_TrackedKeys(0 To m_NumOfTrackedKeys - 1) As Long
+        
+        Dim i As Variant
+        
+        For Each i In listOfKeys
+            If CLng(i) <> 0 Then
+                m_TrackedKeys(curKeyIndex) = CLng(i)
+                curKeyIndex = curKeyIndex + 1
+            End If
+        Next i
+    
+    End If
+    
+End Sub
 
 Private Sub Class_Terminate()
 

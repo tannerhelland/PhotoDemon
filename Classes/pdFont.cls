@@ -713,10 +713,14 @@ Public Function GetMaxFontSizeToFitStringWidth(ByVal srcString As String, ByVal 
     backupFontSize = m_origFontSize
     
     'Create the font anew, using the default string size we were passed
-    If curFont <> 0 Then DeleteCurrentFont
-    m_origFontSize = startingFontSize
-    SetFontSize m_origFontSize
-    CreateFontObject
+    If (startingFontSize <> m_origFontSize) Or (curFont = 0) Then
+        If curFont <> 0 Then DeleteCurrentFont
+        m_origFontSize = startingFontSize
+        SetFontSize m_origFontSize
+        CreateFontObject
+    End If
+    
+    'Select the font into the target DC
     AttachToDC targetDC
     
     'Measure the font relative to the current control size

@@ -69,7 +69,7 @@ Public Function AddFontToCache(ByRef fontName As String, ByVal FontSize As Singl
     
     'First, see if this font already exists in the cache
     Dim fontIndex As Long
-    fontIndex = DoesFontExist(fontName)
+    fontIndex = DoesFontExist(fontName, FontSize, isBold, isItalic, isUnderline)
     
     'If this font already exists in our collection, don't recreate it; instead, return its current index.
     ' IMPORTANT NOTE: the matching criteria used by DoesFontExist defaults to fontname matches only.
