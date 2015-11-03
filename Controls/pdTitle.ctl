@@ -121,7 +121,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     PropertyChanged "Enabled"
     
     'Redraw the control
-    redrawBackBuffer
+    RedrawBackBuffer
     
 End Property
 
@@ -149,8 +149,8 @@ Public Property Get hWnd() As Long
 End Property
 
 'Container hWnd must be exposed for external tooltip handling
-Public Property Get containerHwnd() As Long
-    containerHwnd = UserControl.containerHwnd
+Public Property Get ContainerHwnd() As Long
+    ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
 'State is toggled on each click.  TRUE means the accompanying panel should be OPEN.
@@ -162,7 +162,7 @@ Public Property Let Value(ByVal newState As Boolean)
     If newState <> m_TitleState Then
         m_TitleState = newState
         PropertyChanged "Value"
-        redrawBackBuffer
+        RedrawBackBuffer
     End If
 End Property
 
@@ -174,7 +174,7 @@ Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As
 
         If Me.Enabled Then
             m_TitleState = Not m_TitleState
-            redrawBackBuffer
+            RedrawBackBuffer
             RaiseEvent Click(m_TitleState)
         End If
         
@@ -192,7 +192,7 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
         
         'Note that drawing flags are handled by MouseDown/Up.  Click() is only used for raising a matching Click() event.
         RaiseEvent Click(m_TitleState)
-        redrawBackBuffer
+        RedrawBackBuffer
         
     End If
     
@@ -200,13 +200,13 @@ End Sub
 
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     ucSupport.RequestCursor IDC_HAND
-    redrawBackBuffer
+    RedrawBackBuffer
 End Sub
 
 'When the mouse leaves the UC, we must repaint the button (as it's no longer hovered)
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     ucSupport.RequestCursor IDC_DEFAULT
-    redrawBackBuffer
+    RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_GotFocusAPI()
@@ -218,12 +218,12 @@ Private Sub ucSupport_LostFocusAPI()
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then updateControlLayout
-    redrawBackBuffer
+    If updateLayoutToo Then UpdateControlLayout
+    RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    updateControlLayout
+    UpdateControlLayout
 End Sub
 
 Private Sub UserControl_AccessKeyPress(KeyAscii As Integer)
@@ -248,7 +248,7 @@ Private Sub UserControl_Initialize()
     If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
     
     'Update the control size parameters at least once
-    updateControlLayout
+    UpdateControlLayout
                 
 End Sub
 
@@ -292,7 +292,7 @@ End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
 ' of internal sizing metrics whenever the control size changes.
-Private Sub updateControlLayout()
+Private Sub UpdateControlLayout()
 
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
@@ -328,7 +328,7 @@ Private Sub updateControlLayout()
     End If
         
     'No other special preparation is required for this control, so proceed with recreating the back buffer
-    redrawBackBuffer
+    RedrawBackBuffer
             
 End Sub
 
@@ -344,7 +344,7 @@ End Sub
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
-Private Sub redrawBackBuffer()
+Private Sub RedrawBackBuffer()
     
     If g_IsProgramRunning Then
         
@@ -463,5 +463,5 @@ End Sub
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    ucSupport.AssignTooltip UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub

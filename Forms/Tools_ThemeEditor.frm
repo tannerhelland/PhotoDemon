@@ -24,6 +24,16 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.colorSelector colorSelector1 
+      Height          =   855
+      Left            =   10560
+      TabIndex        =   18
+      Top             =   5400
+      Width           =   2655
+      _ExtentX        =   4683
+      _ExtentY        =   1508
+      Caption         =   "caption test:"
+   End
    Begin PhotoDemon.pdLabel lblHScroll 
       Height          =   255
       Index           =   0
@@ -32,7 +42,6 @@ Begin VB.Form FormThemeEditor
       Width           =   1335
       _ExtentX        =   2355
       _ExtentY        =   503
-      Alignment       =   2
       Caption         =   ""
    End
    Begin PhotoDemon.pdScrollBar hScroll1 
@@ -151,7 +160,7 @@ Begin VB.Form FormThemeEditor
       Width           =   4455
       _ExtentX        =   7858
       _ExtentY        =   503
-      Caption         =   "Other Unicode controls for testing output:"
+      Caption         =   "other Unicode controls for testing output:"
       FontSize        =   12
       Layout          =   2
    End
@@ -267,12 +276,12 @@ Begin VB.Form FormThemeEditor
       Index           =   3
       Left            =   10320
       Top             =   120
-      Width           =   2415
-      _ExtentX        =   4260
+      Width           =   2775
+      _ExtentX        =   4895
       _ExtentY        =   503
-      Caption         =   "Custom scroll bar tests"
+      Alignment       =   1
+      Caption         =   "custom scroll bar tests"
       FontSize        =   12
-      Layout          =   2
    End
    Begin PhotoDemon.pdScrollBar hScroll1 
       Height          =   255
@@ -321,7 +330,6 @@ Begin VB.Form FormThemeEditor
       Width           =   1335
       _ExtentX        =   2355
       _ExtentY        =   503
-      Alignment       =   2
       Caption         =   ""
    End
    Begin PhotoDemon.pdLabel lblVScroll 
@@ -332,7 +340,6 @@ Begin VB.Form FormThemeEditor
       Width           =   1335
       _ExtentX        =   2355
       _ExtentY        =   503
-      Alignment       =   2
       Caption         =   ""
    End
    Begin PhotoDemon.pdLabel lblVScroll 
@@ -343,7 +350,6 @@ Begin VB.Form FormThemeEditor
       Width           =   1335
       _ExtentX        =   2355
       _ExtentY        =   503
-      Alignment       =   2
       Caption         =   ""
    End
 End

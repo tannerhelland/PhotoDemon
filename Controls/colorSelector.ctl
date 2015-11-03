@@ -138,8 +138,8 @@ Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
 
-Public Property Get containerHwnd() As Long
-    containerHwnd = UserControl.containerHwnd
+Public Property Get ContainerHwnd() As Long
+    ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
 'Call this to force a display of the color window.  Note that it's *public*, so outside callers can raise dialogs, too.
@@ -355,6 +355,10 @@ End Function
 'Redraw the entire control, including the caption (if present)
 Private Sub RedrawBackBuffer()
     
+    'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
+    Dim bufferDC As Long
+    bufferDC = ucSupport.GetBackBufferDC(True)
+    
     'NOTE: if a caption exists, it has already been drawn.  We just need to draw the clickable button portion.
     If g_IsProgramRunning Then
     
@@ -368,10 +372,6 @@ Private Sub RedrawBackBuffer()
             defaultBorderColor = g_Themer.GetThemeColor(PDTC_DISABLED)
             activeBorderColor = defaultBorderColor
         End If
-        
-        'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
-        Dim bufferDC As Long
-        bufferDC = ucSupport.GetBackBufferDC(True)
                 
         'Render the primary and secondary color button default appearances
         With m_PrimaryColorRect
@@ -458,5 +458,5 @@ End Sub
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    ucSupport.AssignTooltip UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub

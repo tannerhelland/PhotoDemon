@@ -66,7 +66,21 @@ Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, ByRef lp
 
 'This class subclasses a *lot* of things.  Some are handled by this class itself; others use dedicated single-purpose
 ' support classes.
-Private Const WM_SHOWWINDOW As Long = &H18
+Private Type tagWINDOWPOS
+    hWnd As Long
+    hWndInsertAfter As Long
+    x As Long
+    y As Long
+    cX As Long
+    cY As Long
+    wFlags As Long
+End Type
+Private Const SWP_HIDEWINDOW As Long = &H80&
+Private Const SWP_SHOWWINDOW As Long = &H40&
+
+Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
+Private Const WM_SHOWWINDOW As Long = &H18&
+Private Const WM_WINDOWPOSCHANGING As Long = &H46&
 
 Private m_Subclass As cSelfSubHookCallback
 Private WithEvents m_MouseEvents As pdInputMouse
@@ -143,8 +157,14 @@ Public Sub RegisterControl(ByVal hWnd_Control As Long, Optional ByVal hDC_Contro
     If (m_hWnd <> 0) Then
     
         'Subclass the user control immediately
-        If g_IsProgramRunning Then m_Subclass.ssc_Subclass m_hWnd, , 1, Me, True, True
-    
+        If g_IsProgramRunning Then
+            m_Subclass.ssc_Subclass m_hWnd, , 1, Me, True, True
+            m_Subclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_SHOWWINDOW, WM_WINDOWPOSCHANGING
+        End If
+        
+        'Synchronize initial window visiblity
+        m_Visibility = CBool(IsWindowVisible(m_hWnd) <> 0)
+        
         'Some functionality is supplied "by default".  The caller does not have to request this behavior; they get it for free.
         
         'Themed, Unicode-compatible, multiline tooltips
@@ -231,6 +251,11 @@ End Sub
 ' that caption support is at least a *possibility*.)
 Public Sub RequestCaptionSupport(Optional ByVal supportWordWrap As Boolean = False)
     m_Caption.SetWordWrapSupport supportWordWrap
+    m_Caption.SetControlSize m_Width, m_Height
+End Sub
+
+Public Sub SetCaptionWordWrap(ByVal newWordWrapState As Boolean)
+    m_Caption.SetWordWrapSupport newWordWrapState
 End Sub
 
 'Get/Set functions for various caption-specific features.  Note that you can remove caption support by calling SetCaptionText and
@@ -241,7 +266,7 @@ End Function
 
 Public Sub SetCaptionText(Optional ByVal newCaption As String = "")
     
-    If m_Caption Is Nothing Then Set m_Caption = New pdCaption
+    'If m_Caption Is Nothing Then Set m_Caption = New pdCaption
     
     'Pass the string to the pdCaption instance; it handles the actual mess of sizing and rendering text
     If m_Caption.SetCaption(newCaption) Then
@@ -262,7 +287,7 @@ End Function
 
 Public Sub SetCaptionFontSize(ByVal newSize As Single)
     
-    'Changes to fontsize require redraws
+    'Changes to font size require redraws
     If m_Caption.SetFontSize(newSize) Then
         SyncBackBufferSize True
         AskForARepaint True
@@ -276,8 +301,50 @@ End Function
 
 Public Sub SetCaptionFontBold(ByVal newState As Boolean)
     
-    'Changes to fontsize require redraws
+    'Changes to font style require redraws
     If m_Caption.SetFontBold(newState) Then
+        SyncBackBufferSize True
+        AskForARepaint True
+    End If
+    
+End Sub
+
+Public Function GetCaptionFontItalic() As Boolean
+    GetCaptionFontItalic = m_Caption.GetFontItalic
+End Function
+
+Public Sub SetCaptionFontItalic(ByVal newState As Boolean)
+    
+    'Changes to font style require redraws
+    If m_Caption.SetFontItalic(newState) Then
+        SyncBackBufferSize True
+        AskForARepaint True
+    End If
+    
+End Sub
+
+Public Function GetCaptionFontUnderline() As Boolean
+    GetCaptionFontUnderline = m_Caption.GetFontUnderline
+End Function
+
+Public Sub SetCaptionFontUnderline(ByVal newState As Boolean)
+    
+    'Changes to font style require redraws
+    If m_Caption.SetFontUnderline(newState) Then
+        SyncBackBufferSize True
+        AskForARepaint True
+    End If
+    
+End Sub
+
+Public Function GetCaptionAlignment() As AlignmentConstants
+    GetCaptionAlignment = m_Caption.GetAlignment
+End Function
+
+Public Sub SetCaptionAlignment(ByVal newAlignment As AlignmentConstants)
+    
+    'Changes to alignment require redraws
+    If m_Caption.SetAlignment(newAlignment) Then
         SyncBackBufferSize True
         AskForARepaint True
     End If
@@ -314,7 +381,12 @@ End Sub
 Public Sub PaintCaptionManually(Optional ByVal newX As Long = -1, Optional ByVal newY As Long = -1, Optional ByVal customColor As Long = -1)
     If newX = -1 Then newX = m_CustomCaptionRect.Left
     If newY = -1 Then newY = m_CustomCaptionRect.Top
-    m_Caption.DrawCaption m_BackBuffer.getDIBDC, m_CaptionRect.Left, m_CaptionRect.Top, customColor
+    m_Caption.DrawCaption_Clipped m_BackBuffer.getDIBDC, newX, newY, m_BackBuffer.getDIBWidth - newX, m_BackBuffer.getDIBHeight - newY, customColor
+End Sub
+
+'If automatic caption painting is turned off, the caller can use this function paint the caption to any rect of their choosing.
+Public Sub PaintCaptionManually_Clipped(ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, Optional ByVal customColor As Long = -1, Optional ByVal useEllipses As Boolean = False, Optional ByVal useOriginalFontSize As Boolean = False)
+    m_Caption.DrawCaption_Clipped m_BackBuffer.getDIBDC, dstX, dstY, dstWidth, dstHeight, customColor, useEllipses, useOriginalFontSize
 End Sub
 
 Public Sub SetCaptionCustomColor(ByVal newColor As Long)
@@ -325,8 +397,20 @@ Public Function GetCaptionBottom() As Long
     GetCaptionBottom = m_CaptionRect.Bottom
 End Function
 
-Public Function GetCaptionHeight() As Long
-    GetCaptionHeight = m_Caption.GetCaptionHeight
+Public Function GetCaptionHeight(Optional ByVal useAutoFit As Boolean = True) As Long
+    If useAutoFit Then
+        GetCaptionHeight = m_Caption.GetCaptionHeight
+    Else
+        GetCaptionHeight = m_Caption.GetCaptionHeight_NoFit
+    End If
+End Function
+
+Public Function GetCaptionWidth(Optional ByVal useAutoFit As Boolean = True) As Long
+    If useAutoFit Then
+        GetCaptionWidth = m_Caption.GetCaptionWidth
+    Else
+        GetCaptionWidth = m_Caption.GetCaptionWidth_NoFit
+    End If
 End Function
 
 Public Function IsCaptionActive() As Boolean
@@ -368,9 +452,18 @@ End Sub
 ' INTERNAL FUNCTIONS
 '***************************************************************************
 
-Private Sub AskForARepaint(ByVal askForLayoutUpdateToo As Boolean)
-    m_RedrawRequestCount = m_RedrawRequestCount + 1
-    RaiseEvent RepaintRequired(askForLayoutUpdateToo)
+'Sometimes, this control detects changes that require a repaint (like a resize event).  To avoid unnecessary paint requests, we try to
+' suppress all requests until the control is actually visible, hence the use of this wrapper instead of directly raising the event.
+Private Sub AskForARepaint(ByVal askForLayoutUpdateToo As Boolean, Optional ByVal forceEventRegardless As Boolean = False)
+    
+    'If the control is visible, raise the event immediately.  Otherwise, suppress it, and update the suppressed draw count.
+    If m_Visibility Or forceEventRegardless Then
+        RaiseEvent RepaintRequired(askForLayoutUpdateToo)
+        m_RedrawRequestCount = 0
+    Else
+        m_RedrawRequestCount = m_RedrawRequestCount + 1
+    End If
+    
 End Sub
 
 'Cache the current dimensions of the underlying UC.  Returns TRUE if dimensions were retrieved successfully.
@@ -476,8 +569,8 @@ Private Sub SyncBackBufferSize(Optional ByVal alsoResetDIB As Boolean = False)
             End If
             
             'Paint the caption, as required
-            If Not m_CustomCaptionPaintingActive Then
-                m_Caption.DrawCaption m_BackBuffer.getDIBDC, m_CaptionRect.Left, m_CaptionRect.Top
+            If (Not m_CustomCaptionPaintingActive) Then
+                m_Caption.DrawCaption_Clipped m_BackBuffer.getDIBDC, m_CaptionRect.Left, m_CaptionRect.Top, m_CaptionRect.Right - m_CaptionRect.Left, m_CaptionRect.Bottom - m_CaptionRect.Top
             End If
             
         End If
@@ -579,7 +672,12 @@ Private Sub m_MouseEvents_MouseWheelZoom(ByVal Button As PDMouseButtonConstants,
 End Sub
 
 Private Sub m_MoveSize_WindowMove(ByVal newLeft As Long, ByVal newTop As Long)
-    RaiseEvent WindowMove(newLeft, newTop)
+    
+    'Let the caller know about the change, but note that this behavior can be deliberately suspended
+    If Not m_ResizeEventsSuspended Then
+        RaiseEvent WindowMove(newLeft, newTop)
+    End If
+    
 End Sub
 
 Private Sub m_MoveSize_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
@@ -666,6 +764,8 @@ Public Function GetBackBufferDC(Optional ByVal repaintBackground As Boolean = Fa
             
         End If
         
+    Else
+        If repaintBackground And (newBackColor <> -1) Then ResetBackBuffer newBackColor
     End If
     
     'With the background successfully filled, allow the caller to paint to the DC at their leisure.
@@ -681,12 +781,21 @@ Public Function GetBackBufferHeight() As Long
     GetBackBufferHeight = m_Height
 End Function
 
+Friend Sub GetControlRect(ByRef dstRect As RECTL)
+    With dstRect
+        .Left = m_MoveSize.GetLeft
+        .Top = m_MoveSize.GetTop
+        .Right = .Left + m_MoveSize.GetWidth
+        .Bottom = .Top + m_MoveSize.GetHeight
+    End With
+End Sub
+
 Public Function IsMouseInside() As Boolean
     IsMouseInside = m_MouseInsideUC
 End Function
 
-Public Function IsMouseButtonDown(ByVal Button As PDMouseButtonConstants) As Boolean
-    IsMouseButtonDown = CBool((Button And m_MouseButtonState) <> 0)
+Public Function isMouseButtonDown(ByVal Button As PDMouseButtonConstants) As Boolean
+    isMouseButtonDown = CBool((Button And m_MouseButtonState) <> 0)
 End Function
 
 Public Sub RequestCursor(Optional ByVal standardCursorType As SystemCursorConstant = IDC_DEFAULT)
@@ -707,6 +816,20 @@ Public Sub RequestNewSize(Optional ByVal newWidth As Long = 0, Optional ByVal ne
     
 End Sub
 
+'Want a new control position?  No problem.  Request a move here.  Missing left/top parameters will be set to match the
+' current control width/height.
+Public Sub RequestNewPosition(Optional ByVal newLeft As Long = -100, Optional ByVal newTop As Long = -100, Optional ByVal alsoNotifyMeViaEvent As Boolean = False)
+    
+    'Fill in missing parameters
+    If newLeft = -100 Then newLeft = m_MoveSize.GetLeft
+    If newTop = -100 Then newTop = m_MoveSize.GetTop
+    
+    m_ResizeEventsSuspended = Not alsoNotifyMeViaEvent
+    m_MoveSize.SetPosition newLeft, newTop
+    m_ResizeEventsSuspended = False
+    
+End Sub
+
 'Want a paint event fired?  Call this function.  By default, the painter will add a WM_PAINT message to the stack, and wait
 ' for the window to paint itself naturally.  If this is unacceptable, you can set raiseImmediateDrawEvent to TRUE, which
 ' forces the paint event to fire immediately.  (Because window invalidation does not occur, clipping may not be handled
@@ -718,10 +841,10 @@ Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = Fa
         m_Painter.RequestRepaint raiseImmediateDrawEvent
     Else
         'Inside the IDE, subclassing is disabled, so we must paint the control manually
-        If Not m_BackBuffer Is Nothing Then
+        If Not (m_BackBuffer Is Nothing) Then
             
             CacheWindowDimensions
-            SyncBackBufferSize True
+            If (Not m_CustomCaptionPaintingActive) Then SyncBackBufferSize True
             
             Dim targetDC As Long
             If m_hDC <> 0 Then targetDC = m_hDC Else targetDC = m_Painter.GetPaintStructDC
@@ -738,9 +861,13 @@ End Sub
 Public Sub RequestIDERepaint(ByVal targetDC As Long)
 
     If (Not g_IsProgramRunning) And (m_hDC = 0) Then
-        If Not m_BackBuffer Is Nothing Then
+        If Not (m_BackBuffer Is Nothing) Then
             CacheWindowDimensions
-            SyncBackBufferSize True
+            If m_CustomCaptionPaintingActive Then
+                AskForARepaint False
+            Else
+                SyncBackBufferSize True
+            End If
             BitBlt targetDC, 0, 0, m_Width, m_Height, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
         End If
     End If
@@ -772,6 +899,7 @@ Private Sub Class_Initialize()
     Set m_Subclass = New cSelfSubHookCallback
     m_BackColor = -1
     m_RedrawRequestCount = 0
+    m_Visibility = False
     
     'Some classes are required for minimal drawing inside the IDE.  As such, we must prep them now, instead of waiting for a
     ' formal UC registration event.
@@ -786,7 +914,7 @@ Private Sub Class_Terminate()
     
     'Release custom functionality first, in reverse-order
     If Not (m_Caption Is Nothing) Then Set m_Caption = Nothing
-    '(TODO: keyboard input handler goes here)
+    If Not (m_KeyEvents Is Nothing) Then Set m_KeyEvents = Nothing
     If Not (m_MouseEvents Is Nothing) Then Set m_MouseEvents = Nothing
     
     'Release default functionality next, also in reverse-order
@@ -832,14 +960,29 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
     
     Select Case uMsg
         
-        'TODO: wrap WM_WINDOWPOSCHANGING as well, because it covers some visibility change cases that WM_SHOWWINDOW does not
-        Case WM_SHOWWINDOW
+        'WM_WINDOWPOSCHANGING covers some visibility change cases that WM_SHOWWINDOW does not;
+        ' see http://blogs.msdn.com/b/oldnewthing/archive/2008/01/15/7113860.aspx for details
+        Case WM_WINDOWPOSCHANGING
+            Dim tmpWindowPos As tagWINDOWPOS
+            CopyMemory ByVal VarPtr(tmpWindowPos), ByVal lParam, Len(tmpWindowPos)
             
+            If (tmpWindowPos.wFlags And SWP_HIDEWINDOW) <> 0 Then m_Visibility = False
+            If (tmpWindowPos.wFlags And SWP_SHOWWINDOW) <> 0 Then
+                
+                m_Visibility = True
+                
+                'If we haven't asked the caller for a repaint yet, ask for one now.  (This is the last possible time we can request
+                ' one before the control is actually shown.)
+                If (m_RedrawRequestCount > 0) Then AskForARepaint True, True
+                
+            End If
+            
+        Case WM_SHOWWINDOW
             m_Visibility = CBool(wParam <> 0)
             
             'If we haven't asked the caller for a repaint yet, ask for one now.  (This is the last possible time we can request
             ' one before the control is actually shown.)
-            If m_Visibility And (m_RedrawRequestCount = 0) Then AskForARepaint False
+            If m_Visibility And (m_RedrawRequestCount > 0) Then AskForARepaint True, True
             
             'Finally, notify the parent of the pending visibility change
             RaiseEvent VisibilityChange(m_Visibility)

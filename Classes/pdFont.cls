@@ -239,7 +239,7 @@ Friend Sub DrawCenteredTextToRect(ByVal srcString As String, ByRef dstRect As RE
 End Sub
 
 'If the font has already been created and set to a DC, this function can be used to quickly render text (because no
-' additional parameters have to be set)
+' additional parameters have to be set).  Note that it only works for left-aligned text, as no contraining rect is used.
 Public Sub FastRenderText(ByVal dstX As Long, ByVal dstY As Long, ByRef srcString As String)
     ExtTextOutNoRect curDC, dstX, dstY, 0, ByVal 0&, StrPtr(srcString), Len(srcString), ByVal 0&
 End Sub

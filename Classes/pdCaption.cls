@@ -63,7 +63,24 @@ Private m_FontSizeVerified As Boolean
 Private m_CaptionColor As Long
 
 'Other font settings.  I implement these as I need them, so some may be missing, by design.
-Private m_FontBold As Boolean
+Private m_FontBold As Boolean, m_FontItalic As Boolean, m_FontUnderline As Boolean
+
+'Caption alignment defaults to left-alignment, but to someday support RTL languages properly, we may need to toggle this
+' value at run-time, as part of the translation engine.  Note that this setting is not binding, because some controls
+' will want to manually call the DrawCaptionCentered function (e.g. button strips, which do a bunch of custom text rendering).
+Private m_Alignment As AlignmentConstants
+
+'Get/set alignment.  Please note the caveats under m_Alignment's definition, above.
+Public Function GetAlignment() As AlignmentConstants
+    GetAlignment = m_Alignment
+End Function
+
+Public Function SetAlignment(ByVal newAlignment As AlignmentConstants) As Boolean
+    If newAlignment <> m_Alignment Then
+        m_Alignment = newAlignment
+        SetAlignment = True
+    End If
+End Function
 
 'Get the current ENGLISH caption.
 Public Function GetCaptionEn() As String
@@ -154,6 +171,34 @@ Public Function SetFontBold(ByVal newValue As Boolean) As Boolean
     End If
 End Function
 
+Public Function GetFontItalic() As Boolean
+    GetFontItalic = m_FontItalic
+End Function
+
+Public Function SetFontItalic(ByVal newValue As Boolean) As Boolean
+    If m_FontItalic <> newValue Then
+        m_FontItalic = newValue
+        m_FontSizeVerified = False
+        SetFontItalic = True
+    Else
+        SetFontItalic = False
+    End If
+End Function
+
+Public Function GetFontUnderline() As Boolean
+    GetFontUnderline = m_FontUnderline
+End Function
+
+Public Function SetFontUnderline(ByVal newValue As Boolean) As Boolean
+    If m_FontUnderline <> newValue Then
+        m_FontUnderline = newValue
+        m_FontSizeVerified = False
+        SetFontUnderline = True
+    Else
+        SetFontUnderline = False
+    End If
+End Function
+
 Public Function GetFontSize() As Single
     GetFontSize = m_FontSizeCaption
 End Function
@@ -175,16 +220,6 @@ Public Function SetFontSize(ByVal newSize As Single) As Boolean
     
 End Function
 
-'Whenever relevant, the owner of this class can call this function to see if a redraw is needed.  The redraw flags will be
-' reset whenever a successful draw request occurs.
-Public Function IsRedrawNeeded() As Boolean
-    If (Not m_FontSizeVerified) Then
-        IsRedrawNeeded = True
-    Else
-        IsRedrawNeeded = False
-    End If
-End Function
-
 'Wordwrap can now be optionally enabled on-the-fly
 Public Sub SetWordWrapSupport(ByVal newSupportValue As Boolean)
     If m_WordWrapAllowed <> newSupportValue Then
@@ -204,9 +239,12 @@ Private Sub Class_Initialize()
     m_ContainerWidth = 0
     m_ContainerHeight = 0
     m_WordWrapAllowed = False
+    m_Alignment = vbLeftJustify
     
     m_FontSizeVerified = False
     m_FontBold = False
+    m_FontItalic = False
+    m_FontUnderline = False
     
     If g_IsProgramRunning And Not (g_Themer Is Nothing) Then
         m_CaptionColor = g_Themer.GetThemeColor(PDTC_TEXT_DEFAULT)
@@ -228,8 +266,8 @@ Public Sub SetControlSize(ByVal newWidth As Single, ByVal newHeight As Single)
     
 End Sub
 
-'Returns the width of the current caption, in pixels.  No padding is applied.
-' Note that this return *ignores the wordwrap setting.*  Wordwrap will (obviously) affect the width of the string, but because the width
+'Returns the width of the current caption, in pixels, with autofit active.  No padding is applied.
+' Note that this return *ignores the wordwrap setting.*  Wordwrap (obviously)s affect the width of the string, but because the width
 ' of a wordwrap string is simply the container width - which the caller must specify - there's no point in returning it here.
 Public Function GetCaptionWidth() As Single
     
@@ -239,9 +277,20 @@ Public Function GetCaptionWidth() As Single
     
     'Get a copy of the current font from the central font cache
     Dim tmpFont As pdFont
-    Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, False, False)
+    Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
     
     GetCaptionWidth = tmpFont.GetWidthOfString(m_CaptionTranslated)
+    
+End Function
+
+'Returns the width of the current caption, in pixels, *without considering autofit*.  No padding is applied.
+Public Function GetCaptionWidth_NoFit() As Single
+    
+    'Get a copy of the default font size from the central font cache
+    Dim tmpFont As pdFont
+    Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline)
+    
+    GetCaptionWidth_NoFit = tmpFont.GetWidthOfString(m_CaptionTranslated)
     
 End Function
 
@@ -255,7 +304,7 @@ Public Function GetCaptionHeight() As Single
     
     'Get a copy of the current font from the central font cache
     Dim tmpFont As pdFont
-    Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, False, False)
+    Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
     
     If m_WordWrapAllowed Then
         GetCaptionHeight = tmpFont.GetHeightOfWordwrapString(m_CaptionTranslated, m_ContainerWidth)
@@ -265,7 +314,30 @@ Public Function GetCaptionHeight() As Single
     
 End Function
 
-'When all font and caption settings are ready, use this to actually render the caption onto a target DC
+'Returns the height of the current caption, in pixels, *without considering autofit*.  No padding is applied.
+' Note that this return varies depending on the presence of wordwrapping.  Wordwrap will (obviously) affect the return.
+Public Function GetCaptionHeight_NoFit() As Single
+    
+    'Make sure we can fit the current caption inside the control, when using the selected font size.  (If we can't,
+    ' this function will automatically calculation a new font size, and stick it inside m_FontSizeCaptionFit.)
+    If Not m_FontSizeVerified Then VerifyFontSize
+    
+    'Get a copy of the current font from the central font cache
+    Dim tmpFont As pdFont
+    Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline)
+    
+    If m_WordWrapAllowed Then
+        GetCaptionHeight_NoFit = tmpFont.GetHeightOfWordwrapString(m_CaptionTranslated, m_ContainerWidth)
+    Else
+        GetCaptionHeight_NoFit = tmpFont.GetHeightOfString(m_CaptionTranslated)
+    End If
+    
+End Function
+
+'When all font and caption settings are ready, use this to actually render the caption onto a target DC.
+' IMPORTANT NOTE: this command exists only to support controls that do their own custom text positioning.  It does not support
+'                  text alignment (how could it, without a constraining rect?) so you must use DrawCaption_Clipped if you want
+'                  alignment support.
 Public Sub DrawCaption(ByVal dstDC As Long, Optional ByVal dstX As Long = 0, Optional ByVal dstY As Long = 0, Optional ByVal customColor As Long = -1)
     
     'Make sure we can fit the current caption inside the control, when using the selected font size.  (If we can't,
@@ -274,7 +346,7 @@ Public Sub DrawCaption(ByVal dstDC As Long, Optional ByVal dstX As Long = 0, Opt
     
     'Get a copy of the current font from the central font cache
     Dim tmpFont As pdFont
-    Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, False, False)
+    Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
     
     If customColor <> -1 Then
         tmpFont.SetFontColor customColor
@@ -294,8 +366,10 @@ Public Sub DrawCaption(ByVal dstDC As Long, Optional ByVal dstX As Long = 0, Opt
     
 End Sub
 
-'Same as drawCaption, but centered on an arbitrary rect
-Friend Sub DrawCaptionCentered(ByVal dstDC As Long, ByRef dstRect As RECT, Optional ByVal customColor As Long = -1)
+'When all font and caption settings are ready, use this to actually render the caption onto a target DC.  Clipping to the
+' destination area will occur automatically, with ellipses applied according to the useEllipses parameter.  Note that you
+' can also request to use the original font size, instead of the auto-fit size.
+Public Sub DrawCaption_Clipped(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, Optional ByVal customColor As Long = -1, Optional ByVal useEllipses As Boolean = False, Optional ByVal useOriginalFontSize As Boolean = False)
     
     'Make sure we can fit the current caption inside the control, when using the selected font size.  (If we can't,
     ' this function will automatically calculation a new font size, and stick it inside m_FontSizeCaptionFit.)
@@ -303,7 +377,12 @@ Friend Sub DrawCaptionCentered(ByVal dstDC As Long, ByRef dstRect As RECT, Optio
     
     'Get a copy of the current font from the central font cache
     Dim tmpFont As pdFont
-    Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, False, False)
+    
+    If useOriginalFontSize Then
+        Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline)
+    Else
+        Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
+    End If
     
     If customColor <> -1 Then
         tmpFont.SetFontColor customColor
@@ -312,6 +391,42 @@ Friend Sub DrawCaptionCentered(ByVal dstDC As Long, ByRef dstRect As RECT, Optio
     End If
     
     tmpFont.AttachToDC dstDC
+    
+    'NOTE: pdFont.SetTextAlignment does not actually set text alignment as a property inside the target DC.  Instead, it uses
+    '      DrawText flags to enforce alignment.  This leaves the target DC untouched, so previously set text flags won't be
+    '      modified by calls to pdFont, by design.
+    tmpFont.SetTextAlignment m_Alignment
+    
+    If m_WordWrapAllowed Then
+        tmpFont.FastRenderMultilineTextWithClipping dstX, dstY, dstWidth, dstHeight, m_CaptionTranslated
+    Else
+        tmpFont.FastRenderTextWithClipping dstX, dstY, dstWidth, dstHeight, m_CaptionTranslated, useEllipses
+    End If
+    
+    tmpFont.ReleaseFromDC
+    
+End Sub
+
+'Same as drawCaption, but centered on an arbitrary rect.  This helper function primarily exists for controls that must do
+' a bunch of non-standard text rendering (e.g. button strips, which individually fit each button caption).
+Friend Sub DrawCaptionCentered(ByVal dstDC As Long, ByRef dstRect As RECT, Optional ByVal customColor As Long = -1)
+    
+    'Make sure we can fit the current caption inside the control, when using the selected font size.  (If we can't,
+    ' this function will automatically calculation a new font size, and stick it inside m_FontSizeCaptionFit.)
+    If Not m_FontSizeVerified Then VerifyFontSize
+    
+    'Get a copy of the current font from the central font cache
+    Dim tmpFont As pdFont
+    Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSizeCaptionFit, m_FontBold, m_FontItalic, m_FontUnderline)
+    
+    If customColor <> -1 Then
+        tmpFont.SetFontColor customColor
+    Else
+        tmpFont.SetFontColor m_CaptionColor
+    End If
+    
+    tmpFont.AttachToDC dstDC
+    tmpFont.SetTextAlignment vbLeftJustify
     
     If m_WordWrapAllowed Then
         
@@ -359,9 +474,9 @@ Private Sub VerifyFontSize()
         
         'There are two ways to verify font size, and they differ depending on whether the caller wants us to enable wordwrapping.
         If m_WordWrapAllowed Then
-            newFontSize = Font_Management.FindFontSizeWordWrap(m_CaptionTranslated, m_ContainerWidth, m_ContainerHeight, m_FontSizeCaption, m_FontBold, False, False, True)
+            newFontSize = Font_Management.FindFontSizeWordWrap(m_CaptionTranslated, m_ContainerWidth, m_ContainerHeight, m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline, True)
         Else
-            newFontSize = Font_Management.FindFontSizeSingleLine(m_CaptionTranslated, m_ContainerWidth, m_FontSizeCaption, m_FontBold, False, False, True)
+            newFontSize = Font_Management.FindFontSizeSingleLine(m_CaptionTranslated, m_ContainerWidth, m_FontSizeCaption, m_FontBold, m_FontItalic, m_FontUnderline, True)
         End If
         
         'Note the size required to fit the text inside the target area.  On subsequent draw calls, we will silently switch
