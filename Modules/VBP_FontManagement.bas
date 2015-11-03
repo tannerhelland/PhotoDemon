@@ -322,9 +322,7 @@ Private m_ProgramFontCollection As pdFontCollection
 Public Function FindFontSizeSingleLine(ByRef srcString As String, ByVal pxWidth As Long, ByVal initialFontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False, Optional ByVal cacheIfNovel As Boolean = True) As Single
     
     'Inside the designer, we need to make sure the font collection exists
-    If Not g_IsProgramRunning Then
-        If m_ProgramFontCollection Is Nothing Then InitProgramFontCollection
-    End If
+    If m_ProgramFontCollection Is Nothing Then InitProgramFontCollection
     
     'Add this font size+style combination to the collection
     Dim fontIndex As Long
@@ -350,9 +348,7 @@ End Function
 Public Function FindFontSizeWordWrap(ByRef srcString As String, ByVal pxWidth As Long, ByVal pxHeight As Long, ByVal initialFontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False, Optional ByVal cacheIfNovel As Boolean = True) As Single
     
     'Inside the designer, we need to make sure the font collection exists
-    If Not g_IsProgramRunning Then
-        If m_ProgramFontCollection Is Nothing Then InitProgramFontCollection
-    End If
+    If m_ProgramFontCollection Is Nothing Then InitProgramFontCollection
     
     'Retrieve a handle to a matching pdFont object
     Dim tmpFont As pdFont
@@ -373,9 +369,7 @@ End Function
 Public Function GetMatchingUIFont(ByVal FontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As pdFont
     
     'Inside the designer, we need to make sure the font collection exists
-    If Not g_IsProgramRunning Then
-        If m_ProgramFontCollection Is Nothing Then InitProgramFontCollection
-    End If
+    If m_ProgramFontCollection Is Nothing Then InitProgramFontCollection
     
     'Add this font size+style combination to the collection, as necessary
     Dim fontIndex As Long
