@@ -61,13 +61,8 @@ Public Event Click(ByVal buttonIndex As Long)
 ' (In PD, the metadata browser does this.)
 Public Event MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
 
-'Flicker-free window painter
-Private WithEvents cPainter As pdWindowPainter
-Attribute cPainter.VB_VarHelpID = -1
-
-'Reliable focus detection requires a specialized subclasser
-Private WithEvents cFocusDetector As pdFocusDetector
-Attribute cFocusDetector.VB_VarHelpID = -1
+'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
+' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
@@ -99,28 +94,10 @@ Private Type TEXTMETRIC
     tmCharSet As Byte
 End Type
 
-'API technique for drawing a focus rectangle; used only for designer mode (see the Paint method for details)
-Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
-
-'Previously, we used VB's internal label control to render the text caption.  This is now handled dynamically,
-' via a pdFont object.
-Private curFont As pdFont
-
-'If a given caption needs to be dynamically shrunk (because it's too long to fit, and DrawText can't wrap it for whatever reason),
-' we fall back to a temporary font object.  This is preferable to overwriting the main font object, as font creation is expensive,
-' and we can simply skip creating this font if text fits okay (as it does for en-US).
-Private shrinkFont As pdFont
-
 'Rather than use an StdFont container (which requires VB to create redundant font objects), we track font properties manually,
 ' via dedicated properties.
 Private m_FontSize As Single
 Private m_FontBold As Boolean
-
-'Mouse and keyboard input handlers
-Private WithEvents cMouseEvents As pdInputMouse
-Attribute cMouseEvents.VB_VarHelpID = -1
-Private WithEvents cKeyEvents As pdInputKeyboard
-Attribute cKeyEvents.VB_VarHelpID = -1
 
 'Current button indices
 Private m_ButtonIndex As Long
@@ -131,7 +108,7 @@ Private Type buttonEntry
     btCaptionEn As String           'Current button caption, in its original English
     btCaptionTranslated As String   'Current button caption, translated into the active language (if English is active, this is a copy of btCaptionEn)
     btBounds As RECT                'Boundaries of this button (full clickable area, inclusive - meaning 1px border NOT included)
-    btCaptionRect As RECT           'Bounding rect of the caption.  This is dynamically calculated by the UpdateControlSize function
+    btCaptionRect As RECT           'Bounding rect of the caption.  This is dynamically calculated by the UpdateControlLayout function
     btImage As pdDIB                'Optional image to use with the button.
     btImageDisabled As pdDIB        'Auto-created disabled version of the image
     btImageHover As pdDIB           'Auto-created hover (glow) version of the image
@@ -143,17 +120,8 @@ End Type
 Private m_Buttons() As buttonEntry
 Private m_numOfButtons As Long
 
-'Persistent back buffer, which we manage internally
-Private m_BackBuffer As pdDIB
-
-'If the mouse is currently INSIDE the control, this will be set to TRUE
-Private m_MouseInsideUC As Boolean
-
-'When the option button receives focus via keyboard (e.g. NOT by mouse events), we draw a focus rect to help orient the user.
+'Index of which button has the focus.  The user can use arrow keys to move focus between buttons.
 Private m_FocusRectActive As Long
-
-'Additional helper for rendering themed and multiline tooltips
-Private toolTipManager As pdToolTip
 
 'Color mode.  Buttons with text are easier to read if the background color is extremely dark and text is inverted over the top.
 ' On the main window interface, we use some button strips that are image-only, and the images are lost on such a dark background.
@@ -168,6 +136,11 @@ End Enum
 #End If
 
 Private m_ColoringMode As PD_BTS_COLOR_SCHEME
+
+'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
+' but I've since attempted to wrap these into a single master control support class.
+Private WithEvents ucSupport As pdUCSupport
+Attribute ucSupport.VB_VarHelpID = -1
 
 'Padding between images (if any) and text.  This is automatically adjusted according to DPI, so set this value as it would be at the
 ' Windows default of 96 DPI
@@ -185,7 +158,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     PropertyChanged "Enabled"
     
     'Redraw the control
-    redrawBackBuffer
+    RedrawBackBuffer
     
 End Property
 
@@ -201,7 +174,7 @@ Public Property Let ColorScheme(ByVal newScheme As PD_BTS_COLOR_SCHEME)
         m_ColoringMode = newScheme
         
         'Redraw the control
-        redrawBackBuffer
+        RedrawBackBuffer
         
     End If
     
@@ -215,7 +188,7 @@ End Property
 Public Property Let FontBold(ByVal newBoldSetting As Boolean)
     If newBoldSetting <> m_FontBold Then
         m_FontBold = newBoldSetting
-        refreshFont
+        UpdateControlLayout
     End If
 End Property
 
@@ -226,53 +199,17 @@ End Property
 Public Property Let FontSize(ByVal newSize As Single)
     If newSize <> m_FontSize Then
         m_FontSize = newSize
-        refreshFont
+        UpdateControlLayout
     End If
 End Property
 
-'When the font used for the button changes in some way, it can be recreated (refreshed) using this function.  Note that font
-' creation is expensive, so it's worthwhile to avoid this step as much as possible.
-Private Sub refreshFont()
-    
-    Dim fontRefreshRequired As Boolean
-    fontRefreshRequired = curFont.HasFontBeenCreated
-    
-    'Update each font parameter in turn.  If one (or more) requires a new font object, the font will be recreated as the final step.
-    
-    'Font face is always set automatically, to match the current program-wide font
-    If (Len(g_InterfaceFont) <> 0) And (StrComp(curFont.GetFontFace, g_InterfaceFont, vbBinaryCompare) <> 0) Then
-        fontRefreshRequired = True
-        curFont.SetFontFace g_InterfaceFont
-    End If
-    
-    'In the future, I may switch to GDI+ for font rendering, as it supports floating-point font sizes.  In the meantime, we check
-    ' parity using an Int() conversion, as GDI only supports integer font sizes.
-    If Int(m_FontSize) <> Int(curFont.GetFontSize) Then
-        fontRefreshRequired = True
-        curFont.SetFontSize m_FontSize
-    End If
-    
-    'This control currently supports bold text, but not italics
-    If m_FontBold <> curFont.GetFontBold Then
-        fontRefreshRequired = True
-        curFont.SetFontBold m_FontBold
-    End If
-        
-    'Request a new font, if one or more settings have changed
-    If fontRefreshRequired Then curFont.CreateFontObject
-        
-    'Also, each button needs to be rebuilt to reflect the new font metrics
-    UpdateControlSize
-
-End Sub
-
-'When the control receives focus, if the focus isn't received via mouse click, display a focus rect
-Private Sub cFocusDetector_GotFocusReliable()
+'When the control receives focus, if the focus isn't received via mouse click, display a focus rect around the active button
+Private Sub ucSupport_GotFocusReliable()
     
     'If the mouse is *not* over the user control, assume focus was set via keyboard
-    If Not m_MouseInsideUC Then
+    If Not ucSupport.DoIHaveFocus Then
         m_FocusRectActive = m_ButtonIndex
-        redrawBackBuffer
+        RedrawBackBuffer
     End If
     
     RaiseEvent GotFocusAPI
@@ -280,12 +217,12 @@ Private Sub cFocusDetector_GotFocusReliable()
 End Sub
 
 'When the control loses focus, erase any focus rects it may have active
-Private Sub cFocusDetector_LostFocusReliable()
+Private Sub ucSupport_LostFocusReliable()
     
     'If a focus rect has been drawn, remove it now
     If (m_FocusRectActive >= 0) Then
         m_FocusRectActive = -1
-        redrawBackBuffer
+        RedrawBackBuffer
     End If
     
     RaiseEvent LostFocusAPI
@@ -293,7 +230,7 @@ Private Sub cFocusDetector_LostFocusReliable()
 End Sub
 
 'A few key events are also handled
-Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
+Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
 
     If (vkCode = VK_RIGHT) Then
         
@@ -308,7 +245,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
         If m_FocusRectActive >= m_numOfButtons Then m_FocusRectActive = 0
         
         'Redraw the button strip
-        redrawBackBuffer
+        RedrawBackBuffer
         
     ElseIf (vkCode = VK_LEFT) Then
     
@@ -323,7 +260,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
         If m_FocusRectActive < 0 Then m_FocusRectActive = m_numOfButtons - 1
         
         'Redraw the button strip
-        redrawBackBuffer
+        RedrawBackBuffer
         
     'If a focus rect is active, and space is pressed, activate the button with focus
     ElseIf (vkCode = VK_SPACE) Then
@@ -334,21 +271,12 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
 
 End Sub
 
-Private Sub cMouseEvents_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
     RaiseEvent MouseWheelVertical(Button, Shift, x, y, scrollAmount)
 End Sub
 
-'The pdWindowPaint class raises this event when the control needs to be redrawn.  The passed coordinates contain the
-' rect returned by GetUpdateRect (but with right/bottom measurements pre-converted to width/height).
-Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, ByVal winWidth As Long, ByVal winHeight As Long)
-
-    'Flip the relevant chunk of the buffer to the screen
-    BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
-    
-End Sub
-
 'To improve responsiveness, MouseDown is used instead of Click
-Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
         
     Dim mouseClickIndex As Long
     mouseClickIndex = isMouseOverButton(x, y)
@@ -357,10 +285,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     m_FocusRectActive = -1
     
     If Me.Enabled And (mouseClickIndex >= 0) Then
-    
-        'Ensure that a focus event has been raised, if it wasn't already
-        If Not cFocusDetector.HasFocus Then cFocusDetector.setFocusManually
-        
+            
         If m_ButtonIndex <> mouseClickIndex Then
             ListIndex = mouseClickIndex
         End If
@@ -369,23 +294,19 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
 
 End Sub
 
-'When the mouse leaves the UC, we must repaint the caption (as it's no longer hovered)
-Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+'When the mouse leaves the UC, we must repaint the control (as it's no longer hovered)
+Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     m_ButtonHoverIndex = -1
-    
-    If m_MouseInsideUC Then
-        m_MouseInsideUC = False
-        redrawBackBuffer
-    End If
+    RedrawBackBuffer
     
     'Reset the cursor
-    cMouseEvents.setSystemCursor IDC_ARROW
+    ucSupport.RequestCursor IDC_DEFAULT
     
 End Sub
 
-'When the mouse enters the clickable portion of the UC, we must repaint the caption (to reflect its hovered state)
-Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+'When the mouse enters the clickable portion of the UC, we must repaint the hovered button
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     'If the mouse is over the relevant portion of the user control, display the cursor as clickable
     Dim mouseHoverIndex As Long
@@ -398,25 +319,25 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     
         'If the mouse is not currently hovering a button, set a default arrow cursor and exit
         If mouseHoverIndex = -1 Then
-        
-            cMouseEvents.setSystemCursor IDC_ARROW
-        
-            'Repaint the control as necessary
-            If m_MouseInsideUC Then m_MouseInsideUC = False
-            redrawBackBuffer
-            
+            ucSupport.RequestCursor IDC_ARROW
+            RedrawBackBuffer
         Else
-        
-            cMouseEvents.setSystemCursor IDC_HAND
-        
-            'Repaint the control as necessary
-            If Not m_MouseInsideUC Then m_MouseInsideUC = True
-            redrawBackBuffer
-            
+            ucSupport.RequestCursor IDC_HAND
+            RedrawBackBuffer
         End If
     
     End If
     
+End Sub
+
+Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
+    If updateLayoutToo Then UpdateControlLayout
+    RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    UpdateControlLayout
+    RedrawBackBuffer
 End Sub
 
 'See if the mouse is over the clickable portion of the control
@@ -445,8 +366,8 @@ Attribute hWnd.VB_UserMemId = -515
 End Property
 
 'Container hWnd must be exposed for external tooltip handling
-Public Property Get containerHwnd() As Long
-    containerHwnd = UserControl.containerHwnd
+Public Property Get ContainerHwnd() As Long
+    ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
 'The most relevant part of this control is this ListIndex property, which just like listboxes, controls which button in the strip
@@ -464,7 +385,7 @@ Public Property Let ListIndex(ByVal newIndex As Long)
         PropertyChanged "ListIndex"
         
         'Redraw the control; it's important to do this *before* raising the associated event, to maintain an impression of max responsiveness
-        redrawBackBuffer
+        RedrawBackBuffer
         
         'Notify the user of the change by raising the CLICK event
         RaiseEvent Click(newIndex)
@@ -520,7 +441,7 @@ Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long =
     Set m_Buttons(i).btImageHover = Nothing
     
     'Before we can redraw the control, we need to recalculate all button positions - do that now!
-    UpdateControlSize
+    UpdateControlLayout
 
 End Sub
 
@@ -550,91 +471,27 @@ Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As 
 
 End Sub
 
-'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
-' and/or retranslating all button captions against the current language.
-Public Sub UpdateAgainstCurrentTheme()
-    
-    'Determine if translations are active.  If they are, retrieve translated captions for all buttons within the control.
-    If g_IsProgramRunning Then
-        
-        'See if translations are necessary.
-        Dim isTranslationActive As Boolean
-            
-        If Not (g_Language Is Nothing) Then
-            If g_Language.translationActive Then
-                isTranslationActive = True
-            Else
-                isTranslationActive = False
-            End If
-        Else
-            isTranslationActive = False
-        End If
-        
-        'Apply the new translations, if any.
-        Dim i As Long
-        For i = 0 To m_numOfButtons - 1
-            If isTranslationActive Then
-                m_Buttons(i).btCaptionTranslated = g_Language.TranslateMessage(m_Buttons(i).btCaptionEn)
-            Else
-                m_Buttons(i).btCaptionTranslated = m_Buttons(i).btCaptionEn
-            End If
-        Next i
-        
-        'In the future, themes may also result in font changes.  As such, recreate the font object, just to be safe.
-        refreshFont
-        
-    End If
-    
-    'Update our tooltip object as well
-    If g_IsProgramRunning Then toolTipManager.UpdateAgainstCurrentTheme
-        
-    'Because translations will change text layout, we need to recalculate font metrics prior to redrawing the button
-    UpdateControlSize
-    
-End Sub
-
 'INITIALIZE control
 Private Sub UserControl_Initialize()
     
     m_numOfButtons = 0
     
-    'Initialize the internal font object
-    Set curFont = New pdFont
-    curFont.SetTextAlignment vbLeftJustify
-    refreshFont
+    'Initialize a master user control support class
+    Set ucSupport = New pdUCSupport
+    ucSupport.RegisterControl UserControl.hWnd
     
-    'When not in design mode, initialize a tracker for mouse events
-    If g_IsProgramRunning Then
+    'Request some additional input functionality (custom mouse and key events)
+    ucSupport.RequestExtraFunctionality True, True
+    ucSupport.SpecifyRequiredKeys VK_RIGHT, VK_LEFT, VK_SPACE
     
-        Set cMouseEvents = New pdInputMouse
-        cMouseEvents.addInputTracker Me.hWnd, True, True, , True
-        cMouseEvents.setSystemCursor IDC_HAND
-        
-        Set cKeyEvents = New pdInputKeyboard
-        cKeyEvents.createKeyboardTracker "Button Strip UC", Me.hWnd, VK_RIGHT, VK_LEFT, VK_SPACE
-        
-        'Also start a flicker-free window painter
-        Set cPainter = New pdWindowPainter
-        cPainter.StartPainter Me.hWnd
-        
-        'Also start a focus detector
-        Set cFocusDetector = New pdFocusDetector
-        cFocusDetector.startFocusTracking Me.hWnd
-        
-        'Create a tooltip engine
-        Set toolTipManager = New pdToolTip
-        
-    'In design mode, initialize a base theming class, so our paint function doesn't fail
-    Else
-        Set g_Themer = New pdVisualThemes
-    End If
+    'In design mode, initialize a base theming class, so our paint functions don't fail
+    If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
     
-    m_MouseInsideUC = False
     m_FocusRectActive = -1
     m_ButtonHoverIndex = -1
     
-    'Update the control size parameters at least once
-    UpdateControlSize
+    'Update the control size at least once
+    UpdateControlLayout
                 
 End Sub
 
@@ -653,12 +510,9 @@ Private Sub UserControl_InitProperties()
     
 End Sub
 
-'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
+'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
 Private Sub UserControl_Paint()
-    
-    'Provide minimal painting within the designer
-    If Not g_IsProgramRunning Then redrawBackBuffer
-    
+    ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
@@ -672,46 +526,35 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 
 End Sub
 
-'The control dynamically resizes each button to match the dimensions of their relative captions.
 Private Sub UserControl_Resize()
-    UpdateControlSize
+    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
 End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
 ' of internal sizing metrics whenever the control size changes.
-Private Sub UpdateControlSize()
-
-    'Remove our font object from the buffer DC, because we are about to recreate it
-    curFont.ReleaseFromDC
+Private Sub UpdateControlLayout()
     
-    'Reset our back buffer, and reassign the font to it
-    If m_BackBuffer Is Nothing Then Set m_BackBuffer = New pdDIB
-    If (m_BackBuffer.getDIBWidth <> UserControl.ScaleWidth) Or (m_BackBuffer.getDIBHeight <> UserControl.ScaleHeight) Then
-        m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
-    Else
-        m_BackBuffer.resetDIB 255
-    End If
-    
-    'We're going to be measuring a lot of fonts, so to spare the font object from repeatedly requesting temporary DCs,
-    ' select it into place now.
-    curFont.AttachToDC m_BackBuffer.getDIBDC
+    'Retrieve DPI-aware control dimensions from the support class
+    Dim bWidth As Long, bHeight As Long
+    bWidth = ucSupport.GetBackBufferWidth
+    bHeight = ucSupport.GetBackBufferHeight
     
     'With the buffer prepared, we now need to figure out the size of individual buttons within the strip.  While we
     ' could make these proportional to the text length of each button, I am instead taking the simpler route for now,
-    ' and making all buttons the same size.
+    ' and making all buttons a uniform size.
     
     'Start by calculating a set size for each button.  We will calculate these as floating-point, to avoid compounded
     ' truncation errors as we move from button to button.
     Dim buttonWidth As Double, buttonHeight As Double
     
     'Button height is easy - assume a 1px border on top and bottom, and give each button access to all space in-between.
-    buttonHeight = m_BackBuffer.getDIBHeight - 2
+    buttonHeight = bHeight - 2
     
     'Button width is trickier.  We have a 1px border around the whole control, and then (n-1) borders on the interior.
     If m_numOfButtons > 0 Then
-        buttonWidth = (m_BackBuffer.getDIBWidth - 2 - (m_numOfButtons - 1)) / m_numOfButtons
+        buttonWidth = (bWidth - 2 - (m_numOfButtons - 1)) / m_numOfButtons
     Else
-        buttonWidth = m_BackBuffer.getDIBWidth - 2
+        buttonWidth = bWidth - 2
     End If
     
     'Using these values, populate a boundary rect for each button, and store it.  (This makes the render step much faster.)
@@ -732,7 +575,7 @@ Private Sub UpdateControlSize()
     ' button in line.  The final button receives special consideration.
     If m_numOfButtons > 0 Then
     
-        m_Buttons(m_numOfButtons - 1).btBounds.Right = m_BackBuffer.getDIBWidth - 2
+        m_Buttons(m_numOfButtons - 1).btBounds.Right = bWidth - 2
         
         If m_numOfButtons > 1 Then
         
@@ -749,6 +592,9 @@ Private Sub UpdateControlSize()
     ' reduce the amount of work we need to do in the render loop.
     Dim tmpPoint As POINTAPI
     Dim strWidth As Long, strHeight As Long
+    
+    'Rather than create and manage our own font objects, we're simply going to borrow font objects from the global PD font cache.
+    Dim tmpFont As pdFont
     
     For i = 0 To m_numOfButtons - 1
     
@@ -768,13 +614,14 @@ Private Sub UpdateControlSize()
             End If
             
             'Retrieve the expected size of the string, in pixels
-            strWidth = curFont.GetWidthOfString(m_Buttons(i).btCaptionTranslated)
+            Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSize, m_FontBold)
+            strWidth = tmpFont.GetWidthOfString(m_Buttons(i).btCaptionTranslated)
                     
             'If the string is too long for its containing button, activate word wrap and measure again
             If strWidth > buttonWidth Then
                 
                 strWidth = buttonWidth
-                strHeight = curFont.GetHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth)
+                strHeight = tmpFont.GetHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth)
                 
                 'As a failsafe for ultra-long captions, restrict their size to the button size.  Truncation will (necessarily) occur.
                 If (strHeight > buttonHeight) Then
@@ -782,28 +629,19 @@ Private Sub UpdateControlSize()
                     
                 'As a second failsafe, if word-wrapping didn't solve the problem (because the text is a single word, for example, as is common
                 ' in German), we will forcibly set a smaller font size for this caption alone.
-                ElseIf curFont.GetHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth) = curFont.GetHeightOfString(m_Buttons(i).btCaptionTranslated) Then
-                
-                    'Create and initialize the shrinkFont renderer
-                    If (shrinkFont Is Nothing) Then Set shrinkFont = New pdFont
-                    
-                    m_Buttons(i).btFontSize = shrinkFont.GetMaxFontSizeToFitStringWidth(m_Buttons(i).btCaptionTranslated, buttonWidth, m_FontSize)
-                    
-                    'The .btFontSize value now contains the font size required to render this button correctly.  In most cases, only a single button
-                    ' will require this kind of special treatment, so initialize a matching shrinkFont now.  (If necessary, the object will be
-                    ' recreated on the fly for other buttons.)
-                    shrinkFont.SetFontBold m_FontBold
-                    shrinkFont.SetFontSize m_Buttons(i).btFontSize
-                    shrinkFont.CreateFontObject
-                    
-                    'Also note the new string height
-                    strHeight = shrinkFont.GetHeightOfString(m_Buttons(i).btCaptionTranslated)
+                ElseIf tmpFont.GetHeightOfWordwrapString(m_Buttons(i).btCaptionTranslated, strWidth) = tmpFont.GetHeightOfString(m_Buttons(i).btCaptionTranslated) Then
+                    m_Buttons(i).btFontSize = tmpFont.GetMaxFontSizeToFitStringWidth(m_Buttons(i).btCaptionTranslated, buttonWidth, m_FontSize)
+                    Set tmpFont = Font_Management.GetMatchingUIFont(m_Buttons(i).btFontSize, m_FontBold)
+                    strHeight = tmpFont.GetHeightOfString(m_Buttons(i).btCaptionTranslated)
                     
                 End If
                 
             Else
-                strHeight = curFont.GetHeightOfString(m_Buttons(i).btCaptionTranslated)
+                strHeight = tmpFont.GetHeightOfString(m_Buttons(i).btCaptionTranslated)
             End If
+            
+            'Release our copy of this global PD UI font
+            Set tmpFont = Nothing
             
         End If
         
@@ -827,8 +665,6 @@ Private Sub UpdateControlSize()
                         .btCaptionRect.Left = .btBounds.Left + m_Buttons(i).btImage.getDIBWidth + FixDPI(IMG_TEXT_PADDING) * 2
                     End If
                     
-                    '.btCaptionRect.Left = .btBounds.Left + fixDPI(IMG_TEXT_PADDING) * 2 + m_Buttons(i).btImage.getDIBWidth
-                
                 End If
                 
                 .btCaptionRect.Top = .btBounds.Top + (buttonHeight - strHeight) \ 2
@@ -863,7 +699,7 @@ Private Sub UpdateControlSize()
     Next i
     
     'With all metrics successfully measured, we can now recreate the back buffer
-    redrawBackBuffer
+    RedrawBackBuffer
             
 End Sub
 
@@ -881,16 +717,13 @@ End Sub
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
-Private Sub redrawBackBuffer()
+Private Sub RedrawBackBuffer()
     
-    'Start by erasing the back buffer
-    If g_IsProgramRunning Then
-        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT), 255
-    Else
-        curFont.ReleaseFromDC
-        m_BackBuffer.createBlank m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, 24, RGB(255, 255, 255)
-        curFont.AttachToDC m_BackBuffer.getDIBDC
-    End If
+    'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
+    Dim bufferDC As Long, bWidth As Long, bHeight As Long
+    bufferDC = ucSupport.GetBackBufferDC(True)
+    bWidth = ucSupport.GetBackBufferWidth
+    bHeight = ucSupport.GetBackBufferHeight
     
     'Colors used throughout this paint function are determined primarily control enablement
     Dim btnColorActiveBorder As Long, btnColorActiveFill As Long, btnColorHoverBorder As Long
@@ -945,7 +778,10 @@ Private Sub redrawBackBuffer()
     End If
     
     'A single-pixel border is always drawn around the control
-    GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, 0, 0, m_BackBuffer.getDIBWidth - 1, m_BackBuffer.getDIBHeight - 1, btnColorInactiveBorder, 255, 1
+    GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, btnColorInactiveBorder, 255, 1
+    
+    'This control doesn't maintain its own fonts; instead, it borrows it from the public PD font cache, as necessary
+    Dim tmpFont As pdFont
     
     'Next, each individual button is rendered in turn.
     If m_numOfButtons > 0 Then
@@ -962,11 +798,11 @@ Private Sub redrawBackBuffer()
                     curColor = btnColorInactiveFill
                 End If
                 
-                GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, .btBounds.Left, .btBounds.Top, .btBounds.Right - .btBounds.Left + 1, .btBounds.Bottom - .btBounds.Top, curColor
+                GDI_Plus.GDIPlusFillRectToDC bufferDC, .btBounds.Left, .btBounds.Top, .btBounds.Right - .btBounds.Left + 1, .btBounds.Bottom - .btBounds.Top, curColor
                 
                 'For performance reasons, we only render right borders
                 If i < (m_numOfButtons - 1) Then
-                    GDI_Plus.GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, .btBounds.Right + 1, 0, .btBounds.Right + 1, m_BackBuffer.getDIBHeight, btnColorInactiveBorder, 255, 1
+                    GDI_Plus.GDIPlusDrawLineToDC bufferDC, .btBounds.Right + 1, 0, .btBounds.Right + 1, bHeight, btnColorInactiveBorder, 255, 1
                 End If
                 
                 'Disable the next block of rendering if the control is disabled.
@@ -974,22 +810,22 @@ Private Sub redrawBackBuffer()
                 
                     'If this is the active button, paint it with a special border.
                     If i = m_ButtonIndex Then
-                        GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom, btnColorActiveBorder, 255, 1
+                        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom, btnColorActiveBorder, 255, 1
                     
                     'If this control is hovered by the mouse, paint it with an extra-thick border
                     ElseIf (i = m_ButtonHoverIndex) Then
                         
                         If (m_ColoringMode = CM_DEFAULT) Then
-                            GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, .btBounds.Left, .btBounds.Top, .btBounds.Right + 1, .btBounds.Bottom, btnColorHoverBorder, 255, 2, False, LineJoinMiter
+                            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left, .btBounds.Top, .btBounds.Right + 1, .btBounds.Bottom, btnColorHoverBorder, 255, 2, False, LineJoinMiter
                         Else
-                            GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom, btnColorHoverBorder, 255, 1, False, LineJoinMiter
+                            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom, btnColorHoverBorder, 255, 1, False, LineJoinMiter
                         End If
                     
                     End If
                     
                     'If this button has received focus via keyboard, paint it with a special interior border
                     If i = m_FocusRectActive Then
-                        GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, .btBounds.Left + 2, .btBounds.Top + 2, .btBounds.Right - 2, .btBounds.Bottom - 3, btnColorActiveBorder, 255, 1
+                        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left + 2, .btBounds.Top + 2, .btBounds.Right - 2, .btBounds.Bottom - 3, btnColorActiveBorder, 255, 1
                     End If
                     
                 End If
@@ -1007,28 +843,25 @@ Private Sub redrawBackBuffer()
                         End If
                     End If
                     
+                    'Borrow a relevant UI font from the public UI font cache, then render the button caption using the clipping
+                    ' rect we already calculated in previous steps.
+                    
+                    'Text fits just fine, so use the control font size
                     If .btFontSize = 0 Then
-                        curFont.SetFontColor curColor
-                        curFont.DrawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
+                        Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSize, m_FontBold)
+                        tmpFont.SetFontColor curColor
+                        tmpFont.AttachToDC bufferDC
+                        tmpFont.DrawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
+                        tmpFont.ReleaseFromDC
+                    
+                    'Text does not fit the button area; use the custom font size we calculated in a previous step
                     Else
-                    
-                        'Release the main font object
-                        curFont.ReleaseFromDC
-                    
-                        'Recreate shrinkFont as necessary
-                        If shrinkFont.GetFontSize <> .btFontSize Then
-                            shrinkFont.SetFontSize .btFontSize
-                            shrinkFont.CreateFontObject
-                        End If
                         
-                        'Select shrinkFont into the DC and render the text accordingly
-                        shrinkFont.AttachToDC m_BackBuffer.getDIBDC
-                        shrinkFont.SetFontColor curColor
-                        shrinkFont.DrawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
-                        
-                        'Restore curFont
-                        shrinkFont.ReleaseFromDC
-                        curFont.AttachToDC m_BackBuffer.getDIBDC
+                        Set tmpFont = Font_Management.GetMatchingUIFont(.btFontSize, m_FontBold)
+                        tmpFont.SetFontColor curColor
+                        tmpFont.AttachToDC bufferDC
+                        tmpFont.DrawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
+                        tmpFont.ReleaseFromDC
                         
                     End If
                 
@@ -1040,13 +873,13 @@ Private Sub redrawBackBuffer()
                     If Me.Enabled Then
                     
                         If i = m_ButtonHoverIndex Then
-                            .btImageHover.alphaBlendToDC m_BackBuffer.getDIBDC, 255, .btImageCoords.x, .btImageCoords.y
+                            .btImageHover.alphaBlendToDC bufferDC, 255, .btImageCoords.x, .btImageCoords.y
                         Else
-                            .btImage.alphaBlendToDC m_BackBuffer.getDIBDC, 255, .btImageCoords.x, .btImageCoords.y
+                            .btImage.alphaBlendToDC bufferDC, 255, .btImageCoords.x, .btImageCoords.y
                         End If
                         
                     Else
-                        .btImageDisabled.alphaBlendToDC m_BackBuffer.getDIBDC, 255, .btImageCoords.x, .btImageCoords.y
+                        .btImageDisabled.alphaBlendToDC bufferDC, 255, .btImageCoords.x, .btImageCoords.y
                     End If
                     
                 End If
@@ -1056,29 +889,54 @@ Private Sub redrawBackBuffer()
         Next i
         
     End If
-        
-    'In the designer, draw a focus rect around the control; this is minimal feedback required for positioning
-    If Not g_IsProgramRunning Then
-        
-        Dim tmpRect As RECT
-        With tmpRect
-            .Left = 0
-            .Top = 0
-            .Right = m_BackBuffer.getDIBWidth
-            .Bottom = m_BackBuffer.getDIBHeight
-        End With
-        
-        DrawFocusRect m_BackBuffer.getDIBDC, tmpRect
+    
+    'Paint the final result to the screen, as relevant
+    ucSupport.RequestRepaint
+    
+End Sub
 
+'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
+' and/or retranslating all button captions against the current language.
+Public Sub UpdateAgainstCurrentTheme()
+    
+    'Determine if translations are active.  If they are, retrieve translated captions for all buttons within the control.
+    If g_IsProgramRunning Then
+        
+        'See if translations are necessary.
+        Dim isTranslationActive As Boolean
+            
+        If Not (g_Language Is Nothing) Then
+            If g_Language.translationActive Then
+                isTranslationActive = True
+            Else
+                isTranslationActive = False
+            End If
+        Else
+            isTranslationActive = False
+        End If
+        
+        'Apply the new translations, if any.
+        Dim i As Long
+        For i = 0 To m_numOfButtons - 1
+            If isTranslationActive Then
+                m_Buttons(i).btCaptionTranslated = g_Language.TranslateMessage(m_Buttons(i).btCaptionEn)
+            Else
+                m_Buttons(i).btCaptionTranslated = m_Buttons(i).btCaptionEn
+            End If
+        Next i
+        
     End If
     
-    'Paint the buffer to the screen
-    If g_IsProgramRunning And (Not cPainter Is Nothing) Then cPainter.RequestRepaint Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
-
+    'Update all text managed by the support class (e.g. tooltips)
+    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+        
+    'Because translations can change text layout, we need to recalculate font metrics prior to redrawing the button
+    UpdateControlLayout
+    
 End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    toolTipManager.setTooltip Me.hWnd, Me.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
