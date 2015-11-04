@@ -1,12 +1,12 @@
 VERSION 5.00
 Begin VB.UserControl penSelector 
    Appearance      =   0  'Flat
-   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    ClientHeight    =   3600
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   4800
+   ClipBehavior    =   0  'None
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -16,6 +16,7 @@ Begin VB.UserControl penSelector
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    ScaleHeight     =   240
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   320
@@ -30,8 +31,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Pen Selector custom control
 'Copyright 2014-2015 by Tanner Helland
 'Created: 04/July/15
-'Last updated: 04/July/15
-'Last update: initial build
+'Last updated: 04/November/15
+'Last update: convert to master UC support class; add caption support; simplify rendering approach
 '
 'This thin user control is basically an empty control that when clicked, displays a pen selection window.  If a
 ' pen is selected (e.g. Cancel is not pressed), it updates its appearance to match, and raises a "PenChanged"
@@ -52,13 +53,8 @@ Option Explicit
 'This control doesn't really do anything interesting, besides allow a pen to be selected.
 Public Event PenChanged()
 
-'A specialized class handles mouse input for this control
-Private WithEvents cMouseEvents As pdInputMouse
-Attribute cMouseEvents.VB_VarHelpID = -1
-
-'Reliable focus detection requires a specialized subclasser
-Private WithEvents cFocusDetector As pdFocusDetector
-Attribute cFocusDetector.VB_VarHelpID = -1
+'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
+' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
@@ -74,13 +70,51 @@ Private m_PreviewPath As pdGraphicsPath
 'When the "select pen" dialog is live, this will be set to TRUE
 Private isDialogLive As Boolean
 
-'A backing DIB is required for proper color management
-Private m_BackBuffer As pdDIB
+'The rectangle where the pen preview is actually rendered, and a boolean to track whether the mouse is inside that rect
+Private m_PenRect As RECTF, m_MouseInsidePenRect As Boolean
 
-'This value will be TRUE while the mouse is inside the UC
-Private m_MouseInsideUC As Boolean
+'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
+' but I've since attempted to wrap these into a single master control support class.
+Private WithEvents ucSupport As pdUCSupport
+Attribute ucSupport.VB_VarHelpID = -1
+
+'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
+' if present, will not be processed until run-time.
+' IMPORTANT NOTE: only the ENGLISH caption is returned.  I don't have a reason for returning a translated caption (if any),
+'                  but I can revisit in the future if it ever becomes relevant.
+Public Property Get Caption() As String
+Attribute Caption.VB_UserMemId = -518
+    Caption = ucSupport.GetCaptionText()
+End Property
+
+Public Property Let Caption(ByRef newCaption As String)
+    ucSupport.SetCaptionText newCaption
+    PropertyChanged "Caption"
+End Property
+
+'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
+Public Property Get Enabled() As Boolean
+Attribute Enabled.VB_UserMemId = -514
+    Enabled = UserControl.Enabled
+End Property
+
+Public Property Let Enabled(ByVal newValue As Boolean)
+    UserControl.Enabled = newValue
+    RedrawBackBuffer
+    PropertyChanged "Enabled"
+End Property
+
+Public Property Get FontSize() As Single
+    FontSize = ucSupport.GetCaptionFontSize()
+End Property
+
+Public Property Let FontSize(ByVal newSize As Single)
+    ucSupport.SetCaptionFontSize newSize
+    PropertyChanged "FontSize"
+End Property
 
 Public Property Get hWnd() As Long
+Attribute hWnd.VB_UserMemId = -515
     hWnd = UserControl.hWnd
 End Property
 
@@ -90,45 +124,60 @@ Public Property Get Pen() As String
 End Property
 
 Public Property Let Pen(ByVal newPen As String)
-    
     m_curPen = newPen
-    
-    'Redraw the control to match
-    drawControl
-    
-    PropertyChanged "Pen"
+    RedrawBackBuffer
     RaiseEvent PenChanged
-    
+    PropertyChanged "Pen"
 End Property
 
 'Outside functions can call this to force a display of the pen selection window
-Public Sub displayPenSelection()
-    UserControl_Click
+Public Sub DisplayPenSelection()
+    RaisePenDialog
 End Sub
 
-Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    m_MouseInsideUC = True
-    drawControl
-    cMouseEvents.setSystemCursor IDC_HAND
+Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    UpdateMousePosition x, y
+    If m_MouseInsidePenRect Then RaisePenDialog
 End Sub
 
-Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    m_MouseInsideUC = False
-    drawControl
-    cMouseEvents.setSystemCursor IDC_DEFAULT
+Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    UpdateMousePosition x, y
+    RedrawBackBuffer
 End Sub
 
-'When the control receives focus, relay the event externally
-Private Sub cFocusDetector_GotFocusReliable()
+Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    UpdateMousePosition -100, -100
+    RedrawBackBuffer
+End Sub
+
+Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
+    m_MouseInsidePenRect = Math_Functions.isPointInRectF(mouseX, mouseY, m_PenRect)
+    If m_MouseInsidePenRect Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
+End Sub
+
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    UpdateMousePosition x, y
+    RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
 End Sub
 
-'When the control loses focus, relay the event externally
-Private Sub cFocusDetector_LostFocusReliable()
+Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
 End Sub
 
-Private Sub UserControl_Click()
+Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
+    If updateLayoutToo Then UpdateControlLayout
+    RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    UpdateControlLayout
+End Sub
+
+Private Sub RaisePenDialog()
 
     isDialogLive = True
     
@@ -148,124 +197,161 @@ Private Sub UserControl_Click()
 End Sub
 
 Private Sub UserControl_Initialize()
-
+    
     Set m_PenPreview = New pdGraphicsPen
     Set m_PreviewPath = New pdGraphicsPath
     
-    'TODO: initialize path?
+    'Initialize a master user control support class
+    Set ucSupport = New pdUCSupport
+    ucSupport.RegisterControl UserControl.hWnd
     
-    drawControl
+    'Request some additional input functionality (custom mouse events)
+    ucSupport.RequestExtraFunctionality True
     
-    If g_IsProgramRunning Then
+    'Enable caption support, so we don't need an attached label
+    ucSupport.RequestCaptionSupport
         
-        'Initialize mouse handling
-        Set cMouseEvents = New pdInputMouse
-        cMouseEvents.addInputTracker UserControl.hWnd, True, , , True
-        cMouseEvents.setSystemCursor IDC_HAND
-        
-        'Also start a focus detector
-        Set cFocusDetector = New pdFocusDetector
-        cFocusDetector.startFocusTracking Me.hWnd
-        
-    End If
+    'In design mode, initialize a base theming class, so our paint functions don't fail
+    If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
+    
+    'Update the control size parameters at least once
+    UpdateControlLayout
     
 End Sub
 
 Private Sub UserControl_InitProperties()
+    Caption = ""
+    FontSize = 12
     Pen = ""
 End Sub
 
+'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
+Private Sub UserControl_Paint()
+    ucSupport.RequestIDERepaint UserControl.hDC
+End Sub
+
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-    Pen = PropBag.ReadProperty("curPen", "")
+    With PropBag
+        Caption = .ReadProperty("Caption", "")
+        FontSize = .ReadProperty("FontSize", 12)
+        Pen = .ReadProperty("curPen", "")
+    End With
 End Sub
 
 Private Sub UserControl_Resize()
-    drawControl
+    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
-    PropBag.WriteProperty "curPen", m_curPen, ""
+    With PropBag
+        .WriteProperty "Caption", ucSupport.GetCaptionText, ""
+        .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 12
+        .WriteProperty "curPen", m_curPen, ""
+    End With
 End Sub
 
-'For flexibility, we draw our own borders.  I may decide to change this behavior in the future...
-Private Sub drawControl()
+'Whenever a control property changes that affects control size or layout (including internal changes, like caption adjustments),
+' call this function to recalculate the control's internal layout
+Private Sub UpdateControlLayout()
+    
+    'Retrieve DPI-aware control dimensions from the support class
+    Dim bWidth As Long, bHeight As Long
+    bWidth = ucSupport.GetBackBufferWidth
+    bHeight = ucSupport.GetBackBufferHeight
+    
+    'Next, determine the positioning of the caption, if present.  (ucSupport.GetCaptionBottom tells us where the
+    ' caption text ends vertically.)
+    If ucSupport.IsCaptionActive Then
         
-    'For color management to work, we must pre-render the control onto a DIB, then copy the DIB to the screen.
-    ' Using VB's internal draw commands leads to unpredictable results.
-    If m_BackBuffer Is Nothing Then Set m_BackBuffer = New pdDIB
-    
-    If (m_BackBuffer.getDIBWidth <> UserControl.ScaleWidth) Or (m_BackBuffer.getDIBHeight <> UserControl.ScaleHeight) Then
-        m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, 0
+        'The clickable area is placed relative to the caption
+        With m_PenRect
+            .Left = FixDPI(8)
+            .Top = ucSupport.GetCaptionBottom + 2
+            .Width = (bWidth - 2) - .Left
+            .Height = (bHeight - 2) - .Top
+        End With
+        
+    'If there's no caption, allow the clickable portion to fill the entire control
     Else
-        m_BackBuffer.resetDIB
+        
+        With m_PenRect
+            .Left = 1
+            .Top = 1
+            .Width = (bWidth - 2) - .Left
+            .Height = (bHeight - 2) - .Top
+        End With
+        
     End If
+            
+End Sub
+
+'Primary rendering function.  Note that ucSupport handles a number of rendering duties (like maintaining a back buffer for us).
+Private Sub RedrawBackBuffer()
+        
+    'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
+    Dim bufferDC As Long
+    bufferDC = ucSupport.GetBackBufferDC(True)
     
-    'Because so much of the rendering code requires GDI+, we can't do much in the IDE
+    'NOTE: if a caption exists, it has already been drawn.  We just need to draw the clickable brush portion.
     If g_IsProgramRunning Then
-    
-        'Render the outline first
+        
+        'Paint a checkerboard background first
+        With m_PenRect
+            GDI_Plus.GDIPlusFillPatternToDC bufferDC, .Left, .Top, .Width, .Height, g_CheckerboardPattern
+        End With
+        
+        'Next, create a matching GDI+ pen
         m_PenPreview.createPenFromString Me.Pen
         
         Dim tmpPen As Long
         tmpPen = m_PenPreview.getPenHandle
         
-        GDI_Plus.GDIPlusFillDIBRect_Pattern m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_CheckerboardPattern
-        
         'Prep the preview path.  Note that we manually pad it to make the preview look a little prettier.
-        Dim tmpRect As RECTF, hPadding As Single, vPadding As Single
-        
+        Dim hPadding As Single, vPadding As Single
         hPadding = m_PenPreview.getPenProperty(pgps_PenWidth) * 2
         If hPadding > FixDPIFloat(12) Then hPadding = FixDPIFloat(12)
         vPadding = hPadding
         
-        With tmpRect
-            .Left = 0
-            .Top = 0
-            .Width = m_BackBuffer.getDIBWidth
-            .Height = m_BackBuffer.getDIBHeight
-        End With
-        
         m_PreviewPath.resetPath
-        m_PreviewPath.createSamplePathForRect tmpRect, hPadding, vPadding
+        m_PreviewPath.createSamplePathForRect m_PenRect, hPadding, vPadding
         
-        m_PreviewPath.strokePathToDIB_BarePen tmpPen, m_BackBuffer, , True
-        
+        m_PreviewPath.strokePathToDIB_BarePen tmpPen, , bufferDC, True
         m_PenPreview.releasePenHandle tmpPen
         
-        'Draw borders around the preview.
+        'Draw borders around the pen results.
         Dim outlineColor As Long, outlineWidth As Long, outlineOffset As Long
-    
-        If g_IsProgramRunning And m_MouseInsideUC Then
-            outlineColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+        
+        If g_IsProgramRunning And m_MouseInsidePenRect Then
+            outlineColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
             outlineWidth = 3
-            outlineOffset = 1
         Else
             outlineColor = vbBlack
             outlineWidth = 1
-            outlineOffset = 0
         End If
         
-        GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, 0, outlineOffset, UserControl.ScaleWidth - 1, outlineOffset, outlineColor, , outlineWidth, , LineCapFlat
-        GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, UserControl.ScaleWidth - 1 - outlineOffset, 0, UserControl.ScaleWidth - 1 - outlineOffset, UserControl.ScaleHeight - 1, outlineColor, , outlineWidth, , LineCapFlat
-        GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1 - outlineOffset, 0, UserControl.ScaleHeight - 1 - outlineOffset, outlineColor, , outlineWidth, , LineCapFlat
-        GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, outlineOffset, UserControl.ScaleHeight - 1, outlineOffset, 0, outlineColor, , outlineWidth, , LineCapFlat
+        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_PenRect, outlineColor, , outlineWidth, False, LineJoinMiter
         
-        'Render the completed DIB to the control.  (This is when color management takes place.)
-        TurnOnDefaultColorManagement UserControl.hDC, UserControl.hWnd
-        BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
-        
-    Else
-        UserControl.BackColor = m_PenPreview.getPenProperty(pgps_PenColor)
     End If
-        
-    UserControl.Picture = UserControl.Image
-    UserControl.Refresh
+    
+    'Paint the final result to the screen, as relevant
+    ucSupport.RequestRepaint
     
 End Sub
 
 'If a pen selection dialog is active, it will pass pen updates backward to this function, so that we can let
 ' our parent form display live updates *while the user is playing with pens* - very cool!
-Public Sub notifyOfLivePenChange(ByVal newPen As String)
+Public Sub NotifyOfLivePenChange(ByVal newPen As String)
     Pen = newPen
+End Sub
+
+'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
+Public Sub UpdateAgainstCurrentTheme()
+    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+End Sub
+
+'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
+' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
+Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
 
