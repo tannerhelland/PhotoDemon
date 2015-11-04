@@ -418,6 +418,9 @@ Private Sub MakeNewTooltip()
             targetColor = layerpanel_Colors.clrVariants.Color
         End If
         
+        'Make sure the color is an actual RGB triplet, and not an OLE color constant
+        targetColor = Color_Functions.ConvertSystemColor(targetColor)
+        
         'Construct hex and RGB string representations of the target color
         hexString = "#" & UCase(Color_Functions.getHexStringFromRGB(targetColor))
         rgbString = Color_Functions.ExtractR(targetColor) & ", " & Color_Functions.ExtractG(targetColor) & ", " & Color_Functions.ExtractB(targetColor)
