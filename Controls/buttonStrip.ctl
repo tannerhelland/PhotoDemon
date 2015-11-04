@@ -14,6 +14,7 @@ Begin VB.UserControl buttonStrip
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   HasDC           =   0   'False
    ScaleHeight     =   51
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   183
@@ -28,8 +29,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "Button Strip" control
 'Copyright 2014-2015 by Tanner Helland
 'Created: 13/September/14
-'Last updated: 12/January/15
-'Last update: rewrite control to handle its own caption and tooltip translations
+'Last updated: 04/November/15
+'Last update: convert to master usercontrol support class; switch to spitesheets for button images
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -65,34 +66,6 @@ Public Event MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Sh
 ' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
-
-'Retrieve the width and height of a string
-Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32W" (ByVal hDC As Long, ByVal lpStrPointer As Long, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
-
-'Retrieve specific metrics on a font (in our case, crucial for aligning button images against the font baseline and ascender)
-Private Declare Function GetTextMetrics Lib "gdi32" Alias "GetTextMetricsA" (ByVal hDC As Long, ByRef lpMetrics As TEXTMETRIC) As Long
-Private Type TEXTMETRIC
-    tmHeight As Long
-    tmAscent As Long
-    tmDescent As Long
-    tmInternalLeading As Long
-    tmExternalLeading As Long
-    tmAveCharWidth As Long
-    tmMaxCharWidth As Long
-    tmWeight As Long
-    tmOverhang As Long
-    tmDigitizedAspectX As Long
-    tmDigitizedAspectY As Long
-    tmFirstChar As Byte
-    tmLastChar As Byte
-    tmDefaultChar As Byte
-    tmBreakChar As Byte
-    tmItalic As Byte
-    tmUnderlined As Byte
-    tmStruckOut As Byte
-    tmPitchAndFamily As Byte
-    tmCharSet As Byte
-End Type
 
 'Rather than use an StdFont container (which requires VB to create redundant font objects), we track font properties manually,
 ' via dedicated properties.
@@ -153,13 +126,9 @@ Attribute Enabled.VB_UserMemId = -514
 End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
-    
     UserControl.Enabled = newValue
     PropertyChanged "Enabled"
-    
-    'Redraw the control
-    redrawBackBuffer
-    
+    RedrawBackBuffer
 End Property
 
 'Color scheme should be left at default values *except* for image-only strips
@@ -168,16 +137,10 @@ Public Property Get ColorScheme() As PD_BTS_COLOR_SCHEME
 End Property
 
 Public Property Let ColorScheme(ByVal newScheme As PD_BTS_COLOR_SCHEME)
-    
     If m_ColoringMode <> newScheme Then
-        
         m_ColoringMode = newScheme
-        
-        'Redraw the control
-        redrawBackBuffer
-        
+        RedrawBackBuffer
     End If
-    
 End Property
 
 'Font settings are handled via dedicated properties, to avoid the need for an internal VB font object
@@ -204,12 +167,12 @@ Public Property Let FontSize(ByVal newSize As Single)
 End Property
 
 'When the control receives focus, if the focus isn't received via mouse click, display a focus rect around the active button
-Private Sub ucSupport_GotFocusReliable()
+Private Sub ucSupport_GotFocusAPI()
     
     'If the mouse is *not* over the user control, assume focus was set via keyboard
     If Not ucSupport.DoIHaveFocus Then
         m_FocusRectActive = m_ButtonIndex
-        redrawBackBuffer
+        RedrawBackBuffer
     End If
     
     RaiseEvent GotFocusAPI
@@ -217,12 +180,12 @@ Private Sub ucSupport_GotFocusReliable()
 End Sub
 
 'When the control loses focus, erase any focus rects it may have active
-Private Sub ucSupport_LostFocusReliable()
+Private Sub ucSupport_LostFocusAPI()
     
     'If a focus rect has been drawn, remove it now
     If (m_FocusRectActive >= 0) Then
         m_FocusRectActive = -1
-        redrawBackBuffer
+        RedrawBackBuffer
     End If
     
     RaiseEvent LostFocusAPI
@@ -245,7 +208,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
         If m_FocusRectActive >= m_numOfButtons Then m_FocusRectActive = 0
         
         'Redraw the button strip
-        redrawBackBuffer
+        RedrawBackBuffer
         
     ElseIf (vkCode = VK_LEFT) Then
     
@@ -260,7 +223,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
         If m_FocusRectActive < 0 Then m_FocusRectActive = m_numOfButtons - 1
         
         'Redraw the button strip
-        redrawBackBuffer
+        RedrawBackBuffer
         
     'If a focus rect is active, and space is pressed, activate the button with focus
     ElseIf (vkCode = VK_SPACE) Then
@@ -285,24 +248,18 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
     m_FocusRectActive = -1
     
     If Me.Enabled And (mouseClickIndex >= 0) Then
-            
         If m_ButtonIndex <> mouseClickIndex Then
             ListIndex = mouseClickIndex
         End If
-        
     End If
 
 End Sub
 
 'When the mouse leaves the UC, we must repaint the control (as it's no longer hovered)
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    
     m_ButtonHoverIndex = -1
-    redrawBackBuffer
-    
-    'Reset the cursor
+    RedrawBackBuffer
     ucSupport.RequestCursor IDC_DEFAULT
-    
 End Sub
 
 'When the mouse enters the clickable portion of the UC, we must repaint the hovered button
@@ -320,10 +277,10 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
         'If the mouse is not currently hovering a button, set a default arrow cursor and exit
         If mouseHoverIndex = -1 Then
             ucSupport.RequestCursor IDC_ARROW
-            redrawBackBuffer
+            RedrawBackBuffer
         Else
             ucSupport.RequestCursor IDC_HAND
-            redrawBackBuffer
+            RedrawBackBuffer
         End If
     
     End If
@@ -332,12 +289,12 @@ End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then UpdateControlLayout
-    redrawBackBuffer
+    RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
     UpdateControlLayout
-    redrawBackBuffer
+    RedrawBackBuffer
 End Sub
 
 'See if the mouse is over the clickable portion of the control
@@ -385,7 +342,7 @@ Public Property Let ListIndex(ByVal newIndex As Long)
         PropertyChanged "ListIndex"
         
         'Redraw the control; it's important to do this *before* raising the associated event, to maintain an impression of max responsiveness
-        redrawBackBuffer
+        RedrawBackBuffer
         
         'Notify the user of the change by raising the CLICK event
         RaiseEvent Click(newIndex)
@@ -435,7 +392,7 @@ Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long =
         m_Buttons(itemIndex).btCaptionTranslated = m_Buttons(itemIndex).btCaptionEn
     End If
     
-    'Erase any images assigned to this button
+    'Erase any images previously assigned to this button
     With m_Buttons(itemIndex)
         Set .btImages = Nothing
         .btImageWidth = 0
@@ -514,25 +471,15 @@ Private Sub UserControl_Initialize()
     
     m_FocusRectActive = -1
     m_ButtonHoverIndex = -1
-    
-    'Update the control size at least once
-    UpdateControlLayout
-                
+                    
 End Sub
 
 'Set default properties
 Private Sub UserControl_InitProperties()
-    
-    'Select the first button by default
     ListIndex = 0
-    
-    'Set default font properties
     m_FontBold = False
     m_FontSize = 10
-    
-    'Set default coloring scheme
     m_ColoringMode = CM_DEFAULT
-    
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -564,9 +511,8 @@ Private Sub UpdateControlLayout()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    'With the buffer prepared, we now need to figure out the size of individual buttons within the strip.  While we
-    ' could make these proportional to the text length of each button, I am instead taking the simpler route for now,
-    ' and making all buttons a uniform size.
+    'We now need to figure out the size of individual buttons within the strip.  While we could make these proportional
+    ' to the text length of each button, I am instead taking the simpler route for now, and making all buttons a uniform size.
     
     'Start by calculating a set size for each button.  We will calculate these as floating-point, to avoid compounded
     ' truncation errors as we move from button to button.
@@ -618,7 +564,7 @@ Private Sub UpdateControlLayout()
     Dim tmpPoint As POINTAPI
     Dim strWidth As Long, strHeight As Long
     
-    'Rather than create and manage our own font objects, we're simply going to borrow font objects from the global PD font cache.
+    'Rather than create and manage our own font object(s), we borrow font objects from the global PD font cache.
     Dim tmpFont As pdFont
     
     For i = 0 To m_numOfButtons - 1
@@ -641,7 +587,7 @@ Private Sub UpdateControlLayout()
             'Retrieve the expected size of the string, in pixels
             Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSize, m_FontBold)
             strWidth = tmpFont.GetWidthOfString(m_Buttons(i).btCaptionTranslated)
-                    
+            
             'If the string is too long for its containing button, activate word wrap and measure again
             If strWidth > buttonWidth Then
                 
@@ -658,7 +604,6 @@ Private Sub UpdateControlLayout()
                     m_Buttons(i).btFontSize = tmpFont.GetMaxFontSizeToFitStringWidth(m_Buttons(i).btCaptionTranslated, buttonWidth, m_FontSize)
                     Set tmpFont = Font_Management.GetMatchingUIFont(m_Buttons(i).btFontSize, m_FontBold)
                     strHeight = tmpFont.GetHeightOfString(m_Buttons(i).btCaptionTranslated)
-                    
                 End If
                 
             Else
@@ -683,13 +628,11 @@ Private Sub UpdateControlLayout()
                 
                 'Image...
                 Else
-                    
                     If strWidth < buttonWidth Then
                         .btCaptionRect.Left = .btBounds.Left + m_Buttons(i).btImageWidth + FixDPI(IMG_TEXT_PADDING)
                     Else
                         .btCaptionRect.Left = .btBounds.Left + m_Buttons(i).btImageWidth + FixDPI(IMG_TEXT_PADDING) * 2
                     End If
-                    
                 End If
                 
                 .btCaptionRect.Top = .btBounds.Top + (buttonHeight - strHeight) \ 2
@@ -724,25 +667,23 @@ Private Sub UpdateControlLayout()
     Next i
     
     'With all metrics successfully measured, we can now recreate the back buffer
-    redrawBackBuffer
+    If ucSupport.AmIVisible Then RedrawBackBuffer
             
 End Sub
 
+'Store all associated properties
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
-
-    'Store all associated properties
     With PropBag
         .WriteProperty "ListIndex", ListIndex, 0
         .WriteProperty "FontBold", m_FontBold, False
         .WriteProperty "FontSize", m_FontSize, 10
         .WriteProperty "ColorScheme", m_ColoringMode, CM_DEFAULT
     End With
-    
 End Sub
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
-Private Sub redrawBackBuffer()
+Private Sub RedrawBackBuffer()
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long, bWidth As Long, bHeight As Long
@@ -873,9 +814,11 @@ Private Sub redrawBackBuffer()
                     
                     'Text fits just fine, so use the control font size
                     If .btFontSize = 0 Then
+                        
                         Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSize, m_FontBold)
                         tmpFont.SetFontColor curColor
                         tmpFont.AttachToDC bufferDC
+                        tmpFont.SetTextAlignment vbLeftJustify
                         tmpFont.DrawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
                         tmpFont.ReleaseFromDC
                     
@@ -885,6 +828,7 @@ Private Sub redrawBackBuffer()
                         Set tmpFont = Font_Management.GetMatchingUIFont(.btFontSize, m_FontBold)
                         tmpFont.SetFontColor curColor
                         tmpFont.AttachToDC bufferDC
+                        tmpFont.SetTextAlignment vbLeftJustify
                         tmpFont.DrawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
                         tmpFont.ReleaseFromDC
                         
