@@ -174,8 +174,8 @@ Attribute hWnd.VB_UserMemId = -515
 End Property
 
 'Container hWnd must be exposed for external tooltip handling
-Public Property Get containerHwnd() As Long
-    containerHwnd = UserControl.containerHwnd
+Public Property Get ContainerHwnd() As Long
+    ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
 'The most relevant part of this control is this Value property, which is important since this button operates as a toggle.
@@ -213,7 +213,7 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
     If Len(resName) <> 0 Then loadResourceToDIB resName, srcDIB
     
     'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
-    ' (We also check for these != 0 to know if an image has been loaded.)
+    ' (We also check for these != 0 to verify that an image was successfully loaded.)
     m_ButtonWidth = srcDIB.getDIBWidth
     m_ButtonHeight = srcDIB.getDIBHeight
     
@@ -336,7 +336,7 @@ End Sub
 
 'To improve responsiveness, MouseDown is used instead of Click.
 ' (TODO: switch to MouseUp, so we have a chance to draw the down button state and provide some visual feedback)
-Private Sub ucSupport_MouseDownCustom(ByVal button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     If Me.Enabled Then
         
@@ -356,18 +356,18 @@ Private Sub ucSupport_MouseDownCustom(ByVal button As PDMouseButtonConstants, By
         
 End Sub
 
-Private Sub ucSupport_MouseEnter(ByVal button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     ucSupport.RequestCursor IDC_HAND
     RedrawBackBuffer
 End Sub
 
 'When the mouse leaves the UC, we must repaint the button (as it's no longer hovered)
-Private Sub ucSupport_MouseLeave(ByVal button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     ucSupport.RequestCursor IDC_DEFAULT
     RedrawBackBuffer
 End Sub
 
-Private Sub ucSupport_MouseUpCustom(ByVal button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
     
     'If toggle mode is active, remove the button's TRUE state and redraw it
     If m_AutoToggle And Value Then Value = False
@@ -464,7 +464,7 @@ Private Sub UpdateControlLayout()
         btImageCoords.x = (bWidth - m_ButtonWidth) \ 2
         btImageCoords.y = (bHeight - m_ButtonHeight) \ 2
     End If
-            
+    
 End Sub
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
@@ -492,7 +492,7 @@ Private Sub RedrawBackBuffer(Optional ByVal raiseImmediateDrawEvent As Boolean =
             Else
             
                 'In AutoToggle mode, use mouse state to determine coloring
-                If m_AutoToggle And ucSupport.IsMouseButtonDown(pdLeftButton) Then
+                If m_AutoToggle And ucSupport.isMouseButtonDown(pdLeftButton) Then
                     btnColorFill = g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
                     btnColorBorder = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
                 Else
@@ -568,6 +568,6 @@ End Sub
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    ucSupport.AssignTooltip UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
 

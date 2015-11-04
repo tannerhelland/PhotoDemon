@@ -1760,6 +1760,7 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
     'Create the target DIB
     Set GetRuntimeUIDIB = New pdDIB
     GetRuntimeUIDIB.createBlank dibSize, dibSize, 32, BackColor, 0
+    GetRuntimeUIDIB.setInitialAlphaPremultiplicationState True
     
     Dim paintColor As Long
     
@@ -1796,7 +1797,6 @@ Public Function GetRuntimeUIDIB(ByVal dibType As PD_RUNTIME_UI_DIB, Optional ByV
     'If the user requested any padding, apply it now
     If dibPadding > 0 Then padDIB GetRuntimeUIDIB, dibPadding
     
-
 End Function
 
 'New test functions to (hopefully) help address high-DPI issues where VB's internal scale properties report false values
@@ -1811,5 +1811,3 @@ Public Function APIHeight(ByVal srcHwnd As Long) As Long
     GetWindowRect srcHwnd, tmpRect
     APIHeight = tmpRect.y2 - tmpRect.y1
 End Function
-
-'
