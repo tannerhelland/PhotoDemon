@@ -1,7 +1,6 @@
 VERSION 5.00
 Begin VB.UserControl brushSelector 
    Appearance      =   0  'Flat
-   AutoRedraw      =   -1  'True
    BackColor       =   &H80000005&
    ClientHeight    =   1710
    ClientLeft      =   0
@@ -17,7 +16,8 @@ Begin VB.UserControl brushSelector
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
-   MousePointer    =   99  'Custom
+   HasDC           =   0   'False
+   HitBehavior     =   0  'None
    ScaleHeight     =   114
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   312
@@ -32,8 +32,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Brush Selector custom control
 'Copyright 2013-2015 by Tanner Helland
 'Created: 30/June/15
-'Last updated: 30/June/15
-'Last update: initial build
+'Last updated: 04/November/15
+'Last update: convert to master UC support class; add caption support; simplify rendering approach
 '
 'This thin user control is basically an empty control that when clicked, displays a brush selection window.  If a
 ' brush is selected (e.g. Cancel is not pressed), it updates its appearance to match, and raises a "BrushChanged"
@@ -54,17 +54,12 @@ Option Explicit
 'This control doesn't really do anything interesting, besides allow a brush to be selected.
 Public Event BrushChanged()
 
-'A specialized class handles mouse input for this control
-Private WithEvents cMouseEvents As pdInputMouse
-Attribute cMouseEvents.VB_VarHelpID = -1
-
-'Reliable focus detection requires a specialized subclasser
-Private WithEvents cFocusDetector As pdFocusDetector
-Attribute cFocusDetector.VB_VarHelpID = -1
+'Because VB focus events are wonky, especially when we use CreateWindow within a UC, this control raises its own
+' specialized focus events.  If you need to track focus, use these instead of the default VB functions.
 Public Event GotFocusAPI()
 Public Event LostFocusAPI()
 
-'The control's current brush settings
+'The control's current brush settings; this string is how we actually create the brush
 Private m_curBrush As String
 
 'A temporary filler object, used to render the brush preview
@@ -73,61 +68,114 @@ Private m_Filler As pdGraphicsBrush
 'When the "select brush" dialog is live, this will be set to TRUE
 Private isDialogLive As Boolean
 
-'A backing DIB is required for proper color management
-Private m_BackBuffer As pdDIB
+'The rectangle where the brush preview is actually rendered, and a boolean to track whether the mouse is inside that rect
+Private m_BrushRect As RECTF, m_MouseInsideBrushRect As Boolean
 
-'This value will be TRUE while the mouse is inside the UC
-Private m_MouseInsideUC As Boolean
+'User control support class.  Historically, many classes (and associated subclassers) were required by each user control,
+' but I've since attempted to wrap these into a single master control support class.
+Private WithEvents ucSupport As pdUCSupport
+Attribute ucSupport.VB_VarHelpID = -1
 
-Public Property Get hWnd() As Long
-    hWnd = UserControl.hWnd
-End Property
-
-'At present, all this control does is store a brush param string
+'At present, all this control does is store a brush XML string.  This string defines all brush settings.
 Public Property Get Brush() As String
     Brush = m_curBrush
 End Property
 
 Public Property Let Brush(ByVal newBrush As String)
-    
     m_curBrush = newBrush
-    
-    'Redraw the control to match
-    drawControl
-    
-    PropertyChanged "Brush"
+    RedrawBackBuffer
     RaiseEvent BrushChanged
-    
+    PropertyChanged "Brush"
+End Property
+
+'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
+' if present, will not be processed until run-time.
+' IMPORTANT NOTE: only the ENGLISH caption is returned.  I don't have a reason for returning a translated caption (if any),
+'                  but I can revisit in the future if it ever becomes relevant.
+Public Property Get Caption() As String
+Attribute Caption.VB_UserMemId = -518
+    Caption = ucSupport.GetCaptionText()
+End Property
+
+Public Property Let Caption(ByRef newCaption As String)
+    ucSupport.SetCaptionText newCaption
+    PropertyChanged "Caption"
+End Property
+
+'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
+Public Property Get Enabled() As Boolean
+Attribute Enabled.VB_UserMemId = -514
+    Enabled = UserControl.Enabled
+End Property
+
+Public Property Let Enabled(ByVal newValue As Boolean)
+    UserControl.Enabled = newValue
+    RedrawBackBuffer
+    PropertyChanged "Enabled"
+End Property
+
+Public Property Get FontSize() As Single
+    FontSize = ucSupport.GetCaptionFontSize()
+End Property
+
+Public Property Let FontSize(ByVal newSize As Single)
+    ucSupport.SetCaptionFontSize newSize
+    PropertyChanged "FontSize"
+End Property
+
+Public Property Get hWnd() As Long
+Attribute hWnd.VB_UserMemId = -515
+    hWnd = UserControl.hWnd
 End Property
 
 'Outside functions can call this to force a display of the brush selection window
-Public Sub displayBrushSelection()
-    UserControl_Click
+Public Sub DisplayBrushSelection()
+    RaiseBrushDialog
 End Sub
 
-Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    m_MouseInsideUC = True
-    drawControl
-    cMouseEvents.setSystemCursor IDC_HAND
+Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    UpdateMousePosition x, y
+    If m_MouseInsideBrushRect Then RaiseBrushDialog
 End Sub
 
-Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    m_MouseInsideUC = False
-    drawControl
-    cMouseEvents.setSystemCursor IDC_DEFAULT
+Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    UpdateMousePosition x, y
+    RedrawBackBuffer
 End Sub
 
-'When the control receives focus, relay the event externally
-Private Sub cFocusDetector_GotFocusReliable()
+Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    UpdateMousePosition -100, -100
+    RedrawBackBuffer
+End Sub
+
+Private Sub UpdateMousePosition(ByVal mouseX As Single, ByVal mouseY As Single)
+    m_MouseInsideBrushRect = Math_Functions.isPointInRectF(mouseX, mouseY, m_BrushRect)
+    If m_MouseInsideBrushRect Then ucSupport.RequestCursor IDC_HAND Else ucSupport.RequestCursor IDC_DEFAULT
+End Sub
+
+Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    UpdateMousePosition x, y
+    RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
 End Sub
 
-'When the control loses focus, relay the event externally
-Private Sub cFocusDetector_LostFocusReliable()
+Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
 End Sub
 
-Private Sub UserControl_Click()
+Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
+    If updateLayoutToo Then UpdateControlLayout
+    RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
+    UpdateControlLayout
+End Sub
+
+Private Sub RaiseBrushDialog()
 
     isDialogLive = True
     
@@ -149,108 +197,149 @@ End Sub
 Private Sub UserControl_Initialize()
 
     Set m_Filler = New pdGraphicsBrush
-    drawControl
     
-    If g_IsProgramRunning Then
+    'Initialize a master user control support class
+    Set ucSupport = New pdUCSupport
+    ucSupport.RegisterControl UserControl.hWnd
+    
+    'Request some additional input functionality (custom mouse events)
+    ucSupport.RequestExtraFunctionality True
+    
+    'Enable caption support, so we don't need an attached label
+    ucSupport.RequestCaptionSupport
         
-        'Initialize mouse handling
-        Set cMouseEvents = New pdInputMouse
-        cMouseEvents.addInputTracker UserControl.hWnd, True, , , True
-        cMouseEvents.setSystemCursor IDC_HAND
-        
-        'Also start a focus detector
-        Set cFocusDetector = New pdFocusDetector
-        cFocusDetector.startFocusTracking Me.hWnd
-        
-    End If
+    'In design mode, initialize a base theming class, so our paint functions don't fail
+    If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
+    
+    'Update the control size parameters at least once
+    UpdateControlLayout
     
 End Sub
 
 Private Sub UserControl_InitProperties()
     Brush = ""
+    Caption = ""
+    FontSize = 12
+End Sub
+
+'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
+Private Sub UserControl_Paint()
+    ucSupport.RequestIDERepaint UserControl.hDC
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-    Brush = PropBag.ReadProperty("curBrush", "")
+    With PropBag
+        Brush = .ReadProperty("curBrush", "")
+        Caption = .ReadProperty("Caption", "")
+        FontSize = .ReadProperty("FontSize", 12)
+    End With
 End Sub
 
 Private Sub UserControl_Resize()
-    drawControl
+    If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
-    PropBag.WriteProperty "curBrush", m_curBrush, ""
+    With PropBag
+        .WriteProperty "curBrush", m_curBrush, ""
+        .WriteProperty "Caption", ucSupport.GetCaptionText, ""
+        .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 12
+    End With
 End Sub
 
-'For flexibility, we draw our own borders.  I may decide to change this behavior in the future...
-Private Sub drawControl()
-        
-    'For color management to work, we must pre-render the control onto a DIB, then copy the DIB to the screen.
-    ' Using VB's internal draw commands leads to unpredictable results.
-    If m_BackBuffer Is Nothing Then Set m_BackBuffer = New pdDIB
+'Whenever a control property changes that affects control size or layout (including internal changes, like caption adjustments),
+' call this function to recalculate the control's internal layout
+Private Sub UpdateControlLayout()
     
-    If (m_BackBuffer.getDIBWidth <> UserControl.ScaleWidth) Or (m_BackBuffer.getDIBHeight <> UserControl.ScaleHeight) Then
-        m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24, 0
-    Else
-        m_BackBuffer.resetDIB
-    End If
+    'Retrieve DPI-aware control dimensions from the support class
+    Dim bWidth As Long, bHeight As Long
+    bWidth = ucSupport.GetBackBufferWidth
+    bHeight = ucSupport.GetBackBufferHeight
     
-    'Because so much of the rendering code requires GDI+, we can't do much in the IDE
-    If g_IsProgramRunning Then
+    'Next, determine the positioning of the caption, if present.  (ucSupport.GetCaptionBottom tells us where the
+    ' caption text ends vertically.)
+    If ucSupport.IsCaptionActive Then
         
-        'Render the brush first.  (Gradient brushes require a target width/height, which we want to be the same size as the control.)
-        Dim cBounds As RECTF
-        With cBounds
-            .Left = 0
-            .Top = 0
-            .Width = UserControl.ScaleWidth
-            .Height = UserControl.ScaleHeight
+        'The brush area is placed relative to the caption
+        With m_BrushRect
+            .Left = FixDPI(8)
+            .Top = ucSupport.GetCaptionBottom + 2
+            .Width = (bWidth - 2) - .Left
+            .Height = (bHeight - 2) - .Top
         End With
         
-        m_Filler.setBoundaryRect cBounds
+    'If there's no caption, allow the clickable portion to fill the entire control
+    Else
+        
+        With m_BrushRect
+            .Left = 1
+            .Top = 1
+            .Width = (bWidth - 2) - .Left
+            .Height = (bHeight - 2) - .Top
+        End With
+        
+    End If
+            
+End Sub
+
+'Primary rendering function.  Note that ucSupport handles a number of rendering duties (like maintaining a back buffer for us).
+Private Sub RedrawBackBuffer()
+        
+    'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
+    Dim bufferDC As Long
+    bufferDC = ucSupport.GetBackBufferDC(True)
+    
+    'NOTE: if a caption exists, it has already been drawn.  We just need to draw the clickable brush portion.
+    If g_IsProgramRunning Then
+        
+        'Render the brush first
+        m_Filler.setBoundaryRect m_BrushRect
         m_Filler.createBrushFromString Me.Brush
         
         Dim tmpBrush As Long
         tmpBrush = m_Filler.getBrushHandle
         
-        GDI_Plus.GDIPlusFillDIBRect_Pattern m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_CheckerboardPattern
-        GDI_Plus.GDIPlusFillDC_Brush m_BackBuffer.getDIBDC, tmpBrush, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight
+        With m_BrushRect
+            GDI_Plus.GDIPlusFillPatternToDC bufferDC, .Left, .Top, .Width, .Height, g_CheckerboardPattern
+            GDI_Plus.GDIPlusFillDC_Brush bufferDC, tmpBrush, .Left, .Top, .Width, .Height
+        End With
+        
         m_Filler.releaseBrushHandle tmpBrush
         
         'Draw borders around the brush results.
         Dim outlineColor As Long, outlineWidth As Long, outlineOffset As Long
         
-        If g_IsProgramRunning And m_MouseInsideUC Then
-            outlineColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+        If g_IsProgramRunning And m_MouseInsideBrushRect Then
+            outlineColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
             outlineWidth = 3
-            outlineOffset = 1
         Else
             outlineColor = vbBlack
             outlineWidth = 1
-            outlineOffset = 0
         End If
         
-        GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, 0, outlineOffset, UserControl.ScaleWidth - 1, outlineOffset, outlineColor, , outlineWidth, , LineCapFlat
-        GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, UserControl.ScaleWidth - 1 - outlineOffset, 0, UserControl.ScaleWidth - 1 - outlineOffset, UserControl.ScaleHeight - 1, outlineColor, , outlineWidth, , LineCapFlat
-        GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, UserControl.ScaleWidth - 1, UserControl.ScaleHeight - 1 - outlineOffset, 0, UserControl.ScaleHeight - 1 - outlineOffset, outlineColor, , outlineWidth, , LineCapFlat
-        GDIPlusDrawLineToDC m_BackBuffer.getDIBDC, outlineOffset, UserControl.ScaleHeight - 1, outlineOffset, 0, outlineColor, , outlineWidth, , LineCapFlat
+        GDI_Plus.GDIPlusDrawRectFOutlineToDC bufferDC, m_BrushRect, outlineColor, , outlineWidth, False, LineJoinMiter
         
-        'Render the completed DIB to the control.  (This is when color management takes place.)
-        ' (Note also that we use a g_IsProgramRunning check to prevent color management from firing at compile-time.)
-        If g_IsProgramRunning Then TurnOnDefaultColorManagement UserControl.hDC, UserControl.hWnd
-        BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
-    
-    Else
-        UserControl.BackColor = m_Filler.getBrushProperty(pgbs_PrimaryColor)
     End If
     
-    UserControl.Picture = UserControl.Image
-    UserControl.Refresh
+    'Paint the final result to the screen, as relevant
+    ucSupport.RequestRepaint
     
 End Sub
 
 'If a brush selection dialog is active, it will pass brush updates backward to this function, so that we can let
 ' our parent form display live updates *while the user is playing with brushes* - very cool!
-Public Sub notifyOfLiveBrushChange(ByVal newBrush As String)
+Public Sub NotifyOfLiveBrushChange(ByVal newBrush As String)
     Brush = newBrush
 End Sub
+
+'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
+Public Sub UpdateAgainstCurrentTheme()
+    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
+End Sub
+
+'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
+' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
+Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+End Sub
+
