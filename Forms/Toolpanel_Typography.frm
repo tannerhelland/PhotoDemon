@@ -243,9 +243,9 @@ Begin VB.Form toolpanel_FancyText
             Height          =   330
             Left            =   120
             TabIndex        =   36
-            Top             =   30
-            Width           =   3135
-            _ExtentX        =   5530
+            Top             =   60
+            Width           =   3255
+            _ExtentX        =   5741
             _ExtentY        =   582
             Caption         =   "fill text"
          End
@@ -265,9 +265,9 @@ Begin VB.Form toolpanel_FancyText
             Height          =   330
             Left            =   3480
             TabIndex        =   41
-            Top             =   30
-            Width           =   3135
-            _ExtentX        =   5530
+            Top             =   60
+            Width           =   3255
+            _ExtentX        =   5741
             _ExtentY        =   582
             Caption         =   "outline text"
          End
