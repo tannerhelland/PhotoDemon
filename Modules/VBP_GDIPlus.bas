@@ -1335,7 +1335,7 @@ End Function
 
 'Use GDI+ to fill a DC with a color and optional alpha value; while not as efficient as using GDI, this allows us to set the full
 ' DIB alpha in a single pass, which is important for 32-bpp DIBs.
-Public Function GDIPlusFillRectToDC(ByRef dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As CompositingMode = CompositingModeSourceOver, Optional ByVal useAA As Boolean = False) As Boolean
+Public Function GDIPlusFillRectToDC(ByVal dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As CompositingMode = CompositingModeSourceOver, Optional ByVal useAA As Boolean = False) As Boolean
 
     'Create a GDI+ copy of the image and request AA
     Dim hGraphics As Long
@@ -1357,6 +1357,46 @@ Public Function GDIPlusFillRectToDC(ByRef dstDC As Long, ByVal x1 As Single, ByV
     
     GDIPlusFillRectToDC = True
 
+End Function
+
+
+'Given a source DIB, fill it with the alpha checkerboard pattern.  32bpp images can then be alpha blended onto it.
+Public Function GDIPlusFillPatternToDC(ByVal dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByRef srcDIB As pdDIB, Optional ByVal fixBoundaryPainting As Boolean = False) As Boolean
+    
+    'Create a GDI+ copy of the image and request AA
+    Dim hGraphics As Long
+    GdipCreateFromHDC dstDC, hGraphics
+    GdipSetSmoothingMode hGraphics, SmoothingModeAntiAlias
+    GdipSetCompositingQuality hGraphics, CompositingQualityHighSpeed
+    GdipSetPixelOffsetMode hGraphics, PixelOffsetModeHighSpeed
+        
+    'Create a texture fill brush from the source image
+    Dim srcBitmap As Long, hBrush As Long
+    getGdipBitmapHandleFromDIB srcBitmap, srcDIB
+    GdipCreateTexture srcBitmap, WrapModeTile, hBrush
+    
+    'Because pattern fills are prone to boundary overflow when used with transparent overlays, the caller can
+    ' have us restrict painting to the interior integer region only.)
+    If fixBoundaryPainting Then
+        
+        Dim xDif As Single, yDif As Single
+        xDif = x1 - Int(x1)
+        yDif = y1 - Int(y1)
+        xWidth = Int(xWidth - xDif - 0.5)
+        yHeight = Int(yHeight - yDif - 0.5)
+        
+    End If
+    
+    'Apply the brush
+    GdipFillRectangle hGraphics, hBrush, x1, y1, xWidth, yHeight
+    
+    'Release all created objects
+    GdipDeleteBrush hBrush
+    GdipDisposeImage srcBitmap
+    GdipDeleteGraphics hGraphics
+    
+    GDIPlusFillPatternToDC = True
+    
 End Function
 
 'Use GDI+ to render a filled ellipse, with optional antialiasing

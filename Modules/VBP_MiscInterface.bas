@@ -1347,7 +1347,9 @@ Public Sub MakeFormPretty(ByRef tForm As Form, Optional ByVal useDoEvents As Boo
         If (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is pdHyperlink) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdCanvas) Or (TypeOf eControl Is colorSelector) Or (TypeOf eControl Is pdScrollBar) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdCanvas) Or (TypeOf eControl Is pdScrollBar) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is brushSelector) Or (TypeOf eControl Is gradientSelector) Or (TypeOf eControl Is penSelector) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdColorVariants) Or (TypeOf eControl Is pdColorWheel) Then eControl.UpdateAgainstCurrentTheme
         
         'STEP 3: remove TabStop from each picture box.  They should never receive focus, but I often forget to change this
         ' at design-time.
@@ -1360,13 +1362,10 @@ Public Sub MakeFormPretty(ByRef tForm As Form, Optional ByVal useDoEvents As Boo
         'Optionally, DoEvents can be called after each change.  This slows the process, but it allows external progress
         ' bars to be automatically refreshed.
         If useDoEvents Then DoEvents
-                
+        
     Next
     
-    'FORM STEP 2: subclass this form and force controls to render transparent borders properly.
-    'g_Themer.requestContainerSubclass tForm.hWnd
-    
-    'FORM STEP 3: translate the form (and all controls on it)
+    'FORM STEP 2: translate the form (and all controls on it)
     If g_Language.translationActive And tForm.Enabled Then
         g_Language.applyTranslations tForm, useDoEvents
     End If

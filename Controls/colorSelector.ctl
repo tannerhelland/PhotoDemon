@@ -115,13 +115,9 @@ Attribute Enabled.VB_UserMemId = -514
 End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
-    
     UserControl.Enabled = newValue
     PropertyChanged "Enabled"
-    
-    'Redraw the control
     RedrawBackBuffer
-    
 End Property
 
 Public Property Get FontSize() As Single
@@ -136,10 +132,6 @@ End Property
 'hWnds aren't exposed by default
 Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
-End Property
-
-Public Property Get ContainerHwnd() As Long
-    ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
 'Call this to force a display of the color window.  Note that it's *public*, so outside callers can raise dialogs, too.
@@ -204,12 +196,10 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     
 End Sub
 
-'When the control receives focus, relay the event externally
 Private Sub ucSupport_GotFocusAPI()
     RaiseEvent GotFocusAPI
 End Sub
 
-'When the control loses focus, relay the event externally
 Private Sub ucSupport_LostFocusAPI()
     RaiseEvent LostFocusAPI
 End Sub
@@ -442,17 +432,7 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
     
-    If g_IsProgramRunning Then
-        
-        'The support class handles most of this for us
-        ucSupport.UpdateAgainstThemeAndLanguage
-        
-        'Re-enable color management for the underlying UC.
-        ' TODO: move this to the master support class, so we gain support across all UCs.  (However, this has performance implications;
-        '       I'm waiting until the user has a way to disable it if it crushes UI performance.)
-        Color_Management.TurnOnDefaultColorManagement UserControl.hDC, UserControl.hWnd
-        
-    End If
+    If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
     
     'If theme changes require us to redraw our control, the support class will raise additional paint events for us.
     
