@@ -491,7 +491,7 @@ Private Sub VerifyFontSize()
         m_FontSizeVerified = True
         
     Else
-        Debug.Print "WARNING!  pdCaption.verifyFontSize was called, but the container width is unknown!"
+        'Debug.Print "WARNING!  pdCaption.verifyFontSize was called, but the container width is unknown!"
         m_FontSizeVerified = False
     End If
 
