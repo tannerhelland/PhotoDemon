@@ -109,10 +109,10 @@ Private Type buttonEntry
     btCaptionTranslated As String   'Current button caption, translated into the active language (if English is active, this is a copy of btCaptionEn)
     btBounds As RECT                'Boundaries of this button (full clickable area, inclusive - meaning 1px border NOT included)
     btCaptionRect As RECT           'Bounding rect of the caption.  This is dynamically calculated by the UpdateControlLayout function
-    btImage As pdDIB                'Optional image to use with the button.
-    btImageDisabled As pdDIB        'Auto-created disabled version of the image
-    btImageHover As pdDIB           'Auto-created hover (glow) version of the image
-    btImageCoords As POINTAPI       '(x, y) position of the button image, if any
+    btImages As pdDIB               'Optional image(s) to use with the button; this class is ignored if the button has no image
+    btImageWidth As Long            'If an image is loaded, these will store the image's width and height
+    btImageHeight As Long
+    btImageCoords As POINTAPI       '(x, y) position where the button image is painted (if an image exists)
     btFontSize As Single            'If a button caption fits just fine, this value is 0.  If a translation is active and a button caption must be shrunk,
                                     ' this value will be non-zero, and the button renderer must use it when rendering the button.
 End Type
@@ -158,7 +158,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     PropertyChanged "Enabled"
     
     'Redraw the control
-    RedrawBackBuffer
+    redrawBackBuffer
     
 End Property
 
@@ -174,7 +174,7 @@ Public Property Let ColorScheme(ByVal newScheme As PD_BTS_COLOR_SCHEME)
         m_ColoringMode = newScheme
         
         'Redraw the control
-        RedrawBackBuffer
+        redrawBackBuffer
         
     End If
     
@@ -209,7 +209,7 @@ Private Sub ucSupport_GotFocusReliable()
     'If the mouse is *not* over the user control, assume focus was set via keyboard
     If Not ucSupport.DoIHaveFocus Then
         m_FocusRectActive = m_ButtonIndex
-        RedrawBackBuffer
+        redrawBackBuffer
     End If
     
     RaiseEvent GotFocusAPI
@@ -222,7 +222,7 @@ Private Sub ucSupport_LostFocusReliable()
     'If a focus rect has been drawn, remove it now
     If (m_FocusRectActive >= 0) Then
         m_FocusRectActive = -1
-        RedrawBackBuffer
+        redrawBackBuffer
     End If
     
     RaiseEvent LostFocusAPI
@@ -245,7 +245,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
         If m_FocusRectActive >= m_numOfButtons Then m_FocusRectActive = 0
         
         'Redraw the button strip
-        RedrawBackBuffer
+        redrawBackBuffer
         
     ElseIf (vkCode = VK_LEFT) Then
     
@@ -260,7 +260,7 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
         If m_FocusRectActive < 0 Then m_FocusRectActive = m_numOfButtons - 1
         
         'Redraw the button strip
-        RedrawBackBuffer
+        redrawBackBuffer
         
     'If a focus rect is active, and space is pressed, activate the button with focus
     ElseIf (vkCode = VK_SPACE) Then
@@ -298,7 +298,7 @@ End Sub
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     
     m_ButtonHoverIndex = -1
-    RedrawBackBuffer
+    redrawBackBuffer
     
     'Reset the cursor
     ucSupport.RequestCursor IDC_DEFAULT
@@ -320,10 +320,10 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
         'If the mouse is not currently hovering a button, set a default arrow cursor and exit
         If mouseHoverIndex = -1 Then
             ucSupport.RequestCursor IDC_ARROW
-            RedrawBackBuffer
+            redrawBackBuffer
         Else
             ucSupport.RequestCursor IDC_HAND
-            RedrawBackBuffer
+            redrawBackBuffer
         End If
     
     End If
@@ -332,12 +332,12 @@ End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then UpdateControlLayout
-    RedrawBackBuffer
+    redrawBackBuffer
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
     UpdateControlLayout
-    RedrawBackBuffer
+    redrawBackBuffer
 End Sub
 
 'See if the mouse is over the clickable portion of the control
@@ -385,7 +385,7 @@ Public Property Let ListIndex(ByVal newIndex As Long)
         PropertyChanged "ListIndex"
         
         'Redraw the control; it's important to do this *before* raising the associated event, to maintain an impression of max responsiveness
-        RedrawBackBuffer
+        redrawBackBuffer
         
         'Notify the user of the change by raising the CLICK event
         RaiseEvent Click(newIndex)
@@ -435,10 +435,12 @@ Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long =
         m_Buttons(itemIndex).btCaptionTranslated = m_Buttons(itemIndex).btCaptionEn
     End If
     
-    'Erase any button references
-    Set m_Buttons(i).btImage = Nothing
-    Set m_Buttons(i).btImageDisabled = Nothing
-    Set m_Buttons(i).btImageHover = Nothing
+    'Erase any images assigned to this button
+    With m_Buttons(itemIndex)
+        Set .btImages = Nothing
+        .btImageWidth = 0
+        .btImageHeight = 0
+    End With
     
     'Before we can redraw the control, we need to recalculate all button positions - do that now!
     UpdateControlLayout
@@ -451,23 +453,46 @@ Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As 
     'Load the requested resource DIB, as necessary
     If Len(resName) <> 0 Then loadResourceToDIB resName, srcDIB
     
-    With m_Buttons(itemIndex)
-        
-        'Start by making a copy of the source DIB
-        Set .btImage = New pdDIB
-        .btImage.createFromExistingDIB srcDIB
-        
-        'Next, create a grayscale copy of the image for the disabled state
-        Set .btImageDisabled = New pdDIB
-        .btImageDisabled.createFromExistingDIB .btImage
-        GrayscaleDIB .btImageDisabled, True
-        
-        'Finally, create a "glowy" hovered version of the image
-        Set .btImageHover = New pdDIB
-        .btImageHover.createFromExistingDIB .btImage
-        ScaleDIBRGBValues .btImageHover, UC_HOVER_BRIGHTNESS, True
+    'Cache the width and height of the DIB; it serves as our reference measurements for subsequent blt operations.
+    ' (We also check for these != 0 to verify that an image was successfully loaded.)
+    m_Buttons(itemIndex).btImageWidth = srcDIB.getDIBWidth
+    m_Buttons(itemIndex).btImageHeight = srcDIB.getDIBHeight
     
+    'Create a vertical sprite-sheet DIB, and mark it as having premultiplied alpha
+    If m_Buttons(itemIndex).btImages Is Nothing Then Set m_Buttons(itemIndex).btImages = New pdDIB
+    
+    With m_Buttons(itemIndex)
+        .btImages.createBlank .btImageWidth, .btImageHeight * 3, srcDIB.getDIBColorDepth, 0, 0
+        .btImages.setInitialAlphaPremultiplicationState True
+    
+        'Copy this normal-state DIB into place at the top of the sheet
+        BitBlt .btImages.getDIBDC, 0, 0, .btImageWidth, .btImageHeight, srcDIB.getDIBDC, 0, 0, vbSrcCopy
+        
+        'Next, make a copy of the source DIB.
+        Dim tmpDIB As pdDIB
+        Set tmpDIB = New pdDIB
+        tmpDIB.createFromExistingDIB srcDIB
+        
+        'Convert this to a brighter, "glowing" version; we'll use this when rendering a hovered state.
+        ScaleDIBRGBValues tmpDIB, UC_HOVER_BRIGHTNESS, True
+        
+        'Copy this DIB into position #2, beneath the base DIB
+        BitBlt .btImages.getDIBDC, 0, .btImageHeight, .btImageWidth, .btImageHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+        
+        'Finally, create a grayscale copy of the original image.  This will serve as the "disabled state" copy.
+        tmpDIB.createFromExistingDIB srcDIB
+        GrayscaleDIB tmpDIB, True
+        
+        'Place it into position #3, beneath the previous two DIBs
+        BitBlt .btImages.getDIBDC, 0, .btImageHeight * 2, .btImageWidth, .btImageHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+        
+        'Free whatever DIBs we can.  (If the caller passed us the source DIB, we trust them to release it.)
+        Set tmpDIB = Nothing
+        If Len(resName) <> 0 Then Set srcDIB = Nothing
     End With
+    
+    'Update the control layout to account for this new button
+    UpdateControlLayout
 
 End Sub
 
@@ -609,8 +634,8 @@ Private Sub UpdateControlLayout()
         
             'If a button has an image, we have to alter its sizing somewhat.  To make sure word-wrap is calculated correctly,
             ' remove the width of the image, plus padding, in advance.
-            If Not (m_Buttons(i).btImage Is Nothing) Then
-                buttonWidth = buttonWidth - (m_Buttons(i).btImage.getDIBWidth + FixDPI(IMG_TEXT_PADDING))
+            If Not (m_Buttons(i).btImages Is Nothing) Then
+                buttonWidth = buttonWidth - (m_Buttons(i).btImageWidth + FixDPI(IMG_TEXT_PADDING))
             End If
             
             'Retrieve the expected size of the string, in pixels
@@ -653,16 +678,16 @@ Private Sub UpdateControlLayout()
             If Len(.btCaptionTranslated) <> 0 Then
             
                 'No image...
-                If (.btImage Is Nothing) Then
+                If (.btImages Is Nothing) Then
                     .btCaptionRect.Left = .btBounds.Left
                 
                 'Image...
                 Else
                     
                     If strWidth < buttonWidth Then
-                        .btCaptionRect.Left = .btBounds.Left + m_Buttons(i).btImage.getDIBWidth + FixDPI(IMG_TEXT_PADDING)
+                        .btCaptionRect.Left = .btBounds.Left + m_Buttons(i).btImageWidth + FixDPI(IMG_TEXT_PADDING)
                     Else
-                        .btCaptionRect.Left = .btBounds.Left + m_Buttons(i).btImage.getDIBWidth + FixDPI(IMG_TEXT_PADDING) * 2
+                        .btCaptionRect.Left = .btBounds.Left + m_Buttons(i).btImageWidth + FixDPI(IMG_TEXT_PADDING) * 2
                     End If
                     
                 End If
@@ -674,7 +699,7 @@ Private Sub UpdateControlLayout()
             End If
         
             'Calculate a position for the button image, if any
-            If Not (.btImage Is Nothing) Then
+            If Not (.btImages Is Nothing) Then
                 
                 'X-positioning is dependent on the presence of a caption.  If a caption exists, it gets placement preference.
                 If Len(.btCaptionTranslated) <> 0 Then
@@ -687,10 +712,10 @@ Private Sub UpdateControlLayout()
                     
                 'If no caption exists, center the image horizontally
                 Else
-                    .btImageCoords.x = .btBounds.Left + ((.btBounds.Right - .btBounds.Left) - .btImage.getDIBWidth) \ 2
+                    .btImageCoords.x = .btBounds.Left + ((.btBounds.Right - .btBounds.Left) - .btImageWidth) \ 2
                 End If
                 
-                .btImageCoords.y = .btBounds.Top + (buttonHeight - .btImage.getDIBHeight) \ 2
+                .btImageCoords.y = .btBounds.Top + (buttonHeight - .btImageHeight) \ 2
             
             End If
         
@@ -699,7 +724,7 @@ Private Sub UpdateControlLayout()
     Next i
     
     'With all metrics successfully measured, we can now recreate the back buffer
-    RedrawBackBuffer
+    redrawBackBuffer
             
 End Sub
 
@@ -717,7 +742,7 @@ End Sub
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
-Private Sub RedrawBackBuffer()
+Private Sub redrawBackBuffer()
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long, bWidth As Long, bHeight As Long
@@ -868,18 +893,18 @@ Private Sub RedrawBackBuffer()
                 End If
                 
                 'Paint the button image, if any
-                If Not (.btImage Is Nothing) Then
+                If Not (.btImages Is Nothing) Then
                     
                     If Me.Enabled Then
                     
                         If i = m_ButtonHoverIndex Then
-                            .btImageHover.alphaBlendToDC bufferDC, 255, .btImageCoords.x, .btImageCoords.y
+                            .btImages.alphaBlendToDCEx bufferDC, .btImageCoords.x, .btImageCoords.y, .btImageWidth, .btImageHeight, 0, .btImageHeight, .btImageWidth, .btImageHeight
                         Else
-                            .btImage.alphaBlendToDC bufferDC, 255, .btImageCoords.x, .btImageCoords.y
+                            .btImages.alphaBlendToDCEx bufferDC, .btImageCoords.x, .btImageCoords.y, .btImageWidth, .btImageHeight, 0, 0, .btImageWidth, .btImageHeight
                         End If
                         
                     Else
-                        .btImageDisabled.alphaBlendToDC bufferDC, 255, .btImageCoords.x, .btImageCoords.y
+                        .btImages.alphaBlendToDCEx bufferDC, .btImageCoords.x, .btImageCoords.y, .btImageWidth, .btImageHeight, 0, .btImageHeight * 2, .btImageWidth, .btImageHeight
                     End If
                     
                 End If

@@ -729,7 +729,7 @@ Private Sub Form_Load()
     btsChannel.AssignImageToItem 1, "", Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_GREEN, 16, 2)
     btsChannel.AssignImageToItem 2, "", Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_BLUE, 16, 2)
     btsChannel.AssignImageToItem 3, "", Interface.GetRuntimeUIDIB(PDRUID_CHANNEL_RGB, 24, 2)
-        
+    
     'Populate the histogram display options
     btsHistogram.AddItem "none", 0
     btsHistogram.AddItem "standard", 1
