@@ -282,7 +282,7 @@ End Function
 Public Function ConvertSystemColor(ByVal colorRef As OLE_COLOR) As Long
     
     'OleTranslateColor returns -1 if it fails; if that happens, default to white
-    If OleTranslateColor(colorRef, 0, ConvertSystemColor) Then
+    If OleTranslateColor(colorRef, 0&, ConvertSystemColor) = -1 Then
         ConvertSystemColor = RGB(255, 255, 255)
     End If
     
@@ -290,7 +290,7 @@ End Function
 
 'Extract the red, green, or blue value from an RGB() Long
 Public Function ExtractR(ByVal currentColor As Long) As Integer
-    ExtractR = currentColor Mod 256
+    ExtractR = currentColor And 255
 End Function
 
 Public Function ExtractG(ByVal currentColor As Long) As Integer
@@ -933,6 +933,7 @@ End Function
 
 'Given an RGB triplet (Long-type), return a matching hex representation.
 Public Function getHexStringFromRGB(ByVal srcRGB As Long) As String
+    srcRGB = Color_Functions.ConvertSystemColor(srcRGB)
     getHexStringFromRGB = getHexFromByte(ExtractR(srcRGB)) & getHexFromByte(ExtractG(srcRGB)) & getHexFromByte(ExtractB(srcRGB))
 End Function
 
