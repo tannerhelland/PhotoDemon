@@ -1218,7 +1218,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 ShowPDDialog vbModal, FormExposure
             Else
-                FormExposure.Exposure cParams.GetDouble(1)
+                FormExposure.Exposure cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3)
             End If
         
         Case "HDR"
