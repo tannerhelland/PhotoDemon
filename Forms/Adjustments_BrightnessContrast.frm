@@ -38,7 +38,7 @@ Begin VB.Form FormBrightnessContrast
       Height          =   330
       Left            =   6120
       TabIndex        =   3
-      Top             =   3600
+      Top             =   3840
       Width           =   5775
       _ExtentX        =   10186
       _ExtentY        =   582
@@ -54,10 +54,10 @@ Begin VB.Form FormBrightnessContrast
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltBright 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   1
-      Top             =   1920
+      Top             =   1680
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -67,7 +67,7 @@ Begin VB.Form FormBrightnessContrast
       Value           =   -10
    End
    Begin PhotoDemon.sliderTextCombo sltContrast 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   2760

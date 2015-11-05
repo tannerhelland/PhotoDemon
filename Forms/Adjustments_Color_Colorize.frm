@@ -54,7 +54,7 @@ Begin VB.Form FormColorize
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltHue 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   1800
@@ -200,7 +200,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ColorizeImage sltHue.Value, CBool(chkSaturation), True, fxPreview
+    If cmdBar.previewsAllowed Then ColorizeImage sltHue.Value, CBool(chkSaturation.Value), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

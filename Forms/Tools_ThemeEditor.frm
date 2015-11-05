@@ -24,6 +24,17 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.smartCheckBox chkTest 
+      Height          =   375
+      Index           =   0
+      Left            =   10560
+      TabIndex        =   19
+      Top             =   6480
+      Width           =   2655
+      _ExtentX        =   4683
+      _ExtentY        =   661
+      Caption         =   "Here is my caption.  It's way too long."
+   End
    Begin PhotoDemon.colorSelector colorSelector1 
       Height          =   855
       Left            =   10560

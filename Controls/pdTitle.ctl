@@ -148,11 +148,6 @@ Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
 
-'Container hWnd must be exposed for external tooltip handling
-Public Property Get ContainerHwnd() As Long
-    ContainerHwnd = UserControl.ContainerHwnd
-End Property
-
 'State is toggled on each click.  TRUE means the accompanying panel should be OPEN.
 Public Property Get Value() As Boolean
     Value = m_TitleState
@@ -205,7 +200,6 @@ End Sub
 
 'When the mouse leaves the UC, we must repaint the button (as it's no longer hovered)
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    ucSupport.RequestCursor IDC_DEFAULT
     RedrawBackBuffer
 End Sub
 
@@ -231,7 +225,6 @@ Private Sub UserControl_AccessKeyPress(KeyAscii As Integer)
     RaiseEvent Click(m_TitleState)
 End Sub
 
-'INITIALIZE control
 Private Sub UserControl_Initialize()
     
     'Initialize a master user control support class

@@ -71,8 +71,8 @@ Private Type tagWINDOWPOS
     hWndInsertAfter As Long
     x As Long
     y As Long
-    cX As Long
-    cY As Long
+    cx As Long
+    cy As Long
     wFlags As Long
 End Type
 Private Const SWP_HIDEWINDOW As Long = &H80&
@@ -264,6 +264,10 @@ Public Function GetCaptionText() As String
     GetCaptionText = m_Caption.GetCaptionEn()
 End Function
 
+Public Function GetCaptionTextTranslated() As String
+    GetCaptionTextTranslated = m_Caption.GetCaptionTranslated()
+End Function
+
 Public Sub SetCaptionText(Optional ByVal newCaption As String = "")
     
     'If m_Caption Is Nothing Then Set m_Caption = New pdCaption
@@ -368,6 +372,13 @@ Public Sub SetCaptionCustomPosition(Optional ByVal newLeft As Long = 0, Optional
             .Bottom = newTop + newHeight
         End With
         
+    End If
+    
+    'Immediately notify the caption support class of this boundary rect
+    If m_CustomCaptionRectActive Then
+        m_Caption.SetControlSize m_CustomCaptionRect.Right - m_CustomCaptionRect.Left, m_CustomCaptionRect.Bottom - m_CustomCaptionRect.Top
+    Else
+        m_Caption.SetControlSize m_Width, m_Height
     End If
 
 End Sub
