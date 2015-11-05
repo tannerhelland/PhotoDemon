@@ -31,9 +31,9 @@ Begin VB.Form FormEdgeEnhance
       TabIndex        =   0
       Top             =   5775
       Width           =   12195
-      _ExtentX        =   21511
-      _ExtentY        =   1323
-      BackColor       =   14802140
+      _extentx        =   21511
+      _extenty        =   1323
+      backcolor       =   14802140
    End
    Begin VB.ListBox LstEdgeOptions 
       BeginProperty Font 
@@ -58,8 +58,8 @@ Begin VB.Form FormEdgeEnhance
       TabIndex        =   3
       Top             =   120
       Width           =   5625
-      _ExtentX        =   9922
-      _ExtentY        =   9922
+      _extentx        =   9922
+      _extenty        =   9922
    End
    Begin PhotoDemon.smartCheckBox chkDirection 
       Height          =   360
@@ -84,7 +84,7 @@ Begin VB.Form FormEdgeEnhance
       Caption         =   "vertical"
    End
    Begin PhotoDemon.sliderTextCombo sltStrength 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   7
       Top             =   4560
@@ -661,8 +661,8 @@ Private Sub changeCheckboxActivation(ByVal toEnable As Boolean)
     'Activate both directions, then disable the checkboxes
     Else
     
-        If Not chkDirection(0) Then chkDirection(0).Value = vbChecked
-        If Not chkDirection(1) Then chkDirection(1).Value = vbChecked
+        If Not CBool(chkDirection(0).Value) Then chkDirection(0).Value = vbChecked
+        If Not CBool(chkDirection(1).Value) Then chkDirection(1).Value = vbChecked
         
         chkDirection(0).Enabled = False
         chkDirection(1).Enabled = False
@@ -674,9 +674,9 @@ End Sub
 'Convert the directionality checkboxes to PD's internal edge detection definitions
 Private Function getDirectionality() As PD_EDGE_DETECTION_DIRECTION
 
-    If CBool(chkDirection(0)) And Not CBool(chkDirection(1)) Then
+    If CBool(chkDirection(0).Value) And Not CBool(chkDirection(1).Value) Then
         getDirectionality = PD_EDGE_DIR_HORIZONTAL
-    ElseIf CBool(chkDirection(1)) And Not CBool(chkDirection(0)) Then
+    ElseIf CBool(chkDirection(1).Value) And Not CBool(chkDirection(0).Value) Then
         getDirectionality = PD_EDGE_DIR_VERTICAL
     Else
         getDirectionality = PD_EDGE_DIR_ALL

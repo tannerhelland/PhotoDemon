@@ -1359,6 +1359,31 @@ Public Function GDIPlusFillRectToDC(ByVal dstDC As Long, ByVal x1 As Single, ByV
 
 End Function
 
+'Use GDI+ to fill a DC with a color and optional alpha value; while not as efficient as using GDI, this allows us to set the full
+' DIB alpha in a single pass, which is important for 32-bpp DIBs.
+Public Function GDIPlusFillRectFToDC(ByVal dstDC As Long, ByRef srcRect As RECTF, ByVal eColor As Long, Optional ByVal eTransparency As Long = 255, Optional ByVal dstFillMode As CompositingMode = CompositingModeSourceOver, Optional ByVal useAA As Boolean = False) As Boolean
+
+    'Create a GDI+ copy of the image and request AA
+    Dim hGraphics As Long
+    GdipCreateFromHDC dstDC, hGraphics
+    
+    If useAA Then GdipSetSmoothingMode hGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode hGraphics, SmoothingModeNone
+    GdipSetCompositingMode hGraphics, dstFillMode
+    
+    'Create a solid fill brush using the specified color
+    Dim hBrush As Long
+    GdipCreateSolidFill fillQuadWithVBRGB(eColor, eTransparency), hBrush
+    
+    'Apply the brush
+    GdipFillRectangle hGraphics, hBrush, srcRect.Left, srcRect.Top, srcRect.Width, srcRect.Height
+    
+    'Release all created objects
+    GdipDeleteBrush hBrush
+    GdipDeleteGraphics hGraphics
+    
+    GDIPlusFillRectFToDC = True
+
+End Function
 
 'Given a source DIB, fill it with the alpha checkerboard pattern.  32bpp images can then be alpha blended onto it.
 Public Function GDIPlusFillPatternToDC(ByVal dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByRef srcDIB As pdDIB, Optional ByVal fixBoundaryPainting As Boolean = False) As Boolean
