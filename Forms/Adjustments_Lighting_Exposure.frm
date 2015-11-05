@@ -40,19 +40,19 @@ Begin VB.Form FormExposure
       BackColor       =   &H80000005&
       ForeColor       =   &H80000008&
       Height          =   2415
-      Left            =   8280
+      Left            =   8400
       ScaleHeight     =   159
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   231
+      ScaleWidth      =   223
       TabIndex        =   3
-      Top             =   480
-      Width           =   3495
+      Top             =   240
+      Width           =   3375
    End
    Begin PhotoDemon.sliderTextCombo sltExposure 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
-      Top             =   3720
+      Top             =   2880
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -71,6 +71,35 @@ Begin VB.Form FormExposure
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
+   Begin PhotoDemon.sliderTextCombo sltOffset 
+      Height          =   705
+      Left            =   6000
+      TabIndex        =   5
+      Top             =   3720
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "offset"
+      Min             =   -1
+      Max             =   1
+      SigDigits       =   2
+   End
+   Begin PhotoDemon.sliderTextCombo sltGamma 
+      Height          =   705
+      Left            =   6000
+      TabIndex        =   6
+      Top             =   4560
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "gamma"
+      Min             =   0.01
+      Max             =   2
+      SigDigits       =   2
+      Value           =   1
+      NotchPosition   =   2
+      NotchValueCustom=   1
+   End
    Begin VB.Label lblTitle 
       BackStyle       =   0  'Transparent
       Caption         =   "new exposure curve:"
@@ -86,10 +115,10 @@ Begin VB.Form FormExposure
       ForeColor       =   &H00404040&
       Height          =   1005
       Index           =   2
-      Left            =   5880
+      Left            =   6000
       TabIndex        =   4
-      Top             =   1530
-      Width           =   2280
+      Top             =   1320
+      Width           =   2220
       WordWrap        =   -1  'True
    End
 End
@@ -100,12 +129,12 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Exposure Dialog
-'Copyright 2013-2015 by audioglider and Tanner Helland
+'Copyright 2013-2015 by Audioglider and Tanner Helland
 'Created: 13/July/13
-'Last updated: 09/August/13
-'Last update: rewrote the exposure calculation to operate on a "stops" (power-of-2) scale
+'Last updated: 05/November/15
+'Last update: add the other (non-exposure, but whatevs) controls provided by Photoshop's exposure dialog
 '
-'Many thanks to talented contributer audioglider for creating this tool.
+'Many thanks to talented contributer Audioglider for creating this tool.
 '
 'Basic image exposure adjustment dialog.  Exposure is a complex topic in photography, and (obviously) the best way to
 ' adjust it is at image capture time.  This is because true exposure relies on a number of variables (see
@@ -120,6 +149,9 @@ Attribute VB_Exposed = False
 ' For more information on exposure compensation, see
 ' http://en.wikipedia.org/wiki/Exposure_value#Exposure_compensation_in_EV
 '
+'Also, I have mixed feelings about dumping brightness and gamma corrections on this dialog, but Photoshop does it,
+' so we may as well, too.  (They can always be ignored if you just want "pure" exposure correction.)
+'
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
 '
@@ -131,7 +163,7 @@ Option Explicit
 ' PRIMARY INPUT: exposureAdjust represents the number of stops to correct the image.  Each stop corresponds to a power-of-2
 '                 increase (+values) or decrease (-values) in luminance.  Thus an EV of -1 will cut the amount of light in
 '                 half, while an EV of +1 will double the amount of light.
-Public Sub Exposure(ByVal exposureAdjust As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub Exposure(ByVal exposureAdjust As Double, ByVal offsetAdjust As Double, ByVal gammaAdjust As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     If Not toPreview Then Message "Adjusting image exposure..."
     
@@ -166,14 +198,7 @@ Public Sub Exposure(ByVal exposureAdjust As Double, Optional ByVal toPreview As 
     Dim tmpVal As Double
     
     For x = 0 To 255
-        tmpVal = x / 255
-        tmpVal = tmpVal * 2 ^ (exposureAdjust)
-        tmpVal = tmpVal * 255
-        
-        If tmpVal > 255 Then tmpVal = 255
-        If tmpVal < 0 Then tmpVal = 0
-        
-        gLookUp(x) = tmpVal
+        gLookUp(x) = GetCorrectedValue(x, 255, exposureAdjust, offsetAdjust, gammaAdjust)
     Next x
     
     'Loop through each pixel in the image, converting values as we go
@@ -209,12 +234,44 @@ Public Sub Exposure(ByVal exposureAdjust As Double, Optional ByVal toPreview As 
 
 End Sub
 
+Private Function GetCorrectedValue(ByVal inputVal As Single, ByVal inputMax As Single, ByVal newExposure As Single, ByVal newOffset As Single, ByVal newGamma As Single) As Double
+    
+    Dim tmpCalculation As Double
+    
+    'Convert incoming value to the [0, 1] scale
+    tmpCalculation = inputVal / inputMax
+    
+    'Apply exposure (simple power-of-two calculation)
+    tmpCalculation = tmpCalculation * 2# ^ (newExposure)
+    
+    'Apply offset (brightness)
+    tmpCalculation = tmpCalculation + newOffset
+    
+    'Apply gamma
+    If newGamma = 0 Then newGamma = 0.01
+    If tmpCalculation > 0 Then tmpCalculation = tmpCalculation ^ (1 / newGamma)
+    
+    'Return to the original [0, inputMax] scale
+    tmpCalculation = tmpCalculation * inputMax
+    
+    'Apply clipping
+    If tmpCalculation < 0 Then tmpCalculation = 0
+    If tmpCalculation > inputMax Then tmpCalculation = inputMax
+    
+    GetCorrectedValue = tmpCalculation
+    
+End Function
+
 Private Sub cmdBar_OKClick()
-    Process "Exposure", , buildParams(sltExposure), UNDO_LAYER
+    Process "Exposure", , buildParams(sltExposure, sltOffset, sltGamma), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
+End Sub
+
+Private Sub cmdBar_ResetClick()
+    sltGamma.Value = 1#
 End Sub
 
 Private Sub Form_Activate()
@@ -223,7 +280,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Draw a preview of the effect
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -231,15 +288,10 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-'Update the preview whenever the combination slider/text control has its value changed
-Private Sub sltExposure_Change()
-    updatePreview
-End Sub
-
 'Redrawing a preview of the exposure effect also redraws the exposure curve (which isn't really a curve, but oh well)
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     
-    If cmdBar.previewsAllowed And sltExposure.IsValid Then
+    If cmdBar.previewsAllowed And sltExposure.IsValid And sltOffset.IsValid And sltGamma.IsValid Then
     
         Dim prevX As Double, prevY As Double
         Dim curX As Double, curY As Double
@@ -255,8 +307,10 @@ Private Sub updatePreview()
         GDIPlusDrawLineToDC picChart.hDC, 0, yHeight, xWidth, 0, RGB(127, 127, 127)
         
         'Draw the corresponding exposure curve (line, actually) for this EV
-        Dim expVal As Double, tmpVal As Double
+        Dim expVal As Double, offsetVal As Double, gammaVal As Double, tmpVal As Double
         expVal = sltExposure
+        offsetVal = sltOffset
+        gammaVal = sltGamma
         
         picChart.ForeColor = RGB(0, 0, 255)
         
@@ -266,21 +320,34 @@ Private Sub updatePreview()
         curY = yHeight
         
         For x = 0 To xWidth
-            tmpVal = x / xWidth
-            tmpVal = tmpVal * 2 ^ (expVal)
-            tmpVal = yHeight - (tmpVal * yHeight)
+            
+            'Get the corrected, clamped exposure value
+            tmpVal = GetCorrectedValue(x, xWidth, expVal, offsetVal, gammaVal)
+            
+            'Because the picture box is not square, we also need to multiply the value by the picture box's aspect ratio
+            tmpVal = tmpVal * (yHeight / xWidth)
+            
+            'Invert this final value, because screen coordinates are upside-down
+            tmpVal = yHeight - tmpVal
+            
+            'Draw a line between this point and the previous one, then move on to the next point
             curY = tmpVal
             curX = x
+            If x = 0 Then prevY = curY
+            If curY > yHeight - 1 Then curY = yHeight - 1
+            
             GDIPlusDrawLineToDC picChart.hDC, prevX, prevY, curX, curY, picChart.ForeColor
+            
             prevX = curX
             prevY = curY
+            
         Next x
         
         picChart.Picture = picChart.Image
         picChart.Refresh
     
         'Finally, apply the exposure correction to the preview image
-        Exposure sltExposure, True, fxPreview
+        Exposure sltExposure, sltOffset, sltGamma, True, fxPreview
         
     End If
     
@@ -288,7 +355,18 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
+'Update the preview whenever the combination slider/text control has its value changed
+Private Sub sltExposure_Change()
+    UpdatePreview
+End Sub
 
+Private Sub sltGamma_Change()
+    UpdatePreview
+End Sub
+
+Private Sub sltOffset_Change()
+    UpdatePreview
+End Sub
