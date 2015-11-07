@@ -354,17 +354,17 @@ Public Sub ssc_AddMsg(ByVal lng_hWnd As Long, ByVal When As eMsgWhen, ParamArray
     
     z_ScMem = zMap_VFunction(lng_hWnd, SubclassThunk)
     If z_ScMem Then                     'Ensure that the thunk hasn't already released its memory
-      Dim M As Long
-      For M = LBound(Messages) To UBound(Messages)
-        Select Case VarType(Messages(M))                                        ' ensure no strings, arrays, doubles, objects, etc are passed
+      Dim m As Long
+      For m = LBound(Messages) To UBound(Messages)
+        Select Case VarType(Messages(m))                                        ' ensure no strings, arrays, doubles, objects, etc are passed
         Case vbByte, vbInteger, vbLong
             If When And MSG_BEFORE Then                                         'If the message is to be added to the before original WndProc table...
-              If zAddMsg(Messages(M), IDX_BTABLE, z_ScMem) = False Then                 'Add the message to the before table
+              If zAddMsg(Messages(m), IDX_BTABLE, z_ScMem) = False Then                 'Add the message to the before table
                 When = (When And Not MSG_BEFORE)
               End If
             End If
             If When And MSG_AFTER Then                                          'If message is to be added to the after original WndProc table...
-              If zAddMsg(Messages(M), IDX_ATABLE, z_ScMem) = False Then                 'Add the message to the after table
+              If zAddMsg(Messages(m), IDX_ATABLE, z_ScMem) = False Then                 'Add the message to the after table
                 When = (When And Not MSG_AFTER)
               End If
             End If
@@ -380,15 +380,15 @@ Public Sub ssc_DelMsg(ByVal lng_hWnd As Long, ByVal When As eMsgWhen, ParamArray
     
     z_ScMem = zMap_VFunction(lng_hWnd, SubclassThunk)
     If z_ScMem Then                'Ensure that the thunk hasn't already released its memory
-      Dim M As Long
-      For M = LBound(Messages) To UBound(Messages)                                  ' ensure no strings, arrays, doubles, objects, etc are passed
-        Select Case VarType(Messages(M))
+      Dim m As Long
+      For m = LBound(Messages) To UBound(Messages)                                  ' ensure no strings, arrays, doubles, objects, etc are passed
+        Select Case VarType(Messages(m))
         Case vbByte, vbInteger, vbLong
             If When And MSG_BEFORE Then                                             'If the message is to be removed from the before original WndProc table...
-              zDelMsg Messages(M), IDX_BTABLE, z_ScMem                                      'Remove the message to the before table
+              zDelMsg Messages(m), IDX_BTABLE, z_ScMem                                      'Remove the message to the before table
             End If
             If When And MSG_AFTER Then                                              'If message is to be removed from the after original WndProc table...
-              zDelMsg Messages(M), IDX_ATABLE, z_ScMem                                      'Remove the message to the after table
+              zDelMsg Messages(m), IDX_ATABLE, z_ScMem                                      'Remove the message to the after table
             End If
         End Select
       Next
@@ -396,13 +396,13 @@ Public Sub ssc_DelMsg(ByVal lng_hWnd As Long, ByVal When As eMsgWhen, ParamArray
 End Sub
 
 'Let the subclasser lParamUser callback parameter
-Public Sub zSet_lParamUser(ByVal hWnd_Hook_ID As Long, ByVal vType As eThunkType, ByVal NewValue As Long)
+Public Sub zSet_lParamUser(ByVal hWnd_Hook_ID As Long, ByVal vType As eThunkType, ByVal newValue As Long)
     ' can be removed if you never will retrieve or replace the user-defined parameter
     If vType <> CallbackThunk Then
         Dim z_ScMem       As Long         'Thunk base address
         z_ScMem = zMap_VFunction(hWnd_Hook_ID, vType)
         If z_ScMem Then                 'Ensure that the thunk hasn't already released its memory
-          zData(IDX_PARM_USER, z_ScMem) = NewValue                                         'Set the lParamUser callback parameter
+          zData(IDX_PARM_USER, z_ScMem) = newValue                                         'Set the lParamUser callback parameter
         End If
     End If
 End Sub
@@ -805,13 +805,13 @@ Private Sub zUnThunk(ByVal thunkID As Long, ByVal vType As eThunkType, Optional 
                 
             End If
         Else
-            z_hkFunk.Remove "h" & thunkID       'Remove the specified thunk from the collection
+            If ExistsNonObject(z_scFunk, "h" & thunkID) Then z_hkFunk.Remove "h" & thunkID       'Remove the specified thunk from the collection
         End If
     Case CallbackThunk
         If z_ScMem Then       'Ensure that the thunk hasn't already released its memory
             VirtualFree z_ScMem, 0, MEM_RELEASE 'Release allocated memory
         End If
-        z_cbFunk.Remove "h" & ObjPtr(oCallback) & "." & thunkID           'Remove the specified thunk from the collection
+        If ExistsNonObject(z_scFunk, "h" & thunkID & ObjPtr(oCallback) & "." & thunkID) Then z_cbFunk.Remove "h" & ObjPtr(oCallback) & "." & thunkID           'Remove the specified thunk from the collection
     End Select
 
 End Sub

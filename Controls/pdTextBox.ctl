@@ -1017,8 +1017,8 @@ Private Function doesVirtualKeyRequireSpecialHandling(ByVal vKey As Long) As Boo
 End Function
 
 'Note that the vKey constant below is a virtual key mapping, not necessarily a standard VB key constant
-Private Function isVirtualKeyDown(ByVal vKey As Long) As Boolean
-    isVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
+Private Function IsVirtualKeyDown(ByVal vKey As Long) As Boolean
+    IsVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
 End Function
 
 'Install a keyboard hook in our window
@@ -1211,11 +1211,11 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                             If m_TabMode = TabDefaultBehavior Then
                                 
                                 'Immediately forward focus to the next control
-                                UserControl_Support.ForwardFocusToNewControl Me, Not isVirtualKeyDown(VK_SHIFT)
+                                UserControl_Support.ForwardFocusToNewControl Me, Not IsVirtualKeyDown(VK_SHIFT)
                                 
                             'Let the caller determine how to handle the keypress
                             Else
-                                RaiseEvent TabPress(Not isVirtualKeyDown(VK_SHIFT))
+                                RaiseEvent TabPress(Not IsVirtualKeyDown(VK_SHIFT))
                             End If
                             
                             'Eat the keypress
@@ -1235,7 +1235,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                 
                 'Another special case we must handle here in the hook is Alt+ keypresses.  These work fine for values below 255.
                 ' They are not operational for character values above that range.
-                If (Not m_AltKeyMode) And isVirtualKeyDown(VK_ALT) Then
+                If (Not m_AltKeyMode) And IsVirtualKeyDown(VK_ALT) Then
                     m_AltKeyMode = True
                     assembledVirtualKeyString = ""
                 End If
@@ -1508,7 +1508,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         Case WM_SETFOCUS
             
             'Forcibly disable PD's main accelerator control
-            FormMain.ctlAccelerator.Enabled = False
+            FormMain.pdHotkeys.DeactivateHook
             
             'Mark the control-wide focus state
             If Not m_ControlHasFocus Then
@@ -1522,7 +1522,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         Case WM_KILLFOCUS
         
             'Re-enable PD's main accelerator control
-            FormMain.ctlAccelerator.Enabled = True
+            FormMain.pdHotkeys.ActivateHook
             
             'Mark the control-wide focus state
             If m_ControlHasFocus Then
