@@ -2653,13 +2653,13 @@ Public Sub LoadMessage(ByVal sMsg As String)
     
 End Sub
 
-'Generates all shortcuts that VB can't; many thanks to Steve McMahon for his accelerator class, which helps a great deal
+'Loading all hotkeys (accelerators) requires a few different things.  Besides just populating the hotkey collection, we also paint all
+' menu captions to match.
 Public Sub LoadAccelerators()
-
-    'Don't allow custom shortcuts in the IDE, as they require subclassing and might crash
-    'If Not g_IsProgramCompiled Then Exit Sub
-
-    With FormMain.ctlAccelerator
+    
+    With FormMain.pdHotkeys
+    
+        .Enabled = True
     
         'File menu
         .AddAccelerator vbKeyN, vbCtrlMask, "New image", FormMain.MnuFile(0), True, False, True, UNDO_NOTHING
@@ -2704,7 +2704,6 @@ Public Sub LoadAccelerators()
         .AddAccelerator vbKeyC, vbCtrlMask Or vbShiftMask, "Copy from layer", FormMain.MnuEdit(10), True, True, False, UNDO_NOTHING
         .AddAccelerator vbKeyV, vbCtrlMask, "Paste as new image", FormMain.MnuEdit(11), True, False, False, UNDO_NOTHING
         .AddAccelerator vbKeyV, vbCtrlMask Or vbShiftMask, "Paste as new layer", FormMain.MnuEdit(12), True, False, False, UNDO_IMAGE_VECTORSAFE
-        
         
         'View menu
         .AddAccelerator vbKey0, 0, "FitOnScreen", FormMain.MnuFitOnScreen, False, True, False, UNDO_NOTHING
@@ -2794,30 +2793,29 @@ Public Sub LoadAccelerators()
         'Window menu
         .AddAccelerator vbKeyPageDown, 0, "Next_Image", FormMain.MnuWindow(5), False, True, False, UNDO_NOTHING
         .AddAccelerator vbKeyPageUp, 0, "Prev_Image", FormMain.MnuWindow(6), False, True, False, UNDO_NOTHING
-                
-        'No equivalent menu
-        .AddAccelerator vbKeyEscape, 0, "Escape"
         
-        .Enabled = True
+        'Activate hotkey detection
+        .ActivateHook
+        
     End With
-
+    
+    'Before exiting, paint all shortcut captions to their respective menus
     DrawAccelerators
     
 End Sub
 
-'After all menu shortcuts (accelerators) are loaded above, the custom shortcuts need to be added to the menu entries themselves.
-' If we don't do this, the user won't know how to trigger the shortcuts!
+'After all menu shortcuts (accelerators) are loaded above, the custom shortcuts need to be painted to their corresponding menus
 Public Sub DrawAccelerators()
 
     Dim i As Long
     
-    For i = 1 To FormMain.ctlAccelerator.Count
-        With FormMain.ctlAccelerator
-            If .hasMenu(i) Then
-                .associatedMenu(i).Caption = .associatedMenu(i).Caption & vbTab & .stringRep(i)
+    With FormMain.pdHotkeys
+        For i = 0 To .Count - 1
+            If .HasMenu(i) Then
+                .MenuReference(i).Caption = .MenuReference(i).Caption & vbTab & .StringRepresentation(i)
             End If
-        End With
-    Next i
+        Next i
+    End With
 
     'A few menu shortcuts must be drawn manually.
     

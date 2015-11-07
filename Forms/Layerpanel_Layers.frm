@@ -376,7 +376,7 @@ Private Sub checkButtonEnablement()
     Else
     
         Dim i As Long
-        For i = cmdLayerAction.lBound To cmdLayerAction.ubound
+        For i = cmdLayerAction.lBound To cmdLayerAction.UBound
             cmdLayerAction(i).Enabled = False
         Next i
         
@@ -649,7 +649,7 @@ Private Sub cMouseEvents_DoubleClickCustom(ByVal Button As PDMouseButtonConstant
         txtLayerName.Visible = True
         
         'Disable hotkeys until editing is finished
-        FormMain.ctlAccelerator.Enabled = False
+        FormMain.pdHotkeys.DeactivateHook
         m_LayerNameEditMode = True
         
         'Fill the text box with the current layer name, and select it
@@ -944,11 +944,11 @@ Private Sub Form_Load()
     m_MouseOverLayerBox = False
     
     Set cKeyEvents = New pdInputKeyboard
-    cKeyEvents.createKeyboardTracker "Layers Toolbar - picLayers", picLayers.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_SPACE, VK_TAB, VK_DELETE, VK_INSERT
+    cKeyEvents.CreateKeyboardTracker "Layers Toolbar - picLayers", picLayers.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_SPACE, VK_TAB, VK_DELETE, VK_INSERT
     
     'Enable simple input handling for the form as well
     Set cKeyEventsForm = New pdInputKeyboard
-    cKeyEventsForm.createKeyboardTracker "Layers Toolbar (form)", Me.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_SPACE, VK_TAB, VK_DELETE, VK_INSERT
+    cKeyEventsForm.CreateKeyboardTracker "Layers Toolbar (form)", Me.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_SPACE, VK_TAB, VK_DELETE, VK_INSERT
     
     'No layer has been hovered yet
     updateHoveredLayer -1
@@ -1453,7 +1453,7 @@ Private Sub txtLayerName_KeyPress(ByVal vKey As Long, preventFurtherHandling As 
         If Tool_Support.canvasToolsAllowed Then Processor.flagFinalNDFXState_Generic pgp_Name, pdImages(g_CurrentImage).getActiveLayer.getLayerName
         
         'Re-enable hotkeys now that editing is finished
-        FormMain.ctlAccelerator.Enabled = True
+        FormMain.pdHotkeys.ActivateHook
         m_LayerNameEditMode = False
         
         'Redraw the layer box with the new name
