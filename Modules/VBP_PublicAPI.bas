@@ -134,7 +134,7 @@ Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 Public Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 
 'Hook functions generally need to return the value of this function if they don't process a given message
-Public Declare Function CallNextHookEx Lib "user32" (ByVal hHook As Long, ByVal nCode As Long, ByVal wParam As Long, lParam As Any) As Long
+Public Declare Function CallNextHookEx Lib "user32" (ByVal hHook As Long, ByVal nCode As Long, ByVal wParam As Long, ByVal lParam As Any) As Long
 
 'PhotoDemon allows the user to resize some toolboxes to their liking.  These constants are used with the SendMessage API
 ' to enable this behavior.  (In the case of the image tabstrip, note that it can be aligned to any window edge, which

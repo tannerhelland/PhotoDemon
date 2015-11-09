@@ -1250,7 +1250,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
     ' Note that if we do not manually handle a keypress, this behavior allows the default keyhandler to deal with
     ' the pressed keys (and raise its own WM_CHAR events, etc).
     If (Not bHandled) Then
-        lReturn = CallNextHookEx(0, nCode, wParam, ByVal lParam)
+        lReturn = CallNextHookEx(0, nCode, wParam, lParam)
     Else
         lReturn = 1
     End If

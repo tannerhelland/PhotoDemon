@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.106</langversion>
+<langversion>6.7.107</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -3335,6 +3335,32 @@ Geef een numerieke waarde.</translation>
 
 <!-- END text for gradientSelector.ctl-->
 
+<!-- BEGIN text for pdAccelerator.ctl -->
+
+<phrase>
+<original>Alt</original>
+<translation>Alt</translation>
+</phrase>
+
+<phrase>
+<original>Enter</original>
+<translation>Enter</translation>
+</phrase>
+
+<phrase>
+<original>Page Up</original>
+<translation>Page Up</translation>
+</phrase>
+
+<phrase>
+<original>Page Down</original>
+<translation>Page Down</translation>
+</phrase>
+
+<!-- pdAccelerator.ctl contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<!-- END text for pdAccelerator.ctl-->
+
 <!-- BEGIN text for pdButton.ctl -->
 
 <!-- pdButton.ctl contains 0 phrases. -->
@@ -3811,37 +3837,6 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 <!-- textUpDown.ctl contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for textUpDown.ctl-->
-
-<!-- BEGIN text for vbalHookControl.ctl -->
-
-<phrase>
-<original>Alt</original>
-<translation>Alt</translation>
-</phrase>
-
-<phrase>
-<original>Enter</original>
-<translation>Enter</translation>
-</phrase>
-
-<phrase>
-<original>Page Up</original>
-<translation>Page Up</translation>
-</phrase>
-
-<phrase>
-<original>Page Down</original>
-<translation>Page Down</translation>
-</phrase>
-
-<phrase>
-<original>Failed to initialize custom hotkey handler.</original>
-<translation>Initialiseren van aangepaste sneltoets handler mislukt.</translation>
-</phrase>
-
-<!-- vbalHookControl.ctl contains 13 phrases. 8 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<!-- END text for vbalHookControl.ctl-->
 
 <!-- BEGIN text for MainWindow.frm (FormMain) -->
 
@@ -6519,6 +6514,16 @@ Nota: enkele kleine programmateksten kunnen niet live worden  bijgewerkt. Een de
 </phrase>
 
 <phrase>
+<original>offset</original>
+<translation>offset</translation>
+</phrase>
+
+<phrase>
+<original>gamma</original>
+<translation>gamma</translation>
+</phrase>
+
+<phrase>
 <original>new exposure curve</original>
 <translation>nieuwe blootstellingscurve</translation>
 </phrase>
@@ -6528,7 +6533,7 @@ Nota: enkele kleine programmateksten kunnen niet live worden  bijgewerkt. Een de
 <translation>Aanpassen afbeeldingsblootstelling</translation>
 </phrase>
 
-<!-- Adjustments_Lighting_Exposure.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Adjustments_Lighting_Exposure.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Lighting_Exposure.frm-->
 
@@ -7673,11 +7678,6 @@ Nota: enkele kleine programmateksten kunnen niet live worden  bijgewerkt. Een de
 </phrase>
 
 <phrase>
-<original>gamma</original>
-<translation>gamma</translation>
-</phrase>
-
-<phrase>
 <original>normalize</original>
 <translation>normaliseer</translation>
 </phrase>
@@ -7752,7 +7752,7 @@ Nota: enkele kleine programmateksten kunnen niet live worden  bijgewerkt. Een de
 <translation>Reinhard</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 24 phrases. 6 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
 
@@ -8486,11 +8486,6 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 </phrase>
 
 <phrase>
-<original>offset</original>
-<translation>offset</translation>
-</phrase>
-
-<phrase>
 <original>divisor</original>
 <translation>deler</translation>
 </phrase>
@@ -8505,7 +8500,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>aangepaste</translation>
 </phrase>
 
-<!-- Effects_CustomFilter.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_CustomFilter.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_CustomFilter.frm-->
 
@@ -13262,116 +13257,6 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 </phrase>
 
 <phrase>
-<original>Click here to reset all options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>hardware acceleration report</original>
-<translation>hardwareversnellingrapport</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>geheugengebruik zal hier worden weergegeven</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>geheugen diagnostiek</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>tijdelijke bestandslocatie</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(disclaimer opgevuld in run-time)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>taalbestanden onafhankelijk updaten</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>automatisch controleren op updates</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>plugins onafhankelijk updaten</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>toestaan updates van deze tracks</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>updateopties</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>waarschuwing weergeven wanneer er een update is klaar</translation>
-</phrase>
-
-<phrase>
-<original>use high-resolution input tracking</original>
-<translation>gebruik maken van high-resolution input tracking</translation>
-</phrase>
-
-<phrase>
-<original>mouse and pen input</original>
-<translation>muis en peninvoer</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>maximum aantal recente bestanden</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>lijst recente bestanden</translation>
-</phrase>
-
-<phrase>
-<original>recently used file shortcuts should be</original>
-<translation>snelkoppelingen van laatst gebruikte bestanden moeten worden</translation>
-</phrase>
-
-<phrase>
-<original>captions</original>
-<translation>bijschriften</translation>
-</phrase>
-
-<phrase>
-<original>image window titles should be</original>
-<translation>afbeeldingsvenstertitels moeten worden</translation>
-</phrase>
-
-<phrase>
-<original>image canvas background</original>
-<translation>canvas achtergrond van afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>canvas appearance</original>
-<translation>uitzicht canvas</translation>
-</phrase>
-
-<phrase>
 <original>use the system color profile</original>
 <translation>gebruik het kleurenprofiel van het systeem</translation>
 </phrase>
@@ -13584,6 +13469,116 @@ Download een nieuwe kopij van PhotoDemon vanop photodemon.org. om verder te gaan
 <phrase>
 <original>viewport</original>
 <translation>viewport</translation>
+</phrase>
+
+<phrase>
+<original>Click here to reset all options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>hardware acceleration report</original>
+<translation>hardwareversnellingrapport</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>geheugengebruik zal hier worden weergegeven</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>geheugen diagnostiek</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>tijdelijke bestandslocatie</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(disclaimer opgevuld in run-time)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>taalbestanden onafhankelijk updaten</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>automatisch controleren op updates</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>plugins onafhankelijk updaten</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>toestaan updates van deze tracks</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>updateopties</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>waarschuwing weergeven wanneer er een update is klaar</translation>
+</phrase>
+
+<phrase>
+<original>use high-resolution input tracking</original>
+<translation>gebruik maken van high-resolution input tracking</translation>
+</phrase>
+
+<phrase>
+<original>mouse and pen input</original>
+<translation>muis en peninvoer</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent file entries</original>
+<translation>maximum aantal recente bestanden</translation>
+</phrase>
+
+<phrase>
+<original>recent files list</original>
+<translation>lijst recente bestanden</translation>
+</phrase>
+
+<phrase>
+<original>recently used file shortcuts should be</original>
+<translation>snelkoppelingen van laatst gebruikte bestanden moeten worden</translation>
+</phrase>
+
+<phrase>
+<original>captions</original>
+<translation>bijschriften</translation>
+</phrase>
+
+<phrase>
+<original>image window titles should be</original>
+<translation>afbeeldingsvenstertitels moeten worden</translation>
+</phrase>
+
+<phrase>
+<original>image canvas background</original>
+<translation>canvas achtergrond van afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>canvas appearance</original>
+<translation>uitzicht canvas</translation>
 </phrase>
 
 <phrase>
@@ -14149,7 +14144,7 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <translation>WAARSCHUWING: deze map is ongeldig (toegang verboden). Geef een geldige map op. Als er geen nieuwe map wordt voorzien, zal PhotoDemon gebruik maken van de systeem standaard temp locatie.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 244 phrases. 67 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 242 phrases. 65 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14406,10 +14401,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2476</phrasecount>
+<phrasecount>2475</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4245 phrases. -->
-<!-- 1769 are duplicates, so only 2476 unique phrases have been written to file. -->
-<!-- These 2476 phrases contain approximately 13320 total words. -->
+<!-- As of this build, PhotoDemon contains 4244 phrases. -->
+<!-- 1769 are duplicates, so only 2475 unique phrases have been written to file. -->
+<!-- These 2475 phrases contain approximately 13314 total words. -->
 
 </pdData>
