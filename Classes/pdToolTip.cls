@@ -36,9 +36,10 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Tooltips are actually their own window class, so we interact with them using standard window creation/destruction interfaces
-Private Const WM_USER As Long = &H400
-Private Const TTS_ALWAYSTIP As Long = &H1
-Private Const TTS_NOPREFIX As Long = &H2
+Private Const WM_USER As Long = &H400&
+Private Const TTS_ALWAYSTIP As Long = &H1&
+Private Const TTS_NOPREFIX As Long = &H2&
+Private Const TTS_BALLOON As Long = &H40&
 
 'As with many structs, there are different TOOLINFO layouts for different OSes.  We limit ours to the XP+ variety.
 Private Type TOOLINFO_COMPILED
@@ -202,6 +203,8 @@ Private Type pdTooltipItem
     textStringTranslated As String
     titleStringTranslated As String
     toolIcon As TT_ICON_TYPE
+    customRectActive As Boolean
+    customRectL As RECTL
 End Type
 
 Private m_NumOfTooltips As Long
@@ -219,12 +222,12 @@ Private m_ToolCollection() As pdTooltipItem
 '
 'Setting a blank tooltip will result in destruction of the tool window.  (Note that there is no penalty to doing this, as the
 ' tooltip can easily be recreated by calling this function again with Len(textString) > 0)
-Public Function setTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd As Long, ByVal textString As String, Optional ByVal titleString As String = "", Optional ByVal toolTipIcon As TT_ICON_TYPE = TTI_NONE) As Boolean
+Public Function SetTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd As Long, ByVal textString As String, Optional ByVal titleString As String = "", Optional ByVal toolTipIcon As TT_ICON_TYPE = TTI_NONE) As Boolean
     
     'Check for invalid requests
     If (childWindowHwnd = 0) Or (parentWindowHwnd = 0) Then
         Debug.Print "WARNING! setTooltip received a 0 hWnd for either a child or parent.  Don't do that!"
-        setTooltip = False
+        SetTooltip = False
         Exit Function
     End If
     
@@ -232,7 +235,7 @@ Public Function setTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
     
     'Start by looking for the requested hWnd in the array.  If the hWnd already exists, we can update the existing tool window
     ' instead of creating a new one.
-    toolIndex = findTooltipByChildHwnd(childWindowHwnd)
+    toolIndex = FindTooltipByChildHwnd(childWindowHwnd)
     
     'If the tooltip does not already exist, create it now.  (Note that the tooltip may have been created earlier, but destroyed.
     ' This is also a valid "Does Not Exist" state.)
@@ -292,7 +295,7 @@ Public Function setTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
         'If the window couldn't be created, bail
         If m_ToolCollection(toolIndex).toolHwnd = 0 Then
             Debug.Print "WARNING!  Tooltip window couldn't be created.  Exiting setTooltip."
-            setTooltip = False
+            SetTooltip = False
             Exit Function
         End If
         
@@ -324,7 +327,8 @@ Public Function setTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
     
     'Tooltips are set using the TOOLINFO struct.  Construct one now.
     ' Note that the compiled .exe can take advantage of some unique features (such as automatic parsing of links).
-    ' As such, we have to provide two code paths here: one for the IDE, and one for the compiled .exe.
+    ' As such, I provide two code paths here: one for the IDE, and one for the compiled .exe.  These do not differ
+    ' at present, but they may in the future.
     Dim currentToolInfo_Compiled As TOOLINFO_COMPILED, currentToolInfo_IDE As TOOLINFO_IDE
     
     If g_IsProgramCompiled Then
@@ -333,7 +337,7 @@ Public Function setTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
             .cbSize = LenB(currentToolInfo_Compiled)
             .hWnd = m_ToolCollection(toolIndex).childHwnd
             .uId = m_ToolCollection(toolIndex).childHwnd
-            .uFlags = TTF_SUBCLASS Or TTF_IDISHWND Or TTF_PARSELINKS
+            .uFlags = TTF_SUBCLASS Or TTF_IDISHWND Or TTF_CENTERTIP Or TTF_TRANSPARENT
             .lpszTextPointer = StrPtr(m_ToolCollection(toolIndex).textStringTranslated)
         End With
     
@@ -343,7 +347,7 @@ Public Function setTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
             .cbSize = LenB(currentToolInfo_IDE)
             .hWnd = m_ToolCollection(toolIndex).childHwnd
             .uId = m_ToolCollection(toolIndex).childHwnd
-            .uFlags = TTF_SUBCLASS Or TTF_IDISHWND
+            .uFlags = TTF_SUBCLASS Or TTF_IDISHWND Or TTF_CENTERTIP Or TTF_TRANSPARENT
             .lpszTextPointer = StrPtr(m_ToolCollection(toolIndex).textStringTranslated)
         End With
         
@@ -387,28 +391,28 @@ Public Function setTooltip(ByVal childWindowHwnd As Long, ByVal parentWindowHwnd
     End If
     
     'We don't have much use for this return value at present, but it doesn't hurt to return it
-    setTooltip = (toolMsgSuccess <> 0)
+    SetTooltip = (toolMsgSuccess <> 0)
         
 End Function
 
 'Look for a tooltip in the current collection.  If found, the tooltip's index will be returned.
 ' If not found, -1 will be returned.
-Private Function findTooltipByChildHwnd(ByVal targetHwnd As Long) As Long
+Private Function FindTooltipByChildHwnd(ByVal targetHwnd As Long) As Long
     
     'Check for empty hWnds
     If targetHwnd = 0 Then
         Debug.Print "WARNING! findTooltipByChildHwnd was given 0 as an hWnd.  Don't do that!"
-        findTooltipByChildHwnd = -1
+        FindTooltipByChildHwnd = -1
         Exit Function
     End If
     
     'Search for the target hWnd in our current collection
-    findTooltipByChildHwnd = -1
+    FindTooltipByChildHwnd = -1
     
     Dim i As Long
     For i = 0 To m_NumOfTooltips
         If m_ToolCollection(i).childHwnd = targetHwnd Then
-            findTooltipByChildHwnd = i
+            FindTooltipByChildHwnd = i
             Exit For
         End If
     Next i
@@ -436,7 +440,7 @@ Private Sub Class_Terminate()
 End Sub
 
 'If you want to forcibly kill a child's hWnd, use this function to do so.
-Public Sub killTooltip(ByVal targetHwnd As Long)
+Public Sub KillTooltip(ByVal targetHwnd As Long)
 
     Dim i As Long
     If m_NumOfTooltips > 0 Then
@@ -476,7 +480,7 @@ Public Sub UpdateAgainstCurrentTheme()
     For i = 0 To m_NumOfTooltips - 1
         
         With m_ToolCollection(i)
-            If (.toolHwnd <> 0) Then setTooltip .childHwnd, .parentHwnd, .textStringEn, .titleStringEn, .toolIcon
+            If (.toolHwnd <> 0) Then SetTooltip .childHwnd, .parentHwnd, .textStringEn, .titleStringEn, .toolIcon
         End With
         
     Next i
