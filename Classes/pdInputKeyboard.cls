@@ -244,8 +244,8 @@ Private Sub Class_Terminate()
 End Sub
 
 'Note that the vKey constant below is a virtual key mapping, not necessarily a standard VB key constant
-Private Function isVirtualKeyDown(ByVal vKey As Long) As Boolean
-    isVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
+Private Function IsVirtualKeyDown(ByVal vKey As Long) As Boolean
+    IsVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
 End Function
 
 Private Function getHiWord(ByVal lParam As Long) As Integer
@@ -286,9 +286,9 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
         
         'Manually pull key modifier states (shift, control, alt/menu) in advance; these are standard for all key events
         Dim retShiftConstants As ShiftConstants
-        If isVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
-        If isVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
-        If isVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
+        If IsVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
+        If IsVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
+        If IsVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
         
         'The keycode of the key being pressed is stored in the wParam.  See if it is a key we have been asked to track.
         Dim i As Long
@@ -297,7 +297,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
             If wParam = m_TrackedKeys(i) Then
             
                 'This is a key we are supposed to be tracking.  Check its state by using isVirtualKeyDown.
-                If isVirtualKeyDown(wParam) Then
+                If IsVirtualKeyDown(wParam) Then
                 
                     bHandled = True
                 
@@ -336,7 +336,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                 
         'Per MSDN, return the value of CallNextHookEx
         If (Not bHandled) Then
-            lReturn = CallNextHookEx(0, nCode, wParam, ByVal lParam)
+            lReturn = CallNextHookEx(0, nCode, wParam, lParam)
         Else
             lReturn = 1
         End If

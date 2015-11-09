@@ -565,7 +565,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
     
     'If we didn't handle this keypress, allow subsequent hooks to have their way with it
     If (Not bHandled) Then
-        lReturn = CallNextHookEx(0&, nCode, wParam, ByVal lParam)
+        lReturn = CallNextHookEx(0&, nCode, wParam, lParam)
     Else
         lReturn = 1
     End If
@@ -576,7 +576,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
 'On errors, we simply want to bail, as there's little we can safely do to address an error from inside the hooking procedure
 HookProcError:
     
-    lReturn = CallNextHookEx(0&, nCode, wParam, ByVal lParam)
+    lReturn = CallNextHookEx(0&, nCode, wParam, lParam)
     m_InHookNow = False
     
 

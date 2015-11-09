@@ -1331,8 +1331,8 @@ Private Function doesVirtualKeyRequireSpecialHandling(ByVal vKey As Long) As Boo
 End Function
 
 'Note that the vKey constant below is a virtual key mapping, not necessarily a standard VB key constant
-Private Function isVirtualKeyDown(ByVal vKey As Long) As Boolean
-    isVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
+Private Function IsVirtualKeyDown(ByVal vKey As Long) As Boolean
+    IsVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
 End Function
 
 'Render the combo box area (not the list!)
@@ -1734,7 +1734,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
                     If (wParam = VK_TAB) And ((GetTickCount - m_TimeAtFocusEnter) > 250) Then
                                 
                         'Set a module-level shift state, and a flag that tells the hook to deactivate after it eats this keypress.
-                        If isVirtualKeyDown(VK_SHIFT) Then m_FocusDirection = 2 Else m_FocusDirection = 1
+                        If IsVirtualKeyDown(VK_SHIFT) Then m_FocusDirection = 2 Else m_FocusDirection = 1
                                                         
                         'Forward focus to the next control
                         UserControl_Support.ForwardFocusToNewControl Me, (m_FocusDirection = 1)
@@ -1762,7 +1762,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
     ' Note that if we do not manually handle a keypress, this behavior allows the default keyhandler to deal with
     ' the pressed keys (and raise its own WM_CHAR events, etc).
     If (Not bHandled) Then
-        lReturn = CallNextHookEx(0, nCode, wParam, ByVal lParam)
+        lReturn = CallNextHookEx(0, nCode, wParam, lParam)
     Else
         lReturn = 1
     End If

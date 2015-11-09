@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.109</langversion>
+<langversion>6.7.110</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -3336,6 +3336,32 @@ Please válida Introduzca un valor numérico.</translation>
 
 <!-- END text for gradientSelector.ctl-->
 
+<!-- BEGIN text for pdAccelerator.ctl -->
+
+<phrase>
+<original>Alt</original>
+<translation>alt</translation>
+</phrase>
+
+<phrase>
+<original>Enter</original>
+<translation>entrar</translation>
+</phrase>
+
+<phrase>
+<original>Page Up</original>
+<translation>Page Up</translation>
+</phrase>
+
+<phrase>
+<original>Page Down</original>
+<translation>Av Pág</translation>
+</phrase>
+
+<!-- pdAccelerator.ctl contains 12 phrases. 8 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<!-- END text for pdAccelerator.ctl-->
+
 <!-- BEGIN text for pdButton.ctl -->
 
 <!-- pdButton.ctl contains 0 phrases. -->
@@ -3812,37 +3838,6 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 <!-- textUpDown.ctl contains 4 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for textUpDown.ctl-->
-
-<!-- BEGIN text for vbalHookControl.ctl -->
-
-<phrase>
-<original>Alt</original>
-<translation>alt</translation>
-</phrase>
-
-<phrase>
-<original>Enter</original>
-<translation>entrar</translation>
-</phrase>
-
-<phrase>
-<original>Page Up</original>
-<translation>Page Up</translation>
-</phrase>
-
-<phrase>
-<original>Page Down</original>
-<translation>Av Pág</translation>
-</phrase>
-
-<phrase>
-<original>Failed to initialize custom hotkey handler.</original>
-<translation>No se pudo inicializar controlador personalizado tecla de acceso directo.</translation>
-</phrase>
-
-<!-- vbalHookControl.ctl contains 13 phrases. 8 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<!-- END text for vbalHookControl.ctl-->
 
 <!-- BEGIN text for MainWindow.frm (FormMain) -->
 
@@ -6520,6 +6515,16 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 </phrase>
 
 <phrase>
+<original>offset</original>
+<translation>offset</translation>
+</phrase>
+
+<phrase>
+<original>gamma</original>
+<translation>gama</translation>
+</phrase>
+
+<phrase>
 <original>new exposure curve</original>
 <translation>nueva curva de la exposición</translation>
 </phrase>
@@ -6529,7 +6534,7 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 <translation>Ajuste de exposición de la imagen</translation>
 </phrase>
 
-<!-- Adjustments_Lighting_Exposure.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Adjustments_Lighting_Exposure.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Lighting_Exposure.frm-->
 
@@ -7674,11 +7679,6 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 </phrase>
 
 <phrase>
-<original>gamma</original>
-<translation>gama</translation>
-</phrase>
-
-<phrase>
 <original>normalize</original>
 <translation>normalizar</translation>
 </phrase>
@@ -7753,7 +7753,7 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 <translation>Reinhard</translation>
 </phrase>
 
-<!-- Dialog_ToneMapping.frm contains 24 phrases. 6 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Dialog_ToneMapping.frm contains 24 phrases. 7 were duplicates of existing phrases, so only 17 new phrases were written to file. -->
 
 <!-- END text for Dialog_ToneMapping.frm-->
 
@@ -8487,11 +8487,6 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 </phrase>
 
 <phrase>
-<original>offset</original>
-<translation>offset</translation>
-</phrase>
-
-<phrase>
 <original>divisor</original>
 <translation>divisor</translation>
 </phrase>
@@ -8506,7 +8501,7 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <translation>costumbre</translation>
 </phrase>
 
-<!-- Effects_CustomFilter.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- Effects_CustomFilter.frm contains 8 phrases. 4 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_CustomFilter.frm-->
 
@@ -13263,116 +13258,6 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 </phrase>
 
 <phrase>
-<original>Click here to reset all options</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>hardware acceleration report</original>
-<translation>informe de la aceleración de hardware</translation>
-</phrase>
-
-<phrase>
-<original>memory usage will be displayed here</original>
-<translation>uso de la memoria aparecerá aquí</translation>
-</phrase>
-
-<phrase>
-<original>memory diagnostics</original>
-<translation>diagnósticos de memoria</translation>
-</phrase>
-
-<phrase>
-<original>temporary file location</original>
-<translation>ubicación de archivo temporal</translation>
-</phrase>
-
-<phrase>
-<original>start over</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>(disclaimer populated at run-time)</original>
-<translation>(disclaimer poblada en tiempo de ejecución)</translation>
-</phrase>
-
-<phrase>
-<original>update language files independently</original>
-<translation>idioma archivos de actualización de forma independiente</translation>
-</phrase>
-
-<phrase>
-<original>automatically check for updates</original>
-<translation>verificar automáticamente las actualizaciones</translation>
-</phrase>
-
-<phrase>
-<original>update plugins independently</original>
-<translation>actualización de plugins de forma independiente</translation>
-</phrase>
-
-<phrase>
-<original>allow updates from these tracks</original>
-<translation>permitir actualizaciones de estas pistas</translation>
-</phrase>
-
-<phrase>
-<original>update options</original>
-<translation>opciones de actualización</translation>
-</phrase>
-
-<phrase>
-<original>notify me when an update is ready</original>
-<translation>notificarme cuando una actualización está lista</translation>
-</phrase>
-
-<phrase>
-<original>use high-resolution input tracking</original>
-<translation>utilizar el seguimiento de entrada de alta resolución</translation>
-</phrase>
-
-<phrase>
-<original>mouse and pen input</original>
-<translation>ratón y entrada de lápiz</translation>
-</phrase>
-
-<phrase>
-<original>maximum number of recent file entries</original>
-<translation>número máximo de entradas de archivos recientes</translation>
-</phrase>
-
-<phrase>
-<original>recent files list</original>
-<translation>lista de archivos recientes</translation>
-</phrase>
-
-<phrase>
-<original>recently used file shortcuts should be</original>
-<translation>accesos directos de archivos usados ??recientemente deben ser</translation>
-</phrase>
-
-<phrase>
-<original>captions</original>
-<translation>subtítulos</translation>
-</phrase>
-
-<phrase>
-<original>image window titles should be</original>
-<translation>títulos de la ventana de imagen debe ser</translation>
-</phrase>
-
-<phrase>
-<original>image canvas background</original>
-<translation>el fondo del lienzo la imagen</translation>
-</phrase>
-
-<phrase>
-<original>canvas appearance</original>
-<translation>aparición lienzo</translation>
-</phrase>
-
-<phrase>
 <original>use the system color profile</original>
 <translation>utilizar el perfil de color del sistema</translation>
 </phrase>
@@ -13585,6 +13470,116 @@ To continuar, descargue una copia nueva de PhotoDemon de photodemon.org.</transl
 <phrase>
 <original>viewport</original>
 <translation>viewport</translation>
+</phrase>
+
+<phrase>
+<original>Click here to reset all options</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>hardware acceleration report</original>
+<translation>informe de la aceleración de hardware</translation>
+</phrase>
+
+<phrase>
+<original>memory usage will be displayed here</original>
+<translation>uso de la memoria aparecerá aquí</translation>
+</phrase>
+
+<phrase>
+<original>memory diagnostics</original>
+<translation>diagnósticos de memoria</translation>
+</phrase>
+
+<phrase>
+<original>temporary file location</original>
+<translation>ubicación de archivo temporal</translation>
+</phrase>
+
+<phrase>
+<original>start over</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>(disclaimer populated at run-time)</original>
+<translation>(disclaimer poblada en tiempo de ejecución)</translation>
+</phrase>
+
+<phrase>
+<original>update language files independently</original>
+<translation>idioma archivos de actualización de forma independiente</translation>
+</phrase>
+
+<phrase>
+<original>automatically check for updates</original>
+<translation>verificar automáticamente las actualizaciones</translation>
+</phrase>
+
+<phrase>
+<original>update plugins independently</original>
+<translation>actualización de plugins de forma independiente</translation>
+</phrase>
+
+<phrase>
+<original>allow updates from these tracks</original>
+<translation>permitir actualizaciones de estas pistas</translation>
+</phrase>
+
+<phrase>
+<original>update options</original>
+<translation>opciones de actualización</translation>
+</phrase>
+
+<phrase>
+<original>notify me when an update is ready</original>
+<translation>notificarme cuando una actualización está lista</translation>
+</phrase>
+
+<phrase>
+<original>use high-resolution input tracking</original>
+<translation>utilizar el seguimiento de entrada de alta resolución</translation>
+</phrase>
+
+<phrase>
+<original>mouse and pen input</original>
+<translation>ratón y entrada de lápiz</translation>
+</phrase>
+
+<phrase>
+<original>maximum number of recent file entries</original>
+<translation>número máximo de entradas de archivos recientes</translation>
+</phrase>
+
+<phrase>
+<original>recent files list</original>
+<translation>lista de archivos recientes</translation>
+</phrase>
+
+<phrase>
+<original>recently used file shortcuts should be</original>
+<translation>accesos directos de archivos usados ??recientemente deben ser</translation>
+</phrase>
+
+<phrase>
+<original>captions</original>
+<translation>subtítulos</translation>
+</phrase>
+
+<phrase>
+<original>image window titles should be</original>
+<translation>títulos de la ventana de imagen debe ser</translation>
+</phrase>
+
+<phrase>
+<original>image canvas background</original>
+<translation>el fondo del lienzo la imagen</translation>
+</phrase>
+
+<phrase>
+<original>canvas appearance</original>
+<translation>aparición lienzo</translation>
 </phrase>
 
 <phrase>
@@ -14150,7 +14145,7 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <translation>ADVERTENCIA: es inválida esta carpeta (acceso prohibido). Proporcione una carpeta válida. Si no se proporciona ninguna nueva carpeta, PhotoDemon utilizará ubicación temporal por defecto del sistema.</translation>
 </phrase>
 
-<!-- Tools_Options.frm contains 244 phrases. 67 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
+<!-- Tools_Options.frm contains 242 phrases. 65 were duplicates of existing phrases, so only 177 new phrases were written to file. -->
 
 <!-- END text for Tools_Options.frm-->
 
@@ -14407,10 +14402,10 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2476</phrasecount>
+<phrasecount>2475</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4245 phrases. -->
-<!-- 1769 are duplicates, so only 2476 unique phrases have been written to file. -->
-<!-- These 2476 phrases contain approximately 13320 total words. -->
+<!-- As of this build, PhotoDemon contains 4244 phrases. -->
+<!-- 1769 are duplicates, so only 2475 unique phrases have been written to file. -->
+<!-- These 2475 phrases contain approximately 13314 total words. -->
 
 </pdData>
