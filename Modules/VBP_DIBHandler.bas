@@ -272,8 +272,8 @@ Public Function copyDIBToClipboard(ByRef srcDIB As pdDIB) As Boolean
         ' This maxmimizes operability between major software packages.
         
         'Start by using the vbAccelerator clipboard class, which makes this whole process a bit easier.
-        Dim clpObject As cCustomClipboard
-        Set clpObject = New cCustomClipboard
+        Dim clpObject As pdClipboard
+        Set clpObject = New pdClipboard
         If clpObject.ClipboardOpen(FormMain.hWnd) Then
         
             clpObject.ClearClipboard
@@ -283,7 +283,7 @@ Public Function copyDIBToClipboard(ByRef srcDIB As pdDIB) As Boolean
                 
                 'Most systems willl already have PNG available as a setting; the AddFormat function will detect this
                 Dim PNGID As Long
-                PNGID = clpObject.AddFormat("PNG")
+                PNGID = clpObject.AddClipboardFormat("PNG")
                 
                 'Convert our current DIB to a FreeImage-type DIB
                 Dim fi_DIB As Long
@@ -297,7 +297,7 @@ Public Function copyDIBToClipboard(ByRef srcDIB As pdDIB) As Boolean
                 'If the save was successful, hand the new PNG byte array to the clipboard
                 If fi_Check Then
                     copyDIBToClipboard = True
-                    clpObject.SetBinaryData PNGID, pngArray
+                    clpObject.SetClipboardBinaryData PNGID, pngArray
                 End If
                 
             End If

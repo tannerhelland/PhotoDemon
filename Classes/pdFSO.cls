@@ -1141,19 +1141,33 @@ Public Function EnforcePathSlash(ByRef srcPath As String) As String
 End Function
 
 'Return just the filename from a full path
-Public Function GetFilename(ByRef sString As String) As String
+Public Function GetFilename(ByRef sString As String, Optional ByVal stripExtension As Boolean = False) As String
 
-    Dim i As Long
+    'If the function fails (because no slash is found), we'll simply return the entire incoming string, under the
+    ' assumption that it's already just a filename.
+    GetFilename = sString
     
+    Dim i As Long
     For i = Len(sString) - 1 To 1 Step -1
         If (Mid$(sString, i, 1) = "/") Or (Mid$(sString, i, 1) = "\") Then
             GetFilename = Right$(sString, Len(sString) - i)
-            Exit Function
+            Exit For
         End If
     Next i
     
-    'If we made it here, no slash was found, so presume that the entire incoming string was the filename
-    GetFilename = sString
+    'If the caller wants us to strip the extension, do so before exiting
+    If stripExtension Then
+        
+        Dim dotPos As Long
+        dotPos = InStrRev(GetFilename, ".")
+        
+        If dotPos > 1 Then
+            GetFilename = Left$(GetFilename, dotPos - 1)
+        ElseIf dotPos = 1 Then
+            GetFilename = ""
+        End If
+        
+    End If
     
 End Function
 

@@ -3,8 +3,8 @@ Attribute VB_Name = "Clipboard_Handler"
 'Clipboard Interface
 'Copyright 2001-2015 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 14/June/14
-'Last update: add "paste as new layer" actions to Undo stack
+'Last updated: 10/November/15
+'Last update: start overhaul to integrate new pdClipboard class
 '
 'Module for handling all Windows clipboard routines.  Copy and Paste are the real stars; Cut is not included
 ' (as there is no purpose for it at present), though Empty Clipboard does make an appearance.
@@ -146,185 +146,69 @@ End Sub
 ' The parameter "srcIsMeantAsLayer" controls whether the clipboard data is loaded as a new image, or as a new layer in an existing image.
 Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     
-    'In the future, I'd like to move all file interactions in this function to pdFSO, but for now, only a few actions are covered.
-    Dim cFile As pdFSO
-    Set cFile = New pdFSO
-    
     Dim pasteWasSuccessful As Boolean
     pasteWasSuccessful = False
     
+    'Prep a bunch of generic clipboard handling variables
     Dim tmpClipboardFile As String, tmpDownloadFile As String
     Dim sFile(0) As String
     Dim sTitle As String, sFilename As String
-        
-    'PNGs on the clipboard get preferential treatment, as they preserve transparency data - so check for them first
-    Dim clpObject As cCustomClipboard
-    Set clpObject = New cCustomClipboard
     
-    'See if clipboard data is available in PNG format.  If it is, attempt to load it.
-    ' (If successful, this IF block will manually exit the sub upon completion.)
-    If clpObject.IsDataAvailableForFormatName(FormMain.hWnd, "PNG") Then
+    'Also, note that all file interactions occur through pdFSO, so we can support Unicode filenames/paths.
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    'Attempt to open the clipboard
+    Dim clpObject As pdClipboard
+    Set clpObject = New pdClipboard
+    If clpObject.ClipboardOpen(FormMain.hWnd) Then
         
+        'When debugging, it's nice to know what clipboard formats the OS reports prior to actually retrieving them.
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "PNG format found on clipboard.  Attempting to retrieve data..."
+            pdDebug.LogAction "Clipboard reports the following formats: " & clpObject.GetListOfAvailableFormatNames()
         #End If
         
-        Dim PNGID As Long
-        PNGID = clpObject.FormatIDForName(FormMain.hWnd, "PNG")
-        
-        If clpObject.ClipboardOpen(FormMain.hWnd) Then
-        
-            Dim PNGData() As Byte
-        
-            If clpObject.GetBinaryData(PNGID, PNGData) Then
-                
-                'Dump the PNG data out to file
-                tmpClipboardFile = g_UserPreferences.GetTempPath & "PDClipboard.png"
-                
-                If cFile.SaveByteArrayToFile(PNGData, tmpClipboardFile) Then
-                
-                    'We can now use the standard image load routine to import the temporary file
-                    sFile(0) = tmpClipboardFile
-                    sTitle = g_Language.TranslateMessage("Clipboard Image")
-                    sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
-                    
-                    'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
-                    If srcIsMeantAsLayer Then
-                        Layer_Handler.loadImageAsNewLayer False, sFile(0), sTitle, True
-                    Else
-                        LoadFileAsNewImage sFile, False, sTitle, sFilename
-                    End If
-                        
-                    'Be polite and remove the temporary file
-                    cFile.KillFile tmpClipboardFile
-                        
-                    Message "Clipboard data imported successfully "
-                    
-                    clpObject.ClipboardClose
-                    
-                    pasteWasSuccessful = True
-                    
-                Else
-                    pasteWasSuccessful = False
-                End If
-                
-            Else
-                #If DEBUGMODE = 1 Then
-                    pdDebug.LogAction "Could not retrieve PNG binary data.  PNG paste action abandoned."
-                #End If
-            End If
-        
-            clpObject.ClipboardClose
-        
-        Else
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Could not open clipboard.  PNG paste action abandoned."
-            #End If
+        'PNGs on the clipboard get preferential treatment, as they preserve transparency data - so check for them first.
+        If clpObject.DoesClipboardHaveFormatName("PNG") Then
+            pasteWasSuccessful = Clipboard_Handler.ClipboardPaste_CustomImageFormat(clpObject, "PNG", srcIsMeantAsLayer, "png")
         End If
         
-    End If
-    
-    'If no PNG data was found, look for an HTML fragment.  Chrome and Firefox will include an HTML fragment link to any
-    ' copied image from within the browser, which we can use to download the image in question.
-    ' (If successful, this IF block will manually exit the sub upon completion.)
-    If clpObject.IsDataAvailableForFormatName(FormMain.hWnd, "HTML Format") And (Not pasteWasSuccessful) Then
+        'If we couldn't find PNG data (or something went horribly wrong during that step), look for an HTML fragment next.
+        ' Images copied from web browsers typically create an HTML fragment, which should have a direct link to the copied image.
+        '  Downloading the image manually lets us maintain things like ICC profiles and the image's original filename.
+        If clpObject.DoesClipboardHaveHTML() And (Not pasteWasSuccessful) Then
+            pasteWasSuccessful = Clipboard_Handler.ClipboardPaste_HTML(clpObject, srcIsMeantAsLayer)
+        End If
         
+        'JPEGs are another possibility.  We prefer them less than PNG or direct download (because there's no guarantee that the
+        ' damn browser didn't re-encode them, but they're better than bitmaps or DIBs because they may retain metadata and
+        ' color profiles, so test for JPEG next.  (Also, note that certain versions of Microsoft Office use "JFIF" as the identifier,
+        ' for reasons known only to them...)
+        If clpObject.DoesClipboardHaveFormatName("JPEG") And (Not pasteWasSuccessful) Then
+            pasteWasSuccessful = Clipboard_Handler.ClipboardPaste_CustomImageFormat(clpObject, "JPEG", srcIsMeantAsLayer, "jpg")
+        End If
+        
+        If clpObject.DoesClipboardHaveFormatName("JPG") And (Not pasteWasSuccessful) Then
+            pasteWasSuccessful = Clipboard_Handler.ClipboardPaste_CustomImageFormat(clpObject, "JPG", srcIsMeantAsLayer, "jpg")
+        End If
+        
+        If clpObject.DoesClipboardHaveFormatName("JFIF") And (Not pasteWasSuccessful) Then
+            pasteWasSuccessful = Clipboard_Handler.ClipboardPaste_CustomImageFormat(clpObject, "JFIF", srcIsMeantAsLayer, "jpg")
+        End If
+        
+        'Regardless of success or failure, make sure to close the clipboard now that we're done with it.
+        clpObject.ClipboardClose
+        
+    Else
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "HTML format found on clipboard.  Attempting to retrieve data..."
+            pdDebug.LogAction "WARNING!  Couldn't open the clipboard; is it possible another program has locked it?"
         #End If
-        
-        Dim HtmlID As Long
-        HtmlID = clpObject.FormatIDForName(FormMain.hWnd, "HTML Format")
-        
-        If clpObject.ClipboardOpen(FormMain.hWnd) Then
-        
-            Dim htmlString As String
-            If clpObject.GetTextData(HtmlID, htmlString) Then
-                
-                'Look for an image reference within the HTML snippet
-                If InStr(1, UCase$(htmlString), "<IMG ", vbBinaryCompare) > 0 Then
-                
-                    'Retrieve the full image path, which will be between the first set of quotation marks following the
-                    ' "<img src=" statement in the HTML snippet.
-                    Dim vbQuoteMark As String
-                    vbQuoteMark = """"
-                    
-                    'Parse out the URL between the img src quotes
-                    Dim urlStart As Long, urlEnd As Long
-                    urlStart = InStr(1, UCase$(htmlString), "<IMG ", vbBinaryCompare)
-                    If urlStart > 0 Then urlStart = InStr(urlStart, UCase$(htmlString), "SRC=", vbBinaryCompare)
-                    If urlStart > 0 Then urlStart = InStr(urlStart, htmlString, vbQuoteMark, vbBinaryCompare) + 1
-                    
-                    'The magic number 6 below is calculated as the length of (src="), + 1 to advance to the
-                    ' character immediately following the quotation mark.
-                    If urlStart > 0 Then urlEnd = InStr(urlStart + 6, htmlString, vbQuoteMark, vbBinaryCompare)
-                    
-                    'As a failsafe, make sure a valid URL was actually found
-                    If (urlStart > 0) And (urlEnd > 0) Then
-                    
-                        Message "Image URL found on clipboard.  Attempting to download..."
-                        
-                        tmpDownloadFile = FormInternetImport.downloadURLToTempFile(Mid$(htmlString, urlStart, urlEnd - urlStart))
-                        
-                        'If the download was successful, we can now use the standard image load routine to import the temporary file
-                        If Len(tmpDownloadFile) <> 0 Then
-                        
-                            sFile(0) = tmpDownloadFile
-                                    
-                            Dim tmpFilename As String
-                            tmpFilename = tmpDownloadFile
-                            StripFilename tmpFilename
-                            
-                            'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
-                            If srcIsMeantAsLayer Then
-                                Layer_Handler.loadImageAsNewLayer False, sFile(0), True
-                            Else
-                                LoadFileAsNewImage sFile, False, tmpFilename, tmpFilename, , , , , , True
-                            End If
-                            
-                            'Delete the temporary file
-                            cFile.KillFile tmpDownloadFile
-                            
-                            Message "Clipboard data imported successfully "
-                            
-                            clpObject.ClipboardClose
-                            
-                            'Check for load failure.  If the most recent pdImages object is inactive, it's a safe assumption that
-                            ' the load operation failed.  (This isn't foolproof, especially if the user loads a ton of images,
-                            ' and subsequently unloads images in an arbitrary order - but given the rarity of this situation, I'm content
-                            ' to use this technique for predicting failure.)
-                            If Not pdImages(UBound(pdImages)) Is Nothing Then
-                                If pdImages(UBound(pdImages)).IsActive Then
-                                    pasteWasSuccessful = True
-                                    Exit Sub
-                                Else
-                                    pasteWasSuccessful = False
-                                End If
-                            Else
-                                pasteWasSuccessful = False
-                            End If
-                        
-                        Else
-                        
-                            'If the download failed, let the user know that hey, at least we tried.
-                            Message "Image download failed.  Please copy a valid image URL to the clipboard and try again."
-                            
-                        End If
-                    
-                    End If
-                
-                End If
-                
-        
-            End If
-        
-            clpObject.ClipboardClose
-        
-        End If
-    
     End If
     
-    
+    '*** END OF API CLIPBOARD INTERACTIONS ***
+    '*** Everything beyond this point uses pure VB code ***
+    '*** TODO: FIX THIS! ***
+        
     'Make sure the clipboard format is a bitmap
     If Clipboard.GetFormat(vbCFBitmap) And (Not pasteWasSuccessful) Then
         
@@ -439,16 +323,222 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
         pasteWasSuccessful = True
         
     End If
-    
+        
     'If a paste operation was successful, switch the current tool to the layer move/resize tool, which is most likely needed after a
     ' new layer has been pasted.
     If pasteWasSuccessful Then
         If srcIsMeantAsLayer Then toolbar_Toolbox.selectNewTool NAV_MOVE
     Else
-        pdMsgBox "The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.", vbExclamation + vbOKOnly + vbApplicationModal, "Windows Clipboard Error"
+        PDMsgBox "The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.", vbExclamation + vbOKOnly + vbApplicationModal, "Windows Clipboard Error"
     End If
     
 End Sub
+
+'If the clipboard contains custom-format image data (most commonly PNG or JPEG), you can call this function to initiate a "paste" command
+' using the custom image data as a source.  The parameter "srcIsMeantAsLayer" controls whether the clipboard data is loaded as a new image,
+' or as a new layer in an existing image.
+'
+'RETURNS: TRUE if successful; FALSE otherwise.
+Public Function ClipboardPaste_CustomImageFormat(ByRef clpObject As pdClipboard, ByVal clipboardFormatName As String, ByVal srcIsMeantAsLayer As Boolean, Optional ByVal tmpFileExtension As String = "tmp") As Boolean
+    
+    'Unfortunately, a lot of things can go wrong when pasting custom image data, so we assume failure by default.
+    ClipboardPaste_CustomImageFormat = False
+    
+    'All paste operations use a few consistent variables
+    
+    'Raw retrieval storage variables
+    Dim clipFormatID As Long, rawClipboardData() As Byte
+    
+    'Temporary file for storing the clipboard data.  (This lets us use PD's central image load function.)
+    Dim tmpClipboardFile As String
+    
+    'Additional file information variables, which we pass to the central load function to let it know that this is only a temp file,
+    ' and it should use these hint values instead of assuming normal image load behavior.
+    Dim sFile() As String, sTitle As String, sFilename As String
+    ReDim sFile(0) As String
+    
+    'pdFSO is used to ensure Unicode subfolder compatibility
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    'Verify that the requested data is actually available.  (Hopefully the caller already checked this, but you never know...)
+    If clpObject.DoesClipboardHaveFormatName(clipboardFormatName) Then
+        
+        'Because custom-format image data can be registered by many programs, retrieve this image format's unique ID now.
+        clipFormatID = clpObject.GetFormatIDFromName(clipboardFormatName)
+        
+        'Pull the data into a local array
+        If clpObject.GetClipboardBinaryData(clipFormatID, rawClipboardData) Then
+            
+            'Dump the data out to file
+            tmpClipboardFile = g_UserPreferences.GetTempPath & "PDClipboard." & tmpFileExtension
+            If cFile.SaveByteArrayToFile(rawClipboardData, tmpClipboardFile) Then
+                
+                'We no longer need our local copy of the clipboard data
+                Erase rawClipboardData
+                
+                'We can now use the standard image load routine to import the temporary file.  Because we don't want the
+                ' load function to use the temporary file name as the image name, we manually supply a filename to suggest
+                ' if the user eventually tries to save the file.
+                sFile(0) = tmpClipboardFile
+                sTitle = g_Language.TranslateMessage("Clipboard Image")
+                sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+                
+                'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
+                If srcIsMeantAsLayer Then
+                    Layer_Handler.loadImageAsNewLayer False, sFile(0), sTitle, True
+                Else
+                    LoadFileAsNewImage sFile, False, sTitle, sFilename
+                End If
+                    
+                'Be polite and remove the temporary file
+                cFile.KillFile tmpClipboardFile
+                
+                'If we made it all the way here, the load was (probably?) successful
+                Message "Clipboard data imported successfully "
+                ClipboardPaste_CustomImageFormat = True
+                
+            Else
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "WARNING!  Clipboard image data (probably PNG) could not be written to a temp file."
+                #End If
+            End If
+            
+        Else
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  Clipboard.GetBinaryData failed on custom image data (probably PNG).  Special paste action abandoned."
+            #End If
+        End If
+        
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  ClipboardPaste_CustomImageFormat was called, but the requested data doesn't exist on the clipboard."
+        #End If
+    End If
+    
+End Function
+
+'If the clipboard contains HTML text (presumably copied from a web browser), you can call this function to initiate a "paste" command
+' using the HTML text as a source.  When copying an image from the web, most web browsers will include a link to the original image
+' on the clipboard; we prefer to download this vs grabbing the actual image bits, as we provide much more comprehensive handling for
+' things like metadata, special PNG chunks, ICC profiles, and more.
+'Also, the parameter "srcIsMeantAsLayer" controls whether the clipboard data is loaded as a new image, or as a new layer in the
+' active image.
+'
+'RETURNS: TRUE if successful; FALSE otherwise.
+Public Function ClipboardPaste_HTML(ByRef clpObject As pdClipboard, ByVal srcIsMeantAsLayer As Boolean) As Boolean
+    
+    'Unfortunately, a lot of things can go wrong when pasting custom image data, so we assume failure by default.
+    ClipboardPaste_HTML = False
+    
+    'Verify that the requested data is actually available.  (Hopefully the caller already checked this, but you never know...)
+    If clpObject.DoesClipboardHaveHTML() Then
+        
+        'Pull the HTML data into a local string
+        Dim htmlString As String
+        If clpObject.GetClipboardHTML(htmlString) Then
+            
+            'Look for an image reference within the HTML snippet
+            If InStr(1, UCase$(htmlString), "<IMG ", vbBinaryCompare) > 0 Then
+            
+                'Retrieve the full image path, which will be between the first set of quotation marks following the
+                ' "<img src=" statement in the HTML snippet.
+                Dim vbQuoteMark As String
+                vbQuoteMark = """"
+                
+                'Parse out the URL between the img src quotes
+                Dim urlStart As Long, urlEnd As Long
+                urlStart = InStr(1, UCase$(htmlString), "<IMG ", vbBinaryCompare)
+                If urlStart > 0 Then urlStart = InStr(urlStart, UCase$(htmlString), "SRC=", vbBinaryCompare)
+                If urlStart > 0 Then urlStart = InStr(urlStart, htmlString, vbQuoteMark, vbBinaryCompare) + 1
+                
+                'The magic number 6 below is calculated as the length of (src="), + 1 to advance to the
+                ' character immediately following the quotation mark.
+                If urlStart > 0 Then urlEnd = InStr(urlStart + 6, htmlString, vbQuoteMark, vbBinaryCompare)
+                
+                'As a failsafe, make sure a valid URL was actually found
+                If (urlStart > 0) And (urlEnd > 0) Then
+                    
+                    Message "Image URL found on clipboard.  Attempting to download..."
+                    
+                    Dim tmpDownloadFile As String
+                    tmpDownloadFile = FormInternetImport.downloadURLToTempFile(Mid$(htmlString, urlStart, urlEnd - urlStart))
+                    
+                    'pdFSO is used to ensure Unicode filename compatibility
+                    Dim cFile As pdFSO
+                    Set cFile = New pdFSO
+                    
+                    'If the download was successful, we can now use the standard image load routine to import the temporary file
+                    If cFile.FileLenW(tmpDownloadFile) <> 0 Then
+                        
+                        'Additional file information variables, which we pass to the central load function to let it know that this is only a temp file,
+                        ' and it should use these hint values instead of assuming normal image load behavior.
+                        Dim sFile() As String
+                        ReDim sFile(0) As String
+                        sFile(0) = tmpDownloadFile
+                                
+                        Dim tmpFilename As String
+                        tmpFilename = cFile.GetFilename(tmpDownloadFile, True)
+                        
+                        'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
+                        If srcIsMeantAsLayer Then
+                            Layer_Handler.loadImageAsNewLayer False, sFile(0), True
+                        Else
+                            LoadFileAsNewImage sFile, False, tmpFilename, tmpFilename, , , , , , True
+                        End If
+                        
+                        'Delete the temporary file
+                        cFile.KillFile tmpDownloadFile
+                        
+                        Message "Clipboard data imported successfully "
+                            
+                        'Check for load failure.  If the most recent pdImages object is inactive, it's a safe assumption that
+                        ' the load operation failed.  (This isn't foolproof, especially if the user loads a ton of images,
+                        ' and subsequently unloads images in an arbitrary order - but given the rarity of this situation, I'm content
+                        ' to use this technique for predicting failure.)
+                        If g_CurrentImage <= UBound(pdImages) Then
+                            If Not pdImages(g_CurrentImage) Is Nothing Then
+                                If pdImages(g_CurrentImage).IsActive Then
+                                    ClipboardPaste_HTML = True
+                                End If
+                            End If
+                        End If
+                    
+                    Else
+                        
+                        'If the download failed, let the user know that hey, at least we tried.
+                        Message "Image download failed.  Please copy a valid image URL to the clipboard and try again."
+                        
+                    End If
+                
+                'An image tag was found, but a parsing error occurred when trying to strip out the source URL.  This is okay;
+                ' exit immediately without raising any errors.
+                Else
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "Clipboard.GetClipboardHTML was successful and an image URL was located, but a parsing error occurred."
+                    #End If
+                End If
+                
+            'No image tag found, which is fine; exit immediately without raising any errors.
+            Else
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Clipboard.GetClipboardHTML was successful, but no image URL found."
+                #End If
+            End If
+            
+        Else
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  Clipboard.GetClipboardHTML failed.  Special paste action abandoned."
+            #End If
+        End If
+        
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  ClipboardPaste_HTML was called, but HTML data doesn't exist on the clipboard."
+        #End If
+    End If
+    
+End Function
 
 'The code in the function below is a heavily modified version of code originally located at:
 ' http://www.vb-helper.com/howto_track_clipboard.html (link still good as of 21 December '12)
