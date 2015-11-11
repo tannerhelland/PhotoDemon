@@ -16,14 +16,6 @@ Attribute VB_Name = "Clipboard_Handler"
 
 Option Explicit
 
-'API functions used to extract file names from clipboard data
-Private Declare Function CloseClipboard Lib "user32" () As Long
-Private Declare Function DragQueryFile Lib "shell32" Alias "DragQueryFileA" (ByVal hDrop As Long, ByVal iFile As Long, ByVal lpszFile As String, ByVal cch As Long) As Long
-Private Declare Function GetClipboardData Lib "user32" (ByVal wFormat As Long) As Long
-Private Declare Function OpenClipboard Lib "user32" (ByVal hWnd As Long) As Long
-
-Private Const CF_HDROP As Long = 15
-
 'Copy the current selection (or entire layer, if no selection is active) to the clipboard, then erase the selected area
 ' (or entire layer, if no selection is active).
 Public Sub ClipboardCut(ByVal cutMerged As Boolean)
@@ -196,6 +188,11 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
             pasteWasSuccessful = Clipboard_Handler.ClipboardPaste_CustomImageFormat(clpObject, "JFIF", srcIsMeantAsLayer, "jpg")
         End If
         
+         'Next, see if the clipboard contains one or more files.  If it does, try to load them.
+        If clpObject.DoesClipboardHaveFiles() And (Not pasteWasSuccessful) Then
+            pasteWasSuccessful = Clipboard_Handler.ClipboardPaste_ListOfFiles(clpObject, srcIsMeantAsLayer)
+        End If
+        
         'Regardless of success or failure, make sure to close the clipboard now that we're done with it.
         clpObject.ClipboardClose
         
@@ -298,30 +295,6 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
             
         End If
         
-    'Next, see if the clipboard contains one or more files.  If it does, try to load them.
-    ElseIf Clipboard.GetFormat(vbCFFiles) Then
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "One or more file locations found on clipboard.  Attempting to retrieve data..."
-        #End If
-        
-        Dim listFiles() As String
-        listFiles = ClipboardGetFiles()
-        
-        'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
-        If srcIsMeantAsLayer Then
-            Dim i As Long
-            
-            For i = 0 To UBound(listFiles)
-                Layer_Handler.loadImageAsNewLayer False, listFiles(i), , True
-            Next i
-            
-        Else
-            LoadFileAsNewImage listFiles
-        End If
-        
-        pasteWasSuccessful = True
-        
     End If
         
     'If a paste operation was successful, switch the current tool to the layer move/resize tool, which is most likely needed after a
@@ -339,8 +312,8 @@ End Sub
 ' or as a new layer in an existing image.
 '
 'RETURNS: TRUE if successful; FALSE otherwise.
-Public Function ClipboardPaste_CustomImageFormat(ByRef clpObject As pdClipboard, ByVal clipboardFormatName As String, ByVal srcIsMeantAsLayer As Boolean, Optional ByVal tmpFileExtension As String = "tmp") As Boolean
-    
+Private Function ClipboardPaste_CustomImageFormat(ByRef clpObject As pdClipboard, ByVal clipboardFormatName As String, ByVal srcIsMeantAsLayer As Boolean, Optional ByVal tmpFileExtension As String = "tmp") As Boolean
+        
     'Unfortunately, a lot of things can go wrong when pasting custom image data, so we assume failure by default.
     ClipboardPaste_CustomImageFormat = False
     
@@ -363,6 +336,10 @@ Public Function ClipboardPaste_CustomImageFormat(ByRef clpObject As pdClipboard,
     
     'Verify that the requested data is actually available.  (Hopefully the caller already checked this, but you never know...)
     If clpObject.DoesClipboardHaveFormatName(clipboardFormatName) Then
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "ClipboardPaste_CustomImageFormat() will now attempt to load " & clipboardFormatName & " from the clipboard..."
+        #End If
         
         'Because custom-format image data can be registered by many programs, retrieve this image format's unique ID now.
         clipFormatID = clpObject.GetFormatIDFromName(clipboardFormatName)
@@ -426,13 +403,17 @@ End Function
 ' active image.
 '
 'RETURNS: TRUE if successful; FALSE otherwise.
-Public Function ClipboardPaste_HTML(ByRef clpObject As pdClipboard, ByVal srcIsMeantAsLayer As Boolean) As Boolean
+Private Function ClipboardPaste_HTML(ByRef clpObject As pdClipboard, ByVal srcIsMeantAsLayer As Boolean) As Boolean
     
     'Unfortunately, a lot of things can go wrong when pasting custom image data, so we assume failure by default.
     ClipboardPaste_HTML = False
     
     'Verify that the requested data is actually available.  (Hopefully the caller already checked this, but you never know...)
     If clpObject.DoesClipboardHaveHTML() Then
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "ClipboardPaste_HTML() will now attempt to find valid image HTML on the clipboard..."
+        #End If
         
         'Pull the HTML data into a local string
         Dim htmlString As String
@@ -540,57 +521,49 @@ Public Function ClipboardPaste_HTML(ByRef clpObject As pdClipboard, ByVal srcIsM
     
 End Function
 
-'The code in the function below is a heavily modified version of code originally located at:
-' http://www.vb-helper.com/howto_track_clipboard.html (link still good as of 21 December '12)
-' Many thanks to the original author(s).
-Public Function ClipboardGetFiles() As String()
+'If one or more files exist on the clipboard, attempt to paste them all.
+Private Function ClipboardPaste_ListOfFiles(ByRef clpObject As pdClipboard, ByVal srcIsMeantAsLayer As Boolean)
     
-    Dim drop_handle As Long
-    Dim num_file_names As Long
-    Dim file_names() As String
-    Dim file_name As String * 1024
-    Dim i As Long
-
-    ' Make sure there is file data.
-    If Clipboard.GetFormat(vbCFFiles) Then
+    'Make sure files actually exist on the clipboard
+    If clpObject.DoesClipboardHaveFiles() Then
         
-        ' File data exists. Get it.
-        ' Open the clipboard.
-        If OpenClipboard(0) Then
-            ' The clipboard is open.
-
-            ' Get the handle to the dropped list of files.
-            drop_handle = GetClipboardData(CF_HDROP)
-
-            ' Get the number of dropped files.
-            num_file_names = DragQueryFile(drop_handle, -1, vbNullString, 0)
-
-            ' Get the file names.
-            ReDim file_names(0 To num_file_names - 1) As String
-            For i = 0 To num_file_names - 1
-                ' Get the file name.
-                DragQueryFile drop_handle, i, file_name, Len(file_name)
-
-                ' Truncate at the NULL character.
-                file_names(i) = Left$(file_name, InStr(file_name, vbNullChar) - 1)
-            Next i
-
-            ' Close the clipboard.
-            CloseClipboard
-
-            ' Assign the return value.
-            ClipboardGetFiles = file_names
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "ClipboardPaste_ListOfFiles() will now attempt to load one or more files from the clipboard..."
+        #End If
+        
+        Dim listOfFiles() As String, numOfFiles As Long
+        If clpObject.GetFileList(listOfFiles, numOfFiles) Then
             
+            'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
+            If srcIsMeantAsLayer Then
+                Dim i As Long
+                For i = 0 To UBound(listOfFiles)
+                    If Len(listOfFiles(i)) <> 0 Then Layer_Handler.loadImageAsNewLayer False, listOfFiles(i), , True
+                Next i
+            Else
+                LoadFileAsNewImage listOfFiles
+            End If
+            
+            ClipboardPaste_ListOfFiles = True
+            
+        Else
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  ClipboardPaste_ListOfFiles couldn't retrieve a valid file list from pdClipboard."
+            #End If
         End If
         
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  ClipboardPaste_ListOfFiles was called, but no file paths exist on the clipboard."
+        #End If
     End If
-    
+        
 End Function
 
 'Because OLE drag/drop is so similar to clipboard functionality, I have included that functionality here.
 ' Data and Effect are passed as-is from the calling function, while intendedTargetIsLayer controls whether the image file(s)
 ' (if valid) should be loaded as new layers or new images.
-Public Function loadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As Long, ByVal intendedTargetIsLayer As Boolean) As Boolean
+Public Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As Long, ByVal intendedTargetIsLayer As Boolean) As Boolean
 
     Dim sFile() As String
     Dim tmpString As String
@@ -634,7 +607,7 @@ Public Function loadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
                 LoadFileAsNewImage sFile
             End If
             
-            loadImageFromDragDrop = True
+            LoadImageFromDragDrop = True
             Exit Function
             
         End If
@@ -681,7 +654,7 @@ Public Function loadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
             
         Message "Image imported successfully "
         
-        loadImageFromDragDrop = True
+        LoadImageFromDragDrop = True
         Exit Function
     
     'If the data is not a file list, see if it's a URL.
@@ -712,7 +685,7 @@ Public Function loadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
                 If cFile.FileExist(tmpDownloadFile) Then cFile.KillFile tmpDownloadFile
                 
                 'Exit!
-                loadImageFromDragDrop = True
+                LoadImageFromDragDrop = True
                 Exit Function
             
             Else
@@ -727,7 +700,7 @@ Public Function loadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
     End If
     
     'If we made it all the way here, something went horribly wrong
-    loadImageFromDragDrop = False
+    LoadImageFromDragDrop = False
     Exit Function
 
 End Function

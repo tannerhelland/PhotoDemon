@@ -133,7 +133,7 @@ End Enum
 #End If
 
 'Helper function for dealing with file lists
-Private Declare Function DragQueryFile Lib "shell32" Alias "DragQueryFileW" (ByVal hDrop As Long, ByVal UINT As Long, ByVal lpStrW As Long, ByVal Ch As Long) As Long
+Private Declare Function DragQueryFile Lib "shell32" Alias "DragQueryFileW" (ByVal hDrop As Long, ByVal iFile As Long, ByVal lpStrW As Long, ByVal sizeOfStringBuffer As Long) As Long
 
 Private Type POINTAPI
     x As Long
@@ -148,6 +148,7 @@ Private Type DROPFILES
 End Type
 
 Private Const MAX_PATH As Long = 260
+Private Const MAX_PATH_UNICODE As Long = 1024
 
 'Register a new clipboard format.  This step is important, because multiple programs may register the same format (e.g. PNG).
 ' Using native clipboard functions guarantees that all programs registering the same format name get the same ID in return.
@@ -236,6 +237,12 @@ End Function
 ' IMPORTANT NOTE: you must have previously opened the clipboard (in order to call UpdateClipboardLists) for this function to work.
 Public Function DoesClipboardHaveHTML() As Boolean
     DoesClipboardHaveHTML = Me.DoesClipboardHaveFormatName("HTML Format")
+End Function
+
+'Shortcut function to check for one or more file paths.  File lists are handled weirdly, via an HDROP handle.
+' IMPORTANT NOTE: you must have previously opened the clipboard (in order to call UpdateClipboardLists) for this function to work.
+Public Function DoesClipboardHaveFiles() As Boolean
+    DoesClipboardHaveFiles = Me.DoesClipboardHaveFormatID(CF_HDROP)
 End Function
 
 'See if a given clipboard format name exists on the current clipboard.  The comparison is not case-sensitive.
@@ -571,42 +578,64 @@ Public Function GetClipboardHTML(ByRef dstString As String) As Boolean
     
 End Function
 
-'NOTE: I haven't vetted this function yet.  Use at your own risk.
-Public Function GetFileList( _
-      ByRef sFiles() As String, _
-      ByRef iFileCount As Long _
-   ) As Boolean
-Dim hDrop As Long
-Dim iFile As Long
-Dim sFilename As String
-Dim iPos As Long
-
-   ' Get handle to CF_HDROP if any:
-   hDrop = GetClipboardMemoryHandle(CF_HDROP)
-   If (hDrop <> 0) Then
+'If the clipboard contains one or more file paths, you can retrieve them via this function.  Note that you must pass a string array,
+' even if there is only a single file on the clipboard.
+Public Function GetFileList(ByRef dstFileList() As String, ByRef numOfFiles As Long) As Boolean
+    
+    GetFileList = False
+    
+    'Make sure files actually exist on the clipboard
+    If Me.DoesClipboardHaveFiles() Then
+    
+        'Retrieve a handle to the hDrop (drop group struct)
+        Dim hDrop As Long
+        hDrop = GetClipboardData(CF_HDROP)
+        If hDrop <> 0 Then
+            
+            'Get the number of files in the list
+            numOfFiles = DragQueryFile(hDrop, -1&, 0&, 0)
+            If numOfFiles > 0 Then
+                
+                'Prep the target array, and a temporary buffer for each (null-terminated) return
+                ReDim dstFileList(0 To numOfFiles - 1) As String
+                Dim tmpFilename As String, strLength As Long
+                tmpFilename = String$(MAX_PATH_UNICODE, 0&)
+                
+                'Retrieve each filename in the list
+                Dim i As Long
+                For i = 0 To numOfFiles - 1
+                   
+                    'Get the length of this string
+                    strLength = DragQueryFile(hDrop, i, 0&, 0&)
+                    If DragQueryFile(hDrop, i, StrPtr(tmpFilename), MAX_PATH_UNICODE) <> 0 Then
+                        dstFileList(i) = Left$(tmpFilename, strLength)
+                    End If
+                   
+                Next i
+                
+                GetFileList = True
    
-      iFileCount = DragQueryFile(hDrop, -1&, 0&, 0)
-        
-      If (iFileCount > 0) Then
-         ' Allocate space for return and working variables.
-         ReDim sFiles(0 To iFileCount - 1) As String
-         sFilename = String$(MAX_PATH, 0&)
-   
-         ' Retrieve each filename in Dropped Filelist.
-         For iFile = 0 To iFileCount - 1
-            DragQueryFile hDrop, iFile, StrPtr(sFilename), Len(sFilename)
-            iPos = InStr(sFilename, vbNullChar)
-            If (iPos <> 0) Then
-               sFiles(iFile) = Left$(sFilename, iPos - 1)
             Else
-               sFiles(iFile) = sFilename
+                numOfFiles = 0
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "WARNING!  pdClipboard.GetFileList() failed, because the hDrop contained zero valid files."
+                #End If
             End If
-         Next iFile
-         
-         GetFileList = True
-      End If
-   End If
-   
+
+        Else
+            numOfFiles = 0
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  pdClipboard.GetFileList() failed, because the clipboard didn't return a valid hDrop."
+            #End If
+        End If
+        
+    Else
+        numOfFiles = 0
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  pdClipboard.GetFileList() failed, because the clipboard doesn't contains any filenames."
+        #End If
+    End If
+    
 End Function
 
 'Prior to writing data, you *must* clear the clipboard.  Otherwise, any unwritten formats will remain, potentially fucking up other
