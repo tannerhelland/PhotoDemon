@@ -37,13 +37,6 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'DIB Types
-Private Type RGBQUAD
-    Blue As Byte
-    Green As Byte
-    Red As Byte
-    Alpha As Byte
-End Type
-
 Private Type BITMAP
     Type As Long
     Width As Long
@@ -292,6 +285,45 @@ Public Sub getTransparentLocation(ByRef srcX As Long, ByRef srcY As Long)
     srcX = m_trnsX
     srcY = m_trnsY
 End Sub
+
+'Given a pixel coordinate, return an RGBA quad for that coordinate.
+' Returns: TRUE if the pixel lies inside DIB boundaries; FALSE otherwise.  Make sure to check this before using the RGBQUAD.
+Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad As RGBQUAD) As Boolean
+
+    'Before doing anything else, check to see if the x/y postition lies inside the DIB
+    If (x >= 0) And (x < m_dibWidth) And (y >= 0) And (y < m_dibHeight) Then
+        
+        'The point lies inside the DIB, which means we need to figure out the color at this position
+        GetPixelRGBQuad = True
+        
+        Dim tmpData() As Byte
+        Dim tSA As SAFEARRAY2D
+        prepInternalSafeArray tSA
+        CopyMemory ByVal VarPtrArray(tmpData()), VarPtr(tSA), 4&
+        
+        Dim QuickX As Long
+        QuickX = x * (m_dibColorDepth \ 8)
+        
+        'Failsafe bounds check
+        If ((QuickX + 2) < m_dibArrayWidth) Then
+        
+            With dstQuad
+                .Red = tmpData(QuickX + 2, y)
+                .Green = tmpData(QuickX + 1, y)
+                .Blue = tmpData(QuickX, y)
+                If m_dibColorDepth = 32 Then .Alpha = tmpData(QuickX + 3, y)
+            End With
+            
+        End If
+        
+        CopyMemory ByVal VarPtrArray(tmpData), 0&, 4
+    
+    'This coordinate does not lie inside the layer.
+    Else
+        GetPixelRGBQuad = False
+    End If
+
+End Function
 
 'This function will apply an "alpha-cutoff" to a 32bpp image. Any alpha values above the cutoff will be replaced with
 ' magic magenta (253,0,253) and the location of a transparent pixel (m_trnsX, m_trnsY) will be marked.
