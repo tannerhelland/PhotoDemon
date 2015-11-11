@@ -270,14 +270,14 @@ End Sub
 
 'Render the currently active image to the preview window.  This bares some similarity to the pdDIB.renderToPictureBox function,
 ' but is optimized for the unique concerns of this control.
-Private Sub syncPreviewImage()
+Private Sub syncPreviewImage(Optional ByVal overrideWithOriginalImage As Boolean = False)
     
     'Because the source of rendering may change, we use a temporary reference
     Dim srcDIB As pdDIB
     
     'If the user was previously examining the original image, and color selection is not allowed, be helpful and
     ' automatically restore the previewed image.
-    If m_ShowOriginalInstead Then
+    If m_ShowOriginalInstead Or overrideWithOriginalImage Then
         If m_HasOriginal Then
             Set srcDIB = originalImage
         Else
@@ -351,7 +351,7 @@ Private Sub syncPreviewImage()
         End If
         
         'Paint the results!  (Note that we request an immediate redraw, rather than waiting for WM_PAINT to fire.)
-        If g_IsProgramRunning Then cPainter.requestRepaint True
+        If g_IsProgramRunning Then cPainter.RequestRepaint True
         
         Set srcDIB = Nothing
         
@@ -414,7 +414,6 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
         If Button = vbRightButton Then
         
             curColor = GetPixel(originalImage.getDIBDC, x - ((picPreview.ScaleWidth - originalImage.getDIBWidth) \ 2), y - ((picPreview.ScaleHeight - originalImage.getDIBHeight) \ 2))
-            
             If curColor = -1 Then curColor = RGB(127, 127, 127)
             
             If AllowColorSelection Then colorJustClicked = 1
@@ -452,7 +451,7 @@ Private Sub cMouseEvents_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVa
     
         If AllowColorSelection Then
             cMouseEvents.setPNGCursor "C_PIPETTE", 0, 0
-            If (Not originalImage Is Nothing) Then originalImage.renderToPictureBox picPreview
+            syncPreviewImage True
         Else
             cMouseEvents.setSystemCursor IDC_ARROW
         End If
@@ -467,20 +466,9 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
 
     'If this preview control instance allows the user to select a color, restore whatever image was previously
     ' displayed upon mouse exit
-    If AllowColorSelection Then
-        
-        cMouseEvents.setSystemCursor IDC_HAND
-        
-        If m_ShowOriginalInstead Then
-            If (Not originalImage Is Nothing) Then originalImage.renderToPictureBox picPreview
-        Else
-            If (Not fxImage Is Nothing) Then fxImage.renderToPictureBox picPreview
-        End If
-        
-    Else
-        cMouseEvents.setSystemCursor IDC_ARROW
-    End If
-
+    cMouseEvents.setSystemCursor IDC_DEFAULT
+    syncPreviewImage
+    
 End Sub
 
 Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
@@ -522,7 +510,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
             colorJustClicked = colorJustClicked + 1
         Else
             colorJustClicked = 0
-            If (Not originalImage Is Nothing) Then originalImage.renderToPictureBox picPreview
+            syncPreviewImage True
         End If
         
     End If
@@ -622,7 +610,7 @@ Private Sub UserControl_Initialize()
         
         'Also start a flicker-free window painter
         Set cPainter = New pdWindowPainter
-        cPainter.startPainter picPreview.hWnd
+        cPainter.StartPainter picPreview.hWnd
                 
     End If
     
@@ -720,8 +708,8 @@ Private Sub UserControl_Show()
         End If
         
         'Enable color management
-        assignDefaultColorProfileToObject picPreview.hWnd, picPreview.hDC
-        turnOnColorManagementForDC picPreview.hDC
+        AssignDefaultColorProfileToObject picPreview.hWnd, picPreview.hDC
+        TurnOnColorManagementForDC picPreview.hDC
     
     End If
     
@@ -741,7 +729,7 @@ Private Sub redrawControl()
     'The primary object in this control is the preview picture box.  Everything else is positioned relative to it.
     Dim newPicWidth As Long, newPicHeight As Long
     newPicWidth = UserControl.ScaleWidth
-    newPicHeight = UserControl.ScaleHeight - (btsState.Height + fixDPI(4))
+    newPicHeight = UserControl.ScaleHeight - (btsState.Height + FixDPI(4))
     picPreview.Move 0, 0, newPicWidth, newPicHeight
     
     'If zoom/pan is not allowed, hide that button entirely
@@ -753,7 +741,7 @@ Private Sub redrawControl()
     
     'If zoom/pan is still visible, split the horizontal difference between that button strip, and the before/after strip.
     If btsZoom.Visible Then
-        newButtonWidth = (newPicWidth \ 2) - fixDPI(8)
+        newButtonWidth = (newPicWidth \ 2) - FixDPI(8)
         btsZoom.Move UserControl.ScaleWidth - newButtonWidth, newButtonTop, newButtonWidth, btsState.Height
         
     'If zoom/pan is NOT visible, let the before/after button have the entire horizontal space
