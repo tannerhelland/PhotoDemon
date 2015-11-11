@@ -1071,7 +1071,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     
     'Before doing anything else, make a special note of the outputColorDepth.  If it is 8bpp, we will use PNGQuant to help with the save.
     Dim output8BPP As Boolean
-    If outputColorDepth = 8 Then output8BPP = True Else output8BPP = False
+    If outputColorDepth <= 8 Then output8BPP = True Else output8BPP = False
         
     Message "Preparing %1 image...", sFileType
     
@@ -1082,7 +1082,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     
     'If the image is being saved to a lower bit-depth, we may have to adjust the alpha channel.  Check for that now.
     Dim handleAlpha As Boolean
-    If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth = 8) Then handleAlpha = True Else handleAlpha = False
+    If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth <= 8) Then handleAlpha = True Else handleAlpha = False
     
     'If this image is 32bpp but the output color depth is less than that, make necessary preparations
     If handleAlpha Then

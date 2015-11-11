@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.110</langversion>
+<langversion>6.7.111</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -2478,12 +2478,6 @@ Please válida Introduzca un valor numérico.</translation>
 
 <!-- END text for OutsideDevelopment_SmartBuffer.cls-->
 
-<!-- BEGIN text for cCustomClipboard.cls -->
-
-<!-- cCustomClipboard.cls contains 0 phrases. -->
-
-<!-- END text for cCustomClipboard.cls-->
-
 <!-- BEGIN text for cPerlin3D.cls -->
 
 <!-- cPerlin3D.cls contains 0 phrases. -->
@@ -2519,6 +2513,12 @@ Please válida Introduzca un valor numérico.</translation>
 <!-- pdCaption.cls contains 0 phrases. -->
 
 <!-- END text for pdCaption.cls-->
+
+<!-- BEGIN text for pdClipboard.cls -->
+
+<!-- pdClipboard.cls contains 0 phrases. -->
+
+<!-- END text for pdClipboard.cls-->
 
 <!-- BEGIN text for pdCompositor.cls -->
 
