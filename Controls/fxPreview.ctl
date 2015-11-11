@@ -292,7 +292,7 @@ Private Sub syncPreviewImage(Optional ByVal overrideWithOriginalImage As Boolean
     End If
     
     'If we have nothing to render, exit now
-    If Not srcDIB Is Nothing Then
+    If Not (srcDIB Is Nothing) Then
         
         'srcDIB points at either the original or effect image.  We don't care which, as we render them identically.
         
@@ -412,12 +412,17 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     If isColorSelectionAllowed Then
         
         If Button = vbRightButton Then
-        
-            curColor = GetPixel(originalImage.getDIBDC, x - ((picPreview.ScaleWidth - originalImage.getDIBWidth) \ 2), y - ((picPreview.ScaleHeight - originalImage.getDIBHeight) \ 2))
-            If curColor = -1 Then curColor = RGB(127, 127, 127)
             
-            If AllowColorSelection Then colorJustClicked = 1
-            RaiseEvent ColorSelected
+            'Convert the mouse coordinates to DIB coordinates.
+            Dim dibX As Single, dibY As Single
+            GetDIBXYFromMouseXY x, y, dibX, dibY, True
+            
+            Dim cRGBA As RGBQUAD
+            If originalImage.GetPixelRGBQuad(dibX, dibY, cRGBA) Then
+                curColor = RGB(cRGBA.Red, cRGBA.Green, cRGBA.Blue)
+                If AllowColorSelection Then colorJustClicked = 1
+                RaiseEvent ColorSelected
+            End If
             
         End If
         
@@ -552,6 +557,76 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
         
     End If
 
+End Sub
+
+'Given a mouse (x, y) coordinate pair, return a matching (x, y) pair for the underlying DIB.  Fit/zoom are automatically considered.
+Private Sub GetDIBXYFromMouseXY(ByVal mouseX As Single, ByVal mouseY As Single, ByRef dibX As Single, ByRef dibY As Single, Optional ByVal useOriginalDIB As Boolean = True)
+    
+    'Because the caller may want coordinates from the original *OR* modified DIB, we use a generic reference.
+    Dim srcDIB As pdDIB
+    If useOriginalDIB Then
+        Set srcDIB = originalImage
+    Else
+        Set srcDIB = fxImage
+    End If
+    
+    'If the image is using "fit within" mode, we need to perform some extra coordinate math.
+    Dim dstWidth As Double, dstHeight As Double
+    dstWidth = m_BackBuffer.getDIBWidth
+    dstHeight = m_BackBuffer.getDIBHeight
+    
+    Dim srcWidth As Double, srcHeight As Double
+    srcWidth = srcDIB.getDIBWidth
+    srcHeight = srcDIB.getDIBHeight
+    
+    'Calculate the aspect ratio of this DIB and the target picture box
+    Dim srcAspect As Double, dstAspect As Double
+    If srcHeight > 0 Then srcAspect = srcWidth / srcHeight Else srcAspect = 1
+    If dstHeight > 0 Then dstAspect = dstWidth / dstHeight Else dstAspect = 1
+        
+    Dim finalWidth As Long, finalHeight As Long
+    If (dstWidth <= srcWidth) Or (dstHeight <= srcHeight) Or Me.viewportFitFullImage Then
+        convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, finalWidth, finalHeight
+    Else
+        finalWidth = srcWidth
+        finalHeight = srcHeight
+    End If
+        
+    'Images smaller than the target area in one (or more) dimensions need to be centered in the target area
+    Dim previewX As Long, previewY As Long
+    If srcAspect > dstAspect Then
+        previewY = CLng((dstHeight - finalHeight) / 2)
+        If finalWidth = dstWidth Then
+            previewX = 0
+        Else
+            previewX = CLng((dstWidth - finalWidth) / 2)
+        End If
+    Else
+        previewX = CLng((dstWidth - finalWidth) / 2)
+        If finalHeight = dstHeight Then
+            previewY = 0
+        Else
+            previewY = CLng((dstHeight - finalHeight) / 2)
+        End If
+    End If
+    
+    'We now have an original DIB width/height pair, destination DIB width/height pair, preview (x, y) offset - all that's left
+    ' is a source (x, y) offset.
+    Dim srcX As Single, srcY As Single
+    srcX = Me.offsetX
+    srcY = Me.offsetY
+    
+    'Convert the destination (x, y) pair to the [0, 1] range.
+    Dim dstX As Single, dstY As Single
+    dstX = ((mouseX - previewX) / CDbl(finalWidth))
+    dstY = ((mouseY - previewY) / CDbl(finalHeight))
+    
+    'Map it into the source range
+    dibX = (dstX * srcWidth) + srcX
+    dibY = (dstY * srcHeight) + srcY
+    
+    Set srcDIB = Nothing
+    
 End Sub
 
 'X and Y offsets for the image preview are generated dynamically by the user's mouse movements.  As multiple functions
