@@ -162,14 +162,14 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
         
         'PNGs on the clipboard get preferential treatment, as they preserve transparency data - so check for them first.
         If clpObject.DoesClipboardHaveFormatName("PNG") Then
-            pasteWasSuccessful = Clipboard_Handler.ClipboardPaste_CustomImageFormat(clpObject, "PNG", srcIsMeantAsLayer, "png")
+            pasteWasSuccessful = ClipboardPaste_CustomImageFormat(clpObject, "PNG", srcIsMeantAsLayer, "png")
         End If
         
         'If we couldn't find PNG data (or something went horribly wrong during that step), look for an HTML fragment next.
         ' Images copied from web browsers typically create an HTML fragment, which should have a direct link to the copied image.
         '  Downloading the image manually lets us maintain things like ICC profiles and the image's original filename.
         If clpObject.DoesClipboardHaveHTML() And (Not pasteWasSuccessful) Then
-            pasteWasSuccessful = Clipboard_Handler.ClipboardPaste_HTML(clpObject, srcIsMeantAsLayer)
+            pasteWasSuccessful = ClipboardPaste_HTML(clpObject, srcIsMeantAsLayer)
         End If
         
         'JPEGs are another possibility.  We prefer them less than PNG or direct download (because there's no guarantee that the
@@ -177,20 +177,26 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
         ' color profiles, so test for JPEG next.  (Also, note that certain versions of Microsoft Office use "JFIF" as the identifier,
         ' for reasons known only to them...)
         If clpObject.DoesClipboardHaveFormatName("JPEG") And (Not pasteWasSuccessful) Then
-            pasteWasSuccessful = Clipboard_Handler.ClipboardPaste_CustomImageFormat(clpObject, "JPEG", srcIsMeantAsLayer, "jpg")
+            pasteWasSuccessful = ClipboardPaste_CustomImageFormat(clpObject, "JPEG", srcIsMeantAsLayer, "jpg")
         End If
         
         If clpObject.DoesClipboardHaveFormatName("JPG") And (Not pasteWasSuccessful) Then
-            pasteWasSuccessful = Clipboard_Handler.ClipboardPaste_CustomImageFormat(clpObject, "JPG", srcIsMeantAsLayer, "jpg")
+            pasteWasSuccessful = ClipboardPaste_CustomImageFormat(clpObject, "JPG", srcIsMeantAsLayer, "jpg")
         End If
         
         If clpObject.DoesClipboardHaveFormatName("JFIF") And (Not pasteWasSuccessful) Then
-            pasteWasSuccessful = Clipboard_Handler.ClipboardPaste_CustomImageFormat(clpObject, "JFIF", srcIsMeantAsLayer, "jpg")
+            pasteWasSuccessful = ClipboardPaste_CustomImageFormat(clpObject, "JFIF", srcIsMeantAsLayer, "jpg")
         End If
         
-         'Next, see if the clipboard contains one or more files.  If it does, try to load them.
+        'Next, see if the clipboard contains a generic file list.  If it does, try to load each file in turn.
         If clpObject.DoesClipboardHaveFiles() And (Not pasteWasSuccessful) Then
-            pasteWasSuccessful = Clipboard_Handler.ClipboardPaste_ListOfFiles(clpObject, srcIsMeantAsLayer)
+            pasteWasSuccessful = ClipboardPaste_ListOfFiles(clpObject, srcIsMeantAsLayer)
+        End If
+        
+        'Next, look for plaintext.  This could be a URL, or maybe a text representation of a filepath.
+        ' (Also, note that we only have to search for one text format, because the OS auto-converts between text formats for free.)
+        If clpObject.DoesClipboardHaveText() And (Not pasteWasSuccessful) Then
+            pasteWasSuccessful = ClipboardPaste_TextSource(clpObject, srcIsMeantAsLayer)
         End If
         
         'Regardless of success or failure, make sure to close the clipboard now that we're done with it.
@@ -249,51 +255,6 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
         Message "Clipboard data imported successfully "
         
         pasteWasSuccessful = True
-    
-    'Next, see if the clipboard contains text.  If it does, it may be a hyperlink - if so, try and load it.
-    ElseIf Clipboard.GetFormat(vbCFText) And (Not pasteWasSuccessful) Then
-        
-        tmpDownloadFile = Trim$(Clipboard.GetText)
-        
-        If (StrComp(UCase$(Left$(tmpDownloadFile, 4)), "HTTP", vbBinaryCompare) = 0) Or (StrComp(UCase$(Left$(tmpDownloadFile, 6)), "FTP://", vbBinaryCompare) = 0) Then
-        
-            #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Probably URL found on clipboard.  Attempting to retrieve data..."
-            #End If
-            
-            Message "Image URL found on clipboard.  Attempting to download..."
-            
-            tmpDownloadFile = FormInternetImport.downloadURLToTempFile(tmpDownloadFile)
-            
-            'If the download was successful, we can now use the standard image load routine to import the temporary file
-            If Len(tmpDownloadFile) <> 0 Then
-            
-                sFile(0) = tmpDownloadFile
-                
-                'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
-                If srcIsMeantAsLayer Then
-                    Layer_Handler.loadImageAsNewLayer False, sFile(0), , True
-                Else
-                    LoadFileAsNewImage sFile, False, , GetFilename(tmpDownloadFile)
-                End If
-                
-                'Delete the temporary file
-                cFile.KillFile tmpDownloadFile
-                
-                Message "Clipboard data imported successfully "
-        
-                clpObject.ClipboardClose
-                
-                pasteWasSuccessful = True
-            
-            Else
-            
-                'If the download failed, let the user know that hey, at least we tried.
-                Message "Image download failed.  Please copy a valid image URL to the clipboard and try again."
-                
-            End If
-            
-        End If
         
     End If
         
@@ -440,57 +401,7 @@ Private Function ClipboardPaste_HTML(ByRef clpObject As pdClipboard, ByVal srcIs
                 'As a failsafe, make sure a valid URL was actually found
                 If (urlStart > 0) And (urlEnd > 0) Then
                     
-                    Message "Image URL found on clipboard.  Attempting to download..."
-                    
-                    Dim tmpDownloadFile As String
-                    tmpDownloadFile = FormInternetImport.downloadURLToTempFile(Mid$(htmlString, urlStart, urlEnd - urlStart))
-                    
-                    'pdFSO is used to ensure Unicode filename compatibility
-                    Dim cFile As pdFSO
-                    Set cFile = New pdFSO
-                    
-                    'If the download was successful, we can now use the standard image load routine to import the temporary file
-                    If cFile.FileLenW(tmpDownloadFile) <> 0 Then
-                        
-                        'Additional file information variables, which we pass to the central load function to let it know that this is only a temp file,
-                        ' and it should use these hint values instead of assuming normal image load behavior.
-                        Dim sFile() As String
-                        ReDim sFile(0) As String
-                        sFile(0) = tmpDownloadFile
-                                
-                        Dim tmpFilename As String
-                        tmpFilename = cFile.GetFilename(tmpDownloadFile, True)
-                        
-                        'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
-                        If srcIsMeantAsLayer Then
-                            Layer_Handler.loadImageAsNewLayer False, sFile(0), True
-                        Else
-                            LoadFileAsNewImage sFile, False, tmpFilename, tmpFilename, , , , , , True
-                        End If
-                        
-                        'Delete the temporary file
-                        cFile.KillFile tmpDownloadFile
-                        
-                        Message "Clipboard data imported successfully "
-                            
-                        'Check for load failure.  If the most recent pdImages object is inactive, it's a safe assumption that
-                        ' the load operation failed.  (This isn't foolproof, especially if the user loads a ton of images,
-                        ' and subsequently unloads images in an arbitrary order - but given the rarity of this situation, I'm content
-                        ' to use this technique for predicting failure.)
-                        If g_CurrentImage <= UBound(pdImages) Then
-                            If Not pdImages(g_CurrentImage) Is Nothing Then
-                                If pdImages(g_CurrentImage).IsActive Then
-                                    ClipboardPaste_HTML = True
-                                End If
-                            End If
-                        End If
-                    
-                    Else
-                        
-                        'If the download failed, let the user know that hey, at least we tried.
-                        Message "Image download failed.  Please copy a valid image URL to the clipboard and try again."
-                        
-                    End If
+                    ClipboardPaste_HTML = ClipboardPaste_WellFormedURL(Mid$(htmlString, urlStart, urlEnd - urlStart), srcIsMeantAsLayer)
                 
                 'An image tag was found, but a parsing error occurred when trying to strip out the source URL.  This is okay;
                 ' exit immediately without raising any errors.
@@ -558,6 +469,138 @@ Private Function ClipboardPaste_ListOfFiles(ByRef clpObject As pdClipboard, ByVa
         #End If
     End If
         
+End Function
+
+'If the clipboard contains text, try to find an image path or URL that we can use.
+Private Function ClipboardPaste_TextSource(ByRef clpObject As pdClipboard, ByVal srcIsMeantAsLayer As Boolean)
+    
+    ClipboardPaste_TextSource = False
+    
+    'Make sure text actually exists on the clipboard
+    If clpObject.DoesClipboardHaveText() Then
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "ClipboardPaste_TextSource() will now parse clipboard text, looking for image sources..."
+        #End If
+        
+        Dim clipText As String
+        If clpObject.GetClipboardText(clipText) Then
+            
+            'First, test the text for URL-like indicators
+            Dim testURL As String
+            testURL = Trim$(clipText)
+        
+            If (StrComp(UCase$(Left$(testURL, 4)), "HTTP", vbBinaryCompare) = 0) Or (StrComp(UCase$(Left$(testURL, 3)), "FTP", vbBinaryCompare) = 0) Then
+            
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Possible image URL found on clipboard.  Attempting to retrieve data..."
+                #End If
+                
+                Message "Image URL found on clipboard.  Attempting to download..."
+                
+                ClipboardPaste_TextSource = ClipboardPaste_WellFormedURL(testURL, srcIsMeantAsLayer)
+                
+            'If this doesn't look like a URL, see if it's a file path instead
+            Else
+                
+                Dim targetFile As String
+                targetFile = ""
+                
+                Dim cFile As pdFSO
+                Set cFile = New pdFSO
+                If cFile.FileExist(clipText) Then
+                    targetFile = clipText
+                ElseIf cFile.FileExist(Trim$(clipText)) Then
+                    targetFile = Trim$(clipText)
+                End If
+                
+                'If the text (or a trimmed version of the text) matches a local file, try to load it.
+                If Len(targetFile) <> 0 Then
+                
+                    If srcIsMeantAsLayer Then
+                        Layer_Handler.loadImageAsNewLayer False, targetFile, , True
+                    Else
+                        Dim tmpFiles() As String
+                        ReDim tmpFiles(0) As String
+                        tmpFiles(0) = targetFile
+                        LoadFileAsNewImage tmpFiles
+                    End If
+                    
+                    ClipboardPaste_TextSource = True
+                
+                End If
+                
+            End If
+            
+        Else
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  ClipboardPaste_TextSource couldn't retrieve actual text from pdClipboard."
+            #End If
+        End If
+        
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  ClipboardPaste_TextSource was called, but no text exists on the clipboard."
+        #End If
+    End If
+        
+End Function
+
+'Helper function that SHOULD NOT BE CALLED DIRECTLY.  Only other ClipboardPaste_* variants are able to safely use this function.
+' Returns: TRUE if an image was successfully downloaded and loaded to the pdImages collection.  FALSE if failure occurred.
+Private Function ClipboardPaste_WellFormedURL(ByVal srcURL As String, ByVal srcIsMeantAsLayer As Boolean) As Boolean
+    
+    'This function assumes the source URL is both absolute and well-formed
+    Message "Image URL found on clipboard.  Attempting to download..."
+                    
+    Dim tmpDownloadFile As String
+    tmpDownloadFile = FormInternetImport.downloadURLToTempFile(srcURL)
+    
+    'pdFSO is used to ensure Unicode filename compatibility
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    
+    'If the download was successful, we can now use the standard image load routine to import the temporary file
+    If cFile.FileLenW(tmpDownloadFile) <> 0 Then
+        
+        'Additional file information variables, which we pass to the central load function to let it know that this is only a temp file,
+        ' and it should use these hint values instead of assuming normal image load behavior.
+        Dim sFile() As String
+        ReDim sFile(0) As String
+        sFile(0) = tmpDownloadFile
+                
+        Dim tmpFilename As String
+        tmpFilename = cFile.GetFilename(tmpDownloadFile, True)
+        
+        'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
+        If srcIsMeantAsLayer Then
+            Layer_Handler.loadImageAsNewLayer False, sFile(0), True
+        Else
+            LoadFileAsNewImage sFile, False, tmpFilename, tmpFilename, , , , , , True
+        End If
+        
+        'Delete the temporary file
+        cFile.KillFile tmpDownloadFile
+        
+        Message "Clipboard data imported successfully "
+            
+        'Check for load failure.  If the most recent pdImages object is inactive, it's a safe assumption that
+        ' the load operation failed.  (This isn't foolproof, especially if the user loads a ton of images,
+        ' and subsequently unloads images in an arbitrary order - but given the rarity of this situation, I'm content
+        ' to use this technique for predicting failure.)
+        If g_CurrentImage <= UBound(pdImages) Then
+            If Not pdImages(g_CurrentImage) Is Nothing Then
+                If pdImages(g_CurrentImage).IsActive Then
+                    ClipboardPaste_WellFormedURL = True
+                End If
+            End If
+        End If
+    
+    'If the download failed, let the user know that hey, at least we tried.
+    Else
+        Message "Image download failed.  Please copy a valid image URL to the clipboard and try again."
+    End If
+    
 End Function
 
 'Because OLE drag/drop is so similar to clipboard functionality, I have included that functionality here.
