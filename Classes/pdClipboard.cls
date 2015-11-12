@@ -80,7 +80,7 @@ Private m_IsClipboardOpen As Boolean
 Private m_OwnerHwnd As Long
 
 'Windows defines some clipboard formats for us.  These never change, regardless of OS version.
-Public Enum EPredefinedClipboardFormatConstants
+Public Enum PredefinedClipboardFormatConstants
     CF_MIN = 0
     CF_TEXT = 1
     CF_BITMAP = 2
@@ -243,6 +243,12 @@ End Function
 ' IMPORTANT NOTE: you must have previously opened the clipboard (in order to call UpdateClipboardLists) for this function to work.
 Public Function DoesClipboardHaveFiles() As Boolean
     DoesClipboardHaveFiles = Me.DoesClipboardHaveFormatID(CF_HDROP)
+End Function
+
+'Shortcut function to check for text.  Text, OEM text, and Unicode text all cause a valid return.
+' IMPORTANT NOTE: you must have previously opened the clipboard (in order to call UpdateClipboardLists) for this function to work.
+Public Function DoesClipboardHaveText() As Boolean
+    DoesClipboardHaveText = Me.DoesClipboardHaveFormatID(CF_TEXT) Or Me.DoesClipboardHaveFormatID(CF_UNICODETEXT) Or Me.DoesClipboardHaveFormatID(CF_OEMTEXT)
 End Function
 
 'See if a given clipboard format name exists on the current clipboard.  The comparison is not case-sensitive.
