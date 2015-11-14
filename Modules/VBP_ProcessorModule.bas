@@ -167,6 +167,8 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     '
     'Obviously, we skip this step if no images are loaded
     
+    Dim i As Long
+    
     If g_OpenImageCount > 0 Then
     
         Dim okayToRasterize As VbMsgBoxResult
@@ -202,8 +204,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 Case "Merge visible layers"
                     
                     rasterizeImagePromptNeeded = False
-                    
-                    Dim i As Long
                     For i = 1 To pdImages(g_CurrentImage).getNumOfLayers - 1
                         
                         'If a vector layer is found, restore rasterizeImagePromptNeeded and exit the loop
@@ -222,11 +222,33 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             
             okayToRasterize = Layer_Handler.askIfOkayToRasterizeLayer(pdImages(g_CurrentImage).getActiveLayer.getLayerType, , True)
             
-            'If rasterization is okay, apply it to all layers immediately
+            'If rasterization is okay, immediately apply it to all relevant layers
             If okayToRasterize = vbYes Then
-            
-                Layer_Handler.RasterizeLayer -1
-            
+                
+                Select Case processID
+                    
+                    'When merging layers, only the merged layers need to be rasterized
+                    Case "Merge layer down"
+                        If pdImages(g_CurrentImage).getLayerByIndex(cParams.GetLong(1)).isLayerVector Then Layer_Handler.RasterizeLayer cParams.GetLong(1)
+                        If pdImages(g_CurrentImage).getLayerByIndex(cParams.GetLong(1) - 1).isLayerVector Then Layer_Handler.RasterizeLayer cParams.GetLong(1) - 1
+                        
+                    Case "Merge layer up"
+                        If pdImages(g_CurrentImage).getLayerByIndex(cParams.GetLong(1)).isLayerVector Then Layer_Handler.RasterizeLayer cParams.GetLong(1)
+                        If pdImages(g_CurrentImage).getLayerByIndex(cParams.GetLong(1) + 1).isLayerVector Then Layer_Handler.RasterizeLayer cParams.GetLong(1) + 1
+                    
+                    Case "Merge visible layers"
+                        For i = 1 To pdImages(g_CurrentImage).getNumOfLayers - 1
+                            If pdImages(g_CurrentImage).getLayerByIndex(i).getLayerVisibility And pdImages(g_CurrentImage).getLayerByIndex(i).isLayerVector Then
+                                Layer_Handler.RasterizeLayer i
+                            End If
+                        Next i
+                        
+                    'For any other case, rasterize all vector layers
+                    Case Else
+                        Layer_Handler.RasterizeLayer -1
+                    
+                End Select
+                
             'If the user doesn't want rasterization, bail immediately.
             Else
                 
