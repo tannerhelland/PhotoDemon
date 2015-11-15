@@ -1039,6 +1039,7 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     'Start by initializing the destination DIB to the size of the active selection
     Set dstDIB = New pdDIB
     dstDIB.createBlank mainSelection.boundWidth, mainSelection.boundHeight, 32, 0
+    dstDIB.setInitialAlphaPremultiplicationState True
     
     'We now need pointers to three separate sets of image data: destination DIB, source DIB, and selection mask.
     Dim srcImageData() As Byte
@@ -1134,7 +1135,7 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     Erase selData
     
     'If the calling function requested un-premultiplied alpha, apply it now
-    If Not preMultipliedAlphaState Then dstDIB.setAlphaPremultiplication False
+    If (Not preMultipliedAlphaState) Then dstDIB.setAlphaPremultiplication False
         
     retrieveProcessedSelection = True
 

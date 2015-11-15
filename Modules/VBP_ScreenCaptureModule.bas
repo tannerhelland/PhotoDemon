@@ -148,8 +148,9 @@ Public Sub getDesktopAsDIB(ByRef dstDIB As pdDIB)
     desktopDC = GetDC(screenHwnd)
     
     'Copy the bitmap into the specified DIB
-    dstDIB.createBlank screenWidth, screenHeight, 24
+    dstDIB.createBlank screenWidth, screenHeight, 32
     BitBlt dstDIB.getDIBDC, 0, 0, screenWidth, screenHeight, desktopDC, 0, 0, vbSrcCopy
+    dstDIB.ForceNewAlpha 255
     
     'Release everything we generated for the capture, then exit
     ReleaseDC screenHwnd, desktopDC
@@ -176,8 +177,9 @@ Public Sub getPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RECTL)
     desktopDC = GetDC(screenHwnd)
     
     'BitBlt the relevant portion of the screen into the specified DIB
-    dstDIB.createBlank srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, 24
+    dstDIB.createBlank srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, 32
     BitBlt dstDIB.getDIBDC, 0, 0, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, desktopDC, srcRect.Left, srcRect.Top, vbSrcCopy
+    dstDIB.ForceNewAlpha 255
     
     'Release everything we generated for the capture, then exit
     ReleaseDC screenHwnd, desktopDC

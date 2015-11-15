@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.108</langversion>
+<langversion>6.7.109</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -43,6 +43,16 @@
 <!-- BEGIN text for VBP_ClipboardModule.bas -->
 
 <phrase>
+<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
+<translation>Papan klip kosong atau ia tidak mengandungi format gambar yang sah. Sila salin imej yang sah ke clipboard dan cuba lagi.</translation>
+</phrase>
+
+<phrase>
+<original>Windows Clipboard Error</original>
+<translation>Windows klipbod Ralat</translation>
+</phrase>
+
+<phrase>
 <original>Clipboard Image</original>
 <translation>Imej klipbod</translation>
 </phrase>
@@ -63,16 +73,6 @@
 </phrase>
 
 <phrase>
-<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
-<translation>Papan klip kosong atau ia tidak mengandungi format gambar yang sah. Sila salin imej yang sah ke clipboard dan cuba lagi.</translation>
-</phrase>
-
-<phrase>
-<original>Windows Clipboard Error</original>
-<translation>Windows klipbod Ralat</translation>
-</phrase>
-
-<phrase>
 <original>Imported Image</original>
 <translation>Imej yang diimport</translation>
 </phrase>
@@ -87,7 +87,7 @@
 <translation>Imej turun gagal. Sila berikan URL imej yang sah dan cuba lagi.</translation>
 </phrase>
 
-<!-- VBP_ClipboardModule.bas contains 19 phrases. 10 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- VBP_ClipboardModule.bas contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for VBP_ClipboardModule.bas-->
 
@@ -14404,8 +14404,8 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <phrasecount>2475</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4244 phrases. -->
-<!-- 1769 are duplicates, so only 2475 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4242 phrases. -->
+<!-- 1767 are duplicates, so only 2475 unique phrases have been written to file. -->
 <!-- These 2475 phrases contain approximately 13314 total words. -->
 
 </pdData>

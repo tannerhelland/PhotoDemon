@@ -115,36 +115,11 @@ End Function
 ' (or entire layer, if no selection is active).
 Public Sub ClipboardCut(ByVal cutMerged As Boolean)
 
-    Dim tmpDIB As pdDIB
-    Set tmpDIB = New pdDIB
+    'Cut begins as a normal Copy operation
+    ClipboardCopy cutMerged
     
-    'Check for an active selection
-    If pdImages(g_CurrentImage).selectionActive Then
-    
-        'Fill the temporary DIB with the selection
-        pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB, False, cutMerged
-        
-    Else
-        
-        'If a selection is NOT active, just make a copy of the full layer or image, depending on the merged request
-        If cutMerged Then
-            pdImages(g_CurrentImage).getCompositedImage tmpDIB, False
-        Else
-            tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveLayer.layerDIB
-            
-            'Layers are always premultiplied, so we must unpremultiply it now if 32bpp
-            If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.setAlphaPremultiplication False
-            
-        End If
-        
-    End If
-    
-    'Copy the temporary DIB to the clipboard, then erase it
-    DIB_Handler.copyDIBToClipboard tmpDIB
-    Set tmpDIB = Nothing
-    
-    'Now, we have the added step of erasing the selected area from the screen.  "Cut merged" requires us to delete the selected
-    ' region from all visible layers, so vary the loop bounds accordingly.
+    'Once the copy is complete, we take the extra step of erasing the selected area from the screen.  Note that "Cut merged" requires us
+    ' to delete the selected region from *all visible layers*, so in advance, let's figure out which layers are affected.
     Dim startLayer As Long, endLayer As Long
     
     If cutMerged Then

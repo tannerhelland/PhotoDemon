@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.108</langversion>
+<langversion>6.7.109</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -43,6 +43,16 @@
 <!-- BEGIN text for VBP_ClipboardModule.bas -->
 
 <phrase>
+<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
+<translation>Die Zwischenablage ist leer oder enthält kein gültigen Bildformat. Bitte kopieren Sie ein gültiges Bildformat in die Zwischenablage und versuchen Sie es erneut.</translation>
+</phrase>
+
+<phrase>
+<original>Windows Clipboard Error</original>
+<translation>Fehler der Windows-Zwischenablage</translation>
+</phrase>
+
+<phrase>
 <original>Clipboard Image</original>
 <translation>Bild in der Zwischenablage</translation>
 </phrase>
@@ -63,16 +73,6 @@
 </phrase>
 
 <phrase>
-<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
-<translation>Die Zwischenablage ist leer oder enthält kein gültigen Bildformat. Bitte kopieren Sie ein gültiges Bildformat in die Zwischenablage und versuchen Sie es erneut.</translation>
-</phrase>
-
-<phrase>
-<original>Windows Clipboard Error</original>
-<translation>Fehler der Windows-Zwischenablage</translation>
-</phrase>
-
-<phrase>
 <original>Imported Image</original>
 <translation>Importiertes Bild</translation>
 </phrase>
@@ -87,7 +87,7 @@
 <translation>Das Bild konnte nicht heruntergeladen werden. Bitte geben Sie eine gültige Bild-URL an und versuchen Sie es noch mal.</translation>
 </phrase>
 
-<!-- VBP_ClipboardModule.bas contains 19 phrases. 10 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- VBP_ClipboardModule.bas contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for VBP_ClipboardModule.bas-->
 
@@ -14402,8 +14402,8 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <phrasecount>2475</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4244 phrases. -->
-<!-- 1769 are duplicates, so only 2475 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4242 phrases. -->
+<!-- 1767 are duplicates, so only 2475 unique phrases have been written to file. -->
 <!-- These 2475 phrases contain approximately 13314 total words. -->
 
 </pdData>
