@@ -32,7 +32,6 @@ Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObj
 'Clipboard interaction
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function GetDesktopWindow Lib "user32" () As Long
-Private Const CLIPBOARD_FORMAT_BMP As Long = 2
 
 'Check to see if a 32bpp DIB is really 32bpp. (Basically, scan all pixels in the alpha channel. If all values are set to
 ' 255 or all values are set to 0, the caller can opt to rebuild the DIB in 24bpp mode.)
@@ -348,7 +347,7 @@ Public Function copyDIBToClipboard(ByRef srcDIB As pdDIB) As Boolean
                     SelectObject clipboardDC, clipboardOldBMP
         
                     'Copy the bitmap to the clipboard, then close and exit
-                    clpObject.SetClipboardMemoryHandle CLIPBOARD_FORMAT_BMP, clipboardBMP
+                    clpObject.SetClipboardMemoryHandle CF_BITMAP, clipboardBMP
                     copyDIBToClipboard = True
                     
                 Else

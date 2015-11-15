@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.108</langversion>
+<langversion>6.7.109</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -43,6 +43,16 @@
 <!-- BEGIN text for VBP_ClipboardModule.bas -->
 
 <phrase>
+<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
+<translation>Het klembord is leeg of het bevat geen geldig afbeeldingsformaat. Gelieve een geldig afbeelding naar het klembord te kopieren en opnieuw te proberen .</translation>
+</phrase>
+
+<phrase>
+<original>Windows Clipboard Error</original>
+<translation>Fout Windows Klembord</translation>
+</phrase>
+
+<phrase>
 <original>Clipboard Image</original>
 <translation>Klembordafbeelding</translation>
 </phrase>
@@ -63,16 +73,6 @@
 </phrase>
 
 <phrase>
-<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
-<translation>Het klembord is leeg of het bevat geen geldig afbeeldingsformaat. Gelieve een geldig afbeelding naar het klembord te kopieren en opnieuw te proberen .</translation>
-</phrase>
-
-<phrase>
-<original>Windows Clipboard Error</original>
-<translation>Fout Windows Klembord</translation>
-</phrase>
-
-<phrase>
 <original>Imported Image</original>
 <translation>Geïmporteerde afbeelding</translation>
 </phrase>
@@ -87,7 +87,7 @@
 <translation>Afbeelding downloaden mislukt. Geef een geldige URL van de afbeelding op en probeer het opnieuw.</translation>
 </phrase>
 
-<!-- VBP_ClipboardModule.bas contains 19 phrases. 10 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- VBP_ClipboardModule.bas contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for VBP_ClipboardModule.bas-->
 
@@ -14403,8 +14403,8 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <phrasecount>2475</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4244 phrases. -->
-<!-- 1769 are duplicates, so only 2475 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4242 phrases. -->
+<!-- 1767 are duplicates, so only 2475 unique phrases have been written to file. -->
 <!-- These 2475 phrases contain approximately 13314 total words. -->
 
 </pdData>

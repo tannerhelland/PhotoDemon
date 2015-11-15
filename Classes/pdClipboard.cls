@@ -472,7 +472,7 @@ Public Function SetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboard
         
         'Determine how much binary data we need to write
         Dim blobSize As Long
-        blobSize = UBound(srcData) - LBound(srcData) + 1
+        blobSize = (UBound(srcData) - LBound(srcData)) + 1
         
         'Ask the system for a global chunk of (moveable!) memory.  The moveable part is important; clipboard data requires it, so the system
         ' can move resources around as necessary.

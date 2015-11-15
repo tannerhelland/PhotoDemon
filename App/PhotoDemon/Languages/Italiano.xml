@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.108</langversion>
+<langversion>6.7.109</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -43,6 +43,16 @@
 <!-- BEGIN text for VBP_ClipboardModule.bas -->
 
 <phrase>
+<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
+<translation>Gli appunti sono vuoti o non contengono un formato di immagine valido.  Per favore copia negli appunti un'immagine valida e riprova.</translation>
+</phrase>
+
+<phrase>
+<original>Windows Clipboard Error</original>
+<translation>Errore negli appunti di Windows</translation>
+</phrase>
+
+<phrase>
 <original>Clipboard Image</original>
 <translation>Immagine negli appunti</translation>
 </phrase>
@@ -63,16 +73,6 @@
 </phrase>
 
 <phrase>
-<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
-<translation>Gli appunti sono vuoti o non contengono un formato di immagine valido.  Per favore copia negli appunti un'immagine valida e riprova.</translation>
-</phrase>
-
-<phrase>
-<original>Windows Clipboard Error</original>
-<translation>Errore negli appunti di Windows</translation>
-</phrase>
-
-<phrase>
 <original>Imported Image</original>
 <translation>Immagine importata</translation>
 </phrase>
@@ -87,7 +87,7 @@
 <translation>Scaricamento dell'immagine non riuscito.  Si prega di fornire un URL dell'immagine valido prima di riprovare.</translation>
 </phrase>
 
-<!-- VBP_ClipboardModule.bas contains 19 phrases. 10 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- VBP_ClipboardModule.bas contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for VBP_ClipboardModule.bas-->
 
@@ -14401,8 +14401,8 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <phrasecount>2475</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4244 phrases. -->
-<!-- 1769 are duplicates, so only 2475 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4242 phrases. -->
+<!-- 1767 are duplicates, so only 2475 unique phrases have been written to file. -->
 <!-- These 2475 phrases contain approximately 13314 total words. -->
 
 </pdData>
