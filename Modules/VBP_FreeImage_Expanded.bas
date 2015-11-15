@@ -602,7 +602,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
         tmpRGBDIB.createBlank tmpCMYKDIB.getDIBWidth, tmpCMYKDIB.getDIBHeight, 24
         
         'Apply the transformation using the dedicated CMYK transform handler
-        If Color_Management.applyCMYKTransform(dstDIB.ICCProfile.getICCDataPointer, dstDIB.ICCProfile.getICCDataSize, tmpCMYKDIB, tmpRGBDIB, dstDIB.ICCProfile.getSourceRenderIntent) Then
+        If Color_Management.ApplyCMYKTransform(dstDIB.ICCProfile.getICCDataPointer, dstDIB.ICCProfile.getICCDataSize, tmpCMYKDIB, tmpRGBDIB, dstDIB.ICCProfile.getSourceRenderIntent) Then
         
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "Copying newly transformed sRGB data..."
@@ -634,10 +634,56 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     
     
     '****************************************************************************
-    ' PD's new rendering engine requires pre-multiplied alpha values.  Apply premultiplication now.
+    ' PD's new rendering engine requires pre-multiplied alpha values.  Apply premultiplication now - but ONLY if
+    ' the image did not come from the clipboard.  (Clipboard images requires special treatment.)
     '****************************************************************************
     
-    If fi_BPP = 32 Then FreeImage_PreMultiplyWithAlpha fi_hDIB
+    Dim specialClipboardHandlingRequired As Boolean
+    Dim tmpClipboardInfo As PD_CLIPBOARD_INFO
+    
+    specialClipboardHandlingRequired = False
+    
+    If fi_BPP = 32 Then
+        
+        'If the clipboard is active, this image came from a Paste operation.  It may require extra alpha heuristics.
+        If Clipboard_Handler.IsClipboardOpen Then
+        
+            'Retrieve a local copy of PD's clipboard info struct.  We're going to analyze it, to see if we need to
+            ' run some alpha heuristics (because the clipboard is shit when it comes to handling alpha correctly.)
+            tmpClipboardInfo = Clipboard_Handler.GetClipboardInfo
+            
+            'If the clipboard image was originally placed on the clipboard as a DDB, a whole variety of driver-specific
+            ' issues may be present.
+            If tmpClipboardInfo.pdci_OriginalFormat = CF_BITMAP Then
+            
+                'Well, this sucks.  The original owner of this clipboard data (maybe even Windows itself, in the case
+                ' of PrtScrn) placed an image on the clipboard in the ancient CF_BITMAP format, which is a DDB with
+                ' device-specific coloring.  In the age of 24/32-bit displays, we don't care about color issues so
+                ' much, but alpha is whole other mess.  For performance reasons, most display drivers run in 32-bpp
+                ' mode, with the alpha values typically ignored.  Unfortunately, some drivers (*cough* INTEL *cough*)
+                ' may leave junk in the 4th bytes instead of wiping them clean, preventing us from easily telling
+                ' if the source data has alpha values filled intentionally, or by accident.
+                
+                'Because there is no foolproof way to know if the alpha values are valid, we should probably prompt
+                ' the user for feedback on how to proceed.  For now, however, simply wipe the alpha bytes of anything
+                ' placed on the clipboard in CF_BITMAP format.
+                
+                '(The image is still in FreeImage format at this point, so we set a flag and will apply the actual
+                ' alpha transform later.)
+                specialClipboardHandlingRequired = True
+            
+            'The image was originally placed on the clipboard as a DIB.  Assume the caller knew what they were doing
+            ' with their own alpha bytes, and apply premultiplication now.
+            Else
+                FreeImage_PreMultiplyWithAlpha fi_hDIB
+            End If
+        
+        'This is a normal image - carry on!
+        Else
+            FreeImage_PreMultiplyWithAlpha fi_hDIB
+        End If
+        
+    End If
     
     
     '****************************************************************************
@@ -696,10 +742,6 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     'Copy the bits from the FreeImage DIB to our DIB
     SetDIBitsToDevice dstDIB.getDIBDC, 0, 0, fi_Width, fi_Height, 0, 0, 0, fi_Height, ByVal FreeImage_GetBits(fi_hDIB), ByVal FreeImage_GetInfo(fi_hDIB), 0&
     
-    'Regardless of bit-depth, the final PhotoDemon image will always be 32-bits
-    dstDIB.setInitialAlphaPremultiplicationState True
-    
-    'Debug.Print fi_hDIB, fi_multi_hDIB
     
     '****************************************************************************
     ' Release all FreeImage-specific structures and links
@@ -716,6 +758,26 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Image load successful.  FreeImage released."
     #End If
+    
+    
+    '****************************************************************************
+    ' Finalize alpha values in the target image
+    '****************************************************************************
+    
+    'If this image came from the clipboard, and its alpha state is unknown, we're going to force all alpha values
+    ' to 255 to avoid potential driver-specific issues with the PrtScrn key.
+    If specialClipboardHandlingRequired Then
+    
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Image came from the clipboard; finalizing alpha now..."
+        #End If
+        
+        dstDIB.ForceNewAlpha 255
+    
+    End If
+    
+    'Regardless of original bit-depth, the final PhotoDemon image will always be 32-bits, with pre-multiplied alpha.
+    dstDIB.setInitialAlphaPremultiplicationState True
     
     
     '****************************************************************************

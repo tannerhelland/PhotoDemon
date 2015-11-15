@@ -1682,6 +1682,43 @@ StopAppendText:
     
 End Function
 
+'Append binary data to an arbitrary file.  The caller is responsible for supplying a source pointer and length (in bytes).
+'
+'Returns TRUE if successful, FALSE otherwise.
+' (FALSE generally only occurs if write access to the destination folder is restricted.)
+Public Function AppendBinaryToFile(ByVal srcPointer As Long, ByVal srcLengthInBytes As Long, ByRef dstFilename As String) As Boolean
+    
+    On Error GoTo StopAppendBinary
+    
+    'Open the file with append rights only
+    Dim hFile As Long
+    If Me.CreateAppendFileHandle(dstFilename, hFile) Then
+        
+        'Write the byte array and exit!
+        WriteDataToFile hFile, srcPointer, srcLengthInBytes
+        CloseFileHandle hFile
+        AppendBinaryToFile = True
+        
+    'hFile should technically never be zero, FYI.  An invalid handle value may be returned for generic filesystem errors,
+    ' but if a previous "does file exist" check passed, that outcome is extremely unlikely.
+    Else
+        AppendBinaryToFile = False
+    End If
+    
+    Exit Function
+    
+StopAppendBinary:
+
+    #If DEBUGMODE = 1 Then
+        If Not pdDebug Is Nothing Then
+            pdDebug.LogAction "AppendBinaryToFile threw error " & Err.Description & " (" & Err.Number & ") on " & dstFilename & ". Abandoning append operation."
+        End If
+    #End If
+    
+    AppendBinaryToFile = False
+    
+End Function
+
 'Given a (potentially) long path, with or without Unicode chars, return the short path.  This provides an easy way to use internal VB file functions,
 ' even on Unicode pathnames.
 Public Function GetShortPath(ByRef longPath As String) As String
