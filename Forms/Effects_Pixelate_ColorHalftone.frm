@@ -33,15 +33,6 @@ Begin VB.Form FormColorHalftone
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -54,7 +45,7 @@ Begin VB.Form FormColorHalftone
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   720
+      Height          =   705
       Index           =   0
       Left            =   6000
       TabIndex        =   2
@@ -67,7 +58,7 @@ Begin VB.Form FormColorHalftone
       SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   600
@@ -81,7 +72,7 @@ Begin VB.Form FormColorHalftone
       Value           =   5
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   720
+      Height          =   705
       Index           =   1
       Left            =   6000
       TabIndex        =   4
@@ -94,7 +85,7 @@ Begin VB.Form FormColorHalftone
       SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   720
+      Height          =   705
       Index           =   2
       Left            =   6000
       TabIndex        =   5
@@ -107,7 +98,7 @@ Begin VB.Form FormColorHalftone
       SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltDensity 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   6
       Top             =   1560
@@ -201,7 +192,7 @@ End Sub
 Private Sub Form_Activate()
 
     'Apply translations and themes
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Request a preview
     cmdBar.markPreviewStatus True

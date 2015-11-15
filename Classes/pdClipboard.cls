@@ -15,7 +15,7 @@ Attribute VB_Exposed = False
 'PhotoDemon Clipboard Interface
 'Copyright 2013-2015 by Tanner Helland
 'Created: 06/November/15 (formally split off from a heavily modified cCustomClipboard by Steve McMahon)
-'Last updated: 10/November/15
+'Last updated: 15/November/15
 'Last update: rewrite the damn thing (mostly) from scratch
 '
 'For many years, PD used vbAccelerator's "cCustomClipboard" class to simplify Windows clipboard interactions:
@@ -213,7 +213,7 @@ End Function
 
 'See if a given clipboard format ID exists on the current clipboard.
 ' IMPORTANT NOTE: you must have previously opened the clipboard (in order to call UpdateClipboardLists) for this function to work.
-Public Function DoesClipboardHaveFormatID(ByVal srcFormatId As Long) As Boolean
+Public Function DoesClipboardHaveFormatID(ByVal srcFormatId As PredefinedClipboardFormatConstants) As Boolean
     
     DoesClipboardHaveFormatID = False
     
@@ -251,6 +251,12 @@ Public Function DoesClipboardHaveText() As Boolean
     DoesClipboardHaveText = Me.DoesClipboardHaveFormatID(CF_TEXT) Or Me.DoesClipboardHaveFormatID(CF_UNICODETEXT) Or Me.DoesClipboardHaveFormatID(CF_OEMTEXT)
 End Function
 
+'Shortcut function to check for bitmaps and DIBs.  Note that the OS auto-converts between CF_BITMAP, CF_DIB, and CF_DIBv5 for you.
+' IMPORTANT NOTE: you must have previously opened the clipboard (in order to call UpdateClipboardLists) for this function to work.
+Public Function DoesClipboardHaveBitmapImage() As Boolean
+    DoesClipboardHaveBitmapImage = Me.DoesClipboardHaveFormatID(CF_BITMAP) Or Me.DoesClipboardHaveFormatID(CF_DIB) Or Me.DoesClipboardHaveFormatID(CF_DIBV5)
+End Function
+
 'See if a given clipboard format name exists on the current clipboard.  The comparison is not case-sensitive.
 ' IMPORTANT NOTE: you must have previously opened the clipboard (in order to call UpdateClipboardLists) for this function to work.
 Public Function DoesClipboardHaveFormatName(ByVal srcFormatName As String) As Boolean
@@ -274,7 +280,7 @@ End Function
 
 'Return the name for a given clipboard format ID.  (Format IDs for custom formats can be obtained via AddClipboardFormat(), above.)
 ' By design, this function does not support translations.  It is for internal PD use only.
-Public Function GetFormatNameFromID(ByVal clipFormatID As Long) As String
+Public Function GetFormatNameFromID(ByVal clipFormatID As PredefinedClipboardFormatConstants) As String
     
     'Predefined clipboard format names can be supplied without relying on the OS
     If (clipFormatID > CF_MIN And clipFormatID < CF_MAX) Then
@@ -382,7 +388,7 @@ End Function
 
 'Given a clipboard format ID, return the corresponding data chunk as a raw byte array.  It's up to the caller to parse the data further.
 ' Returns: TRUE if successful; FALSE if something goes horribly wrong.
-Public Function GetClipboardBinaryData(ByVal clipFormatID As Long, ByRef dstData() As Byte) As Boolean
+Public Function GetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboardFormatConstants, ByRef dstData() As Byte) As Boolean
     
     GetClipboardBinaryData = False
     
@@ -430,7 +436,7 @@ Public Function GetClipboardBinaryData(ByVal clipFormatID As Long, ByRef dstData
 End Function
 
 'Get a handle (HGLOBAL, specifically) to the clipboard data associated with a given format ID
-Public Function GetClipboardMemoryHandle(ByVal clipFormatID As Long) As Long
+Public Function GetClipboardMemoryHandle(ByVal clipFormatID As PredefinedClipboardFormatConstants) As Long
     
     GetClipboardMemoryHandle = 0
     
@@ -455,7 +461,7 @@ End Function
 'Stick new data on the clipboard.  An associated clipboard format is required.
 ' (IMPORTANT NOTE: the data placed on the clipboard is owned by the clipboard - NOT you - so we don't need to worry about freeing it later.)
 ' (IMPORTANT NOTE: the passed array must be initialized, or the function will fail.)
-Public Function SetClipboardBinaryData(ByVal clipFormatID As Long, ByRef srcData() As Byte) As Boolean
+Public Function SetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboardFormatConstants, ByRef srcData() As Byte) As Boolean
     
     SetClipboardBinaryData = False
     
@@ -513,13 +519,13 @@ SetClipboardFailure:
 End Function
 
 'If the caller's already allocated a global object, they can use this shortcut function to set that object into the clipboard.
-Public Function SetClipboardMemoryHandle(ByVal clipFormatID As Long, ByVal hGlobalHandle As Long) As Boolean
+Public Function SetClipboardMemoryHandle(ByVal clipFormatID As PredefinedClipboardFormatConstants, ByVal hGlobalHandle As Long) As Boolean
     SetClipboardMemoryHandle = CBool(SetClipboardData(clipFormatID, hGlobalHandle) <> 0)
 End Function
 
 'Retrieve text from the clipboard.  Format doesn't matter; PD always tries to grab Unicode text, if possible, with the system implicitly
 ' applying any necessary conversions.
-Public Function GetClipboardText(ByRef dstString As String, Optional ClipboardFormatID As Long = CF_UNICODETEXT) As Boolean
+Public Function GetClipboardText(ByRef dstString As String, Optional ClipboardFormatID As PredefinedClipboardFormatConstants = CF_UNICODETEXT) As Boolean
     
     GetClipboardText = False
     
@@ -644,6 +650,73 @@ Public Function GetFileList(ByRef dstFileList() As String, ByRef numOfFiles As L
     
 End Function
 
+'If a program places any one of CF_BITMAP, CF_DIB, or CF_DIBv5 on the clipboard, Windows will automatically list all three formats
+' as available.  Other programs can then request whichever format they like best, and Windows will silently convert between them
+' as necessary.  In PD, we prefer to know which format the caller *actually* supplied, because that lets us know whether to take
+' things like ICC profiles and color endpoints in the CF_DIBv5 entry seriously.
+'
+'Call this function to find out which BITMAP format the caller actually placed on the clipboard, and which ones were auto-created
+' for them by Windows.
+Public Function GetPriorityBitmapFormat() As PredefinedClipboardFormatConstants
+    
+    'CF_MIN is a placeholder value that equals (first_valid_entry - 1).  For this function, it's considered a failure value,
+    ' as subsequenct select statements would fail to hit it.
+    GetPriorityBitmapFormat = CF_MIN
+    
+    If m_NumOfClipboardFormats > 0 Then
+    
+        'Per MSDN (https://msdn.microsoft.com/en-us/library/windows/desktop/ms649013%28v=vs.85%29.aspx):
+        ' If the system provides an automatic type conversion for a particular clipboard format, and you call EnumClipboardFormats
+        ' to enumerate the clipboard data formats, the system first enumerates the format that is on the clipboard, followed by the
+        ' formats to which it can be converted.
+        '
+        'This lets us know which bitmap format the caller *actually* placed on the clipboard, vs which ones are auto-created.
+        ' (And since we cache the results of EnumClipboardFormats when the clipboard is opened, retrieving the first hit is easy!)
+        Dim i As Long
+        For i = 0 To m_NumOfClipboardFormats - 1
+            If (m_ClipboardIDs(i) = CF_BITMAP) Or (m_ClipboardIDs(i) = CF_DIB) Or (m_ClipboardIDs(i) = CF_DIBV5) Then
+                GetPriorityBitmapFormat = m_ClipboardIDs(i)
+                Exit For
+            End If
+        Next i
+        
+    End If
+    
+End Function
+
+'If a program places any one of CF_TEXT, CF_UNICODETEXT, or CF_OEMTEXT on the clipboard, Windows will automatically list all three
+' formats as available.  Other programs can then request whichever format they like best, and Windows will silently convert between
+' them as necessary.  In PD, we sometimes prefer to know which format the caller *actually* supplied.
+'
+'Call this function to find out which TEXT format the caller actually placed on the clipboard, and which ones were auto-created
+' for them by Windows.
+Public Function GetPriorityTextFormat() As PredefinedClipboardFormatConstants
+    
+    'CF_MIN is a placeholder value that equals (first_valid_entry - 1).  For this function, it's considered a failure value,
+    ' as subsequenct select statements would fail to hit it.
+    GetPriorityTextFormat = CF_MIN
+    
+    If m_NumOfClipboardFormats > 0 Then
+    
+        'Per MSDN (https://msdn.microsoft.com/en-us/library/windows/desktop/ms649013%28v=vs.85%29.aspx):
+        ' If the system provides an automatic type conversion for a particular clipboard format, and you call EnumClipboardFormats
+        ' to enumerate the clipboard data formats, the system first enumerates the format that is on the clipboard, followed by the
+        ' formats to which it can be converted.
+        '
+        'This lets us know which text format the caller *actually* placed on the clipboard, vs which ones are auto-created.
+        ' (And since we cache the results of EnumClipboardFormats when the clipboard is opened, retrieving the first hit is easy!)
+        Dim i As Long
+        For i = 0 To m_NumOfClipboardFormats - 1
+            If (m_ClipboardIDs(i) = CF_TEXT) Or (m_ClipboardIDs(i) = CF_UNICODETEXT) Or (m_ClipboardIDs(i) = CF_OEMTEXT) Then
+                GetPriorityTextFormat = m_ClipboardIDs(i)
+                Exit For
+            End If
+        Next i
+        
+    End If
+    
+End Function
+
 'Prior to writing data, you *must* clear the clipboard.  Otherwise, any unwritten formats will remain, potentially fucking up other
 ' programs who preferentially read clipboard formats in a different order than yours.
 Public Function ClearClipboard() As Boolean
@@ -704,31 +777,35 @@ Public Function UpdateClipboardLists() As Boolean
         Dim lR As Long
         lR = CountClipboardFormats()
         
-        ReDim m_ClipboardIDs(0 To lR - 1) As Long
-        ReDim m_ClipboardNames(0 To lR - 1) As String
-        
-        'Enumerate each format in return.
-        lR = EnumClipboardFormats(0&)
-        
         If (lR <> 0) Then
-            
-            Do
+        
+            ReDim m_ClipboardIDs(0 To lR - 1) As Long
+            ReDim m_ClipboardNames(0 To lR - 1) As String
+        
+            'Enumerate each format in return.
+            lR = EnumClipboardFormats(0&)
+        
+            If (lR <> 0) Then
                 
-                'As a failsafe, make sure our destination arrays are large enough to hold all clipboard formats
-                If m_NumOfClipboardFormats > UBound(m_ClipboardIDs) Then
-                    ReDim Preserve m_ClipboardIDs(1 To m_NumOfClipboardFormats) As Long
-                    ReDim Preserve m_ClipboardNames(1 To m_NumOfClipboardFormats) As String
-                End If
+                Do
+                    
+                    'As a failsafe, make sure our destination arrays are large enough to hold all clipboard formats
+                    If m_NumOfClipboardFormats > UBound(m_ClipboardIDs) Then
+                        ReDim Preserve m_ClipboardIDs(1 To m_NumOfClipboardFormats) As Long
+                        ReDim Preserve m_ClipboardNames(1 To m_NumOfClipboardFormats) As String
+                    End If
+                    
+                    'Retrieve the new ID and name values
+                    m_ClipboardIDs(m_NumOfClipboardFormats) = lR
+                    m_ClipboardNames(m_NumOfClipboardFormats) = GetFormatNameFromID(lR)
+                    lR = EnumClipboardFormats(m_ClipboardIDs(m_NumOfClipboardFormats))
+                    
+                    'Increment the clipboard format count and carry on
+                    m_NumOfClipboardFormats = m_NumOfClipboardFormats + 1
+                    
+                Loop While lR <> 0
                 
-                'Retrieve the new ID and name values
-                m_ClipboardIDs(m_NumOfClipboardFormats) = lR
-                m_ClipboardNames(m_NumOfClipboardFormats) = GetFormatNameFromID(lR)
-                lR = EnumClipboardFormats(m_ClipboardIDs(m_NumOfClipboardFormats))
-                
-                'Increment the clipboard format count and carry on
-                m_NumOfClipboardFormats = m_NumOfClipboardFormats + 1
-                
-            Loop While lR <> 0
+            End If
             
         End If
         
