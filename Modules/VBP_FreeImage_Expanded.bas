@@ -383,7 +383,7 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     
         'Use the central tone-map handler to apply further tone-mapping
         Dim toneMappingOutcome As PD_OPERATION_OUTCOME
-        toneMappingOutcome = raiseToneMapDialog(fi_hDIB, new_hDIB)
+        toneMappingOutcome = RaiseToneMapDialog(fi_hDIB, new_hDIB)
         
         'A non-zero return signifies a successful tone-map operation.  Unload our old handle, and proceed with the new handle
         If (toneMappingOutcome = PD_SUCCESS) And (new_hDIB <> 0) Then
@@ -861,11 +861,9 @@ End Function
 ' status of 32bpp images.  The caller is responsible for applying that (as necessary).
 '
 'NOTE!  This function requires the FreeImage DIB to already be in 24 or 32bpp format.  It will fail if another bit-depth is used.
-'
 'ALSO NOTE!  This function does not set alpha premultiplication.  It's assumed that the caller knows that value in advance.
-'
 'ALSO NOTE!  This function does not free the incoming FreeImage handle, by design.
-Public Function getPDDibFromFreeImageHandle(ByVal srcFI_Handle As Long, ByRef dstDIB As pdDIB) As Boolean
+Public Function GetPDDibFromFreeImageHandle(ByVal srcFI_Handle As Long, ByRef dstDIB As pdDIB) As Boolean
     
     Dim fiHandleBackup As Long
     fiHandleBackup = srcFI_Handle
@@ -894,12 +892,12 @@ Public Function getPDDibFromFreeImageHandle(ByVal srcFI_Handle As Long, ByRef ds
                 'If a new DIB was created, release it now.  (Note that the caller must still free the original handle.)
                 If (srcFI_Handle <> 0) And (srcFI_Handle <> fiHandleBackup) Then FreeImage_Unload srcFI_Handle
                 
-                getPDDibFromFreeImageHandle = False
+                GetPDDibFromFreeImageHandle = False
                 Exit Function
             End If
             
         Else
-            getPDDibFromFreeImageHandle = False
+            GetPDDibFromFreeImageHandle = False
             Exit Function
         End If
         
@@ -918,8 +916,21 @@ Public Function getPDDibFromFreeImageHandle(ByVal srcFI_Handle As Long, ByRef ds
         srcFI_Handle = fiHandleBackup
     End If
     
-    getPDDibFromFreeImageHandle = True
+    GetPDDibFromFreeImageHandle = True
     
+End Function
+
+'Given a PD DIB, return a 24 or 32bpp FreeImage handle that simply WRAPS the DIB without copying it.  This is much faster (and less
+' resource-intensive) than copying of the entire pixel array.  For situations where you only need non-destructive FreeImage behavior
+' (like saving a DIB to file in some non-BMP format), please use this function.
+'
+'ALSO NOTE!  This function does not affect alpha premultiplication.  It's assumed that the caller sets that value in advance.
+'ALSO NOTE!  This function does not free the outgoing FreeImage handle, by design.  Make sure to free it manually!
+'ALSO NOTE!  The function returns zero for failure state; please check the return value before trying to use it!
+Public Function GetFIHandleFromPDDib_NoCopy(ByRef srcDIB As pdDIB) As Long
+    With srcDIB
+        GetFIHandleFromPDDib_NoCopy = Outside_FreeImageV3.FreeImage_ConvertFromRawBitsEx(False, .getActualDIBBits, FIT_BITMAP, .getDIBWidth, .getDIBHeight, .getDIBArrayWidth, .getDIBColorDepth, , , , True)
+    End With
 End Function
 
 'Prior to applying tone-mapping settings, query the user for their preferred behavior.  If the user doesn't want this dialog raised, this
@@ -931,7 +942,7 @@ End Function
 'IMPORTANT NOTE!  If this function fails, further loading of the image must be halted.  PD cannot yet operate on anything larger than 32bpp,
 ' so if tone-mapping fails, we must abandon loading completely.  (A failure state can also be triggered by the user canceling the
 ' tone-mapping dialog.)
-Private Function raiseToneMapDialog(ByVal fi_Handle As Long, ByRef dst_fiHandle As Long) As PD_OPERATION_OUTCOME
+Private Function RaiseToneMapDialog(ByVal fi_Handle As Long, ByRef dst_fiHandle As Long) As PD_OPERATION_OUTCOME
 
     'Ask the user how they want to proceed.  Note that the dialog wrapper automatically handles the case of "do not prompt;
     ' use previous settings."  If that happens, it will retrieve the proper conversion settings for us, and return a dummy
@@ -943,7 +954,7 @@ Private Function raiseToneMapDialog(ByVal fi_Handle As Long, ByRef dst_fiHandle 
     If howToProceed <> vbOK Then
     
         dst_fiHandle = 0
-        raiseToneMapDialog = PD_FAILURE_USER_CANCELED
+        RaiseToneMapDialog = PD_FAILURE_USER_CANCELED
         Exit Function
     
     'The ToneMapSettings string will now contain all the information we need to proceed with the tone-map.  Forward it to the
@@ -953,9 +964,9 @@ Private Function raiseToneMapDialog(ByVal fi_Handle As Long, ByRef dst_fiHandle 
         dst_fiHandle = applyToneMapping(fi_Handle, toneMapSettings)
         
         If dst_fiHandle = 0 Then
-            raiseToneMapDialog = PD_FAILURE_GENERIC
+            RaiseToneMapDialog = PD_FAILURE_GENERIC
         Else
-            raiseToneMapDialog = PD_SUCCESS
+            RaiseToneMapDialog = PD_SUCCESS
         End If
         
     End If
