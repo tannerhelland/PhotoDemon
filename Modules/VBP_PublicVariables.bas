@@ -170,10 +170,6 @@ Public g_AlphaCompositeColor As Long
 ' current color count is relevant for a given image (e.g. if the image being worked on has just had its colors counted).
 Public g_LastImageScanned As Long
 
-'Some actions take a long time to execute.  This global variable can be used to track if a function is still running.
-' Just make sure to initialize it properly (in case the last function didn't!).
-'Public g_Processing As Boolean
-
 'If this is the first time the user has run PhotoDemon (as determined by the lack of a preferences XML file), this
 ' variable will be set to TRUE early in the load process.  Other routines can then modify their behavior accordingly.
 Public g_IsFirstRun As Boolean
