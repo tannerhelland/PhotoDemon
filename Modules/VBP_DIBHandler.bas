@@ -17,19 +17,12 @@ Attribute VB_Name = "DIB_Handler"
 
 Option Explicit
 
-'DC API functions
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
-
-'Object API functions
-Private Const OBJ_BITMAP As Long = 7
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function GetObjectType Lib "gdi32" (ByVal hgdiobj As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
-
-'Clipboard interaction
 Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 Private Declare Function GetDesktopWindow Lib "user32" () As Long
 
@@ -259,14 +252,18 @@ End Function
 
 'Copy a given DIB to the clipboard.  If FreeImage is available, PD will also copy the image in PNG format, so things like
 ' transparency are preserved.
-Public Function copyDIBToClipboard(ByRef srcDIB As pdDIB) As Boolean
+Public Function CopyDIBToClipboard(ByRef srcDIB As pdDIB) As Boolean
     
     'Make sure the DIB exists
     If srcDIB Is Nothing Then Exit Function
     
     'Make sure the DIB actually contains an image
     If (srcDIB.getDIBHandle <> 0) And (srcDIB.getDIBWidth <> 0) And (srcDIB.getDIBHeight <> 0) Then
-    
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Clipboard copy update: opening clipboard..."
+        #End If
+        
         'We are going to copy the image data to the clipboard twice - once in PNG format, then again in standard BMP format.
         ' This maxmimizes operability between major software packages.
         
@@ -274,29 +271,62 @@ Public Function copyDIBToClipboard(ByRef srcDIB As pdDIB) As Boolean
         Dim clpObject As pdClipboard
         Set clpObject = New pdClipboard
         If clpObject.ClipboardOpen(FormMain.hWnd) Then
-        
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Clipboard copy update: clearing clipboard..."
+            #End If
+            
             clpObject.ClearClipboard
         
             'FreeImage is required to perform the PNG transformation.  We could use GDI+, but FreeImage is easier.
             If g_ImageFormats.FreeImageEnabled And srcDIB.getDIBColorDepth = 32 Then
                 
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Clipboard copy update: retrieving PNG format ID..."
+                #End If
+                
                 'Most systems willl already have PNG available as a setting; the AddFormat function will detect this
                 Dim PNGID As Long
                 PNGID = clpObject.AddClipboardFormat("PNG")
                 
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Clipboard copy update: creating FreeImage handle..."
+                #End If
+                
                 'Convert our current DIB to a FreeImage-type DIB
                 Dim fi_DIB As Long
-                fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+                'fi_DIB = FreeImage_CreateFromDC(srcDIB.getDIBDC)
+                fi_DIB = Plugin_FreeImage_Interface.GetFIHandleFromPDDib_NoCopy(srcDIB)
                 
                 'Convert the bitmap to PNG format, save it to an array, and release the original bitmap from memory
-                Dim pngArray() As Byte
-                Dim fi_Check As Long
-                fi_Check = FreeImage_SaveToMemoryEx(FIF_PNG, fi_DIB, pngArray, FISO_PNG_Z_DEFAULT_COMPRESSION, True)
+                If fi_DIB <> 0 Then
                 
-                'If the save was successful, hand the new PNG byte array to the clipboard
-                If fi_Check Then
-                    copyDIBToClipboard = True
-                    clpObject.SetClipboardBinaryData PNGID, pngArray
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "Clipboard copy update: saving PNG to byte array..."
+                    #End If
+                    
+                    Dim pngArray() As Byte
+                    Dim fi_Check As Long
+                    fi_Check = FreeImage_SaveToMemoryEx(FIF_PNG, fi_DIB, pngArray, FISO_PNG_Z_DEFAULT_COMPRESSION, False)
+                    
+                    'If the save was successful, hand the new PNG byte array to the clipboard
+                    If fi_Check Then
+                        
+                        #If DEBUGMODE = 1 Then
+                            pdDebug.LogAction "Clipboard copy update: uploading PNG to clipboard..."
+                        #End If
+                    
+                        CopyDIBToClipboard = True
+                        clpObject.SetClipboardBinaryData PNGID, pngArray
+                    End If
+                    
+                    'Release FreeImage's copy of the image
+                    FreeImage_Unload fi_DIB
+                    
+                Else
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "WARNING!  During ClipboardCopy, FreeImage was unable to create a handle around the target DIB.  PNG format abandoned."
+                    #End If
                 End If
                 
             End If
@@ -313,12 +343,20 @@ Public Function copyDIBToClipboard(ByRef srcDIB As pdDIB) As Boolean
             
             'If our temporary DC was created successfully, use it to create a temporary bitmap for the clipboard
             If (clipboardDC <> 0) Then
-            
+                
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Clipboard copy update: creating DDB copy of image..."
+                #End If
+                
                 'Create a bitmap compatible with the current desktop. This will receive the actual pixel data of the current DIB.
                 Dim clipboardBMP As Long
                 clipboardBMP = CreateCompatibleBitmap(desktopDC, srcDIB.getDIBWidth, srcDIB.getDIBHeight)
                 
                 If (clipboardBMP <> 0) Then
+                    
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "Clipboard copy update: compositing 24-bpp copy for DDB format..."
+                    #End If
                     
                     'Place the compatible bitmap within the clipboard device context
                     Dim clipboardOldBMP As Long
@@ -334,7 +372,9 @@ Public Function copyDIBToClipboard(ByRef srcDIB As pdDIB) As Boolean
                         Dim tmpDIB As pdDIB
                         Set tmpDIB = New pdDIB
                         
-                        tmpDIB.createFromExistingDIB srcDIB
+                        'Create a new top-down version of the image in 24-bpp format
+                        tmpDIB.createBlank srcDIB.getDIBWidth, srcDIB.getDIBHeight, 32
+                        GDI_Plus.GDIPlusRotateFlipDIB srcDIB, tmpDIB, RotateNoneFlipY
                         tmpDIB.convertTo24bpp
                         
                         BitBlt clipboardDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
@@ -343,21 +383,29 @@ Public Function copyDIBToClipboard(ByRef srcDIB As pdDIB) As Boolean
                         
                     End If
                     
+                    #If DEBUGMODE = 1 Then
+                        pdDebug.LogAction "Clipboard copy update: uploading DDB to clipboard..."
+                    #End If
+                    
                     'Remove the clipboard bitmap from the clipboard DC to leave room for the copy
                     SelectObject clipboardDC, clipboardOldBMP
         
                     'Copy the bitmap to the clipboard, then close and exit
                     clpObject.SetClipboardMemoryHandle CF_BITMAP, clipboardBMP
-                    copyDIBToClipboard = True
+                    CopyDIBToClipboard = True
                     
                 Else
-                    copyDIBToClipboard = False
+                    CopyDIBToClipboard = False
                 End If
+                
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "Clipboard copy update: freeing temporary clipboard resources..."
+                #End If
                 
                 DeleteDC clipboardDC
                 
             Else
-                copyDIBToClipboard = False
+                CopyDIBToClipboard = False
             End If
             
             'Release (DON'T DELETE!) our control of the current desktop device context
@@ -366,15 +414,19 @@ Public Function copyDIBToClipboard(ByRef srcDIB As pdDIB) As Boolean
             'Release our hold on the clipboard
             clpObject.ClipboardClose
             
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Clipboard copy update: clipboard operation complete."
+            #End If
+            
         Else
             #If DEBUGMODE = 1 Then
                 pdDebug.LogAction "WARNING!  CopyDIBToClipboard could not open the clipboard."
             #End If
-            copyDIBToClipboard = False
+            CopyDIBToClipboard = False
         End If
         
     Else
-        copyDIBToClipboard = False
+        CopyDIBToClipboard = False
     End If
 
 End Function

@@ -114,9 +114,12 @@ End Function
 'Copy the current selection (or entire layer, if no selection is active) to the clipboard, then erase the selected area
 ' (or entire layer, if no selection is active).
 Public Sub ClipboardCut(ByVal cutMerged As Boolean)
-
+    
+    'Lock the UI
+    Processor.MarkProgramBusyState True
+    
     'Cut begins as a normal Copy operation
-    ClipboardCopy cutMerged
+    ClipboardCopy cutMerged, False
     
     'Once the copy is complete, we take the extra step of erasing the selected area from the screen.  Note that "Cut merged" requires us
     ' to delete the selected region from *all visible layers*, so in advance, let's figure out which layers are affected.
@@ -161,13 +164,21 @@ Public Sub ClipboardCut(ByVal cutMerged As Boolean)
         
     Next i
     
+    'Unlock the UI
+    Processor.MarkProgramBusyState False
+    
     'Redraw the active viewport
     Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
 
 End Sub
 
 'Copy the current layer (or composite image, if copyMerged is true) to the clipboard.
-Public Sub ClipboardCopy(ByVal copyMerged As Boolean)
+' The optional updateUI parameter tells the function to lock PD's UI during the copy operation.  ("Cut" operations also do this, so they
+' manage the UI separately - hence the need for a dedicated parameter.)
+Public Sub ClipboardCopy(ByVal copyMerged As Boolean, Optional ByVal updateUI As Boolean = True)
+    
+    'Lock the UI
+    If updateUI Then Processor.MarkProgramBusyState True
     
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
@@ -187,15 +198,17 @@ Public Sub ClipboardCopy(ByVal copyMerged As Boolean)
             tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveLayer.layerDIB
             
             'Layers are always premultiplied, so we must unpremultiply it now if 32bpp
-            If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.setAlphaPremultiplication False
+            If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.SetAlphaPremultiplication False
             
         End If
         
     End If
     
-    'Copy the temporary DIB to the clipboard, then erase it
-    DIB_Handler.copyDIBToClipboard tmpDIB
-    tmpDIB.eraseDIB
+    'Let the central DIB handler take care of the rest!
+    DIB_Handler.CopyDIBToClipboard tmpDIB
+    
+    'Unlock the UI
+    If updateUI Then Processor.MarkProgramBusyState False
     
 End Sub
 
