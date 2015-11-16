@@ -449,7 +449,7 @@ Public Function canvasToolsAllowed(Optional ByVal alsoCheckBusyState As Boolean 
             ' if they don't need it.
             If alsoCheckBusyState Then
                 
-                If (Not Processor.Processing) And (Not getToolBusyState) Then
+                If (Not Processor.IsProgramBusy) And (Not getToolBusyState) Then
                     canvasToolsAllowed = True
                 Else
                     canvasToolsAllowed = False

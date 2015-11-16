@@ -1930,7 +1930,7 @@ Private Sub picCanvas_OLEDragDrop(Data As DataObject, Effect As Long, Button As 
     
     'Use the external function (in the clipboard handler, as the code is roughly identical to clipboard pasting)
     ' to load the OLE source.
-    Clipboard_Handler.loadImageFromDragDrop Data, Effect, True
+    Clipboard_Handler.LoadImageFromDragDrop Data, Effect, True
     
 End Sub
 
@@ -1961,7 +1961,7 @@ Private Sub UserControl_Initialize()
         
         'Enable key tracking as well
         Set cKeyEvents = New pdInputKeyboard
-        cKeyEvents.createKeyboardTracker "pdCanvas", picCanvas.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_DELETE, VK_INSERT, VK_TAB, VK_SPACE, VK_ESCAPE, VK_BACK
+        cKeyEvents.CreateKeyboardTracker "pdCanvas", picCanvas.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN, VK_DELETE, VK_INSERT, VK_TAB, VK_SPACE, VK_ESCAPE, VK_BACK
                 
         'Allow the control to generate its own redraw requests
         m_SuspendRedraws = False
@@ -2633,7 +2633,7 @@ Private Function isCanvasInteractionAllowed() As Boolean
     End If
     
     'If the central processor is active, exit
-    If Processor.Processing Then isCanvasInteractionAllowed = False
+    If Processor.IsProgramBusy Then isCanvasInteractionAllowed = False
     
 End Function
 
