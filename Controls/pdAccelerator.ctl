@@ -175,9 +175,11 @@ Private Sub SafelyReleaseHook()
     'If we're not inside the hook, this is a perfect time to release.
     Else
         
-        m_HookingActive = False
-        m_Subclass.shk_UnHook WH_KEYBOARD
-        m_Subclass.shk_TerminateHooks
+        If m_HookingActive Then
+            m_HookingActive = False
+            m_Subclass.shk_UnHook WH_KEYBOARD
+            m_Subclass.shk_TerminateHooks
+        End If
         
         'Also deactivate the failsafe timer
         tmrRelease.Enabled = False
@@ -221,7 +223,7 @@ Public Function ActivateHook() As Boolean
     If Not (m_Subclass Is Nothing) Then
         
         'If we're already hooked, don't attempt to hook again
-        If Not m_HookingActive Then
+        If (Not m_HookingActive) Then
         
             m_HookingActive = m_Subclass.shk_SetHook(WH_KEYBOARD, False, MSG_BEFORE, , 1, Me)
             
@@ -243,7 +245,7 @@ End Function
 
 Public Sub DeactivateHook(Optional ByVal forciblyReleaseInstantly As Boolean = True)
     
-    If Not (m_Subclass Is Nothing) Then
+    If (Not (m_Subclass Is Nothing)) And m_HookingActive Then
         
         If forciblyReleaseInstantly Then
             m_HookingActive = False
@@ -503,7 +505,7 @@ Private Sub myHookProc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRe
     bHandled = False
     
     'Try to see if we're in an IDE break mode.  This isn't 100% reliable, but it's better than not checking at all.
-    If Not AreEventsFrozen Then
+    If (Not AreEventsFrozen) Then
         
         'MSDN states that negative codes must be passed to the next hook, without processing
         ' (see http://msdn.microsoft.com/en-us/library/ms644984.aspx)

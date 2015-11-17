@@ -565,8 +565,8 @@ Private Sub Class_Terminate()
 End Sub
 
 'Note that the vKey constant below is a virtual key mapping, not (necessarily) a standard VB key constant - plan accordingly!
-Private Function isVirtualKeyDown(ByVal vKey As Long) As Boolean
-    isVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
+Private Function IsVirtualKeyDown(ByVal vKey As Long) As Boolean
+    IsVirtualKeyDown = GetAsyncKeyState(vKey) And &H8000
 End Function
 
 'Note that the vKey constant below is a virtual key mapping, not necessarily a standard VB key constant
@@ -584,7 +584,7 @@ Private Function isMouseButtonDown(ByVal vKey As Long) As Boolean
     
     End If
     
-    isMouseButtonDown = isVirtualKeyDown(vKey)
+    isMouseButtonDown = IsVirtualKeyDown(vKey)
     
 End Function
 
@@ -922,15 +922,15 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
         ' ignore window message reports entirely and pull key states manually using GetAsyncKeyState.
         Dim retShiftConstants As ShiftConstants
         
-        If isVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
-        If isVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
+        If IsVirtualKeyDown(VK_SHIFT) Then retShiftConstants = retShiftConstants Or vbShiftMask
+        If IsVirtualKeyDown(VK_CONTROL) Then retShiftConstants = retShiftConstants Or vbCtrlMask
         
         'NOTE!  MSDN provides some odd instructions for tracking the ALT key (see Remarks here:
         ' http://msdn.microsoft.com/en-us/library/ms646242%28v=vs.85%29.aspx).  They state explicitly to use
         ' use GetKeyState and not GetAsyncKeyState, but they don't provide any rationale for this.  I have no
         ' trouble with GetAsyncKeyState properly reporting Alt status on Win 7, so I'm leaving this strategy
         ' for now, but I remain intrigued by MSDN's oddly specific instructions on the point...
-        If isVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
+        If IsVirtualKeyDown(VK_ALT) Then retShiftConstants = retShiftConstants Or vbAltMask
         
         'Similarly, always grab mouse buttons independent of the window message
         Dim retMouseButton As PDMouseButtonConstants
