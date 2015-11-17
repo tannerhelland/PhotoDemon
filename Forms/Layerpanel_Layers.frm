@@ -830,7 +830,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     End If
     
     'Only update the tooltip if it differs from the current one.  (This prevents horrific flickering.)
-    If StrComp(m_PreviousTooltip, toolString, vbBinaryCompare) <> 0 Then toolTipManager.setTooltip picLayers.hWnd, Me.hWnd, toolString
+    If StrComp(m_PreviousTooltip, toolString, vbBinaryCompare) <> 0 Then toolTipManager.SetTooltip picLayers.hWnd, Me.hWnd, toolString
     m_PreviousTooltip = toolString
     
 End Sub
@@ -930,7 +930,7 @@ Private Sub Form_Load()
 
     'Activate the custom tooltip handler
     Set toolTipManager = New pdToolTip
-    toolTipManager.setTooltip picLayers.hWnd, Me.hWnd, ""
+    toolTipManager.SetTooltip picLayers.hWnd, Me.hWnd, ""
     
     'Add images to the layer action buttons at the bottom of the toolbox
     cmdLayerAction(0).AssignImage "LAYER_ADD_32", , 50
@@ -1388,7 +1388,7 @@ Private Sub picLayers_OLEDragDrop(Data As DataObject, Effect As Long, Button As 
     'Use the external function (in the clipboard handler, as the code is roughly identical to clipboard pasting)
     ' to load the OLE source.
     m_InOLEDragDropMode = True
-    Clipboard_Handler.loadImageFromDragDrop Data, Effect, True
+    g_Clipboard.LoadImageFromDragDrop Data, Effect, True
     m_InOLEDragDropMode = False
 
 End Sub

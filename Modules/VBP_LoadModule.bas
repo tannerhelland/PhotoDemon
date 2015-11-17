@@ -364,6 +364,20 @@ Public Sub LoadTheProgram()
     Font_Management.BuildFontCacheProperties
     
     
+    
+    '*************************************************************************************************************************************
+    ' Initialize PD's central clipboard manager
+    '*************************************************************************************************************************************
+    
+    #If DEBUGMODE = 1 Then
+        perfCheck.markEvent "Initialize pdClipboardMain"
+    #End If
+    
+    LoadMessage "Initializing clipboard interface..."
+    
+    Set g_Clipboard = New pdClipboardMain
+    
+    
     '*************************************************************************************************************************************
     ' Get the viewport engine ready
     '*************************************************************************************************************************************
@@ -442,7 +456,7 @@ Public Sub LoadTheProgram()
     ' if a user doesn't use a tool during a given session.
     
     'Also, while here, prep the specialized non-destructive tool handler in the central processor
-    Processor.initializeProcessor
+    Processor.InitializeProcessor
     
     
     '*************************************************************************************************************************************
@@ -1129,13 +1143,13 @@ Public Sub LoadFileAsNewImage(ByRef sFile() As String, Optional ByVal ToUpdateMR
             If targetDIB.ICCProfile.hasICCData And (Not targetDIB.ICCProfile.hasProfileBeenApplied) And (Not targetImage.imgStorage.doesKeyExist("Tone-mapping")) Then
                 
                 '32bpp images must be un-premultiplied before the transformation
-                If targetDIB.getDIBColorDepth = 32 Then targetDIB.setAlphaPremultiplication False
+                If targetDIB.getDIBColorDepth = 32 Then targetDIB.SetAlphaPremultiplication False
                 
                 'Apply the ICC transform
                 targetDIB.ICCProfile.applyICCtoSelf targetDIB
                 
                 '32bpp images must be re-premultiplied after the transformation
-                If targetDIB.getDIBColorDepth = 32 Then targetDIB.setAlphaPremultiplication True
+                If targetDIB.getDIBColorDepth = 32 Then targetDIB.SetAlphaPremultiplication True
                 
             End If
             
@@ -1794,13 +1808,13 @@ Public Function QuickLoadImageToDIB(ByVal imagePath As String, ByRef targetDIB A
     If targetDIB.ICCProfile.hasICCData And (Not targetDIB.ICCProfile.hasProfileBeenApplied) Then
         
         '32bpp images must be un-premultiplied before the transformation
-        If targetDIB.getDIBColorDepth = 32 Then targetDIB.setAlphaPremultiplication False
+        If targetDIB.getDIBColorDepth = 32 Then targetDIB.SetAlphaPremultiplication False
         
         'Apply the ICC transform
         targetDIB.ICCProfile.applyICCtoSelf targetDIB
         
         '32bpp images must be re-premultiplied after the transformation
-        If targetDIB.getDIBColorDepth = 32 Then targetDIB.setAlphaPremultiplication True
+        If targetDIB.getDIBColorDepth = 32 Then targetDIB.SetAlphaPremultiplication True
     
     End If
 

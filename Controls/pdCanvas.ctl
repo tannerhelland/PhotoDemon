@@ -1930,7 +1930,7 @@ Private Sub picCanvas_OLEDragDrop(Data As DataObject, Effect As Long, Button As 
     
     'Use the external function (in the clipboard handler, as the code is roughly identical to clipboard pasting)
     ' to load the OLE source.
-    Clipboard_Handler.LoadImageFromDragDrop Data, Effect, True
+    g_Clipboard.LoadImageFromDragDrop Data, Effect, True
     
 End Sub
 

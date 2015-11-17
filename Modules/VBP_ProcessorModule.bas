@@ -71,6 +71,7 @@ Private prevTextLayerID As Long, prevTextSetting() As Variant
 Private Const NUM_OF_NDFX_PROPERTY_ENUMS As Long = 6
 Private prevNDFXLayerID As Long, prevNDFXSetting() As Variant
 
+
 'PhotoDemon's software processor.  (Almost) every action the program takes is first routed through this method.  This processor is what
 ' makes recording and playing back macros possible, as well as a host of other features.  (See comment at top of page for more details.)
 '
@@ -588,31 +589,31 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             End If
         
         Case "Cut"
-            ClipboardCut True
+            g_Clipboard.ClipboardCut True
         
         Case "Cut from layer"
-            ClipboardCut False
+            g_Clipboard.ClipboardCut False
             
         Case "Copy"
-            ClipboardCopy True
+            g_Clipboard.ClipboardCopy True
             
         Case "Copy from layer"
-            ClipboardCopy False
+            g_Clipboard.ClipboardCopy False
             
         Case "Paste as new image"
-            ClipboardPaste False
+            g_Clipboard.ClipboardPaste False
         
         Case "Paste as new layer"
         
             'Perform a quick check; if no images have been loaded, secretly reroute the Ctrl+Shift+V shortcut as "Paste as new image"
             If g_OpenImageCount > 0 Then
-                ClipboardPaste True
+                g_Clipboard.ClipboardPaste True
             Else
-                ClipboardPaste False
+                g_Clipboard.ClipboardPaste False
             End If
                     
         Case "Empty clipboard"
-            ClipboardEmpty
+            g_Clipboard.ClipboardEmpty
         
         
         
@@ -2403,8 +2404,8 @@ Public Sub MarkProgramBusyState(ByVal newState As Boolean, Optional ByVal change
         m_Processing = True
         
         'Make a note of the window that has keyboard focus, then forcibly remove it
-        m_FocusHWnd = g_WindowManager.GetFocusAPI
-        g_WindowManager.SetFocusAPI 0
+        m_FocusHWnd = g_WindowManager.GetFocusAPI()
+        If m_FocusHWnd <> 0 Then g_WindowManager.SetFocusAPI 0&
         
         'Change the cursor to a busy state (but ONLY if explicitly requested - this is important)
         If changeCursor Then Screen.MousePointer = vbHourglass
