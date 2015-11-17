@@ -646,11 +646,11 @@ Public Function LoadFreeImageV4(ByVal srcFilename As String, ByRef dstDIB As pdD
     If fi_BPP = 32 Then
         
         'If the clipboard is active, this image came from a Paste operation.  It may require extra alpha heuristics.
-        If Clipboard_Handler.IsClipboardOpen Then
+        If g_Clipboard.IsClipboardOpen Then
         
             'Retrieve a local copy of PD's clipboard info struct.  We're going to analyze it, to see if we need to
             ' run some alpha heuristics (because the clipboard is shit when it comes to handling alpha correctly.)
-            tmpClipboardInfo = Clipboard_Handler.GetClipboardInfo
+            tmpClipboardInfo = g_Clipboard.GetClipboardInfo
             
             'If the clipboard image was originally placed on the clipboard as a DDB, a whole variety of driver-specific
             ' issues may be present.

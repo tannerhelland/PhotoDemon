@@ -2916,7 +2916,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     
     'Use the external function (in the clipboard handler, as the code is roughly identical to clipboard pasting)
     ' to load the OLE source.
-    Clipboard_Handler.LoadImageFromDragDrop Data, Effect, False
+    g_Clipboard.LoadImageFromDragDrop Data, Effect, False
     
 End Sub
 

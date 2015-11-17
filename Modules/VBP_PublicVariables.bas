@@ -36,6 +36,9 @@ Public g_ImageFormats As pdFormats
 'Main language and translation handler
 Public g_Language As pdTranslate
 
+'Main clipboard handler
+Public g_Clipboard As pdClipboardMain
+
 'Currently selected tool, previous tool
 Public g_CurrentTool As PDTools
 Public g_PreviousTool As PDTools

@@ -1,10 +1,22 @@
-Attribute VB_Name = "Clipboard_Handler"
+VERSION 1.0 CLASS
+BEGIN
+  MultiUse = -1  'True
+  Persistable = 0  'NotPersistable
+  DataBindingBehavior = 0  'vbNone
+  DataSourceBehavior  = 0  'vbNone
+  MTSTransactionMode  = 0  'NotAnMTSObject
+END
+Attribute VB_Name = "pdClipboardMain"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = True
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = False
 '***************************************************************************
 'Clipboard Interface
 'Copyright 2001-2015 by Tanner Helland
 'Created: 15/April/01
-'Last updated: 15/November/15
-'Last update: finalize massive overhaul to integrate new pdClipboard class during PASTE operations.  Cut/Copy still need work.
+'Last updated: 17/November/15
+'Last update: convert module to a class; use new g_Clipboard instance throughout PD.
 '
 'Module for handling all Windows clipboard routines.  Most clipboard APIs are not located here, but in the separate pdClipboard
 ' object, which includes a ton of specialized helper functions.  Look there for details.
@@ -94,12 +106,6 @@ Private Declare Function SetDIBitsToDevice Lib "gdi32" (ByVal hDC As Long, ByVal
 Private m_IsClipboardOpen As Boolean
 
 'If external functions want to know more about the current clipboard operation, they can retrieve a copy of this struct.
-Public Type PD_CLIPBOARD_INFO
-    pdci_CurrentFormat As PredefinedClipboardFormatConstants
-    pdci_OriginalFormat As PredefinedClipboardFormatConstants
-    pdci_DIBv5AlphaMask As Long
-End Type
-
 Private m_ClipboardInfo As PD_CLIPBOARD_INFO
 
 'IMPORTANT NOTE: at present, this value is only updated during paste steps.  I still need to convert cut/copy operations to use pdClipboard.
@@ -107,7 +113,7 @@ Public Function IsClipboardOpen() As Boolean
     IsClipboardOpen = m_IsClipboardOpen
 End Function
 
-Public Function GetClipboardInfo() As PD_CLIPBOARD_INFO
+Friend Function GetClipboardInfo() As PD_CLIPBOARD_INFO
     GetClipboardInfo = m_ClipboardInfo
 End Function
 
@@ -116,7 +122,7 @@ End Function
 Public Sub ClipboardCut(ByVal cutMerged As Boolean)
     
     'Lock the UI
-    Processor.MarkProgramBusyState True
+    Processor.MarkProgramBusyState True, True
     
     'Cut begins as a normal Copy operation
     ClipboardCopy cutMerged, False
@@ -178,19 +184,27 @@ End Sub
 Public Sub ClipboardCopy(ByVal copyMerged As Boolean, Optional ByVal updateUI As Boolean = True)
     
     'Lock the UI
-    If updateUI Then Processor.MarkProgramBusyState True
+    If updateUI Then Processor.MarkProgramBusyState True, True
     
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     
     'Check for an active selection
     If pdImages(g_CurrentImage).selectionActive Then
-    
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Clipboard copy update: retrieving processed selection area..."
+        #End If
+        
         'Fill the temporary DIB with the selection
         pdImages(g_CurrentImage).retrieveProcessedSelection tmpDIB, False, copyMerged
         
     Else
-    
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Clipboard copy update: retrieving composited image and/or layer..."
+        #End If
+        
         'If a selection is NOT active, just make a copy of the full layer or image, depending on the merged request
         If copyMerged Then
             pdImages(g_CurrentImage).getCompositedImage tmpDIB, False
@@ -1038,3 +1052,4 @@ Public Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
     Exit Function
 
 End Function
+

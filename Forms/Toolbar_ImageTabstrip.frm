@@ -731,15 +731,15 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
             If curThumbHover <> -1 Then
                         
                 If Len(pdImages(imgThumbnails(curThumbHover).indexInPDImages).locationOnDisk) <> 0 Then
-                    toolTipManager.setTooltip Me.hWnd, Me.hWnd, pdImages(imgThumbnails(curThumbHover).indexInPDImages).locationOnDisk, pdImages(imgThumbnails(curThumbHover).indexInPDImages).originalFileNameAndExtension
+                    toolTipManager.SetTooltip Me.hWnd, Me.hWnd, pdImages(imgThumbnails(curThumbHover).indexInPDImages).locationOnDisk, pdImages(imgThumbnails(curThumbHover).indexInPDImages).originalFileNameAndExtension
                 Else
-                    toolTipManager.setTooltip Me.hWnd, Me.hWnd, "Once this image has been saved to disk, its filename will appear here.", "This image does not have a filename."
+                    toolTipManager.SetTooltip Me.hWnd, Me.hWnd, "Once this image has been saved to disk, its filename will appear here.", "This image does not have a filename."
                 End If
             
             'The cursor is not over a thumbnail; let the user know they can hover if they want more information.
             Else
             
-                toolTipManager.setTooltip Me.hWnd, Me.hWnd, "Hover an image thumbnail to see its name and current file location.", ""
+                toolTipManager.SetTooltip Me.hWnd, Me.hWnd, "Hover an image thumbnail to see its name and current file location.", ""
             
             End If
             
@@ -900,7 +900,7 @@ Private Sub Form_Load()
     'Generate a drop-shadow for the X.  (We can use the same one for both red and gray, obviously.)
     Set m_CloseIconShadow = New pdDIB
     Filters_Layers.createShadowDIB m_CloseIconGray, m_CloseIconShadow
-    m_CloseIconShadow.setAlphaPremultiplication False
+    m_CloseIconShadow.SetAlphaPremultiplication False
     
     'Pad and blur the drop-shadow
     Dim tmpLUT() As Byte
@@ -913,7 +913,7 @@ Private Sub Form_Load()
     quickBlurDIB m_CloseIconShadow, FixDPI(2), False
     cFilter.applyLUTToAllColorChannels m_CloseIconShadow, tmpLUT, True
     
-    m_CloseIconShadow.setAlphaPremultiplication True
+    m_CloseIconShadow.SetAlphaPremultiplication True
     
     ' Track the last thumbnail whose close icon has been clicked.
     ' -1 means no close icon has been clicked yet
@@ -941,7 +941,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     
     'Use the external function (in the clipboard handler, as the code is roughly identical to clipboard pasting)
     ' to load the OLE source.
-    Clipboard_Handler.loadImageFromDragDrop Data, Effect, False
+    g_Clipboard.LoadImageFromDragDrop Data, Effect, False
 
 End Sub
 
@@ -1204,7 +1204,7 @@ Private Sub updateShadowDIB(ByVal imgThumbnailIndex As Long)
     quickBlurDIB imgThumbnails(imgThumbnailIndex).thumbShadow, shadowBlurRadius
     
     'Apply premultiplied alpha (so we can more quickly AlphaBlend the resulting image to the tabstrip)
-    imgThumbnails(imgThumbnailIndex).thumbShadow.setAlphaPremultiplication True
+    imgThumbnails(imgThumbnailIndex).thumbShadow.SetAlphaPremultiplication True
     
 End Sub
 

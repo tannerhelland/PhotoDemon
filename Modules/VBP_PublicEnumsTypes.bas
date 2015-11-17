@@ -420,3 +420,13 @@ End Enum
 #End If
 
 Public Const NUM_OF_LOD_CACHES As Long = 3
+
+'PD's gotten much better about abstracting and encapsulating clipboard-specific functionality.  Unfortunately, some formats
+' (most notably CF_BITMAP) require special heuristics from PD's image load function, because the alpha data CF_BITMAP
+' provides is unlikely to be valid, but we can't know for sure without examining it.  As such, some clipboard-specific data
+' can be retrieved via this struct.
+Public Type PD_CLIPBOARD_INFO
+    pdci_CurrentFormat As PredefinedClipboardFormatConstants
+    pdci_OriginalFormat As PredefinedClipboardFormatConstants
+    pdci_DIBv5AlphaMask As Long
+End Type
