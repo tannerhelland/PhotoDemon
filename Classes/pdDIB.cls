@@ -158,8 +158,8 @@ Private m_dibColorDepth As Long
 
 'Used when writing/reading DIB data to/from a file
 Private Const DIB_IDENTIFIER As Long = &H726C4450  'PDlr
-Private Const DIB_FILE_VERSION_2012 As Long = &H1000
-Private Const DIB_FILE_VERSION_2015 As Long = &H1001
+Private Const DIB_FILE_VERSION_2012 As Long = &H1000&
+Private Const DIB_FILE_VERSION_2015 As Long = &H1001&
 
 'When converting a 32bpp DIB to 8bpp with transparency, we need to know the location of a transparent pixel.
 ' This location is passed to FreeImage, and it designates the palette index at that location as the transparent index.
@@ -1084,7 +1084,7 @@ End Sub
 'Load a DIB's header and image information from file.  If the file is compressed, it will automatically be decompressed.
 ' Optionally, if the DIB data is embedded inside another file, that handle can be passed to the this function, and it will attempt to
 ' load DIB data from the current file pointer location.  (In this case, just supply a blank filename.)
-Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEmbeddedLocation As Boolean = False, Optional ByVal hFile As Long = 0) As Boolean
+Public Function CreateFromFile(ByRef srcFilename As String, Optional ByVal useEmbeddedLocation As Boolean = False, Optional ByVal hFile As Long = 0) As Boolean
     
     'pdFSO is used so we can support Unicode paths
     Dim cFile As pdFSO
@@ -1099,7 +1099,7 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
                 If Not pdDebug Is Nothing Then pdDebug.LogAction "WARNING!  pdDIB.createFromFile failed to generate a handle for " & srcFilename & ".  Load abandoned."
             #End If
             
-            createFromFile = False
+            CreateFromFile = False
             Exit Function
             
         End If
@@ -1113,7 +1113,7 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
     If (DIBIDCheck <> DIB_IDENTIFIER) Then
         
         Message "Failed to load embedded image; invalid header found."
-        createFromFile = False
+        CreateFromFile = False
         
         If Not useEmbeddedLocation Then cFile.CloseFileHandle hFile
         Exit Function
@@ -1129,21 +1129,22 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
     cFile.ReadDataFromFile hFile, VarPtr(fColorDepth), 4&
     
     'The newest, 2015 version of PD DIBs retrieves alpha premultiplication as well
+    Dim localAlphaPremultiplied As Boolean
     If DIBVersionCheck = DIB_FILE_VERSION_2015 Then
-        
-        cFile.ReadDataFromFile hFile, VarPtr(m_IsAlphaPremultiplied), 2&
+    
+        cFile.ReadDataFromFile hFile, VarPtr(localAlphaPremultiplied), 2&
         
     'If alpha premultiplication state is not stored, make a best guess based on color depth
     Else
         
         If fColorDepth = 24 Then
-            m_IsAlphaPremultiplied = False
+            localAlphaPremultiplied = False
         Else
-            m_IsAlphaPremultiplied = True
+            localAlphaPremultiplied = True
         End If
         
     End If
-        
+    
     'Retrieve DIB dimensions
     Dim fWidth As Long, fHeight As Long, fArrayWidth As Long
     cFile.ReadDataFromFile hFile, VarPtr(fWidth), 4&
@@ -1168,7 +1169,7 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
             'If zLib is not enabled for some reason, abandon the load
             If Not g_ZLibEnabled Then
                 Message "DIB data must be decompressed, but zLib is disabled or missing.  Please install the zLib plugin to continue."
-                createFromFile = False
+                CreateFromFile = False
                 Exit Function
             End If
             
@@ -1211,7 +1212,7 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
             Else
                 
                 Message "Decompression was not successful (unspecified zLib plugin error).  DIB processing abandoned."
-                createFromFile = False
+                CreateFromFile = False
                 Exit Function
                 
             End If
@@ -1224,15 +1225,18 @@ Public Function createFromFile(ByRef srcFilename As String, Optional ByVal useEm
             
         End If
         
-        createFromFile = True
+        CreateFromFile = True
         
     Else
         #If DEBUGMODE = 1 Then
             If Not pdDebug Is Nothing Then pdDebug.LogAction "WARNING!  pdDIB.createFromFile failed to create a new DIB using the stored file settings.  Load abandoned."
         #End If
-        createFromFile = False
+        CreateFromFile = False
     End If
-        
+    
+    'Reset alpha premultiplication to match the value embedded in the file
+    m_IsAlphaPremultiplied = localAlphaPremultiplied
+    
     'If this is an embedded file, leave the file open for further processing.  Otherwise, close it.
     If Not useEmbeddedLocation Then cFile.CloseFileHandle hFile
     
@@ -1241,7 +1245,7 @@ End Function
 'Write this class's DIB information to file.  Compression can optionally be applied to the DIB data.
 ' Also, if the calling function wants to embed the DIB's data inside an existing file, specify the embedInFile parameter and pass a valid
 ' file handle, with the pointer already moved to the location desired for embedding.
-Public Function writeToFile(ByRef dstFilename As String, Optional ByVal toCompress As Boolean = True, Optional ByVal embedInFile As Boolean = False, Optional ByRef hFile As Long) As Boolean
+Public Function WriteToFile(ByRef dstFilename As String, Optional ByVal toCompress As Boolean = True, Optional ByVal embedInFile As Boolean = False, Optional ByRef hFile As Long) As Boolean
     
     'Before proceeding, make sure this DIB actually exists
     If (Me.getDIBWidth <= 0) Or (Me.getDIBHeight <= 0) Then
@@ -1250,7 +1254,7 @@ Public Function writeToFile(ByRef dstFilename As String, Optional ByVal toCompre
             If Not pdDebug Is Nothing Then pdDebug.LogAction "WARNING!  pdDIB.writeToFile was called on an empty DIB.  Fix this!"
         #End If
         
-        writeToFile = False
+        WriteToFile = False
         Exit Function
         
     End If
@@ -1272,7 +1276,7 @@ Public Function writeToFile(ByRef dstFilename As String, Optional ByVal toCompre
                 If Not pdDebug Is Nothing Then pdDebug.LogAction "WARNING!  pdDIB.writeToFile failed to create a file handle for " & dstFilename & ".  Write abandoned."
             #End If
             
-            writeToFile = False
+            WriteToFile = False
             Exit Function
         
         End If
@@ -1292,7 +1296,7 @@ Public Function writeToFile(ByRef dstFilename As String, Optional ByVal toCompre
     cFile.WriteDataToFile hFile, VarPtr(Me.getDIBColorDepth), 4&
     
     'Alpha premultiplication (yes, this is stored even for 24-bit images)
-    cFile.WriteDataToFile hFile, VarPtr(Me.getAlphaPremultiplication()), 2&
+    cFile.WriteDataToFile hFile, VarPtr(m_IsAlphaPremultiplied), 2&
     
     'Size
     cFile.WriteDataToFile hFile, VarPtr(Me.getDIBWidth), 4&
@@ -1532,6 +1536,10 @@ Public Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional 
     'This is only useful for images with alpha channels. Exit if no alpha channel is present.
     If m_dibColorDepth <> 32 Then Exit Sub
     
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "Compositing DIB of size " & m_dibWidth & "x" & m_dibHeight & ".  Alpha premultiplication = " & m_IsAlphaPremultiplied & "."
+    #End If
+    
     'To simplify processing in the inner loop, we process entire scanlines at once, stepping through byte values in pixel increments.
     ' (Because only 32-bpp images are supported, we know each pixel takes up 4-bytes: one each for RGBA.)
     Dim finalX As Long, finalY As Long
@@ -1669,13 +1677,13 @@ End Sub
 
 'DIBs created from GDI+ contain pre-multiplied alpha values. These are great for high-performance blting, but terrible for
 ' photo editing. This routine can be used to either apply or remove premultiplied alpha from an image.
-Public Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Boolean = False)
+Public Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Boolean = False, Optional ByVal ignoreEmbeddedValue As Boolean = False)
 
     'This function doesn't matter if the image isn't 32bpp
     If m_dibColorDepth <> 32 Then Exit Sub
     
     'If alpha premultiplication already matches the requested state, exit now
-    If m_IsAlphaPremultiplied = applyPremultiplication Then
+    If (m_IsAlphaPremultiplied = applyPremultiplication) And (Not ignoreEmbeddedValue) Then
         Debug.Print "WARNING! Alpha premultiplication = " & applyPremultiplication & " is pointless, as image is already in that state.  (" & m_dibWidth & "x" & m_dibHeight & "x" & m_dibColorDepth & ")  Abandoning request."
         Exit Sub
     End If
