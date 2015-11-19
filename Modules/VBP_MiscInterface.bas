@@ -1377,7 +1377,7 @@ Public Sub MakeFormPretty(ByRef tForm As Form, Optional ByVal useDoEvents As Boo
         'The main from is a bit different - if it has been translated or changed, it needs menu icons reassigned.
         If FormMain.Visible Then applyAllMenuIcons
     End If
-        
+    
 End Sub
 
 'Used to enable font smoothing if currently disabled.
@@ -1810,3 +1810,8 @@ Public Function APIHeight(ByVal srcHwnd As Long) As Long
     GetWindowRect srcHwnd, tmpRect
     APIHeight = tmpRect.y2 - tmpRect.y1
 End Function
+
+'Program shutting down?  Call this function to release any interface-related resources stored by this module
+Public Sub ReleaseResources()
+    Set currentDialogReference = Nothing
+End Sub

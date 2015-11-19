@@ -92,8 +92,44 @@ Public Sub finalShutdown()
     
     Set FormMain = Nothing
     
+    'Release FreeImage (if available)
+    If g_FreeImageHandle <> 0 Then
+    
+        FreeLibrary g_FreeImageHandle
+        g_ImageFormats.FreeImageEnabled = False
+    
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "FreeImage released"
+        #End If
+        
+    End If
+    
+    'Release zLib (if available)
+    If g_ZLibEnabled Then
+    
+        Plugin_zLib_Interface.releaseZLib
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "zLib released"
+        #End If
+    
+    End If
+    
+    'Release GDIPlus (if applicable)
+    If g_ImageFormats.GDIPlusEnabled Then
+        
+        releaseGDIPlus
+        
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "GDI+ released"
+        #End If
+    
+    End If
+    
+    g_IsProgramRunning = False
+    
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "FormMain is gone.  Manually unloading all public class instances..."
+        pdDebug.LogAction "Manually unloading all remaining public class instances..."
     #End If
     
     Set g_RecentFiles = Nothing
@@ -110,7 +146,7 @@ Public Sub finalShutdown()
     Next i
     
     #If DEBUGMODE = 1 Then
-        pdDebug.LogAction "Everything I can physically unload has been forcibly unloaded.  Releasing final library reference..."
+        pdDebug.LogAction "Everything we can physically unload has been forcibly unloaded.  Releasing final library reference..."
     #End If
     
     'If the shell32 library was loaded successfully, once FormMain is closed, we need to unload the library handle.

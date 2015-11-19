@@ -188,6 +188,17 @@ Private Sub SafelyReleaseHook()
     
 End Sub
 
+'Prior to shutdown, you can call this function to forcibly release as many accelerator resources as we can.  In PD,
+' we use this to free our menu references.
+Public Sub ReleaseResources()
+    
+    Dim i As Long
+    For i = 0 To m_NumOfHotkeys - 1
+        Set m_Hotkeys(i).relevantMenu = Nothing
+    Next i
+    
+End Sub
+
 Private Sub UserControl_Initialize()
     
     m_HookingActive = False
@@ -214,6 +225,8 @@ Private Sub UserControl_Terminate()
         DeactivateHook True
         Set m_Subclass = Nothing
     End If
+    
+    ReleaseResources
     
 End Sub
 

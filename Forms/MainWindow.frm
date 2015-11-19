@@ -27,8 +27,8 @@ Begin VB.Form FormMain
    Begin PhotoDemon.pdAccelerator pdHotkeys 
       Left            =   120
       Top             =   4440
-      _ExtentX        =   661
-      _ExtentY        =   661
+      _extentx        =   661
+      _extenty        =   661
    End
    Begin VB.Timer tmrMetadata 
       Enabled         =   0   'False
@@ -49,22 +49,22 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _ExtentX        =   873
-      _ExtentY        =   873
+      _extentx        =   873
+      _extenty        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
       Top             =   2520
-      _ExtentX        =   635
-      _ExtentY        =   635
-      ErrAsOut        =   0   'False
-      PollInterval    =   5
+      _extentx        =   635
+      _extenty        =   635
+      errasout        =   0   'False
+      pollinterval    =   5
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1576,15 +1576,14 @@ Attribute VB_Exposed = False
 'Please visit photodemon.org for updates and additional downloads
 
 '***************************************************************************
-'Main Program Form
+'Primary PhotoDemon Window
 'Copyright 2002-2015 by Tanner Helland
 'Created: 15/September/02
-'Last updated: 17/February/15
-'Last updated by: Raj
-'Last update: Added menus and handlers for MRU list for macros.
+'Last updated: 19/November/15
+'Last update: rework the order of unloading classes, to ensure delayed clipboard rendering doesn't break
 '
-'This is PhotoDemon's main form.  In actuality, it contains relatively little code.  Its
-' primary purpose is sending parameters to other, more interesting sections of the program.
+'This is PhotoDemon's main form.  In actuality, it contains relatively little code.  Its primary purpose is sending
+' parameters to other, more interesting sections of the program.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -3022,11 +3021,13 @@ Private Sub Form_Unload(Cancel As Integer)
     
     'FYI, this function includes a fair amount of debug code!
     
+    'Hide the main window to make it appear as if we shut down quickly
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Shutdown initiated"
     #End If
     
     Me.Visible = False
+    Interface.ReleaseResources
     
     'Cancel any pending downloads
     #If DEBUGMODE = 1 Then
@@ -3034,6 +3035,20 @@ Private Sub Form_Unload(Cancel As Integer)
     #End If
     
     Me.asyncDownloader.Reset
+    
+    'Release the clipboard manager.  If we are responsible for the current clipboard data, we must manually upload a
+    ' copy of all supported formats - for this reason, this step may be a little slow.
+    #If DEBUGMODE = 1 Then
+        pdDebug.LogAction "FormMain gone.  Shutting down clipboard manager..."
+    #End If
+    If g_Clipboard.IsPDDataOnClipboard Then
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "PD's data remains on the clipboard.  Rendering any additional formats now..."
+        #End If
+        g_Clipboard.RenderAllClipboardFormatsManually
+    End If
+    
+    Set g_Clipboard = Nothing
     
     'Most core plugins are released as a final step, but ExifTool only matters when images are loaded, and we know
     ' no images are loaded by this point.  Because it also takes a moment to shut down, trigger it first.
@@ -3047,72 +3062,71 @@ Private Sub Form_Unload(Cancel As Integer)
         
     End If
         
+    'Perform any printer-related cleanup
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Removing printer temp files"
     #End If
     
-    'Perform printer cleanup
     Printing.performPrinterCleanup
     
+    'Stop tracking hotkeys
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Turning off hotkey manager"
     #End If
     
-    'Stop tracking hotkeys
     pdHotkeys.DeactivateHook True
+    pdHotkeys.ReleaseResources
     
+    'Destroy all custom-created form icons
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Destroying custom icons for this session"
     #End If
     
-    'Destroy all custom-created form icons
     DestroyAllIcons
     
+    'Release the hand cursor we use for all clickable objects
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Unloading custom cursors for this session"
     #End If
     
-    'Release the hand cursor we use for all clickable objects
     unloadAllCursors
     
+    'Save all MRU lists to the preferences file.  (I've considered doing this as files are loaded, but the only time
+    ' that would be an improvement is if the program crashes, and if it does crash, the user wouldn't want to re-load
+    ' the problematic image anyway.)
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Saving recent file list"
     #End If
     
-    'Save the MRU list to the preferences file.  (I've considered doing this as files are loaded, but the only time
-    ' that would be an improvement is if the program crashes, and if it does crash, the user wouldn't want to re-load
-    ' the problematic image anyway.)
     g_RecentFiles.MRU_SaveToFile
-    
-    'Save the macro-specific MRU.
     g_RecentMacros.MRU_SaveToFile
     
+    'Restore the user's font smoothing setting as necessary.  (Only relevant on XP.)
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Restoring ClearType settings (if any)"
     #End If
     
-    'Restore the user's font smoothing setting as necessary
     HandleClearType False
     
+    'Release any Win7-specific features
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Releasing custom Windows 7 features"
     #End If
     
-    'Release any Win7-specific features
     releaseWin7Features
     
+    'TODO: implement this, as necessary, once theming is active
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Releasing main form theming"
     #End If
     
-    'TODO: implement this, as necessary, once theming is active
     'ReleaseFormTheming Me
-        
+    
+    'Unload all toolbars
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Unloading toolbars"
     #End If
-        
-    'Unload all toolbars
+    
     #If DEBUGMODE = 1 Then
         If Not (toolbar_Debug Is Nothing) Then Unload toolbar_Debug
     #End If
@@ -3121,19 +3135,19 @@ Private Sub Form_Unload(Cancel As Integer)
     If Not (toolbar_Options Is Nothing) Then Unload toolbar_Options
     If Not (toolbar_Toolbox Is Nothing) Then Unload toolbar_Toolbox
     
+    'Release this form from the window manager, and write out all window data to file
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Shutting down window manager"
     #End If
     
-    'Release this form from the window manager, and write out all window data to file
     g_WindowManager.UnregisterForm Me
     g_WindowManager.SaveAllWindowLocations
     
+    'As a final failsafe, forcibly unload any remaining forms
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Forcibly unloading any remaining forms"
     #End If
     
-    'As a final failsafe, forcibly unload any remaining forms
     Dim tmpForm As Form
     For Each tmpForm In Forms
 
@@ -3164,60 +3178,21 @@ Private Sub Form_Unload(Cancel As Integer)
         
     End If
         
-    
+    'Because PD can now auto-update between runs, it's helpful to log the current program version to the preferences file.  The next time PD runs,
+    ' it can compare its version against this value, to infer if an update occurred.
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Writing session data to file..."
     #End If
     
-    'Because PD can now auto-update between runs, it's helpful to log the current program version to the preferences file.  The next time PD runs,
-    ' it can compare its version against this value, to infer if an update occurred.
     g_UserPreferences.SetPref_String "Core", "LastRunVersion", App.Major & "." & App.Minor & "." & App.Revision
     
+    'All core PD functions appear to have terminated correctly, so notify the Autosave handler that this session was clean.
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Final step: writing out new autosave checksum..."
     #End If
-        
-    'All core PD functions appear to have terminated correctly, so notify the Autosave handler that this session was clean.
+    
     Autosave_Handler.purgeOldAutosaveData
     Autosave_Handler.notifyCleanShutdown
-    
-    'With PD effectively gone, we can release the few plugins that remain.
-    
-    'Release FreeImage (if available)
-    If g_FreeImageHandle <> 0 Then
-    
-        FreeLibrary g_FreeImageHandle
-        g_ImageFormats.FreeImageEnabled = False
-    
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "FreeImage released"
-        #End If
-        
-    End If
-    
-    'Release zLib (if available)
-    If g_ZLibEnabled Then
-    
-        Plugin_zLib_Interface.releaseZLib
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "zLib released"
-        #End If
-    
-    End If
-    
-    'Release GDIPlus (if applicable)
-    If g_ImageFormats.GDIPlusEnabled Then
-        
-        releaseGDIPlus
-        
-        #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "GDI+ released"
-        #End If
-    
-    End If
-    
-    g_IsProgramRunning = False
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Shutdown appears to be clean.  Turning final control over to modMain.finalShutdown()..."
