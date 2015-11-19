@@ -515,7 +515,7 @@ Public Function Modulo(ByVal Quotient As Double, ByVal Divisor As Double) As Dou
 End Function
 
 'Retrieve the low-word value from a Long-type variable.  With thanks to Randy Birch for this function (http://vbnet.mvps.org/index.html?code/subclass/activation.htm)
-Public Function LoWord(dw As Long) As Integer
+Public Function LoWord(ByRef dw As Long) As Integer
    If dw And &H8000& Then
       LoWord = &H8000& Or (dw And &H7FFF&)
    Else

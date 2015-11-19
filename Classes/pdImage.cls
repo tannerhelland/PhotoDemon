@@ -295,11 +295,11 @@ Public Sub getCompositedImage(ByRef dstDIB As pdDIB, Optional ByVal premultiplic
     If Not m_CompositeCacheClean Then rebuildCompositeBuffer
     
     'Give the caller a copy of the composited image
-    If dstDIB Is Nothing Then Set dstDIB = New pdDIB
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     dstDIB.createFromExistingDIB compositeBuffer
     
     'Change premultiplication, if requested by the caller.  (By default, the composite image is stored in premultiplied format.)
-    If dstDIB.getAlphaPremultiplication <> premultiplicationStatus Then dstDIB.setAlphaPremultiplication premultiplicationStatus
+    If dstDIB.getAlphaPremultiplication <> premultiplicationStatus Then dstDIB.SetAlphaPremultiplication premultiplicationStatus
     
 End Sub
 
@@ -1037,7 +1037,7 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     ' are fully processed according to the contents of the mask.  Also, all selections are currently created as 32bpp DIBs.
     
     'Start by initializing the destination DIB to the size of the active selection
-    Set dstDIB = New pdDIB
+    If (dstDIB Is Nothing) Then Set dstDIB = New pdDIB
     dstDIB.createBlank mainSelection.boundWidth, mainSelection.boundHeight, 32, 0
     dstDIB.setInitialAlphaPremultiplicationState True
     
@@ -1135,7 +1135,7 @@ Public Function retrieveProcessedSelection(ByRef dstDIB As pdDIB, Optional ByVal
     Erase selData
     
     'If the calling function requested un-premultiplied alpha, apply it now
-    If (Not preMultipliedAlphaState) Then dstDIB.setAlphaPremultiplication False
+    If (Not preMultipliedAlphaState) Then dstDIB.SetAlphaPremultiplication False
         
     retrieveProcessedSelection = True
 

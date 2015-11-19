@@ -48,6 +48,11 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'When delayed rendering is active, this class raises three potential events
+Public Event ClipboardRenderFormat(ByVal FormatID As PredefinedClipboardFormatConstants)
+Public Event ClipboardRenderAllFormats()
+Public Event ClipboardDestroyStashedData()
+
 'Clipboard functions:
 Private Declare Function OpenClipboard Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function CloseClipboard Lib "user32" () As Long
@@ -59,6 +64,7 @@ Private Declare Function RegisterClipboardFormatW Lib "user32" (ByVal lpStringW 
 Private Declare Function EnumClipboardFormats Lib "user32" (ByVal wFormat As Long) As Long
 Private Declare Function IsClipboardFormatAvailable Lib "user32" (ByVal wFormat As Long) As Long
 Private Declare Function CountClipboardFormats Lib "user32" () As Long
+Private Declare Function GetClipboardOwner Lib "user32" () As Long
 
 'Global memory functions (all clipboard data is placed on/taken from the global heap):
 Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
@@ -149,6 +155,18 @@ End Type
 
 Private Const MAX_PATH As Long = 260
 Private Const MAX_PATH_UNICODE As Long = 1024
+
+'If the caller activates delayed rendering, we need to subclass a window and listen for messages
+Private Const WM_RENDERFORMAT As Long = &H305
+Private Const WM_RENDERALLFORMATS As Long = &H306
+Private Const WM_DESTROYCLIPBOARD As Long = &H307
+Private m_Subclass As cSelfSubHookCallback
+Attribute m_Subclass.VB_VarHelpID = -1
+
+'If delayed rendering is active, we need to know if we are responsible for the current clipboard data.  Prior to program shutdown,
+' if we're *still* responsible for clipboard data, we must render all supported formats prior to shutdown (otherwise, when another
+' program asks us for a copy of our data, we'll already be gone!)
+Private m_DelayedRenderingActive As Boolean
 
 'Register a new clipboard format.  This step is important, because multiple programs may register the same format (e.g. PNG).
 ' Using native clipboard functions guarantees that all programs registering the same format name get the same ID in return.
@@ -467,8 +485,9 @@ Public Function SetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboard
     
     On Error GoTo SetClipboardFailure
     
-    'Make sure the clipboard is actually open
-    If m_IsClipboardOpen Then
+    'Make sure the clipboard is actually open.  (Note that delayed rendering requires to explicitly *not* open the clipboard
+    ' prior to rendering data, as another program owns the clipboard as part of their Paste action - this is the sole exception.)
+    If m_IsClipboardOpen Or m_DelayedRenderingActive Then
         
         'Determine how much binary data we need to write
         Dim blobSize As Long
@@ -490,7 +509,7 @@ Public Function SetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboard
                 CopyMemoryStrict ptrGlobal, VarPtr(srcData(LBound(srcData))), blobSize
                 GlobalUnlock hGlobalHandle
                         
-                'Hand the data over to the clipboard.  If we succeed, the data is no longer ours
+                'Hand the data over to the clipboard.  If we succeed, the data is no longer ours.
                 SetClipboardBinaryData = CBool(SetClipboardData(clipFormatID, hGlobalHandle) <> 0)
                 
             Else
@@ -507,7 +526,7 @@ Public Function SetClipboardBinaryData(ByVal clipFormatID As PredefinedClipboard
         
     Else
         #If DEBUGMODE = 1 Then
-            pdDebug.LogAction "WARNING!  You can't stick stuff on the clipboard (via SetClipboardBinaryData) unless the clipboard is open!"
+            pdDebug.LogAction "WARNING!  You can't stick stuff on the clipboard (via SetClipboardBinaryData) unless the clipboard is open, or delayed rendering is active!"
         #End If
     End If
     
@@ -734,7 +753,6 @@ Public Sub ClipboardClose()
     If m_IsClipboardOpen Then
         CloseClipboard
         m_IsClipboardOpen = False
-        m_OwnerHwnd = 0
     End If
 End Sub
 
@@ -820,8 +838,128 @@ Public Function UpdateClipboardLists() As Boolean
     
 End Function
 
+'Set clipboard data in delayed rendering mode.  This does not require source data; instead, it simply notifies the clipboard that we're
+' the owner of the current clipboard data.  If/when someone else requests clipboard data, this class will raise a matching event -
+' at THAT point you must upload the actual clipboard data, in the requested format.
+Public Function SetClipboardData_DelayedRendering(ByVal clipFormatID As PredefinedClipboardFormatConstants) As Boolean
+        
+    SetClipboardData_DelayedRendering = False
+    
+    On Error GoTo SetClipboardDRFailure
+    
+    'Make sure the clipboard is actually open
+    If m_IsClipboardOpen Then
+        
+        'Delayed rendering requires substantially different behavior elsewhere in the class, so we mark its state at class-level
+        m_DelayedRenderingActive = True
+        
+        'If we haven't already, subclass the main window and start listening for three clipboard-related messages
+        If (m_Subclass Is Nothing) Then
+            Set m_Subclass = New cSelfSubHookCallback
+            If (m_OwnerHwnd <> 0) Then
+                m_Subclass.ssc_Subclass m_OwnerHwnd, 0, 1, Me
+                m_Subclass.ssc_AddMsg m_OwnerHwnd, MSG_BEFORE, WM_RENDERFORMAT, WM_RENDERALLFORMATS, WM_DESTROYCLIPBOARD
+            Else
+                #If DEBUGMODE = 1 Then
+                    pdDebug.LogAction "WARNING!  pdClipboard.SetClipboardData_DelayedRendering failed to initialized the subclasser, because you haven't given it an hWnd to subclass!"
+                #End If
+            End If
+        End If
+        
+        'Set a null-copy of the current data to the clipboard.  This tells the clipboard that we're willing to provide this data
+        ' on an "as-needed" basis.
+        SetClipboardData_DelayedRendering = CBool(SetClipboardData(clipFormatID, 0&) <> 0&)
+        
+    End If
+    
+    Exit Function
+    
+SetClipboardDRFailure:
+    SetClipboardData_DelayedRendering = False
+        
+End Function
+
+'Want to know if PD is responsible for the current clipboard data?  (You may want to do this prior to the program shutting down,
+' for example, since WM_RENDERALLFORMATS doesn't play nicely with the way VB destroys windows.)
+Public Function IsOurDataOnTheClipboard() As Boolean
+    IsOurDataOnTheClipboard = CBool(GetClipboardOwner() = m_OwnerHwnd)
+End Function
+
 'On termination, we do a failsafe clipboard close, but it *really* should be closed manually as soon as you're done with it!
 Private Sub Class_Terminate()
     If m_IsClipboardOpen Then ClipboardClose
+    If (m_Subclass Is Nothing) Then
+    
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "Terminating clipboard subclasser.  I hope all clipboard formats havee been rendered already..."
+        #End If
+        m_Subclass.ssc_UnSubclass FormMain.hWnd
+        Set m_Subclass = Nothing
+        
+        'Not that it matters, but also remove the delayed rendering flag, as a reminder that we no longer have access to that clipboard data
+        m_DelayedRenderingActive = False
+        
+    End If
+End Sub
+
+'All events subclassed by this window are processed here.
+Private Sub myWndProc(ByVal bBefore As Boolean, _
+                      ByRef bHandled As Boolean, _
+                      ByRef lReturn As Long, _
+                      ByVal lng_hWnd As Long, _
+                      ByVal uMsg As Long, _
+                      ByVal wParam As Long, _
+                      ByVal lParam As Long, _
+                      ByRef lParamUser As Long)
+'*************************************************************************************************
+'* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
+'*              you will know unless the callback for the uMsg value is specified as
+'*              MSG_BEFORE_AFTER (both before and after the original WndProc).
+'* bHandled   - In a before original WndProc callback, setting bHandled to True will prevent the
+'*              message being passed to the original WndProc and (if set to do so) the after
+'*              original WndProc callback.
+'* lReturn    - WndProc return value. Set as per the MSDN documentation for the message value,
+'*              and/or, in an after the original WndProc callback, act on the return value as set
+'*              by the original WndProc.
+'* lng_hWnd   - Window handle.
+'* uMsg       - Message value.
+'* wParam     - Message related data.
+'* lParam     - Message related data.
+'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
+'*************************************************************************************************
+
+    'This class subclasses three relevant clipboard messages:
+    Select Case uMsg
+    
+        'Another program wants to paste our data; the relevant format is in the wParam
+        Case WM_RENDERFORMAT
+            RaiseEvent ClipboardRenderFormat(wParam)
+            bHandled = True
+            lReturn = 0
+        
+        'PD is going down; we must render ALL possible formats to the clipboard, in case someone else wants them later
+        Case WM_RENDERALLFORMATS
+            RaiseEvent ClipboardRenderAllFormats
+            bHandled = True
+            lReturn = 0
+        
+        'Another program was used to copy data, meaning our stash is now irrelevant.  Feel free to clear it out.
+        Case WM_DESTROYCLIPBOARD
+            If Not IsOurDataOnTheClipboard() Then
+                RaiseEvent ClipboardDestroyStashedData
+                m_DelayedRenderingActive = False
+            End If
+            bHandled = True
+            lReturn = 0
+            
+    End Select
+    
+
+' *************************************************************
+' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
+' -------------------------------------------------------------
+' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
+'   add this warning banner to the last routine in your class
+' *************************************************************
 End Sub
 

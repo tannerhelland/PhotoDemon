@@ -1173,23 +1173,23 @@ Public Function RestoreWindowLocation(ByVal windowIndex As Long, ByVal preferred
             winWidth = .lastPosition.x2 - .lastPosition.x1
             winHeight = .lastPosition.y2 - .lastPosition.y1
             
-            If (.lastPosition.x1 + winWidth) < g_Displays.getDesktopLeft Then
-                .lastPosition.x1 = g_Displays.getDesktopLeft
+            If (.lastPosition.x1 + winWidth) < g_Displays.GetDesktopLeft Then
+                .lastPosition.x1 = g_Displays.GetDesktopLeft
                 .lastPosition.x2 = .lastPosition.x1 + winWidth
             End If
             
-            If .lastPosition.x1 > (g_Displays.getDesktopLeft + g_Displays.getDesktopWidth) Then
-                .lastPosition.x1 = (g_Displays.getDesktopWidth - winWidth)
+            If .lastPosition.x1 > (g_Displays.GetDesktopLeft + g_Displays.GetDesktopWidth) Then
+                .lastPosition.x1 = (g_Displays.GetDesktopWidth - winWidth)
                 .lastPosition.x2 = .lastPosition.x1 + winWidth
             End If
             
-            If .lastPosition.y1 < g_Displays.getDesktopTop Then
-                .lastPosition.y1 = g_Displays.getDesktopTop
+            If .lastPosition.y1 < g_Displays.GetDesktopTop Then
+                .lastPosition.y1 = g_Displays.GetDesktopTop
                 .lastPosition.y2 = .lastPosition.y1 + winHeight
             End If
             
-            If .lastPosition.y1 > g_Displays.getDesktopHeight Then
-                .lastPosition.y1 = (g_Displays.getDesktopHeight - winHeight)
+            If .lastPosition.y1 > g_Displays.GetDesktopHeight Then
+                .lastPosition.y1 = (g_Displays.GetDesktopHeight - winHeight)
                 .lastPosition.y2 = .lastPosition.y1 + winHeight
             End If
             
@@ -1537,8 +1537,6 @@ Public Sub UnregisterForm(ByRef srcForm As Form)
             'Remove our reference to this form (if we don't, it will remain in memory)
             Set pdWindows(i).formReference = Nothing
             
-            Exit For
-            
         End If
     Next i
 
@@ -1852,7 +1850,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
 
                 'Notify the color management engine that the main window may have changed monitors, so it may need to
                 ' be redrawn with a new color profile.
-                If g_OpenImageCount > 0 Then checkParentMonitor
+                If g_OpenImageCount > 0 Then CheckParentMonitor
                 
             'The parent window is currently being resized
             Case WM_SIZING, WM_SIZE
