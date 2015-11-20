@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.109</langversion>
+<langversion>6.7.110</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -39,57 +39,6 @@
 <!-- VBP_AutosaveHandler.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for VBP_AutosaveHandler.bas-->
-
-<!-- BEGIN text for VBP_ClipboardModule.bas -->
-
-<phrase>
-<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
-<translation>Die Zwischenablage ist leer oder enthält kein gültigen Bildformat. Bitte kopieren Sie ein gültiges Bildformat in die Zwischenablage und versuchen Sie es erneut.</translation>
-</phrase>
-
-<phrase>
-<original>Windows Clipboard Error</original>
-<translation>Fehler der Windows-Zwischenablage</translation>
-</phrase>
-
-<phrase>
-<original>Clipboard Image</original>
-<translation>Bild in der Zwischenablage</translation>
-</phrase>
-
-<phrase>
-<original>Clipboard data imported successfully</original>
-<translation>Die Daten aus der Zwischenablage wurden importiert</translation>
-</phrase>
-
-<phrase>
-<original>Image URL found on clipboard.  Attempting to download</original>
-<translation>URL in der Zwischenablage gefunden - Download wird versucht</translation>
-</phrase>
-
-<phrase>
-<original>Image download failed.  Please copy a valid image URL to the clipboard and try again.</original>
-<translation>Bild-Download fehlgeschlagen. Bitte kopieren Sie eine gültige Bild-URL in die Zwischenablage und versuchen Sie es erneut.</translation>
-</phrase>
-
-<phrase>
-<original>Imported Image</original>
-<translation>Importiertes Bild</translation>
-</phrase>
-
-<phrase>
-<original>Image imported successfully</original>
-<translation>Das Bild wurde importiert</translation>
-</phrase>
-
-<phrase>
-<original>Image download failed.  Please supply a valid image URL and try again.</original>
-<translation>Das Bild konnte nicht heruntergeladen werden. Bitte geben Sie eine gültige Bild-URL an und versuchen Sie es noch mal.</translation>
-</phrase>
-
-<!-- VBP_ClipboardModule.bas contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- END text for VBP_ClipboardModule.bas-->
 
 <!-- BEGIN text for VBP_ColorFunctions.bas -->
 
@@ -1043,6 +992,11 @@ Sie können das Unterprogramm MenuTest () im Modul Filters_Miscellaneous verwend
 </phrase>
 
 <phrase>
+<original>Initializing clipboard interface</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Initializing viewport engine</original>
 <translation>Viewport-Engine initialisieren</translation>
 </phrase>
@@ -1274,7 +1228,7 @@ Wenn Sie gepackte PDI-Dateien verwenden wollen, wählen Sie 'Hilfe > Nach Update
 <translation>Bild wurde dupliziert.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 80 phrases. 29 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 81 phrases. 29 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -14398,12 +14352,63 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdClipboardMain.cls -->
+
+<phrase>
+<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
+<translation>Die Zwischenablage ist leer oder enthält kein gültigen Bildformat. Bitte kopieren Sie ein gültiges Bildformat in die Zwischenablage und versuchen Sie es erneut.</translation>
+</phrase>
+
+<phrase>
+<original>Windows Clipboard Error</original>
+<translation>Fehler der Windows-Zwischenablage</translation>
+</phrase>
+
+<phrase>
+<original>Clipboard Image</original>
+<translation>Bild in der Zwischenablage</translation>
+</phrase>
+
+<phrase>
+<original>Clipboard data imported successfully</original>
+<translation>Die Daten aus der Zwischenablage wurden importiert</translation>
+</phrase>
+
+<phrase>
+<original>Image URL found on clipboard.  Attempting to download</original>
+<translation>URL in der Zwischenablage gefunden - Download wird versucht</translation>
+</phrase>
+
+<phrase>
+<original>Image download failed.  Please copy a valid image URL to the clipboard and try again.</original>
+<translation>Bild-Download fehlgeschlagen. Bitte kopieren Sie eine gültige Bild-URL in die Zwischenablage und versuchen Sie es erneut.</translation>
+</phrase>
+
+<phrase>
+<original>Imported Image</original>
+<translation>Importiertes Bild</translation>
+</phrase>
+
+<phrase>
+<original>Image imported successfully</original>
+<translation>Das Bild wurde importiert</translation>
+</phrase>
+
+<phrase>
+<original>Image download failed.  Please supply a valid image URL and try again.</original>
+<translation>Das Bild konnte nicht heruntergeladen werden. Bitte geben Sie eine gültige Bild-URL an und versuchen Sie es noch mal.</translation>
+</phrase>
+
+<!-- pdClipboardMain.cls contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<!-- END text for pdClipboardMain.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2475</phrasecount>
+<phrasecount>2476</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4242 phrases. -->
-<!-- 1767 are duplicates, so only 2475 unique phrases have been written to file. -->
-<!-- These 2475 phrases contain approximately 13314 total words. -->
+<!-- As of this build, PhotoDemon contains 4243 phrases. -->
+<!-- 1767 are duplicates, so only 2476 unique phrases have been written to file. -->
+<!-- These 2476 phrases contain approximately 13317 total words. -->
 
 </pdData>

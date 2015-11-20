@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.109</langversion>
+<langversion>6.7.110</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -39,57 +39,6 @@
 <!-- VBP_AutosaveHandler.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for VBP_AutosaveHandler.bas-->
-
-<!-- BEGIN text for VBP_ClipboardModule.bas -->
-
-<phrase>
-<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
-<translation>Het klembord is leeg of het bevat geen geldig afbeeldingsformaat. Gelieve een geldig afbeelding naar het klembord te kopieren en opnieuw te proberen .</translation>
-</phrase>
-
-<phrase>
-<original>Windows Clipboard Error</original>
-<translation>Fout Windows Klembord</translation>
-</phrase>
-
-<phrase>
-<original>Clipboard Image</original>
-<translation>Klembordafbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Clipboard data imported successfully</original>
-<translation>Klemborddata succesvol geïmporteerd</translation>
-</phrase>
-
-<phrase>
-<original>Image URL found on clipboard.  Attempting to download</original>
-<translation>Afbeeldings-URL gevonden op klembord. Trachten te downloaden</translation>
-</phrase>
-
-<phrase>
-<original>Image download failed.  Please copy a valid image URL to the clipboard and try again.</original>
-<translation>Afbeelding downloaden mislukt. Gelieve een geldig afbeeldings-URL naar het klembord te kopieren en opnieuw te proberen.</translation>
-</phrase>
-
-<phrase>
-<original>Imported Image</original>
-<translation>Geïmporteerde afbeelding</translation>
-</phrase>
-
-<phrase>
-<original>Image imported successfully</original>
-<translation>Afbeelding succesvol geïmporteerd</translation>
-</phrase>
-
-<phrase>
-<original>Image download failed.  Please supply a valid image URL and try again.</original>
-<translation>Afbeelding downloaden mislukt. Geef een geldige URL van de afbeelding op en probeer het opnieuw.</translation>
-</phrase>
-
-<!-- VBP_ClipboardModule.bas contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- END text for VBP_ClipboardModule.bas-->
 
 <!-- BEGIN text for VBP_ColorFunctions.bas -->
 
@@ -1043,6 +992,11 @@ Je kan gebruik maken van de MenuTest() sub in de Filters_Miscellaneous module om
 </phrase>
 
 <phrase>
+<original>Initializing clipboard interface</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Initializing viewport engine</original>
 <translation>Initialisatie viewport engine</translation>
 </phrase>
@@ -1274,7 +1228,7 @@ Om ondersteuning voor gecomprimeerde PDI-bestanden in te schakelen, klikt u op H
 <translation>Duplicatie afbeelding klaar.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 80 phrases. 29 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 81 phrases. 29 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -14399,12 +14353,63 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdClipboardMain.cls -->
+
+<phrase>
+<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
+<translation>Het klembord is leeg of het bevat geen geldig afbeeldingsformaat. Gelieve een geldig afbeelding naar het klembord te kopieren en opnieuw te proberen .</translation>
+</phrase>
+
+<phrase>
+<original>Windows Clipboard Error</original>
+<translation>Fout Windows Klembord</translation>
+</phrase>
+
+<phrase>
+<original>Clipboard Image</original>
+<translation>Klembordafbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Clipboard data imported successfully</original>
+<translation>Klemborddata succesvol geïmporteerd</translation>
+</phrase>
+
+<phrase>
+<original>Image URL found on clipboard.  Attempting to download</original>
+<translation>Afbeeldings-URL gevonden op klembord. Trachten te downloaden</translation>
+</phrase>
+
+<phrase>
+<original>Image download failed.  Please copy a valid image URL to the clipboard and try again.</original>
+<translation>Afbeelding downloaden mislukt. Gelieve een geldig afbeeldings-URL naar het klembord te kopieren en opnieuw te proberen.</translation>
+</phrase>
+
+<phrase>
+<original>Imported Image</original>
+<translation>Geïmporteerde afbeelding</translation>
+</phrase>
+
+<phrase>
+<original>Image imported successfully</original>
+<translation>Afbeelding succesvol geïmporteerd</translation>
+</phrase>
+
+<phrase>
+<original>Image download failed.  Please supply a valid image URL and try again.</original>
+<translation>Afbeelding downloaden mislukt. Geef een geldige URL van de afbeelding op en probeer het opnieuw.</translation>
+</phrase>
+
+<!-- pdClipboardMain.cls contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<!-- END text for pdClipboardMain.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2475</phrasecount>
+<phrasecount>2476</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4242 phrases. -->
-<!-- 1767 are duplicates, so only 2475 unique phrases have been written to file. -->
-<!-- These 2475 phrases contain approximately 13314 total words. -->
+<!-- As of this build, PhotoDemon contains 4243 phrases. -->
+<!-- 1767 are duplicates, so only 2476 unique phrases have been written to file. -->
+<!-- These 2476 phrases contain approximately 13317 total words. -->
 
 </pdData>

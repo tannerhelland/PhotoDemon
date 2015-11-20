@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.109</langversion>
+<langversion>6.7.110</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -39,57 +39,6 @@
 <!-- VBP_AutosaveHandler.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for VBP_AutosaveHandler.bas-->
-
-<!-- BEGIN text for VBP_ClipboardModule.bas -->
-
-<phrase>
-<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
-<translation>Klippbordet är tomt eller den inte innehåller ett giltigt bildformat. Kopiera en giltig bild på klippbordet och försök igen.</translation>
-</phrase>
-
-<phrase>
-<original>Windows Clipboard Error</original>
-<translation>Windows Urklipp Fel</translation>
-</phrase>
-
-<phrase>
-<original>Clipboard Image</original>
-<translation>Urklipp Bild</translation>
-</phrase>
-
-<phrase>
-<original>Clipboard data imported successfully</original>
-<translation>Urklippsdata importerats</translation>
-</phrase>
-
-<phrase>
-<original>Image URL found on clipboard.  Attempting to download</original>
-<translation>Bild-URL finns på klippbordet. Försök att ladda ner</translation>
-</phrase>
-
-<phrase>
-<original>Image download failed.  Please copy a valid image URL to the clipboard and try again.</original>
-<translation>Bild nedladdning misslyckades. Kopiera en giltig bild webbadress till klippbordet och försök igen.</translation>
-</phrase>
-
-<phrase>
-<original>Imported Image</original>
-<translation>Importerad Bild</translation>
-</phrase>
-
-<phrase>
-<original>Image imported successfully</original>
-<translation>Bild importerats</translation>
-</phrase>
-
-<phrase>
-<original>Image download failed.  Please supply a valid image URL and try again.</original>
-<translation>Bild nedladdning misslyckades. Vänligen ange en giltig bild-URL och försök igen.</translation>
-</phrase>
-
-<!-- VBP_ClipboardModule.bas contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- END text for VBP_ClipboardModule.bas-->
 
 <!-- BEGIN text for VBP_ColorFunctions.bas -->
 
@@ -1043,6 +992,11 @@ You kan använda MenuTest () sub i Filters_Miscellaneous modulen för att testa 
 </phrase>
 
 <phrase>
+<original>Initializing clipboard interface</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Initializing viewport engine</original>
 <translation>Initierar vyport motor</translation>
 </phrase>
@@ -1274,7 +1228,7 @@ To aktivera stöd för komprimerade PDI-filer, klicka på Hjälp> Sök efter upp
 <translation>Bilddubbel komplett.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 80 phrases. 29 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 81 phrases. 29 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -14400,12 +14354,63 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdClipboardMain.cls -->
+
+<phrase>
+<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
+<translation>Klippbordet är tomt eller den inte innehåller ett giltigt bildformat. Kopiera en giltig bild på klippbordet och försök igen.</translation>
+</phrase>
+
+<phrase>
+<original>Windows Clipboard Error</original>
+<translation>Windows Urklipp Fel</translation>
+</phrase>
+
+<phrase>
+<original>Clipboard Image</original>
+<translation>Urklipp Bild</translation>
+</phrase>
+
+<phrase>
+<original>Clipboard data imported successfully</original>
+<translation>Urklippsdata importerats</translation>
+</phrase>
+
+<phrase>
+<original>Image URL found on clipboard.  Attempting to download</original>
+<translation>Bild-URL finns på klippbordet. Försök att ladda ner</translation>
+</phrase>
+
+<phrase>
+<original>Image download failed.  Please copy a valid image URL to the clipboard and try again.</original>
+<translation>Bild nedladdning misslyckades. Kopiera en giltig bild webbadress till klippbordet och försök igen.</translation>
+</phrase>
+
+<phrase>
+<original>Imported Image</original>
+<translation>Importerad Bild</translation>
+</phrase>
+
+<phrase>
+<original>Image imported successfully</original>
+<translation>Bild importerats</translation>
+</phrase>
+
+<phrase>
+<original>Image download failed.  Please supply a valid image URL and try again.</original>
+<translation>Bild nedladdning misslyckades. Vänligen ange en giltig bild-URL och försök igen.</translation>
+</phrase>
+
+<!-- pdClipboardMain.cls contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<!-- END text for pdClipboardMain.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2475</phrasecount>
+<phrasecount>2476</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4242 phrases. -->
-<!-- 1767 are duplicates, so only 2475 unique phrases have been written to file. -->
-<!-- These 2475 phrases contain approximately 13314 total words. -->
+<!-- As of this build, PhotoDemon contains 4243 phrases. -->
+<!-- 1767 are duplicates, so only 2476 unique phrases have been written to file. -->
+<!-- These 2476 phrases contain approximately 13317 total words. -->
 
 </pdData>

@@ -6,7 +6,7 @@
 
 <langid>it-IT</langid>
 <langname>Italiano</langname>
-<langversion>6.7.109</langversion>
+<langversion>6.7.110</langversion>
 <langstatus>Completa</langstatus>
 
 <author>GioRock</author>
@@ -39,57 +39,6 @@
 <!-- VBP_AutosaveHandler.bas contains 3 phrases.  All 3 were unique, so 3 new phrases were written to file. -->
 
 <!-- END text for VBP_AutosaveHandler.bas-->
-
-<!-- BEGIN text for VBP_ClipboardModule.bas -->
-
-<phrase>
-<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
-<translation>Gli appunti sono vuoti o non contengono un formato di immagine valido.  Per favore copia negli appunti un'immagine valida e riprova.</translation>
-</phrase>
-
-<phrase>
-<original>Windows Clipboard Error</original>
-<translation>Errore negli appunti di Windows</translation>
-</phrase>
-
-<phrase>
-<original>Clipboard Image</original>
-<translation>Immagine negli appunti</translation>
-</phrase>
-
-<phrase>
-<original>Clipboard data imported successfully</original>
-<translation>Dati negli appunti importati con successo</translation>
-</phrase>
-
-<phrase>
-<original>Image URL found on clipboard.  Attempting to download</original>
-<translation>URL dell'immagine trovata negli appunti.  Tentativo di scaricamento</translation>
-</phrase>
-
-<phrase>
-<original>Image download failed.  Please copy a valid image URL to the clipboard and try again.</original>
-<translation>Scaricamento dell'immagine fallito.  Per favore copia negli appunti un URL dell'immagine valido e riprova.</translation>
-</phrase>
-
-<phrase>
-<original>Imported Image</original>
-<translation>Immagine importata</translation>
-</phrase>
-
-<phrase>
-<original>Image imported successfully</original>
-<translation>Immagine importata con successo</translation>
-</phrase>
-
-<phrase>
-<original>Image download failed.  Please supply a valid image URL and try again.</original>
-<translation>Scaricamento dell'immagine non riuscito.  Si prega di fornire un URL dell'immagine valido prima di riprovare.</translation>
-</phrase>
-
-<!-- VBP_ClipboardModule.bas contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- END text for VBP_ClipboardModule.bas-->
 
 <!-- BEGIN text for VBP_ColorFunctions.bas -->
 
@@ -1043,6 +992,11 @@ Puoi usare la sub MenuTest() nel modulo Filters_Miscellaneous per testare i tuoi
 </phrase>
 
 <phrase>
+<original>Initializing clipboard interface</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Initializing viewport engine</original>
 <translation>Inizializzazione della finestra motrice</translation>
 </phrase>
@@ -1272,7 +1226,7 @@ Per abilitare il supporto per i file PDI compressi, fare clic su Aiuto > Control
 <translation>Duplicazione dell'immagine completa.</translation>
 </phrase>
 
-<!-- VBP_LoadModule.bas contains 80 phrases. 29 were duplicates of existing phrases, so only 51 new phrases were written to file. -->
+<!-- VBP_LoadModule.bas contains 81 phrases. 29 were duplicates of existing phrases, so only 52 new phrases were written to file. -->
 
 <!-- END text for VBP_LoadModule.bas-->
 
@@ -14397,12 +14351,63 @@ If ancora scegliete di disattivare gli aggiornamenti, non dimenticate di visitar
 
 <!-- END text for Tools_PluginManager.frm-->
 
+<!-- BEGIN text for pdClipboardMain.cls -->
+
+<phrase>
+<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
+<translation>Gli appunti sono vuoti o non contengono un formato di immagine valido.  Per favore copia negli appunti un'immagine valida e riprova.</translation>
+</phrase>
+
+<phrase>
+<original>Windows Clipboard Error</original>
+<translation>Errore negli appunti di Windows</translation>
+</phrase>
+
+<phrase>
+<original>Clipboard Image</original>
+<translation>Immagine negli appunti</translation>
+</phrase>
+
+<phrase>
+<original>Clipboard data imported successfully</original>
+<translation>Dati negli appunti importati con successo</translation>
+</phrase>
+
+<phrase>
+<original>Image URL found on clipboard.  Attempting to download</original>
+<translation>URL dell'immagine trovata negli appunti.  Tentativo di scaricamento</translation>
+</phrase>
+
+<phrase>
+<original>Image download failed.  Please copy a valid image URL to the clipboard and try again.</original>
+<translation>Scaricamento dell'immagine fallito.  Per favore copia negli appunti un URL dell'immagine valido e riprova.</translation>
+</phrase>
+
+<phrase>
+<original>Imported Image</original>
+<translation>Immagine importata</translation>
+</phrase>
+
+<phrase>
+<original>Image imported successfully</original>
+<translation>Immagine importata con successo</translation>
+</phrase>
+
+<phrase>
+<original>Image download failed.  Please supply a valid image URL and try again.</original>
+<translation>Scaricamento dell'immagine non riuscito.  Si prega di fornire un URL dell'immagine valido prima di riprovare.</translation>
+</phrase>
+
+<!-- pdClipboardMain.cls contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<!-- END text for pdClipboardMain.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2475</phrasecount>
+<phrasecount>2476</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4242 phrases. -->
-<!-- 1767 are duplicates, so only 2475 unique phrases have been written to file. -->
-<!-- These 2475 phrases contain approximately 13314 total words. -->
+<!-- As of this build, PhotoDemon contains 4243 phrases. -->
+<!-- 1767 are duplicates, so only 2476 unique phrases have been written to file. -->
+<!-- These 2476 phrases contain approximately 13317 total words. -->
 
 </pdData>
