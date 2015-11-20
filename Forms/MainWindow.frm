@@ -27,8 +27,8 @@ Begin VB.Form FormMain
    Begin PhotoDemon.pdAccelerator pdHotkeys 
       Left            =   120
       Top             =   4440
-      _extentx        =   661
-      _extenty        =   661
+      _ExtentX        =   661
+      _ExtentY        =   661
    End
    Begin VB.Timer tmrMetadata 
       Enabled         =   0   'False
@@ -49,22 +49,22 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _extentx        =   873
-      _extenty        =   873
+      _ExtentX        =   873
+      _ExtentY        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
       Top             =   2520
-      _extentx        =   635
-      _extenty        =   635
-      errasout        =   0   'False
-      pollinterval    =   5
+      _ExtentX        =   635
+      _ExtentY        =   635
+      ErrAsOut        =   0   'False
+      PollInterval    =   5
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -3041,7 +3041,8 @@ Private Sub Form_Unload(Cancel As Integer)
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "FormMain gone.  Shutting down clipboard manager..."
     #End If
-    If g_Clipboard.IsPDDataOnClipboard Then
+    
+    If g_Clipboard.IsPDDataOnClipboard And g_IsProgramCompiled Then
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "PD's data remains on the clipboard.  Rendering any additional formats now..."
         #End If

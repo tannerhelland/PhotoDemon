@@ -721,3 +721,7 @@ Public Function ClampF(ByVal srcF As Double, ByVal minF As Double, ByVal maxF As
         ClampF = srcF
     End If
 End Function
+
+Public Function ConvertDPIToPels(ByVal srcDPI As Double) As Double
+    ConvertDPIToPels = (srcDPI / 2.54) * 100
+End Function
