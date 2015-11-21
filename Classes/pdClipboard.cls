@@ -117,6 +117,9 @@ Public Enum PredefinedClipboardFormatConstants
     ' As such, attempting to call GlobalFree() will cause major issues.  Don't do it.
     CF_PRIVATEFIRST = &H200
     CF_PRIVATELAST = &H2FF
+    
+    'PD defines some internal formats, which is awesome for Cut/Copy/Paste within PD herself.
+    CF_PD_DIB = CF_PRIVATEFIRST + 1
      
     'IMPORTANT NOTE!  These have nothing to do with GDI objects, despite the stupid names.  They are simply private-range objects
     ' that the Clipboard itself is responsible for freeing.  Per MSDN:
@@ -135,7 +138,7 @@ End Enum
     Private Const CF_DIB = 8, CF_PALETTE = 9, CF_PENDATA = 10, CF_RIFF = 11, CF_WAVE = 12, CF_UNICODETEXT = 13, CF_ENHMETAFILE = 14
     Private Const CF_HDROP = 15, CF_LOCALE = 16, CF_DIBV5 = 17, CF_MAX = 18, CF_OWNERDISPLAY = &H80, CF_DSPTEXT = &H81
     Private Const CF_DSPBITMAP = &H82, CF_DSPMETAFILEPICT = &H83, CF_DSPENHMETAFILE = &H8E, CF_PRIVATEFIRST = &H200, CF_PRIVATELAST = &H2FF
-    Private Const CF_GDIOBJFIRST = &H300, CF_GDIOBJLAST = &H3FF
+    Private Const CF_GDIOBJFIRST = &H300, CF_GDIOBJLAST = &H3FF, CF_PD_DIB = 0
 #End If
 
 'Helper function for dealing with file lists

@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.110</langversion>
+<langversion>6.7.111</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -14400,7 +14400,7 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <translation>Afbeelding downloaden mislukt. Geef een geldige URL van de afbeelding op en probeer het opnieuw.</translation>
 </phrase>
 
-<!-- pdClipboardMain.cls contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- pdClipboardMain.cls contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for pdClipboardMain.cls-->
 
@@ -14408,8 +14408,8 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <phrasecount>2476</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4243 phrases. -->
-<!-- 1767 are duplicates, so only 2476 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4246 phrases. -->
+<!-- 1770 are duplicates, so only 2476 unique phrases have been written to file. -->
 <!-- These 2476 phrases contain approximately 13317 total words. -->
 
 </pdData>
