@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.113</langversion>
+<langversion>6.7.114</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -14401,7 +14401,7 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <translation>Descarga Image falló. Por favor, proporcione una URL de imagen válida y vuelva a intentarlo.</translation>
 </phrase>
 
-<!-- pdClipboardMain.cls contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- pdClipboardMain.cls contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for pdClipboardMain.cls-->
 
@@ -14409,8 +14409,8 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <phrasecount>2476</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4243 phrases. -->
-<!-- 1767 are duplicates, so only 2476 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4246 phrases. -->
+<!-- 1770 are duplicates, so only 2476 unique phrases have been written to file. -->
 <!-- These 2476 phrases contain approximately 13317 total words. -->
 
 </pdData>

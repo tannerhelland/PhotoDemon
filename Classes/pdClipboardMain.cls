@@ -215,6 +215,7 @@ Public Sub ClipboardCopy(ByVal copyMerged As Boolean, Optional ByVal updateUI As
     'Notify the clipboard of the formats we are willing to copy "on-demand"
     If m_Clipboard.ClipboardOpen(FormMain.hWnd) Then
         m_Clipboard.ClearClipboard
+        m_Clipboard.SetClipboardData_DelayedRendering CF_PD_DIB
         m_Clipboard.SetClipboardData_DelayedRendering m_Clipboard.AddClipboardFormat("PNG")
         m_Clipboard.SetClipboardData_DelayedRendering CF_BITMAP
         m_Clipboard.SetClipboardData_DelayedRendering CF_DIBV5
@@ -258,8 +259,13 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
             pdDebug.LogAction "Clipboard reports the following formats: " & m_Clipboard.GetListOfAvailableFormatNames()
         #End If
         
+        'If PD was used to Cut or Copy something onto the clipboard, our own private format(s) will be listed first.
+        If m_Clipboard.DoesClipboardHaveFormatID(CF_PD_DIB) Then
+            pasteWasSuccessful = ClipboardPaste_InternalData(srcIsMeantAsLayer, CF_PD_DIB)
+        End If
+        
         'PNGs on the clipboard get preferential treatment, as they preserve transparency data - so check for them first.
-        If m_Clipboard.DoesClipboardHaveFormatName("PNG") Then
+        If m_Clipboard.DoesClipboardHaveFormatName("PNG") And (Not pasteWasSuccessful) Then
             pasteWasSuccessful = ClipboardPaste_CustomImageFormat("PNG", srcIsMeantAsLayer, "png")
         End If
         
@@ -325,6 +331,58 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
     
 End Sub
 
+'If the clipboard contains internal PD-format data (most commonly a bare DIB), you can call this function to initiate a "paste" command
+' using the internal data as a source.  The parameter "srcIsMeantAsLayer" controls whether the clipboard data is loaded as a new image,
+' or as a new layer in an existing image.
+'
+'RETURNS: TRUE if successful; FALSE otherwise.
+Private Function ClipboardPaste_InternalData(ByVal srcIsMeantAsLayer As Boolean, Optional ByVal clipFormatID As PredefinedClipboardFormatConstants = CF_PD_DIB) As Boolean
+    
+    'Unfortunately, a lot of things can go wrong when pasting custom image data, so we assume failure by default.
+    ClipboardPaste_InternalData = False
+    
+    'See if a previous stash file exists
+    Dim cFile As pdFSO
+    Set cFile = New pdFSO
+    If (Len(m_StashFile) <> 0) Then
+        If cFile.FileExist(m_StashFile) Then
+            
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "Loading internal PD clipboard data now..."
+            #End If
+            
+            'We've previously saved a valid stash file.  Attempt to load it as a new file.
+            Dim sFile() As String, sTitle As String, sFilename As String
+            ReDim sFile(0) As String
+            
+            sFile(0) = m_StashFile
+            sTitle = g_Language.TranslateMessage("Clipboard Image")
+            sFilename = sTitle & " (" & Day(Now) & " " & MonthName(Month(Now)) & " " & Year(Now) & ")"
+                
+            'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
+            If srcIsMeantAsLayer Then
+                Layer_Handler.LoadImageAsNewLayer False, sFile(0), sTitle, True
+            Else
+                LoadFileAsNewImage sFile, False, sTitle, sFilename
+            End If
+                
+            'If we made it all the way here, the load was (probably?) successful
+            Message "Clipboard data imported successfully "
+            ClipboardPaste_InternalData = True
+                
+        Else
+            #If DEBUGMODE = 1 Then
+                pdDebug.LogAction "WARNING!  ClipboardPaste_InternalData failed to find a stash file.  Paste abandoned."
+            #End If
+        End If
+    Else
+        #If DEBUGMODE = 1 Then
+            pdDebug.LogAction "WARNING!  ClipboardPaste_InternalData failed, because a stash file hasn't been created yet.  Paste abandoned."
+        #End If
+    End If
+    
+End Function
+
 'If the clipboard contains custom-format image data (most commonly PNG or JPEG), you can call this function to initiate a "paste" command
 ' using the custom image data as a source.  The parameter "srcIsMeantAsLayer" controls whether the clipboard data is loaded as a new image,
 ' or as a new layer in an existing image.
@@ -383,7 +441,7 @@ Private Function ClipboardPaste_CustomImageFormat(ByVal clipboardFormatName As S
                 
                 'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
                 If srcIsMeantAsLayer Then
-                    Layer_Handler.loadImageAsNewLayer False, sFile(0), sTitle, True
+                    Layer_Handler.LoadImageAsNewLayer False, sFile(0), sTitle, True
                 Else
                     LoadFileAsNewImage sFile, False, sTitle, sFilename
                 End If
@@ -516,7 +574,7 @@ Private Function ClipboardPaste_ListOfFiles(ByVal srcIsMeantAsLayer As Boolean)
             If srcIsMeantAsLayer Then
                 Dim i As Long
                 For i = 0 To UBound(listOfFiles)
-                    If Len(listOfFiles(i)) <> 0 Then Layer_Handler.loadImageAsNewLayer False, listOfFiles(i), , True
+                    If Len(listOfFiles(i)) <> 0 Then Layer_Handler.LoadImageAsNewLayer False, listOfFiles(i), , True
                 Next i
             Else
                 LoadFileAsNewImage listOfFiles
@@ -589,7 +647,7 @@ Private Function ClipboardPaste_TextSource(ByVal srcIsMeantAsLayer As Boolean)
                 If Len(targetFile) <> 0 Then
                 
                     If srcIsMeantAsLayer Then
-                        Layer_Handler.loadImageAsNewLayer False, targetFile, , True
+                        Layer_Handler.LoadImageAsNewLayer False, targetFile, , True
                     Else
                         Dim tmpFiles() As String
                         ReDim tmpFiles(0) As String
@@ -645,7 +703,7 @@ Private Function ClipboardPaste_WellFormedURL(ByVal srcURL As String, ByVal srcI
         
         'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
         If srcIsMeantAsLayer Then
-            Layer_Handler.loadImageAsNewLayer False, sFile(0), True
+            Layer_Handler.LoadImageAsNewLayer False, sFile(0), True
         Else
             LoadFileAsNewImage sFile, False, tmpFilename, tmpFilename, , , , , , True
         End If
@@ -812,7 +870,7 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                     
                     'Place the temporary file in inside the program-specified temp path
                     Dim tmpClipboardFile As String
-                    tmpClipboardFile = g_UserPreferences.GetTempPath & "PDClipboard.bmp"
+                    tmpClipboardFile = g_UserPreferences.GetTempPath & "PDClipboard.tmp"
                     
                     'pdFSO is used to ensure Unicode subfolder compatibility
                     Dim cFile As pdFSO
@@ -857,7 +915,7 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
                         
                     'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
                     If srcIsMeantAsLayer Then
-                        Layer_Handler.loadImageAsNewLayer False, sFile(0), sTitle, True
+                        Layer_Handler.LoadImageAsNewLayer False, sFile(0), sTitle, True
                     Else
                         LoadFileAsNewImage sFile, False, sTitle, sFilename
                     End If
@@ -947,7 +1005,7 @@ Public Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
             
             If (g_OpenImageCount > 0) And intendedTargetIsLayer Then
                 For i = 0 To UBound(sFile)
-                    Layer_Handler.loadImageAsNewLayer False, sFile(i)
+                    Layer_Handler.LoadImageAsNewLayer False, sFile(i)
                 Next i
             Else
                 LoadFileAsNewImage sFile
@@ -990,7 +1048,7 @@ Public Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
         
         'Depending on the request, load the clipboard data as a new image or as a new layer in the current image
         If (g_OpenImageCount > 0) And intendedTargetIsLayer Then
-            Layer_Handler.loadImageAsNewLayer False, sFile(0), sTitle
+            Layer_Handler.LoadImageAsNewLayer False, sFile(0), sTitle
         Else
             LoadFileAsNewImage sFile, False, sTitle, sFilename
         End If
@@ -1020,7 +1078,7 @@ Public Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
                 
                 'Depending on the number of open images, load the clipboard data as a new image or as a new layer in the current image
                 If (g_OpenImageCount > 0) And intendedTargetIsLayer Then
-                    Layer_Handler.loadImageAsNewLayer False, tmpDownloadFile
+                    Layer_Handler.LoadImageAsNewLayer False, tmpDownloadFile
                 Else
                     ReDim sFile(0) As String
                     sFile(0) = tmpDownloadFile
@@ -1096,7 +1154,7 @@ Private Sub StashClipboardData(ByVal copyMerged As Boolean)
     End If
     
     'Grab a new temporary path name (TODO: use system-generated temp file names)
-    If Len(m_StashFile) = 0 Then m_StashFile = g_UserPreferences.GetTempPath() & "pdClipboardStash.tmp"
+    If Len(m_StashFile) = 0 Then m_StashFile = g_UserPreferences.GetTempPath() & "cbStash.tmpdib"
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Writing clipboard stash now..."

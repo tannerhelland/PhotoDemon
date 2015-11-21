@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (rk)</langname>
-<langversion>6.7.111</langversion>
+<langversion>6.7.112</langversion>
 <langstatus>Nicht abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -14401,7 +14401,7 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 <translation>Download des Bildes fehlgeschlagen. Geben Sie bitte eine gültige Bild-URL an und versuchen es erneut.</translation>
 </phrase>
 
-<!-- pdClipboardMain.cls contains 17 phrases. 8 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- pdClipboardMain.cls contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for pdClipboardMain.cls-->
 
@@ -14409,8 +14409,8 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <phrasecount>2476</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4243 phrases. -->
-<!-- 1767 are duplicates, so only 2476 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4246 phrases. -->
+<!-- 1770 are duplicates, so only 2476 unique phrases have been written to file. -->
 <!-- These 2476 phrases contain approximately 13317 total words. -->
 
 </pdData>
