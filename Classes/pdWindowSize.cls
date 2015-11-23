@@ -51,8 +51,8 @@ Private Enum SWP_FLAGS
 End Enum
 
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
-Private Declare Sub SetWindowPos Lib "user32" (ByVal targethWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
-Private Declare Function GetParent Lib "user32" (ByVal targethWnd As Long) As Long
+Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Declare Function GetParent Lib "user32" (ByVal targetHwnd As Long) As Long
 Private Declare Function ClientToScreen Lib "user32" (ByVal srcHwnd As Long, ByRef lpPoint As POINTAPI) As Long
 Private Declare Function ScreenToClient Lib "user32" (ByVal srcHwnd As Long, ByRef lpPoint As POINTAPI) As Long
 Private Declare Function MapWindowPoints Lib "user32" (ByVal hWndFrom As Long, ByVal hWndTo As Long, ByRef lpPoints As POINTAPI, ByVal cPoints As Long) As Long
@@ -87,7 +87,6 @@ Public Sub AttachToHWnd(ByVal srcHwnd As Long, Optional ByVal subclassMoveSizeEv
     Else
     
         m_hWnd = srcHwnd
-        UpdateWinRect
         
         'Activate the subclasser conditionally; some UCs don't need to receive API size/move events
         m_SubclassActive = subclassMoveSizeEvents
@@ -95,8 +94,11 @@ Public Sub AttachToHWnd(ByVal srcHwnd As Long, Optional ByVal subclassMoveSizeEv
         If m_SubclassActive Then
             Set cSubclass = New cSelfSubHookCallback
             cSubclass.ssc_Subclass m_hWnd, , , Me
-            cSubclass.ssc_AddMsg m_hWnd, MSG_BEFORE, WM_SIZE, WM_MOVE
+            cSubclass.ssc_AddMsg m_hWnd, MSG_AFTER, WM_SIZE, WM_MOVE
         End If
+        
+        'Cache an initial set of window dimensions
+        UpdateWinRect
         
     End If
     
