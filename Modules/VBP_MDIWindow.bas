@@ -196,7 +196,7 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
     Debug.Print "(Image #" & imageID & " received a Query_Unload trigger)"
     
     'Failsafe to make sure the image was properly initialized; if it wasn't, ignore this request entirely.
-    If imageID <= UBound(pdImages) Then
+    If (imageID >= 0) And (imageID <= UBound(pdImages)) Then
         If pdImages(imageID) Is Nothing Then Exit Function
     Else
         Exit Function
@@ -207,7 +207,7 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
     
         'Check the .HasBeenSaved property of the image associated with this form
         If Not pdImages(imageID).getSaveState(pdSE_AnySave) Then
-                        
+            
             'If the user hasn't already told us to deal with all unsaved images in the same fashion, run some checks
             If Not g_DealWithAllUnsavedImages Then
             
@@ -230,7 +230,9 @@ Public Function QueryUnloadPDImage(ByRef Cancel As Integer, ByRef UnloadMode As 
                 End If
             
                 'Before displaying the "do you want to save this image?" dialog, bring the image in question to the foreground.
-                If FormMain.Enabled Then ActivatePDImage imageID, "unsaved changes dialog required", True
+                If imageID <> g_CurrentImage Then
+                    If FormMain.Enabled Then ActivatePDImage imageID, "unsaved changes dialog required", True
+                End If
                 
                 'Show the "do you want to save this image?" dialog. On that form, the number of unsaved images will be
                 ' displayed and the user will be given an option to apply their choice to all unsaved images.

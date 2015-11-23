@@ -2959,13 +2959,13 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     If g_NumOfImagesLoaded > 0 Then
     
         For i = 0 To UBound(pdImages)
-            If (Not pdImages(i) Is Nothing) Then
+            If Not (pdImages(i) Is Nothing) Then
                 If pdImages(i).IsActive Then
                 
-                    'This image is active and so is its parent form.  Unload both now.
-                    QueryUnloadPDImage Cancel, UnloadMode, i
-                    
-                    If Not CBool(Cancel) Then UnloadPDImage Cancel, i
+                    'This image is active and so is its parent form.  Ask the master image handler to unload it.
+                    ' (NOTE: this function returns a boolean saying whether the image was successfully unloaded,
+                    '        but for this fringe case, we ignore it in favor of checking g_ProgramShuttingDown.)
+                    Image_Canvas_Handler.FullPDImageUnload i, True
                     
                     'If the child form canceled shut down, it will have reset the g_ProgramShuttingDown variable
                     If Not g_ProgramShuttingDown Then
