@@ -25,6 +25,16 @@ Begin VB.Form dialog_UnsavedChanges
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   624
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdLabel lblWarning 
+      Height          =   765
+      Left            =   4830
+      Top             =   360
+      Width           =   4215
+      _ExtentX        =   7435
+      _ExtentY        =   1349
+      Caption         =   ""
+      Layout          =   1
+   End
    Begin PhotoDemon.pdButton cmdAnswer 
       Height          =   735
       Index           =   0
@@ -66,7 +76,7 @@ Begin VB.Form dialog_UnsavedChanges
       ScaleHeight     =   231
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   231
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   120
       Width           =   3495
    End
@@ -98,17 +108,6 @@ Begin VB.Form dialog_UnsavedChanges
       X2              =   624
       Y1              =   256
       Y2              =   256
-   End
-   Begin VB.Label lblWarning 
-      BackStyle       =   0  'Transparent
-      Caption         =   "%1 has unsaved changes.  What would you like to do?"
-      ForeColor       =   &H00202020&
-      Height          =   765
-      Left            =   4830
-      TabIndex        =   4
-      Top             =   360
-      Width           =   4215
-      WordWrap        =   -1  'True
    End
 End
 Attribute VB_Name = "dialog_UnsavedChanges"
