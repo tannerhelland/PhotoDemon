@@ -24,17 +24,17 @@ Begin VB.Form FormFilmNoir
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.sliderTextCombo sltShadow 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   480
       Width           =   5880
-      _extentx        =   10372
-      _extenty        =   1270
-      caption         =   "shadow cut-off"
-      sigdigits       =   1
-      max             =   100
-      value           =   50
+      _ExtentX        =   10372
+      _ExtentY        =   1270
+      Caption         =   "shadow cut-off"
+      Max             =   100
+      SigDigits       =   1
+      Value           =   50
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -42,8 +42,8 @@ Begin VB.Form FormFilmNoir
       TabIndex        =   1
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -52,60 +52,60 @@ Begin VB.Form FormFilmNoir
       TabIndex        =   0
       Top             =   5790
       Width           =   12030
-      _extentx        =   21220
-      _extenty        =   1323
-      backcolor       =   14802140
+      _ExtentX        =   21220
+      _ExtentY        =   1323
+      BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltContrast 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   2400
       Width           =   5880
-      _extentx        =   10372
-      _extenty        =   1270
-      caption         =   "contrast boost"
-      sigdigits       =   1
-      max             =   100
-      value           =   50
+      _ExtentX        =   10372
+      _ExtentY        =   1270
+      Caption         =   "contrast boost"
+      Max             =   100
+      SigDigits       =   1
+      Value           =   50
    End
    Begin PhotoDemon.sliderTextCombo sltHighlight 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   4
       Top             =   1440
       Width           =   5880
-      _extentx        =   10372
-      _extenty        =   1270
-      caption         =   "highlight cut-off"
-      sigdigits       =   1
-      max             =   100
-      value           =   50
+      _ExtentX        =   10372
+      _ExtentY        =   1270
+      Caption         =   "highlight cut-off"
+      Max             =   100
+      SigDigits       =   1
+      Value           =   50
    End
    Begin PhotoDemon.sliderTextCombo sltMidpoint 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   5
       Top             =   3360
       Width           =   5880
-      _extentx        =   10372
-      _extenty        =   1270
-      caption         =   "contrast midpoint"
-      sigdigits       =   1
-      max             =   100
-      value           =   50
+      _ExtentX        =   10372
+      _ExtentY        =   1270
+      Caption         =   "contrast midpoint"
+      Max             =   100
+      SigDigits       =   1
+      Value           =   50
    End
    Begin PhotoDemon.sliderTextCombo sltGrain 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   6
       Top             =   4320
       Width           =   5880
-      _extentx        =   10372
-      _extenty        =   1270
-      caption         =   "film grain"
-      sigdigits       =   1
-      max             =   100
+      _ExtentX        =   10372
+      _ExtentY        =   1270
+      Caption         =   "film grain"
+      Max             =   100
+      SigDigits       =   1
    End
 End
 Attribute VB_Name = "FormFilmNoir"
@@ -260,7 +260,7 @@ Public Sub fxFilmNoir(ByVal parameterList As String, Optional ByVal toPreview As
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Film noir", , buildParamList("shadow", sltShadow.Value, "contrast", sltContrast.Value, "midpoint", sltMidpoint.Value, "highlight", sltHighlight.Value, "grain", sltGrain.Value), UNDO_LAYER
+    Process "Film noir", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -294,7 +294,7 @@ Private Sub fxPreview_ViewportChanged()
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then fxFilmNoir buildParamList("shadow", sltShadow.Value, "contrast", sltContrast.Value, "midpoint", sltMidpoint.Value, "highlight", sltHighlight.Value, "grain", sltGrain.Value), True, fxPreview
+    If cmdBar.previewsAllowed Then fxFilmNoir GetLocalParamString(), True, fxPreview
 End Sub
 
 Private Sub sltContrast_Change()
@@ -316,3 +316,7 @@ End Sub
 Private Sub sltShadow_Change()
     updatePreview
 End Sub
+
+Private Function GetLocalParamString() As String
+    GetLocalParamString = buildParamList("shadow", sltShadow.Value, "contrast", sltContrast.Value, "midpoint", sltMidpoint.Value, "highlight", sltHighlight.Value, "grain", sltGrain.Value)
+End Function
