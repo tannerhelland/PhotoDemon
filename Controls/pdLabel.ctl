@@ -104,7 +104,7 @@ End Property
 
 Public Property Let Alignment(ByVal newAlignment As AlignmentConstants)
     ucSupport.SetCaptionAlignment newAlignment
-    If (Not g_IsProgramRunning) Then UpdateControlLayout
+    If (Not g_IsProgramRunning) Then updateControlLayout
     PropertyChanged "Alignment"
 End Property
 
@@ -115,7 +115,7 @@ End Property
 Public Property Let BackColor(ByVal newColor As OLE_COLOR)
     If m_BackColor <> newColor Then
         m_BackColor = newColor
-        RedrawBackBuffer
+        redrawBackBuffer
     End If
 End Property
 
@@ -135,9 +135,9 @@ Public Property Let Caption(ByRef newCaption As String)
     'Normally we would rely on the ucSupport class to raise redraw events for us, but this label control is a weird one,
     ' since we may need to resize the entire control when the caption changes.  As such, force an immediate layout update.
     If (Not g_IsProgramRunning) Then
-        UpdateControlLayout
+        updateControlLayout
     Else
-        If (m_Layout = AutoSizeControl) Or (m_Layout = AutoSizeControlPlusWordWrap) Then UpdateControlLayout
+        If (m_Layout = AutoSizeControl) Or (m_Layout = AutoSizeControlPlusWordWrap) Then updateControlLayout
     End If
     
     PropertyChanged "Caption"
@@ -156,7 +156,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     PropertyChanged "Enabled"
     
     'Redraw the control
-    RedrawBackBuffer
+    redrawBackBuffer
     
 End Property
 
@@ -194,7 +194,7 @@ End Property
 Public Property Let ForeColor(ByVal newColor As OLE_COLOR)
     If m_ForeColor <> newColor Then
         m_ForeColor = newColor
-        RedrawBackBuffer
+        redrawBackBuffer
     End If
 End Property
 
@@ -212,7 +212,7 @@ End Property
 
 Public Property Let Layout(ByVal newLayout As PD_LABEL_LAYOUT)
     m_Layout = newLayout
-    UpdateControlLayout
+    updateControlLayout
 End Property
 
 'Because there can be a delay between window resize events and VB processing the related message (and updating its internal properties),
@@ -232,7 +232,7 @@ End Property
 Public Property Let UseCustomBackColor(ByVal newSetting As Boolean)
     If newSetting <> m_UseCustomBackColor Then
         m_UseCustomBackColor = newSetting
-        RedrawBackBuffer
+        redrawBackBuffer
     End If
 End Property
 
@@ -243,13 +243,13 @@ End Property
 Public Property Let UseCustomForeColor(ByVal newSetting As Boolean)
     If newSetting <> m_UseCustomForeColor Then
         m_UseCustomForeColor = newSetting
-        RedrawBackBuffer
+        redrawBackBuffer
     End If
 End Property
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then UpdateControlLayout
-    RedrawBackBuffer
+    If updateLayoutToo Then updateControlLayout
+    redrawBackBuffer
 End Sub
 
 'hWnds aren't exposed by default
@@ -259,12 +259,12 @@ Attribute hWnd.VB_UserMemId = -515
 End Property
 
 'Container hWnd must be exposed for external tooltip handling
-Public Property Get ContainerHwnd() As Long
-    ContainerHwnd = UserControl.ContainerHwnd
+Public Property Get containerHwnd() As Long
+    containerHwnd = UserControl.containerHwnd
 End Property
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
+    updateControlLayout
 End Sub
 
 'Because we sometimes do run-timre rearranging of label controls, we wrap a couple helper functions to ensure proper high-DPI support
@@ -365,7 +365,7 @@ End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
 ' of internal sizing metrics whenever the control size changes.
-Private Sub UpdateControlLayout()
+Private Sub updateControlLayout()
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
@@ -457,13 +457,13 @@ Private Sub UpdateControlLayout()
     End If
     
     'With all size metrics handled, we can now paint the back buffer
-    RedrawBackBuffer
+    redrawBackBuffer
             
 End Sub
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
-Private Sub RedrawBackBuffer()
+Private Sub redrawBackBuffer()
     
     'Because labels are so prevalent throughout the program, this function may end up being called when PD is going down.
     If g_ProgramShuttingDown Then Exit Sub
@@ -539,12 +539,12 @@ Public Sub UpdateAgainstCurrentTheme()
 End Sub
 
 'Post-translation, we can request an immediate refresh
-Public Sub RequestRefresh()
+Public Sub requestRefresh()
     ucSupport.RequestRepaint
 End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    ucSupport.AssignTooltip UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
