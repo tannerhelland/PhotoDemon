@@ -126,6 +126,7 @@ Begin VB.Form FormPreferences
          Width           =   945
          _ExtentX        =   1667
          _ExtentY        =   767
+         ShowMainWindowColor=   0   'False
       End
       Begin PhotoDemon.colorSelector csAlphaTwo 
          Height          =   435
@@ -135,6 +136,7 @@ Begin VB.Form FormPreferences
          Width           =   945
          _ExtentX        =   1667
          _ExtentY        =   767
+         ShowMainWindowColor=   0   'False
       End
       Begin PhotoDemon.smartOptionButton optColorManagement 
          Height          =   330
@@ -1385,6 +1387,7 @@ Begin VB.Form FormPreferences
          Width           =   1215
          _ExtentX        =   2143
          _ExtentY        =   767
+         ShowMainWindowColor=   0   'False
       End
       Begin PhotoDemon.smartCheckBox chkMouseHighResolution 
          Height          =   330
