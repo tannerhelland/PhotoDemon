@@ -119,7 +119,7 @@ Public Sub RequestRepaint(Optional ByVal raiseImmediateDrawEvent As Boolean = Fa
         'Invalidate the client rect, which will automatically trigger the addition of a WM_PAINT message to the window queue.
         ' This way, the window can redraw at the leisure of the system.
         Else
-            InvalidateRect m_hWnd, tmpRect, 0
+            InvalidateRect m_hWnd, tmpRect, 0&
         End If
         
     End If
