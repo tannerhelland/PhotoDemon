@@ -796,7 +796,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             End If
         
         Case "New layer from file"
-            Layer_Handler.loadImageAsNewLayer showDialog, processParameters
+            Layer_Handler.LoadImageAsNewLayer showDialog, processParameters
         
         Case "Duplicate layer"
             Layer_Handler.duplicateLayerByIndex cParams.GetLong(1)
@@ -1298,7 +1298,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 ShowPDDialog vbModal, FormFilmNoir
             Else
-                'FormFilmNoir.fxFilmNoir cParams.GetDouble(1), cParams.GetDouble(2), cParams.GetDouble(3), cParams.GetDouble(4), cParams.GetDouble(5)
                 FormFilmNoir.fxFilmNoir cXMLParams.getParamString
             End If
             
@@ -1320,7 +1319,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 ShowPDDialog vbModal, FormModernArt
             Else
-                FormModernArt.ApplyModernArt cParams.GetLong(1)
+                FormModernArt.ApplyModernArt cXMLParams.getParamString
             End If
             
         Case "Oil painting"

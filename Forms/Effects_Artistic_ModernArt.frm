@@ -44,14 +44,29 @@ Begin VB.Form FormModernArt
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
+      Index           =   0
       Left            =   6000
       TabIndex        =   2
-      Top             =   2280
+      Top             =   2040
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
-      Caption         =   "strength"
+      Caption         =   "horizontal strength"
+      Min             =   1
+      Max             =   200
+      Value           =   5
+   End
+   Begin PhotoDemon.sliderTextCombo sltRadius 
+      Height          =   705
+      Index           =   1
+      Left            =   6000
+      TabIndex        =   3
+      Top             =   2880
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "vertical strength"
       Min             =   1
       Max             =   200
       Value           =   5
@@ -66,8 +81,8 @@ Attribute VB_Exposed = False
 'Modern Art Tool
 'Copyright 2013-2015 by Tanner Helland
 'Created: 09/Feb/13
-'Last updated: 23/August/13
-'Last update: added command bar
+'Last updated: 23/November/15
+'Last update: convert to XML parameter list
 '
 'This is a heavily optimized "extreme rank" function.  An accumulation technique is used instead of the standard sliding
 ' window mechanism.  (See http://web.archive.org/web/20060718054020/http://www.acm.uiuc.edu/siggraph/workshops/wjarosz_convolution_2001.pdf)
@@ -88,9 +103,18 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Convolve an image using a gaussian kernel (separable implementation!)
+'Apply a "modern art" filter to the current master image (basically a max/min rank algorithm, with some tweaks)
 'Input: radius of the median (min 1, no real max - but the scroll bar is maxed at 200 presently)
-Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+    
+    'Parse out the parameter list
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.setParamString parameterList
+    
+    Dim hRadius As Double, vRadius As Double
+    hRadius = cParams.GetDouble("hRadius", 1#)
+    vRadius = cParams.GetDouble("vRadius", hRadius)
     
     If Not toPreview Then Message "Applying modern art techniques..."
         
@@ -120,20 +144,21 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
     finalY = curDIBValues.Bottom
         
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
-    If toPreview Then mRadius = mRadius * curDIBValues.previewModifier
-    
-    'Range-check the radius.  During previews, the line of code above may cause the radius to drop to zero.
-    ' If this happens, we will report the filter as successful, but we will not actually apply it.  This is
-    ' really the only way we have to notify the user that the effect will not be noticeable without a
-    ' larger strength (or zooming in).
-    If mRadius = 0 Then GoTo prematureModernArtExit
-    
-    'Just to be safe, make sure the radius isn't larger than the image itself
-    If (finalY - initY) < (finalX - initX) Then
-        If mRadius > (finalY - initY) Then mRadius = finalY - initY
-    Else
-        If mRadius > (finalX - initX) Then mRadius = finalX - initX
+    If toPreview Then
+        hRadius = hRadius * curDIBValues.previewModifier
+        vRadius = vRadius * curDIBValues.previewModifier
     End If
+    
+    'Range-check the radius.  (During previews, the line of code above may cause the radius to drop to zero.)
+    If (hRadius = 0) Then hRadius = 1
+    If (vRadius = 0) Then vRadius = 1
+    
+    'Split the radius into integer-only components, and make sure each isn't larger than the image itself
+    ' in that dimension.
+    Dim xRadius As Long, yRadius As Long
+    xRadius = hRadius: yRadius = vRadius
+    If xRadius > (finalX - initX) Then xRadius = finalX - initX
+    If yRadius > (finalY - initY) Then yRadius = finalY - initY
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
@@ -146,8 +171,8 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
     progBarCheck = findBestProgBarValue()
     
     'The number of pixels in the current median box are tracked dynamically.
-    Dim NumOfPixels As Long
-    NumOfPixels = 0
+    Dim numOfPixels As Long
+    numOfPixels = 0
             
     'Median filtering takes a lot of variables
     Dim rValues(0 To 255) As Long, gValues(0 To 255) As Long, bValues(0 To 255) As Long
@@ -164,12 +189,12 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
     
     Dim startY As Long, stopY As Long, yStep As Long
     
-    NumOfPixels = 0
+    numOfPixels = 0
     
     'Generate an initial array of median data for the first pixel
-    For x = initX To initX + mRadius - 1
+    For x = initX To initX + xRadius - 1
         QuickVal = x * qvDepth
-    For y = initY To initY + mRadius '- 1
+    For y = initY To initY + yRadius
     
         r = srcImageData(QuickVal + 2, y)
         g = srcImageData(QuickVal + 1, y)
@@ -179,7 +204,7 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
         bValues(b) = bValues(b) + 1
         
         'Increase the pixel tally
-        NumOfPixels = NumOfPixels + 1
+        numOfPixels = numOfPixels + 1
         
     Next y
     Next x
@@ -190,9 +215,9 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
         QuickVal = x * qvDepth
         
         'Determine the bounds of the current median box in the X direction
-        lbX = x - mRadius
+        lbX = x - xRadius
         If lbX < 0 Then lbX = 0
-        ubX = x + mRadius
+        ubX = x + xRadius
         
         If ubX > finalX Then
             obuX = True
@@ -205,9 +230,9 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
         ' Set y-related loop variables depending on the direction of the next cycle.
         If atBottom Then
             lbY = 0
-            ubY = mRadius
+            ubY = yRadius
         Else
-            lbY = finalY - mRadius
+            lbY = finalY - yRadius
             ubY = finalY
         End If
         
@@ -223,7 +248,7 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
                 rValues(r) = rValues(r) - 1
                 gValues(g) = gValues(g) - 1
                 bValues(b) = bValues(b) - 1
-                NumOfPixels = NumOfPixels - 1
+                numOfPixels = numOfPixels - 1
             Next j
         
         End If
@@ -240,7 +265,7 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
                 rValues(r) = rValues(r) + 1
                 gValues(g) = gValues(g) + 1
                 bValues(b) = bValues(b) + 1
-                NumOfPixels = NumOfPixels + 1
+                numOfPixels = numOfPixels + 1
             Next j
             
         End If
@@ -251,18 +276,18 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
                 
             For i = lbX To ubX
                 QuickValInner = i * qvDepth
-                r = srcImageData(QuickValInner + 2, mRadius)
-                g = srcImageData(QuickValInner + 1, mRadius)
-                b = srcImageData(QuickValInner, mRadius)
+                r = srcImageData(QuickValInner + 2, yRadius)
+                g = srcImageData(QuickValInner + 1, yRadius)
+                b = srcImageData(QuickValInner, yRadius)
                 rValues(r) = rValues(r) - 1
                 gValues(g) = gValues(g) - 1
                 bValues(b) = bValues(b) - 1
-                NumOfPixels = NumOfPixels - 1
+                numOfPixels = numOfPixels - 1
             Next i
         
         Else
         
-            QuickY = finalY - mRadius
+            QuickY = finalY - yRadius
         
             For i = lbX To ubX
                 QuickValInner = i * qvDepth
@@ -272,7 +297,7 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
                 rValues(r) = rValues(r) - 1
                 gValues(g) = gValues(g) - 1
                 bValues(b) = bValues(b) - 1
-                NumOfPixels = NumOfPixels - 1
+                numOfPixels = numOfPixels - 1
             Next i
         
         End If
@@ -297,10 +322,10 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
         If atBottom Then
         
             'Calculate bounds
-            lbY = y - mRadius
+            lbY = y - yRadius
             If lbY < 0 Then lbY = 0
             
-            ubY = y + mRadius
+            ubY = y + yRadius
             If ubY > finalY Then
                 obuY = True
                 ubY = finalY
@@ -321,7 +346,7 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
                     rValues(r) = rValues(r) - 1
                     gValues(g) = gValues(g) - 1
                     bValues(b) = bValues(b) - 1
-                    NumOfPixels = NumOfPixels - 1
+                    numOfPixels = numOfPixels - 1
                 Next i
                         
             End If
@@ -337,7 +362,7 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
                     rValues(r) = rValues(r) + 1
                     gValues(g) = gValues(g) + 1
                     bValues(b) = bValues(b) + 1
-                    NumOfPixels = NumOfPixels + 1
+                    numOfPixels = numOfPixels + 1
                 Next i
             
             End If
@@ -345,7 +370,7 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
         'The exact same code as above, but in the opposite direction
         Else
         
-            lbY = y - mRadius
+            lbY = y - yRadius
             If lbY < 0 Then
                 oblY = True
                 lbY = 0
@@ -353,7 +378,7 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
                 oblY = False
             End If
             
-            ubY = y + mRadius
+            ubY = y + yRadius
             If ubY > finalY Then ubY = finalY
                                 
             If ubY < finalY Then
@@ -368,7 +393,7 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
                     rValues(r) = rValues(r) - 1
                     gValues(g) = gValues(g) - 1
                     bValues(b) = bValues(b) - 1
-                    NumOfPixels = NumOfPixels - 1
+                    numOfPixels = numOfPixels - 1
                 Next i
                         
             End If
@@ -383,7 +408,7 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
                     rValues(r) = rValues(r) + 1
                     gValues(g) = gValues(g) + 1
                     bValues(b) = bValues(b) + 1
-                    NumOfPixels = NumOfPixels + 1
+                    numOfPixels = numOfPixels + 1
                 Next i
             
             End If
@@ -396,7 +421,7 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
         lowR = 0
         lowG = 0
         lowB = 0
-        cutoffTotal = 0.01 * NumOfPixels
+        cutoffTotal = 0.01 * numOfPixels
         If cutoffTotal = 0 Then cutoffTotal = 1
         
         i = 0
@@ -424,7 +449,7 @@ Public Sub ApplyModernArt(ByVal mRadius As Long, Optional ByVal toPreview As Boo
         highR = 0
         highG = 0
         highB = 0
-        cutoffTotal = 0.01 * NumOfPixels
+        cutoffTotal = 0.01 * numOfPixels
         If cutoffTotal = 0 Then cutoffTotal = 1
         
         i = 255
@@ -496,7 +521,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Modern art", , buildParams(sltRadius.Value), UNDO_LAYER
+    Process "Modern art", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -525,12 +550,8 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub sltRadius_Change()
-    updatePreview
-End Sub
-
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ApplyModernArt sltRadius.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyModernArt GetLocalParamString(), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -538,4 +559,10 @@ Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
 
+Private Sub sltRadius_Change(Index As Integer)
+    updatePreview
+End Sub
 
+Private Function GetLocalParamString() As String
+    GetLocalParamString = buildParamList("hRadius", sltRadius(0).Value, "vRadius", sltRadius(1).Value)
+End Function
