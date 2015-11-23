@@ -745,7 +745,7 @@ End Function
 ' (IMPORTANT NOTE: the tooltip class handles translations automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal parentHwnd As Long, ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
     If m_hWndParent = 0 Then m_hWndParent = parentHwnd
-    m_ToolTipManager.setTooltip m_hWnd, m_hWndParent, newTooltip, newTooltipTitle, newTooltipIcon
+    m_ToolTipManager.SetTooltip m_hWnd, m_hWndParent, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
 
 'If the control wants to know if it has focus, it can call this function.  API techniques are used, so even API windows

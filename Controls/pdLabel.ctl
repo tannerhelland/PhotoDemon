@@ -466,7 +466,10 @@ End Sub
 Private Sub redrawBackBuffer()
     
     'Because labels are so prevalent throughout the program, this function may end up being called when PD is going down.
-    If g_ProgramShuttingDown Then Exit Sub
+    ' As such, we need to perform a failsafe check on the theming class.
+    If g_ProgramShuttingDown Then
+        If (g_Themer Is Nothing) Then Exit Sub
+    End If
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
@@ -539,7 +542,7 @@ Public Sub UpdateAgainstCurrentTheme()
 End Sub
 
 'Post-translation, we can request an immediate refresh
-Public Sub requestRefresh()
+Public Sub RequestRefresh()
     ucSupport.RequestRepaint
 End Sub
 
