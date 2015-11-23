@@ -64,7 +64,7 @@ Begin VB.Form FormPosterize
       Caption         =   "match existing colors"
    End
    Begin PhotoDemon.sliderTextCombo sltRed 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   4
       Top             =   1080
@@ -77,7 +77,7 @@ Begin VB.Form FormPosterize
       Value           =   6
    End
    Begin PhotoDemon.sliderTextCombo sltGreen 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   5
       Top             =   2040
@@ -90,7 +90,7 @@ Begin VB.Form FormPosterize
       Value           =   7
    End
    Begin PhotoDemon.sliderTextCombo sltBlue 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   6
       Top             =   3000

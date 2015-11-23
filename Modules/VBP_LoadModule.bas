@@ -4,7 +4,6 @@ Attribute VB_Name = "Loading"
 'Copyright 2001-2015 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 28/April/15
-'Last updated by: Tanner
 'Last update: thanks to the new pdGlyphCollection class, PD now caches a list of all fonts, not just TrueType ones.
 '
 'Module for handling any and all program loading.  This includes the program itself,

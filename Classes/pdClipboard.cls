@@ -16,7 +16,7 @@ Attribute VB_Exposed = False
 'Copyright 2013-2015 by Tanner Helland
 'Created: 06/November/15 (formally split off from a heavily modified cCustomClipboard by Steve McMahon)
 'Last updated: 15/November/15
-'Last update: rewrite the damn thing (mostly) from scratch
+'Last update: rewrite the damn thing from scratch
 '
 'For many years, PD used vbAccelerator's "cCustomClipboard" class to simplify Windows clipboard interactions:
 ' http://www.vbaccelerator.com/home/VB/Code/Libraries/Clipboard/Customising_Clipboard_Use/article.asp

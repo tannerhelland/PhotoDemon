@@ -54,6 +54,7 @@ Begin VB.Form FormLevels
       _ExtentX        =   873
       _ExtentY        =   661
       curColor        =   0
+      ShowMainWindowColor=   0   'False
    End
    Begin VB.PictureBox picOutputArrows 
       Appearance      =   0  'Flat
@@ -203,6 +204,7 @@ Begin VB.Form FormLevels
       Width           =   495
       _ExtentX        =   873
       _ExtentY        =   661
+      ShowMainWindowColor=   0   'False
    End
    Begin PhotoDemon.buttonStrip btsChannel 
       Height          =   600

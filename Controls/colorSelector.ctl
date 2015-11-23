@@ -79,6 +79,10 @@ Private m_MouseInPrimaryButton As Boolean, m_MouseInSecondaryButton As Boolean
 Private WithEvents ucSupport As pdUCSupport
 Attribute ucSupport.VB_VarHelpID = -1
 
+'Most instances of the control provide a "quick select" box on the right that contains the current main window color.
+' In some places, this color is irrelevant (like the Levels dialog), so we suppress it via a dedicated property.
+Private m_ShowMainWindowColor As Boolean
+
 'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
 ' if present, will not be processed until run-time.
 ' IMPORTANT NOTE: only the ENGLISH caption is returned.  I don't have a reason for returning a translated caption (if any),
@@ -101,7 +105,7 @@ End Property
 Public Property Let Color(ByVal newColor As OLE_COLOR)
     
     curColor = newColor
-    RedrawBackBuffer
+    redrawBackBuffer
     
     PropertyChanged "Color"
     RaiseEvent ColorChanged
@@ -117,7 +121,7 @@ End Property
 Public Property Let Enabled(ByVal newValue As Boolean)
     UserControl.Enabled = newValue
     PropertyChanged "Enabled"
-    RedrawBackBuffer
+    redrawBackBuffer
 End Property
 
 Public Property Get FontSize() As Single
@@ -132,6 +136,16 @@ End Property
 'hWnds aren't exposed by default
 Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
+End Property
+
+Public Property Get ShowMainWindowColor() As Boolean
+    ShowMainWindowColor = m_ShowMainWindowColor
+End Property
+
+Public Property Let ShowMainWindowColor(ByVal newState As Boolean)
+    m_ShowMainWindowColor = newState
+    PropertyChanged "ShowMainWindowColor"
+    updateControlLayout
 End Property
 
 'Call this to force a display of the color window.  Note that it's *public*, so outside callers can raise dialogs, too.
@@ -163,14 +177,14 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
 End Sub
 
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    RedrawBackBuffer
+    redrawBackBuffer
     UpdateCursor x, y
 End Sub
 
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseInPrimaryButton = False
     m_MouseInSecondaryButton = False
-    RedrawBackBuffer
+    redrawBackBuffer
     UpdateCursor -100, -100
 End Sub
 
@@ -190,7 +204,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     End If
     
     If redrawRequired Then
-        RedrawBackBuffer
+        redrawBackBuffer
         MakeNewTooltip
     End If
     
@@ -207,17 +221,17 @@ End Sub
 Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean)
     
     'On program-wide color changes, redraw ourselves accordingly
-    If wMsg = WM_PD_PRIMARY_COLOR_CHANGE Then RedrawBackBuffer
+    If wMsg = WM_PD_PRIMARY_COLOR_CHANGE Then redrawBackBuffer
     
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then UpdateControlLayout
-    RedrawBackBuffer
+    If updateLayoutToo Then updateControlLayout
+    redrawBackBuffer
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
+    updateControlLayout
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -239,7 +253,7 @@ Private Sub UserControl_Initialize()
     If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
     
     'Update the control size parameters at least once
-    UpdateControlLayout
+    updateControlLayout
     
 End Sub
 
@@ -247,6 +261,7 @@ Private Sub UserControl_InitProperties()
     Color = RGB(255, 255, 255)
     FontSize = 12
     Caption = ""
+    ShowMainWindowColor = True
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -259,6 +274,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         Color = .ReadProperty("curColor", RGB(255, 255, 255))
         Caption = .ReadProperty("Caption", "")
         FontSize = .ReadProperty("FontSize", 12)
+        ShowMainWindowColor = .ReadProperty("ShowMainWindowColor", True)
     End With
 End Sub
 
@@ -271,12 +287,13 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "Caption", ucSupport.GetCaptionText, ""
         .WriteProperty "FontSize", ucSupport.GetCaptionFontSize, 12
         .WriteProperty "curColor", curColor, RGB(255, 255, 255)
+        .WriteProperty "ShowMainWindowColor", m_ShowMainWindowColor, True
     End With
 End Sub
 
 'Whenever a control property changes that affects control size or layout (including internal changes, like caption adjustments),
 ' call this function to recalculate the control's layout
-Private Sub UpdateControlLayout()
+Private Sub updateControlLayout()
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
@@ -291,15 +308,22 @@ Private Sub UpdateControlLayout()
         With m_SecondaryColorRect
             .Top = ucSupport.GetCaptionBottom + 2
             .Bottom = bHeight - 2
-            .Right = bWidth - 2
-            .Left = .Right - FixDPI(24)
+            
+            If m_ShowMainWindowColor Then
+                .Right = bWidth - 2
+                .Left = .Right - FixDPI(24)
+            Else
+                .Right = bWidth + 10
+                .Left = bWidth + 9
+            End If
+            
         End With
         
         With m_PrimaryColorRect
             .Top = ucSupport.GetCaptionBottom + 2
             .Left = FixDPI(8)
-            .Right = m_SecondaryColorRect.Left
             .Bottom = bHeight - 2
+            If m_ShowMainWindowColor Then .Right = m_SecondaryColorRect.Left Else .Right = bWidth - 2
         End With
         
     'If there's no caption, allow the clickable portion to fill the entire control
@@ -308,15 +332,22 @@ Private Sub UpdateControlLayout()
         With m_SecondaryColorRect
             .Top = 1
             .Bottom = bHeight - 2
-            .Right = bWidth - 2
-            .Left = .Right - FixDPI(24)
+            
+            If m_ShowMainWindowColor Then
+                .Right = bWidth - 2
+                .Left = .Right - FixDPI(24)
+            Else
+                .Right = bWidth + 10
+                .Left = bWidth + 9
+            End If
+            
         End With
         
         With m_PrimaryColorRect
             .Top = 1
             .Left = 1
-            .Right = m_SecondaryColorRect.Left
             .Bottom = bHeight - 2
+            If m_ShowMainWindowColor Then .Right = m_SecondaryColorRect.Left Else .Right = bWidth - 2
         End With
         
     End If
@@ -343,7 +374,7 @@ Private Function IsMouseInSecondaryButton(ByVal x As Single, ByVal y As Single) 
 End Function
 
 'Redraw the entire control, including the caption (if present)
-Private Sub RedrawBackBuffer()
+Private Sub redrawBackBuffer()
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
@@ -369,15 +400,17 @@ Private Sub RedrawBackBuffer()
             GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left, .Top, .Right, .Bottom, defaultBorderColor, 255, 1#, False, LineJoinMiter
         End With
         
-        With m_SecondaryColorRect
-            GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, .Right - .Left, .Bottom - .Top, layerpanel_Colors.clrVariants.Color, 255
-            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left, .Top, .Right, .Bottom, defaultBorderColor, 255, 1#, False, LineJoinMiter
-        End With
+        If m_ShowMainWindowColor Then
+            With m_SecondaryColorRect
+                GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, .Right - .Left, .Bottom - .Top, layerpanel_Colors.clrVariants.Color, 255
+                GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left, .Top, .Right, .Bottom, defaultBorderColor, 255, 1#, False, LineJoinMiter
+            End With
+        End If
         
         'If either button is hovered, trace it with a bold, colored outline
         If m_MouseInPrimaryButton Then
             GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, m_PrimaryColorRect.Left, m_PrimaryColorRect.Top, m_PrimaryColorRect.Right, m_PrimaryColorRect.Bottom, activeBorderColor, 255, 3#, False, LineJoinMiter
-        ElseIf m_MouseInSecondaryButton Then
+        ElseIf m_MouseInSecondaryButton And m_ShowMainWindowColor Then
             GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, m_SecondaryColorRect.Left, m_SecondaryColorRect.Top, m_SecondaryColorRect.Right, m_SecondaryColorRect.Bottom, activeBorderColor, 255, 3#, False, LineJoinMiter
         End If
         
@@ -404,7 +437,7 @@ Private Sub MakeNewTooltip()
         
         If m_MouseInPrimaryButton Then
             targetColor = Me.Color
-        ElseIf m_MouseInSecondaryButton Then
+        ElseIf m_MouseInSecondaryButton And m_ShowMainWindowColor Then
             targetColor = layerpanel_Colors.clrVariants.Color
         End If
         
@@ -441,5 +474,5 @@ End Sub
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    ucSupport.AssignTooltip UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
