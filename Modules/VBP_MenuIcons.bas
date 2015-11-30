@@ -430,7 +430,8 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "EMBOSS", 7, 3, 0         'Emboss / Engrave
         addMenuIcon "EDGEENHANCE", 7, 3, 1    'Enhance Edges
         addMenuIcon "EDGES", 7, 3, 2          'Find Edges
-        addMenuIcon "TRACECONTOUR", 7, 3, 3   'Trace Contour
+        'addMenuIcon "RANGEFILTER", 7, 3, 4    'Range filter
+        addMenuIcon "TRACECONTOUR", 7, 3, 4   'Trace Contour
         
     addMenuIcon "SUNSHINE", 7, 4        'Lights and shadows
         '--> Lights and shadows sub-menu

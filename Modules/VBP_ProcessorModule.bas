@@ -1562,8 +1562,12 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormFindEdges.ApplyEdgeDetection cParams.GetLong(1), cParams.GetLong(2), cParams.GetBool(3)
             End If
             
-        Case "Artistic contour"
-            FormFindEdges.FilterSmoothContour cParams.GetBool(1)
+        Case "Range filter"
+            If showDialog Then
+                ShowPDDialog vbModal, FormRangeFilter
+            Else
+                FormRangeFilter.ApplyRangeFilter cXMLParams.getParamString
+            End If
             
         Case "Trace contour"
             If showDialog Then
@@ -1571,6 +1575,11 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormContour.TraceContour cParams.GetLong(1), cParams.GetBool(2), cParams.GetBool(3)
             End If
+            
+        'Historically, "artistic contour" was provided as a standalone option.  It's now integrated into the base
+        ' "find edges" function but its dedicated instruction has been left here for backwards compatibility reasons.
+        Case "Artistic contour"
+            FormFindEdges.FilterSmoothContour cParams.GetBool(1)
             
         
         'Lights and shadows

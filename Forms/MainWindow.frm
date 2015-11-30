@@ -27,8 +27,8 @@ Begin VB.Form FormMain
    Begin PhotoDemon.pdAccelerator pdHotkeys 
       Left            =   120
       Top             =   4440
-      _ExtentX        =   661
-      _ExtentY        =   661
+      _extentx        =   661
+      _extenty        =   661
    End
    Begin VB.Timer tmrMetadata 
       Enabled         =   0   'False
@@ -49,22 +49,22 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   6588
+      _extentx        =   10398
+      _extenty        =   6588
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _ExtentX        =   873
-      _ExtentY        =   873
+      _extentx        =   873
+      _extenty        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
       Top             =   2520
-      _ExtentX        =   635
-      _ExtentY        =   635
-      ErrAsOut        =   0   'False
-      PollInterval    =   5
+      _extentx        =   635
+      _extenty        =   635
+      errasout        =   0   'False
+      pollinterval    =   5
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -1106,8 +1106,12 @@ Begin VB.Form FormMain
             Index           =   2
          End
          Begin VB.Menu MnuEdge 
-            Caption         =   "Trace contour..."
+            Caption         =   "Range filter..."
             Index           =   3
+         End
+         Begin VB.Menu MnuEdge 
+            Caption         =   "Trace contour..."
+            Index           =   4
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -3543,8 +3547,12 @@ Private Sub MnuEdge_Click(Index As Integer)
         Case 2
             Process "Find edges", True
         
-        'Trace contour
+        'Range filter
         Case 3
+            Process "Range filter", True
+        
+        'Trace contour
+        Case 4
             Process "Trace contour", True
     
     End Select
