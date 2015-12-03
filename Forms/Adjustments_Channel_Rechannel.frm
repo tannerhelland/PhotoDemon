@@ -429,7 +429,7 @@ Private Sub updatePreview()
     
         Dim i As Long
         For i = 0 To optChannel.Count - 1
-            If optChannel(i) Then RechannelImage i, True, fxPreview
+            If optChannel(i).Value Then RechannelImage i, True, fxPreview
         Next i
         
     End If
