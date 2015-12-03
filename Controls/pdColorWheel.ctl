@@ -108,8 +108,8 @@ Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
 
-Public Property Get containerHwnd() As Long
-    containerHwnd = UserControl.containerHwnd
+Public Property Get ContainerHwnd() As Long
+    ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
 Public Property Get Color() As Long
@@ -382,7 +382,7 @@ Private Sub UserControl_Initialize()
         
         'Also start a flicker-free window painter
         Set cPainter = New pdWindowPainter
-        cPainter.startPainter UserControl.hWnd
+        cPainter.StartPainter UserControl.hWnd
         
         'Create a tooltip engine
         Set toolTipManager = New pdToolTip
@@ -398,7 +398,7 @@ Private Sub UserControl_Initialize()
 End Sub
 
 Private Sub UserControl_InitProperties()
-    Color = vbRed
+    Color = RGB(50, 200, 255)
 End Sub
 
 'At run-time, painting is handled by PD's pdWindowPainter class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -410,7 +410,7 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-    Me.Color = PropBag.ReadProperty("Color", vbRed)
+    Me.Color = PropBag.ReadProperty("Color", RGB(50, 200, 255))
 End Sub
 
 Private Sub UserControl_Resize()
@@ -419,7 +419,7 @@ End Sub
     
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
-        .WriteProperty "Color", Me.Color, vbRed
+        .WriteProperty "Color", Me.Color, RGB(50, 200, 255)
     End With
 End Sub
 
@@ -648,7 +648,7 @@ Private Sub DrawUC()
     If g_IsProgramRunning Then
     
         'Paint the background.
-        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT), 255
+        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT), 255
         
         'Paint the hue wheel (currently left-aligned)
         If Not (m_WheelBuffer Is Nothing) Then m_WheelBuffer.alphaBlendToDC m_BackBuffer.getDIBDC
@@ -745,7 +745,7 @@ Private Sub DrawUC()
     
     'Paint the final result to the screen, as relevant
     If g_IsProgramRunning Then
-        cPainter.requestRepaint
+        cPainter.RequestRepaint
     Else
         BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
     End If
@@ -770,7 +770,7 @@ End Function
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    toolTipManager.setTooltip Me.hWnd, Me.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    toolTipManager.SetTooltip Me.hWnd, Me.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
