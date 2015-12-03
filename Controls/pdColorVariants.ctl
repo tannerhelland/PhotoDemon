@@ -133,8 +133,8 @@ Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
 
-Public Property Get containerHwnd() As Long
-    containerHwnd = UserControl.containerHwnd
+Public Property Get ContainerHwnd() As Long
+    ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
 Public Property Get Color() As Long
@@ -276,7 +276,7 @@ Private Sub UserControl_Initialize()
         
         'Also start a flicker-free window painter
         Set cPainter = New pdWindowPainter
-        cPainter.startPainter UserControl.hWnd
+        cPainter.StartPainter UserControl.hWnd
         
         'Create a tooltip engine
         Set toolTipManager = New pdToolTip
@@ -305,7 +305,7 @@ Private Sub UserControl_Initialize()
 End Sub
 
 Private Sub UserControl_InitProperties()
-    Color = vbRed
+    Color = RGB(50, 200, 255)
     WheelShape = CWS_Circular
 End Sub
 
@@ -318,7 +318,7 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-    Me.Color = PropBag.ReadProperty("Color", vbRed)
+    Me.Color = PropBag.ReadProperty("Color", RGB(50, 200, 255))
     Me.WheelShape = PropBag.ReadProperty("WheelShape", CWS_Circular)
 End Sub
 
@@ -328,7 +328,7 @@ End Sub
     
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     With PropBag
-        .WriteProperty "Color", Me.Color, vbRed
+        .WriteProperty "Color", Me.Color, RGB(50, 200, 255)
         .WriteProperty "WheelShape", Me.WheelShape, CWS_Circular
     End With
 End Sub
@@ -670,10 +670,10 @@ Private Sub DrawUC()
     If g_IsProgramRunning Then
     
         'Paint the background.
-        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT), 255
+        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT), 255
         
         Dim fillColor As Long, borderColor As Long, borderPen As Long
-        borderColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
+        borderColor = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
         
         'We can reuse a single border pen for all sub-paths
         borderPen = GDI_Plus.getGDIPlusPenHandle(borderColor, , , , LineJoinMiter)
@@ -698,7 +698,7 @@ Private Sub DrawUC()
         
         'If a subregion is currently hovered, trace it with a highlight outline.
         If m_MouseInsideRegion >= 0 Then
-            borderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+            borderColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
             borderPen = GDI_Plus.getGDIPlusPenHandle(borderColor, , 3, , LineJoinMiter)
             m_ColorRegions(m_MouseInsideRegion).strokePathToDIB_BarePen borderPen, m_BackBuffer
             GDI_Plus.releaseGDIPlusPen borderPen
@@ -721,7 +721,7 @@ Private Sub DrawUC()
     
     'Paint the final result to the screen, as relevant
     If g_IsProgramRunning Then
-        cPainter.requestRepaint
+        cPainter.RequestRepaint
     Else
         BitBlt UserControl.hDC, 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
     End If
@@ -794,7 +794,7 @@ End Sub
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    toolTipManager.setTooltip Me.hWnd, Me.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    toolTipManager.SetTooltip Me.hWnd, Me.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
