@@ -128,20 +128,20 @@ Friend Function GetThemeColor(ByVal colorType As PD_THEME_COLOR) As Long
 End Function
 
 'When a container object needs to render contained controls transparently, register it using this function
-Public Sub RequestContainerSubclass(ByVal containerHwnd As Long)
+Public Sub RequestContainerSubclass(ByVal ContainerHwnd As Long)
 
     If (cSubclass Is Nothing) Then
         Set cSubclass = New cSelfSubHookCallback
     End If
     
-    cSubclass.ssc_Subclass containerHwnd, , , Me
-    cSubclass.ssc_AddMsg containerHwnd, MSG_BEFORE, WM_PRINTCLIENT
+    cSubclass.ssc_Subclass ContainerHwnd, , , Me
+    cSubclass.ssc_AddMsg ContainerHwnd, MSG_BEFORE, WM_PRINTCLIENT
 
 End Sub
 
 'While not strictly required, it is good behavior to unsubclass container objects when they are unloaded
-Public Sub ReleaseContainerSubclass(ByVal containerHwnd As Long)
-    cSubclass.ssc_UnSubclass containerHwnd
+Public Sub ReleaseContainerSubclass(ByVal ContainerHwnd As Long)
+    cSubclass.ssc_UnSubclass ContainerHwnd
 End Sub
 
 'Reset the theme color cache to all -1 values.
@@ -264,6 +264,8 @@ Private Function GetDefaultPDColor(ByVal colorType As PD_THEME_COLOR) As Long
             
             Case PDTC_OK_GREEN
             Case PDTC_CANCEL_RED
+                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#e81828")
+            
             Case PDTC_FOCUS_RECT
             
             Case PDTC_CHANNEL_RED
