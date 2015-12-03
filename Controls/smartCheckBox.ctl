@@ -109,7 +109,7 @@ End Property
 
 Public Property Let Enabled(ByVal newValue As Boolean)
     UserControl.Enabled = newValue
-    redrawBackBuffer
+    RedrawBackBuffer
     PropertyChanged "Enabled"
 End Property
 
@@ -137,19 +137,19 @@ End Property
 Public Property Let Value(ByVal newValue As CheckBoxConstants)
     If m_Value <> newValue Then
         m_Value = newValue
-        redrawBackBuffer
+        RedrawBackBuffer
         RaiseEvent Click
         PropertyChanged "Value"
     End If
 End Property
 
 Private Sub ucSupport_GotFocusAPI()
-    redrawBackBuffer
+    RedrawBackBuffer
     RaiseEvent GotFocusAPI
 End Sub
 
 Private Sub ucSupport_LostFocusAPI()
-    redrawBackBuffer
+    RedrawBackBuffer
     RaiseEvent LostFocusAPI
 End Sub
 
@@ -170,7 +170,7 @@ End Sub
 'When the mouse leaves the UC, we must repaint the caption (as it's no longer hovered)
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseInsideClickableRect = False
-    redrawBackBuffer
+    RedrawBackBuffer
 End Sub
 
 'When the mouse enters the clickable portion of the UC, we must repaint the caption (to reflect its hovered state)
@@ -179,7 +179,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     'If the mouse is over the relevant portion of the user control, display the cursor as clickable
     If m_MouseInsideClickableRect <> isMouseOverClickArea(x, y) Then
         m_MouseInsideClickableRect = isMouseOverClickArea(x, y)
-        redrawBackBuffer
+        RedrawBackBuffer
     End If
     
     If m_MouseInsideClickableRect Then
@@ -191,12 +191,12 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then updateControlLayout
-    redrawBackBuffer
+    If updateLayoutToo Then UpdateControlLayout
+    RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    updateControlLayout
+    UpdateControlLayout
 End Sub
 
 'See if the mouse is over the clickable portion of the control
@@ -220,7 +220,7 @@ Private Sub UserControl_Initialize()
     If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
     
     'Update the control size parameters at least once
-    updateControlLayout
+    UpdateControlLayout
                 
 End Sub
 
@@ -257,7 +257,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 End Sub
 
 'Whenever the size of the control changes, we must recalculate some internal rendering metrics.
-Private Sub updateControlLayout()
+Private Sub UpdateControlLayout()
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
@@ -334,13 +334,13 @@ Private Sub updateControlLayout()
         m_FitFailure = False
     End If
     
-    redrawBackBuffer
+    RedrawBackBuffer
             
 End Sub
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
-Private Sub redrawBackBuffer()
+Private Sub RedrawBackBuffer()
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
@@ -441,7 +441,7 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
-    updateControlLayout
+    UpdateControlLayout
 End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
