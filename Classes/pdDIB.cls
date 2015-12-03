@@ -986,8 +986,8 @@ Private Sub Class_Terminate()
     
 End Sub
 
-'Draw this DIB to a picture box. The image will be automatically resized and centered.
-Public Sub renderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal colorManagementMatters As Boolean = True)
+'Draw this DIB to a picture box. The image will be automatically centered and sized to fit.
+Public Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal colorManagementMatters As Boolean = True, Optional ByVal doNotStretchIfSmaller As Boolean = False)
 
     'Erase any existing picture
     If dstPicture.AutoRedraw Then dstPicture.Picture = LoadPicture("")
@@ -1000,6 +1000,18 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
     srcWidth = m_dibWidth
     srcHeight = m_dibHeight
     
+    'If the caller expects the source image to be small, they may prevent us from enlarging the image to fit
+    Dim fitPrevented As Boolean
+    fitPrevented = False
+    
+    If doNotStretchIfSmaller Then
+        If (srcWidth < dstWidth) And (srcHeight < dstHeight) Then
+            fitPrevented = True
+            dstWidth = srcWidth
+            dstHeight = srcHeight
+        End If
+    End If
+    
     'Calculate the aspect ratio of this DIB and the target picture box
     Dim srcAspect As Double, dstAspect As Double
     If srcHeight > 0 Then srcAspect = srcWidth / srcHeight Else srcAspect = 1
@@ -1008,14 +1020,19 @@ Public Sub renderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
     Dim dWidth As Long, dHeight As Long, previewX As Long, previewY As Long
     convertAspectRatio srcWidth, srcHeight, dstWidth, dstHeight, dWidth, dHeight
     
-    If srcAspect > dstAspect Then
-        previewY = CLng((dstHeight - dHeight) / 2)
-        previewX = 0
+    If fitPrevented Then
+        previewX = (dstPicture.ScaleWidth - srcWidth) / 2
+        previewY = (dstPicture.ScaleHeight - srcHeight) / 2
     Else
-        previewX = CLng((dstWidth - dWidth) / 2)
-        previewY = 0
+        If srcAspect > dstAspect Then
+            previewY = CLng((dstHeight - dHeight) / 2)
+            previewX = 0
+        Else
+            previewX = CLng((dstWidth - dWidth) / 2)
+            previewY = 0
+        End If
     End If
-    
+        
     'We now branch according to active color management.  This is a hackish fix designed to work around some current
     ' performance issues with WCS; I'm working on an LittleCMS-based fix for the 7.0 release.
     If colorManagementMatters Then
@@ -1367,7 +1384,7 @@ Public Function WriteToFile(ByRef dstFilename As String, Optional ByVal toCompre
 End Function
 
 'Write this class's DIB information to a valid BMP file.
-Public Sub writeToBitmapFile(ByRef dstFilename As String)
+Public Sub WriteToBitmapFile(ByRef dstFilename As String)
 
     'First, make sure this DIB actually contains image data
     If Not Me.hasImage() Then Exit Sub

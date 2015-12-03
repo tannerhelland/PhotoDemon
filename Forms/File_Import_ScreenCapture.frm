@@ -25,6 +25,21 @@ Begin VB.Form FormScreenCapture
    ScaleWidth      =   873
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
+   Begin PhotoDemon.pdLabel lblMinimizedWarning 
+      Height          =   495
+      Left            =   6120
+      Top             =   5640
+      Visible         =   0   'False
+      Width           =   6855
+      _ExtentX        =   12091
+      _ExtentY        =   873
+      Alignment       =   2
+      Caption         =   ""
+      FontSize        =   9
+      ForeColor       =   2627816
+      Layout          =   1
+      UseCustomForeColor=   -1  'True
+   End
    Begin PhotoDemon.commandBarMini cmdBarMini 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -41,9 +56,9 @@ Begin VB.Form FormScreenCapture
       AutoRedraw      =   -1  'True
       BackColor       =   &H00FFFFFF&
       ForeColor       =   &H80000008&
-      Height          =   5415
+      Height          =   4935
       Left            =   6120
-      ScaleHeight     =   359
+      ScaleHeight     =   327
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   455
       TabIndex        =   6
@@ -179,11 +194,11 @@ Option Explicit
 Private Declare Function EnumWindows Lib "user32" (ByVal lpEnumFunc As Long, ByVal lParam As Long) As Long
 
 Private Sub chkChrome_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub chkMinimize_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBarMini_OKClick()
@@ -207,10 +222,18 @@ Private Sub cmdBarMini_OKClick()
 End Sub
 
 Private Sub Form_Load()
-    
+        
+    'Populate the "window is minimized" warning
+    lblMinimizedWarning.Caption = g_Language.TranslateMessage("This program is currently minimized.  Restore it to normal size for best results.")
+    If Not (g_Themer Is Nothing) Then
+        lblMinimizedWarning.ForeColor = g_Themer.GetThemeColor(PDTC_CANCEL_RED)
+    Else
+        lblMinimizedWarning.ForeColor = RGB(232, 24, 20)
+    End If
+        
     'Retrieve a list of all currently open programs.  Many thanks to Karl E Peterson for help with this topic, via:
     ' http://vb.mvps.org/articles/ap199902.pdf
-    fillListWithOpenApplications lstWindows
+    FillListWithOpenApplications lstWindows
     
     'Apply translations and visual themes
     MakeFormPretty Me
@@ -220,24 +243,24 @@ Private Sub Form_Load()
     Sleep 500
     
     'Render a preview of whichever item is currently selected
-    updatePreview
+    UpdatePreview
     
 End Sub
 
 'Given a list box, fill it with a list of open applications.  The .ItemData property will be filled with
 ' each window's hWnd.
-Private Function fillListWithOpenApplications(ByVal dstListbox As ListBox) As Long
+Private Function FillListWithOpenApplications(ByVal dstListbox As ListBox) As Long
     
     dstListbox.Clear
     Call EnumWindows(AddressOf Screen_Capture.EnumWindowsProc, dstListbox.hWnd)
-    fillListWithOpenApplications = dstListbox.ListCount
+    FillListWithOpenApplications = dstListbox.ListCount
     
 End Function
 
 Private Sub lstWindows_Click()
     
     If Not optSource(1) Then optSource(1) = True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -247,20 +270,21 @@ Private Sub optSource_Click(Index As Integer)
     If Index = 1 Then
         If lstWindows.ListIndex = -1 Then lstWindows.ListIndex = 0
     End If
-    updatePreview
+    
+    UpdatePreview
     
 End Sub
 
 'Live previews of the screen capture are now provided
-Private Sub updatePreview()
+Private Sub UpdatePreview()
 
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
 
     'Full screen capture was requested
     If optSource(0) Then
-        Screen_Capture.getDesktopAsDIB tmpDIB
-        tmpDIB.renderToPictureBox picPreview
+        Screen_Capture.GetDesktopAsDIB tmpDIB
+        tmpDIB.RenderToPictureBox picPreview
     
     'Specific window capture was requested
     Else
@@ -268,11 +292,13 @@ Private Sub updatePreview()
             
             'Make sure the function returns successfully; if a window is unloaded after the listbox has been
             ' filled, the function will (obviously) fail to capture the screen contents.
-            If Screen_Capture.GetHwndContentsAsDIB(tmpDIB, lstWindows.itemData(lstWindows.ListIndex), chkChrome) Then
-                tmpDIB.renderToPictureBox picPreview
+            Dim minimizeCheck As Boolean
+            If Screen_Capture.GetHwndContentsAsDIB(tmpDIB, lstWindows.itemData(lstWindows.ListIndex), chkChrome, minimizeCheck) Then
+                tmpDIB.RenderToPictureBox picPreview, , True
+                lblMinimizedWarning.Visible = minimizeCheck
             Else
                 lstWindows.RemoveItem lstWindows.ListIndex
-                displayScreenCaptureError
+                DisplayScreenCaptureError
             End If
             
         End If
@@ -282,7 +308,7 @@ Private Sub updatePreview()
 End Sub
 
 'If the user attempts to capture a window after it's been unloaded, warn them via this function
-Private Sub displayScreenCaptureError()
+Private Sub DisplayScreenCaptureError()
 
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
@@ -299,8 +325,10 @@ Private Sub displayScreenCaptureError()
     
     notifyFont.FastRenderText picPreview.ScaleWidth / 2, picPreview.ScaleHeight / 2 - notifyFont.GetHeightOfString("ABCjqy"), g_Language.TranslateMessage("Unfortunately, that program has exited.")
     notifyFont.FastRenderText picPreview.ScaleWidth / 2, picPreview.ScaleHeight / 2, g_Language.TranslateMessage("Please select another one.")
-    tmpDIB.renderToPictureBox picPreview
+    tmpDIB.RenderToPictureBox picPreview
     notifyFont.ReleaseFromDC
     Set tmpDIB = Nothing
-
+    
+    lblMinimizedWarning.Visible = False
+    
 End Sub
