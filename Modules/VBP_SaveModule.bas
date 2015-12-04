@@ -497,6 +497,11 @@ Public Function PhotoDemon_SaveImage(ByRef srcPDImage As pdImage, ByVal dstPath 
             beginSaveProcess
             updateMRU = SaveHDRImage(srcPDImage, dstPath)
         
+        'PSD/PSB
+        Case FIF_PSD
+            beginSaveProcess
+            updateMRU = SavePSDImage(srcPDImage, dstPath, outputColorDepth)
+        
         Case Else
         
             Message "Output format not recognized.  Save aborted.  Please use the Help -> Submit Bug Report menu item to report this incident."
@@ -646,7 +651,7 @@ Public Function SaveBMP(ByRef srcPDImage As pdImage, ByVal BMPPath As String, By
         Message "Saving %1 file...", sFileType
     
         'The DIB class is capable of doing this without any outside help.
-        tmpImageCopy.writeToBitmapFile BMPPath
+        tmpImageCopy.WriteToBitmapFile BMPPath
         
         Message "%1 save complete.", sFileType
         
@@ -1147,7 +1152,7 @@ Public Function SavePNGImage(ByRef srcPDImage As pdImage, ByVal PNGPath As Strin
     
         'If we are not saving to 8bpp, check to see if we are saving to some other smaller bit-depth.
         ' If we are, composite the image against a white background.
-        If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.compositeBackgroundColor 255, 255, 255
+        If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.CompositeBackgroundColor 255, 255, 255
     
         'Also, if PNGquant is enabled, use it for the transformation - and note that we need to reset the
         ' first PNG save (pre-PNGQuant) color depth to 24bpp
@@ -1472,7 +1477,7 @@ Public Function SaveTGAImage(ByRef srcPDImage As pdImage, ByVal TGAPath As Strin
     
         'If we are not saving to 8bpp, check to see if we are saving to some other smaller bit-depth.
         ' If we are, composite the image against a white background.
-        If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.compositeBackgroundColor 255, 255, 255
+        If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.CompositeBackgroundColor 255, 255, 255
     
     End If
     
@@ -1802,7 +1807,7 @@ Public Function SaveTIFImage(ByRef srcPDImage As pdImage, ByVal TIFPath As Strin
     
         'If we are not saving to 8bpp, check to see if we are saving to some other smaller bit-depth.
         ' If we are, composite the image against a white background.
-        If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.compositeBackgroundColor 255, 255, 255
+        If (tmpDIB.getDIBColorDepth = 32) And (outputColorDepth < 32) Then tmpDIB.CompositeBackgroundColor 255, 255, 255
     
     End If
     
@@ -2288,6 +2293,84 @@ SaveHDRError:
 
     SaveHDRImage = False
         
+End Function
+
+'Save to PSD (or PSB) format using the FreeImage library
+Public Function SavePSDImage(ByRef srcPDImage As pdImage, ByVal psdPath As String, ByVal outputColorDepth As Long, Optional ByVal psdParams As String = "") As Boolean
+    
+    On Error GoTo SavePSDError
+    
+    'Parse all possible PSD params (unused at present; may be added someday to allow control over compression and PSB format)
+    'Dim cParams As pdParamString
+    'Set cParams = New pdParamString
+    'If Len(psdParams) <> 0 Then cParams.setParamString psdParams
+    Dim compressRLE As Boolean, usePSBFormat As Boolean
+    compressRLE = True
+    usePSBFormat = False
+    
+    Dim sFileType As String
+    If usePSBFormat Then sFileType = "PSB" Else sFileType = "PSD"
+    
+    'Make sure we found the plug-in when we loaded the program
+    If Not g_ImageFormats.FreeImageEnabled Then
+        
+        PDMsgBox "The FreeImage interface plug-in (FreeImage.dll) was marked as missing or disabled upon program initialization." & vbCrLf & vbCrLf & "To enable support for this image format, please copy the FreeImage.dll file (downloadable from http://freeimage.sourceforge.net/download.html) into the plug-in directory and reload the program.", vbExclamation + vbOKOnly + vbApplicationModal, "FreeImage Interface Error"
+        Message "Save cannot be completed without FreeImage library."
+        SavePSDImage = False
+        Exit Function
+        
+    End If
+    
+    Message "Preparing %1 image...", sFileType
+    
+    'Retrieve a composited copy of the image, at full size
+    Dim tmpDIB As pdDIB
+    Set tmpDIB = New pdDIB
+    srcPDImage.getCompositedImage tmpDIB, False
+    
+    'If the output color depth is 24 but the current image is 32, composite the image against a white background
+    If (outputColorDepth < 32) And (tmpDIB.getDIBColorDepth = 32) Then tmpDIB.convertTo24bpp
+    
+    'Convert our current DIB to a FreeImage-type DIB
+    Dim fi_DIB As Long
+    fi_DIB = FreeImage_CreateFromDC(tmpDIB.getDIBDC)
+    
+    'Use that handle to export the image
+    If fi_DIB <> 0 Then
+        
+        Dim fi_Flags As Long
+        fi_Flags = 0&
+        If compressRLE Then fi_Flags = fi_Flags Or PSD_RLE Else fi_Flags = fi_Flags Or PSD_NONE
+        If usePSBFormat Then fi_Flags = fi_Flags Or PSD_PSB
+        
+        Dim fi_Check As Long
+        fi_Check = FreeImage_SaveEx(fi_DIB, psdPath, FIF_PSD, fi_Flags, outputColorDepth, , , , , True)
+        
+        If fi_Check Then
+            Message "%1 save complete.", sFileType
+        Else
+            
+            Message "%1 save failed (FreeImage_SaveEx silent fail). Please report this error using Help -> Submit Bug Report.", sFileType
+            SavePSDImage = False
+            Exit Function
+            
+        End If
+        
+    Else
+    
+        Message "%1 save failed (FreeImage returned blank handle). Please report this error using Help -> Submit Bug Report.", sFileType
+        SavePSDImage = False
+        Exit Function
+        
+    End If
+    
+    SavePSDImage = True
+    Exit Function
+    
+SavePSDError:
+
+    SavePSDImage = False
+    
 End Function
 
 'Given a source and destination DIB reference, fill the destination with a post-JPEG-compression of the original.  This

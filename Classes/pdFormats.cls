@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon Image Format Manager
 'Copyright 2012-2015 by Tanner Helland
 'Created: 18/November/12
-'Last updated: 28/November/14
-'Last update: HDR export added
+'Last updated: 04/December/15
+'Last update: provisional PSD export added
 '
 'This class is the new handler for PhotoDemon's vast image format support library.  Previously, individual functions
 ' (such as batch convert) had to manage specialized versions of this data, which made it extremely cumbersome to add
@@ -257,7 +257,7 @@ Public Sub generateInputFormats()
         
     If FreeImageEnabled Then
         addInputFormat "PPM - Portable Pixelmap", "*.ppm", FIF_PPM
-        addInputFormat "PSD - Adobe Photoshop", "*.psd", FIF_PSD
+        addInputFormat "PSD - Adobe Photoshop", "*.psd;*.psb", FIF_PSD
         addInputFormat "RAS - Sun Raster File", "*.ras", FIF_RAS
         addInputFormat "RAW, etc - Raw image data", "*.3fr;*.arw;*.bay;*.bmq;*.cap;*.cine;*.cr2;*.crw;*.cs1;*.dc2;*.dcr;*.dng;*.drf;*.dsc;*.erf;*.fff;*.ia;*.iiq;*.k25;*.kc2;*.kdc;*.mdc;*.mef;*.mos;*.mrw;*.nef;*.nrw;*.orf;*.pef;*.ptx;*.pxn;*.qtk;*.raf;*.raw;*.rdc;*.rw2;*.rwz;*.sr2;*.srf;*.sti", FIF_RAW
         addInputFormat "SGI/RGB/BW - Silicon Graphics Image", "*.sgi;*.rgb;*.rgba;*.bw;*.int;*.inta", FIF_SGI
@@ -344,9 +344,10 @@ Public Sub generateOutputFormats()
     
     If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "GIF - Graphics Interchange Format", "gif", FIF_GIF
     
-    If FreeImageEnabled Then addOutputFormat "HDR - High Dynamic Range", "hdr", FIF_HDR
-    
-    If FreeImageEnabled Then addOutputFormat "JP2 - JPEG 2000", "jp2", FIF_JP2
+    If FreeImageEnabled Then
+        addOutputFormat "HDR - High Dynamic Range", "hdr", FIF_HDR
+        addOutputFormat "JP2 - JPEG 2000", "jp2", FIF_JP2
+    End If
         
     If FreeImageEnabled Or GDIPlusEnabled Then addOutputFormat "JPG - Joint Photographic Experts Group", "jpg", FIF_JPEG
         
@@ -358,6 +359,7 @@ Public Sub generateOutputFormats()
         
     If FreeImageEnabled Then
         addOutputFormat "PPM - Portable Pixel Map", "ppm", FIF_PPM
+        addOutputFormat "PSD - Photoshop Document", "psd", FIF_PSD
         addOutputFormat "TGA - Truevision (TARGA)", "tga", FIF_TARGA
     End If
     
@@ -627,7 +629,30 @@ Public Function isColorDepthSupported(ByVal outputFIF As Long, ByVal desiredColo
             Case FIF_PPM
             
                 If desiredColorDepth = 24 Then isColorDepthSupported = True Else isColorDepthSupported = False
-                
+            
+            'PSD (Photoshop document)
+            Case FIF_PSD
+                    
+                Select Case desiredColorDepth
+        
+                    Case 1
+                        isColorDepthSupported = True
+                    Case 4
+                        isColorDepthSupported = True
+                    Case 8
+                        isColorDepthSupported = True
+                    Case 24
+                        isColorDepthSupported = True
+                    Case 32
+                        isColorDepthSupported = True
+                    
+                    'Higher bit-depths may be supported, but I'm not enabling them until high bit-depth output is
+                    ' better supported throughout all of PD.
+                    Case Else
+                        isColorDepthSupported = False
+                        
+                End Select
+            
             'TGA (Targa)
             Case FIF_TARGA
             
@@ -855,6 +880,21 @@ Public Function getClosestColorDepth(ByVal outputFIF As Long, ByVal desiredColor
         Case FIF_PPM
             getClosestColorDepth = 24
         
+        'PSD supports all available color depths
+        Case FIF_PSD
+        
+            If desiredColorDepth <= 1 Then
+                getClosestColorDepth = 1
+            ElseIf desiredColorDepth <= 4 Then
+                getClosestColorDepth = 4
+            ElseIf desiredColorDepth <= 8 Then
+                getClosestColorDepth = 8
+            ElseIf desiredColorDepth <= 24 Then
+                getClosestColorDepth = 24
+            Else
+                getClosestColorDepth = 32
+            End If
+        
         'TGA supports 8/24/32
         Case FIF_TARGA
             If desiredColorDepth <= 8 Then
@@ -923,6 +963,9 @@ Friend Function getIdealMetadataFormatFromFIF(ByVal outputFIF As Long) As PD_MET
         
         Case FIF_PPM
             getIdealMetadataFormatFromFIF = PDMF_NONE
+            
+        Case FIF_PSD
+            getIdealMetadataFormatFromFIF = PDMF_XMP
         
         Case FIF_TARGA
             getIdealMetadataFormatFromFIF = PDMF_NONE
@@ -973,6 +1016,9 @@ Public Function isExifAllowedForFIF(ByVal outputFIF As Long) As Boolean
         
         Case FIF_PPM
             isExifAllowedForFIF = False
+        
+        Case FIF_PSD
+            isExifAllowedForFIF = True
         
         Case FIF_TARGA
             isExifAllowedForFIF = False
