@@ -1210,7 +1210,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 ShowPDDialog vbModal, FormRechannel
             Else
-                FormRechannel.RechannelImage cParams.GetByte(1)
+                FormRechannel.RechannelImage cXMLParams.getParamString
             End If
             
         Case "Shift colors (left)"
