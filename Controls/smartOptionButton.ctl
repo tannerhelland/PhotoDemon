@@ -18,6 +18,7 @@ Begin VB.UserControl smartOptionButton
       Strikethrough   =   0   'False
    EndProperty
    ForeColor       =   &H00404040&
+   HasDC           =   0   'False
    MousePointer    =   99  'Custom
    ScaleHeight     =   37
    ScaleMode       =   3  'Pixel
