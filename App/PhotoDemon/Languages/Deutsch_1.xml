@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.111</langversion>
+<langversion>6.7.113</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -4699,6 +4699,11 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 </phrase>
 
 <phrase>
+<original>Range filter</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Trace contour</original>
 <translation>Konturen nachzeichnen</translation>
 </phrase>
@@ -5724,7 +5729,7 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 559 phrases. 176 were duplicates of existing phrases, so only 383 new phrases were written to file. -->
+<!-- MainWindow.frm contains 561 phrases. 177 were duplicates of existing phrases, so only 384 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -5909,6 +5914,31 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 <!-- BEGIN text for Adjustments_Channel_Rechannel.frm (FormRechannel) -->
 
 <phrase>
+<original>color space</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>channel</original>
+<translation>Kanal</translation>
+</phrase>
+
+<phrase>
+<original>RGB</original>
+<translation>RGB</translation>
+</phrase>
+
+<phrase>
+<original>CMY</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>CMYK</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>cyan</original>
 <translation>cyan</translation>
 </phrase>
@@ -5929,31 +5959,11 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 </phrase>
 
 <phrase>
-<original>CMYK channels</original>
-<translation>CMYK-Kanal</translation>
-</phrase>
-
-<phrase>
-<original>CMY channels</original>
-<translation>CMY-Kanal</translation>
-</phrase>
-
-<phrase>
-<original>RGB channels</original>
-<translation>RGB-Kanal</translation>
-</phrase>
-
-<phrase>
-<original>black</original>
-<translation>schwarz</translation>
-</phrase>
-
-<phrase>
 <original>Isolating the %1 channel</original>
 <translation>Den %1-Kanal isolieren</translation>
 </phrase>
 
-<!-- Adjustments_Channel_Rechannel.frm contains 36 phrases. 27 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Adjustments_Channel_Rechannel.frm contains 32 phrases. 22 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Channel_Rechannel.frm-->
 
@@ -6208,11 +6218,6 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 <!-- BEGIN text for Adjustments_Curves.frm (FormCurves) -->
 
 <phrase>
-<original>channel</original>
-<translation>Kanal</translation>
-</phrase>
-
-<phrase>
 <original>original curve (diagonal line)</original>
 <translation>Originalkurve (diagonale Gerade)</translation>
 </phrase>
@@ -6250,11 +6255,6 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 <phrase>
 <original>right-click to remove nodes</original>
 <translation>Rechtsklick, um Knoten zu entfernen</translation>
-</phrase>
-
-<phrase>
-<original>RGB</original>
-<translation>RGB</translation>
 </phrase>
 
 <phrase>
@@ -6297,7 +6297,7 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 <translation>Ausgabe</translation>
 </phrase>
 
-<!-- Adjustments_Curves.frm contains 31 phrases. 13 were duplicates of existing phrases, so only 18 new phrases were written to file. -->
+<!-- Adjustments_Curves.frm contains 31 phrases. 15 were duplicates of existing phrases, so only 16 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Curves.frm-->
 
@@ -7737,11 +7737,6 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 </phrase>
 
 <phrase>
-<original>%1 has unsaved changes.  What would you like to do?</original>
-<translation>%1 hat ungespeicherte Änderungen. Was möchten Sie tun?</translation>
-</phrase>
-
-<phrase>
 <original>NOTE: if you click 'Save', PhotoDemon will save this image using its current file name.
 
 If you want to save it with a different file name, please select 'Cancel', then use the File -> Save As menu item.</original>
@@ -7766,6 +7761,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>This image</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>%1 has unsaved changes.  What would you like to do?</original>
+<translation>%1 hat ungespeicherte Änderungen. Was möchten Sie tun?</translation>
+</phrase>
+
+<phrase>
 <original>Repeat this action for both unsaved images</original>
 <translation>Wiederholen Sie das für beide ungespeicherten Bilder</translation>
 </phrase>
@@ -7775,7 +7780,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Wiederholen Sie das für alle ungespeicherten Bilder (%1 insgesamt)</translation>
 </phrase>
 
-<!-- Dialog_UnsavedChanges.frm contains 16 phrases. 4 were duplicates of existing phrases, so only 12 new phrases were written to file. -->
+<!-- Dialog_UnsavedChanges.frm contains 17 phrases. 4 were duplicates of existing phrases, so only 13 new phrases were written to file. -->
 
 <!-- END text for Dialog_UnsavedChanges.frm-->
 
@@ -8091,11 +8096,21 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Artistic_ModernArt.frm (FormModernArt) -->
 
 <phrase>
+<original>horizontal strength</original>
+<translation>horizontale Stärke</translation>
+</phrase>
+
+<phrase>
+<original>vertical strength</original>
+<translation>vertikale Stärke</translation>
+</phrase>
+
+<phrase>
 <original>Applying modern art techniques</original>
 <translation>Verfahren der modernen Kunst</translation>
 </phrase>
 
-<!-- Effects_Artistic_ModernArt.frm contains 4 phrases. 3 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Artistic_ModernArt.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ModernArt.frm-->
 
@@ -8652,21 +8667,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Distort_Squish.frm (FormSquish) -->
 
 <phrase>
-<original>horizontal strength</original>
-<translation>horizontale Stärke</translation>
-</phrase>
-
-<phrase>
-<original>vertical strength</original>
-<translation>vertikale Stärke</translation>
-</phrase>
-
-<phrase>
 <original>Squeezing image</original>
 <translation>Bild quetschen</translation>
 </phrase>
 
-<!-- Effects_Distort_Squish.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Distort_Squish.frm contains 7 phrases. 6 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Distort_Squish.frm-->
 
@@ -10773,6 +10778,11 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 </phrase>
 
 <phrase>
+<original>This program is currently minimized.  Restore it to normal size for best results.</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Unfortunately, that program has exited.</original>
 <translation>Leider wurde dieses Programm beendet.</translation>
 </phrase>
@@ -10782,7 +10792,7 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <translation>Bitte wählen Sie einen anderen.</translation>
 </phrase>
 
-<!-- File_Import_ScreenCapture.frm contains 15 phrases. 5 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+<!-- File_Import_ScreenCapture.frm contains 17 phrases. 6 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for File_Import_ScreenCapture.frm-->
 
@@ -10796,6 +10806,11 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <phrase>
 <original>transparent</original>
 <translation>transparent</translation>
+</phrase>
+
+<phrase>
+<original>black</original>
+<translation>schwarz</translation>
 </phrase>
 
 <phrase>
@@ -10813,7 +10828,7 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 <translation>Hintergrund</translation>
 </phrase>
 
-<!-- File_New.frm contains 7 phrases. 2 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- File_New.frm contains 7 phrases.  One was a duplicate of an existing phrase, so only 6 new phrases were written to file. -->
 
 <!-- END text for File_New.frm-->
 
@@ -14403,12 +14418,23 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- END text for pdClipboardMain.cls-->
 
+<!-- BEGIN text for Effects_Edge_Range.frm (FormRangeFilter) -->
+
+<phrase>
+<original>Searching each pixel range for edges</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Edge_Range.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Effects_Edge_Range.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2476</phrasecount>
+<phrasecount>2480</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4246 phrases. -->
-<!-- 1770 are duplicates, so only 2476 unique phrases have been written to file. -->
-<!-- These 2476 phrases contain approximately 13317 total words. -->
+<!-- As of this build, PhotoDemon contains 4253 phrases. -->
+<!-- 1773 are duplicates, so only 2480 unique phrases have been written to file. -->
+<!-- These 2480 phrases contain approximately 13339 total words. -->
 
 </pdData>
