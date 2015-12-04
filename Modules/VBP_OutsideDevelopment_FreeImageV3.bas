@@ -577,6 +577,12 @@ Public Const PNM_SAVE_ASCII As Long = 1              ' if set, the writer saves 
 Public Const PSD_DEFAULT As Long = 0
 Public Const PSD_CMYK As Long = 1                    ' reads tags for separated CMYK (default is conversion to RGB)
 Public Const PSD_LAB As Long = 2                     ' reads tags for CIELab (default is conversion to RGB)
+
+'Added by Tanner on 04 Dec '15
+Public Const PSD_NONE As Long = &H100   ' save without any compression
+Public Const PSD_RLE  As Long = &H200   ' save using RLE compression
+Public Const PSD_PSB  As Long = &H2000  ' save using Adobe Large Document Format (use | to combine with other save flags)
+
 Public Const RAS_DEFAULT As Long = 0
 Public Const RAW_DEFAULT As Long = 0                 ' load the file as linear RGB 48-bit
 Public Const RAW_PREVIEW As Long = 1                 ' try to load the embedded JPEG preview with included Exif Data or default to RGB 24-bit
