@@ -1414,13 +1414,6 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 FormKuwahara.Kuwahara cParams.GetLong(1)
             End If
         
-        Case "Mean shift"
-            If showDialog Then
-                ShowPDDialog vbModal, FormMeanShift
-            Else
-                FormMeanShift.ApplyMeanShiftFilter cParams.GetLong(1), cParams.GetLong(2)
-            End If
-        
         Case "Grid blur"
             FilterGridBlur
             
@@ -1698,6 +1691,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                     
             End If
         
+        Case "Mean shift"
+            If showDialog Then
+                ShowPDDialog vbModal, FormMeanShift
+            Else
+                FormMeanShift.ApplyMeanShiftFilter cXMLParams.getParamString
+            End If
+            
         Case "Median"
             If showDialog Then
                 FormMedian.showMedianDialog 50
