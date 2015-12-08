@@ -430,3 +430,13 @@ Public Type PD_CLIPBOARD_INFO
     pdci_OriginalFormat As PredefinedClipboardFormatConstants
     pdci_DIBv5AlphaMask As Long
 End Type
+
+'When iterating through pixels via pdPixelIterator, PD now supports a variety of region shapes.
+Public Enum PD_PIXEL_REGION_SHAPE
+    PDPRS_Rectangle = 0
+    PDPRS_Circle = 1
+End Enum
+
+#If False Then
+    Private Const PDPRS_Rectangle = 0, PDPRS_Circle = 1
+#End If

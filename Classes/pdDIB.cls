@@ -154,7 +154,7 @@ Private m_dibWidth As Long, m_dibHeight As Long
 Private m_dibArrayWidth As Long
 
 'The DIB's color depth (should only ever be 24 or 32)
-Private m_dibColorDepth As Long
+Private m_DibColorDepth As Long
 
 'Used when writing/reading DIB data to/from a file
 Private Const DIB_IDENTIFIER As Long = &H726C4450  'PDlr
@@ -302,7 +302,7 @@ Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad 
         CopyMemory ByVal VarPtrArray(tmpData()), VarPtr(tSA), 4&
         
         Dim QuickX As Long
-        QuickX = x * (m_dibColorDepth \ 8)
+        QuickX = x * (m_DibColorDepth \ 8)
         
         'Failsafe bounds check
         If ((QuickX + 2) < m_dibArrayWidth) Then
@@ -311,7 +311,7 @@ Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad 
                 .Red = tmpData(QuickX + 2, y)
                 .Green = tmpData(QuickX + 1, y)
                 .Blue = tmpData(QuickX, y)
-                If m_dibColorDepth = 32 Then .Alpha = tmpData(QuickX + 3, y)
+                If m_DibColorDepth = 32 Then .Alpha = tmpData(QuickX + 3, y)
             End With
             
         End If
@@ -330,7 +330,7 @@ End Function
 Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal forceColor As Boolean = True, Optional ByVal newBackgroundColor As Long = 16777215)
 
     'Make sure this DIB is 32bpp. If it isn't, running this function is pointless.
-    If m_dibColorDepth = 32 Then
+    If m_DibColorDepth = 32 Then
 
         'Make sure this DIB isn't empty
         If (m_dibDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
@@ -424,7 +424,7 @@ End Sub
 Public Sub ForceNewAlpha(ByVal newAlpha As Byte)
 
     'Make sure this DIB is 32bpp. If it isn't, running this function is pointless.
-    If m_dibColorDepth = 32 Then
+    If m_DibColorDepth = 32 Then
 
         'Make sure this DIB isn't empty
         If (m_dibDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
@@ -464,7 +464,7 @@ End Function
 
 'Return this DIB's color depth
 Public Function getDIBColorDepth() As Long
-    getDIBColorDepth = m_dibColorDepth
+    getDIBColorDepth = m_DibColorDepth
 End Function
 
 'Return this DIB's array width
@@ -521,7 +521,7 @@ Public Function createFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
         If (newWidth = srcDIB.getDIBWidth) And (newHeight = srcDIB.getDIBHeight) Then
             
             'If we are already at the same size and bit-depth as the source image, we can use our existing DIB and DC as-is.
-            If (newWidth = m_dibWidth) And (newHeight = m_dibHeight) And (srcDIB.getDIBColorDepth = m_dibColorDepth) Then
+            If (newWidth = m_dibWidth) And (newHeight = m_dibHeight) And (srcDIB.getDIBColorDepth = m_DibColorDepth) Then
             
                 'Copy the image data without modification
                 BitBlt m_dibDC, 0, 0, m_dibWidth, m_dibHeight, srcDIB.getDIBDC, 0, 0, vbSrcCopy
@@ -603,7 +603,7 @@ End Function
 Public Function convertTo24bpp(Optional ByVal newBackColor As Long = vbWhite) As Boolean
 
     'Make sure this DIB is 32bpp. If it isn't, running this function pointless.
-    If m_dibColorDepth = 32 Then
+    If m_DibColorDepth = 32 Then
 
         'Make sure this DIB isn't empty
         If (m_dibDC <> 0) And (m_dibWidth <> 0) And (m_dibHeight <> 0) Then
@@ -776,7 +776,7 @@ Public Function CreateFromPicture(ByRef srcPicture As StdPicture, Optional force
                     
                     'Finally, if the copied image contains an alpha channel (icons, PNGs, etc), it will be set against a
                     ' black background. We typically want the background to be white, so perform a composite if requested.
-                    If forceWhiteBackground And (m_dibColorDepth = 32) Then CompositeBackgroundColor
+                    If forceWhiteBackground And (m_DibColorDepth = 32) Then CompositeBackgroundColor
                     
                     'Success!
                     CreateFromPicture = True
@@ -818,7 +818,7 @@ Public Function createBlank(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     If iHeight <= 0 Then iHeight = 1
     
     'Remember the requested color depth, width, and height
-    m_dibColorDepth = colorDepth
+    m_DibColorDepth = colorDepth
     m_dibWidth = iWidth
     m_dibHeight = iHeight
     
@@ -1043,7 +1043,7 @@ Public Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
         tmpDIB.createBlank dWidth, dHeight, 24
         
         'For 24bpp images, simply copy over the current image data
-        If m_dibColorDepth = 24 Then
+        If m_DibColorDepth = 24 Then
         
             'If the target area is smaller than the DIB, request halftoning
             If (dstPicture.ScaleWidth < m_dibWidth) Or (dstPicture.ScaleHeight < m_dibHeight) Then
@@ -1071,7 +1071,7 @@ Public Sub RenderToPictureBox(ByRef dstPicture As PictureBox, Optional ByVal col
     Else
         
         'For 24bpp images, simply copy over the current image data
-        If m_dibColorDepth = 24 Then
+        If m_DibColorDepth = 24 Then
         
             'If the target area is smaller than the DIB, request halftoning
             If (dstPicture.ScaleWidth < m_dibWidth) Or (dstPicture.ScaleHeight < m_dibHeight) Then
@@ -1395,7 +1395,7 @@ Public Sub WriteToBitmapFile(ByRef dstFilename As String)
     If Me.getDIBColorDepth = 32 Then
         slWidth = Me.getDIBArrayWidth
     Else
-        slWidth = ((m_dibWidth * m_dibColorDepth + 31) \ 32) * 4
+        slWidth = ((m_dibWidth * m_DibColorDepth + 31) \ 32) * 4
     End If
     
     'A valid bitmap header consists of two parts: a file header, and an image header.
@@ -1551,7 +1551,7 @@ End Sub
 Public Sub CompositeBackgroundColor(Optional ByVal newR As Byte = 255, Optional ByVal newG As Byte = 255, Optional ByVal newB As Byte = 255)
 
     'This is only useful for images with alpha channels. Exit if no alpha channel is present.
-    If m_dibColorDepth <> 32 Then Exit Sub
+    If m_DibColorDepth <> 32 Then Exit Sub
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Compositing DIB of size " & m_dibWidth & "x" & m_dibHeight & ".  Alpha premultiplication = " & m_IsAlphaPremultiplied & "."
@@ -1657,7 +1657,7 @@ End Function
 Public Sub copyAlphaFromExistingDIB(ByRef srcDIB As pdDIB)
 
     'This is only useful for images with alpha channels. Exit if no alpha channel is present.
-    If m_dibColorDepth <> 32 Then convertTo32bpp
+    If m_DibColorDepth <> 32 Then convertTo32bpp
 
     'Prepare a SafeArray that points to our own DIB data
     Dim iData() As Byte
@@ -1697,11 +1697,11 @@ End Sub
 Public Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Boolean = False, Optional ByVal ignoreEmbeddedValue As Boolean = False)
 
     'This function doesn't matter if the image isn't 32bpp
-    If m_dibColorDepth <> 32 Then Exit Sub
+    If m_DibColorDepth <> 32 Then Exit Sub
     
     'If alpha premultiplication already matches the requested state, exit now
     If (m_IsAlphaPremultiplied = applyPremultiplication) And (Not ignoreEmbeddedValue) Then
-        Debug.Print "WARNING! Alpha premultiplication = " & applyPremultiplication & " is pointless, as image is already in that state.  (" & m_dibWidth & "x" & m_dibHeight & "x" & m_dibColorDepth & ")  Abandoning request."
+        Debug.Print "WARNING! Alpha premultiplication = " & applyPremultiplication & " is pointless, as image is already in that state.  (" & m_dibWidth & "x" & m_dibHeight & "x" & m_DibColorDepth & ")  Abandoning request."
         Exit Sub
     End If
     
@@ -1835,7 +1835,7 @@ Public Sub alphaBlendToDC(ByVal dstDC As Long, Optional ByVal customAlpha As Lon
     
     Dim bfParams As Long
     
-    If m_dibColorDepth = 32 Then
+    If m_DibColorDepth = 32 Then
         
         'Use the image's current alpha channel, and blend it with the supplied customAlpha value
         bfParams = customAlpha * &H10000 Or &H1000000
@@ -1859,7 +1859,7 @@ Public Sub alphaBlendToDCEx(ByVal dstDC As Long, ByVal dstX As Long, ByVal dstY 
     
     Dim bfParams As Long
     
-    If m_dibColorDepth = 32 Then
+    If m_DibColorDepth = 32 Then
     
         'Use the image's current alpha channel, and blend it with the supplied customAlpha value
         bfParams = customAlpha * &H10000 Or &H1000000

@@ -44,7 +44,7 @@ Begin VB.Form FormMeanShift
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   1920
@@ -57,7 +57,7 @@ Begin VB.Form FormMeanShift
       Value           =   5
    End
    Begin PhotoDemon.sliderTextCombo sltThreshold 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   3000
@@ -79,17 +79,16 @@ Attribute VB_Exposed = False
 'Mean Shift Effect Tool
 'Copyright 2015-2015 by Tanner Helland
 'Created: 02/October/15
-'Last updated: 02/October/15
-'Last update: initial build
+'Last updated: 08/December/15
+'Last update: convert to the new pdPixelIterator class
 '
 'Mean shift filter, heavily optimized.  Wiki has a nice summary of this technique:
 ' https://en.wikipedia.org/wiki/Mean_shift
 '
-'Note that an "accumulation" technique is used instead of the standard sliding window mechanism.
-' (See http://web.archive.org/web/20060718054020/http://www.acm.uiuc.edu/siggraph/workshops/wjarosz_convolution_2001.pdf)
-' This allows the algorithm to perform pretty well, despite being written in pure VB.
+'Note that an "accumulation" technique is used instead of the standard sliding window mechanism.  The pdPixelIterator
+' class handles this portion of the code, so all this filter has to do is process the resulting histograms.
 '
-'That said, it is still unfortunately slow in the IDE.  I STRONGLY recommend compiling the project before using.
+'As with all area-based filters, this function will be slow inside the IDE.  I STRONGLY recommend compiling before using.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -98,11 +97,16 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Apply a mean-shift filter to the active image.
-'Inputs: - radius of the search area (min 1, no real max - but the scroll bar is maxed at 200 presently)
-'        - threshold of valid mean contributors; for example, a threshold of "10" means that a color must be
-'           within +/- 10 in order to contribute to the mean for a given pixel
-Public Sub ApplyMeanShiftFilter(ByVal mRadius As Long, ByVal mThreshold As Long, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+    
+    'Parse out the parameter list
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.setParamString parameterList
+    
+    Dim mRadius As Long, mThreshold As Long
+    mRadius = cParams.GetLong("radius", 1&)
+    mThreshold = cParams.GetLong("threshold", 0&)
     
     If Not toPreview Then Message "Applying mean shift filter..."
     
@@ -117,13 +121,6 @@ Public Sub ApplyMeanShiftFilter(ByVal mRadius As Long, ByVal mThreshold As Long,
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
     srcDIB.createFromExistingDIB workingDIB
-    
-    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent medianred pixel values from spreading across the image as we go.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
         
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
@@ -161,325 +158,153 @@ Public Sub ApplyMeanShiftFilter(ByVal mRadius As Long, ByVal mThreshold As Long,
     'The number of pixels in the current median box are tracked dynamically.
     Dim numOfPixels As Long
     numOfPixels = 0
-            
+    
     'We use an optimized histogram technique for calculating means, which means a lot of intermediate values are required
-    Dim rValues(0 To 255) As Long, gValues(0 To 255) As Long, bValues(0 To 255) As Long
-    Dim lbX As Long, lbY As Long, ubX As Long, ubY As Long
-    Dim obuX As Boolean, obuY As Boolean, oblY As Boolean
-    Dim startY As Long, stopY As Long, yStep As Long
-    Dim i As Long, j As Long
+    Dim rValues() As Long, gValues() As Long, bValues() As Long, aValues() As Long
+    ReDim rValues(0 To 255) As Long
+    ReDim gValues(0 To 255) As Long
+    ReDim bValues(0 To 255) As Long
+    ReDim aValues(0 To 255) As Long
+    
     Dim r As Long, g As Long, b As Long
     Dim lColor As Long, hColor As Long, cCount As Long
+    Dim startY As Long, stopY As Long, yStep As Long, i As Long
     
-    Dim atBottom As Boolean
-    atBottom = True
+    Dim directionDown As Boolean
+    directionDown = True
     
-    'Generate an initial array of median data for the first pixel
-    For x = initX To initX + mRadius - 1
-        QuickVal = x * qvDepth
-    For y = initY To initY + mRadius
+    'Prep the pixel iterator
+    Dim cPixelIterator As pdPixelIterator
+    Set cPixelIterator = New pdPixelIterator
     
-        r = srcImageData(QuickVal + 2, y)
-        g = srcImageData(QuickVal + 1, y)
-        b = srcImageData(QuickVal, y)
+    If cPixelIterator.InitializeIterator(srcDIB, mRadius, mRadius, PDPRS_Rectangle) Then
+    
+        numOfPixels = cPixelIterator.LockTargetHistograms(rValues, gValues, bValues, aValues, False)
         
-        rValues(r) = rValues(r) + 1
-        gValues(g) = gValues(g) + 1
-        bValues(b) = bValues(b) + 1
-        
-    Next y
-    Next x
-                
-    'Loop through each pixel in the image, tallying median values as we go
-    For x = initX To finalX
+        'Loop through each pixel in the image, applying the filter as we go
+        For x = initX To finalX
             
-        QuickVal = x * qvDepth
-        
-        'Determine the bounds of the current median box in the X direction
-        lbX = x - mRadius
-        If lbX < 0 Then lbX = 0
-        
-        ubX = x + mRadius
-        If ubX > finalX Then
-            obuX = True
-            ubX = finalX
-        Else
-            obuX = False
-        End If
-                
-        'As part of my accumulation algorithm, I swap the inner loop's direction with each iteration.
-        ' Set y-related loop variables depending on the direction of the next cycle.
-        If atBottom Then
-            lbY = 0
-            ubY = mRadius
-        Else
-            lbY = finalY - mRadius
-            ubY = finalY
-        End If
-        
-        'Remove trailing values from the median box if they lie outside the processing radius
-        If lbX > 0 Then
-        
-            QuickValInner = (lbX - 1) * qvDepth
-        
-            For j = lbY To ubY
-                r = srcImageData(QuickValInner + 2, j)
-                g = srcImageData(QuickValInner + 1, j)
-                b = srcImageData(QuickValInner, j)
-                rValues(r) = rValues(r) - 1
-                gValues(g) = gValues(g) - 1
-                bValues(b) = bValues(b) - 1
-            Next j
-        
-        End If
-        
-        'Add leading values to the median box if they lie inside the processing radius
-        If Not obuX Then
-        
-            QuickValInner = ubX * qvDepth
+            QuickVal = x * qvDepth
             
-            For j = lbY To ubY
-                r = srcImageData(QuickValInner + 2, j)
-                g = srcImageData(QuickValInner + 1, j)
-                b = srcImageData(QuickValInner, j)
-                rValues(r) = rValues(r) + 1
-                gValues(g) = gValues(g) + 1
-                bValues(b) = bValues(b) + 1
-            Next j
-            
-        End If
-        
-        'Depending on the direction we are moving, remove a line of pixels from the median box
-        ' (because the interior loop will add it back in).
-        If atBottom Then
-        
-            For i = lbX To ubX
-                QuickValInner = i * qvDepth
-                r = srcImageData(QuickValInner + 2, mRadius)
-                g = srcImageData(QuickValInner + 1, mRadius)
-                b = srcImageData(QuickValInner, mRadius)
-                rValues(r) = rValues(r) - 1
-                gValues(g) = gValues(g) - 1
-                bValues(b) = bValues(b) - 1
-            Next i
-       
-        Else
-       
-            QuickY = finalY - mRadius
-       
-            For i = lbX To ubX
-                QuickValInner = i * qvDepth
-                r = srcImageData(QuickValInner + 2, QuickY)
-                g = srcImageData(QuickValInner + 1, QuickY)
-                b = srcImageData(QuickValInner, QuickY)
-                rValues(r) = rValues(r) - 1
-                gValues(g) = gValues(g) - 1
-                bValues(b) = bValues(b) - 1
-            Next i
-       
-        End If
-        
-        'Based on the direction we're traveling, reverse the interior loop boundaries as necessary.
-        If atBottom Then
-            startY = 0
-            stopY = finalY
-            yStep = 1
-        Else
-            startY = finalY
-            stopY = 0
-            yStep = -1
-        End If
-            
-    'Process the next column.  This step is pretty much identical to the row steps above (but in a vertical direction, obviously)
-    For y = startY To stopY Step yStep
-            
-        'If we are at the bottom and moving up, we will REMOVE rows from the bottom and ADD them at the top.
-        'If we are at the top and moving down, we will REMOVE rows from the top and ADD them at the bottom.
-        'As such, there are two copies of this function, one per possible direction.
-        If atBottom Then
-        
-            'Calculate bounds
-            lbY = y - mRadius
-            If lbY < 0 Then lbY = 0
-            
-            ubY = y + mRadius
-            If ubY > finalY Then
-                obuY = True
-                ubY = finalY
+            'Based on the direction we're traveling, reverse the interior loop boundaries as necessary.
+            If directionDown Then
+                startY = initY
+                stopY = finalY
+                yStep = 1
             Else
-                obuY = False
-            End If
-                                
-            'Remove trailing values from the box
-            If lbY > 0 Then
-            
-                QuickY = lbY - 1
-            
-                For i = lbX To ubX
-                    QuickValInner = i * qvDepth
-                    r = srcImageData(QuickValInner + 2, QuickY)
-                    g = srcImageData(QuickValInner + 1, QuickY)
-                    b = srcImageData(QuickValInner, QuickY)
-                    rValues(r) = rValues(r) - 1
-                    gValues(g) = gValues(g) - 1
-                    bValues(b) = bValues(b) - 1
-                Next i
-                        
-            End If
-                    
-            'Add leading values
-            If Not obuY Then
-            
-                For i = lbX To ubX
-                    QuickValInner = i * qvDepth
-                    r = srcImageData(QuickValInner + 2, ubY)
-                    g = srcImageData(QuickValInner + 1, ubY)
-                    b = srcImageData(QuickValInner, ubY)
-                    rValues(r) = rValues(r) + 1
-                    gValues(g) = gValues(g) + 1
-                    bValues(b) = bValues(b) + 1
-                Next i
-            
+                startY = finalY
+                stopY = initY
+                yStep = -1
             End If
             
-        'The exact same code as above, but in the opposite direction
-        Else
-        
-            lbY = y - mRadius
-            If lbY < 0 Then
-                oblY = True
-                lbY = 0
-            Else
-                oblY = False
-            End If
+            'Process the next column.  This step is pretty much identical to the row steps above (but in a vertical direction, obviously)
+            For y = startY To stopY Step yStep
             
-            ubY = y + mRadius
-            If ubY > finalY Then ubY = finalY
-                                
-            If ubY < finalY Then
-            
-                QuickY = ubY + 1
-            
-                For i = lbX To ubX
-                    QuickValInner = i * qvDepth
-                    r = srcImageData(QuickValInner + 2, QuickY)
-                    g = srcImageData(QuickValInner + 1, QuickY)
-                    b = srcImageData(QuickValInner, QuickY)
-                    rValues(r) = rValues(r) - 1
-                    gValues(g) = gValues(g) - 1
-                    bValues(b) = bValues(b) - 1
-                Next i
-                        
-            End If
-                    
-            If Not oblY Then
-            
-                For i = lbX To ubX
-                    QuickValInner = i * qvDepth
-                    r = srcImageData(QuickValInner + 2, lbY)
-                    g = srcImageData(QuickValInner + 1, lbY)
-                    b = srcImageData(QuickValInner, lbY)
-                    rValues(r) = rValues(r) + 1
-                    gValues(g) = gValues(g) + 1
-                    bValues(b) = bValues(b) + 1
-                Next i
-            
-            End If
+                'With a local histogram successfully built for the area surrounding this pixel, we now need to find the
+                ' shifted mean value.  We do this by averaging only the pixels whose color is within the caller-specified
+                ' threshold of this pixel.  This limits the average to similar pixels only.
         
-        End If
-        
-        'With a local histogram successfully built for the area surrounding this pixel, we now need to find the
-        ' shifted mean value.  We do this by averaging only the pixels whose color is within the caller-specified
-        ' threshold of this pixel.  This limits the average to similar pixels only.
-        
-        'Red
-        
-        'Start by finding low/high bounds
-        lColor = srcImageData(QuickVal + 2, y)
-        hColor = lColor
-        
-        lColor = lColor - mThreshold
-        If lColor < 0 Then lColor = 0
-        hColor = hColor + mThreshold
-        If hColor > 255 Then hColor = 255
-        
-        'Search from low to high, tallying colors as we go
-        r = 0: cCount = 0
-        For i = lColor To hColor
-            r = r + i * rValues(i)
-            cCount = cCount + rValues(i)
-        Next i
+                'Red
                 
-        'Take the mean of this range of values
-        r = r / cCount
-        
-        'Repeat for green
-        lColor = srcImageData(QuickVal + 1, y)
-        hColor = lColor
-        
-        lColor = lColor - mThreshold
-        If lColor < 0 Then lColor = 0
-        hColor = hColor + mThreshold
-        If hColor > 255 Then hColor = 255
-        
-        g = 0: cCount = 0
-        For i = lColor To hColor
-            g = g + i * gValues(i)
-            cCount = cCount + gValues(i)
-        Next i
-        
-        g = g / cCount
-        
-        'Repeat for blue
-        lColor = srcImageData(QuickVal, y)
-        hColor = lColor
-        
-        lColor = lColor - mThreshold
-        If lColor < 0 Then lColor = 0
-        hColor = hColor + mThreshold
-        If hColor > 255 Then hColor = 255
-        
-        b = 0: cCount = 0
-        For i = lColor To hColor
-            b = b + i * bValues(i)
-            cCount = cCount + bValues(i)
-        Next i
-        
-        b = b / cCount
-        
-        'Finally, apply the results to the image.
-        dstImageData(QuickVal + 2, y) = r
-        dstImageData(QuickVal + 1, y) = g
-        dstImageData(QuickVal, y) = b
-        
-    Next y
-        atBottom = Not atBottom
-        If Not toPreview Then
-            If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
-                SetProgBarVal x
+                'Start by finding low/high bounds
+                lColor = dstImageData(QuickVal + 2, y)
+                hColor = lColor
+                
+                lColor = lColor - mThreshold
+                If lColor < 0 Then lColor = 0
+                hColor = hColor + mThreshold
+                If hColor > 255 Then hColor = 255
+                
+                'Search from low to high, tallying colors as we go
+                r = 0: cCount = 0
+                For i = lColor To hColor
+                    r = r + i * rValues(i)
+                    cCount = cCount + rValues(i)
+                Next i
+                
+                'Take the mean of this range of values
+                If cCount > 0 Then r = r / cCount Else r = 255
+                
+                'Repeat for green
+                lColor = dstImageData(QuickVal + 1, y)
+                hColor = lColor
+                
+                lColor = lColor - mThreshold
+                If lColor < 0 Then lColor = 0
+                hColor = hColor + mThreshold
+                If hColor > 255 Then hColor = 255
+                
+                g = 0: cCount = 0
+                For i = lColor To hColor
+                    g = g + i * gValues(i)
+                    cCount = cCount + gValues(i)
+                Next i
+                
+                If cCount > 0 Then g = g / cCount Else g = 255
+                
+                'Repeat for blue
+                lColor = dstImageData(QuickVal, y)
+                hColor = lColor
+                
+                lColor = lColor - mThreshold
+                If lColor < 0 Then lColor = 0
+                hColor = hColor + mThreshold
+                If hColor > 255 Then hColor = 255
+                
+                b = 0: cCount = 0
+                For i = lColor To hColor
+                    b = b + i * bValues(i)
+                    cCount = cCount + bValues(i)
+                Next i
+                
+                If cCount > 0 Then b = b / cCount Else b = 255
+                
+                'Finally, apply the results to the image.
+                dstImageData(QuickVal, y) = b
+                dstImageData(QuickVal + 1, y) = g
+                dstImageData(QuickVal + 2, y) = r
+                
+                'Move the iterator in the correct direction
+                If directionDown Then
+                    If y < finalY Then numOfPixels = cPixelIterator.MoveYDown
+                Else
+                    If y > initY Then numOfPixels = cPixelIterator.MoveYUp
+                End If
+                
+            Next y
+            
+            directionDown = Not directionDown
+            If x < finalX Then numOfPixels = cPixelIterator.MoveXRight
+            
+            If Not toPreview Then
+                If (x And progBarCheck) = 0 Then
+                    If userPressedESC() Then Exit For
+                    SetProgBarVal x
+                End If
             End If
-        End If
-    Next x
+                
+        Next x
         
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
+        'Release the pixel iterator
+        cPixelIterator.ReleaseTargetHistograms rValues, gValues, bValues, aValues
+        
+        'Release our local array that points to the target DIB
+        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+        
+        'Erase our temporary DIB
+        srcDIB.eraseDIB
+        Set srcDIB = Nothing
     
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
-    
-    srcDIB.eraseDIB
-    Set srcDIB = Nothing
-    
-    'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
+        'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
+        finalizeImageData toPreview, dstPic
+        
+    End If
 
 End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Mean shift", , buildParams(sltRadius.Value, sltThreshold.Value), UNDO_LAYER
+    Process "Mean shift", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -517,11 +342,15 @@ Private Sub sltRadius_Change()
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then Me.ApplyMeanShiftFilter sltRadius.Value, sltThreshold.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then Me.ApplyMeanShiftFilter GetLocalParamString(), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
+Private Function GetLocalParamString() As String
+    GetLocalParamString = buildParamList("radius", sltRadius.Value, "threshold", sltThreshold.Value)
+End Function
 
