@@ -116,7 +116,7 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
     prepImageData dstSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
+    'Create a second copy of the target DIB.
     ' (This is necessary to prevent processed pixel values from spreading across the image as we go.)
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
@@ -144,8 +144,13 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    Dim qvDepth As Long
+    qvDepth = curDIBValues.BytesPerPixel
+    
+    'The x-dimension of the image has a stride of (width * 4) for 32-bit images; precalculate this, to spare us some
+    ' processing time in the inner loop.
+    initX = initX * qvDepth
+    finalX = finalX * qvDepth
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -182,9 +187,7 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
         numOfPixels = cPixelIterator.LockTargetHistograms(rValues, gValues, bValues, aValues, False)
         
         'Loop through each pixel in the image, applying the filter as we go
-        For x = initX To finalX
-            
-            QuickVal = x * qvDepth
+        For x = initX To finalX Step qvDepth
             
             'Based on the direction we're traveling, reverse the interior loop boundaries as necessary.
             If directionDown Then
@@ -204,10 +207,10 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
                 ' shifted mean value.  We do this by averaging only the pixels whose color is within the caller-specified
                 ' threshold of this pixel.  This limits the average to similar pixels only.
         
-                'Red
+                'Blue
                 
                 'Start by finding low/high bounds
-                lColor = dstImageData(QuickVal + 2, y)
+                lColor = dstImageData(x, y)
                 hColor = lColor
                 
                 lColor = lColor - mThreshold
@@ -216,17 +219,17 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
                 If hColor > 255 Then hColor = 255
                 
                 'Search from low to high, tallying colors as we go
-                r = 0: cCount = 0
+                b = 0: cCount = 0
                 For i = lColor To hColor
-                    r = r + i * rValues(i)
-                    cCount = cCount + rValues(i)
+                    b = b + i * bValues(i)
+                    cCount = cCount + bValues(i)
                 Next i
                 
                 'Take the mean of this range of values
-                If cCount > 0 Then r = r / cCount Else r = 255
+                If cCount > 0 Then b = b / cCount Else b = 255
                 
                 'Repeat for green
-                lColor = dstImageData(QuickVal + 1, y)
+                lColor = dstImageData(x + 1, y)
                 hColor = lColor
                 
                 lColor = lColor - mThreshold
@@ -242,8 +245,8 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
                 
                 If cCount > 0 Then g = g / cCount Else g = 255
                 
-                'Repeat for blue
-                lColor = dstImageData(QuickVal, y)
+                'Repeat for red
+                lColor = dstImageData(x + 2, y)
                 hColor = lColor
                 
                 lColor = lColor - mThreshold
@@ -251,18 +254,18 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
                 hColor = hColor + mThreshold
                 If hColor > 255 Then hColor = 255
                 
-                b = 0: cCount = 0
+                r = 0: cCount = 0
                 For i = lColor To hColor
-                    b = b + i * bValues(i)
-                    cCount = cCount + bValues(i)
+                    r = r + i * rValues(i)
+                    cCount = cCount + rValues(i)
                 Next i
                 
-                If cCount > 0 Then b = b / cCount Else b = 255
+                If cCount > 0 Then r = r / cCount Else r = 255
                 
                 'Finally, apply the results to the image.
-                dstImageData(QuickVal, y) = b
-                dstImageData(QuickVal + 1, y) = g
-                dstImageData(QuickVal + 2, y) = r
+                dstImageData(x, y) = b
+                dstImageData(x + 1, y) = g
+                dstImageData(x + 2, y) = r
                 
                 'Move the iterator in the correct direction
                 If directionDown Then
@@ -273,9 +276,11 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
                 
             Next y
             
+            'Reverse y-directionality on each pass
             directionDown = Not directionDown
             If x < finalX Then numOfPixels = cPixelIterator.MoveXRight
             
+            'Update the progress bar every (progBarCheck) lines
             If Not toPreview Then
                 If (x And progBarCheck) = 0 Then
                     If userPressedESC() Then Exit For
