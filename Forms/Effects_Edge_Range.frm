@@ -254,18 +254,21 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
                 i = 0
                 Do While (rValues(i) = 0)
                     i = i + 1
+                    If i > 255 Then Exit Do
                 Loop
                 lowR = i
                 
                 i = 0
                 Do While (gValues(i) = 0)
                     i = i + 1
+                    If i > 255 Then Exit Do
                 Loop
                 lowG = i
                 
                 i = 0
                 Do While (bValues(i) = 0)
                     i = i + 1
+                    If i > 255 Then Exit Do
                 Loop
                 lowB = i
                 
@@ -277,20 +280,28 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
                 i = 255
                 Do While (rValues(i) = 0)
                     i = i - 1
+                    If i < 0 Then Exit Do
                 Loop
                 highR = i
                 
                 i = 255
                 Do While (gValues(i) = 0)
                     i = i - 1
+                    If i < 0 Then Exit Do
                 Loop
                 highG = i
                 
                 i = 255
                 Do While (bValues(i) = 0)
                     i = i - 1
+                    If i < 0 Then Exit Do
                 Loop
                 highB = i
+                
+                'Failsafe check for empty histograms
+                If highB < lowB Then highB = lowB
+                If highG < lowG Then highG = lowG
+                If highR < lowR Then highR = lowR
                 
                 'Set each channel to the difference between their max/min values.
                 dstImageData(x, y) = highB - lowB
