@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.116</langversion>
+<langversion>6.7.117</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -715,6 +715,16 @@ You puede utilizar el MenuTest () sub en el módulo Filters_Miscellaneous para p
 </phrase>
 
 <phrase>
+<original>Square</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Circle</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Normal</original>
 <translation>normal</translation>
 </phrase>
@@ -844,7 +854,7 @@ You puede utilizar el MenuTest () sub en el módulo Filters_Miscellaneous para p
 <translation></translation>
 </phrase>
 
-<!-- VBP_MiscInterface.bas contains 64 phrases. 20 were duplicates of existing phrases, so only 44 new phrases were written to file. -->
+<!-- VBP_MiscInterface.bas contains 66 phrases. 20 were duplicates of existing phrases, so only 46 new phrases were written to file. -->
 
 <!-- END text for VBP_MiscInterface.bas-->
 
@@ -2126,7 +2136,7 @@ To habilitar el soporte para este formato de imagen, por favor copie el archivo 
 <translation>Miniatura guardar falló (error GDI sin especificar).</translation>
 </phrase>
 
-<!-- VBP_SaveModule.bas contains 121 phrases. 87 were duplicates of existing phrases, so only 34 new phrases were written to file. -->
+<!-- VBP_SaveModule.bas contains 128 phrases. 94 were duplicates of existing phrases, so only 34 new phrases were written to file. -->
 
 <!-- END text for VBP_SaveModule.bas-->
 
@@ -9137,11 +9147,16 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 <!-- BEGIN text for Effects_Noise_MeanShift.frm (FormMeanShift) -->
 
 <phrase>
+<original>kernel shape</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Applying mean shift filter</original>
 <translation></translation>
 </phrase>
 
-<!-- Effects_Noise_MeanShift.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Noise_MeanShift.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_MeanShift.frm-->
 
@@ -14423,20 +14438,41 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <!-- BEGIN text for Effects_Edge_Range.frm (FormRangeFilter) -->
 
 <phrase>
+<original>synchronize search radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>horizontal radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Searching each pixel range for edges</original>
 <translation></translation>
 </phrase>
 
-<!-- Effects_Edge_Range.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Edge_Range.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Edge_Range.frm-->
 
+<!-- BEGIN text for pdPixelIterator.cls -->
+
+<!-- pdPixelIterator.cls contains 0 phrases. -->
+
+<!-- END text for pdPixelIterator.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2480</phrasecount>
+<phrasecount>2486</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4253 phrases. -->
-<!-- 1773 are duplicates, so only 2480 unique phrases have been written to file. -->
-<!-- These 2480 phrases contain approximately 13339 total words. -->
+<!-- As of this build, PhotoDemon contains 4265 phrases. -->
+<!-- 1779 are duplicates, so only 2486 unique phrases have been written to file. -->
+<!-- These 2486 phrases contain approximately 13350 total words. -->
 
 </pdData>
