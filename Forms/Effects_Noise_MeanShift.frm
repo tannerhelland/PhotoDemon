@@ -47,7 +47,7 @@ Begin VB.Form FormMeanShift
       Height          =   705
       Left            =   6000
       TabIndex        =   2
-      Top             =   1920
+      Top             =   1560
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -60,7 +60,7 @@ Begin VB.Form FormMeanShift
       Height          =   705
       Left            =   6000
       TabIndex        =   3
-      Top             =   3000
+      Top             =   2400
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -68,6 +68,25 @@ Begin VB.Form FormMeanShift
       Min             =   1
       Max             =   50
       Value           =   15
+   End
+   Begin PhotoDemon.buttonStrip btsKernelShape 
+      Height          =   615
+      Left            =   6120
+      TabIndex        =   4
+      Top             =   3600
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1085
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   375
+      Left            =   6000
+      Top             =   3240
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   661
+      Caption         =   "kernel shape"
+      FontSize        =   12
    End
 End
 Attribute VB_Name = "FormMeanShift"
@@ -104,9 +123,10 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
     Set cParams = New pdParamXML
     cParams.setParamString parameterList
     
-    Dim mRadius As Long, mThreshold As Long
+    Dim mRadius As Long, mThreshold As Long, kernelShape As PD_PIXEL_REGION_SHAPE
     mRadius = cParams.GetLong("radius", 1&)
     mThreshold = cParams.GetLong("threshold", 0&)
+    kernelShape = cParams.GetLong("kernelShape", PDPRS_Circle)
     
     If Not toPreview Then Message "Applying mean shift filter..."
     
@@ -182,7 +202,7 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
     Dim cPixelIterator As pdPixelIterator
     Set cPixelIterator = New pdPixelIterator
     
-    If cPixelIterator.InitializeIterator(srcDIB, mRadius, mRadius, PDPRS_Rectangle) Then
+    If cPixelIterator.InitializeIterator(srcDIB, mRadius, mRadius, kernelShape) Then
     
         numOfPixels = cPixelIterator.LockTargetHistograms(rValues, gValues, bValues, aValues, False)
         
@@ -307,6 +327,10 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
 
 End Sub
 
+Private Sub btsKernelShape_Click(ByVal buttonIndex As Long)
+    updatePreview
+End Sub
+
 'OK button
 Private Sub cmdBar_OKClick()
     Process "Mean shift", , GetLocalParamString(), UNDO_LAYER
@@ -332,6 +356,9 @@ Private Sub Form_Load()
     'Disable previews while we initialize the dialog
     cmdBar.markPreviewStatus False
     
+    'Populate the kernel shape box with whatever shapes PD currently supports
+    Interface.PopKernelShapeButtonStrip btsKernelShape, PDPRS_Circle
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -356,6 +383,6 @@ Private Sub fxPreview_ViewportChanged()
 End Sub
 
 Private Function GetLocalParamString() As String
-    GetLocalParamString = buildParamList("radius", sltRadius.Value, "threshold", sltThreshold.Value)
+    GetLocalParamString = buildParamList("radius", sltRadius.Value, "threshold", sltThreshold.Value, "kernelShape", btsKernelShape.ListIndex)
 End Function
 
