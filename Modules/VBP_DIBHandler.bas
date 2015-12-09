@@ -318,7 +318,7 @@ End Function
 
 'Given a DIB, return a 2D Byte array of the DIB's luminance values.  An optional preNormalize parameter will guarantee that the output
 ' stretches from 0 to 255.  (Also note: this function does not support progress bar reports.)
-Public Function getDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() As Byte, Optional ByVal toNormalize As Boolean = True) As Boolean
+Public Function GetDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() As Byte, Optional ByVal toNormalize As Boolean = True) As Boolean
     
     'Make sure the DIB exists
     If srcDIB Is Nothing Then Exit Function
@@ -419,11 +419,11 @@ Public Function getDIBGrayscaleMap(ByRef srcDIB As pdDIB, ByRef dstGrayArray() A
         
         End If
                 
-        getDIBGrayscaleMap = True
+        GetDIBGrayscaleMap = True
         
     Else
         Debug.Print "WARNING! Non-existent DIB passed to getDIBGrayscaleMap."
-        getDIBGrayscaleMap = False
+        GetDIBGrayscaleMap = False
     End If
 
 End Function

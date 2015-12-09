@@ -195,7 +195,7 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
     Dim cPixelIterator As pdPixelIterator
     Set cPixelIterator = New pdPixelIterator
     
-    If cPixelIterator.InitializeIterator(srcDIB, xRadius, yRadius, PDPRS_Rectangle) Then
+    If cPixelIterator.InitializeIterator(srcDIB, xRadius, yRadius, PDPRS_Circle) Then
         
         numOfPixels = cPixelIterator.LockTargetHistograms(rValues, gValues, bValues, aValues, False)
         
