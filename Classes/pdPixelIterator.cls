@@ -43,6 +43,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+Private Declare Sub SafeArrayLock Lib "oleaut32" (ByVal ptrToSA As Long)
+Private Declare Sub SafeArrayUnlock Lib "oleaut32" (ByVal ptrToSA As Long)
 Private Declare Function PutMem4 Lib "msvbvm60" (ByVal Addr As Long, ByVal newValue As Long) As Long
 Private Declare Function GetMem4 Lib "msvbvm60" (ByVal Addr As Long, ByRef dstValue As Long) As Long
 
@@ -218,11 +220,22 @@ Private Sub Alias1DArray(ByRef orig1DArray() As Long, ByRef new1DArray() As Long
     'newArraySA now contains the full SafeArray of the original array.  Copy this over our current array.
     CopyMemory ByVal VarPtrArray(new1DArray()), VarPtr(newArraySA), 4&
     
+    'Add a lock to the original array, to prevent potential crashes from unknowing users.  (Thanks to @Kroc for this tip.)
+    SafeArrayLock ptrSrc
+    
 End Sub
 
 'Counterpart to Alias1DArray, above.  Do NOT call this function on arrays that were not originally processed by that function.
 Private Sub Unalias1DArray(ByRef orig1DArray() As Long, ByRef new1DArray() As Long)
+    
+    'Wipe the array pointer
     CopyMemory ByVal VarPtrArray(new1DArray), 0&, 4&
+    
+    'Remove a lock from the original array; this allows the user to safely release the array on their own terms
+    Dim ptrSrc As Long
+    GetMem4 VarPtrArray(orig1DArray()), ptrSrc
+    SafeArrayUnlock ptrSrc
+    
 End Sub
 
 'Create the reference map for a non-rectangular kernel
@@ -232,9 +245,13 @@ Private Sub CreateShape(ByVal srcShape As PD_PIXEL_REGION_SHAPE)
     m_ShapeImage.createBlank m_XBSize, m_YBSize, 24, 0&
     
     Select Case srcShape
-    
+        
+        'At small sizes, the GDI+ circle rendering algorithm doesn't work very well.  To bypass this, we activate
+        ' antialiasing when the search radius is only 1 px wide (for a net search diameter of 3).
         Case PDPRS_Circle
-            GDI_Plus.GDIPlusFillEllipseToDC m_ShapeImage.getDIBDC, 0, 0, m_ShapeImage.getDIBWidth, m_ShapeImage.getDIBHeight, RGB(255, 255, 255), True
+            Dim useAA As Boolean
+            If (m_XBSize <= 3) Or (m_YBSize <= 3) Then useAA = True Else useAA = False
+            GDI_Plus.GDIPlusFillEllipseToDC m_ShapeImage.getDIBDC, 0, 0, m_ShapeImage.getDIBWidth, m_ShapeImage.getDIBHeight, RGB(255, 255, 255), useAA, 255, True
             
     End Select
     

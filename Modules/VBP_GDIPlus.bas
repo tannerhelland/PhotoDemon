@@ -1425,13 +1425,14 @@ Public Function GDIPlusFillPatternToDC(ByVal dstDC As Long, ByVal x1 As Single, 
 End Function
 
 'Use GDI+ to render a filled ellipse, with optional antialiasing
-Public Function GDIPlusFillEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True, Optional ByVal eTransparency As Byte = 255) As Boolean
+Public Function GDIPlusFillEllipseToDC(ByRef dstDC As Long, ByVal x1 As Single, ByVal y1 As Single, ByVal xWidth As Single, ByVal yHeight As Single, ByVal eColor As Long, Optional ByVal useAA As Boolean = True, Optional ByVal eTransparency As Byte = 255, Optional ByVal hqOffsets As Boolean = False) As Boolean
 
-    'Create a GDI+ copy of the image and request matching AA behavior
+    'Create a GDI+ copy of the image and request matching AA and offset behavior
     Dim iGraphics As Long
     GdipCreateFromHDC dstDC, iGraphics
     If useAA Then GdipSetSmoothingMode iGraphics, SmoothingModeAntiAlias Else GdipSetSmoothingMode iGraphics, SmoothingModeNone
-        
+    If hqOffsets Then GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighQuality Else GdipSetPixelOffsetMode iGraphics, PixelOffsetModeHighSpeed
+    
     'Create a solid fill brush
     Dim iBrush As Long
     GdipCreateSolidFill fillQuadWithVBRGB(eColor, eTransparency), iBrush
@@ -2088,7 +2089,7 @@ Public Function GDIPlusSavePicture(ByRef srcPDImage As pdImage, ByVal dstFilenam
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     srcPDImage.getCompositedImage tmpDIB, False
-    If tmpDIB.getDIBColorDepth <> 24 And imgFormat = [ImageJPEG] Then tmpDIB.compositeBackgroundColor 255, 255, 255
+    If tmpDIB.getDIBColorDepth <> 24 And imgFormat = [ImageJPEG] Then tmpDIB.CompositeBackgroundColor 255, 255, 255
 
     'Begin by creating a generic bitmap header for the current DIB
     Dim imgHeader As BITMAPINFO
