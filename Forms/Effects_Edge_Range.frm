@@ -23,6 +23,35 @@ Begin VB.Form FormRangeFilter
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.smartCheckBox chkSynchronize 
+      Height          =   375
+      Left            =   6120
+      TabIndex        =   5
+      Top             =   3120
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   661
+      Caption         =   "synchronize search radius"
+   End
+   Begin PhotoDemon.buttonStrip btsKernelShape 
+      Height          =   615
+      Left            =   6120
+      TabIndex        =   4
+      Top             =   4080
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1085
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   375
+      Left            =   6000
+      Top             =   3720
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   661
+      Caption         =   "kernel shape"
+      FontSize        =   12
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -48,11 +77,11 @@ Begin VB.Form FormRangeFilter
       Index           =   0
       Left            =   6000
       TabIndex        =   2
-      Top             =   2040
+      Top             =   1440
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
-      Caption         =   "horizontal strength"
+      Caption         =   "horizontal radius"
       Min             =   1
       Max             =   50
       Value           =   5
@@ -62,11 +91,11 @@ Begin VB.Form FormRangeFilter
       Index           =   1
       Left            =   6000
       TabIndex        =   3
-      Top             =   2880
+      Top             =   2280
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
-      Caption         =   "vertical strength"
+      Caption         =   "vertical radius"
       Min             =   1
       Max             =   50
       Value           =   5
@@ -111,9 +140,10 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
     Set cParams = New pdParamXML
     cParams.setParamString parameterList
     
-    Dim hRadius As Double, vRadius As Double
+    Dim hRadius As Double, vRadius As Double, kernelShape As PD_PIXEL_REGION_SHAPE
     hRadius = cParams.GetDouble("hRadius", 1#)
     vRadius = cParams.GetDouble("vRadius", hRadius)
+    kernelShape = cParams.GetLong("kernelShape", PDPRS_Circle)
     
     If Not toPreview Then Message "Searching each pixel range for edges..."
         
@@ -172,8 +202,8 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
     End If
     
     'The number of pixels in the current box are tracked dynamically.
-    Dim numOfPixels As Long
-    numOfPixels = 0
+    Dim NumOfPixels As Long
+    NumOfPixels = 0
             
     'Accumulation filters like this take a lot of variables
     'We use an optimized histogram technique for calculating means, which means a lot of intermediate values are required
@@ -195,9 +225,9 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
     Dim cPixelIterator As pdPixelIterator
     Set cPixelIterator = New pdPixelIterator
     
-    If cPixelIterator.InitializeIterator(srcDIB, xRadius, yRadius, PDPRS_Circle) Then
+    If cPixelIterator.InitializeIterator(srcDIB, xRadius, yRadius, kernelShape) Then
         
-        numOfPixels = cPixelIterator.LockTargetHistograms(rValues, gValues, bValues, aValues, False)
+        NumOfPixels = cPixelIterator.LockTargetHistograms(rValues, gValues, bValues, aValues, False)
         
         'Loop through each pixel in the image, applying the filter as we go
         For x = initX To finalX Step qvDepth
@@ -269,16 +299,16 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
                 
                 'Move the iterator in the correct direction
                 If directionDown Then
-                    If y < finalY Then numOfPixels = cPixelIterator.MoveYDown
+                    If y < finalY Then NumOfPixels = cPixelIterator.MoveYDown
                 Else
-                    If y > initY Then numOfPixels = cPixelIterator.MoveYUp
+                    If y > initY Then NumOfPixels = cPixelIterator.MoveYUp
                 End If
                 
             Next y
             
             'Reverse y-directionality on each pass
             directionDown = Not directionDown
-            If x < finalX Then numOfPixels = cPixelIterator.MoveXRight
+            If x < finalX Then NumOfPixels = cPixelIterator.MoveXRight
             
             'Update the progress bar every (progBarCheck) lines
             If Not toPreview Then
@@ -307,6 +337,14 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
 
 End Sub
 
+Private Sub btsKernelShape_Click(ByVal buttonIndex As Long)
+    updatePreview
+End Sub
+
+Private Sub chkSynchronize_Click()
+    If CBool(chkSynchronize.Value) Then sltRadius(1).Value = sltRadius(0).Value
+End Sub
+
 'OK button
 Private Sub cmdBar_OKClick()
     Process "Range filter", , GetLocalParamString(), UNDO_LAYER
@@ -332,6 +370,9 @@ Private Sub Form_Load()
     'Disable previews while we initialize everything
     cmdBar.markPreviewStatus False
     
+    'Populate the kernel shape box with whatever shapes PD currently supports
+    Interface.PopKernelShapeButtonStrip btsKernelShape, PDPRS_Circle
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -348,9 +389,15 @@ Private Sub fxPreview_ViewportChanged()
 End Sub
 
 Private Sub sltRadius_Change(Index As Integer)
+    
+    If CBool(chkSynchronize.Value) Then
+        If sltRadius(Abs(Index - 1)).Value <> sltRadius(Index).Value Then sltRadius(Abs(Index - 1)).Value = sltRadius(Index).Value
+    End If
+    
     updatePreview
+    
 End Sub
 
 Private Function GetLocalParamString() As String
-    GetLocalParamString = buildParamList("hRadius", sltRadius(0).Value, "vRadius", sltRadius(1).Value)
+    GetLocalParamString = buildParamList("hRadius", sltRadius(0).Value, "vRadius", sltRadius(1).Value, "kernelShape", btsKernelShape.ListIndex)
 End Function
