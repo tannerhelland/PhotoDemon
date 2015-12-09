@@ -1671,6 +1671,16 @@ Public Sub PopDistortEdgeBox(ByRef cmbEdges As ComboBox, Optional ByVal defaultE
     
 End Sub
 
+'Populate the passed button strip with options related to convolution kernel shape.  The caller can also specify which method they
+' want set as the default.
+Public Sub PopKernelShapeButtonStrip(ByRef srcBTS As buttonStrip, Optional ByVal defaultShape As PD_PIXEL_REGION_SHAPE = PDPRS_Rectangle)
+    
+    srcBTS.AddItem "Square", 0
+    srcBTS.AddItem "Circle", 1
+    srcBTS.ListIndex = defaultShape
+    
+End Sub
+
 'Return the width (and below, height) of a string, in pixels, according to the font assigned to fontContainerDC
 Public Function GetPixelWidthOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
     Dim txtSize As POINTAPI
