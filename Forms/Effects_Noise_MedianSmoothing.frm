@@ -44,10 +44,10 @@ Begin VB.Form FormMedian
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
-      Top             =   1920
+      Top             =   1440
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -57,10 +57,10 @@ Begin VB.Form FormMedian
       Value           =   5
    End
    Begin PhotoDemon.sliderTextCombo sltPercent 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
-      Top             =   2880
+      Top             =   3480
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -70,6 +70,25 @@ Begin VB.Form FormMedian
       Value           =   50
       NotchPosition   =   2
       NotchValueCustom=   50
+   End
+   Begin PhotoDemon.buttonStrip btsKernelShape 
+      Height          =   615
+      Left            =   6120
+      TabIndex        =   4
+      Top             =   2640
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1085
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   375
+      Left            =   6000
+      Top             =   2280
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   661
+      Caption         =   "kernel shape"
+      FontSize        =   12
    End
 End
 Attribute VB_Name = "FormMedian"
@@ -112,7 +131,17 @@ Private curMode As MedianToolMode
 
 'Apply a median filter to the image (heavily optimized accumulation implementation!)
 'Input: radius of the median (min 1, no real max - but the scroll bar is maxed at 200 presently)
-Public Sub ApplyMedianFilter(ByVal mRadius As Long, ByVal mPercent As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyMedianFilter(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+    
+    'Parse out the parameter list
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.setParamString parameterList
+    
+    Dim mRadius As Long, mPercent As Double, kernelShape As PD_PIXEL_REGION_SHAPE
+    mRadius = cParams.GetLong("radius", 1&)
+    mPercent = cParams.GetLong("percent", 50&)
+    kernelShape = cParams.GetLong("kernelShape", PDPRS_Rectangle)
     
     If Not toPreview Then
         If mPercent = 1 Then
@@ -123,7 +152,7 @@ Public Sub ApplyMedianFilter(ByVal mRadius As Long, ByVal mPercent As Double, Op
             Message "Applying median filter..."
         End If
     End If
-            
+    
     'Create a local array and point it at the pixel data of the current image
     Dim dstSA As SAFEARRAY2D
     prepImageData dstSA, toPreview, dstPic
@@ -140,7 +169,7 @@ Public Sub ApplyMedianFilter(ByVal mRadius As Long, ByVal mPercent As Double, Op
     Set srcDIB = New pdDIB
     srcDIB.createFromExistingDIB workingDIB
     
-    CreateMedianDIB mRadius, mPercent, srcDIB, workingDIB, toPreview
+    CreateMedianDIB mRadius, mPercent, kernelShape, srcDIB, workingDIB, toPreview
     
     srcDIB.eraseDIB
     Set srcDIB = Nothing
@@ -150,8 +179,12 @@ Public Sub ApplyMedianFilter(ByVal mRadius As Long, ByVal mPercent As Double, Op
 
 End Sub
 
+Private Sub btsKernelShape_Click(ByVal buttonIndex As Long)
+    updatePreview
+End Sub
+
 Private Sub cmdBar_OKClick()
-    Process "Median", , buildParams(sltRadius.Value, sltPercent.Value), UNDO_LAYER
+    Process "Median", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 'Because this dialog can be used for multiple tools, we need to clarify some behavior when resetting and randomizing
@@ -208,6 +241,9 @@ Private Sub Form_Load()
     'Disable previews while we get everything initialized
     cmdBar.markPreviewStatus False
     
+    'Populate the kernel shape box with whatever shapes PD currently supports
+    Interface.PopKernelShapeButtonStrip btsKernelShape, PDPRS_Circle
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -252,12 +288,16 @@ Private Sub sltRadius_Change()
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ApplyMedianFilter sltRadius.Value, sltPercent.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyMedianFilter GetLocalParamString(), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
+Private Function GetLocalParamString() As String
+    GetLocalParamString = buildParamList("radius", sltRadius.Value, "percent", sltPercent.Value, "kernelShape", btsKernelShape.ListIndex)
+End Function
 
 

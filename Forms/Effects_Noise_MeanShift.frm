@@ -126,7 +126,7 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
     Dim mRadius As Long, mThreshold As Long, kernelShape As PD_PIXEL_REGION_SHAPE
     mRadius = cParams.GetLong("radius", 1&)
     mThreshold = cParams.GetLong("threshold", 0&)
-    kernelShape = cParams.GetLong("kernelShape", PDPRS_Circle)
+    kernelShape = cParams.GetLong("kernelShape", PDPRS_Rectangle)
     
     If Not toPreview Then Message "Applying mean shift filter..."
     
@@ -141,7 +141,7 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
     Dim srcDIB As pdDIB
     Set srcDIB = New pdDIB
     srcDIB.createFromExistingDIB workingDIB
-        
+    
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         mRadius = mRadius * curDIBValues.previewModifier
@@ -357,7 +357,7 @@ Private Sub Form_Load()
     cmdBar.markPreviewStatus False
     
     'Populate the kernel shape box with whatever shapes PD currently supports
-    Interface.PopKernelShapeButtonStrip btsKernelShape, PDPRS_Circle
+    Interface.PopKernelShapeButtonStrip btsKernelShape, PDPRS_Rectangle
     
 End Sub
 

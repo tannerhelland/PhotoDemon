@@ -120,7 +120,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
     If displayDialog Then
     
         'Disable user input until the dialog closes
-        Interface.disableUserInput
+        Interface.DisableUserInput
     
         'Simple open dialog
         Dim openDialog As pdOpenSaveDialog
@@ -135,7 +135,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         Dim cdTitle As String
         cdTitle = g_Language.TranslateMessage("Load a previously saved selection")
                 
-        If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, g_UserPreferences.getSelectionPath, cdTitle, , getModalOwner().hWnd) Then
+        If openDialog.GetOpenFileName(sFile, , True, False, cdFilter, 1, g_UserPreferences.getSelectionPath, cdTitle, , GetModalOwner().hWnd) Then
             
             'Use a temporary selection object to validate the requested selection file
             Dim tmpSelection As pdSelection
@@ -151,7 +151,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
                 Process "Load selection", False, sFile, UNDO_SELECTION
                     
             Else
-                pdMsgBox "An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.", vbOKOnly + vbExclamation + vbApplicationModal, "Selection Error", sFile
+                PDMsgBox "An error occurred while attempting to load %1.  Please verify that the file is a valid PhotoDemon selection file.", vbOKOnly + vbExclamation + vbApplicationModal, "Selection Error", sFile
             End If
             
             'Release the temporary selection object
@@ -161,7 +161,7 @@ Public Sub LoadSelectionFromFile(ByVal displayDialog As Boolean, Optional ByVal 
         End If
         
         'Re-enable user input
-        Interface.enableUserInput
+        Interface.EnableUserInput
         
     Else
     
@@ -195,7 +195,7 @@ Public Sub SaveSelectionToFile()
     Dim cdTitle As String
     cdTitle = g_Language.TranslateMessage("Save the current selection")
         
-    If saveDialog.GetSaveFileName(sFile, , True, cdFilter, 1, g_UserPreferences.getSelectionPath, cdTitle, "." & SELECTION_EXT, getModalOwner().hWnd) Then
+    If saveDialog.GetSaveFileName(sFile, , True, cdFilter, 1, g_UserPreferences.getSelectionPath, cdTitle, "." & SELECTION_EXT, GetModalOwner().hWnd) Then
         
         'Save the new directory as the default path for future usage
         g_UserPreferences.setSelectionPath sFile
@@ -440,8 +440,8 @@ Public Sub syncTextToCurrentSelection(ByVal formID As Long)
         
     Else
         
-        metaToggle tSelection, False
-        metaToggle tSelectionTransform, False
+        MetaToggle tSelection, False
+        MetaToggle tSelectionTransform, False
         For i = 0 To toolpanel_Selections.tudSel.Count - 1
             If toolpanel_Selections.tudSel(i).Value <> 0 Then toolpanel_Selections.tudSel(i).Value = 0
         Next i
@@ -931,7 +931,7 @@ Public Sub growCurrentSelection(ByVal showDialog As Boolean, Optional ByVal grow
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
         tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
-        CreateMedianDIB growSize, 100, tmpDIB, pdImages(g_CurrentImage).mainSelection.selMask, False
+        CreateMedianDIB growSize, 99, PDPRS_Circle, tmpDIB, pdImages(g_CurrentImage).mainSelection.selMask, False
         
         Set tmpDIB = Nothing
         
@@ -978,7 +978,7 @@ Public Sub shrinkCurrentSelection(ByVal showDialog As Boolean, Optional ByVal sh
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
         tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
-        CreateMedianDIB shrinkSize, 1, tmpDIB, pdImages(g_CurrentImage).mainSelection.selMask, False
+        CreateMedianDIB shrinkSize, 1, PDPRS_Circle, tmpDIB, pdImages(g_CurrentImage).mainSelection.selMask, False
         
         'Erase the temporary DIB
         Set tmpDIB = Nothing
@@ -1035,8 +1035,8 @@ Public Sub borderCurrentSelection(ByVal showDialog As Boolean, Optional ByVal bo
         shrinkDIB.createFromExistingDIB pdImages(g_CurrentImage).mainSelection.selMask
         
         'Use a median function to dilate and erode the existing mask
-        CreateMedianDIB borderRadius, 1, pdImages(g_CurrentImage).mainSelection.selMask, shrinkDIB, False, pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth * 2
-        CreateMedianDIB borderRadius, 100, pdImages(g_CurrentImage).mainSelection.selMask, growDIB, False, pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth * 2, pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth
+        CreateMedianDIB borderRadius, 1, PDPRS_Circle, pdImages(g_CurrentImage).mainSelection.selMask, shrinkDIB, False, pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth * 2
+        CreateMedianDIB borderRadius, 99, PDPRS_Circle, pdImages(g_CurrentImage).mainSelection.selMask, growDIB, False, pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth * 2, pdImages(g_CurrentImage).mainSelection.selMask.getDIBWidth
         
         'Blend those two DIBs together, and use the difference between the two to calculate the new border area
         pdImages(g_CurrentImage).mainSelection.selMask.createFromExistingDIB growDIB
@@ -1244,8 +1244,8 @@ Public Sub initSelectionByPoint(ByVal x As Double, ByVal y As Double)
     pdImages(g_CurrentImage).mainSelection.requestNewMask
     
     'Make the selection tools visible
-    metaToggle tSelection, True
-    metaToggle tSelectionTransform, True
+    MetaToggle tSelection, True
+    MetaToggle tSelectionTransform, True
     
     'Redraw the screen
     Viewport_Engine.Stage4_CompositeCanvas pdImages(g_CurrentImage), FormMain.mainCanvas(0)
