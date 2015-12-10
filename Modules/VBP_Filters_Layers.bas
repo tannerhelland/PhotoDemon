@@ -176,7 +176,7 @@ End Function
 
 'Given two DIBs, fill one with a median-filtered version of the other.
 ' Per PhotoDemon convention, this function will return a non-zero value if successful, and 0 if canceled.
-Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double, ByVal kernelShape As PD_PIXEL_REGION_SHAPE, ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
@@ -184,13 +184,6 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
     prepSafeArray dstSA, dstDIB
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
-    'Create a second local array.  This will contain the a copy of the current image, and we will use it as our source reference
-    ' (This is necessary to prevent median-calculated pixel values from spreading across the image as we go.)
-    Dim srcImageData() As Byte
-    Dim srcSA As SAFEARRAY2D
-    prepSafeArray srcSA, srcDIB
-    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
     Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
     initX = 0
@@ -204,13 +197,21 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
     Else
         If mRadius > (finalX - initX) Then mRadius = finalX - initX
     End If
+    
+    If mRadius < 1 Then mRadius = 1
         
     mPercent = mPercent / 100
+    If mPercent < 0.01 Then mPercent = 0.01
         
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
     qvDepth = srcDIB.getDIBColorDepth \ 8
+    
+    'The x-dimension of the image has a stride of (width * 4) for 32-bit images; precalculate this, to spare us some
+    ' processing time in the inner loop.
+    initX = initX * qvDepth
+    finalX = finalX * qvDepth
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -225,304 +226,119 @@ Public Function CreateMedianDIB(ByVal mRadius As Long, ByVal mPercent As Double,
     End If
     
     'The number of pixels in the current median box are tracked dynamically.
-    Dim NumOfPixels As Long
-    NumOfPixels = 0
+    Dim numOfPixels As Long
+    numOfPixels = 0
             
-    'Median filtering takes a lot of variables
-    Dim rValues(0 To 255) As Long, gValues(0 To 255) As Long, bValues(0 To 255) As Long
-    Dim lbX As Long, lbY As Long, ubX As Long, ubY As Long
-    Dim obuX As Boolean, obuY As Boolean, oblY As Boolean
-    Dim i As Long, j As Long
+    'We use an optimized histogram technique for calculating means, which means a lot of intermediate values are required
+    Dim rValues() As Long, gValues() As Long, bValues() As Long, aValues() As Long
+    ReDim rValues(0 To 255) As Long
+    ReDim gValues(0 To 255) As Long
+    ReDim bValues(0 To 255) As Long
+    ReDim aValues(0 To 255) As Long
+    
     Dim cutoffTotal As Long
     Dim r As Long, g As Long, b As Long
-    Dim midR As Long, midG As Long, midB As Long
-    'Dim rBins As Long, gBins As Long, bBins As Long
+    Dim startY As Long, stopY As Long, yStep As Long, i As Long
     
-    Dim atBottom As Boolean
-    atBottom = True
+    Dim directionDown As Boolean
+    directionDown = True
     
-    Dim startY As Long, stopY As Long, yStep As Long
+    'Prep the pixel iterator
+    Dim cPixelIterator As pdPixelIterator
+    Set cPixelIterator = New pdPixelIterator
     
-    NumOfPixels = 0
+    If cPixelIterator.InitializeIterator(srcDIB, mRadius, mRadius, kernelShape) Then
     
-    'Generate an initial array of median data for the first pixel
-    For x = initX To initX + mRadius - 1
-        QuickVal = x * qvDepth
-    For y = initY To initY + mRadius
-    
-        r = srcImageData(QuickVal + 2, y)
-        g = srcImageData(QuickVal + 1, y)
-        b = srcImageData(QuickVal, y)
-        rValues(r) = rValues(r) + 1
-        gValues(g) = gValues(g) + 1
-        bValues(b) = bValues(b) + 1
+        numOfPixels = cPixelIterator.LockTargetHistograms(rValues, gValues, bValues, aValues, False)
         
-        'Increase the pixel tally
-        NumOfPixels = NumOfPixels + 1
-        
-    Next y
-    Next x
-                
-    'Loop through each pixel in the image, tallying median values as we go
-    For x = initX To finalX
+        'Loop through each pixel in the image, applying the filter as we go
+        For x = initX To finalX Step qvDepth
             
-        QuickVal = x * qvDepth
-        
-        'Determine the bounds of the current median box in the X direction
-        lbX = x - mRadius
-        If lbX < 0 Then lbX = 0
-        
-        ubX = x + mRadius
-        If ubX > finalX Then
-            obuX = True
-            ubX = finalX
-        Else
-            obuX = False
-        End If
-                
-        'As part of my accumulation algorithm, I swap the inner loop's direction with each iteration.
-        ' Set y-related loop variables depending on the direction of the next cycle.
-        If atBottom Then
-            lbY = 0
-            ubY = mRadius
-        Else
-            lbY = finalY - mRadius
-            ubY = finalY
-        End If
-        
-        'Remove trailing values from the median box if they lie outside the processing radius
-        If lbX > 0 Then
-        
-            QuickValInner = (lbX - 1) * qvDepth
-        
-            For j = lbY To ubY
-                r = srcImageData(QuickValInner + 2, j)
-                g = srcImageData(QuickValInner + 1, j)
-                b = srcImageData(QuickValInner, j)
-                rValues(r) = rValues(r) - 1
-                gValues(g) = gValues(g) - 1
-                bValues(b) = bValues(b) - 1
-                NumOfPixels = NumOfPixels - 1
-            Next j
-        
-        End If
-        
-        'Add leading values to the median box if they lie inside the processing radius
-        If Not obuX Then
-        
-            QuickValInner = ubX * qvDepth
-            
-            For j = lbY To ubY
-                r = srcImageData(QuickValInner + 2, j)
-                g = srcImageData(QuickValInner + 1, j)
-                b = srcImageData(QuickValInner, j)
-                rValues(r) = rValues(r) + 1
-                gValues(g) = gValues(g) + 1
-                bValues(b) = bValues(b) + 1
-                NumOfPixels = NumOfPixels + 1
-            Next j
-            
-        End If
-        
-        'Depending on the direction we are moving, remove a line of pixels from the median box
-        ' (because the interior loop will add it back in).
-        If atBottom Then
-        
-            For i = lbX To ubX
-                QuickValInner = i * qvDepth
-                r = srcImageData(QuickValInner + 2, mRadius)
-                g = srcImageData(QuickValInner + 1, mRadius)
-                b = srcImageData(QuickValInner, mRadius)
-                rValues(r) = rValues(r) - 1
-                gValues(g) = gValues(g) - 1
-                bValues(b) = bValues(b) - 1
-                NumOfPixels = NumOfPixels - 1
-            Next i
-       
-        Else
-       
-            QuickY = finalY - mRadius
-       
-            For i = lbX To ubX
-                QuickValInner = i * qvDepth
-                r = srcImageData(QuickValInner + 2, QuickY)
-                g = srcImageData(QuickValInner + 1, QuickY)
-                b = srcImageData(QuickValInner, QuickY)
-                rValues(r) = rValues(r) - 1
-                gValues(g) = gValues(g) - 1
-                bValues(b) = bValues(b) - 1
-                NumOfPixels = NumOfPixels - 1
-            Next i
-       
-        End If
-        
-        'Based on the direction we're traveling, reverse the interior loop boundaries as necessary.
-        If atBottom Then
-            startY = 0
-            stopY = finalY
-            yStep = 1
-        Else
-            startY = finalY
-            stopY = 0
-            yStep = -1
-        End If
-            
-    'Process the next column.  This step is pretty much identical to the row steps above (but in a vertical direction, obviously)
-    For y = startY To stopY Step yStep
-            
-        'If we are at the bottom and moving up, we will REMOVE rows from the bottom and ADD them at the top.
-        'If we are at the top and moving down, we will REMOVE rows from the top and ADD them at the bottom.
-        'As such, there are two copies of this function, one per possible direction.
-        If atBottom Then
-        
-            'Calculate bounds
-            lbY = y - mRadius
-            If lbY < 0 Then lbY = 0
-            
-            ubY = y + mRadius
-            If ubY > finalY Then
-                obuY = True
-                ubY = finalY
+            'Based on the direction we're traveling, reverse the interior loop boundaries as necessary.
+            If directionDown Then
+                startY = initY
+                stopY = finalY
+                yStep = 1
             Else
-                obuY = False
-            End If
-                                
-            'Remove trailing values from the box
-            If lbY > 0 Then
-            
-                QuickY = lbY - 1
-            
-                For i = lbX To ubX
-                    QuickValInner = i * qvDepth
-                    r = srcImageData(QuickValInner + 2, QuickY)
-                    g = srcImageData(QuickValInner + 1, QuickY)
-                    b = srcImageData(QuickValInner, QuickY)
-                    rValues(r) = rValues(r) - 1
-                    gValues(g) = gValues(g) - 1
-                    bValues(b) = bValues(b) - 1
-                    NumOfPixels = NumOfPixels - 1
-                Next i
-                        
-            End If
-                    
-            'Add leading values
-            If Not obuY Then
-            
-                For i = lbX To ubX
-                    QuickValInner = i * qvDepth
-                    r = srcImageData(QuickValInner + 2, ubY)
-                    g = srcImageData(QuickValInner + 1, ubY)
-                    b = srcImageData(QuickValInner, ubY)
-                    rValues(r) = rValues(r) + 1
-                    gValues(g) = gValues(g) + 1
-                    bValues(b) = bValues(b) + 1
-                    NumOfPixels = NumOfPixels + 1
-                Next i
-            
+                startY = finalY
+                stopY = initY
+                yStep = -1
             End If
             
-        'The exact same code as above, but in the opposite direction
-        Else
-        
-            lbY = y - mRadius
-            If lbY < 0 Then
-                oblY = True
-                lbY = 0
-            Else
-                oblY = False
-            End If
+            'Process the next column.  This step is pretty much identical to the row steps above (but in a vertical direction, obviously)
+            For y = startY To stopY Step yStep
             
-            ubY = y + mRadius
-            If ubY > finalY Then ubY = finalY
-                                
-            If ubY < finalY Then
-            
-                QuickY = ubY + 1
-            
-                For i = lbX To ubX
-                    QuickValInner = i * qvDepth
-                    r = srcImageData(QuickValInner + 2, QuickY)
-                    g = srcImageData(QuickValInner + 1, QuickY)
-                    b = srcImageData(QuickValInner, QuickY)
-                    rValues(r) = rValues(r) - 1
-                    gValues(g) = gValues(g) - 1
-                    bValues(b) = bValues(b) - 1
-                    NumOfPixels = NumOfPixels - 1
-                Next i
-                        
-            End If
-                    
-            If Not oblY Then
-            
-                For i = lbX To ubX
-                    QuickValInner = i * qvDepth
-                    r = srcImageData(QuickValInner + 2, lbY)
-                    g = srcImageData(QuickValInner + 1, lbY)
-                    b = srcImageData(QuickValInner, lbY)
-                    rValues(r) = rValues(r) + 1
-                    gValues(g) = gValues(g) + 1
-                    bValues(b) = bValues(b) + 1
-                    NumOfPixels = NumOfPixels + 1
-                Next i
-            
-            End If
-        
-        End If
+                'With a local histogram successfully built for the area surrounding this pixel, we now need to find the
+                ' actual median value.
                 
-        'With the median box successfully calculated, we can now find the actual median for this pixel.
+                'Loop through each color component histogram, until we've passed the desired percentile of pixels
+                r = 0
+                g = 0
+                b = 0
+                cutoffTotal = (mPercent * numOfPixels)
+                If cutoffTotal = 0 Then cutoffTotal = 1
+        
+                i = -1
+                Do
+                    i = i + 1
+                    If rValues(i) > 0 Then r = r + rValues(i)
+                Loop Until (r >= cutoffTotal)
+                r = i
                 
-        'Loop through each color component histogram, until we've passed the desired percentile of pixels
-        midR = 0
-        midG = 0
-        midB = 0
-        cutoffTotal = (mPercent * NumOfPixels)
-        If cutoffTotal = 0 Then cutoffTotal = 1
-        
-        i = -1
-        Do
-            i = i + 1
-            If rValues(i) > 0 Then midR = midR + rValues(i)
-        Loop Until (midR >= cutoffTotal)
-        midR = i
-        
-        i = -1
-        Do
-            i = i + 1
-            If gValues(i) > 0 Then midG = midG + gValues(i)
-        Loop Until (midG >= cutoffTotal)
-        midG = i
-        
-        i = -1
-        Do
-            i = i + 1
-            If bValues(i) > 0 Then midB = midB + bValues(i)
-        Loop Until (midB >= cutoffTotal)
-        midB = i
+                i = -1
+                Do
+                    i = i + 1
+                    If gValues(i) > 0 Then g = g + gValues(i)
+                Loop Until (g >= cutoffTotal)
+                g = i
                 
-        'Finally, apply the results to the image.
-        dstImageData(QuickVal + 2, y) = midR
-        dstImageData(QuickVal + 1, y) = midG
-        dstImageData(QuickVal, y) = midB
+                i = -1
+                Do
+                    i = i + 1
+                    If bValues(i) > 0 Then b = b + bValues(i)
+                Loop Until (b >= cutoffTotal)
+                b = i
+                
+                'Finally, apply the results to the image.
+                dstImageData(x, y) = b
+                dstImageData(x + 1, y) = g
+                dstImageData(x + 2, y) = r
+                
+                'Move the iterator in the correct direction
+                If directionDown Then
+                    If y < finalY Then numOfPixels = cPixelIterator.MoveYDown
+                Else
+                    If y > initY Then numOfPixels = cPixelIterator.MoveYUp
+                End If
         
-    Next y
-        atBottom = Not atBottom
-        If Not suppressMessages Then
-            If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
-                SetProgBarVal x + modifyProgBarOffset
+            Next y
+            
+            'Reverse y-directionality on each pass
+            directionDown = Not directionDown
+            If x < finalX Then numOfPixels = cPixelIterator.MoveXRight
+            
+            'Update the progress bar every (progBarCheck) lines
+            If Not suppressMessages Then
+                If (x And progBarCheck) = 0 Then
+                    If userPressedESC() Then Exit For
+                    SetProgBarVal x + modifyProgBarOffset
+                End If
             End If
-        End If
-    Next x
+            
+        Next x
         
-    'With our work complete, point both ImageData() arrays away from their DIBs and deallocate them
-    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-    Erase srcImageData
+        'Release the pixel iterator
+        cPixelIterator.ReleaseTargetHistograms rValues, gValues, bValues, aValues
+        
+        'Release our local array that points to the target DIB
+        CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
+            
+        If cancelCurrentAction Then CreateMedianDIB = 0 Else CreateMedianDIB = 1
     
-    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-    Erase dstImageData
+    Else
+        CreateMedianDIB = 0
+    End If
     
-    If cancelCurrentAction Then CreateMedianDIB = 0 Else CreateMedianDIB = 1
-
 End Function
 
 'White balance a given DIB.
@@ -598,11 +414,11 @@ Public Function WhiteBalanceDIB(ByVal percentIgnore As Double, ByRef srcDIB As p
     Dim foundYet As Boolean
     foundYet = False
     
-    Dim NumOfPixels As Long
-    NumOfPixels = (finalX + 1) * (finalY + 1)
+    Dim numOfPixels As Long
+    numOfPixels = (finalX + 1) * (finalY + 1)
     
     Dim wbThreshold As Long
-    wbThreshold = NumOfPixels * percentIgnore
+    wbThreshold = numOfPixels * percentIgnore
     
     r = 0: g = 0: b = 0
     
@@ -812,11 +628,11 @@ Public Function ContrastCorrectDIB(ByVal percentIgnore As Double, ByRef srcDIB A
     Dim foundYet As Boolean
     foundYet = False
     
-    Dim NumOfPixels As Long
-    NumOfPixels = (finalX + 1) * (finalY + 1)
+    Dim numOfPixels As Long
+    numOfPixels = (finalX + 1) * (finalY + 1)
     
     Dim wbThreshold As Long
-    wbThreshold = NumOfPixels * percentIgnore
+    wbThreshold = numOfPixels * percentIgnore
     
     grayVal = 0
     
@@ -2401,8 +2217,8 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
     If rRadius > xRadius Then rRadius = xRadius
         
     'The number of pixels in the current horizontal line are tracked dynamically.
-    Dim NumOfPixels As Long
-    NumOfPixels = 0
+    Dim numOfPixels As Long
+    numOfPixels = 0
             
     'Blurring takes a lot of variables
     Dim lbX As Long, ubX As Long
@@ -2429,7 +2245,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
         
     Next y
         'Increase the pixel tally
-        NumOfPixels = NumOfPixels + 1
+        numOfPixels = numOfPixels + 1
     Next x
                 
     'Loop through each column in the image, tallying blur values as we go
@@ -2461,7 +2277,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
                 If qvDepth = 4 Then aTotals(y) = aTotals(y) - srcImageData(QuickValInner + 3, y)
             Next y
             
-            NumOfPixels = NumOfPixels - 1
+            numOfPixels = numOfPixels - 1
         
         End If
         
@@ -2477,7 +2293,7 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
                 If qvDepth = 4 Then aTotals(y) = aTotals(y) + srcImageData(QuickValInner + 3, y)
             Next y
             
-            NumOfPixels = NumOfPixels + 1
+            numOfPixels = numOfPixels + 1
             
         End If
             
@@ -2485,10 +2301,10 @@ Public Function CreateHorizontalBlurDIB(ByVal lRadius As Long, ByVal rRadius As 
         For y = initY To finalY
                 
             'With the blur box successfully calculated, we can finally apply the results to the image.
-            dstImageData(QuickVal + 2, y) = rTotals(y) \ NumOfPixels
-            dstImageData(QuickVal + 1, y) = gTotals(y) \ NumOfPixels
-            dstImageData(QuickVal, y) = bTotals(y) \ NumOfPixels
-            If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = aTotals(y) \ NumOfPixels
+            dstImageData(QuickVal + 2, y) = rTotals(y) \ numOfPixels
+            dstImageData(QuickVal + 1, y) = gTotals(y) \ numOfPixels
+            dstImageData(QuickVal, y) = bTotals(y) \ numOfPixels
+            If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = aTotals(y) \ numOfPixels
     
         Next y
         
@@ -2563,8 +2379,8 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
     If dRadius > yRadius Then dRadius = yRadius
         
     'The number of pixels in the current vertical line are tracked dynamically.
-    Dim NumOfPixels As Long
-    NumOfPixels = 0
+    Dim numOfPixels As Long
+    numOfPixels = 0
             
     'Blurring takes a lot of variables
     Dim lbY As Long, ubY As Long
@@ -2589,7 +2405,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
         If qvDepth = 4 Then aTotals(x) = aTotals(x) + srcImageData(QuickVal + 3, y)
     Next x
         'Increase the pixel tally
-        NumOfPixels = NumOfPixels + 1
+        numOfPixels = numOfPixels + 1
     Next y
                 
     'Loop through each row in the image, tallying blur values as we go
@@ -2620,7 +2436,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
                 If qvDepth = 4 Then aTotals(x) = aTotals(x) - srcImageData(QuickVal + 3, QuickY)
             Next x
             
-            NumOfPixels = NumOfPixels - 1
+            numOfPixels = numOfPixels - 1
         
         End If
         
@@ -2637,7 +2453,7 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
                 If qvDepth = 4 Then aTotals(x) = aTotals(x) + srcImageData(QuickVal + 3, QuickY)
             Next x
             
-            NumOfPixels = NumOfPixels + 1
+            numOfPixels = numOfPixels + 1
             
         End If
             
@@ -2647,10 +2463,10 @@ Public Function CreateVerticalBlurDIB(ByVal uRadius As Long, ByVal dRadius As Lo
             QuickVal = x * qvDepth
             
             'With the blur box successfully calculated, we can finally apply the results to the image.
-            dstImageData(QuickVal + 2, y) = rTotals(x) \ NumOfPixels
-            dstImageData(QuickVal + 1, y) = gTotals(x) \ NumOfPixels
-            dstImageData(QuickVal, y) = bTotals(x) \ NumOfPixels
-            If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = aTotals(x) \ NumOfPixels
+            dstImageData(QuickVal + 2, y) = rTotals(x) \ numOfPixels
+            dstImageData(QuickVal + 1, y) = gTotals(x) \ numOfPixels
+            dstImageData(QuickVal, y) = bTotals(x) \ numOfPixels
+            If qvDepth = 4 Then dstImageData(QuickVal + 3, y) = aTotals(x) \ numOfPixels
     
         Next x
         
@@ -2911,7 +2727,7 @@ End Function
 Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmount As Long = 0, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
 
     'Unpremultiply the source DIB, as necessary
-    If srcDIB.getDIBColorDepth = 32 Then srcDIB.setAlphaPremultiplication False
+    If srcDIB.getDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication False
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -2986,7 +2802,7 @@ Public Function ScaleDIBRGBValues(ByRef srcDIB As pdDIB, Optional ByVal scaleAmo
     Erase ImageData
     
     'Premultiply the source DIB, as necessary
-    If srcDIB.getDIBColorDepth = 32 Then srcDIB.setAlphaPremultiplication True
+    If srcDIB.getDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication True
     
     If cancelCurrentAction Then ScaleDIBRGBValues = 0 Else ScaleDIBRGBValues = 1
     
@@ -3071,7 +2887,7 @@ Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double,
     End If
     
     'Unpremultiply the source DIB, as necessary
-    If srcDIB.getDIBColorDepth = 32 Then srcDIB.setAlphaPremultiplication False
+    If srcDIB.getDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication False
 
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
@@ -3154,7 +2970,7 @@ Public Function GammaCorrectDIB(ByRef srcDIB As pdDIB, ByVal newGamma As Double,
     Erase ImageData
     
     'Premultiply the source DIB, as necessary
-    If srcDIB.getDIBColorDepth = 32 Then srcDIB.setAlphaPremultiplication True
+    If srcDIB.getDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication True
     
     If cancelCurrentAction Then GammaCorrectDIB = 0 Else GammaCorrectDIB = 1
     

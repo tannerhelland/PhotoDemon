@@ -64,7 +64,7 @@ Begin VB.Form FormContour
       Caption         =   "apply contour smoothing"
    End
    Begin PhotoDemon.sliderTextCombo sltThickness 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   4
       Top             =   2160
@@ -138,7 +138,7 @@ Public Sub TraceContour(ByVal cRadius As Long, ByVal useBlackBackground As Boole
         If CreateApproximateGaussianBlurDIB(cRadius, srcDIB, workingDIB, 3, toPreview, finalX * 6 + finalY * 3) Then
         
             'Use the median filter to round out edges
-            If CreateMedianDIB(cRadius, 50, workingDIB, srcDIB, toPreview, finalX * 6 + finalY * 3, finalX * 3 + finalY * 3) Then
+            If CreateMedianDIB(cRadius, 50, PDPRS_Circle, workingDIB, srcDIB, toPreview, finalX * 6 + finalY * 3, finalX * 3 + finalY * 3) Then
         
                 'Next, create a contour of the DIB
                 If CreateContourDIB(useBlackBackground, srcDIB, workingDIB, toPreview, finalX * 6 + finalY * 3, finalX * 4 + finalY * 3) Then

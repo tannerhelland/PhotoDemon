@@ -1616,14 +1616,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 FormMedian.showMedianDialog 100
             Else
-                FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
+                FormMedian.ApplyMedianFilter cXMLParams.getParamString
             End If
             
         Case "Erode (minimum rank)"
             If showDialog Then
                 FormMedian.showMedianDialog 1
             Else
-                FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
+                FormMedian.ApplyMedianFilter cXMLParams.getParamString
             End If
         
         'Natural
@@ -1702,7 +1702,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 FormMedian.showMedianDialog 50
             Else
-                FormMedian.ApplyMedianFilter cParams.GetLong(1), cParams.GetDouble(2)
+                FormMedian.ApplyMedianFilter cXMLParams.getParamString
             End If
             
         
