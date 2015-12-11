@@ -415,7 +415,7 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         addMenuIcon "LENSDISTORT", 7, 2, 0    'Apply lens distortion
         addMenuIcon "FIXLENS", 7, 2, 1        'Remove or correct existing lens distortion
         
-        'addMenuIcon "DONUT", 7, 2, 3          'Donut (TODO)
+        'addMenuIcon "DONUT", 7, 2, 3          'Donut
         addMenuIcon "PINCHWHIRL", 7, 2, 4     'Pinch and whirl
         addMenuIcon "POKE", 7, 2, 5           'Poke
         addMenuIcon "RIPPLE", 7, 2, 6         'Ripple
@@ -457,9 +457,11 @@ Public Sub applyAllMenuIcons(Optional ByVal useDoEvents As Boolean = False)
         '--> Noise sub-menu
         addMenuIcon "FILMGRAIN", 7, 6, 0      'Film grain
         addMenuIcon "ADDNOISE", 7, 6, 1       'Add Noise
-        addMenuIcon "BILATERAL", 7, 6, 3      'Bilateral smoothing
-        'TODO: mean shift
-        addMenuIcon "MEDIAN", 7, 6, 5         'Median
+        
+        'addMenuIcon "ANISOTROPIC", 7, 6, 3    'Anisotropic diffusion
+        addMenuIcon "BILATERAL", 7, 6, 4      'Bilateral smoothing
+        'addMenuIcon "MEANSHIFT", 7, 6, 5      'Mean-shift
+        addMenuIcon "MEDIAN", 7, 6, 6         'Median
         
     addMenuIcon "PIXELATE", 7, 7        'Pixelate
         '--> Pixelate sub-menu

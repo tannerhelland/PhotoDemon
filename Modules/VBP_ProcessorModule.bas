@@ -1400,18 +1400,26 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             End If
             
         'Miscellaneous blurs
-        Case "Chroma blur"
+        Case "Anisotropic diffusion"
             If showDialog Then
-                ShowPDDialog vbModal, FormChromaBlur
+                ShowPDDialog vbModal, FormAnisotropic
             Else
-                FormChromaBlur.ChromaBlurFilter cParams.GetDouble(1), cParams.GetLong(2)
+                FormAnisotropic.ApplyAnisotropicDiffusion cXMLParams.getParamString()
             End If
-            
+        
         Case "Kuwahara filter"
             If showDialog Then
                 ShowPDDialog vbModal, FormKuwahara
             Else
                 FormKuwahara.Kuwahara cParams.GetLong(1)
+            End If
+        
+        'TODO: The next two blurs are currently unused; their inclusion in 7.0 is still pending a final decision
+        Case "Chroma blur"
+            If showDialog Then
+                ShowPDDialog vbModal, FormChromaBlur
+            Else
+                FormChromaBlur.ChromaBlurFilter cParams.GetDouble(1), cParams.GetLong(2)
             End If
         
         Case "Grid blur"
