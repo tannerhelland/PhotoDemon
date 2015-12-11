@@ -1251,7 +1251,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 ShowPDDialog vbModal, FormHDR
             Else
-                FormHDR.ApplyImitationHDR_2 cParams.GetDouble(1), cParams.GetDouble(2)
+                FormHDR.ApplyImitationHDR cParams.GetDouble(1), cParams.GetDouble(2)
             End If
             
         Case "Photo filter"
@@ -1326,7 +1326,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 ShowPDDialog vbModal, FormOilPainting
             Else
-                FormOilPainting.ApplyOilPaintingEffect cParams.GetLong(1), cParams.GetDouble(2)
+                FormOilPainting.ApplyOilPaintingEffect cXMLParams.getParamString
             End If
             
         Case "Posterize"

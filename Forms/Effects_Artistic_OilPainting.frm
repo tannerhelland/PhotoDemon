@@ -44,10 +44,10 @@ Begin VB.Form FormOilPainting
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
-      Top             =   1680
+      Top             =   2040
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -57,10 +57,10 @@ Begin VB.Form FormOilPainting
       Value           =   5
    End
    Begin PhotoDemon.sliderTextCombo sltPercent 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
-      Top             =   2760
+      Top             =   2880
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -99,10 +99,20 @@ Option Explicit
 'Apply an "oil painting" effect to the image (heavily optimized accumulation implementation!)
 'Inputs: radius of the effect (min 1, no real max - but the scroll bar is maxed at 200 presently)
 '        smoothness of the effect; smaller values indicate less smoothness (e.g. less bins are used to calculate luminance)
-Public Sub ApplyOilPaintingEffect(ByVal mRadius As Long, ByVal mLevels As Double, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+    
+    'Parse out the parameter list
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.setParamString parameterList
+    
+    Dim mRadius As Long, mLevels As Double, kernelShape As PD_PIXEL_REGION_SHAPE
+    mRadius = cParams.GetLong("radius", 1&)
+    mLevels = cParams.GetDouble("levels", 50#)
+    kernelShape = cParams.GetLong("kernelShape", PDPRS_Rectangle)
     
     If Not toPreview Then Message "Repainting image with oils..."
-    
+        
     'Create a local array and point it at the pixel data of the current image
     Dim dstImageData() As Byte
     Dim dstSA As SAFEARRAY2D
@@ -121,7 +131,7 @@ Public Sub ApplyOilPaintingEffect(ByVal mRadius As Long, ByVal mLevels As Double
     Dim srcSA As SAFEARRAY2D
     prepSafeArray srcSA, srcDIB
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-        
+    
     'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
     If toPreview Then
         mRadius = mRadius * curDIBValues.previewModifier
@@ -145,7 +155,7 @@ Public Sub ApplyOilPaintingEffect(ByVal mRadius As Long, ByVal mLevels As Double
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
     Dim QuickVal As Long, QuickValInner As Long, QuickY As Long, qvDepth As Long
-    qvDepth = srcDIB.getDIBColorDepth \ 8
+    qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
@@ -156,10 +166,10 @@ Public Sub ApplyOilPaintingEffect(ByVal mRadius As Long, ByVal mLevels As Double
     End If
     
     'The number of pixels in the current median box are tracked dynamically.
-    Dim NumOfPixels As Long
-    NumOfPixels = 0
+    Dim numOfPixels As Long
+    numOfPixels = 0
             
-    'Median filtering takes a lot of variables
+    'Oil painting takes a lot of variables
     Dim rValues(0 To 255) As Long, gValues(0 To 255) As Long, bValues(0 To 255) As Long, lValues(0 To 255) As Long
     Dim lbX As Long, lbY As Long, ubX As Long, ubY As Long
     Dim obuX As Boolean, obuY As Boolean, oblY As Boolean
@@ -184,7 +194,7 @@ Public Sub ApplyOilPaintingEffect(ByVal mRadius As Long, ByVal mLevels As Double
     Next i
     
     'Later in the function, we must find the most populated luminance bin; these values help us track it
-    Dim maxBinCount As Long, maxBinIndex As Byte
+    Dim maxBinCount As Long, maxBinIndex As Long
     
     'Generate an initial array of median data for the first pixel
     For x = initX To initX + mRadius - 1
@@ -466,7 +476,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Oil painting", , buildParams(sltRadius.Value, sltPercent.Value), UNDO_LAYER
+    Process "Oil painting", , GetLocalParamString(), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -504,11 +514,15 @@ Private Sub sltRadius_Change()
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ApplyOilPaintingEffect sltRadius.Value, sltPercent.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyOilPaintingEffect GetLocalParamString(), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
+Private Function GetLocalParamString() As String
+    GetLocalParamString = buildParamList("radius", sltRadius.Value, "levels", sltPercent.Value)
+End Function
 
