@@ -63,7 +63,7 @@ Begin VB.Form FormMain
       Top             =   2520
       _extentx        =   635
       _extenty        =   635
-      errasout        =   0   'False
+      errasout        =   0
       pollinterval    =   5
    End
    Begin VB.Menu MnuFileTop 
@@ -1198,16 +1198,20 @@ Begin VB.Form FormMain
             Index           =   2
          End
          Begin VB.Menu MnuNoise 
-            Caption         =   "Bilateral filter..."
+            Caption         =   "Anisotropic diffusion..."
             Index           =   3
          End
          Begin VB.Menu MnuNoise 
-            Caption         =   "Mean shift..."
+            Caption         =   "Bilateral filter..."
             Index           =   4
          End
          Begin VB.Menu MnuNoise 
-            Caption         =   "Median..."
+            Caption         =   "Mean shift..."
             Index           =   5
+         End
+         Begin VB.Menu MnuNoise 
+            Caption         =   "Median..."
+            Index           =   6
          End
       End
       Begin VB.Menu MnuEffectUpper 
@@ -3347,7 +3351,7 @@ Private Sub MnuBlurFilter_Click(Index As Integer)
             
         '<separator>
         Case 7
-                
+        
         'Kuwahara
         Case 8
             Process "Kuwahara filter", True
@@ -4149,16 +4153,20 @@ Private Sub MnuNoise_Click(Index As Integer)
         'Separator
         Case 2
         
-        'Bilateral smoothing
+        'Anisotropic diffusion
         Case 3
+            Process "Anisotropic diffusion", True
+        
+        'Bilateral smoothing
+        Case 4
             Process "Bilateral smoothing", True
         
         'Mean shift
-        Case 4
+        Case 5
             Process "Mean shift", True
         
         'Median
-        Case 5
+        Case 6
             Process "Median", True
             
     End Select
