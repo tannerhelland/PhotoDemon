@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.114</langversion>
+<langversion>6.7.115</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -4815,6 +4815,11 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
+<original>Anisotropic diffusion</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Bilateral filter</original>
 <translation></translation>
 </phrase>
@@ -5740,7 +5745,7 @@ Nota: enkele kleine programmateksten kunnen niet live worden  bijgewerkt. Een de
 <translation>Verwijder alfakanaal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 561 phrases. 177 were duplicates of existing phrases, so only 384 new phrases were written to file. -->
+<!-- MainWindow.frm contains 563 phrases. 178 were duplicates of existing phrases, so only 385 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -8117,11 +8122,16 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 </phrase>
 
 <phrase>
+<original>kernel shape</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Applying modern art techniques</original>
 <translation>Toepassen moderne kunst technieken</translation>
 </phrase>
 
-<!-- Effects_Artistic_ModernArt.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Artistic_ModernArt.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ModernArt.frm-->
 
@@ -9146,16 +9156,11 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <!-- BEGIN text for Effects_Noise_MeanShift.frm (FormMeanShift) -->
 
 <phrase>
-<original>kernel shape</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Applying mean shift filter</original>
 <translation></translation>
 </phrase>
 
-<!-- Effects_Noise_MeanShift.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Noise_MeanShift.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Noise_MeanShift.frm-->
 
@@ -9201,7 +9206,7 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Mediaanfilter</translation>
 </phrase>
 
-<!-- Effects_Noise_MedianSmoothing.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_MedianSmoothing.frm-->
 
@@ -14466,12 +14471,63 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- END text for pdPixelIterator.cls-->
 
+<!-- BEGIN text for Effects_Blur_Anisotropic.frm (FormAnisotropic) -->
+
+<phrase>
+<original>directionality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>gradient flow</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>iterations</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>model</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Calculating energy gradients (pass %1 of %2)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>4-way cardinal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>4-way ordinal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>8-way</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>smooth</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Blur_Anisotropic.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<!-- END text for Effects_Blur_Anisotropic.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2486</phrasecount>
+<phrasecount>2496</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4265 phrases. -->
-<!-- 1779 are duplicates, so only 2486 unique phrases have been written to file. -->
-<!-- These 2486 phrases contain approximately 13350 total words. -->
+<!-- As of this build, PhotoDemon contains 4282 phrases. -->
+<!-- 1786 are duplicates, so only 2496 unique phrases have been written to file. -->
+<!-- These 2496 phrases contain approximately 13365 total words. -->
 
 </pdData>

@@ -487,6 +487,11 @@ Public Function hasImage() As Boolean
     hasImage = (m_dibHandle <> 0)
 End Function
 
+'Return whether the DIB is top-down (negative height) or bottom-up (positive height)
+Public Function IsDIBTopDown() As Boolean
+    IsDIBTopDown = CBool(m_dibHeader.Height < 0)
+End Function
+
 'Return this DIB's hDC
 Public Function getDIBDC() As Long
     getDIBDC = m_dibDC
@@ -507,6 +512,10 @@ Public Function getDIBHeader() As Long
     getDIBHeader = VarPtr(m_dibHeader)
 End Function
 
+Friend Sub copyDIBHeader(ByRef dstHeader As BITMAPINFOHEADER)
+    dstHeader = m_dibHeader
+End Sub
+
 'Make a copy of an existing DIB
 Public Function createFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newWidth As Long = -1, Optional ByVal newHeight As Long = -1, Optional useHalftoning As Boolean = True) As Boolean
 
@@ -525,6 +534,9 @@ Public Function createFromExistingDIB(ByRef srcDIB As pdDIB, Optional ByVal newW
             
                 'Copy the image data without modification
                 BitBlt m_dibDC, 0, 0, m_dibWidth, m_dibHeight, srcDIB.getDIBDC, 0, 0, vbSrcCopy
+                
+                'Copy the source DIB's header as well
+                srcDIB.copyDIBHeader m_dibHeader
                 
                 'Reset our alpha premultiplication flag to match
                 m_IsAlphaPremultiplied = srcDIB.getAlphaPremultiplication
