@@ -1032,7 +1032,7 @@ Public Function LoadImageFromDragDrop(ByRef Data As DataObject, ByRef Effect As 
         
         'Ask the DIB to write its contents to file in BMP format
         tmpString = g_UserPreferences.GetTempPath & "PD_DragDrop.tmp"
-        tmpDIB.writeToBitmapFile tmpString
+        tmpDIB.WriteToBitmapFile tmpString
         
         'Now that the image is saved on the hard drive, we can delete our temporary objects
         Set tmpPicture = Nothing
@@ -1431,7 +1431,7 @@ Private Sub RenderClipboard_BITMAP()
         
         If (clipboardDC <> 0) Then
         
-            clipboardBMP = CreateCompatibleBitmap(tmpDC, m_ClipboardDIB.getDIBWidth, m_ClipboardDIB.getDIBHeight)
+            clipboardBMP = CreateCompatibleBitmap(tmpDC, m_ClipboardDIB.getDIBWidth, Abs(m_ClipboardDIB.getDIBHeight))
             If (clipboardBMP <> 0) Then
                 
                 #If DEBUGMODE = 1 Then
@@ -1444,7 +1444,13 @@ Private Sub RenderClipboard_BITMAP()
                 
                 '24-bit images can be copied as-is
                 If m_ClipboardDIB.getDIBColorDepth = 24 Then
-                    BitBlt clipboardDC, 0, 0, m_ClipboardDIB.getDIBWidth, m_ClipboardDIB.getDIBHeight, m_ClipboardDIB.getDIBDC, 0, 0, vbSrcCopy
+                
+                    'As a failsafe check, look for upside-down DIBs.
+                    If m_ClipboardDIB.IsDIBTopDown Then
+                        BitBlt clipboardDC, 0, 0, m_ClipboardDIB.getDIBWidth, m_ClipboardDIB.getDIBHeight, m_ClipboardDIB.getDIBDC, 0, 0, vbSrcCopy
+                    Else
+                        StretchBlt clipboardDC, 0, m_ClipboardDIB.getDIBHeight, m_ClipboardDIB.getDIBWidth, -m_ClipboardDIB.getDIBHeight, m_ClipboardDIB.getDIBDC, 0, 0, m_ClipboardDIB.getDIBWidth, m_ClipboardDIB.getDIBHeight, vbSrcCopy
+                    End If
                 
                 '32-bit images must be composited against a white background first
                 Else
@@ -1455,7 +1461,12 @@ Private Sub RenderClipboard_BITMAP()
                     
                     tmpDIB.createFromExistingDIB m_ClipboardDIB
                     tmpDIB.convertTo24bpp
-                    BitBlt clipboardDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+                    
+                    If m_ClipboardDIB.IsDIBTopDown Then
+                        BitBlt clipboardDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
+                    Else
+                        StretchBlt clipboardDC, 0, tmpDIB.getDIBHeight, tmpDIB.getDIBWidth, -tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, vbSrcCopy
+                    End If
                     Set tmpDIB = Nothing
                     
                 End If
