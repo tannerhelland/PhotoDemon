@@ -18,9 +18,9 @@ Option Explicit
 
 'API Declarations
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
-Private Declare Function compress Lib "zlibwapi.dll" (Dest As Any, destLen As Any, src As Any, ByVal srcLen As Long) As Long
-Private Declare Function uncompress Lib "zlibwapi.dll" (Dest As Any, destLen As Any, src As Any, ByVal srcLen As Long) As Long
-Private Declare Function zlibVersion Lib "zlibwapi.dll" () As Long
+Private Declare Function compress Lib "zlibwapi" (Dest As Any, destLen As Any, src As Any, ByVal srcLen As Long) As Long
+Private Declare Function uncompress Lib "zlibwapi" (Dest As Any, destLen As Any, src As Any, ByVal srcLen As Long) As Long
+Private Declare Function zlibVersion Lib "zlibwapi" () As Long
 
 'A single zLib handle is maintained for the life of a PD instance; see initializeZLib and releaseZLib, below.
 Private m_ZLibHandle As Long
