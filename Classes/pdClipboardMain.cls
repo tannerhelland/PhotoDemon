@@ -28,6 +28,18 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'**************************************************************************
+'CONSTANTS FOR DEBUGGING USE ONLY.
+' In production code, these should all be set to TRUE.
+Private Const PD_CB_ALLOW_INTERNAL_FORMAT_PASTE As Boolean = True
+Private Const PD_CB_ALLOW_PNG_PASTE As Boolean = True
+Private Const PD_CB_ALLOW_JPEG_PASTE As Boolean = True
+Private Const PD_CB_ALLOW_ONLINE_PASTE As Boolean = True
+Private Const PD_CB_ALLOW_FILE_PASTE As Boolean = True
+Private Const PD_CB_ALLOW_GENERIC_TEXT_PASTE As Boolean = True
+Private Const PD_CB_ALLOW_BMP_DIB_PASTE As Boolean = True
+'**************************************************************************
+
 'Some specialized structs are required for parsing various clipboard bitmap formats
 Private Type BITMAPFILEHEADER
     Type As Integer
@@ -219,6 +231,19 @@ Public Sub ClipboardCopy(ByVal copyMerged As Boolean, Optional ByVal updateUI As
         m_Clipboard.SetClipboardData_DelayedRendering m_Clipboard.AddClipboardFormat("PNG")
         m_Clipboard.SetClipboardData_DelayedRendering CF_BITMAP
         m_Clipboard.SetClipboardData_DelayedRendering CF_DIBV5
+        
+        'So an interesting story about CF_DIB.  PD is perfectly capable of rendering CF_DIB images to the clipboard, but at present,
+        ' we choose not to enable this.  Why?  Microsoft Paint will preferentially accept a CF_DIB image over any other format on
+        ' the clipboard.  This would be okay if Paint recognized alpha channels, but because it doesn't, we would need to downsample
+        ' PD's 32-bpp images to 24-bpp.  However, this would incorrectly generate a 24-bpp copy for software that *does* recognize
+        ' 32-bpp CF_DIB entries.  To minimize the risk of a screwed-up end result, PD only registers CF_BITMAP and CF_DIBv5 formats
+        ' to the clipboard (plus PNG, obviously).  It's assumed that any program clever enough to recognize CF_DIBv5 also has a
+        ' contingency plan for alpha bytes, whereas the same can't be said for CF_DIB, unfortunately.
+        '
+        'As always, PNG is the preferred interchange format for images.  If you use a program that doesn't copy/paste PNG-format data,
+        ' get them to fix their software!
+        'm_Clipboard.SetClipboardData_DelayedRendering CF_DIB
+        
         m_Clipboard.ClipboardClose
     End If
     
@@ -260,19 +285,19 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
         #End If
         
         'If PD was used to Cut or Copy something onto the clipboard, our own private format(s) will be listed first.
-        If m_Clipboard.DoesClipboardHaveFormatID(CF_PD_DIB) Then
+        If m_Clipboard.DoesClipboardHaveFormatID(CF_PD_DIB) And PD_CB_ALLOW_INTERNAL_FORMAT_PASTE Then
             pasteWasSuccessful = ClipboardPaste_InternalData(srcIsMeantAsLayer, CF_PD_DIB)
         End If
         
         'PNGs on the clipboard get preferential treatment, as they preserve transparency data - so check for them first.
-        If m_Clipboard.DoesClipboardHaveFormatName("PNG") And (Not pasteWasSuccessful) Then
+        If m_Clipboard.DoesClipboardHaveFormatName("PNG") And (Not pasteWasSuccessful) And PD_CB_ALLOW_PNG_PASTE Then
             pasteWasSuccessful = ClipboardPaste_CustomImageFormat("PNG", srcIsMeantAsLayer, "png")
         End If
         
         'If we couldn't find PNG data (or something went horribly wrong during that step), look for an HTML fragment next.
         ' Images copied from web browsers typically create an HTML fragment, which should have a direct link to the copied image.
         '  Downloading the image manually lets us maintain things like ICC profiles and the image's original filename.
-        If m_Clipboard.DoesClipboardHaveHTML() And (Not pasteWasSuccessful) Then
+        If m_Clipboard.DoesClipboardHaveHTML() And (Not pasteWasSuccessful) And PD_CB_ALLOW_ONLINE_PASTE Then
             pasteWasSuccessful = ClipboardPaste_HTML(srcIsMeantAsLayer)
         End If
         
@@ -280,32 +305,32 @@ Public Sub ClipboardPaste(ByVal srcIsMeantAsLayer As Boolean)
         ' damn browser didn't re-encode them, but they're better than bitmaps or DIBs because they may retain metadata and
         ' color profiles, so test for JPEG next.  (Also, note that certain versions of Microsoft Office use "JFIF" as the identifier,
         ' for reasons known only to them...)
-        If m_Clipboard.DoesClipboardHaveFormatName("JPEG") And (Not pasteWasSuccessful) Then
+        If m_Clipboard.DoesClipboardHaveFormatName("JPEG") And (Not pasteWasSuccessful) And PD_CB_ALLOW_JPEG_PASTE Then
             pasteWasSuccessful = ClipboardPaste_CustomImageFormat("JPEG", srcIsMeantAsLayer, "jpg")
         End If
         
-        If m_Clipboard.DoesClipboardHaveFormatName("JPG") And (Not pasteWasSuccessful) Then
+        If m_Clipboard.DoesClipboardHaveFormatName("JPG") And (Not pasteWasSuccessful) And PD_CB_ALLOW_JPEG_PASTE Then
             pasteWasSuccessful = ClipboardPaste_CustomImageFormat("JPG", srcIsMeantAsLayer, "jpg")
         End If
         
-        If m_Clipboard.DoesClipboardHaveFormatName("JFIF") And (Not pasteWasSuccessful) Then
+        If m_Clipboard.DoesClipboardHaveFormatName("JFIF") And (Not pasteWasSuccessful) And PD_CB_ALLOW_JPEG_PASTE Then
             pasteWasSuccessful = ClipboardPaste_CustomImageFormat("JFIF", srcIsMeantAsLayer, "jpg")
         End If
         
         'Next, see if the clipboard contains a generic file list.  If it does, try to load each file in turn.
-        If m_Clipboard.DoesClipboardHaveFiles() And (Not pasteWasSuccessful) Then
+        If m_Clipboard.DoesClipboardHaveFiles() And (Not pasteWasSuccessful) And PD_CB_ALLOW_FILE_PASTE Then
             pasteWasSuccessful = ClipboardPaste_ListOfFiles(srcIsMeantAsLayer)
         End If
         
         'Next, look for plaintext.  This could be a URL, or maybe a text representation of a filepath.
         ' (Also, note that we only have to search for one text format, because the OS auto-converts between text formats for free.)
-        If m_Clipboard.DoesClipboardHaveText() And (Not pasteWasSuccessful) Then
+        If m_Clipboard.DoesClipboardHaveText() And (Not pasteWasSuccessful) And PD_CB_ALLOW_GENERIC_TEXT_PASTE Then
             pasteWasSuccessful = ClipboardPaste_TextSource(srcIsMeantAsLayer)
         End If
         
         'Last up are DIBs and bitmaps.  Once again, the OS auto-converts between bitmap and DIB formats, and if it all possible,
         ' we prefer DIBv5 as it actually supports alpha data.
-        If m_Clipboard.DoesClipboardHaveBitmapImage() And (Not pasteWasSuccessful) Then
+        If m_Clipboard.DoesClipboardHaveBitmapImage() And (Not pasteWasSuccessful) And PD_CB_ALLOW_BMP_DIB_PASTE Then
             pasteWasSuccessful = ClipboardPaste_BitmapImage(srcIsMeantAsLayer)
         End If
         
@@ -749,7 +774,7 @@ Private Function ClipboardPaste_BitmapImage(ByVal srcIsMeantAsLayer As Boolean) 
         ' (vs a variant that Windows auto-created to simplify handling).
         Dim priorityFormat As PredefinedClipboardFormatConstants
         priorityFormat = m_Clipboard.GetPriorityBitmapFormat()
-                
+        
         'Bitmap formats may require special behavior on the part of external load functions, so it's important that we accurately
         ' mark the module-level tracker with both the current format (what we retrieved from the clipboard; this may have been
         ' auto-generated by Windows), and the original format the caller placed on the clipboard.
@@ -1244,7 +1269,14 @@ Public Sub RenderAllClipboardFormatsManually()
             'Render all supported formats
             RenderClipboard_PNG
             RenderClipboard_BITMAP True
-            RenderClipboard_DIB True
+            
+            'DIBs have some special considerations.  For details, check out the comments in the ClipboardCopy function, but in a nutshell,
+            ' PD doesn't render CF_DIB images because various programs handle alpha in varying ways, making it impossible to please everyone.
+            ' Instead, as far as standard formats go, PD renders CF_BITMAP and CF_DIBv5 ONLY, with the assumption that "advanced" image
+            ' editors can pick up the DIBv5 without trouble, while "basic" editors (like MS Paint) will take the CF_BITMAP copy.
+            ' (This approach also spares the user's system a good chunk of resources, as we're not copying a crapload of mega-sized images
+            '  in varying DIB formats.)
+            RenderClipboard_DIB True, True
             
             'Close the clipboard
             m_Clipboard.ClipboardClose
@@ -1523,7 +1555,7 @@ End Sub
 'Place a DIB (or optionally, DIBv5) on the clipboard.  This function assumes that the caller has already unstashed previously
 ' saved clipboard data and thoroughly validated it.  If you haven't done that, this function will fail.
 ' NOTE: this function does not open, clear, or close the clipboard, by design; it is up to the caller to handle that.
-Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False)
+Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False, Optional ByVal programShuttingDown As Boolean = False)
     
     On Error GoTo RenderClipboardDIB_Failure
     
@@ -1547,7 +1579,7 @@ Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False)
     Else
         headerSize = LenB(bmpHeader)
     End If
-        
+    
     Dim dibPointer As Long, dibSize As Long
     m_ClipboardDIB.retrieveDIBPointerAndSize dibPointer, dibSize
     
@@ -1605,14 +1637,22 @@ Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False)
             End If
             
             'Next, we want to copy the actual pixel bits into place.  PD stores DIBs as bottom-up, but this can cause problems when
-            ' programs expect a top-down DIB.  To prevent trouble, we'll reverse the order of lines.
+            ' programs expect a top-down DIB.  To prevent trouble, we'll reverse the order of lines.  (Note that we do *not* reverse
+            ' order if PD is shutting down.  I do not have an explanation for this, except that the resulting DIB appears upside-down
+            ' if I don't do this.  Explanations welcome!)
             Dim y As Long, yFinal As Long, dibStride As Long
             yFinal = m_ClipboardDIB.getDIBHeight - 1
             dibStride = m_ClipboardDIB.getDIBArrayWidth
             
-            For y = 0 To yFinal
-                CopyMemoryStrict hGlobalPtr + headerSize + (y * dibStride), dibPointer + (yFinal - y) * dibStride, dibStride
-            Next y
+            If (Not programShuttingDown) Or (useV5Header) Then
+                For y = 0 To yFinal
+                    CopyMemoryStrict hGlobalPtr + headerSize + (y * dibStride), dibPointer + (yFinal - y) * dibStride, dibStride
+                Next y
+            Else
+                For y = 0 To yFinal
+                    CopyMemoryStrict hGlobalPtr + headerSize + (y * dibStride), dibPointer + y * dibStride, dibStride
+                Next y
+            End If
             
             'Unlock the memory, then assign ownership to the clipboard
             m_Clipboard.FinishedWithGlobalMemoryPtr hGlobal
