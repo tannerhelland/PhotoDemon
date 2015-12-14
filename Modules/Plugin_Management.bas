@@ -339,7 +339,7 @@ Private Function doesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
     'The plugin file is missing.  Let's see if we can find it.
     Else
     
-        pdDebug.LogAction "WARNING!  Plugin ID#" & i & " (" & getPluginFilename(i) & ") is missing.  Scanning alternate folders..."
+        pdDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & getPluginFilename(pluginEnumID) & ") is missing.  Scanning alternate folders..."
     
         Dim extraFiles As pdStringStack
         Set extraFiles = New pdStringStack
@@ -348,12 +348,12 @@ Private Function doesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
         ' folders preserved.
         If cFile.FileExist(g_UserPreferences.getProgramPath & pluginFilename) Then
             
-            pdDebug.LogAction "UPDATE!  Plugin ID#" & i & " (" & getPluginFilename(i) & ") was found in the base PD folder.  Attempting to relocate..."
+            pdDebug.LogAction "UPDATE!  Plugin ID#" & pluginEnumID & " (" & getPluginFilename(pluginEnumID) & ") was found in the base PD folder.  Attempting to relocate..."
             
             'Move the plugin file to the proper folder
             If cFile.CopyFile(g_UserPreferences.getProgramPath & pluginFilename, g_PluginPath & pluginFilename) Then
                 
-                pdDebug.LogAction "UPDATE!  Plugin ID#" & i & " (" & getPluginFilename(i) & ") was relocated successfully."
+                pdDebug.LogAction "UPDATE!  Plugin ID#" & pluginEnumID & " (" & getPluginFilename(pluginEnumID) & ") was relocated successfully."
                 
                 'Kill the old plugin instance
                 cFile.KillFile g_UserPreferences.getProgramPath & pluginFilename
@@ -379,13 +379,13 @@ Private Function doesPluginFileExist(ByVal pluginEnumID As CORE_PLUGINS) As Bool
             'The file couldn't be moved.  There's probably write issues with the folder structure, in which case the program
             ' as a whole is pretty much doomed.  Exit now.
             Else
-                pdDebug.LogAction "WARNING!  Plugin ID#" & i & " (" & getPluginFilename(i) & ") could not be relocated.  Initialization abandoned."
+                pdDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & getPluginFilename(pluginEnumID) & ") could not be relocated.  Initialization abandoned."
                 doesPluginFileExist = False
             End If
         
         'If the plugin file doesn't exist in the base folder either, we're SOL.  Exit now.
         Else
-            pdDebug.LogAction "WARNING!  Plugin ID#" & i & " (" & getPluginFilename(i) & ") wasn't found in alternate locations.  Initialization abandoned."
+            pdDebug.LogAction "WARNING!  Plugin ID#" & pluginEnumID & " (" & getPluginFilename(pluginEnumID) & ") wasn't found in alternate locations.  Initialization abandoned."
             doesPluginFileExist = False
         End If
     
