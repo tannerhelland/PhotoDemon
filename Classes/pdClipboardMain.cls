@@ -1243,7 +1243,7 @@ Public Sub RenderAllClipboardFormatsManually()
             
             'Render all supported formats
             RenderClipboard_PNG
-            RenderClipboard_BITMAP
+            RenderClipboard_BITMAP True
             RenderClipboard_DIB True
             
             'Close the clipboard
@@ -1409,7 +1409,7 @@ End Sub
 'Place an old-fashioned hBitmap on the clipboard.  This function assumes that the caller has already unstashed previously saved
 ' clipboard data and thoroughly validated it.  If you haven't done that, this function will fail.
 ' NOTE: this function does not open, clear, or close the clipboard, by design; it is up to the caller to handle that.
-Private Sub RenderClipboard_BITMAP()
+Private Sub RenderClipboard_BITMAP(Optional ByVal programShuttingDown As Boolean = False)
     
     On Error GoTo RenderClipboardBITMAP_Failure
     
@@ -1445,11 +1445,19 @@ Private Sub RenderClipboard_BITMAP()
                 '24-bit images can be copied as-is
                 If m_ClipboardDIB.getDIBColorDepth = 24 Then
                 
-                    'As a failsafe check, look for upside-down DIBs.
-                    If m_ClipboardDIB.IsDIBTopDown Then
-                        BitBlt clipboardDC, 0, 0, m_ClipboardDIB.getDIBWidth, m_ClipboardDIB.getDIBHeight, m_ClipboardDIB.getDIBDC, 0, 0, vbSrcCopy
-                    Else
+                    'So, a weird discovery: PD's delayed rendering system means that clipboard formats are not uploaded to the clipboard
+                    ' until they are actually requested by a program.  The exception to this is when PD shuts down and is still the owner
+                    ' of clipboard data; when this happens, PD renders all formats prior to shutting down (as obviously it won't be around
+                    ' to render things on-demand).
+                    '
+                    'For reasons known only to Microsoft, traditional bottom-up DIBs are no longer handled correctly if PD is not running
+                    ' when other programs access the clipboard.  There is no obvious reason for this, seeing as PD's presence shouldn't
+                    ' even be part of the equation... but here we are.  As a result, if PD is shutting down, I manually reverse the
+                    ' scanline order to ensure compatibility with programs that don't support PNG clipboard data.
+                    If programShuttingDown Then
                         StretchBlt clipboardDC, 0, m_ClipboardDIB.getDIBHeight, m_ClipboardDIB.getDIBWidth, -m_ClipboardDIB.getDIBHeight, m_ClipboardDIB.getDIBDC, 0, 0, m_ClipboardDIB.getDIBWidth, m_ClipboardDIB.getDIBHeight, vbSrcCopy
+                    Else
+                        BitBlt clipboardDC, 0, 0, m_ClipboardDIB.getDIBWidth, m_ClipboardDIB.getDIBHeight, m_ClipboardDIB.getDIBDC, 0, 0, vbSrcCopy
                     End If
                 
                 '32-bit images must be composited against a white background first
@@ -1462,10 +1470,10 @@ Private Sub RenderClipboard_BITMAP()
                     tmpDIB.createFromExistingDIB m_ClipboardDIB
                     tmpDIB.convertTo24bpp
                     
-                    If m_ClipboardDIB.IsDIBTopDown Then
-                        BitBlt clipboardDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
-                    Else
+                    If programShuttingDown Then
                         StretchBlt clipboardDC, 0, tmpDIB.getDIBHeight, tmpDIB.getDIBWidth, -tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, vbSrcCopy
+                    Else
+                        BitBlt clipboardDC, 0, 0, tmpDIB.getDIBWidth, tmpDIB.getDIBHeight, tmpDIB.getDIBDC, 0, 0, vbSrcCopy
                     End If
                     Set tmpDIB = Nothing
                     
@@ -1539,7 +1547,7 @@ Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False)
     Else
         headerSize = LenB(bmpHeader)
     End If
-    
+        
     Dim dibPointer As Long, dibSize As Long
     m_ClipboardDIB.retrieveDIBPointerAndSize dibPointer, dibSize
     
