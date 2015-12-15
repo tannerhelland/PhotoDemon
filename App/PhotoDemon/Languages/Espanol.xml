@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.118</langversion>
+<langversion>6.7.119</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -4636,6 +4636,11 @@ or los menús Archivo > Importar y Archivo > Abrir.</translation>
 </phrase>
 
 <phrase>
+<original>Symmetric nearest-neighbor</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Distort</original>
 <translation>distorsionar</translation>
 </phrase>
@@ -5746,7 +5751,7 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 <translation>Retire canal alfa</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 563 phrases. 178 were duplicates of existing phrases, so only 385 new phrases were written to file. -->
+<!-- MainWindow.frm contains 565 phrases. 179 were duplicates of existing phrases, so only 386 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14472,7 +14477,7 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- END text for pdPixelIterator.cls-->
 
-<!-- BEGIN text for Effects_Blur_Anisotropic.frm (FormAnisotropic) -->
+<!-- BEGIN text for Effects_Noise_Anisotropic.frm (FormAnisotropic) -->
 
 <phrase>
 <original>directionality</original>
@@ -14519,16 +14524,22 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 <translation></translation>
 </phrase>
 
-<!-- Effects_Blur_Anisotropic.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
-<!-- END text for Effects_Blur_Anisotropic.frm-->
+<!-- END text for Effects_Noise_Anisotropic.frm-->
+
+<!-- BEGIN text for Effects_Blur_SNN.frm (FormSNN) -->
+
+<!-- Effects_Blur_SNN.frm contains 13 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+
+<!-- END text for Effects_Blur_SNN.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2496</phrasecount>
+<phrasecount>2497</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4282 phrases. -->
-<!-- 1786 are duplicates, so only 2496 unique phrases have been written to file. -->
-<!-- These 2496 phrases contain approximately 13365 total words. -->
+<!-- As of this build, PhotoDemon contains 4297 phrases. -->
+<!-- 1800 are duplicates, so only 2497 unique phrases have been written to file. -->
+<!-- These 2497 phrases contain approximately 13367 total words. -->
 
 </pdData>
