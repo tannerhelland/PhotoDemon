@@ -1037,6 +1037,10 @@ Begin VB.Form FormMain
             Caption         =   "Kuwahara filter..."
             Index           =   8
          End
+         Begin VB.Menu MnuBlurFilter 
+            Caption         =   "Symmetric nearest-neighbor..."
+            Index           =   9
+         End
       End
       Begin VB.Menu MnuEffectUpper 
          Caption         =   "Distort"
@@ -3355,6 +3359,10 @@ Private Sub MnuBlurFilter_Click(Index As Integer)
         'Kuwahara
         Case 8
             Process "Kuwahara filter", True
+            
+        'Symmetric nearest-neighbor
+        Case 9
+            Process "Symmetric nearest-neighbor", True
             
         'Currently unused:
         

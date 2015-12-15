@@ -204,8 +204,8 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
     If adCardinal And adOrdinal Then lambda = 1 / 8 Else lambda = 1 / 4
     lambda = lambda * adStrength
     
-    'Conduction values are constant, given a difference on the range [-255, 255]
-    ' (TODO: vary this based on perona-malik's constants)
+    'Conduction values are constant, given a difference on the range [-255, 255], but they are calculated differently
+    ' based on the "option" parameter given in the original paper.
     Dim conduction() As Single
     ReDim conduction(-255 To 255) As Single
     
@@ -310,7 +310,6 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
                     aNabla = (aSrc - aDst)
                     aSum = aSum + aNabla * conduction(aNabla)
                 End If
-                
                 
                 'South
                 QuickY = y + 1
@@ -500,11 +499,6 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
     finalizeImageData toPreview, dstPic
 
 End Sub
-
-'Blend byte1 w/ byte2 based on mixRatio. mixRatio is expected to be a value between 0 and 1.
-Private Function BlendLongs(ByVal baseColor As Long, ByVal newColor As Long, ByRef mixRatio As Double) As Long
-    BlendLongs = ((1# - mixRatio) * CDbl(baseColor)) + (mixRatio * CDbl(newColor))
-End Function
 
 Private Sub btsDirection_Click(ByVal buttonIndex As Long)
     updatePreview

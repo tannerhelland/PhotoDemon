@@ -1400,18 +1400,18 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             End If
             
         'Miscellaneous blurs
-        Case "Anisotropic diffusion"
-            If showDialog Then
-                ShowPDDialog vbModal, FormAnisotropic
-            Else
-                FormAnisotropic.ApplyAnisotropicDiffusion cXMLParams.getParamString()
-            End If
-        
         Case "Kuwahara filter"
             If showDialog Then
                 ShowPDDialog vbModal, FormKuwahara
             Else
                 FormKuwahara.Kuwahara cParams.GetLong(1)
+            End If
+            
+        Case "Symmetric nearest-neighbor"
+            If showDialog Then
+                ShowPDDialog vbModal, FormSNN
+            Else
+                FormSNN.ApplySymmetricNearestNeighbor cXMLParams.getParamString
             End If
         
         'TODO: The next two blurs are currently unused; their inclusion in 7.0 is still pending a final decision
@@ -1684,6 +1684,13 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
                 ShowPDDialog vbModal, FormNoise
             Else
                 FormNoise.AddNoise cParams.GetLong(1), cParams.GetBool(2)
+            End If
+        
+        Case "Anisotropic diffusion"
+            If showDialog Then
+                ShowPDDialog vbModal, FormAnisotropic
+            Else
+                FormAnisotropic.ApplyAnisotropicDiffusion cXMLParams.getParamString()
             End If
         
         Case "Bilateral smoothing"
