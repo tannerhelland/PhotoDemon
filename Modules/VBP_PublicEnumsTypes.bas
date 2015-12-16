@@ -32,7 +32,7 @@ End Type
 'Currently supported tools; these numbers correspond to the index of the tool's command button on the main form.
 ' In theory, adding new tools should be as easy as changing these numbers.  All tool-related code is tied into these
 ' constants, so any changes here should automatically propagate throughout the software.  (In practice, be sure to
-' double-check everything!!)
+' double-check everything!)
 Public Enum PDTools
     NAV_DRAG = 0
     NAV_MOVE = 1
@@ -439,4 +439,14 @@ End Enum
 
 #If False Then
     Private Const PDPRS_Rectangle = 0, PDPRS_Circle = 1
+#End If
+
+'pdPixelIterator also supports multiple modes of operation, which determine what kind of histogram it generates.
+Public Enum PD_PIXEL_ITERATOR_MODE
+    PDPIM_RGBA = 0
+    PDPIM_LUMINANCE = 1
+End Enum
+
+#If False Then
+    Private Const PDPIM_RGBA = 0, PDPIM_LUMINANCE = 1
 #End If

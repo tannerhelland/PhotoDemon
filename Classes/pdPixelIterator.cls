@@ -69,10 +69,20 @@ Private m_PixelSA As SAFEARRAY2D, m_Pixels() As Byte
 'If the function wants alpha tracked, this will be set to TRUE
 Private m_AlphaSupport As Boolean
 
+'This class currently supports two modes of operation: RGBA, and Luminance.  While we could track both simultaneously,
+' there is a performance penalty to this, so it's easier to simply track one or the other.
+' (NOTE: this value is set by the
+Private m_HistogramMode As PD_PIXEL_ITERATOR_MODE
+
 'Histogram arrays.  Managing these are a bit tricky, because these are simply "trick" wrappers against arrays
 ' provided by the caller.
 Private m_RedSA As SAFEARRAY1D, m_GreenSA As SAFEARRAY1D, m_BlueSA As SAFEARRAY1D, m_AlphaSA As SAFEARRAY1D
 Private m_Red() As Long, m_Green() As Long, m_Blue() As Long, m_Alpha() As Long
+
+'Note that the caller can also use the pixel iterator in luminance mode.  This relies on only a single destination
+' luminance array, and dedicated movement/calculation functions are used.
+Private m_LuminanceSA As SAFEARRAY1D
+Private m_Luminance() As Long
 
 'Number of pixels in the histogram.  This is required for things like median calculations.
 Private m_NumOfPixels As Long
@@ -101,8 +111,8 @@ Friend Function InitializeIterator(ByRef targetDIB As pdDIB, ByVal xRadius As Lo
     m_FinalX = targetDIB.getDIBWidth - 1
     m_FinalY = targetDIB.getDIBHeight - 1
     
-    'TODO: use magic to generate a shape map for each direction, including bounds
-    ' (right now, during testing, only rectangular regions are supported)
+    'Cache shape and assumed bounds.  (In the future, these bounds may change according to automated trim functions,
+    ' but for now, they are hard-coded per the user's request.)
     m_WindowShape = windowShape
     m_XBLeft = xRadius
     m_XBRight = xRadius
@@ -146,7 +156,10 @@ End Function
 ' you have completed your function and freed the histograms safely (via ReleaseTargetHistograms, below).
 '
 'This function will return the pixel count of the first window in the image.  DO NOT PROCEED if it returns zero.
-Friend Function LockTargetHistograms(ByRef dstRed() As Long, ByRef dstGreen() As Long, ByRef dstBlue() As Long, ByRef dstAlpha() As Long, Optional ByVal calcAlpha As Boolean = True) As Long
+Friend Function LockTargetHistograms_RGBA(ByRef dstRed() As Long, ByRef dstGreen() As Long, ByRef dstBlue() As Long, ByRef dstAlpha() As Long, Optional ByVal calcAlpha As Boolean = True) As Long
+    
+    'Put the iterator in RGB mode
+    m_HistogramMode = PDPIM_RGBA
     
     'Alias our internal histogram arrays around the destination ones.  As you might expect, you MUST NOT attempt
     ' to erase or ReDim the target arrays until the iterator has finished.
@@ -160,43 +173,15 @@ Friend Function LockTargetHistograms(ByRef dstRed() As Long, ByRef dstGreen() As
         m_AlphaSupport = False
     End If
     
-    'Point our internal 2D pixel array at the target DIB
-    With m_PixelSA
-        .cbElements = 1
-        .cDims = 2
-        .cLocks = 1
-        .Bounds(0).lBound = 0
-        .Bounds(0).cElements = m_dibHeight
-        .Bounds(1).lBound = 0
-        .Bounds(1).cElements = m_DibStride
-        .pvData = m_DibPointer
-    End With
-    CopyMemory ByVal VarPtrArray(m_Pixels()), VarPtr(m_PixelSA), 4&
-    
-    'Generate the initial window
-    Select Case m_WindowShape
-        
-        Case PDPRS_Rectangle
-            LockTargetHistograms = GenerateInitialWindow_Square()
-        
-        Case PDPRS_Circle
-            
-            'Generate an initial shape
-            CreateShape PDPRS_Circle
-            
-            'Generate boundary indices
-            FindBoundaries
-            
-            'Generate the initial histogram window
-            LockTargetHistograms = GenerateInitialWindow_ArbitraryShape()
-        
-    End Select
+    'Point our internal 2D pixel array at the target DIB and generate the initial histogram window
+    AliasPixelArray
+    LockTargetHistograms_RGBA = GenerateInitialWindow()
     
 End Function
 
 'When the iterator is finished (due to any condition - success, error, etc), the caller MUST call this function to
 ' release our aliases to their histogram arrays and DIB.
-Friend Function ReleaseTargetHistograms(ByRef dstRed() As Long, ByRef dstGreen() As Long, ByRef dstBlue() As Long, ByRef dstAlpha() As Long)
+Friend Function ReleaseTargetHistograms_RGBA(ByRef dstRed() As Long, ByRef dstGreen() As Long, ByRef dstBlue() As Long, ByRef dstAlpha() As Long) As Boolean
 
     Unalias1DArray dstRed, m_Red
     Unalias1DArray dstGreen, m_Green
@@ -204,7 +189,43 @@ Friend Function ReleaseTargetHistograms(ByRef dstRed() As Long, ByRef dstGreen()
     If m_AlphaSupport Then Unalias1DArray dstAlpha, m_Alpha
     
     'While we're here, release our DIB reference, too
-    CopyMemory ByVal VarPtrArray(m_Pixels()), 0&, 4&
+    UnaliasPixelArray
+    
+    ReleaseTargetHistograms_RGBA = True
+    
+End Function
+
+'Luminance counterpart to the RGBA lock function above.  All the same caveats and rules apply.
+'
+'IMPORTANT NOTE: PRIOR TO CALLING THIS FUNCTION, you must redim the target array to range [0, 255].  Do not ReDim
+' it until you have completed your function and freed the histogram safely (via ReleaseTargetHistograms, below).
+'
+'This function will return the pixel count of the first window in the image.  DO NOT PROCEED if it returns zero.
+Friend Function LockTargetHistograms_Luminance(ByRef dstLum() As Long) As Long
+    
+    'Put the iterator in Luminance mode
+    m_HistogramMode = PDPIM_LUMINANCE
+    
+    'Alias our internal histogram arrays around the destination ones.  As you might expect, you MUST NOT attempt
+    ' to erase or ReDim the target arrays until the iterator has finished.
+    Alias1DArray dstLum, m_Luminance, m_LuminanceSA
+    
+    'Point our internal 2D pixel array at the target DIB and generate the initial histogram window
+    AliasPixelArray
+    LockTargetHistograms_Luminance = GenerateInitialWindow()
+    
+End Function
+
+'When the iterator is finished (due to any condition - success, error, etc), the caller MUST call this function to
+' release our aliases to their histogram arrays and DIB.
+Friend Function ReleaseTargetHistograms_Luminance(ByRef dstLum() As Long) As Boolean
+
+    Unalias1DArray dstLum, m_Luminance
+    
+    'While we're here, release our DIB reference, too
+    UnaliasPixelArray
+    
+    ReleaseTargetHistograms_Luminance = True
     
 End Function
 
@@ -237,6 +258,48 @@ Private Sub Unalias1DArray(ByRef orig1DArray() As Long, ByRef new1DArray() As Lo
     SafeArrayUnlock ptrSrc
     
 End Sub
+
+'Alias/unalias the target pixel array, specifically.
+Private Sub AliasPixelArray()
+    With m_PixelSA
+        .cbElements = 1
+        .cDims = 2
+        .cLocks = 1
+        .Bounds(0).lBound = 0
+        .Bounds(0).cElements = m_dibHeight
+        .Bounds(1).lBound = 0
+        .Bounds(1).cElements = m_DibStride
+        .pvData = m_DibPointer
+    End With
+    CopyMemory ByVal VarPtrArray(m_Pixels()), VarPtr(m_PixelSA), 4&
+End Sub
+
+Private Sub UnaliasPixelArray()
+    CopyMemory ByVal VarPtrArray(m_Pixels()), 0&, 4&
+End Sub
+
+'Generating the initial histogram window has variable complexity, depending on the shape being used.  This function
+' is universal regardless of histogram type or window shape.
+Private Function GenerateInitialWindow() As Long
+    
+    Select Case m_WindowShape
+        
+        Case PDPRS_Rectangle
+            GenerateInitialWindow = GenerateInitialWindow_Square()
+        
+        Case PDPRS_Circle
+            'Generate an initial shape
+            CreateShape PDPRS_Circle
+            
+            'Generate boundary indices
+            FindBoundaries
+            
+            'Actually generate the initial histogram window
+            GenerateInitialWindow = GenerateInitialWindow_ArbitraryShape()
+        
+    End Select
+    
+End Function
 
 'Create the reference map for a non-rectangular kernel
 Private Sub CreateShape(ByVal srcShape As PD_PIXEL_REGION_SHAPE)
@@ -367,13 +430,20 @@ Private Function GenerateInitialWindow_Square() As Long
         g = m_Pixels(x + 1, y)
         r = m_Pixels(x + 2, y)
         
-        m_Blue(b) = m_Blue(b) + 1
-        m_Green(g) = m_Green(g) + 1
-        m_Red(r) = m_Red(r) + 1
+        If m_HistogramMode = PDPIM_RGBA Then
         
-        If m_AlphaSupport Then
-            a = m_Pixels(x + 3, y)
-            m_Alpha(a) = m_Alpha(a) + 1
+            m_Blue(b) = m_Blue(b) + 1
+            m_Green(g) = m_Green(g) + 1
+            m_Red(r) = m_Red(r) + 1
+            
+            If m_AlphaSupport Then
+                a = m_Pixels(x + 3, y)
+                m_Alpha(a) = m_Alpha(a) + 1
+            End If
+            
+        Else
+            a = GetLuminance(r, g, b)
+            m_Luminance(a) = m_Luminance(a) + 1
         End If
         
         m_NumOfPixels = m_NumOfPixels + 1
@@ -403,13 +473,20 @@ Private Function GenerateInitialWindow_ArbitraryShape() As Long
             g = m_Pixels(QuickX + 1, y)
             r = m_Pixels(QuickX + 2, y)
             
-            m_Blue(b) = m_Blue(b) + 1
-            m_Green(g) = m_Green(g) + 1
-            m_Red(r) = m_Red(r) + 1
+            If m_HistogramMode = PDPIM_RGBA Then
             
-            If m_AlphaSupport Then
-                a = m_Pixels(QuickX + 3, y)
-                m_Alpha(a) = m_Alpha(a) + 1
+                m_Blue(b) = m_Blue(b) + 1
+                m_Green(g) = m_Green(g) + 1
+                m_Red(r) = m_Red(r) + 1
+                
+                If m_AlphaSupport Then
+                    a = m_Pixels(QuickX + 3, y)
+                    m_Alpha(a) = m_Alpha(a) + 1
+                End If
+                            
+            Else
+                a = GetLuminance(r, g, b)
+                m_Luminance(a) = m_Luminance(a) + 1
             End If
             
             m_NumOfPixels = m_NumOfPixels + 1
@@ -421,6 +498,11 @@ Private Function GenerateInitialWindow_ArbitraryShape() As Long
     
     GenerateInitialWindow_ArbitraryShape = m_NumOfPixels
     
+End Function
+
+'Given source RGB values, return a corresponding luminance value (high-quality calculation)
+Private Function GetLuminance(ByVal srcR As Long, ByVal srcG As Long, ByVal srcB As Long) As Long
+    GetLuminance = (213 * srcR + 715 * srcG + 72 * srcB) \ 1000
 End Function
 
 'After the caller has successfully processed a pixel, they can call these functions to move to the next pixel
@@ -458,13 +540,20 @@ Friend Function MoveXRight() As Long
                 g = m_Pixels(x + 1, y)
                 r = m_Pixels(x + 2, y)
                 
-                m_Blue(b) = m_Blue(b) - 1
-                m_Green(g) = m_Green(g) - 1
-                m_Red(r) = m_Red(r) - 1
+                If m_HistogramMode = PDPIM_RGBA Then
                 
-                If m_AlphaSupport Then
-                    a = m_Pixels(x + 3, y)
-                    m_Alpha(a) = m_Alpha(a) - 1
+                    m_Blue(b) = m_Blue(b) - 1
+                    m_Green(g) = m_Green(g) - 1
+                    m_Red(r) = m_Red(r) - 1
+                    
+                    If m_AlphaSupport Then
+                        a = m_Pixels(x + 3, y)
+                        m_Alpha(a) = m_Alpha(a) - 1
+                    End If
+                                    
+                Else
+                    a = GetLuminance(r, g, b)
+                    m_Luminance(a) = m_Luminance(a) - 1
                 End If
                 
                 m_NumOfPixels = m_NumOfPixels - 1
@@ -483,13 +572,20 @@ Friend Function MoveXRight() As Long
                 g = m_Pixels(x + 1, y)
                 r = m_Pixels(x + 2, y)
                 
-                m_Blue(b) = m_Blue(b) + 1
-                m_Green(g) = m_Green(g) + 1
-                m_Red(r) = m_Red(r) + 1
+                If m_HistogramMode = PDPIM_RGBA Then
                 
-                If m_AlphaSupport Then
-                    a = m_Pixels(x + 3, y)
-                    m_Alpha(a) = m_Alpha(a) + 1
+                    m_Blue(b) = m_Blue(b) + 1
+                    m_Green(g) = m_Green(g) + 1
+                    m_Red(r) = m_Red(r) + 1
+                    
+                    If m_AlphaSupport Then
+                        a = m_Pixels(x + 3, y)
+                        m_Alpha(a) = m_Alpha(a) + 1
+                    End If
+                    
+                Else
+                    a = GetLuminance(r, g, b)
+                    m_Luminance(a) = m_Luminance(a) + 1
                 End If
                 
                 m_NumOfPixels = m_NumOfPixels + 1
@@ -525,13 +621,20 @@ Friend Function MoveXRight() As Long
                     g = m_Pixels(tmpX + 1, tmpY)
                     r = m_Pixels(tmpX + 2, tmpY)
                     
-                    m_Blue(b) = m_Blue(b) - 1
-                    m_Green(g) = m_Green(g) - 1
-                    m_Red(r) = m_Red(r) - 1
+                    If m_HistogramMode = PDPIM_RGBA Then
                     
-                    If m_AlphaSupport Then
-                        a = m_Pixels(tmpX + 3, tmpY)
-                        m_Alpha(a) = m_Alpha(a) - 1
+                        m_Blue(b) = m_Blue(b) - 1
+                        m_Green(g) = m_Green(g) - 1
+                        m_Red(r) = m_Red(r) - 1
+                        
+                        If m_AlphaSupport Then
+                            a = m_Pixels(tmpX + 3, tmpY)
+                            m_Alpha(a) = m_Alpha(a) - 1
+                        End If
+                        
+                    Else
+                        a = GetLuminance(r, g, b)
+                        m_Luminance(a) = m_Luminance(a) - 1
                     End If
                     
                     m_NumOfPixels = m_NumOfPixels - 1
@@ -549,13 +652,20 @@ Friend Function MoveXRight() As Long
                     g = m_Pixels(tmpX + 1, tmpY)
                     r = m_Pixels(tmpX + 2, tmpY)
                     
-                    m_Blue(b) = m_Blue(b) + 1
-                    m_Green(g) = m_Green(g) + 1
-                    m_Red(r) = m_Red(r) + 1
+                    If m_HistogramMode = PDPIM_RGBA Then
                     
-                    If m_AlphaSupport Then
-                        a = m_Pixels(tmpX + 3, tmpY)
-                        m_Alpha(a) = m_Alpha(a) + 1
+                        m_Blue(b) = m_Blue(b) + 1
+                        m_Green(g) = m_Green(g) + 1
+                        m_Red(r) = m_Red(r) + 1
+                        
+                        If m_AlphaSupport Then
+                            a = m_Pixels(tmpX + 3, tmpY)
+                            m_Alpha(a) = m_Alpha(a) + 1
+                        End If
+                        
+                    Else
+                        a = GetLuminance(r, g, b)
+                        m_Luminance(a) = m_Luminance(a) + 1
                     End If
                     
                     m_NumOfPixels = m_NumOfPixels + 1
@@ -603,13 +713,20 @@ Friend Function MoveYDown() As Long
                 g = m_Pixels(x + 1, yTop)
                 r = m_Pixels(x + 2, yTop)
                 
-                m_Blue(b) = m_Blue(b) - 1
-                m_Green(g) = m_Green(g) - 1
-                m_Red(r) = m_Red(r) - 1
+                If m_HistogramMode = PDPIM_RGBA Then
                 
-                If m_AlphaSupport Then
-                    a = m_Pixels(x + 3, yTop)
-                    m_Alpha(a) = m_Alpha(a) - 1
+                    m_Blue(b) = m_Blue(b) - 1
+                    m_Green(g) = m_Green(g) - 1
+                    m_Red(r) = m_Red(r) - 1
+                    
+                    If m_AlphaSupport Then
+                        a = m_Pixels(x + 3, yTop)
+                        m_Alpha(a) = m_Alpha(a) - 1
+                    End If
+                    
+                Else
+                    a = GetLuminance(r, g, b)
+                    m_Luminance(a) = m_Luminance(a) - 1
                 End If
                 
                 m_NumOfPixels = m_NumOfPixels - 1
@@ -627,13 +744,20 @@ Friend Function MoveYDown() As Long
                 g = m_Pixels(x + 1, yBottom)
                 r = m_Pixels(x + 2, yBottom)
                 
-                m_Blue(b) = m_Blue(b) + 1
-                m_Green(g) = m_Green(g) + 1
-                m_Red(r) = m_Red(r) + 1
+                If m_HistogramMode = PDPIM_RGBA Then
                 
-                If m_AlphaSupport Then
-                    a = m_Pixels(x + 3, yBottom)
-                    m_Alpha(a) = m_Alpha(a) + 1
+                    m_Blue(b) = m_Blue(b) + 1
+                    m_Green(g) = m_Green(g) + 1
+                    m_Red(r) = m_Red(r) + 1
+                    
+                    If m_AlphaSupport Then
+                        a = m_Pixels(x + 3, yBottom)
+                        m_Alpha(a) = m_Alpha(a) + 1
+                    End If
+                    
+                Else
+                    a = GetLuminance(r, g, b)
+                    m_Luminance(a) = m_Luminance(a) + 1
                 End If
                 
                 m_NumOfPixels = m_NumOfPixels + 1
@@ -671,13 +795,20 @@ Friend Function MoveYDown() As Long
                     g = m_Pixels(tmpX + 1, tmpY)
                     r = m_Pixels(tmpX + 2, tmpY)
                     
-                    m_Blue(b) = m_Blue(b) - 1
-                    m_Green(g) = m_Green(g) - 1
-                    m_Red(r) = m_Red(r) - 1
+                    If m_HistogramMode = PDPIM_RGBA Then
                     
-                    If m_AlphaSupport Then
-                        a = m_Pixels(tmpX + 3, tmpY)
-                        m_Alpha(a) = m_Alpha(a) - 1
+                        m_Blue(b) = m_Blue(b) - 1
+                        m_Green(g) = m_Green(g) - 1
+                        m_Red(r) = m_Red(r) - 1
+                        
+                        If m_AlphaSupport Then
+                            a = m_Pixels(tmpX + 3, tmpY)
+                            m_Alpha(a) = m_Alpha(a) - 1
+                        End If
+                        
+                    Else
+                        a = GetLuminance(r, g, b)
+                        m_Luminance(a) = m_Luminance(a) - 1
                     End If
                     
                     m_NumOfPixels = m_NumOfPixels - 1
@@ -694,13 +825,20 @@ Friend Function MoveYDown() As Long
                     g = m_Pixels(tmpX + 1, tmpY)
                     r = m_Pixels(tmpX + 2, tmpY)
                     
-                    m_Blue(b) = m_Blue(b) + 1
-                    m_Green(g) = m_Green(g) + 1
-                    m_Red(r) = m_Red(r) + 1
+                    If m_HistogramMode = PDPIM_RGBA Then
                     
-                    If m_AlphaSupport Then
-                        a = m_Pixels(tmpX + 3, tmpY)
-                        m_Alpha(a) = m_Alpha(a) + 1
+                        m_Blue(b) = m_Blue(b) + 1
+                        m_Green(g) = m_Green(g) + 1
+                        m_Red(r) = m_Red(r) + 1
+                        
+                        If m_AlphaSupport Then
+                            a = m_Pixels(tmpX + 3, tmpY)
+                            m_Alpha(a) = m_Alpha(a) + 1
+                        End If
+                        
+                    Else
+                        a = GetLuminance(r, g, b)
+                        m_Luminance(a) = m_Luminance(a) + 1
                     End If
                     
                     m_NumOfPixels = m_NumOfPixels + 1
@@ -748,13 +886,20 @@ Friend Function MoveYUp() As Long
                 g = m_Pixels(x + 1, yBottom)
                 r = m_Pixels(x + 2, yBottom)
                 
-                m_Blue(b) = m_Blue(b) - 1
-                m_Green(g) = m_Green(g) - 1
-                m_Red(r) = m_Red(r) - 1
+                If m_HistogramMode = PDPIM_RGBA Then
                 
-                If m_AlphaSupport Then
-                    a = m_Pixels(x + 3, yBottom)
-                    m_Alpha(a) = m_Alpha(a) - 1
+                    m_Blue(b) = m_Blue(b) - 1
+                    m_Green(g) = m_Green(g) - 1
+                    m_Red(r) = m_Red(r) - 1
+                    
+                    If m_AlphaSupport Then
+                        a = m_Pixels(x + 3, yBottom)
+                        m_Alpha(a) = m_Alpha(a) - 1
+                    End If
+                    
+                Else
+                    a = GetLuminance(r, g, b)
+                    m_Luminance(a) = m_Luminance(a) - 1
                 End If
                 
                 m_NumOfPixels = m_NumOfPixels - 1
@@ -772,14 +917,22 @@ Friend Function MoveYUp() As Long
                 g = m_Pixels(x + 1, yTop)
                 r = m_Pixels(x + 2, yTop)
                 
-                m_Blue(b) = m_Blue(b) + 1
-                m_Green(g) = m_Green(g) + 1
-                m_Red(r) = m_Red(r) + 1
+                If m_HistogramMode = PDPIM_RGBA Then
                 
-                If m_AlphaSupport Then
-                    a = m_Pixels(x + 3, yTop)
-                    m_Alpha(a) = m_Alpha(a) + 1
+                    m_Blue(b) = m_Blue(b) + 1
+                    m_Green(g) = m_Green(g) + 1
+                    m_Red(r) = m_Red(r) + 1
+                    
+                    If m_AlphaSupport Then
+                        a = m_Pixels(x + 3, yTop)
+                        m_Alpha(a) = m_Alpha(a) + 1
+                    End If
+                    
+                Else
+                    a = GetLuminance(r, g, b)
+                    m_Luminance(a) = m_Luminance(a) + 1
                 End If
+                
                 
                 m_NumOfPixels = m_NumOfPixels + 1
                 
@@ -816,13 +969,20 @@ Friend Function MoveYUp() As Long
                     g = m_Pixels(tmpX + 1, tmpY)
                     r = m_Pixels(tmpX + 2, tmpY)
                     
-                    m_Blue(b) = m_Blue(b) - 1
-                    m_Green(g) = m_Green(g) - 1
-                    m_Red(r) = m_Red(r) - 1
+                    If m_HistogramMode = PDPIM_RGBA Then
                     
-                    If m_AlphaSupport Then
-                        a = m_Pixels(tmpX + 3, tmpY)
-                        m_Alpha(a) = m_Alpha(a) - 1
+                        m_Blue(b) = m_Blue(b) - 1
+                        m_Green(g) = m_Green(g) - 1
+                        m_Red(r) = m_Red(r) - 1
+                        
+                        If m_AlphaSupport Then
+                            a = m_Pixels(tmpX + 3, tmpY)
+                            m_Alpha(a) = m_Alpha(a) - 1
+                        End If
+                        
+                    Else
+                        a = GetLuminance(r, g, b)
+                        m_Luminance(a) = m_Luminance(a) - 1
                     End If
                     
                     m_NumOfPixels = m_NumOfPixels - 1
@@ -839,13 +999,20 @@ Friend Function MoveYUp() As Long
                     g = m_Pixels(tmpX + 1, tmpY)
                     r = m_Pixels(tmpX + 2, tmpY)
                     
-                    m_Blue(b) = m_Blue(b) + 1
-                    m_Green(g) = m_Green(g) + 1
-                    m_Red(r) = m_Red(r) + 1
+                    If m_HistogramMode = PDPIM_RGBA Then
                     
-                    If m_AlphaSupport Then
-                        a = m_Pixels(tmpX + 3, tmpY)
-                        m_Alpha(a) = m_Alpha(a) + 1
+                        m_Blue(b) = m_Blue(b) + 1
+                        m_Green(g) = m_Green(g) + 1
+                        m_Red(r) = m_Red(r) + 1
+                        
+                        If m_AlphaSupport Then
+                            a = m_Pixels(tmpX + 3, tmpY)
+                            m_Alpha(a) = m_Alpha(a) + 1
+                        End If
+                        
+                    Else
+                        a = GetLuminance(r, g, b)
+                        m_Luminance(a) = m_Luminance(a) + 1
                     End If
                     
                     m_NumOfPixels = m_NumOfPixels + 1

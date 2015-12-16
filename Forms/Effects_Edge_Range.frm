@@ -227,7 +227,7 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
     
     If cPixelIterator.InitializeIterator(srcDIB, xRadius, yRadius, kernelShape) Then
         
-        NumOfPixels = cPixelIterator.LockTargetHistograms(rValues, gValues, bValues, aValues, False)
+        NumOfPixels = cPixelIterator.LockTargetHistograms_RGBA(rValues, gValues, bValues, aValues, False)
         
         'Loop through each pixel in the image, applying the filter as we go
         For x = initX To finalX Step qvDepth
@@ -332,7 +332,7 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
         Next x
         
         'Release the pixel iterator
-        cPixelIterator.ReleaseTargetHistograms rValues, gValues, bValues, aValues
+        cPixelIterator.ReleaseTargetHistograms_RGBA rValues, gValues, bValues, aValues
         
         'Release our local array that points to the target DIB
         CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
