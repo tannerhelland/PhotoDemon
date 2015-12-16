@@ -181,8 +181,8 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
     End If
     
     'The number of pixels in the current median box are tracked dynamically.
-    Dim numOfPixels As Long
-    numOfPixels = 0
+    Dim NumOfPixels As Long
+    NumOfPixels = 0
     
     'We use an optimized histogram technique for calculating means, which means a lot of intermediate values are required
     Dim rValues() As Long, gValues() As Long, bValues() As Long, aValues() As Long
@@ -204,7 +204,7 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
     
     If cPixelIterator.InitializeIterator(srcDIB, mRadius, mRadius, kernelShape) Then
     
-        numOfPixels = cPixelIterator.LockTargetHistograms(rValues, gValues, bValues, aValues, False)
+        NumOfPixels = cPixelIterator.LockTargetHistograms_RGBA(rValues, gValues, bValues, aValues, False)
         
         'Loop through each pixel in the image, applying the filter as we go
         For x = initX To finalX Step qvDepth
@@ -289,16 +289,16 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
                 
                 'Move the iterator in the correct direction
                 If directionDown Then
-                    If y < finalY Then numOfPixels = cPixelIterator.MoveYDown
+                    If y < finalY Then NumOfPixels = cPixelIterator.MoveYDown
                 Else
-                    If y > initY Then numOfPixels = cPixelIterator.MoveYUp
+                    If y > initY Then NumOfPixels = cPixelIterator.MoveYUp
                 End If
                 
             Next y
             
             'Reverse y-directionality on each pass
             directionDown = Not directionDown
-            If x < finalX Then numOfPixels = cPixelIterator.MoveXRight
+            If x < finalX Then NumOfPixels = cPixelIterator.MoveXRight
             
             'Update the progress bar every (progBarCheck) lines
             If Not toPreview Then
@@ -311,7 +311,7 @@ Public Sub ApplyMeanShiftFilter(ByVal parameterList As String, Optional ByVal to
         Next x
         
         'Release the pixel iterator
-        cPixelIterator.ReleaseTargetHistograms rValues, gValues, bValues, aValues
+        cPixelIterator.ReleaseTargetHistograms_RGBA rValues, gValues, bValues, aValues
         
         'Release our local array that points to the target DIB
         CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4

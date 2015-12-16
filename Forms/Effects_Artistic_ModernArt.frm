@@ -196,8 +196,8 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
     End If
     
     'The number of pixels in the current median box are tracked dynamically.
-    Dim numOfPixels As Long
-    numOfPixels = 0
+    Dim NumOfPixels As Long
+    NumOfPixels = 0
             
     'Median filtering takes a lot of variables
     Dim rValues() As Long, gValues() As Long, bValues() As Long, aValues() As Long
@@ -221,7 +221,7 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
     
     If cPixelIterator.InitializeIterator(srcDIB, hRadius, vRadius, kernelShape) Then
     
-        numOfPixels = cPixelIterator.LockTargetHistograms(rValues, gValues, bValues, aValues, False)
+        NumOfPixels = cPixelIterator.LockTargetHistograms_RGBA(rValues, gValues, bValues, aValues, False)
         
         'Loop through each pixel in the image, applying the filter as we go
         For x = initX To finalX Step qvDepth
@@ -246,7 +246,7 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
                 lowR = 0
                 lowG = 0
                 lowB = 0
-                cutoffTotal = 0.01 * numOfPixels
+                cutoffTotal = 0.01 * NumOfPixels
                 If cutoffTotal = 0 Then cutoffTotal = 1
                 
                 i = 0
@@ -274,7 +274,7 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
                 highR = 0
                 highG = 0
                 highB = 0
-                cutoffTotal = 0.01 * numOfPixels
+                cutoffTotal = 0.01 * NumOfPixels
                 If cutoffTotal = 0 Then cutoffTotal = 1
                 
                 i = 255
@@ -322,16 +322,16 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
                 
                 'Move the iterator in the correct direction
                 If directionDown Then
-                    If y < finalY Then numOfPixels = cPixelIterator.MoveYDown
+                    If y < finalY Then NumOfPixels = cPixelIterator.MoveYDown
                 Else
-                    If y > initY Then numOfPixels = cPixelIterator.MoveYUp
+                    If y > initY Then NumOfPixels = cPixelIterator.MoveYUp
                 End If
                 
             Next y
             
             'Reverse y-directionality on each pass
             directionDown = Not directionDown
-            If x < finalX Then numOfPixels = cPixelIterator.MoveXRight
+            If x < finalX Then NumOfPixels = cPixelIterator.MoveXRight
             
             'Update the progress bar every (progBarCheck) lines
             If Not toPreview Then
@@ -344,7 +344,7 @@ Public Sub ApplyModernArt(ByVal parameterList As String, Optional ByVal toPrevie
         Next x
         
         'Release the pixel iterator
-        cPixelIterator.ReleaseTargetHistograms rValues, gValues, bValues, aValues
+        cPixelIterator.ReleaseTargetHistograms_RGBA rValues, gValues, bValues, aValues
         
         'Release our local array that points to the target DIB
         CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
