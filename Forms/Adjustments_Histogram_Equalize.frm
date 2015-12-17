@@ -6,7 +6,7 @@ Begin VB.Form FormEqualize
    ClientHeight    =   6555
    ClientLeft      =   45
    ClientTop       =   285
-   ClientWidth     =   10155
+   ClientWidth     =   12090
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -21,87 +21,100 @@ Begin VB.Form FormEqualize
    MinButton       =   0   'False
    ScaleHeight     =   437
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   677
+   ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.sliderTextCombo sltRadius 
+      Height          =   705
+      Left            =   5880
+      TabIndex        =   4
+      Top             =   4440
+      Width           =   6015
+      _ExtentX        =   10610
+      _ExtentY        =   1244
+      Caption         =   "radius"
+      Min             =   1
+      Max             =   100
+      Value           =   1
+      GradientColorRight=   1703935
+   End
+   Begin PhotoDemon.buttonStrip btsTarget 
+      Height          =   615
+      Left            =   6120
+      TabIndex        =   2
+      Top             =   1200
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1085
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   375
+      Index           =   0
+      Left            =   5880
+      Top             =   840
+      Width           =   6015
+      _ExtentX        =   10610
+      _ExtentY        =   661
+      Caption         =   "target histogram"
+      FontSize        =   12
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5805
-      Width           =   10155
-      _ExtentX        =   17912
+      Width           =   12090
+      _ExtentX        =   21325
       _ExtentY        =   1323
       BackColor       =   14802140
-   End
-   Begin PhotoDemon.smartCheckBox chkRed 
-      Height          =   375
-      Left            =   6240
-      TabIndex        =   3
-      Top             =   2040
-      Width           =   3750
-      _ExtentX        =   6615
-      _ExtentY        =   582
-      Caption         =   "red"
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin PhotoDemon.smartCheckBox chkGreen 
-      Height          =   375
-      Left            =   6240
-      TabIndex        =   4
-      Top             =   2520
-      Width           =   3750
-      _ExtentX        =   6615
-      _ExtentY        =   582
-      Caption         =   "green"
+   Begin PhotoDemon.buttonStrip btsMode 
+      Height          =   615
+      Left            =   6120
+      TabIndex        =   3
+      Top             =   2400
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1085
    End
-   Begin PhotoDemon.smartCheckBox chkBlue 
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   375
-      Left            =   6240
+      Index           =   1
+      Left            =   5880
+      Top             =   2040
+      Width           =   6015
+      _ExtentX        =   10610
+      _ExtentY        =   661
+      Caption         =   "mode"
+      FontSize        =   12
+   End
+   Begin PhotoDemon.buttonStrip btsKernelShape 
+      Height          =   615
+      Left            =   6120
       TabIndex        =   5
-      Top             =   3000
-      Width           =   3750
-      _ExtentX        =   6615
-      _ExtentY        =   582
-      Caption         =   "blue"
+      Top             =   3600
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1085
    End
-   Begin PhotoDemon.smartCheckBox chkLuminance 
+   Begin PhotoDemon.pdLabel lblShape 
       Height          =   375
-      Left            =   6240
-      TabIndex        =   6
-      Top             =   3480
-      Width           =   3750
-      _ExtentX        =   6615
-      _ExtentY        =   582
-      Caption         =   "luminance"
-   End
-   Begin VB.Label lblEqualize 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "equalize"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   1
-      Top             =   1620
-      Width           =   855
+      Left            =   5880
+      Top             =   3240
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   661
+      Caption         =   "kernel shape"
+      FontSize        =   12
    End
 End
 Attribute VB_Name = "FormEqualize"
@@ -113,11 +126,12 @@ Attribute VB_Exposed = False
 'Histogram Equalization Interface
 'Copyright 2012-2015 by Tanner Helland
 'Created: 19/September/12
-'Last updated: 22/August/13
-'Last update: add command bar user control
+'Last updated: 16/December/15
+'Last update: overhaul from the ground up so we can support local histogram operations, multiple luminance types,
+'             modernize the code, and enable new optimizations
 '
-'Module for handling histogram equalization.  Any combination of red, green, blue, and luminance can be equalized, but if
-' luminance is selected it will get precedent (e.g. it will be equalized first).
+'Module for handling histogram equalization.  As of Dec '15, both global and local modes are supported, and a variety
+' of histograms can be generated and analyzed.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -126,214 +140,379 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'Whenever a check box is changed, redraw the preview
-Private Sub chkBlue_Click()
-    updatePreview
-End Sub
-
-Private Sub chkGreen_Click()
-    updatePreview
-End Sub
-
-Private Sub chkLuminance_Click()
-    updatePreview
-End Sub
-
-Private Sub chkRed_Click()
-    updatePreview
-End Sub
-
-Private Sub cmdBar_OKClick()
-    Process "Equalize", , buildParams(CBool(chkRed), CBool(chkGreen), CBool(chkBlue), CBool(chkLuminance)), UNDO_LAYER
-End Sub
-
-Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
-End Sub
-
-Private Sub Form_Activate()
-        
-    'Apply translations and visual themes
-    MakeFormPretty Me
-    
-    'Request a preview
-    updatePreview
-    
-End Sub
-
 'Equalize the red, green, blue, and/or Luminance channels of an image
 ' (Technically Luminance isn't a channel, but you know what I mean.)
-Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean, ByVal HandleB As Boolean, ByVal HandleL As Boolean, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
+Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
-    If Not toPreview Then Message "Analyzing image histogram..."
+    'Parse out the parameter list
+    Dim cParams As pdParamXML
+    Set cParams = New pdParamXML
+    cParams.setParamString parameterList
+    
+    Dim ehTarget As Long, ehMode As Long, ehRadius As Long, kernelShape As PD_PIXEL_REGION_SHAPE
+    ehTarget = cParams.GetLong("target", 0&)
+    ehMode = cParams.GetLong("mode", 0&)
+    ehRadius = cParams.GetLong("radius", 1&)
+    kernelShape = cParams.GetLong("kernelShape", PDPRS_Rectangle)
     
     'Create a local array and point it at the pixel data we want to operate on
     Dim ImageData() As Byte
     Dim tmpSA As SAFEARRAY2D
-    
     prepImageData tmpSA, toPreview, dstPic
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
-        
-    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long
-    initX = curDIBValues.Left
-    initY = curDIBValues.Top
-    finalX = curDIBValues.Right
-    finalY = curDIBValues.Bottom
-            
+    
+    'Local histogram equalizing requires a second copy of the source image
+    Dim srcDIB As pdDIB
+    If ehMode <> 0 Then
+        Set srcDIB = New pdDIB
+        srcDIB.createFromExistingDIB workingDIB
+    End If
+    
+    'If this is a preview, we need to adjust the kernel radius to match the size of the preview box
+    If toPreview Then
+        ehRadius = ehRadius * curDIBValues.previewModifier
+        If ehRadius < 1 Then ehRadius = 1
+    End If
+    
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickVal As Long, qvDepth As Long
+    Dim QuickX As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
+        
+    'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
+    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long, initXStride As Long, finalXStride As Long
+    initX = curDIBValues.Left
+    initY = curDIBValues.Top
+    initXStride = initX * qvDepth
+    
+    finalX = curDIBValues.Right
+    finalY = curDIBValues.Bottom
+    finalXStride = finalX * qvDepth
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
     If Not toPreview Then
-        SetProgBarMax finalX * 2
-        progBarCheck = findBestProgBarValue()
+        
+        'Global and local modes use different progress calculations
+        If ehMode = 0 Then
+            SetProgBarMax finalY * 2
+            progBarCheck = findBestProgBarValue()
+        Else
+            SetProgBarMax finalXStride
+            progBarCheck = findBestProgBarValue()
+        End If
     End If
     
-    'Color variables
-    Dim r As Long, g As Long, b As Long
-    Dim h As Double, s As Double, l As Double
-    Dim lInt As Long
-    
-    'Histogram variables
-    Dim rData(0 To 255) As Double, gData(0 To 255) As Double, bData(0 To 255) As Double
-    Dim rDataInt(0 To 255) As Long, gDataInt(0 To 255) As Long, bDataInt(0 To 255) As Long
-    Dim lData(0 To 255) As Double
-    Dim lDataInt(0 To 255) As Long
-        
-    'Loop through each pixel in the image, converting values as we go.
-    ' (This step is so fast that I calculate all channels, even those not being converted, with the exception of luminance.)
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
-    
-        'Get the source pixel color values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
-        
-        'Store those values in the histogram
-        rDataInt(r) = rDataInt(r) + 1
-        gDataInt(g) = gDataInt(g) + 1
-        bDataInt(b) = bDataInt(b) + 1
-        
-        'Because luminance is slower to calculate, only calculate it if absolutely necessary
-        If HandleL Then
-            lInt = getLuminance(r, g, b)
-            lDataInt(lInt) = lDataInt(lInt) + 1
-        End If
-        
-    Next y
-        If toPreview = False Then
-            If (x And progBarCheck) = 0 Then SetProgBarVal x
-        End If
-    Next x
-    
-    'Compute a scaling factor based on the number of pixels in the image
+    'Compute a histogram scaling factor based on the number of pixels in the image; this lets us calculate how many pixels
+    ' should ideally exist in each "bin" of the histogram.
     Dim scaleFactor As Double
     scaleFactor = 255 / (curDIBValues.Width * curDIBValues.Height)
     
-    'Compute red if requested
-    If HandleR Then
-        rData(0) = rDataInt(0) * scaleFactor
-        For x = 1 To 255
-            rData(x) = rData(x - 1) + (scaleFactor * rDataInt(x))
-        Next x
-    End If
+    'Color variables
+    Dim r As Long, g As Long, b As Long, a As Long
+    Dim rFloat As Double, gFloat As Double, bFloat As Double
+    Dim h As Double, s As Double, v As Double, vLong As Long
     
-    'Compute green if requested
-    If HandleG Then
-        gData(0) = gDataInt(0) * scaleFactor
-        For x = 1 To 255
-            gData(x) = gData(x - 1) + (scaleFactor * gDataInt(x))
-        Next x
-    End If
+    Dim NumOfPixels As Long
+    NumOfPixels = 0
     
-    'Compute blue if requested
-    If HandleB Then
-        bData(0) = bDataInt(0) * scaleFactor
-        For x = 1 To 255
-            bData(x) = bData(x - 1) + (scaleFactor * bDataInt(x))
-        Next x
-    End If
+    Dim rValues() As Long, gValues() As Long, bValues() As Long, aValues() As Long, lValues() As Long
+    ReDim rValues(0 To 255) As Long
+    ReDim gValues(0 To 255) As Long
+    ReDim bValues(0 To 255) As Long
+    ReDim aValues(0 To 255) As Long
+    ReDim lValues(0 To 255) As Long
     
-    'Compute luminance if requested
-    If HandleL Then
-        lData(0) = lDataInt(0) * scaleFactor
-        For x = 1 To 255
-            lData(x) = lData(x - 1) + (scaleFactor * lDataInt(x))
-        Next x
-    End If
+    Dim rData() As Long, gData() As Long, bData() As Long, lData() As Long
+    ReDim rData(0 To 255) As Long
+    ReDim gData(0 To 255) As Long
+    ReDim bData(0 To 255) As Long
+    ReDim lData(0 To 255) As Long
     
-    'Make sure all look-up values are in valid byte range (e.g. [0,255])
-    For x = 0 To 255
-        
-        If rData(x) > 255 Then
-            rDataInt(x) = 255
-        Else
-            rDataInt(x) = Int(rData(x))
-        End If
-        
-        If gData(x) > 255 Then
-            gDataInt(x) = 255
-        Else
-            gDataInt(x) = Int(gData(x))
-        End If
-        
-        If bData(x) > 255 Then
-            bDataInt(x) = 255
-        Else
-            bDataInt(x) = Int(bData(x))
-        End If
-        
-        If lData(x) > 255 Then
-            lDataInt(x) = 255
-        Else
-            lDataInt(x) = Int(lData(x))
-        End If
-        
-    Next x
+    Dim startY As Long, stopY As Long, yStep As Long, i As Long
     
-    'Apply the equalized values
-    If Not toPreview Then Message "Equalizing image..."
+    Dim floatLookup() As Double
+    ReDim floatLookup(0 To 255) As Double
+    For i = 0 To 255
+        floatLookup(i) = i / 255
+    Next i
     
-    For x = initX To finalX
-        QuickVal = x * qvDepth
-    For y = initY To finalY
+    Dim directionDown As Boolean
+    directionDown = True
     
-        'Get the RGB values
-        r = ImageData(QuickVal + 2, y)
-        g = ImageData(QuickVal + 1, y)
-        b = ImageData(QuickVal, y)
+    'We now split our code into two branches: a global approach, and a local approach.  These two options require vastly
+    ' different code.
+    
+    'Global histogram
+    If ehMode = 0 Then
         
-        'If luminance has been requested, calculate it before messing with any of the color channels
-        If HandleL Then
-            tRGBToHSL r, g, b, h, s, l
-            tHSLToRGB h, s, lDataInt(Int(l * 255)) / 255, r, g, b
-        End If
+        If Not toPreview Then Message "Analyzing image histogram..."
         
-        'Next, calculate new values for the color channels, based on what is being equalized
-        If HandleR Then r = rDataInt(r)
-        If HandleG Then g = gDataInt(g)
-        If HandleB Then b = bDataInt(b)
-        
-        'Assign our new values back into the pixel array
-        ImageData(QuickVal + 2, y) = r
-        ImageData(QuickVal + 1, y) = g
-        ImageData(QuickVal, y) = b
-        
-    Next y
-        If toPreview = False Then
-            If (x And progBarCheck) = 0 Then
-                If userPressedESC() Then Exit For
-                SetProgBarVal x + finalX
+        'Start by generating the initial histogram(s)
+        For Y = initY To finalY
+        For X = initXStride To finalXStride Step qvDepth
+            
+            'Get the source pixel color values
+            b = ImageData(X, Y)
+            g = ImageData(X + 1, Y)
+            r = ImageData(X + 2, Y)
+            
+            'Store those values in the correct histogram
+            'RGB
+            If ehTarget = 0 Then
+                rValues(r) = rValues(r) + 1
+                gValues(g) = gValues(g) + 1
+                bValues(b) = bValues(b) + 1
+            
+            'Luminance
+            Else
+                a = Color_Functions.getHQLuminance(r, g, b)
+                lValues(a) = lValues(a) + 1
             End If
+            
+        Next X
+            If Not toPreview Then
+                If (Y And progBarCheck) = 0 Then SetProgBarVal Y
+            End If
+        Next Y
+        
+        'With the histograms successfully calculated, it's now time to equalize them
+        'RGB
+        If ehTarget = 0 Then
+        
+            rData(0) = CDbl(rValues(0)) * scaleFactor
+            For i = 1 To 255
+                rData(i) = CDbl(rData(i - 1)) + (scaleFactor * CDbl(rValues(i)))
+            Next i
+            
+            gData(0) = CDbl(gValues(0)) * scaleFactor
+            For i = 1 To 255
+                gData(i) = CDbl(gData(i - 1)) + (scaleFactor * CDbl(gValues(i)))
+            Next i
+            
+            bData(0) = CDbl(bValues(0)) * scaleFactor
+            For i = 1 To 255
+                bData(i) = CDbl(bData(i - 1)) + (scaleFactor * CDbl(bValues(i)))
+            Next i
+            
+            'Clamp all lookup table values
+            For i = 0 To 255
+                If rData(i) > 255 Then rData(i) = 255
+                If gData(i) > 255 Then gData(i) = 255
+                If bData(i) > 255 Then bData(i) = 255
+            Next i
+            
+        'Luminance
+        Else
+        
+            lData(0) = CDbl(lValues(0)) * scaleFactor
+            For i = 1 To 255
+                lData(i) = CDbl(lData(i - 1)) + (scaleFactor * CDbl(lValues(i)))
+            Next i
+            
+            For i = 0 To 255
+                If lData(i) > 255 Then lData(i) = 255
+            Next i
+        
         End If
-    Next x
+        
+        'Apply the new histogram to the image
+        If Not toPreview Then Message "Equalizing image..."
+        
+        For Y = initY To finalY
+        For X = initXStride To finalXStride Step qvDepth
+        
+            'Get the source RGB values
+            b = ImageData(X, Y)
+            g = ImageData(X + 1, Y)
+            r = ImageData(X + 2, Y)
+            
+            'Apply new values
+            If ehTarget = 0 Then
+                ImageData(X, Y) = bData(b)
+                ImageData(X + 1, Y) = gData(g)
+                ImageData(X + 2, Y) = rData(r)
+            Else
+                If ehTarget = 1 Then
+                    Color_Functions.tRGBToHSL r, g, b, h, s, v
+                    Color_Functions.tHSLToRGB h, s, floatLookup(lData(Int(v * 255))), r, g, b
+                    ImageData(X, Y) = b
+                    ImageData(X + 1, Y) = g
+                    ImageData(X + 2, Y) = r
+                Else
+                    Color_Functions.fRGBtoHSV floatLookup(r), floatLookup(g), floatLookup(b), h, s, v
+                    Color_Functions.fHSVtoRGB h, s, floatLookup(lData(Int(v * 255))), rFloat, gFloat, bFloat
+                    ImageData(X, Y) = Int(bFloat * 255)
+                    ImageData(X + 1, Y) = Int(gFloat * 255)
+                    ImageData(X + 2, Y) = Int(rFloat * 255)
+                End If
+                
+            End If
+            
+        Next X
+            If Not toPreview Then
+                If (Y And progBarCheck) = 0 Then
+                    If userPressedESC() Then Exit For
+                    SetProgBarVal Y + finalY
+                End If
+            End If
+        Next Y
+        
+    'Local histogram
+    Else
+        
+        If Not toPreview Then Message "Equalizing image..."
+        
+        'Prep the pixel iterator
+        Dim cPixelIterator As pdPixelIterator
+        Set cPixelIterator = New pdPixelIterator
+        
+        If cPixelIterator.InitializeIterator(srcDIB, ehRadius, ehRadius, kernelShape) Then
+            
+            If ehTarget = 0 Then
+                NumOfPixels = cPixelIterator.LockTargetHistograms_RGBA(rValues, gValues, bValues, aValues, False)
+            Else
+                NumOfPixels = cPixelIterator.LockTargetHistograms_Luminance(lValues)
+            End If
+            
+            'Loop through each pixel in the image, applying the filter as we go
+            For X = initXStride To finalXStride Step qvDepth
+                
+                'Based on the direction we're traveling, reverse the interior loop boundaries as necessary.
+                If directionDown Then
+                    startY = initY
+                    stopY = finalY
+                    yStep = 1
+                Else
+                    startY = finalY
+                    stopY = initY
+                    yStep = -1
+                End If
+                
+                'Process the next column.  This step is pretty much identical to the row steps above (but in a vertical direction, obviously)
+                For Y = startY To stopY Step yStep
+                
+                    'With a local histogram successfully built for the area surrounding this pixel, we can now proceed
+                    ' with processing the local histogram.
+                    
+                    'Start by retrieving the color at this pixel location.
+                    b = ImageData(X, Y)
+                    g = ImageData(X + 1, Y)
+                    r = ImageData(X + 2, Y)
+                    
+                    'Partially equalize each histogram
+                    scaleFactor = 255 / NumOfPixels
+                    
+                    'RGB
+                    If ehTarget = 0 Then
+                    
+                        rData(0) = CDbl(rValues(0)) * scaleFactor
+                        If r > 0 Then
+                            For i = 1 To r
+                                rData(i) = rData(i - 1) + (scaleFactor * CDbl(rValues(i)))
+                            Next i
+                        End If
+                        
+                        gData(0) = CDbl(gValues(0)) * scaleFactor
+                        If g > 0 Then
+                            For i = 1 To g
+                                gData(i) = gData(i - 1) + (scaleFactor * CDbl(gValues(i)))
+                            Next i
+                        End If
+                        
+                        bData(0) = CDbl(bValues(0)) * scaleFactor
+                        If b > 0 Then
+                            For i = 1 To b
+                                bData(i) = bData(i - 1) + (scaleFactor * CDbl(bValues(i)))
+                            Next i
+                        End If
+                        
+                        'Clamp all lookup table values
+                        If rData(r) > 255 Then rData(r) = 255
+                        If gData(g) > 255 Then gData(g) = 255
+                        If bData(b) > 255 Then bData(b) = 255
+                        
+                        'Adaptive histogram equalization can often lead to enormously different values.
+                        ' To try and mediate this, we average the new value with the original value.
+                        b = (b + bData(b)) \ 2
+                        g = (g + gData(g)) \ 2
+                        r = (r + rData(r)) \ 2
+                        
+                        'Apply the equalized value to the image
+                        ImageData(X, Y) = b
+                        ImageData(X + 1, Y) = g
+                        ImageData(X + 2, Y) = r
+                        
+                    'Luminance
+                    Else
+                        
+                        If ehTarget = 1 Then
+                            Color_Functions.tRGBToHSL r, g, b, h, s, v
+                        Else
+                            Color_Functions.fRGBtoHSV floatLookup(r), floatLookup(g), floatLookup(b), h, s, v
+                        End If
+                        
+                        lData(0) = CDbl(lValues(0)) * scaleFactor
+                        vLong = Int(v * 255)
+                        If vLong > 0 Then
+                            For i = 1 To vLong
+                                lData(i) = CDbl(lData(i - 1)) + (scaleFactor * CDbl(lValues(i)))
+                            Next i
+                        End If
+                        
+                        If lData(vLong) > 255 Then lData(vLong) = 255
+                        v = (v + floatLookup(lData(vLong))) / 2
+                        
+                        If ehTarget = 1 Then
+                            Color_Functions.tHSLToRGB h, s, v, r, g, b
+                            ImageData(X, Y) = b
+                            ImageData(X + 1, Y) = g
+                            ImageData(X + 2, Y) = r
+                        Else
+                            Color_Functions.fHSVtoRGB h, s, v, rFloat, gFloat, bFloat
+                            ImageData(X, Y) = Int(bFloat * 255)
+                            ImageData(X + 1, Y) = Int(gFloat * 255)
+                            ImageData(X + 2, Y) = Int(rFloat * 255)
+                        End If
+                        
+                    End If
+                    
+                    'Move the iterator in the correct direction
+                    If directionDown Then
+                        If Y < finalY Then NumOfPixels = cPixelIterator.MoveYDown
+                    Else
+                        If Y > initY Then NumOfPixels = cPixelIterator.MoveYUp
+                    End If
+                    
+                Next Y
+                
+                'Reverse y-directionality on each pass
+                directionDown = Not directionDown
+                If X < finalXStride Then NumOfPixels = cPixelIterator.MoveXRight
+                
+                'Update the progress bar every (progBarCheck) lines
+                If Not toPreview Then
+                    If (X And progBarCheck) = 0 Then
+                        If userPressedESC() Then Exit For
+                        SetProgBarVal X
+                    End If
+                End If
+                    
+            Next X
+            
+            'Release the pixel iterator and second copy of the source image
+            If ehTarget = 0 Then
+                cPixelIterator.ReleaseTargetHistograms_RGBA rValues, gValues, bValues, aValues
+            Else
+                cPixelIterator.ReleaseTargetHistograms_Luminance lValues
+            End If
+            
+        End If
+        
+        srcDIB.eraseDIB
+    
+    End If
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
@@ -344,12 +523,59 @@ Public Sub EqualizeHistogram(ByVal HandleR As Boolean, ByVal HandleG As Boolean,
     
 End Sub
 
-Private Sub Form_Unload(Cancel As Integer)
-    ReleaseFormTheming Me
+Private Sub btsKernelShape_Click(ByVal buttonIndex As Long)
+    updatePreview
 End Sub
 
-Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then EqualizeHistogram CBool(chkRed.Value), CBool(chkGreen.Value), CBool(chkBlue.Value), CBool(chkLuminance.Value), True, fxPreview
+Private Sub btsMode_Click(ByVal buttonIndex As Long)
+    UpdateRadiusVisibility
+    updatePreview
+End Sub
+
+Private Sub btsTarget_Click(ByVal buttonIndex As Long)
+    updatePreview
+End Sub
+
+Private Sub cmdBar_OKClick()
+    Process "Equalize", , GetLocalParamString(), UNDO_LAYER
+End Sub
+
+Private Sub cmdBar_RequestPreviewUpdate()
+    updatePreview
+End Sub
+
+Private Sub Form_Activate()
+    
+    'Apply translations and visual themes
+    MakeFormPretty Me
+    
+    'Request a preview
+    cmdBar.markPreviewStatus True
+    updatePreview
+    
+End Sub
+
+Private Sub Form_Load()
+    
+    cmdBar.markPreviewStatus False
+    
+    btsTarget.AddItem "RGB", 0
+    btsTarget.AddItem "luminance", 1
+    btsTarget.AddItem "value", 2
+    btsTarget.ListIndex = 0
+    
+    btsMode.AddItem "global", 0
+    btsMode.AddItem "local", 1
+    btsMode.ListIndex = 0
+    
+    Interface.PopKernelShapeButtonStrip btsKernelShape, PDPRS_Rectangle
+    
+    UpdateRadiusVisibility
+    
+End Sub
+
+Private Sub Form_Unload(Cancel As Integer)
+    ReleaseFormTheming Me
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -357,4 +583,20 @@ Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
 
+Private Sub sltRadius_Change()
+    updatePreview
+End Sub
 
+Private Sub UpdateRadiusVisibility()
+    sltRadius.Visible = CBool(btsMode.ListIndex = 1)
+    lblShape.Visible = CBool(btsMode.ListIndex = 1)
+    btsKernelShape.Visible = CBool(btsMode.ListIndex = 1)
+End Sub
+
+Private Sub updatePreview()
+    If cmdBar.previewsAllowed Then EqualizeHistogram GetLocalParamString(), True, fxPreview
+End Sub
+
+Private Function GetLocalParamString() As String
+    GetLocalParamString = buildParamList("target", btsTarget.ListIndex, "mode", btsMode.ListIndex, "kernelShape", btsKernelShape.ListIndex, "radius", sltRadius.Value)
+End Function

@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (rk)</langname>
-<langversion>6.7.117</langversion>
+<langversion>6.7.119</langversion>
 <langstatus>Nicht abgeschlossen</langstatus>
 
 <author>rk (orig. Frank Donckers, Helmut Kuerbiss)</author>
@@ -6422,8 +6422,23 @@ Hinweis: Einige kleinere Programmtexte können nicht live aktualisiert werden. S
 </phrase>
 
 <phrase>
-<original>equalize</original>
-<translation>Ausgleichen</translation>
+<original>radius</original>
+<translation>Radius</translation>
+</phrase>
+
+<phrase>
+<original>target histogram</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>kernel shape</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6436,7 +6451,17 @@ Hinweis: Einige kleinere Programmtexte können nicht live aktualisiert werden. S
 <translation>Bild wird ausgeglichen</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_Equalize.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<phrase>
+<original>global</original>
+<translation>Global</translation>
+</phrase>
+
+<phrase>
+<original>local</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_Histogram_Equalize.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Histogram_Equalize.frm-->
 
@@ -6546,11 +6571,6 @@ Hinweis: Einige kleinere Programmtexte können nicht live aktualisiert werden. S
 </phrase>
 
 <phrase>
-<original>radius</original>
-<translation>Radius</translation>
-</phrase>
-
-<phrase>
 <original>advice from the experts</original>
 <translation>Rat von Experten</translation>
 </phrase>
@@ -6570,7 +6590,7 @@ Hinweis: Einige kleinere Programmtexte können nicht live aktualisiert werden. S
 <translation>Wie alle Monochrom-nach-Graustufen-Werkzeuge wird dieses Werk- zeug ein verschwommenes Bild erzeugen. Sie können im Menü "Effekte > Schärfen > Unscharfe Maskierung" benutzen, um dies zu beheben. (Für beste Resultate verwenden Sie einen Radius bei "Unscharf maskieren" mindestens so groß wie dieser Radius.)</translation>
 </phrase>
 
-<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Monochrome_MonoToGray.frm-->
 
@@ -8128,16 +8148,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
-<original>kernel shape</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Applying modern art techniques</original>
 <translation>Verfahren der modernen Kunst wird angewendet</translation>
 </phrase>
 
-<!-- Effects_Artistic_ModernArt.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Artistic_ModernArt.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ModernArt.frm-->
 
@@ -12517,11 +12532,6 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei "
 </phrase>
 
 <phrase>
-<original>global</original>
-<translation>Global</translation>
-</phrase>
-
-<phrase>
 <original>Luminance</original>
 <translation>Leuchtdichte</translation>
 </phrase>
@@ -12611,7 +12621,7 @@ Um den Support für diese Funktion zu aktivieren, kopieren Sie bitte die Datei "
 <translation>Diese Option steuert, welche Kriterien der Zauberstab zur Bestimmung verwendet, ob ein Pixel der aktuellen Auswahl hinzugefügt werden sollte.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 54 phrases. 15 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 54 phrases. 16 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14530,16 +14540,21 @@ Wenn Sie dennoch das Deaktivieren der Updates wählen, vergessen Sie nicht, phot
 
 <!-- BEGIN text for Effects_Blur_SNN.frm (FormSNN) -->
 
-<!-- Effects_Blur_SNN.frm contains 13 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>Generating symmetric pixel pairs</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Blur_SNN.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Blur_SNN.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2497</phrasecount>
+<phrasecount>2500</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4297 phrases. -->
-<!-- 1800 are duplicates, so only 2497 unique phrases have been written to file. -->
-<!-- These 2497 phrases contain approximately 13367 total words. -->
+<!-- As of this build, PhotoDemon contains 4293 phrases. -->
+<!-- 1793 are duplicates, so only 2500 unique phrases have been written to file. -->
+<!-- These 2500 phrases contain approximately 13374 total words. -->
 
 </pdData>

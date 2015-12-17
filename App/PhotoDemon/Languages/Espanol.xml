@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.119</langversion>
+<langversion>6.7.121</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -6422,8 +6422,23 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 </phrase>
 
 <phrase>
-<original>equalize</original>
-<translation>ecualizar</translation>
+<original>radius</original>
+<translation>radio</translation>
+</phrase>
+
+<phrase>
+<original>target histogram</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>kernel shape</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -6436,7 +6451,17 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 <translation>Igualando la imagen</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_Equalize.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<phrase>
+<original>global</original>
+<translation>global</translation>
+</phrase>
+
+<phrase>
+<original>local</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_Histogram_Equalize.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Histogram_Equalize.frm-->
 
@@ -6546,11 +6571,6 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 </phrase>
 
 <phrase>
-<original>radius</original>
-<translation>radio</translation>
-</phrase>
-
-<phrase>
 <original>advice from the experts</original>
 <translation>el asesoramiento de los expertos</translation>
 </phrase>
@@ -6570,7 +6590,7 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 <translation>Como todas las herramientas-monocroma-a escala de grises, esta herramienta va a producir una imagen borrosa. Puede utilizar los efectos -> Enfocar -> herramienta de máscara de desenfoque para arreglar esto. (Para obtener los mejores resultados, utilice un radio de Máscara de enfoque, al menos, tan grande como este radio.)</translation>
 </phrase>
 
-<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Monochrome_MonoToGray.frm-->
 
@@ -8128,16 +8148,11 @@ If desea guardarlo con un nombre de archivo diferente, seleccione "Cancelar", y 
 </phrase>
 
 <phrase>
-<original>kernel shape</original>
-<translation></translation>
-</phrase>
-
-<phrase>
 <original>Applying modern art techniques</original>
 <translation>La aplicación de técnicas de arte moderno</translation>
 </phrase>
 
-<!-- Effects_Artistic_ModernArt.frm contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- Effects_Artistic_ModernArt.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ModernArt.frm-->
 
@@ -12517,11 +12532,6 @@ To habilitar el soporte para esta función, por favor copie el archivo FreeImage
 </phrase>
 
 <phrase>
-<original>global</original>
-<translation>global</translation>
-</phrase>
-
-<phrase>
 <original>Luminance</original>
 <translation>luminancia</translation>
 </phrase>
@@ -12611,7 +12621,7 @@ To habilitar el soporte para esta función, por favor copie el archivo FreeImage
 <translation>Esta opción controla qué criterios utiliza la varita mágica para determinar si un píxel se debe agregar a la selección actual.</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 54 phrases. 15 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 54 phrases. 16 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14530,16 +14540,21 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <!-- BEGIN text for Effects_Blur_SNN.frm (FormSNN) -->
 
-<!-- Effects_Blur_SNN.frm contains 13 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
+<phrase>
+<original>Generating symmetric pixel pairs</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Blur_SNN.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Blur_SNN.frm-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2497</phrasecount>
+<phrasecount>2500</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4297 phrases. -->
-<!-- 1800 are duplicates, so only 2497 unique phrases have been written to file. -->
-<!-- These 2497 phrases contain approximately 13367 total words. -->
+<!-- As of this build, PhotoDemon contains 4293 phrases. -->
+<!-- 1793 are duplicates, so only 2500 unique phrases have been written to file. -->
+<!-- These 2500 phrases contain approximately 13374 total words. -->
 
 </pdData>

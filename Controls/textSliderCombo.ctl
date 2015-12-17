@@ -520,8 +520,8 @@ Public Property Let Value(ByVal newValue As Double)
         drawSliderKnob
         
         'Mark the value property as being changed, and raise the corresponding event.
+        If Me.Enabled Then RaiseEvent Change
         PropertyChanged "Value"
-        RaiseEvent Change
         
     End If
     
@@ -552,12 +552,12 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
 
 End Sub
 
-Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
     
     If ((Button And pdLeftButton) <> 0) Then
     
         'Check to see if the mouse is over a) the slider control button, or b) the background track
-        If isMouseOverSlider(x, y) Then
+        If isMouseOverSlider(X, Y) Then
         
             'Track various states to make UI rendering easier
             m_MouseDown = True
@@ -565,13 +565,13 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
             m_MouseOverSliderTrack = False
             
             'Calculate a new control value.  This will cause the slider to "jump" to the current position.
-            Value = (controlMax - controlMin) * ((x - getTrackMinPos) / (getTrackMaxPos - getTrackMinPos)) + controlMin
+            Value = (controlMax - controlMin) * ((X - getTrackMinPos) / (getTrackMaxPos - getTrackMinPos)) + controlMin
             
             'Retrieve the current slider x/y values, and store the mouse position relative to those values
             Dim sliderX As Single, sliderY As Single
             getSliderCoordinates sliderX, sliderY
-            m_InitX = x - sliderX
-            m_InitY = y - sliderY
+            m_InitX = X - sliderX
+            m_InitY = Y - sliderY
             
             'Force an immediate redraw (instead of waiting for WM_PAINT to process)
             cSliderPainter.RequestRepaint True
@@ -582,7 +582,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
     
 End Sub
 
-Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
     
     'Reset all hover indicators
     m_MouseOverSlider = False
@@ -594,7 +594,7 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
     
 End Sub
 
-Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long)
 
     'If the mouse is down, adjust the current control value accordingly.
     If m_MouseDown Then
@@ -605,7 +605,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         m_MouseOverSliderTrack = False
         
         'Calculate a new control value relative to the current mouse position.  (This will automatically force a button redraw.)
-        Value = (controlMax - controlMin) * (((x + m_InitX) - getTrackMinPos) / (getTrackMaxPos - getTrackMinPos)) + controlMin
+        Value = (controlMax - controlMin) * (((X + m_InitX) - getTrackMinPos) / (getTrackMaxPos - getTrackMinPos)) + controlMin
         
         'Force an immediate redraw (instead of waiting for WM_PAINT to process)
         cSliderPainter.RequestRepaint True
@@ -613,12 +613,12 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
     'If the LMB is not down, modify the cursor according to its position relative to the slider
     Else
         
-        m_MouseOverSlider = isMouseOverSlider(x, y, False)
+        m_MouseOverSlider = isMouseOverSlider(X, Y, False)
         If m_MouseOverSlider Then
             m_MouseOverSliderTrack = False
         Else
-            m_MouseOverSliderTrack = isMouseOverSlider(x, y, True)
-            m_MouseTrackX = x
+            m_MouseOverSliderTrack = isMouseOverSlider(X, Y, True)
+            m_MouseTrackX = X
         End If
         
         If m_MouseOverSlider Or m_MouseOverSliderTrack Then
@@ -634,13 +634,13 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
 
 End Sub
 
-Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal X As Long, ByVal Y As Long, ByVal ClickEventAlsoFiring As Boolean)
     
     If ((Button And pdLeftButton) <> 0) And m_MouseDown Then
         
         'Perform a final mouse move update at the reported x/y position.  If intensive processing occurred while the slider was being
         ' interacted with, this will ensure that the mouse location at its exact point of release is used.
-        Value = (controlMax - controlMin) * (((x + m_InitX) - getTrackMinPos) / (getTrackMaxPos - getTrackMinPos)) + controlMin
+        Value = (controlMax - controlMin) * (((X + m_InitX) - getTrackMinPos) / (getTrackMaxPos - getTrackMinPos)) + controlMin
         
         m_MouseDown = False
         
@@ -729,7 +729,7 @@ Private Sub UserControl_Initialize()
         
         'Set up keyboard events
         Set cKeyEvents = New pdInputKeyboard
-        cKeyEvents.createKeyboardTracker "Slider/Text UC", picScroll.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN
+        cKeyEvents.CreateKeyboardTracker "Slider/Text UC", picScroll.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN
         
         'Also start a focus detector for the slider picture box
         Set cFocusDetector = New pdFocusDetector
@@ -1258,7 +1258,7 @@ Private Sub redrawInternalGradientDIB()
     Dim trackRadius As Single
     trackRadius = (m_trackDiameter) \ 2
     
-    Dim x As Long
+    Dim X As Long
     Dim relativeMiddlePosition As Single, tmpY As Single
     
     'Draw the gradient differently depending on the type of gradient
@@ -1292,20 +1292,20 @@ Private Sub redrawInternalGradientDIB()
             
             Dim tmpR As Double, tmpG As Double, tmpB As Double
             
-            For x = 0 To m_GradientDIB.getDIBWidth - 1
+            For X = 0 To m_GradientDIB.getDIBWidth - 1
                 
-                If x < trackRadius Then
+                If X < trackRadius Then
                     fHSVtoRGB 0, 1, 1, tmpR, tmpG, tmpB
-                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, LineCapFlat
-                ElseIf x > (m_GradientDIB.getDIBWidth - trackRadius) Then
+                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, X, 0, X, m_GradientDIB.getDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, LineCapFlat
+                ElseIf X > (m_GradientDIB.getDIBWidth - trackRadius) Then
                     fHSVtoRGB 1, 1, 1, tmpR, tmpG, tmpB
-                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, LineCapFlat
+                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, X, 0, X, m_GradientDIB.getDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, LineCapFlat
                 Else
-                    fHSVtoRGB (x - trackRadius) / hueSpread, 1, 1, tmpR, tmpG, tmpB
-                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, LineCapFlat
+                    fHSVtoRGB (X - trackRadius) / hueSpread, 1, 1, tmpR, tmpG, tmpB
+                    GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, X, 0, X, m_GradientDIB.getDIBHeight, RGB(tmpR * 255, tmpG * 255, tmpB * 255), 255, 1, False, LineCapFlat
                 End If
                 
-            Next x
+            Next X
             
     End Select
     
@@ -1316,13 +1316,13 @@ Private Sub redrawInternalGradientDIB()
     ' handle this step during the DIB creation phase.
     If (curSliderStyle = GradientTwoPoint) Or (curSliderStyle = GradientThreePoint) Then
     
-        For x = 0 To trackRadius
-            GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, gradColorLeft, 255, 1, False, LineCapFlat
-        Next x
+        For X = 0 To trackRadius
+            GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, X, 0, X, m_GradientDIB.getDIBHeight, gradColorLeft, 255, 1, False, LineCapFlat
+        Next X
         
-        For x = m_GradientDIB.getDIBWidth - trackRadius To m_GradientDIB.getDIBWidth
-            GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, x, 0, x, m_GradientDIB.getDIBHeight, gradColorRight, 255, 1, False, LineCapFlat
-        Next x
+        For X = m_GradientDIB.getDIBWidth - trackRadius To m_GradientDIB.getDIBWidth
+            GDI_Plus.GDIPlusDrawLineToDC m_GradientDIB.getDIBDC, X, 0, X, m_GradientDIB.getDIBHeight, gradColorRight, 255, 1, False, LineCapFlat
+        Next X
         
     End If
     
@@ -1347,7 +1347,7 @@ Private Sub redrawInternalGradientDIB()
     Set alphaMask = Nothing
     
     'Premultiply the gradient DIB, so we can successfully alpha-blend it later
-    m_GradientDIB.setAlphaPremultiplication True
+    m_GradientDIB.SetAlphaPremultiplication True
     
     'The gradient mask is now complete!
     
@@ -1491,6 +1491,6 @@ End Sub
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    toolTipManager.setTooltip Me.hWnd, UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
-    toolTipManager.setTooltip picScroll.hWnd, UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    toolTipManager.SetTooltip Me.hWnd, UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    toolTipManager.SetTooltip picScroll.hWnd, UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub

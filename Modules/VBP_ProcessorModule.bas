@@ -1236,7 +1236,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             If showDialog Then
                 ShowPDDialog vbModal, FormEqualize
             Else
-                FormEqualize.EqualizeHistogram cParams.GetBool(1), cParams.GetBool(2), cParams.GetBool(3), cParams.GetBool(4)
+                FormEqualize.EqualizeHistogram cXMLParams.getParamString
             End If
         
         'Photography sub-menu functions

@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.828</langversion>
+<langversion>6.8.830</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ILoveVB</author>
@@ -4043,13 +4043,13 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>90 clockwise</original>
-<translation>顺时针90°</translation>
+<original>90° clockwise</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>90 counter-clockwise</original>
-<translation>逆时针90°</translation>
+<original>90° counter-clockwise</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -4178,18 +4178,18 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
-<original>Rotate 90 clockwise</original>
-<translation>旋转90°顺时针</translation>
+<original>Rotate 90° clockwise</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Rotate 90 counter-clockwise</original>
-<translation>旋转90°逆时针</translation>
+<original>Rotate 90° counter-clockwise</original>
+<translation></translation>
 </phrase>
 
 <phrase>
-<original>Rotate 180</original>
-<translation>旋转180°</translation>
+<original>Rotate 180°</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -4628,6 +4628,11 @@ or the File > Open and File > Import menus.</original>
 </phrase>
 
 <phrase>
+<original>Symmetric nearest-neighbor</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Distort</original>
 <translation>扭曲</translation>
 </phrase>
@@ -4805,6 +4810,11 @@ or the File > Open and File > Import menus.</original>
 <phrase>
 <original>Add RGB noise</original>
 <translation>添加RGB噪音</translation>
+</phrase>
+
+<phrase>
+<original>Anisotropic diffusion</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -5732,7 +5742,7 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 <translation>移除 Alpha 通道</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 561 phrases. 177 were duplicates of existing phrases, so only 384 new phrases were written to file. -->
+<!-- MainWindow.frm contains 565 phrases. 179 were duplicates of existing phrases, so only 386 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -6403,8 +6413,23 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 </phrase>
 
 <phrase>
-<original>equalize</original>
-<translation>均衡</translation>
+<original>radius</original>
+<translation>半径</translation>
+</phrase>
+
+<phrase>
+<original>target histogram</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>mode</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>kernel shape</original>
+<translation>内核形状</translation>
 </phrase>
 
 <phrase>
@@ -6417,7 +6442,17 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 <translation>均衡图像</translation>
 </phrase>
 
-<!-- Adjustments_Histogram_Equalize.frm contains 9 phrases. 5 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<phrase>
+<original>global</original>
+<translation>全局</translation>
+</phrase>
+
+<phrase>
+<original>local</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_Histogram_Equalize.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Histogram_Equalize.frm-->
 
@@ -6527,11 +6562,6 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 </phrase>
 
 <phrase>
-<original>radius</original>
-<translation>半径</translation>
-</phrase>
-
-<phrase>
 <original>advice from the experts</original>
 <translation>专家建议</translation>
 </phrase>
@@ -6551,7 +6581,7 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 <translation>像所有的单色到灰度的工具，这个工具会产生一个模糊的图像。你可以使用效果->锐化->反锐化掩模的工具来解决这个。（最好的结果是，使用锐化掩模半径至少为这个半径大）</translation>
 </phrase>
 
-<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 2 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
+<!-- Adjustments_Monochrome_MonoToGray.frm contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Monochrome_MonoToGray.frm-->
 
@@ -8114,7 +8144,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>运用现代艺术手法</translation>
 </phrase>
 
-<!-- Effects_Artistic_ModernArt.frm contains 5 phrases. 2 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<!-- Effects_Artistic_ModernArt.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Artistic_ModernArt.frm-->
 
@@ -9139,16 +9169,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Noise_MeanShift.frm (FormMeanShift) -->
 
 <phrase>
-<original>kernel shape</original>
-<translation>内核形状</translation>
-</phrase>
-
-<phrase>
 <original>Applying mean shift filter</original>
 <translation>均值漂移滤波</translation>
 </phrase>
 
-<!-- Effects_Noise_MeanShift.frm contains 6 phrases. 4 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<!-- Effects_Noise_MeanShift.frm contains 6 phrases. 5 were duplicates of existing phrases, so only one new phrase was written to file. -->
 
 <!-- END text for Effects_Noise_MeanShift.frm-->
 
@@ -9194,7 +9219,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>中值滤波</translation>
 </phrase>
 
-<!-- Effects_Noise_MedianSmoothing.frm contains 13 phrases. 5 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
+<!-- Effects_Noise_MedianSmoothing.frm contains 14 phrases. 6 were duplicates of existing phrases, so only 8 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_MedianSmoothing.frm-->
 
@@ -12499,11 +12524,6 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 </phrase>
 
 <phrase>
-<original>global</original>
-<translation>全局</translation>
-</phrase>
-
-<phrase>
 <original>Luminance</original>
 <translation>亮度</translation>
 </phrase>
@@ -12593,7 +12613,7 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <translation>此选项控制了魔术棒使用的标准，以确定是否应该将像素添加到当前选择。</translation>
 </phrase>
 
-<!-- Toolpanel_Selections.frm contains 54 phrases. 15 were duplicates of existing phrases, so only 39 new phrases were written to file. -->
+<!-- Toolpanel_Selections.frm contains 54 phrases. 16 were duplicates of existing phrases, so only 38 new phrases were written to file. -->
 
 <!-- END text for Toolpanel_Selections.frm-->
 
@@ -14456,12 +14476,74 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- END text for pdPixelIterator.cls-->
 
+<!-- BEGIN text for Effects_Noise_Anisotropic.frm (FormAnisotropic) -->
+
+<phrase>
+<original>directionality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>gradient flow</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>iterations</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>model</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Calculating energy gradients (pass %1 of %2)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>4-way cardinal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>4-way ordinal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>8-way</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>smooth</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<!-- END text for Effects_Noise_Anisotropic.frm-->
+
+<!-- BEGIN text for Effects_Blur_SNN.frm (FormSNN) -->
+
+<phrase>
+<original>Generating symmetric pixel pairs</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Blur_SNN.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Effects_Blur_SNN.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2486</phrasecount>
+<phrasecount>2500</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4265 phrases. -->
-<!-- 1779 are duplicates, so only 2486 unique phrases have been written to file. -->
-<!-- These 2486 phrases contain approximately 13350 total words. -->
+<!-- As of this build, PhotoDemon contains 4293 phrases. -->
+<!-- 1793 are duplicates, so only 2500 unique phrases have been written to file. -->
+<!-- These 2500 phrases contain approximately 13374 total words. -->
 
 </pdData>
