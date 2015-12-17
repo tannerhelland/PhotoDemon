@@ -26,7 +26,7 @@ Begin VB.Form FormFadeLast
    Begin PhotoDemon.pdComboBox cboBlendMode 
       Height          =   375
       Left            =   6240
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   3240
       Width           =   5895
       _ExtentX        =   10398
@@ -53,7 +53,7 @@ Begin VB.Form FormFadeLast
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltOpacity 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   1920
@@ -67,28 +67,17 @@ Begin VB.Form FormFadeLast
       NotchPosition   =   2
       NotchValueCustom=   50
    End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "blend mode"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   1
       Top             =   2880
-      Width           =   1260
+      Width           =   6060
+      _ExtentX        =   10689
+      _ExtentY        =   503
+      Caption         =   "blend mode"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormFadeLast"
@@ -276,3 +265,4 @@ End Sub
 Private Sub sltOpacity_Change()
     updatePreview
 End Sub
+

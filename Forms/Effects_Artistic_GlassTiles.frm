@@ -23,25 +23,6 @@ Begin VB.Form FormGlassTiles
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
-   Begin VB.ComboBox cmbEdges 
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   6120
-      Style           =   2  'Dropdown List
-      TabIndex        =   5
-      Top             =   4995
-      Width           =   5700
-   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -54,7 +35,7 @@ Begin VB.Form FormGlassTiles
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   360
@@ -78,7 +59,7 @@ Begin VB.Form FormGlassTiles
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltSize 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   1440
@@ -91,7 +72,7 @@ Begin VB.Form FormGlassTiles
       Value           =   40
    End
    Begin PhotoDemon.sliderTextCombo sltCurvature 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   4
       Top             =   2520
@@ -105,9 +86,9 @@ Begin VB.Form FormGlassTiles
       Value           =   8
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   3600
       Width           =   5895
       _ExtentX        =   10398
@@ -118,6 +99,15 @@ Begin VB.Form FormGlassTiles
       Value           =   2
       NotchPosition   =   2
       NotchValueCustom=   2
+   End
+   Begin PhotoDemon.pdComboBox cboEdges 
+      Height          =   375
+      Left            =   6240
+      TabIndex        =   7
+      Top             =   4920
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   661
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -136,7 +126,7 @@ Begin VB.Form FormGlassTiles
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   4560
       Width           =   3315
    End
@@ -362,12 +352,12 @@ Public Sub GlassTiles(ByVal lSquareSize As Long, ByVal lCurvature As Double, ByV
     
 End Sub
 
-Private Sub cmbEdges_Click()
+Private Sub cboEdges_Click()
     updatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Glass tiles", , buildParams(sltSize.Value, sltCurvature.Value, sltAngle.Value, sltQuality.Value, CLng(cmbEdges.ListIndex)), UNDO_LAYER
+    Process "Glass tiles", , buildParams(sltSize.Value, sltCurvature.Value, sltAngle.Value, sltQuality.Value, CLng(cboEdges.ListIndex)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -379,7 +369,7 @@ Private Sub cmdBar_ResetClick()
     sltSize.Value = 40
     sltCurvature.Value = 8
     sltQuality.Value = 2
-    cmbEdges.ListIndex = EDGE_CLAMP
+    cboEdges.ListIndex = EDGE_CLAMP
 End Sub
 
 Private Sub Form_Activate()
@@ -400,7 +390,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cmbEdges, EDGE_CLAMP
+    PopDistortEdgeBox cboEdges, EDGE_CLAMP
     
 End Sub
 
@@ -425,7 +415,7 @@ Private Sub sltSize_Change()
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then GlassTiles sltSize.Value, sltCurvature.Value, sltAngle.Value, sltQuality.Value, CLng(cmbEdges.ListIndex), True, fxPreview
+    If cmdBar.previewsAllowed Then GlassTiles sltSize.Value, sltCurvature.Value, sltAngle.Value, sltQuality.Value, CLng(cboEdges.ListIndex), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

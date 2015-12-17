@@ -87,7 +87,7 @@ Begin VB.Form FormExposure
    Begin PhotoDemon.sliderTextCombo sltGamma 
       Height          =   705
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   4560
       Width           =   5895
       _ExtentX        =   10398
@@ -100,26 +100,18 @@ Begin VB.Form FormExposure
       NotchPosition   =   2
       NotchValueCustom=   1
    End
-   Begin VB.Label lblTitle 
-      BackStyle       =   0  'Transparent
-      Caption         =   "new exposure curve:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   1005
       Index           =   2
       Left            =   6000
-      TabIndex        =   4
       Top             =   1320
       Width           =   2220
-      WordWrap        =   -1  'True
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "new exposure curve:"
+      FontSize        =   12
+      ForeColor       =   4210752
+      Layout          =   1
    End
 End
 Attribute VB_Name = "FormExposure"
@@ -267,7 +259,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    UpdatePreview
+    updatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -280,7 +272,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Draw a preview of the effect
-    UpdatePreview
+    updatePreview
     
 End Sub
 
@@ -289,7 +281,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Redrawing a preview of the exposure effect also redraws the exposure curve (which isn't really a curve, but oh well)
-Private Sub UpdatePreview()
+Private Sub updatePreview()
     
     If cmdBar.previewsAllowed And sltExposure.IsValid And sltOffset.IsValid And sltGamma.IsValid Then
     
@@ -355,18 +347,19 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    UpdatePreview
+    updatePreview
 End Sub
 
 'Update the preview whenever the combination slider/text control has its value changed
 Private Sub sltExposure_Change()
-    UpdatePreview
+    updatePreview
 End Sub
 
 Private Sub sltGamma_Change()
-    UpdatePreview
+    updatePreview
 End Sub
 
 Private Sub sltOffset_Change()
-    UpdatePreview
+    updatePreview
 End Sub
+

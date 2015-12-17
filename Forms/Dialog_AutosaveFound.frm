@@ -28,7 +28,7 @@ Begin VB.Form dialog_AutosaveWarning
    Begin PhotoDemon.pdButton cmdOK 
       Height          =   735
       Left            =   2280
-      TabIndex        =   5
+      TabIndex        =   0
       Top             =   6060
       Width           =   3300
       _ExtentX        =   5821
@@ -54,7 +54,7 @@ Begin VB.Form dialog_AutosaveWarning
       ScaleHeight     =   225
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   330
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   2430
       Width           =   4980
    End
@@ -80,12 +80,49 @@ Begin VB.Form dialog_AutosaveWarning
    Begin PhotoDemon.pdButton cmdCancel 
       Height          =   735
       Left            =   5640
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   6060
       Width           =   3300
       _ExtentX        =   5821
       _ExtentY        =   1296
       Caption         =   "Discard all images"
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   285
+      Index           =   0
+      Left            =   240
+      Top             =   2040
+      Width           =   8730
+      _ExtentX        =   15399
+      _ExtentY        =   503
+      Caption         =   "autosave entries found:"
+      ForeColor       =   4210752
+   End
+   Begin PhotoDemon.pdLabel lblWarning 
+      Height          =   645
+      Index           =   1
+      Left            =   240
+      Top             =   960
+      Width           =   8745
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "Warning"
+      ForeColor       =   4210752
+      Layout          =   1
+   End
+   Begin PhotoDemon.pdLabel lblWarning 
+      Height          =   525
+      Index           =   0
+      Left            =   1005
+      Top             =   330
+      Width           =   8055
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Alignment       =   2
+      Caption         =   "Autosave data found.  Would you like to restore it?"
+      FontSize        =   12
+      ForeColor       =   2105376
+      Layout          =   1
    End
    Begin VB.Line Line1 
       BorderColor     =   &H8000000D&
@@ -93,70 +130,6 @@ Begin VB.Form dialog_AutosaveWarning
       X2              =   595
       Y1              =   120
       Y2              =   120
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "autosave entries found:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   240
-      TabIndex        =   3
-      Top             =   2040
-      Width           =   2490
-   End
-   Begin VB.Label lblWarning 
-      BackStyle       =   0  'Transparent
-      Caption         =   "Warning"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   645
-      Index           =   1
-      Left            =   240
-      TabIndex        =   1
-      Top             =   990
-      Width           =   8745
-      WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblWarning 
-      Alignment       =   2  'Center
-      BackStyle       =   0  'Transparent
-      Caption         =   "Autosave data found.  Would you like to restore it?"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00202020&
-      Height          =   525
-      Index           =   0
-      Left            =   1005
-      TabIndex        =   0
-      Top             =   330
-      Width           =   8055
-      WordWrap        =   -1  'True
    End
 End
 Attribute VB_Name = "dialog_AutosaveWarning"
@@ -306,7 +279,7 @@ Private Sub updatePreview(ByVal srcImagePath As String)
     If Not (tmpDIB Is Nothing) Then
       If (tmpDIB.getDIBWidth > 0) And (tmpDIB.getDIBHeight > 0) Then
         tmpDIBExists = True
-        tmpDIB.renderToPictureBox picPreview
+        tmpDIB.RenderToPictureBox picPreview
       End If
     End If
 
@@ -360,3 +333,4 @@ Private Sub lstAutosaves_Click()
     updatePreview previewPath
     
 End Sub
+

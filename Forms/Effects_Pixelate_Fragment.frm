@@ -24,25 +24,6 @@ Begin VB.Form FormFragment
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   793
    ShowInTaskbar   =   0   'False
-   Begin VB.ComboBox cmbEdges 
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   6120
-      Style           =   2  'Dropdown List
-      TabIndex        =   5
-      Top             =   3975
-      Width           =   5700
-   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -65,7 +46,7 @@ Begin VB.Form FormFragment
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltDistance 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   1440
@@ -78,7 +59,7 @@ Begin VB.Form FormFragment
       Value           =   8
    End
    Begin PhotoDemon.sliderTextCombo sltFragments 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   360
@@ -91,7 +72,7 @@ Begin VB.Form FormFragment
       Value           =   4
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   4
       Top             =   2520
@@ -106,7 +87,7 @@ Begin VB.Form FormFragment
       Height          =   360
       Index           =   0
       Left            =   6120
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   4920
       Width           =   5685
       _ExtentX        =   10028
@@ -118,12 +99,21 @@ Begin VB.Form FormFragment
       Height          =   360
       Index           =   1
       Left            =   6120
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   5280
       Width           =   5685
       _ExtentX        =   10028
       _ExtentY        =   582
       Caption         =   "speed"
+   End
+   Begin PhotoDemon.pdComboBox cboEdges 
+      Height          =   375
+      Left            =   6120
+      TabIndex        =   9
+      Top             =   3960
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   661
    End
    Begin VB.Label lblTitle 
       Appearance      =   0  'Flat
@@ -144,7 +134,7 @@ Begin VB.Form FormFragment
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   4530
       Width           =   1755
    End
@@ -165,7 +155,7 @@ Begin VB.Form FormFragment
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   3540
       Width           =   3315
    End
@@ -354,12 +344,12 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
         
 End Sub
 
-Private Sub cmbEdges_Click()
+Private Sub cboEdges_Click()
     updatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Fragment", , buildParams(sltFragments.Value, sltDistance.Value, sltAngle.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
+    Process "Fragment", , buildParams(sltFragments.Value, sltDistance.Value, sltAngle.Value, CLng(cboEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -370,7 +360,7 @@ Private Sub cmdBar_ResetClick()
     sltFragments.Value = 4
     sltDistance.Value = 8
     sltAngle.Value = 0
-    cmbEdges.ListIndex = EDGE_CLAMP
+    cboEdges.ListIndex = EDGE_CLAMP
     OptInterpolate(1).Value = True
 End Sub
 
@@ -392,7 +382,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cmbEdges, EDGE_CLAMP
+    PopDistortEdgeBox cboEdges, EDGE_CLAMP
 
 End Sub
 
@@ -401,7 +391,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then Fragment sltFragments, sltDistance, sltAngle, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then Fragment sltFragments, sltDistance, sltAngle, CLng(cboEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
 End Sub
 
 Private Sub fxPreview_ViewportChanged()

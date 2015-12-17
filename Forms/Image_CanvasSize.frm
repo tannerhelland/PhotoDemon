@@ -136,7 +136,7 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   7
       Left            =   1680
-      TabIndex        =   12
+      TabIndex        =   1
       Top             =   4920
       Width           =   750
       _ExtentX        =   1323
@@ -146,55 +146,33 @@ Begin VB.Form FormCanvasSize
       Height          =   570
       Index           =   8
       Left            =   2520
-      TabIndex        =   13
+      TabIndex        =   2
       Top             =   4920
       Width           =   750
       _ExtentX        =   1323
       _ExtentY        =   1005
    End
-   Begin VB.Label lblAnchor 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "anchor position"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblAnchor 
       Height          =   285
       Left            =   360
-      TabIndex        =   1
       Top             =   3360
-      Width           =   1635
+      Width           =   8595
+      _ExtentX        =   15161
+      _ExtentY        =   503
+      Caption         =   "anchor position"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblFill 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "fill empty areas with"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblFill 
       Height          =   285
       Left            =   360
-      TabIndex        =   2
       Top             =   5760
-      Width           =   2145
+      Width           =   8385
+      _ExtentX        =   14790
+      _ExtentY        =   503
+      Caption         =   "fill empty areas with"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormCanvasSize"
@@ -451,3 +429,4 @@ Public Sub ResizeCanvas(ByVal iWidth As Long, ByVal iHeight As Long, ByVal ancho
     Message "Finished."
     
 End Sub
+

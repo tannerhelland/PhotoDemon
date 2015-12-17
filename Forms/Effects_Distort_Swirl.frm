@@ -35,25 +35,6 @@ Begin VB.Form FormSwirl
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin VB.ComboBox cmbEdges 
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   6120
-      Style           =   2  'Dropdown List
-      TabIndex        =   2
-      Top             =   4965
-      Width           =   5700
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
@@ -66,9 +47,9 @@ Begin VB.Form FormSwirl
       PointSelection  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   1560
       Width           =   5895
       _ExtentX        =   10398
@@ -79,9 +60,9 @@ Begin VB.Form FormSwirl
       SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   2520
       Width           =   5895
       _ExtentX        =   10398
@@ -94,9 +75,9 @@ Begin VB.Form FormSwirl
       NotchValueCustom=   100
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   3480
       Width           =   5895
       _ExtentX        =   10398
@@ -111,7 +92,7 @@ Begin VB.Form FormSwirl
    Begin PhotoDemon.sliderTextCombo sltXCenter 
       Height          =   405
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   480
       Width           =   2895
       _ExtentX        =   5106
@@ -125,7 +106,7 @@ Begin VB.Form FormSwirl
    Begin PhotoDemon.sliderTextCombo sltYCenter 
       Height          =   405
       Left            =   9000
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   480
       Width           =   2895
       _ExtentX        =   5106
@@ -135,6 +116,15 @@ Begin VB.Form FormSwirl
       Value           =   0.5
       NotchPosition   =   2
       NotchValueCustom=   0.5
+   End
+   Begin PhotoDemon.pdComboBox cboEdges 
+      Height          =   375
+      Left            =   6240
+      TabIndex        =   10
+      Top             =   4920
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   661
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -153,7 +143,7 @@ Begin VB.Form FormSwirl
       Height          =   285
       Index           =   4
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   120
       Width           =   2205
    End
@@ -164,7 +154,7 @@ Begin VB.Form FormSwirl
       Height          =   435
       Index           =   0
       Left            =   6120
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   1050
       Width           =   5655
       WordWrap        =   -1  'True
@@ -186,7 +176,7 @@ Begin VB.Form FormSwirl
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   4530
       Width           =   3315
    End
@@ -217,7 +207,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Sub cmbEdges_Click()
+Private Sub cboEdges_Click()
     updatePreview
 End Sub
 
@@ -451,7 +441,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Swirl", , buildParams(sltAngle, sltRadius, CLng(cmbEdges.ListIndex), sltQuality, sltXCenter, sltYCenter), UNDO_LAYER
+    Process "Swirl", , buildParams(sltAngle, sltRadius, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -460,7 +450,7 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     sltRadius.Value = 100
-    cmbEdges.ListIndex = EDGE_CLAMP
+    cboEdges.ListIndex = EDGE_CLAMP
     sltQuality.Value = 2
 End Sub
 
@@ -482,7 +472,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cmbEdges, EDGE_CLAMP
+    PopDistortEdgeBox cboEdges, EDGE_CLAMP
     
 End Sub
 
@@ -514,7 +504,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then SwirlImage sltAngle, sltRadius, CLng(cmbEdges.ListIndex), sltQuality, sltXCenter, sltYCenter, True, fxPreview
+    If cmdBar.previewsAllowed Then SwirlImage sltAngle, sltRadius, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

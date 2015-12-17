@@ -35,25 +35,6 @@ Begin VB.Form FormSpherize
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin VB.ComboBox cmbEdges 
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   6120
-      Style           =   2  'Dropdown List
-      TabIndex        =   2
-      Top             =   5550
-      Width           =   5700
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
@@ -65,9 +46,9 @@ Begin VB.Form FormSpherize
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   120
       Width           =   5895
       _ExtentX        =   10398
@@ -78,9 +59,9 @@ Begin VB.Form FormSpherize
       SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltOffsetY 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   2040
       Width           =   5895
       _ExtentX        =   10398
@@ -91,9 +72,9 @@ Begin VB.Form FormSpherize
       SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltOffsetX 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   1080
       Width           =   5895
       _ExtentX        =   10398
@@ -104,9 +85,9 @@ Begin VB.Form FormSpherize
       SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   3000
       Width           =   5895
       _ExtentX        =   10398
@@ -121,11 +102,20 @@ Begin VB.Form FormSpherize
    Begin PhotoDemon.buttonStrip btsExterior 
       Height          =   600
       Left            =   6120
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   4320
       Width           =   5595
       _ExtentX        =   9869
       _ExtentY        =   1058
+   End
+   Begin PhotoDemon.pdComboBox cboEdges 
+      Height          =   375
+      Left            =   6120
+      TabIndex        =   9
+      Top             =   5520
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   661
    End
    Begin VB.Label lblOther 
       Appearance      =   0  'Flat
@@ -145,7 +135,7 @@ Begin VB.Form FormSpherize
       ForeColor       =   &H00404040&
       Height          =   285
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   3960
       Width           =   2070
    End
@@ -166,7 +156,7 @@ Begin VB.Form FormSpherize
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   5130
       Width           =   3315
    End
@@ -208,7 +198,7 @@ Private Sub btsExterior_Click(ByVal buttonIndex As Long)
     updatePreview
 End Sub
 
-Private Sub cmbEdges_Click()
+Private Sub cboEdges_Click()
     updatePreview
 End Sub
 
@@ -492,7 +482,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Spherize", , buildParams(sltAngle, sltOffsetX, sltOffsetY, (btsExterior.ListIndex = 1), CLng(cmbEdges.ListIndex), sltQuality), UNDO_LAYER
+    Process "Spherize", , buildParams(sltAngle, sltOffsetX, sltOffsetY, (btsExterior.ListIndex = 1), CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -501,7 +491,7 @@ End Sub
 
 Private Sub cmdBar_ResetClick()
     sltQuality = 2
-    cmbEdges.ListIndex = EDGE_WRAP
+    cboEdges.ListIndex = EDGE_WRAP
 End Sub
 
 Private Sub Form_Activate()
@@ -522,7 +512,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cmbEdges, EDGE_WRAP
+    PopDistortEdgeBox cboEdges, EDGE_WRAP
     
     'Populate the "area outside sphere" button
     btsExterior.AddItem "empty", 0
@@ -541,7 +531,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then SpherizeImage sltAngle, sltOffsetX, sltOffsetY, (btsExterior.ListIndex = 1), CLng(cmbEdges.ListIndex), sltQuality, True, fxPreview
+    If cmdBar.previewsAllowed Then SpherizeImage sltAngle, sltOffsetX, sltOffsetY, (btsExterior.ListIndex = 1), CLng(cboEdges.ListIndex), sltQuality, True, fxPreview
 End Sub
 
 Private Sub sltOffsetX_Change()

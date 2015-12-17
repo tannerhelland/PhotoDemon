@@ -26,7 +26,7 @@ Begin VB.Form FormBatchWizard
    Begin PhotoDemon.pdButton cmdPrevious 
       Height          =   615
       Left            =   10080
-      TabIndex        =   110
+      TabIndex        =   0
       Top             =   8355
       Width           =   1725
       _ExtentX        =   3043
@@ -70,7 +70,7 @@ Begin VB.Form FormBatchWizard
    Begin PhotoDemon.pdButton cmdNext 
       Height          =   615
       Left            =   11880
-      TabIndex        =   111
+      TabIndex        =   1
       Top             =   8355
       Width           =   1725
       _ExtentX        =   3043
@@ -80,12 +80,35 @@ Begin VB.Form FormBatchWizard
    Begin PhotoDemon.pdButton cmdCancel 
       Height          =   615
       Left            =   13860
-      TabIndex        =   112
+      TabIndex        =   2
       Top             =   8355
       Width           =   1365
       _ExtentX        =   2408
       _ExtentY        =   1085
       Caption         =   "&Cancel"
+   End
+   Begin PhotoDemon.pdLabel lblExplanation 
+      Height          =   7365
+      Index           =   0
+      Left            =   120
+      Top             =   780
+      Width           =   3135
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "(text populated at run-time)"
+      ForeColor       =   4210752
+      Layout          =   1
+   End
+   Begin PhotoDemon.pdLabel lblWizardTitle 
+      Height          =   405
+      Left            =   120
+      Top             =   120
+      Width           =   14835
+      _ExtentX        =   26167
+      _ExtentY        =   714
+      Caption         =   "Step 1: select the photo editing action(s) to apply to each image"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -104,7 +127,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdSelectMacro 
          Height          =   615
          Left            =   8640
-         TabIndex        =   114
+         TabIndex        =   15
          Top             =   6570
          Width           =   3015
          _ExtentX        =   5318
@@ -115,7 +138,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdTextBox txtMacro 
          Height          =   315
          Left            =   1080
-         TabIndex        =   101
+         TabIndex        =   16
          Top             =   6720
          Width           =   7335
          _ExtentX        =   12938
@@ -133,7 +156,7 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   50
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   191
-         TabIndex        =   91
+         TabIndex        =   17
          Top             =   5385
          Width           =   2865
       End
@@ -151,7 +174,7 @@ Begin VB.Form FormBatchWizard
          Height          =   360
          Left            =   3390
          Style           =   2  'Dropdown List
-         TabIndex        =   87
+         TabIndex        =   18
          Top             =   5460
          Width           =   4095
       End
@@ -159,7 +182,7 @@ Begin VB.Form FormBatchWizard
          Height          =   300
          Index           =   2
          Left            =   600
-         TabIndex        =   84
+         TabIndex        =   22
          Top             =   6150
          Width           =   10020
          _ExtentX        =   17674
@@ -171,7 +194,7 @@ Begin VB.Form FormBatchWizard
          Height          =   300
          Index           =   1
          Left            =   600
-         TabIndex        =   85
+         TabIndex        =   24
          Top             =   2040
          Width           =   10020
          _ExtentX        =   17674
@@ -183,7 +206,7 @@ Begin VB.Form FormBatchWizard
          Height          =   360
          Index           =   0
          Left            =   120
-         TabIndex        =   88
+         TabIndex        =   25
          Top             =   120
          Width           =   10500
          _ExtentX        =   18521
@@ -195,7 +218,7 @@ Begin VB.Form FormBatchWizard
          Height          =   360
          Index           =   1
          Left            =   120
-         TabIndex        =   89
+         TabIndex        =   26
          Top             =   1080
          Width           =   10500
          _ExtentX        =   18521
@@ -206,7 +229,7 @@ Begin VB.Form FormBatchWizard
          Height          =   300
          Index           =   0
          Left            =   600
-         TabIndex        =   92
+         TabIndex        =   39
          Top             =   1560
          Width           =   10020
          _ExtentX        =   17674
@@ -217,7 +240,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.smartResize ucResize 
          Height          =   2850
          Left            =   1080
-         TabIndex        =   96
+         TabIndex        =   40
          Top             =   2520
          Width           =   8775
          _ExtentX        =   15478
@@ -233,49 +256,28 @@ Begin VB.Form FormBatchWizard
          EndProperty
          UnknownSizeMode =   -1  'True
       End
-      Begin VB.Label lblExplanation 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "if you only want to rename images or change image formats, use this option "
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   240
+      Begin PhotoDemon.pdLabel lblExplanation 
+         Height          =   480
          Index           =   1
          Left            =   600
-         TabIndex        =   90
          Top             =   540
-         Width           =   6615
+         Width           =   9975
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Caption         =   "if you only want to rename images or change image formats, use this option "
+         ForeColor       =   4210752
+         Layout          =   1
       End
-      Begin VB.Label lblFit 
-         Alignment       =   1  'Right Justify
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "resize image by:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblFit 
          Height          =   240
-         Left            =   1875
-         TabIndex        =   86
+         Left            =   195
          Top             =   5520
-         Width           =   1425
+         Width           =   3105
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Alignment       =   1
+         Caption         =   "resize image by:"
+         ForeColor       =   4210752
       End
    End
    Begin VB.PictureBox picContainer 
@@ -295,7 +297,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdSaveList 
          Height          =   615
          Left            =   9960
-         TabIndex        =   109
+         TabIndex        =   43
          Top             =   6600
          Width           =   1695
          _ExtentX        =   2990
@@ -306,7 +308,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdLoadList 
          Height          =   615
          Left            =   8160
-         TabIndex        =   108
+         TabIndex        =   44
          Top             =   6600
          Width           =   1695
          _ExtentX        =   2990
@@ -317,7 +319,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdRemoveAll 
          Height          =   615
          Left            =   9960
-         TabIndex        =   107
+         TabIndex        =   49
          Top             =   5400
          Width           =   1695
          _ExtentX        =   2990
@@ -328,7 +330,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdRemove 
          Height          =   615
          Left            =   8160
-         TabIndex        =   106
+         TabIndex        =   50
          Top             =   5400
          Width           =   1695
          _ExtentX        =   2990
@@ -339,7 +341,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdUseCD 
          Height          =   615
          Left            =   8160
-         TabIndex        =   105
+         TabIndex        =   51
          Top             =   360
          Width           =   3495
          _ExtentX        =   6165
@@ -350,7 +352,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdAddFiles 
          Height          =   615
          Left            =   4200
-         TabIndex        =   104
+         TabIndex        =   52
          Top             =   4140
          Width           =   3615
          _ExtentX        =   6376
@@ -361,7 +363,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdSelectNone 
          Height          =   615
          Left            =   6120
-         TabIndex        =   103
+         TabIndex        =   55
          Top             =   360
          Width           =   1695
          _ExtentX        =   2990
@@ -372,7 +374,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdSelectAll 
          Height          =   615
          Left            =   4200
-         TabIndex        =   102
+         TabIndex        =   58
          Top             =   360
          Width           =   1695
          _ExtentX        =   2990
@@ -462,85 +464,45 @@ Begin VB.Form FormBatchWizard
          _ExtentY        =   582
          Caption         =   "show image previews"
       End
-      Begin VB.Label lblFiles 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "potential source images:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblFiles 
          Height          =   285
          Left            =   120
-         TabIndex        =   18
          Top             =   0
-         Width           =   2595
+         Width           =   3675
+         _ExtentX        =   6482
+         _ExtentY        =   503
+         Caption         =   "potential source images:"
+         ForeColor       =   4210752
       End
-      Begin VB.Label lblTargetFiles 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "batch list:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTargetFiles 
          Height          =   285
          Left            =   120
-         TabIndex        =   17
          Top             =   4680
-         Width           =   1215
+         Width           =   3855
+         _ExtentX        =   6800
+         _ExtentY        =   503
+         Caption         =   "batch list:"
+         ForeColor       =   4210752
       End
-      Begin VB.Label lblModify 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "modify batch list:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblModify 
          Height          =   285
          Left            =   8040
-         TabIndex        =   16
          Top             =   5040
-         Width           =   1845
+         Width           =   3525
+         _ExtentX        =   6218
+         _ExtentY        =   503
+         Caption         =   "modify batch list:"
+         ForeColor       =   4210752
       End
-      Begin VB.Label lblLoadSaveList 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "load / save batch list:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblLoadSaveList 
          Height          =   285
          Left            =   8040
-         TabIndex        =   15
          Top             =   6240
-         Width           =   2265
+         Width           =   3585
+         _ExtentX        =   6324
+         _ExtentY        =   503
+         Caption         =   "load / save batch list:"
+         ForeColor       =   4210752
       End
       Begin VB.Line Line1 
          BorderColor     =   &H8000000D&
@@ -570,7 +532,7 @@ Begin VB.Form FormBatchWizard
       ScaleHeight     =   497
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   785
-      TabIndex        =   93
+      TabIndex        =   60
       Top             =   720
       Width           =   11775
       Begin VB.PictureBox picBatchProgress 
@@ -583,32 +545,21 @@ Begin VB.Form FormBatchWizard
          ScaleHeight     =   25
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   753
-         TabIndex        =   94
+         TabIndex        =   66
          Top             =   3360
          Width           =   11295
       End
-      Begin VB.Label lblBatchProgress 
-         Alignment       =   2  'Center
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "(batch conversion process will appear here at run-time)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H80000008&
+      Begin PhotoDemon.pdLabel lblBatchProgress 
          Height          =   645
          Left            =   285
-         TabIndex        =   95
          Top             =   2640
          Width           =   11205
-         WordWrap        =   -1  'True
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Alignment       =   2
+         Caption         =   "(batch conversion process will appear here at run-time)"
+         ForeColor       =   -2147483640
+         Layout          =   1
       End
    End
    Begin VB.PictureBox picContainer 
@@ -628,7 +579,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdButton cmdSelectOutputPath 
          Height          =   615
          Left            =   8280
-         TabIndex        =   113
+         TabIndex        =   67
          Top             =   435
          Width           =   3135
          _ExtentX        =   5530
@@ -639,7 +590,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdTextBox txtRenameRemove 
          Height          =   315
          Left            =   840
-         TabIndex        =   100
+         TabIndex        =   70
          Top             =   4560
          Width           =   6495
          _ExtentX        =   11456
@@ -648,7 +599,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdTextBox txtAppendBack 
          Height          =   315
          Left            =   6120
-         TabIndex        =   99
+         TabIndex        =   71
          Top             =   3480
          Width           =   4575
          _ExtentX        =   8070
@@ -657,7 +608,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdTextBox txtAppendFront 
          Height          =   315
          Left            =   840
-         TabIndex        =   98
+         TabIndex        =   72
          Top             =   3480
          Width           =   4335
          _ExtentX        =   7646
@@ -667,7 +618,7 @@ Begin VB.Form FormBatchWizard
       Begin PhotoDemon.pdTextBox txtOutputPath 
          Height          =   315
          Left            =   480
-         TabIndex        =   97
+         TabIndex        =   73
          Top             =   600
          Width           =   7455
          _ExtentX        =   13150
@@ -781,65 +732,35 @@ Begin VB.Form FormBatchWizard
          Caption         =   "use case-sensitive matching"
          Value           =   0
       End
-      Begin VB.Label lblDstFilename 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "after images are processed, save them with the following name:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblDstFilename 
          Height          =   285
          Left            =   120
-         TabIndex        =   26
          Top             =   1320
-         Width           =   6795
+         Width           =   11235
+         _ExtentX        =   19817
+         _ExtentY        =   503
+         Caption         =   "after images are processed, save them with the following name:"
+         ForeColor       =   4210752
       End
-      Begin VB.Label lblOptionalText 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "additional rename options"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblOptionalText 
          Height          =   285
          Left            =   120
-         TabIndex        =   25
          Top             =   2520
-         Width           =   2760
+         Width           =   10440
+         _ExtentX        =   18415
+         _ExtentY        =   503
+         Caption         =   "additional rename options"
+         ForeColor       =   4210752
       End
-      Begin VB.Label lblDstFolder 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "output images to this folder:"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblDstFolder 
          Height          =   285
          Left            =   120
-         TabIndex        =   24
          Top             =   120
-         Width           =   3030
+         Width           =   7815
+         _ExtentX        =   13785
+         _ExtentY        =   503
+         Caption         =   "output images to this folder:"
+         ForeColor       =   4210752
       End
    End
    Begin VB.PictureBox picContainer 
@@ -897,6 +818,17 @@ Begin VB.Form FormBatchWizard
          _ExtentY        =   582
          Caption         =   "convert all images to a new format"
       End
+      Begin PhotoDemon.pdLabel lblExplanationFormat 
+         Height          =   600
+         Left            =   720
+         Top             =   540
+         Width           =   10980
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Caption         =   ""
+         ForeColor       =   4210752
+         Layout          =   1
+      End
       Begin VB.PictureBox picFileContainer 
          Appearance      =   0  'Flat
          BackColor       =   &H80000005&
@@ -915,7 +847,7 @@ Begin VB.Form FormBatchWizard
          Begin PhotoDemon.sliderTextCombo sltThreshold 
             Height          =   405
             Left            =   360
-            TabIndex        =   82
+            TabIndex        =   74
             Top             =   1080
             Width           =   8055
             _ExtentX        =   14208
@@ -925,107 +857,65 @@ Begin VB.Form FormBatchWizard
             NotchPosition   =   2
             NotchValueCustom=   127
          End
-         Begin VB.Label lblGIFExplanation 
-            BackStyle       =   0  'Transparent
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
+         Begin PhotoDemon.pdLabel lblGIFExplanation 
             Height          =   1920
             Left            =   480
-            TabIndex        =   74
             Top             =   2280
             Width           =   9015
-            WordWrap        =   -1  'True
+            _ExtentX        =   0
+            _ExtentY        =   0
+            Caption         =   ""
+            ForeColor       =   4210752
+            Layout          =   1
          End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "GIF options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
+         Begin PhotoDemon.pdLabel lblInterfaceTitle 
             Height          =   285
             Index           =   1
             Left            =   120
-            TabIndex        =   73
             Top             =   120
-            Width           =   1230
+            Width           =   5055
+            _ExtentX        =   8916
+            _ExtentY        =   503
+            Caption         =   "GIF options"
+            FontSize        =   12
+            ForeColor       =   4210752
          End
-         Begin VB.Label lblTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "transparency threshold for images with complex (32bpp) alpha channels:"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   240
+         Begin PhotoDemon.pdLabel lblTitle 
+            Height          =   360
             Index           =   1
             Left            =   360
-            TabIndex        =   72
             Top             =   720
-            Width           =   6270
+            Width           =   7695
+            _ExtentX        =   13573
+            _ExtentY        =   635
+            Caption         =   "transparency threshold for images with complex (32bpp) alpha channels:"
+            ForeColor       =   4210752
          End
-         Begin VB.Label lblAfter 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "no transparency "
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   -1  'True
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   195
+         Begin PhotoDemon.pdLabel lblAfter 
+            Height          =   315
             Index           =   0
             Left            =   720
-            TabIndex        =   71
             Top             =   1680
-            Width           =   1230
+            Width           =   2415
+            _ExtentX        =   4260
+            _ExtentY        =   556
+            Caption         =   "no transparency "
+            FontItalic      =   -1  'True
+            FontSize        =   8
+            ForeColor       =   4210752
          End
-         Begin VB.Label Label2 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "maximum transparency "
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   -1  'True
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   195
-            Left            =   5520
-            TabIndex        =   70
+         Begin PhotoDemon.pdLabel Label2 
+            Height          =   315
+            Left            =   4440
             Top             =   1680
-            Width           =   1710
+            Width           =   2790
+            _ExtentX        =   4921
+            _ExtentY        =   556
+            Alignment       =   1
+            Caption         =   "maximum transparency "
+            FontItalic      =   -1  'True
+            FontSize        =   8
+            ForeColor       =   4210752
          End
       End
       Begin VB.PictureBox picFileContainer 
@@ -1061,46 +951,27 @@ Begin VB.Form FormBatchWizard
             Top             =   960
             Width           =   6975
          End
-         Begin VB.Label lblPPMEncoding 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "export PPM files using:"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
+         Begin PhotoDemon.pdLabel lblPPMEncoding 
             Height          =   240
             Left            =   240
-            TabIndex        =   44
             Top             =   600
-            Width           =   1950
+            Width           =   7215
+            _ExtentX        =   12726
+            _ExtentY        =   423
+            Caption         =   "export PPM files using:"
+            ForeColor       =   4210752
          End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "PPM options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
+         Begin PhotoDemon.pdLabel lblInterfaceTitle 
             Height          =   285
             Index           =   12
             Left            =   120
-            TabIndex        =   43
             Top             =   120
-            Width           =   1305
+            Width           =   7305
+            _ExtentX        =   12885
+            _ExtentY        =   503
+            Caption         =   "PPM options"
+            FontSize        =   12
+            ForeColor       =   4210752
          End
       End
       Begin VB.PictureBox picFileContainer 
@@ -1146,47 +1017,28 @@ Begin VB.Form FormBatchWizard
             _ExtentY        =   582
             Caption         =   " save TIFFs as separated CMYK (for printing)"
          End
-         Begin VB.Label lblFileStuff 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "when saving, compress TIFFs using:"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
+         Begin PhotoDemon.pdLabel lblFileStuff 
             Height          =   240
             Index           =   0
             Left            =   360
-            TabIndex        =   40
             Top             =   645
-            Width           =   3135
+            Width           =   7095
+            _ExtentX        =   12515
+            _ExtentY        =   423
+            Caption         =   "when saving, compress TIFFs using:"
+            ForeColor       =   4210752
          End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "TIFF options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
+         Begin PhotoDemon.pdLabel lblInterfaceTitle 
             Height          =   285
             Index           =   7
             Left            =   120
-            TabIndex        =   39
             Top             =   120
-            Width           =   1335
+            Width           =   7575
+            _ExtentX        =   13361
+            _ExtentY        =   503
+            Caption         =   "TIFF options"
+            FontSize        =   12
+            ForeColor       =   4210752
          End
       End
       Begin VB.PictureBox picFileContainer 
@@ -1207,7 +1059,7 @@ Begin VB.Form FormBatchWizard
          Begin PhotoDemon.sliderTextCombo sltJP2Quality 
             Height          =   405
             Left            =   480
-            TabIndex        =   83
+            TabIndex        =   76
             Top             =   1650
             Width           =   7935
             _ExtentX        =   13996
@@ -1235,89 +1087,54 @@ Begin VB.Form FormBatchWizard
             Top             =   1110
             Width           =   6855
          End
-         Begin VB.Label lblTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "image compression ratio:"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
+         Begin PhotoDemon.pdLabel lblTitle 
             Height          =   240
             Index           =   2
             Left            =   360
-            TabIndex        =   80
             Top             =   720
-            Width           =   2190
+            Width           =   7095
+            _ExtentX        =   12515
+            _ExtentY        =   423
+            Caption         =   "image compression ratio:"
+            ForeColor       =   4210752
          End
-         Begin VB.Label lblAfter 
-            Alignment       =   1  'Right Justify
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "low quality, small file"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   -1  'True
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   195
+         Begin PhotoDemon.pdLabel lblAfter 
+            Height          =   315
             Index           =   1
-            Left            =   5730
-            TabIndex        =   79
+            Left            =   4650
             Top             =   2160
-            Width           =   1470
+            Width           =   2550
+            _ExtentX        =   4498
+            _ExtentY        =   556
+            Alignment       =   1
+            Caption         =   "low quality, small file"
+            FontItalic      =   -1  'True
+            FontSize        =   8
+            ForeColor       =   4210752
          End
-         Begin VB.Label lblBefore 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "high quality, large file"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   -1  'True
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   195
+         Begin PhotoDemon.pdLabel lblBefore 
+            Height          =   315
             Left            =   840
-            TabIndex        =   78
             Top             =   2160
-            Width           =   1545
+            Width           =   2865
+            _ExtentX        =   5054
+            _ExtentY        =   556
+            Caption         =   "high quality, large file"
+            FontItalic      =   -1  'True
+            FontSize        =   8
+            ForeColor       =   4210752
          End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "JPEG-2000 options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
+         Begin PhotoDemon.pdLabel lblInterfaceTitle 
             Height          =   285
             Index           =   2
             Left            =   120
-            TabIndex        =   76
             Top             =   120
-            Width           =   2025
+            Width           =   7905
+            _ExtentX        =   13944
+            _ExtentY        =   503
+            Caption         =   "JPEG-2000 options"
+            FontSize        =   12
+            ForeColor       =   4210752
          End
       End
       Begin VB.PictureBox picFileContainer 
@@ -1346,26 +1163,17 @@ Begin VB.Form FormBatchWizard
             Caption         =   "use RLE compression when saving 8bpp BMP images"
             Value           =   0
          End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "BMP options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
+         Begin PhotoDemon.pdLabel lblInterfaceTitle 
             Height          =   285
             Index           =   19
             Left            =   120
-            TabIndex        =   58
             Top             =   120
-            Width           =   1305
+            Width           =   7305
+            _ExtentX        =   12885
+            _ExtentY        =   503
+            Caption         =   "BMP options"
+            FontSize        =   12
+            ForeColor       =   4210752
          End
       End
       Begin VB.PictureBox picFileContainer 
@@ -1393,26 +1201,17 @@ Begin VB.Form FormBatchWizard
             _ExtentY        =   582
             Caption         =   "use RLE compression when saving TGA images"
          End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "TGA options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
+         Begin PhotoDemon.pdLabel lblInterfaceTitle 
             Height          =   285
             Index           =   21
             Left            =   120
-            TabIndex        =   55
             Top             =   120
-            Width           =   1335
+            Width           =   7335
+            _ExtentX        =   12938
+            _ExtentY        =   503
+            Caption         =   "TGA options"
+            FontSize        =   12
+            ForeColor       =   4210752
          End
       End
       Begin VB.PictureBox picFileContainer 
@@ -1434,7 +1233,7 @@ Begin VB.Form FormBatchWizard
          Begin PhotoDemon.sliderTextCombo sltQuality 
             Height          =   405
             Left            =   2640
-            TabIndex        =   81
+            TabIndex        =   78
             Top             =   945
             Width           =   5895
             _ExtentX        =   10398
@@ -1524,67 +1323,38 @@ Begin VB.Form FormBatchWizard
             Caption         =   "use specific subsampling:"
             Value           =   0
          End
-         Begin VB.Label lblTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "image quality:"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
+         Begin PhotoDemon.pdLabel lblTitle 
             Height          =   240
             Index           =   0
             Left            =   240
-            TabIndex        =   67
             Top             =   600
-            Width           =   1215
+            Width           =   7215
+            _ExtentX        =   12726
+            _ExtentY        =   423
+            Caption         =   "image quality:"
+            ForeColor       =   4210752
          End
-         Begin VB.Label lblAdvancedJpegSettings 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "advanced JPEG settings:"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
+         Begin PhotoDemon.pdLabel lblAdvancedJpegSettings 
             Height          =   240
             Left            =   240
-            TabIndex        =   66
             Top             =   1560
-            Width           =   2070
+            Width           =   7335
+            _ExtentX        =   12938
+            _ExtentY        =   423
+            Caption         =   "advanced JPEG settings:"
+            ForeColor       =   4210752
          End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "JPEG options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
+         Begin PhotoDemon.pdLabel lblInterfaceTitle 
             Height          =   285
             Index           =   0
             Left            =   120
-            TabIndex        =   60
             Top             =   120
-            Width           =   1395
+            Width           =   7395
+            _ExtentX        =   13044
+            _ExtentY        =   503
+            Caption         =   "JPEG options"
+            FontSize        =   12
+            ForeColor       =   4210752
          End
       End
       Begin VB.PictureBox picFileContainer 
@@ -1633,110 +1403,56 @@ Begin VB.Form FormBatchWizard
             Caption         =   "use interlacing (Adam7)"
             Value           =   0
          End
-         Begin VB.Label lblInterfaceTitle 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "PNG options"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   12
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
+         Begin PhotoDemon.pdLabel lblInterfaceTitle 
             Height          =   285
             Index           =   20
             Left            =   120
-            TabIndex        =   52
             Top             =   120
-            Width           =   1320
+            Width           =   7320
+            _ExtentX        =   12912
+            _ExtentY        =   503
+            Caption         =   "PNG options"
+            FontSize        =   12
+            ForeColor       =   4210752
          End
-         Begin VB.Label lblFileStuff 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "when saving, compress PNG files at the following level:"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   9.75
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   0   'False
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
+         Begin PhotoDemon.pdLabel lblFileStuff 
             Height          =   240
             Index           =   1
             Left            =   360
-            TabIndex        =   51
             Top             =   720
-            Width           =   4725
+            Width           =   7005
+            _ExtentX        =   12356
+            _ExtentY        =   423
+            Caption         =   "when saving, compress PNG files at the following level:"
+            ForeColor       =   4210752
          End
-         Begin VB.Label lblPNGCompression 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "no compression"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   -1  'True
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   195
+         Begin PhotoDemon.pdLabel lblPNGCompression 
+            Height          =   315
             Index           =   0
             Left            =   600
-            TabIndex        =   50
             Top             =   1560
-            Width           =   1110
+            Width           =   2775
+            _ExtentX        =   4895
+            _ExtentY        =   556
+            Caption         =   "no compression"
+            FontItalic      =   -1  'True
+            FontSize        =   8
+            ForeColor       =   4210752
          End
-         Begin VB.Label lblPNGCompression 
-            Alignment       =   1  'Right Justify
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "maximum compression"
-            BeginProperty Font 
-               Name            =   "Tahoma"
-               Size            =   8.25
-               Charset         =   0
-               Weight          =   400
-               Underline       =   0   'False
-               Italic          =   -1  'True
-               Strikethrough   =   0   'False
-            EndProperty
-            ForeColor       =   &H00404040&
-            Height          =   195
+         Begin PhotoDemon.pdLabel lblPNGCompression 
+            Height          =   315
             Index           =   1
-            Left            =   5625
-            TabIndex        =   49
+            Left            =   4665
             Top             =   1560
-            Width           =   1590
+            Width           =   2550
+            _ExtentX        =   4498
+            _ExtentY        =   556
+            Alignment       =   1
+            Caption         =   "maximum compression"
+            FontItalic      =   -1  'True
+            FontSize        =   8
+            ForeColor       =   4210752
          End
-      End
-      Begin VB.Label lblExplanationFormat 
-         BackStyle       =   0  'Transparent
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   600
-         Left            =   720
-         TabIndex        =   22
-         Top             =   540
-         Width           =   10980
-         WordWrap        =   -1  'True
       End
    End
    Begin VB.Line Line1 
@@ -1746,63 +1462,6 @@ Begin VB.Form FormBatchWizard
       X2              =   224
       Y1              =   48
       Y2              =   544
-   End
-   Begin VB.Label lblExplanation 
-      BackStyle       =   0  'Transparent
-      Caption         =   "(text populated at run-time)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   7365
-      Index           =   0
-      Left            =   120
-      TabIndex        =   2
-      Top             =   780
-      Width           =   3135
-      WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblWizardTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "Step 1: select the photo editing action(s) to apply to each image"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   120
-      TabIndex        =   1
-      Top             =   120
-      Width           =   7875
-   End
-   Begin VB.Label lblBackground 
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   855
-      Left            =   -240
-      TabIndex        =   0
-      Top             =   8280
-      Width           =   17415
    End
 End
 Attribute VB_Name = "FormBatchWizard"
@@ -2430,9 +2089,6 @@ Private Sub updateWizardText()
     End Select
     
     lblExplanation(0).Caption = sideText
-    
-    'If translations are active, the translated text may not fit the label.  Automatically adjust it to fit.
-    FitWordwrapLabel lblExplanation(0), Me
     
 End Sub
 
@@ -3083,7 +2739,7 @@ Private Sub updatePreview(ByVal srcImagePath As String)
             picPreview.CurrentY = (picPreview.ScaleHeight - picPreview.textHeight(strToPrint)) \ 2
             picPreview.Print strToPrint
         Else
-            tmpDIB.renderToPictureBox picPreview
+            tmpDIB.RenderToPictureBox picPreview
         End If
         
         'Remember the name of the current preview; this saves us having to reload the preview any more than
@@ -3582,5 +3238,6 @@ End Sub
 'Display a progress update to the user
 Private Sub batchConvertMessage(ByVal newMessage As String)
     lblBatchProgress.Caption = newMessage
-    lblBatchProgress.Refresh
+    lblBatchProgress.requestRefresh
 End Sub
+

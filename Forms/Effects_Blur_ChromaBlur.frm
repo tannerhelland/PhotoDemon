@@ -44,7 +44,7 @@ Begin VB.Form FormChromaBlur
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   1680
@@ -91,26 +91,17 @@ Begin VB.Form FormChromaBlur
       _ExtentY        =   582
       Caption         =   "best"
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "quality"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   6
       Top             =   2760
-      Width           =   705
+      Width           =   5745
+      _ExtentX        =   10134
+      _ExtentY        =   503
+      Caption         =   "quality"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormChromaBlur"
@@ -350,4 +341,5 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 

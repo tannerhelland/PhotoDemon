@@ -27,7 +27,7 @@ Begin VB.Form dialog_ExportColorDepth
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   6
+      TabIndex        =   0
       Top             =   3750
       Width           =   6435
       _ExtentX        =   11351
@@ -95,26 +95,18 @@ Begin VB.Form dialog_ExportColorDepth
       _ExtentY        =   582
       Caption         =   "32 bpp (16 million colors + full transparency)"
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "please choose an output color depth"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   525
       Index           =   0
       Left            =   360
-      TabIndex        =   0
       Top             =   240
-      Width           =   3840
+      Width           =   5880
+      _ExtentX        =   10372
+      _ExtentY        =   926
+      Caption         =   "please choose an output color depth"
+      FontSize        =   11
+      ForeColor       =   4210752
+      Layout          =   1
    End
 End
 Attribute VB_Name = "dialog_ExportColorDepth"
@@ -255,3 +247,4 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
+

@@ -29,7 +29,7 @@ Begin VB.Form dialog_ColorSelector
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   36
+      TabIndex        =   2
       Top             =   5295
       Width           =   11535
       _ExtentX        =   20346
@@ -39,7 +39,7 @@ Begin VB.Form dialog_ColorSelector
    Begin PhotoDemon.pdButtonToolbox cmdCapture 
       Height          =   600
       Left            =   10320
-      TabIndex        =   35
+      TabIndex        =   3
       Top             =   3720
       Visible         =   0   'False
       Width           =   1095
@@ -50,7 +50,7 @@ Begin VB.Form dialog_ColorSelector
    Begin PhotoDemon.pdTextBox txtHex 
       Height          =   315
       Left            =   6480
-      TabIndex        =   34
+      TabIndex        =   6
       Top             =   3735
       Width           =   1455
       _ExtentX        =   2566
@@ -68,7 +68,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   33
+      TabIndex        =   7
       Top             =   4560
       Width           =   495
    End
@@ -83,7 +83,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   32
+      TabIndex        =   8
       Top             =   4560
       Width           =   495
    End
@@ -98,7 +98,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   31
+      TabIndex        =   9
       Top             =   4560
       Width           =   495
    End
@@ -113,7 +113,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   30
+      TabIndex        =   10
       Top             =   4560
       Width           =   495
    End
@@ -128,7 +128,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   29
+      TabIndex        =   11
       Top             =   4560
       Width           =   495
    End
@@ -143,7 +143,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   28
+      TabIndex        =   24
       Top             =   4560
       Width           =   495
    End
@@ -158,7 +158,7 @@ Begin VB.Form dialog_ColorSelector
       ScaleHeight     =   31
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   31
-      TabIndex        =   27
+      TabIndex        =   25
       Top             =   4560
       Width           =   495
    End
@@ -389,245 +389,131 @@ Begin VB.Form dialog_ColorSelector
       _ExtentY        =   714
       Max             =   100
    End
-   Begin VB.Label lblColor 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "recent colors:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00000000&
+   Begin PhotoDemon.pdLabel lblColor 
       Height          =   600
       Index           =   9
       Left            =   5085
-      TabIndex        =   25
       Top             =   4680
       Width           =   1305
-      WordWrap        =   -1  'True
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Alignment       =   1
+      Caption         =   "recent colors:"
+      ForeColor       =   0
+      Layout          =   1
    End
-   Begin VB.Label lblColor 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "HTML / CSS:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00000000&
-      Height          =   240
+   Begin PhotoDemon.pdLabel lblColor 
+      Height          =   720
       Index           =   8
-      Left            =   5310
-      TabIndex        =   24
+      Left            =   5070
       Top             =   3765
-      Width           =   1110
+      Width           =   1350
+      _ExtentX        =   2381
+      _ExtentY        =   1270
+      Alignment       =   1
+      Caption         =   "HTML / CSS:"
+      ForeColor       =   0
+      Layout          =   1
    End
-   Begin VB.Label lblColor 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "blue:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00000000&
+   Begin PhotoDemon.pdLabel lblColor 
       Height          =   240
       Index           =   7
-      Left            =   5970
-      TabIndex        =   11
+      Left            =   5130
       Top             =   3180
-      Width           =   435
+      Width           =   1275
+      _ExtentX        =   2249
+      _ExtentY        =   423
+      Alignment       =   1
+      Caption         =   "blue:"
+      ForeColor       =   0
    End
-   Begin VB.Label lblColor 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "green:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00000000&
+   Begin PhotoDemon.pdLabel lblColor 
       Height          =   240
       Index           =   6
-      Left            =   5835
-      TabIndex        =   10
+      Left            =   5115
       Top             =   2580
-      Width           =   570
+      Width           =   1290
+      _ExtentX        =   2275
+      _ExtentY        =   423
+      Alignment       =   1
+      Caption         =   "green:"
+      ForeColor       =   0
    End
-   Begin VB.Label lblColor 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "red:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00000000&
+   Begin PhotoDemon.pdLabel lblColor 
       Height          =   240
       Index           =   5
-      Left            =   6045
-      TabIndex        =   9
+      Left            =   5085
       Top             =   1980
-      Width           =   360
+      Width           =   1320
+      _ExtentX        =   2328
+      _ExtentY        =   423
+      Alignment       =   1
+      Caption         =   "red:"
+      ForeColor       =   0
    End
-   Begin VB.Label lblColor 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "value:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00000000&
+   Begin PhotoDemon.pdLabel lblColor 
       Height          =   240
       Index           =   4
-      Left            =   5880
-      TabIndex        =   8
+      Left            =   5040
       Top             =   1380
-      Width           =   525
+      Width           =   1365
+      _ExtentX        =   2408
+      _ExtentY        =   423
+      Alignment       =   1
+      Caption         =   "value:"
+      ForeColor       =   0
    End
-   Begin VB.Label lblColor 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "saturation:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00000000&
+   Begin PhotoDemon.pdLabel lblColor 
       Height          =   240
       Index           =   3
-      Left            =   5475
-      TabIndex        =   7
+      Left            =   5115
       Top             =   780
-      Width           =   930
+      Width           =   1290
+      _ExtentX        =   2275
+      _ExtentY        =   423
+      Alignment       =   1
+      Caption         =   "saturation:"
+      ForeColor       =   0
    End
-   Begin VB.Label lblColor 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "hue:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00000000&
+   Begin PhotoDemon.pdLabel lblColor 
       Height          =   240
       Index           =   2
-      Left            =   6015
-      TabIndex        =   6
+      Left            =   5055
       Top             =   180
-      Width           =   390
+      Width           =   1350
+      _ExtentX        =   2381
+      _ExtentY        =   423
+      Alignment       =   1
+      Caption         =   "hue:"
+      ForeColor       =   0
    End
-   Begin VB.Label lblColor 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "original:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00000000&
-      Height          =   285
+   Begin PhotoDemon.pdLabel lblColor 
+      Height          =   525
       Index           =   1
-      Left            =   270
-      TabIndex        =   3
+      Left            =   30
       Top             =   4650
-      Width           =   885
+      Width           =   1125
+      _ExtentX        =   1984
+      _ExtentY        =   926
+      Alignment       =   1
+      Caption         =   "original:"
+      FontSize        =   11
+      ForeColor       =   0
+      Layout          =   1
    End
-   Begin VB.Label lblColor 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "current:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00000000&
-      Height          =   285
+   Begin PhotoDemon.pdLabel lblColor 
+      Height          =   405
       Index           =   0
-      Left            =   315
-      TabIndex        =   2
+      Left            =   75
       Top             =   4170
-      Width           =   840
+      Width           =   1080
+      _ExtentX        =   1905
+      _ExtentY        =   714
+      Alignment       =   1
+      Caption         =   "current:"
+      FontSize        =   11
+      ForeColor       =   0
+      Layout          =   1
    End
 End
 Attribute VB_Name = "dialog_ColorSelector"
@@ -909,7 +795,7 @@ Public Sub showDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     ' not be properly color managed.
     Dim tmpDIB As New pdDIB
     tmpDIB.createBlank picOriginal.ScaleWidth, picOriginal.ScaleHeight, 24, oldColor
-    tmpDIB.renderToPictureBox picOriginal
+    tmpDIB.RenderToPictureBox picOriginal
     
     'Sync all current color values to the initial color
     curColor = initialColor
@@ -1072,7 +958,7 @@ Private Sub loadRecentColorList()
     
         If i <= UBound(recentColors) Then
             tmpDIB.createBlank picRecColor(i).ScaleWidth, picRecColor(i).ScaleHeight, 24, recentColors(i)
-            tmpDIB.renderToPictureBox picRecColor(i)
+            tmpDIB.RenderToPictureBox picRecColor(i)
         End If
     
     Next i
@@ -1187,7 +1073,7 @@ Private Sub drawHueBox()
     Next y
     
     'Render the hue to the picture box, which will also activate color management
-    hueBox.renderToPictureBox picHue
+    hueBox.RenderToPictureBox picHue
     
 End Sub
 
@@ -1251,7 +1137,7 @@ Private Sub syncInterfaceToCurrentColor()
     GDIPlusDrawCanvasCircle primaryBox.getDIBDC, curValue * (loopWidth / 3), (1 - curSaturation) * loopHeight, FixDPI(7)
         
     'Render the primary color box
-    primaryBox.renderToPictureBox picColor
+    primaryBox.RenderToPictureBox picColor
     
     'Render the current color box.  Note that we must use a temporary DIB for this; otherwise, the color will
     ' not be properly color managed.
@@ -1263,7 +1149,7 @@ Private Sub syncInterfaceToCurrentColor()
         GDI_Plus.GDIPlusFillDIBRect m_tmpDIB, 0, 0, m_tmpDIB.getDIBWidth, m_tmpDIB.getDIBHeight, RGB(curRed, curGreen, curBlue)
     End If
     
-    m_tmpDIB.renderToPictureBox picCurrent
+    m_tmpDIB.RenderToPictureBox picCurrent
     
     'Synchronize all text boxes to their current values
     redrawAllTextBoxes
@@ -1329,13 +1215,13 @@ Private Sub redrawAllTextBoxes()
     renderSampleDIB sValue, ccValue
     
     'Now we can render the bars to screen
-    sRed.renderToPictureBox picSampleRGB(0)
-    sGreen.renderToPictureBox picSampleRGB(1)
-    sBlue.renderToPictureBox picSampleRGB(2)
+    sRed.RenderToPictureBox picSampleRGB(0)
+    sGreen.RenderToPictureBox picSampleRGB(1)
+    sBlue.RenderToPictureBox picSampleRGB(2)
     
-    sHue.renderToPictureBox picSampleHSV(0)
-    sSaturation.renderToPictureBox picSampleHSV(1)
-    sValue.renderToPictureBox picSampleHSV(2)
+    sHue.RenderToPictureBox picSampleHSV(0)
+    sSaturation.RenderToPictureBox picSampleHSV(1)
+    sValue.RenderToPictureBox picSampleHSV(2)
     
     'Update the hex representation box
     txtHex = Color_Functions.getHexStringFromRGB(RGB(curRed, curGreen, curBlue))
@@ -1765,6 +1651,7 @@ Private Sub myWndProc(ByVal bBefore As Boolean, _
 '   add this warning banner to the last routine in your class
 ' *************************************************************
 End Sub
+
 
 
 

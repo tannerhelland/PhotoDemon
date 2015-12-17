@@ -70,29 +70,10 @@ Begin VB.Form FormRipple
       Top             =   120
       Visible         =   0   'False
       Width           =   6135
-      Begin VB.ComboBox cmbEdges 
-         BackColor       =   &H00FFFFFF&
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   13
-         Top             =   3840
-         Width           =   5700
-      End
       Begin PhotoDemon.sliderTextCombo sltRadius 
-         Height          =   720
+         Height          =   705
          Left            =   120
-         TabIndex        =   14
+         TabIndex        =   13
          Top             =   1440
          Width           =   5895
          _ExtentX        =   10398
@@ -105,15 +86,24 @@ Begin VB.Form FormRipple
          NotchValueCustom=   100
       End
       Begin PhotoDemon.sliderTextCombo sltPhase 
-         Height          =   720
+         Height          =   705
          Left            =   120
-         TabIndex        =   15
+         TabIndex        =   14
          Top             =   2400
          Width           =   5895
          _ExtentX        =   10398
          _ExtentY        =   1270
          Caption         =   "time (phase)"
          Max             =   360
+      End
+      Begin PhotoDemon.pdComboBox cboEdges 
+         Height          =   375
+         Left            =   360
+         TabIndex        =   16
+         Top             =   3720
+         Width           =   5655
+         _ExtentX        =   9975
+         _ExtentY        =   661
       End
       Begin VB.Label lblTitle 
          AutoSize        =   -1  'True
@@ -132,7 +122,7 @@ Begin VB.Form FormRipple
          Height          =   285
          Index           =   5
          Left            =   120
-         TabIndex        =   16
+         TabIndex        =   15
          Top             =   3360
          Width           =   3315
       End
@@ -152,7 +142,7 @@ Begin VB.Form FormRipple
       Top             =   120
       Width           =   6135
       Begin PhotoDemon.sliderTextCombo sltAmplitude 
-         Height          =   720
+         Height          =   705
          Left            =   120
          TabIndex        =   6
          Top             =   2520
@@ -164,7 +154,7 @@ Begin VB.Form FormRipple
          Value           =   80
       End
       Begin PhotoDemon.sliderTextCombo sltWavelength 
-         Height          =   720
+         Height          =   705
          Left            =   120
          TabIndex        =   7
          Top             =   1560
@@ -177,7 +167,7 @@ Begin VB.Form FormRipple
          Value           =   16
       End
       Begin PhotoDemon.sliderTextCombo sltQuality 
-         Height          =   720
+         Height          =   705
          Left            =   120
          TabIndex        =   8
          Top             =   3480
@@ -312,7 +302,7 @@ Private Sub btsOptions_Click(ByVal buttonIndex As Long)
     picContainer(1 - buttonIndex).Visible = False
 End Sub
 
-Private Sub cmbEdges_Click()
+Private Sub cboEdges_Click()
     updatePreview
 End Sub
 
@@ -555,7 +545,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Ripple", , buildParams(sltWavelength, sltAmplitude, sltPhase, sltRadius, CLng(cmbEdges.ListIndex), sltQuality, sltXCenter, sltYCenter), UNDO_LAYER
+    Process "Ripple", , buildParams(sltWavelength, sltAmplitude, sltPhase, sltRadius, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -569,7 +559,7 @@ Private Sub cmdBar_ResetClick()
     sltAmplitude.Value = 80
     sltRadius.Value = 100
     sltQuality.Value = 2
-    cmbEdges.ListIndex = EDGE_REFLECT
+    cboEdges.ListIndex = EDGE_REFLECT
 End Sub
 
 Private Sub Form_Activate()
@@ -590,7 +580,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cmbEdges, EDGE_REFLECT
+    PopDistortEdgeBox cboEdges, EDGE_REFLECT
     
     'Set up the basic/advanced panels
     btsOptions.AddItem "basic", 0
@@ -626,7 +616,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then RippleImage sltWavelength, sltAmplitude, sltPhase, sltRadius, CLng(cmbEdges.ListIndex), sltQuality, sltXCenter, sltYCenter, True, fxPreview
+    If cmdBar.previewsAllowed Then RippleImage sltWavelength, sltAmplitude, sltPhase, sltRadius, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

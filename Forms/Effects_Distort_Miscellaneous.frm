@@ -48,28 +48,9 @@ Begin VB.Form FormMiscDistorts
       ForeColor       =   &H00404040&
       Height          =   2460
       Left            =   6120
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   600
       Width           =   5655
-   End
-   Begin VB.ComboBox cmbEdges 
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   6120
-      Style           =   2  'Dropdown List
-      TabIndex        =   3
-      Top             =   4725
-      Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -81,9 +62,9 @@ Begin VB.Form FormMiscDistorts
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   3360
       Width           =   5895
       _ExtentX        =   10398
@@ -94,6 +75,15 @@ Begin VB.Form FormMiscDistorts
       Value           =   2
       NotchPosition   =   2
       NotchValueCustom=   2
+   End
+   Begin PhotoDemon.pdComboBox cboEdges 
+      Height          =   375
+      Left            =   6240
+      TabIndex        =   6
+      Top             =   4680
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   661
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -112,7 +102,7 @@ Begin VB.Form FormMiscDistorts
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   4320
       Width           =   4170
    End
@@ -455,7 +445,7 @@ Public Sub ApplyMiscDistort(ByVal distortName As String, ByVal distortStyle As L
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Miscellaneous distort", , buildParams(lstDistorts.List(lstDistorts.ListIndex), lstDistorts.ListIndex, CLng(cmbEdges.ListIndex), sltQuality), UNDO_LAYER
+    Process "Miscellaneous distort", , buildParams(lstDistorts.List(lstDistorts.ListIndex), lstDistorts.ListIndex, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -463,7 +453,7 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    cmbEdges.ListIndex = EDGE_WRAP
+    cboEdges.ListIndex = EDGE_WRAP
     sltQuality = 2
 End Sub
 
@@ -496,7 +486,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cmbEdges, EDGE_WRAP
+    PopDistortEdgeBox cboEdges, EDGE_WRAP
     
 End Sub
 
@@ -510,7 +500,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ApplyMiscDistort "", lstDistorts.ListIndex, CLng(cmbEdges.ListIndex), sltQuality, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyMiscDistort "", lstDistorts.ListIndex, CLng(cboEdges.ListIndex), sltQuality, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
