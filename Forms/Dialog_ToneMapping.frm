@@ -33,15 +33,6 @@ Begin VB.Form dialog_ToneMapping
       Width           =   11655
       _ExtentX        =   20558
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
       dontAutoUnloadParent=   -1  'True
    End
@@ -94,7 +85,7 @@ Begin VB.Form dialog_ToneMapping
       Top             =   2040
       Width           =   6855
       Begin PhotoDemon.sliderTextCombo sltGamma 
-         Height          =   705
+         Height          =   690
          Index           =   0
          Left            =   120
          TabIndex        =   7
@@ -149,7 +140,7 @@ Begin VB.Form dialog_ToneMapping
          Height          =   330
          Index           =   2
          Left            =   360
-         TabIndex        =   20
+         TabIndex        =   0
          Top             =   2100
          Width           =   6255
          _ExtentX        =   11033
@@ -173,7 +164,7 @@ Begin VB.Form dialog_ToneMapping
       Visible         =   0   'False
       Width           =   6855
       Begin PhotoDemon.sliderTextCombo sltGamma 
-         Height          =   705
+         Height          =   690
          Index           =   1
          Left            =   120
          TabIndex        =   9
@@ -191,7 +182,7 @@ Begin VB.Form dialog_ToneMapping
          NotchValueCustom=   1
       End
       Begin PhotoDemon.sliderTextCombo sltExposure 
-         Height          =   705
+         Height          =   690
          Index           =   0
          Left            =   120
          TabIndex        =   10
@@ -222,7 +213,7 @@ Begin VB.Form dialog_ToneMapping
       Visible         =   0   'False
       Width           =   6855
       Begin PhotoDemon.sliderTextCombo sltIntensity 
-         Height          =   705
+         Height          =   690
          Left            =   120
          TabIndex        =   11
          Top             =   0
@@ -236,7 +227,7 @@ Begin VB.Form dialog_ToneMapping
          SigDigits       =   2
       End
       Begin PhotoDemon.sliderTextCombo sltAdaptation 
-         Height          =   705
+         Height          =   690
          Left            =   120
          TabIndex        =   12
          Top             =   960
@@ -253,7 +244,7 @@ Begin VB.Form dialog_ToneMapping
          NotchValueCustom=   1
       End
       Begin PhotoDemon.sliderTextCombo sltColorCorrection 
-         Height          =   705
+         Height          =   690
          Left            =   120
          TabIndex        =   13
          Top             =   1920
@@ -283,7 +274,7 @@ Begin VB.Form dialog_ToneMapping
       Visible         =   0   'False
       Width           =   6855
       Begin PhotoDemon.sliderTextCombo sltGamma 
-         Height          =   705
+         Height          =   690
          Index           =   2
          Left            =   120
          TabIndex        =   15
@@ -301,7 +292,7 @@ Begin VB.Form dialog_ToneMapping
          NotchValueCustom=   2.2
       End
       Begin PhotoDemon.sliderTextCombo sltExposure 
-         Height          =   705
+         Height          =   690
          Index           =   1
          Left            =   120
          TabIndex        =   16
@@ -319,7 +310,7 @@ Begin VB.Form dialog_ToneMapping
          NotchValueCustom=   2
       End
       Begin PhotoDemon.sliderTextCombo sltWhitepoint 
-         Height          =   705
+         Height          =   690
          Left            =   120
          TabIndex        =   17
          Top             =   1920
@@ -336,24 +327,16 @@ Begin VB.Form dialog_ToneMapping
          NotchValueCustom=   11.2
       End
    End
-   Begin VB.Label lblWarning 
-      BackStyle       =   0  'Transparent
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00202020&
+   Begin PhotoDemon.pdLabel lblWarning 
       Height          =   765
       Left            =   975
-      TabIndex        =   0
       Top             =   240
       Width           =   10440
-      WordWrap        =   -1  'True
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   ""
+      ForeColor       =   2105376
+      Layout          =   1
    End
 End
 Attribute VB_Name = "dialog_ToneMapping"
@@ -452,9 +435,9 @@ Public Sub showDialog()
         
     'Automatically draw a question icon using the system icon set
     Dim iconY As Long
-    iconY = fixDPI(18)
-    If g_UseFancyFonts Then iconY = iconY + fixDPI(2)
-    DrawSystemIcon IDI_ASTERISK, Me.hDC, fixDPI(22), iconY
+    iconY = FixDPI(18)
+    If g_UseFancyFonts Then iconY = iconY + FixDPI(2)
+    DrawSystemIcon IDI_ASTERISK, Me.hDC, FixDPI(22), iconY
     
     'Create a small copy of the image, for preview purposes.  Tone-mapping can be hideously slow, so we'll want to limit the size
     ' of the image in question.  Note that we do not free the source handle - we still need it for the loading process!!
@@ -472,10 +455,10 @@ Public Sub showDialog()
     Message "Waiting for tone mapping instructions..."
     
     'Apply translations and visual themes
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Display the dialog
-    showPDDialog vbModal, Me, True
+    ShowPDDialog vbModal, Me, True
 
 End Sub
 
@@ -500,11 +483,11 @@ Private Sub updatePreview()
     
         Dim tmpDIB As pdDIB
         Set tmpDIB = New pdDIB
-        If Plugin_FreeImage_Interface.getPDDibFromFreeImageHandle(tmp_FIHandle, tmpDIB) Then
+        If Plugin_FreeImage_Interface.GetPDDibFromFreeImageHandle(tmp_FIHandle, tmpDIB) Then
             
             'Premultiply as necessary
-            If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.setAlphaPremultiplication True
-            tmpDIB.renderToPictureBox picPreview
+            If tmpDIB.getDIBColorDepth = 32 Then tmpDIB.SetAlphaPremultiplication True
+            tmpDIB.RenderToPictureBox picPreview
             
             'Release our DIB
             Set tmpDIB = Nothing
@@ -689,3 +672,4 @@ End Sub
 Private Sub sltWhitepoint_Change()
     updatePreview
 End Sub
+

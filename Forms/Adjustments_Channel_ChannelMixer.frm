@@ -33,7 +33,7 @@ Begin VB.Form FormChannelMixer
       _ExtentY        =   11880
    End
    Begin PhotoDemon.sliderTextCombo sltRed 
-      Height          =   720
+      Height          =   705
       Left            =   6120
       TabIndex        =   2
       Top             =   1800
@@ -47,7 +47,7 @@ Begin VB.Form FormChannelMixer
       GradientColorMiddle=   255
    End
    Begin PhotoDemon.sliderTextCombo sltGreen 
-      Height          =   720
+      Height          =   705
       Left            =   6120
       TabIndex        =   3
       Top             =   2760
@@ -61,7 +61,7 @@ Begin VB.Form FormChannelMixer
       GradientColorMiddle=   65280
    End
    Begin PhotoDemon.sliderTextCombo sltBlue 
-      Height          =   720
+      Height          =   705
       Left            =   6120
       TabIndex        =   4
       Top             =   3720
@@ -85,7 +85,7 @@ Begin VB.Form FormChannelMixer
       Caption         =   "monochrome"
    End
    Begin PhotoDemon.sliderTextCombo sltConstant 
-      Height          =   720
+      Height          =   705
       Left            =   6120
       TabIndex        =   6
       Top             =   4680
@@ -121,73 +121,46 @@ Begin VB.Form FormChannelMixer
    Begin PhotoDemon.buttonStrip btsChannel 
       Height          =   600
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   8
       Top             =   480
       Width           =   6000
       _ExtentX        =   10583
       _ExtentY        =   1058
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "input channel(s)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   11
       Top             =   1320
-      Width           =   1710
+      Width           =   6015
+      _ExtentX        =   10610
+      _ExtentY        =   503
+      Caption         =   "input channel(s)"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label Label1 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "options for all channels"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel Label1 
       Height          =   285
       Left            =   6000
-      TabIndex        =   9
       Top             =   5760
-      Width           =   2460
+      Width           =   5820
+      _ExtentX        =   10266
+      _ExtentY        =   503
+      Caption         =   "options for all channels"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "output channel"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   8
       Top             =   120
-      Width           =   1575
+      Width           =   6015
+      _ExtentX        =   10610
+      _ExtentY        =   503
+      Caption         =   "output channel"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormChannelMixer"
@@ -672,5 +645,6 @@ End Function
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 
 

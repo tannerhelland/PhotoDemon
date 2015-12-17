@@ -44,9 +44,9 @@ Begin VB.Form FormColorTemp
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltStrength 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   3000
       Width           =   6135
       _ExtentX        =   10821
@@ -59,9 +59,9 @@ Begin VB.Form FormColorTemp
       NotchValueCustom=   50
    End
    Begin PhotoDemon.sliderTextCombo sltTemperature 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   1560
       Width           =   6135
       _ExtentX        =   10821
@@ -72,45 +72,32 @@ Begin VB.Form FormColorTemp
       SliderTrackStyle=   3
       Value           =   5500
    End
-   Begin VB.Label lblCool 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
+   Begin PhotoDemon.pdLabel lblCool 
+      Height          =   435
+      Left            =   9000
+      Top             =   2400
+      Width           =   2055
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Alignment       =   1
       Caption         =   "cool tones"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   10320
-      TabIndex        =   2
-      Top             =   2400
-      Width           =   735
+      FontItalic      =   -1  'True
+      FontSize        =   9
+      ForeColor       =   4210752
+      Layout          =   1
    End
-   Begin VB.Label lblWarm 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "warm tones"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
+   Begin PhotoDemon.pdLabel lblWarm 
+      Height          =   435
       Left            =   6240
-      TabIndex        =   1
       Top             =   2400
-      Width           =   840
+      Width           =   2280
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "warm tones"
+      FontItalic      =   -1  'True
+      FontSize        =   9
+      ForeColor       =   4210752
+      Layout          =   1
    End
 End
 Attribute VB_Name = "FormColorTemp"
@@ -365,5 +352,6 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 
 

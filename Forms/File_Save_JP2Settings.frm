@@ -23,28 +23,19 @@ Begin VB.Form dialog_ExportJP2
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   809
    ShowInTaskbar   =   0   'False
-   Begin VB.ComboBox CmbSaveQuality 
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
+   Begin PhotoDemon.pdComboBox cboSaveQuality 
+      Height          =   375
       Left            =   6240
-      Style           =   2  'Dropdown List
-      TabIndex        =   0
-      Top             =   2550
-      Width           =   5535
+      TabIndex        =   3
+      Top             =   2520
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   661
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
       Height          =   405
       Left            =   6120
-      TabIndex        =   4
+      TabIndex        =   0
       Top             =   3120
       Width           =   5775
       _ExtentX        =   15055
@@ -58,7 +49,7 @@ Begin VB.Form dialog_ExportJP2
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   5
+      TabIndex        =   1
       Top             =   5835
       Width           =   12135
       _ExtentX        =   21405
@@ -69,73 +60,50 @@ Begin VB.Form dialog_ExportJP2
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   2
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
    End
-   Begin VB.Label lblBefore 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "high quality, large file"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
+   Begin PhotoDemon.pdLabel lblBefore 
+      Height          =   435
       Left            =   6240
-      TabIndex        =   3
       Top             =   3600
-      Width           =   1545
+      Width           =   2265
+      _ExtentX        =   3995
+      _ExtentY        =   767
+      Caption         =   "high quality, large file"
+      FontItalic      =   -1  'True
+      FontSize        =   8
+      ForeColor       =   4210752
+      Layout          =   1
    End
-   Begin VB.Label lblAfter 
-      Alignment       =   1  'Right Justify
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
+   Begin PhotoDemon.pdLabel lblAfter 
+      Height          =   435
+      Left            =   8520
+      Top             =   3600
+      Width           =   2190
+      _ExtentX        =   3863
+      _ExtentY        =   767
+      Alignment       =   1
       Caption         =   "low quality, small file"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   -1  'True
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   195
-      Left            =   9480
-      TabIndex        =   2
-      Top             =   3600
-      Width           =   1470
+      FontItalic      =   -1  'True
+      FontSize        =   8
+      ForeColor       =   4210752
+      Layout          =   1
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "image compression ratio"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   360
       Index           =   0
       Left            =   6000
-      TabIndex        =   1
       Top             =   2160
-      Width           =   2610
+      Width           =   5850
+      _ExtentX        =   10319
+      _ExtentY        =   635
+      Caption         =   "image compression ratio"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "dialog_ExportJP2"
@@ -176,9 +144,9 @@ Public Property Get DialogResult() As VbMsgBoxResult
 End Property
 
 'QUALITY combo box - when adjusted, change the scroll bar to match
-Private Sub CmbSaveQuality_Click()
+Private Sub cboSaveQuality_Click()
     
-    Select Case CmbSaveQuality.ListIndex
+    Select Case cboSaveQuality.ListIndex
         
         Case 0
             sltQuality = 1
@@ -241,22 +209,22 @@ Private Sub updateComboBox()
     Select Case sltQuality.Value
         
         Case 1
-            If CmbSaveQuality.ListIndex <> 0 Then CmbSaveQuality.ListIndex = 0
+            If cboSaveQuality.ListIndex <> 0 Then cboSaveQuality.ListIndex = 0
                 
         Case 16
-            If CmbSaveQuality.ListIndex <> 1 Then CmbSaveQuality.ListIndex = 1
+            If cboSaveQuality.ListIndex <> 1 Then cboSaveQuality.ListIndex = 1
                 
         Case 32
-            If CmbSaveQuality.ListIndex <> 2 Then CmbSaveQuality.ListIndex = 2
+            If cboSaveQuality.ListIndex <> 2 Then cboSaveQuality.ListIndex = 2
                 
         Case 64
-            If CmbSaveQuality.ListIndex <> 3 Then CmbSaveQuality.ListIndex = 3
+            If cboSaveQuality.ListIndex <> 3 Then cboSaveQuality.ListIndex = 3
                 
         Case 256
-            If CmbSaveQuality.ListIndex <> 4 Then CmbSaveQuality.ListIndex = 4
+            If cboSaveQuality.ListIndex <> 4 Then cboSaveQuality.ListIndex = 4
                 
         Case Else
-            If CmbSaveQuality.ListIndex <> 5 Then CmbSaveQuality.ListIndex = 5
+            If cboSaveQuality.ListIndex <> 5 Then cboSaveQuality.ListIndex = 5
                 
     End Select
     
@@ -272,14 +240,14 @@ Public Sub showDialog()
     Screen.MousePointer = 0
     
     'Populate the quality drop-down box with presets corresponding to the JPEG-2000 file format
-    CmbSaveQuality.Clear
-    CmbSaveQuality.AddItem " Lossless (1:1)", 0
-    CmbSaveQuality.AddItem " Low compression, good image quality (16:1)", 1
-    CmbSaveQuality.AddItem " Moderate compression, medium image quality (32:1)", 2
-    CmbSaveQuality.AddItem " High compression, poor image quality (64:1)", 3
-    CmbSaveQuality.AddItem " Super compression, very poor image quality (256:1)", 4
-    CmbSaveQuality.AddItem " Custom ratio (X:1)", 5
-    CmbSaveQuality.ListIndex = 0
+    cboSaveQuality.Clear
+    cboSaveQuality.AddItem " Lossless (1:1)", 0
+    cboSaveQuality.AddItem " Low compression, good image quality (16:1)", 1
+    cboSaveQuality.AddItem " Moderate compression, medium image quality (32:1)", 2
+    cboSaveQuality.AddItem " High compression, poor image quality (64:1)", 3
+    cboSaveQuality.AddItem " Super compression, very poor image quality (256:1)", 4
+    cboSaveQuality.AddItem " Custom ratio (X:1)", 5
+    cboSaveQuality.ListIndex = 0
     
     Message "Waiting for user to specify JPEG-2000 export options... "
     
@@ -317,3 +285,4 @@ Private Sub updatePreview()
     End If
 
 End Sub
+

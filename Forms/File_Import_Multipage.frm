@@ -57,25 +57,16 @@ Begin VB.Form dialog_MultiImage
       _ExtentY        =   1296
       Caption         =   "Load only the first page"
    End
-   Begin VB.Label lblWarning 
-      BackStyle       =   0  'Transparent
-      Caption         =   "%1 contains multiple pages (%2 in total).  How would you like to proceed?"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00202020&
+   Begin PhotoDemon.pdLabel lblWarning 
       Height          =   765
       Left            =   960
-      TabIndex        =   3
       Top             =   270
       Width           =   4335
-      WordWrap        =   -1  'True
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "%1 contains multiple pages (%2 in total).  How would you like to proceed?"
+      ForeColor       =   2105376
+      Layout          =   1
    End
 End
 Attribute VB_Name = "dialog_MultiImage"
@@ -192,3 +183,4 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
+

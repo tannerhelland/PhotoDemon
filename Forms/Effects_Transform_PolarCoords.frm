@@ -27,7 +27,7 @@ Begin VB.Form FormPolar
    Begin PhotoDemon.smartCheckBox chkSwapXY 
       Height          =   330
       Left            =   6120
-      TabIndex        =   10
+      TabIndex        =   9
       Top             =   1590
       Width           =   5670
       _ExtentX        =   10001
@@ -44,25 +44,6 @@ Begin VB.Form FormPolar
       _ExtentX        =   21352
       _ExtentY        =   1323
       BackColor       =   14802140
-   End
-   Begin VB.ComboBox cmbEdges 
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   6120
-      Style           =   2  'Dropdown List
-      TabIndex        =   5
-      Top             =   3585
-      Width           =   5700
    End
    Begin VB.ComboBox cboConvert 
       BackColor       =   &H00FFFFFF&
@@ -97,7 +78,7 @@ Begin VB.Form FormPolar
       Height          =   360
       Index           =   0
       Left            =   6120
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   4560
       Width           =   5685
       _ExtentX        =   10028
@@ -109,7 +90,7 @@ Begin VB.Form FormPolar
       Height          =   360
       Index           =   1
       Left            =   6120
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   4920
       Width           =   5685
       _ExtentX        =   10028
@@ -117,9 +98,9 @@ Begin VB.Form FormPolar
       Caption         =   "speed"
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   2280
       Width           =   5895
       _ExtentX        =   10398
@@ -130,6 +111,15 @@ Begin VB.Form FormPolar
       Value           =   100
       NotchPosition   =   2
       NotchValueCustom=   100
+   End
+   Begin PhotoDemon.pdComboBox cboEdges 
+      Height          =   375
+      Left            =   6120
+      TabIndex        =   10
+      Top             =   3600
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   661
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -148,7 +138,7 @@ Begin VB.Form FormPolar
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   3210
       Width           =   3315
    End
@@ -232,7 +222,7 @@ Private Sub chkSwapXY_Click()
     updatePreview
 End Sub
 
-Private Sub cmbEdges_Click()
+Private Sub cboEdges_Click()
     updatePreview
 End Sub
 
@@ -272,7 +262,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Polar conversion", , buildParams(cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
+    Process "Polar conversion", , buildParams(cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cboEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -282,7 +272,7 @@ End Sub
 Private Sub cmdBar_ResetClick()
     sltRadius.Value = 100
     chkSwapXY.Value = vbUnchecked
-    cmbEdges.ListIndex = EDGE_ERASE
+    cboEdges.ListIndex = EDGE_ERASE
 End Sub
 
 Private Sub Form_Activate()
@@ -303,7 +293,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cmbEdges, EDGE_ERASE
+    PopDistortEdgeBox cboEdges, EDGE_ERASE
     
     'Populate the polar conversion technique drop-down
     cboConvert.AddItem "Rectangular to polar", 0
@@ -327,7 +317,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ConvertToPolar cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cmbEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ConvertToPolar cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cboEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

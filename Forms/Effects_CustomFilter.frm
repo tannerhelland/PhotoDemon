@@ -60,7 +60,7 @@ Begin VB.Form FormCustomFilter
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   32
+      TabIndex        =   29
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
@@ -403,68 +403,38 @@ Begin VB.Form FormCustomFilter
       Min             =   -255
       Max             =   255
    End
-   Begin VB.Label lblOffset 
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "offset"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblOffset 
       Height          =   285
       Left            =   9480
-      TabIndex        =   31
-      Top             =   4095
-      Width           =   585
+      Top             =   4080
+      Width           =   1545
+      _ExtentX        =   2725
+      _ExtentY        =   503
+      Caption         =   "offset"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblDivisor 
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "divisor"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblDivisor 
       Height          =   285
       Left            =   7320
-      TabIndex        =   30
       Top             =   4095
-      Width           =   705
+      Width           =   1665
+      _ExtentX        =   2937
+      _ExtentY        =   503
+      Caption         =   "divisor"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblConvolution 
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "convolution matrix"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblConvolution 
       Height          =   285
       Left            =   6000
-      TabIndex        =   29
       Top             =   600
-      Width           =   1980
+      Width           =   6420
+      _ExtentX        =   11324
+      _ExtentY        =   503
+      Caption         =   "convolution matrix"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormCustomFilter"
@@ -625,5 +595,6 @@ End Function
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 
 

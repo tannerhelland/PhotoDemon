@@ -39,7 +39,7 @@ Begin VB.Form FormPerspective
       Height          =   360
       Left            =   240
       Style           =   2  'Dropdown List
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   6240
       Width           =   5550
    End
@@ -64,28 +64,9 @@ Begin VB.Form FormPerspective
       ScaleHeight     =   574
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   598
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   120
       Width           =   9000
-   End
-   Begin VB.ComboBox cmbEdges 
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   240
-      Style           =   2  'Dropdown List
-      TabIndex        =   2
-      Top             =   8175
-      Width           =   5550
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -98,9 +79,9 @@ Begin VB.Form FormPerspective
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   720
+      Height          =   705
       Left            =   120
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   6840
       Width           =   5775
       _ExtentX        =   10186
@@ -111,6 +92,15 @@ Begin VB.Form FormPerspective
       Value           =   2
       NotchPosition   =   2
       NotchValueCustom=   2
+   End
+   Begin PhotoDemon.pdComboBox cboEdges 
+      Height          =   375
+      Left            =   240
+      TabIndex        =   7
+      Top             =   8160
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   661
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -129,7 +119,7 @@ Begin VB.Form FormPerspective
       Height          =   285
       Index           =   0
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   5880
       Width           =   2085
    End
@@ -150,7 +140,7 @@ Begin VB.Form FormPerspective
       Height          =   285
       Index           =   5
       Left            =   120
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   7800
       Width           =   3315
    End
@@ -214,11 +204,11 @@ Private m_isMouseDown As Boolean
 'Currently selected node in the workspace area
 Private m_selPoint As Long
 
-Private Sub cmbEdges_Click()
+Private Sub cboEdges_Click()
     updatePreview
 End Sub
 
-Private Sub cmbEdges_Scroll()
+Private Sub cboEdges_Scroll()
     updatePreview
 End Sub
 
@@ -654,7 +644,7 @@ End Sub
 Private Sub cmdBar_ResetClick()
         
     'Set edge handling to match the default specified in Form_Load
-    cmbEdges.ListIndex = EDGE_ERASE
+    cboEdges.ListIndex = EDGE_ERASE
     
     'Default quality is interpolation, but no supersampling
     sltQuality.Value = 2
@@ -690,7 +680,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cmbEdges, EDGE_ERASE
+    PopDistortEdgeBox cboEdges, EDGE_ERASE
     
     'Populate the mapping type combo box
     cmbMapping.Clear
@@ -898,7 +888,7 @@ Private Function getPerspectiveParamString() As String
     paramString = paramString & "|" & CLng(cmbMapping.ListIndex)
     
     'Edge handling
-    paramString = paramString & "|" & CLng(cmbEdges.ListIndex)
+    paramString = paramString & "|" & CLng(cboEdges.ListIndex)
     
     'Supersampling
     paramString = paramString & "|" & sltQuality

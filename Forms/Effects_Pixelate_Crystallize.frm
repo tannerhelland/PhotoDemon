@@ -24,43 +24,14 @@ Begin VB.Form FormCrystallize
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin VB.ComboBox cboDistance 
-      Appearance      =   0  'Flat
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
+   Begin PhotoDemon.pdComboBox cboColorSampling 
+      Height          =   375
       Left            =   6120
-      Style           =   2  'Dropdown List
-      TabIndex        =   6
-      Top             =   4125
+      TabIndex        =   4
+      Top             =   3240
       Width           =   5775
-   End
-   Begin VB.ComboBox cboColorSampling 
-      Appearance      =   0  'Flat
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   6120
-      Style           =   2  'Dropdown List
-      TabIndex        =   5
-      Top             =   3180
-      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   661
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -83,7 +54,7 @@ Begin VB.Form FormCrystallize
       _ExtentY        =   9657
    End
    Begin PhotoDemon.sliderTextCombo sltSize 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   840
@@ -96,7 +67,7 @@ Begin VB.Form FormCrystallize
       Value           =   50
    End
    Begin PhotoDemon.sliderTextCombo sltTurbulence 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   1800
@@ -110,47 +81,38 @@ Begin VB.Form FormCrystallize
       NotchPosition   =   2
       NotchValueCustom=   100
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "distance method"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   7
       Top             =   3765
-      Width           =   1740
+      Width           =   5820
+      _ExtentX        =   10266
+      _ExtentY        =   503
+      Caption         =   "distance method"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "color sampling"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   4
       Top             =   2820
-      Width           =   1560
+      Width           =   5880
+      _ExtentX        =   10372
+      _ExtentY        =   503
+      Caption         =   "color sampling"
+      FontSize        =   12
+      ForeColor       =   4210752
+   End
+   Begin PhotoDemon.pdComboBox cboDistance 
+      Height          =   375
+      Left            =   6120
+      TabIndex        =   5
+      Top             =   4200
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   661
    End
 End
 Attribute VB_Name = "FormCrystallize"
@@ -433,7 +395,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply translations and visual themes
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Request a preview
     cmdBar.markPreviewStatus True
@@ -487,3 +449,4 @@ End Sub
 Private Sub sltTurbulence_Change()
     updatePreview
 End Sub
+

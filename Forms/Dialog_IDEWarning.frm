@@ -45,89 +45,53 @@ Begin VB.Form dialog_IDEWarning
       _ExtentY        =   582
       Caption         =   "Do not display this warning again"
    End
-   Begin VB.Label lblWarning 
-      BackStyle       =   0  'Transparent
-      Caption         =   "Warning"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblWarning 
       Height          =   885
       Index           =   3
       Left            =   360
-      TabIndex        =   5
       Top             =   3240
       Width           =   8175
-      WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblWarning 
-      BackStyle       =   0  'Transparent
+      _ExtentX        =   0
+      _ExtentY        =   0
       Caption         =   "Warning"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+      ForeColor       =   4210752
+      Layout          =   1
+   End
+   Begin PhotoDemon.pdLabel lblWarning 
       Height          =   765
       Index           =   2
       Left            =   360
-      TabIndex        =   4
       Top             =   2400
       Width           =   8385
-      WordWrap        =   -1  'True
-   End
-   Begin VB.Label lblWarning 
-      BackStyle       =   0  'Transparent
+      _ExtentX        =   0
+      _ExtentY        =   0
       Caption         =   "Warning"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+      ForeColor       =   4210752
+      Layout          =   1
+   End
+   Begin PhotoDemon.pdLabel lblWarning 
       Height          =   1245
       Index           =   1
       Left            =   360
-      TabIndex        =   3
       Top             =   1080
       Width           =   8385
-      WordWrap        =   -1  'True
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "Warning"
+      ForeColor       =   4210752
+      Layout          =   1
    End
-   Begin VB.Label lblWarning 
-      BackStyle       =   0  'Transparent
-      Caption         =   "You are running PhotoDemon inside the Visual Basic IDE.  This is not recommended."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00202020&
+   Begin PhotoDemon.pdLabel lblWarning 
       Height          =   525
       Index           =   0
       Left            =   1005
-      TabIndex        =   2
       Top             =   390
       Width           =   7695
-      WordWrap        =   -1  'True
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "You are running PhotoDemon inside the Visual Basic IDE.  This is not recommended."
+      ForeColor       =   2105376
+      Layout          =   1
    End
 End
 Attribute VB_Name = "dialog_IDEWarning"
@@ -164,9 +128,9 @@ Public Sub showDialog()
 
     'Automatically draw a warning icon using the system icon set
     Dim iconY As Long
-    iconY = fixDPI(18)
-    If g_UseFancyFonts Then iconY = iconY + fixDPI(2)
-    DrawSystemIcon IDI_EXCLAMATION, Me.hDC, fixDPI(22), iconY
+    iconY = FixDPI(18)
+    If g_UseFancyFonts Then iconY = iconY + FixDPI(2)
+    DrawSystemIcon IDI_EXCLAMATION, Me.hDC, FixDPI(22), iconY
     
     lblWarning(1).Caption = g_Language.TranslateMessage("Please compile PhotoDemon before using it.  Many features that rely on subclassing are disabled in the IDE, but some - such as custom command buttons - cannot be disabled without severely impacting the program's functionality.  As such, you may experience IDE instability and crashes, especially if you close the program using the IDE's Stop button.")
     lblWarning(2).Caption = g_Language.TranslateMessage("Additionally, like all other photo editors, PhotoDemon relies heavily on multidimensional arrays. Array performance is severely degraded in the IDE, so some functions may perform very slowly.")
@@ -178,10 +142,10 @@ Public Sub showDialog()
     userAnswer = vbOK
 
     'Apply any custom styles to the form
-    makeFormPretty Me
+    MakeFormPretty Me
 
     'Display the form
-    showPDDialog vbModal, Me, True
+    ShowPDDialog vbModal, Me, True
 
 End Sub
 
@@ -193,3 +157,4 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
+

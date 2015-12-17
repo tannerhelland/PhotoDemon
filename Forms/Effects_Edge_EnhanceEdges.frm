@@ -31,9 +31,9 @@ Begin VB.Form FormEdgeEnhance
       TabIndex        =   0
       Top             =   5775
       Width           =   12195
-      _extentx        =   21511
-      _extenty        =   1323
-      backcolor       =   14802140
+      _ExtentX        =   21511
+      _ExtentY        =   1323
+      BackColor       =   14802140
    End
    Begin VB.ListBox LstEdgeOptions 
       BeginProperty Font 
@@ -58,8 +58,8 @@ Begin VB.Form FormEdgeEnhance
       TabIndex        =   3
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.smartCheckBox chkDirection 
       Height          =   360
@@ -76,7 +76,7 @@ Begin VB.Form FormEdgeEnhance
       Height          =   360
       Index           =   1
       Left            =   6240
-      TabIndex        =   6
+      TabIndex        =   2
       Top             =   3840
       Width           =   5625
       _ExtentX        =   9922
@@ -86,7 +86,7 @@ Begin VB.Form FormEdgeEnhance
    Begin PhotoDemon.sliderTextCombo sltStrength 
       Height          =   705
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   4560
       Width           =   6015
       _ExtentX        =   10610
@@ -96,47 +96,29 @@ Begin VB.Form FormEdgeEnhance
       NotchPosition   =   2
       NotchValueCustom=   50
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "detection direction(s)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   4
       Top             =   3000
-      Width           =   2235
+      Width           =   5835
+      _ExtentX        =   10292
+      _ExtentY        =   503
+      Caption         =   "detection direction(s)"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "edge detection technique"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   2
       Top             =   120
-      Width           =   2640
+      Width           =   5880
+      _ExtentX        =   10372
+      _ExtentY        =   503
+      Caption         =   "edge detection technique"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormEdgeEnhance"
@@ -292,14 +274,14 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
         ConvolveDIB tmpParamString, workingDIB, tmpEdgeDIB, toPreview, workingDIB.getDIBWidth * numPassesRequired, workingDIB.getDIBWidth
         
         'The compositor requires premultiplied alpha, so convert both top and bottom layers now
-        edgeDIB.setAlphaPremultiplication True
-        tmpEdgeDIB.setAlphaPremultiplication True
+        edgeDIB.SetAlphaPremultiplication True
+        tmpEdgeDIB.SetAlphaPremultiplication True
         
         'Use the pdCompositor class to blend the results of the second edge detection pass with the first pass.
         cComposite.quickMergeTwoDibsOfEqualSize edgeDIB, tmpEdgeDIB, BL_SCREEN
         
         'Remove premultiplication
-        edgeDIB.setAlphaPremultiplication False
+        edgeDIB.SetAlphaPremultiplication False
         
         Set tmpEdgeDIB = Nothing
         
@@ -311,8 +293,8 @@ Public Sub ApplyEdgeEnhancement(ByVal edgeDetectionType As PD_EDGE_DETECTION, By
     If Not toPreview Then Message "Applying pass %1 of %2 for %3 filter...", numPassesRequired, numPassesRequired, getNameOfEdgeDetector(edgeDetectionType)
     
     'Apply premultiplication prior to compositing
-    edgeDIB.setAlphaPremultiplication True
-    workingDIB.setAlphaPremultiplication True
+    edgeDIB.SetAlphaPremultiplication True
+    workingDIB.SetAlphaPremultiplication True
     
     'To make the merge operation easier, we're going to place our DIBs inside temporary layers.  This allows us to use existing
     ' layer code to handle the merge.
@@ -701,3 +683,4 @@ End Sub
 Private Sub sltStrength_Change()
     updatePreview
 End Sub
+

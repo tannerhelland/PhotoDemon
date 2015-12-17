@@ -35,25 +35,6 @@ Begin VB.Form FormPanAndZoom
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin VB.ComboBox cmbEdges 
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   6120
-      Style           =   2  'Dropdown List
-      TabIndex        =   5
-      Top             =   5100
-      Width           =   5700
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
@@ -64,7 +45,7 @@ Begin VB.Form FormPanAndZoom
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltHorizontal 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   1
       Top             =   240
@@ -77,7 +58,7 @@ Begin VB.Form FormPanAndZoom
       SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltVertical 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   1320
@@ -90,7 +71,7 @@ Begin VB.Form FormPanAndZoom
       SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltZoom 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   2400
@@ -102,9 +83,9 @@ Begin VB.Form FormPanAndZoom
       SigDigits       =   2
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   3480
       Width           =   5895
       _ExtentX        =   10398
@@ -115,6 +96,15 @@ Begin VB.Form FormPanAndZoom
       Value           =   2
       NotchPosition   =   2
       NotchValueCustom=   2
+   End
+   Begin PhotoDemon.pdComboBox cboEdges 
+      Height          =   375
+      Left            =   6240
+      TabIndex        =   7
+      Top             =   5040
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   661
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -133,7 +123,7 @@ Begin VB.Form FormPanAndZoom
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   4680
       Width           =   3315
    End
@@ -163,7 +153,7 @@ Option Explicit
 ' original image width in order to establish the right ratio.
 Private iWidth As Long, iHeight As Long
 
-Private Sub cmbEdges_Click()
+Private Sub cboEdges_Click()
     updatePreview
 End Sub
 
@@ -387,7 +377,7 @@ Public Sub PanAndZoomFilter(ByVal hPan As Double, ByVal vPan As Double, ByVal ne
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Pan and zoom", , buildParams(sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cmbEdges.ListIndex), sltQuality), UNDO_LAYER
+    Process "Pan and zoom", , buildParams(sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -395,7 +385,7 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    cmbEdges.ListIndex = EDGE_WRAP
+    cboEdges.ListIndex = EDGE_WRAP
     sltQuality.Value = 2
 End Sub
 
@@ -431,7 +421,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cmbEdges, EDGE_WRAP
+    PopDistortEdgeBox cboEdges, EDGE_WRAP
     
 End Sub
 
@@ -441,7 +431,7 @@ End Sub
 
 'Redraw the effect preview
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then PanAndZoomFilter sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cmbEdges.ListIndex), sltQuality, True, fxPreview
+    If cmdBar.previewsAllowed Then PanAndZoomFilter sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cboEdges.ListIndex), sltQuality, True, fxPreview
 End Sub
 
 Private Sub sltQuality_Change()

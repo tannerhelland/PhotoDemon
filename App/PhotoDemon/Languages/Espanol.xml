@@ -6,7 +6,7 @@
 
 <langid>es-MX</langid>
 <langname>Español</langname>
-<langversion>6.7.121</langversion>
+<langversion>6.7.122</langversion>
 <langstatus>completo</langstatus>
 
 <author>Plinio C Garcia</author>
@@ -6452,6 +6452,11 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 </phrase>
 
 <phrase>
+<original>value</original>
+<translation>valor</translation>
+</phrase>
+
+<phrase>
 <original>global</original>
 <translation>global</translation>
 </phrase>
@@ -6461,7 +6466,7 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 <translation></translation>
 </phrase>
 
-<!-- Adjustments_Histogram_Equalize.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+<!-- Adjustments_Histogram_Equalize.frm contains 14 phrases. 4 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Histogram_Equalize.frm-->
 
@@ -7199,11 +7204,6 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 </phrase>
 
 <phrase>
-<original>value</original>
-<translation>valor</translation>
-</phrase>
-
-<phrase>
 <original>original</original>
 <translation>original</translation>
 </phrase>
@@ -7218,7 +7218,7 @@ Note: un poco de texto programa menor no puede ser actualizado en vivo. Dicho te
 <translation>Haga clic en este botón para habilitar el color de la captura desde cualquier lugar de la pantalla.</translation>
 </phrase>
 
-<!-- Dialog_ColorSelector.frm contains 12 phrases. 5 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
+<!-- Dialog_ColorSelector.frm contains 12 phrases. 6 were duplicates of existing phrases, so only 6 new phrases were written to file. -->
 
 <!-- END text for Dialog_ColorSelector.frm-->
 
@@ -14553,8 +14553,8 @@ If usted todavía elige desactivar las actualizaciones, no se olvide de visitar 
 
 <phrasecount>2500</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4293 phrases. -->
-<!-- 1793 are duplicates, so only 2500 unique phrases have been written to file. -->
+<!-- As of this build, PhotoDemon contains 4294 phrases. -->
+<!-- 1794 are duplicates, so only 2500 unique phrases have been written to file. -->
 <!-- These 2500 phrases contain approximately 13374 total words. -->
 
 </pdData>

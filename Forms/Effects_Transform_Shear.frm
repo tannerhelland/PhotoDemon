@@ -35,25 +35,6 @@ Begin VB.Form FormShear
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin VB.ComboBox cmbEdges 
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   6120
-      Style           =   2  'Dropdown List
-      TabIndex        =   2
-      Top             =   4410
-      Width           =   5700
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
@@ -65,9 +46,9 @@ Begin VB.Form FormShear
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltAngleX 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   1080
       Width           =   5895
       _ExtentX        =   10398
@@ -78,9 +59,9 @@ Begin VB.Form FormShear
       SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltAngleY 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   2040
       Width           =   5895
       _ExtentX        =   10398
@@ -91,9 +72,9 @@ Begin VB.Form FormShear
       SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   3000
       Width           =   5895
       _ExtentX        =   10398
@@ -104,6 +85,15 @@ Begin VB.Form FormShear
       Value           =   2
       NotchPosition   =   2
       NotchValueCustom=   2
+   End
+   Begin PhotoDemon.pdComboBox cboEdges 
+      Height          =   375
+      Left            =   6240
+      TabIndex        =   6
+      Top             =   4320
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   661
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -122,7 +112,7 @@ Begin VB.Form FormShear
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   3960
       Width           =   3315
    End
@@ -152,7 +142,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Sub cmbEdges_Click()
+Private Sub cboEdges_Click()
     updatePreview
 End Sub
 
@@ -347,7 +337,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Shear", , buildParams(sltAngleX, sltAngleY, CLng(cmbEdges.ListIndex), sltQuality), UNDO_LAYER
+    Process "Shear", , buildParams(sltAngleX, sltAngleY, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -355,7 +345,7 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    cmbEdges.ListIndex = EDGE_WRAP
+    cboEdges.ListIndex = EDGE_WRAP
     sltQuality = 2
 End Sub
 
@@ -377,7 +367,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cmbEdges, EDGE_WRAP
+    PopDistortEdgeBox cboEdges, EDGE_WRAP
     
 End Sub
 
@@ -395,7 +385,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ShearImage sltAngleX, sltAngleY, CLng(cmbEdges.ListIndex), sltQuality, True, fxPreview
+    If cmdBar.previewsAllowed Then ShearImage sltAngleX, sltAngleY, CLng(cboEdges.ListIndex), sltQuality, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

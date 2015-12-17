@@ -24,6 +24,15 @@ Begin VB.Form FormFiguredGlass
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdComboBox cboEdges 
+      Height          =   375
+      Left            =   6120
+      TabIndex        =   6
+      Top             =   4440
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   661
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -36,9 +45,9 @@ Begin VB.Form FormFiguredGlass
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltScale 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   840
       Width           =   5895
       _ExtentX        =   10398
@@ -47,25 +56,6 @@ Begin VB.Form FormFiguredGlass
       Max             =   100
       SigDigits       =   1
       Value           =   10
-   End
-   Begin VB.ComboBox cmbEdges 
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   6120
-      Style           =   2  'Dropdown List
-      TabIndex        =   2
-      Top             =   4425
-      Width           =   5700
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -78,9 +68,9 @@ Begin VB.Form FormFiguredGlass
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltTurbulence 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   1920
       Width           =   5895
       _ExtentX        =   10398
@@ -91,9 +81,9 @@ Begin VB.Form FormFiguredGlass
       Value           =   0.5
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   3000
       Width           =   5895
       _ExtentX        =   10398
@@ -122,7 +112,7 @@ Begin VB.Form FormFiguredGlass
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   3990
       Width           =   3315
    End
@@ -163,7 +153,7 @@ Option Explicit
 'This variable stores random z-location in the perlin noise generator (which allows for a unique effect each time the form is loaded)
 Private m_zOffset As Double
 
-Private Sub cmbEdges_Click()
+Private Sub cboEdges_Click()
     updatePreview
 End Sub
 
@@ -385,7 +375,7 @@ Public Sub FiguredGlassFX(ByVal fxScale As Double, ByVal fxTurbulence As Double,
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Figured glass", , buildParams(sltScale, sltTurbulence, CLng(cmbEdges.ListIndex), sltQuality), UNDO_LAYER
+    Process "Figured glass", , buildParams(sltScale, sltTurbulence, CLng(cboEdges.ListIndex), sltQuality), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -395,7 +385,7 @@ End Sub
 Private Sub cmdBar_ResetClick()
 
     'Set the edge handler to match the default in Form_Load
-    cmbEdges.ListIndex = 1
+    cboEdges.ListIndex = 1
     sltScale.Value = 10#
     sltTurbulence.Value = 0.5
     sltQuality.Value = 2
@@ -425,7 +415,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cmbEdges, EDGE_REFLECT
+    PopDistortEdgeBox cboEdges, EDGE_REFLECT
     
 End Sub
 
@@ -452,7 +442,7 @@ End Sub
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
     If cmdBar.previewsAllowed Then
-        FiguredGlassFX sltScale, sltTurbulence, CLng(cmbEdges.ListIndex), sltQuality, True, fxPreview
+        FiguredGlassFX sltScale, sltTurbulence, CLng(cboEdges.ListIndex), sltQuality, True, fxPreview
     End If
 End Sub
 

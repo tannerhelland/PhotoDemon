@@ -53,6 +53,29 @@ Begin VB.Form FormCurves
       _ExtentX        =   11774
       _ExtentY        =   1058
    End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   285
+      Index           =   2
+      Left            =   6000
+      Top             =   6360
+      Width           =   6855
+      _ExtentX        =   12091
+      _ExtentY        =   503
+      Caption         =   "display"
+      FontSize        =   12
+      ForeColor       =   4210752
+   End
+   Begin PhotoDemon.pdLabel lblExplanation 
+      Height          =   1440
+      Left            =   240
+      Top             =   5910
+      Width           =   5535
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   ""
+      ForeColor       =   4210752
+      Layout          =   1
+   End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
@@ -91,26 +114,17 @@ Begin VB.Form FormCurves
          _ExtentX        =   11774
          _ExtentY        =   1058
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "channel"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   0
          Left            =   120
-         TabIndex        =   8
          Top             =   5160
-         Width           =   810
+         Width           =   6810
+         _ExtentX        =   12012
+         _ExtentY        =   503
+         Caption         =   "channel"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
    End
    Begin VB.PictureBox picContainer 
@@ -139,7 +153,7 @@ Begin VB.Form FormCurves
       Begin PhotoDemon.buttonStrip btsGrid 
          Height          =   600
          Left            =   240
-         TabIndex        =   11
+         TabIndex        =   2
          Top             =   2580
          Width           =   6675
          _ExtentX        =   11774
@@ -148,115 +162,48 @@ Begin VB.Form FormCurves
       Begin PhotoDemon.buttonStrip btsDiagonalLine 
          Height          =   600
          Left            =   240
-         TabIndex        =   13
+         TabIndex        =   8
          Top             =   3900
          Width           =   6675
          _ExtentX        =   11774
          _ExtentY        =   1058
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "original curve (diagonal line)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   4
          Left            =   120
-         TabIndex        =   14
          Top             =   3480
-         Width           =   3045
+         Width           =   6765
+         _ExtentX        =   11933
+         _ExtentY        =   503
+         Caption         =   "original curve (diagonal line)"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "grid"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   3
          Left            =   120
-         TabIndex        =   12
          Top             =   2160
-         Width           =   420
+         Width           =   6780
+         _ExtentX        =   11959
+         _ExtentY        =   503
+         Caption         =   "grid"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "histogram overlay"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   1
          Left            =   120
-         TabIndex        =   10
          Top             =   840
-         Width           =   1905
+         Width           =   6825
+         _ExtentX        =   12039
+         _ExtentY        =   503
+         Caption         =   "histogram overlay"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "display"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   2
-      Left            =   6000
-      TabIndex        =   15
-      Top             =   6360
-      Width           =   735
-   End
-   Begin VB.Label lblExplanation 
-      BackStyle       =   0  'Transparent
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   1440
-      Left            =   240
-      TabIndex        =   2
-      Top             =   5910
-      Width           =   5535
-      WordWrap        =   -1  'True
    End
 End
 Attribute VB_Name = "FormCurves"
@@ -1338,5 +1285,6 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 
 

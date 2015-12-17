@@ -24,25 +24,6 @@ Begin VB.Form FormPoke
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
-   Begin VB.ComboBox cmbEdges 
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   6120
-      Style           =   2  'Dropdown List
-      TabIndex        =   1
-      Top             =   4440
-      Width           =   5700
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
@@ -55,9 +36,9 @@ Begin VB.Form FormPoke
       PointSelection  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltStrength 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   2160
       Width           =   5895
       _ExtentX        =   10398
@@ -73,7 +54,7 @@ Begin VB.Form FormPoke
    Begin PhotoDemon.sliderTextCombo sltXCenter 
       Height          =   405
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   1080
       Width           =   2895
       _ExtentX        =   5106
@@ -87,7 +68,7 @@ Begin VB.Form FormPoke
    Begin PhotoDemon.sliderTextCombo sltYCenter 
       Height          =   405
       Left            =   9000
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   1080
       Width           =   2895
       _ExtentX        =   5106
@@ -102,7 +83,7 @@ Begin VB.Form FormPoke
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   5790
       Width           =   12090
       _ExtentX        =   21325
@@ -110,9 +91,9 @@ Begin VB.Form FormPoke
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   3060
       Width           =   5895
       _ExtentX        =   10398
@@ -123,6 +104,15 @@ Begin VB.Form FormPoke
       Value           =   2
       NotchPosition   =   2
       NotchValueCustom=   2
+   End
+   Begin PhotoDemon.pdComboBox cboEdges 
+      Height          =   375
+      Left            =   6240
+      TabIndex        =   9
+      Top             =   4320
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   661
    End
    Begin VB.Label lblTitle 
       AutoSize        =   -1  'True
@@ -141,7 +131,7 @@ Begin VB.Form FormPoke
       Height          =   285
       Index           =   4
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   720
       Width           =   2205
    End
@@ -152,7 +142,7 @@ Begin VB.Form FormPoke
       Height          =   435
       Index           =   0
       Left            =   6120
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   1650
       Width           =   5655
       WordWrap        =   -1  'True
@@ -174,7 +164,7 @@ Begin VB.Form FormPoke
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   3960
       Width           =   3315
    End
@@ -212,7 +202,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Sub cmbEdges_Click()
+Private Sub cboEdges_Click()
     updatePreview
 End Sub
 
@@ -454,7 +444,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Poke", , buildParams(sltStrength, CLng(cmbEdges.ListIndex), sltQuality, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
+    Process "Poke", , buildParams(sltStrength, CLng(cboEdges.ListIndex), sltQuality, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -464,7 +454,7 @@ End Sub
 Private Sub cmdBar_ResetClick()
     sltXCenter.Value = 0.5
     sltYCenter.Value = 0.5
-    cmbEdges.ListIndex = EDGE_CLAMP
+    cboEdges.ListIndex = EDGE_CLAMP
     sltStrength.Value = 1
     sltQuality.Value = 2
 End Sub
@@ -487,7 +477,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    PopDistortEdgeBox cmbEdges, EDGE_CLAMP
+    PopDistortEdgeBox cboEdges, EDGE_CLAMP
     
 End Sub
 
@@ -505,7 +495,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ApplyPokeDistort sltStrength, CLng(cmbEdges.ListIndex), sltQuality, sltXCenter.Value, sltYCenter.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyPokeDistort sltStrength, CLng(cboEdges.ListIndex), sltQuality, sltXCenter.Value, sltYCenter.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

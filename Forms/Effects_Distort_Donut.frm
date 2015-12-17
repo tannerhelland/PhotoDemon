@@ -33,15 +33,6 @@ Begin VB.Form FormDonut
       Width           =   12090
       _ExtentX        =   21325
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -58,11 +49,23 @@ Begin VB.Form FormDonut
    Begin PhotoDemon.buttonStrip btsOptions 
       Height          =   600
       Left            =   6240
-      TabIndex        =   15
+      TabIndex        =   10
       Top             =   5040
       Width           =   5595
       _ExtentX        =   9869
       _ExtentY        =   1058
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   285
+      Index           =   7
+      Left            =   6000
+      Top             =   4680
+      Width           =   5820
+      _ExtentX        =   10266
+      _ExtentY        =   503
+      Caption         =   "options"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -78,24 +81,14 @@ Begin VB.Form FormDonut
       TabIndex        =   7
       Top             =   120
       Width           =   6135
-      Begin VB.ComboBox cmbEdges 
-         BackColor       =   &H00FFFFFF&
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
+      Begin PhotoDemon.pdComboBox cboEdges 
+         Height          =   375
          Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   13
-         Top             =   2895
-         Width           =   5700
+         TabIndex        =   12
+         Top             =   3000
+         Width           =   5655
+         _ExtentX        =   9975
+         _ExtentY        =   661
       End
       Begin PhotoDemon.sliderTextCombo sltXCenter 
          Height          =   405
@@ -126,9 +119,9 @@ Begin VB.Form FormDonut
          NotchValueCustom=   0.5
       End
       Begin PhotoDemon.sliderTextCombo sltQuality 
-         Height          =   720
+         Height          =   705
          Left            =   120
-         TabIndex        =   12
+         TabIndex        =   11
          Top             =   1500
          Width           =   5895
          _ExtentX        =   10398
@@ -140,59 +133,41 @@ Begin VB.Form FormDonut
          NotchPosition   =   2
          NotchValueCustom=   2
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "if pixels lie outside the image..."
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   5
          Left            =   120
-         TabIndex        =   14
          Top             =   2520
-         Width           =   3315
+         Width           =   5835
+         _ExtentX        =   10292
+         _ExtentY        =   503
+         Caption         =   "if pixels lie outside the image..."
+         FontSize        =   12
+         ForeColor       =   4210752
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "center position (x, y)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   4
          Left            =   120
-         TabIndex        =   11
          Top             =   120
-         Width           =   2205
+         Width           =   5685
+         _ExtentX        =   10028
+         _ExtentY        =   503
+         Caption         =   "center position (x, y)"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
-      Begin VB.Label lblExplanation 
-         BackStyle       =   0  'Transparent
-         Caption         =   "Note: you can also set a center position by clicking the preview window."
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblExplanation 
          Height          =   435
          Index           =   0
          Left            =   240
-         TabIndex        =   10
          Top             =   1050
          Width           =   5655
-         WordWrap        =   -1  'True
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Caption         =   "Note: you can also set a center position by clicking the preview window."
+         ForeColor       =   4210752
+         Layout          =   1
       End
    End
    Begin VB.PictureBox picContainer 
@@ -210,7 +185,7 @@ Begin VB.Form FormDonut
       Top             =   120
       Width           =   6135
       Begin PhotoDemon.sliderTextCombo sltAngle 
-         Height          =   720
+         Height          =   705
          Left            =   120
          TabIndex        =   3
          Top             =   120
@@ -223,7 +198,7 @@ Begin VB.Form FormDonut
          SigDigits       =   1
       End
       Begin PhotoDemon.sliderTextCombo sltSpread 
-         Height          =   720
+         Height          =   705
          Left            =   120
          TabIndex        =   4
          Top             =   1080
@@ -238,7 +213,7 @@ Begin VB.Form FormDonut
          NotchValueCustom=   360
       End
       Begin PhotoDemon.sliderTextCombo sltRadius 
-         Height          =   720
+         Height          =   705
          Left            =   120
          TabIndex        =   5
          Top             =   2040
@@ -251,7 +226,7 @@ Begin VB.Form FormDonut
          NotchPosition   =   2
       End
       Begin PhotoDemon.sliderTextCombo sltHeight 
-         Height          =   720
+         Height          =   705
          Left            =   120
          TabIndex        =   6
          Top             =   3000
@@ -265,27 +240,6 @@ Begin VB.Form FormDonut
          NotchPosition   =   2
          NotchValueCustom=   50
       End
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "options"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   7
-      Left            =   6000
-      TabIndex        =   16
-      Top             =   4680
-      Width           =   780
    End
 End
 Attribute VB_Name = "FormDonut"
@@ -319,7 +273,7 @@ Private Sub btsOptions_Click(ByVal buttonIndex As Long)
     picContainer(1 - buttonIndex).Visible = False
 End Sub
 
-Private Sub cmbEdges_Click()
+Private Sub cboEdges_Click()
     updatePreview
 End Sub
 
@@ -554,7 +508,7 @@ Public Sub ApplyDonutDistortion(ByVal initialAngle As Double, ByVal donutSpread 
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Donut", , buildParams(sltAngle, sltSpread, sltRadius, sltHeight, CLng(cmbEdges.ListIndex), sltQuality, sltXCenter, sltYCenter), UNDO_LAYER
+    Process "Donut", , buildParams(sltAngle, sltSpread, sltRadius, sltHeight, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -564,7 +518,7 @@ End Sub
 Private Sub cmdBar_ResetClick()
     sltXCenter.Value = 0.5
     sltYCenter.Value = 0.5
-    cmbEdges.ListIndex = EDGE_ERASE
+    cboEdges.ListIndex = EDGE_ERASE
     sltRadius.Value = 0
     sltQuality.Value = 2
     sltSpread.Value = 360
@@ -574,7 +528,7 @@ End Sub
 Private Sub Form_Activate()
         
     'Apply translations and visual themes
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Create the preview
     cmdBar.markPreviewStatus True
@@ -589,7 +543,7 @@ Private Sub Form_Load()
     
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
-    popDistortEdgeBox cmbEdges, EDGE_ERASE
+    PopDistortEdgeBox cboEdges, EDGE_ERASE
     
     'Set up the basic/advanced panels
     btsOptions.AddItem "basic", 0
@@ -621,7 +575,7 @@ End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ApplyDonutDistortion sltAngle, sltSpread, sltRadius, sltHeight, CLng(cmbEdges.ListIndex), sltQuality, sltXCenter, sltYCenter, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyDonutDistortion sltAngle, sltSpread, sltRadius, sltHeight, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
@@ -651,3 +605,4 @@ End Sub
 Private Sub sltYCenter_Change()
     updatePreview
 End Sub
+

@@ -32,15 +32,6 @@ Begin VB.Form FormColorBalance
       Width           =   12360
       _ExtentX        =   21802
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -55,7 +46,7 @@ Begin VB.Form FormColorBalance
    Begin PhotoDemon.sliderTextCombo sltRed 
       Height          =   405
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   1
       Top             =   1800
       Width           =   6255
       _ExtentX        =   10398
@@ -70,7 +61,7 @@ Begin VB.Form FormColorBalance
    Begin PhotoDemon.sliderTextCombo sltGreen 
       Height          =   405
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   2
       Top             =   2760
       Width           =   6255
       _ExtentX        =   10398
@@ -84,7 +75,7 @@ Begin VB.Form FormColorBalance
    Begin PhotoDemon.sliderTextCombo sltBlue 
       Height          =   405
       Left            =   6000
-      TabIndex        =   10
+      TabIndex        =   3
       Top             =   3720
       Width           =   6255
       _ExtentX        =   10398
@@ -98,7 +89,7 @@ Begin VB.Form FormColorBalance
    Begin PhotoDemon.smartCheckBox chkLuminance 
       Height          =   360
       Left            =   6240
-      TabIndex        =   12
+      TabIndex        =   5
       Top             =   4800
       Width           =   6015
       _ExtentX        =   10610
@@ -108,176 +99,98 @@ Begin VB.Form FormColorBalance
    Begin PhotoDemon.buttonStrip btsTone 
       Height          =   600
       Left            =   6000
-      TabIndex        =   14
+      TabIndex        =   6
       Top             =   540
       Width           =   6255
       _ExtentX        =   10425
       _ExtentY        =   1058
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "new balance"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   1
       Left            =   5880
-      TabIndex        =   13
       Top             =   1440
-      Width           =   1305
+      Width           =   6345
+      _ExtentX        =   11192
+      _ExtentY        =   503
+      Caption         =   "new balance"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "tonal range"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   0
       Left            =   5880
-      TabIndex        =   11
       Top             =   120
-      Width           =   1200
+      Width           =   6240
+      _ExtentX        =   11007
+      _ExtentY        =   503
+      Caption         =   "tonal range"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label Label1 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
+   Begin PhotoDemon.pdLabel Label1 
+      Height          =   270
+      Left            =   6300
+      Top             =   4200
+      Width           =   2115
+      _ExtentX        =   3731
+      _ExtentY        =   476
       Caption         =   "yellow"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+      ForeColor       =   4210752
+   End
+   Begin PhotoDemon.pdLabel lblMagenta 
       Height          =   270
       Left            =   6300
-      TabIndex        =   7
-      Top             =   4200
-      Width           =   570
-   End
-   Begin VB.Label lblMagenta 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
+      Top             =   3240
+      Width           =   2190
+      _ExtentX        =   3863
+      _ExtentY        =   476
       Caption         =   "magenta"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+      ForeColor       =   4210752
+   End
+   Begin PhotoDemon.pdLabel lblCyan 
       Height          =   270
       Left            =   6300
-      TabIndex        =   6
-      Top             =   3240
-      Width           =   870
-   End
-   Begin VB.Label lblCyan 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
+      Top             =   2280
+      Width           =   2145
+      _ExtentX        =   3784
+      _ExtentY        =   476
       Caption         =   "cyan"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   270
-      Left            =   6300
-      TabIndex        =   5
-      Top             =   2280
-      Width           =   465
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblBlue 
-      Alignment       =   1  'Right Justify
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "blue"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblBlue 
       Height          =   270
-      Left            =   10770
-      TabIndex        =   3
+      Left            =   9120
       Top             =   4200
-      Width           =   390
+      Width           =   2070
+      _ExtentX        =   3651
+      _ExtentY        =   476
+      Alignment       =   1
+      Caption         =   "blue"
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblGreen 
-      Alignment       =   1  'Right Justify
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "green"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblGreen 
       Height          =   270
-      Left            =   10605
-      TabIndex        =   2
+      Left            =   9045
       Top             =   3240
-      Width           =   555
+      Width           =   2115
+      _ExtentX        =   3731
+      _ExtentY        =   476
+      Alignment       =   1
+      Caption         =   "green"
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblRed 
-      Alignment       =   1  'Right Justify
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "red"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblRed 
       Height          =   270
-      Left            =   10845
-      TabIndex        =   1
+      Left            =   9045
       Top             =   2280
-      Width           =   315
+      Width           =   2115
+      _ExtentX        =   3731
+      _ExtentY        =   476
+      Alignment       =   1
+      Caption         =   "red"
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormColorBalance"
@@ -533,7 +446,7 @@ End Sub
 Private Sub Form_Activate()
         
     'Apply translations and visual themes
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Display the previewed effect in the neighboring window
     updatePreview
@@ -574,3 +487,4 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
