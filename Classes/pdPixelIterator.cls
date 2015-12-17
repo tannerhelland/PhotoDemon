@@ -71,8 +71,9 @@ Private m_AlphaSupport As Boolean
 
 'This class currently supports two modes of operation: RGBA, and Luminance.  While we could track both simultaneously,
 ' there is a performance penalty to this, so it's easier to simply track one or the other.
-' (NOTE: this value is set by the
+' (NOTE: this value is set by the respective LockTargetHistograms function)
 Private m_HistogramMode As PD_PIXEL_ITERATOR_MODE
+Private m_LuminanceMode As PD_LUMINANCE_MODE
 
 'Histogram arrays.  Managing these are a bit tricky, because these are simply "trick" wrappers against arrays
 ' provided by the caller.
@@ -201,10 +202,11 @@ End Function
 ' it until you have completed your function and freed the histogram safely (via ReleaseTargetHistograms, below).
 '
 'This function will return the pixel count of the first window in the image.  DO NOT PROCEED if it returns zero.
-Friend Function LockTargetHistograms_Luminance(ByRef dstLum() As Long) As Long
+Friend Function LockTargetHistograms_Luminance(ByRef dstLum() As Long, Optional ByVal lumMode As PD_LUMINANCE_MODE = PDLM_VALUE) As Long
     
     'Put the iterator in Luminance mode
     m_HistogramMode = PDPIM_LUMINANCE
+    m_LuminanceMode = lumMode
     
     'Alias our internal histogram arrays around the destination ones.  As you might expect, you MUST NOT attempt
     ' to erase or ReDim the target arrays until the iterator has finished.
@@ -422,9 +424,12 @@ Private Function GenerateInitialWindow_Square() As Long
     
     Dim x As Long, y As Long, QuickX As Long
     Dim r As Long, g As Long, b As Long, a As Long
+    Dim xStart As Long, xFinal As Long
+    xStart = m_InitX * m_PixelWidth
+    xFinal = (m_InitX + m_XBRight) * m_PixelWidth
     
     For y = m_InitY To m_InitY + m_YBBottom
-    For x = m_InitX * m_PixelWidth To (m_InitX + m_XBRight) * m_PixelWidth Step m_PixelWidth
+    For x = xStart To xFinal Step m_PixelWidth
         
         b = m_Pixels(x, y)
         g = m_Pixels(x + 1, y)
@@ -442,7 +447,7 @@ Private Function GenerateInitialWindow_Square() As Long
             End If
             
         Else
-            a = GetLuminance(r, g, b)
+            a = GetLuminanceFromRGB(r, g, b)
             m_Luminance(a) = m_Luminance(a) + 1
         End If
         
@@ -485,7 +490,7 @@ Private Function GenerateInitialWindow_ArbitraryShape() As Long
                 End If
                             
             Else
-                a = GetLuminance(r, g, b)
+                a = GetLuminanceFromRGB(r, g, b)
                 m_Luminance(a) = m_Luminance(a) + 1
             End If
             
@@ -501,8 +506,12 @@ Private Function GenerateInitialWindow_ArbitraryShape() As Long
 End Function
 
 'Given source RGB values, return a corresponding luminance value (high-quality calculation)
-Private Function GetLuminance(ByVal srcR As Long, ByVal srcG As Long, ByVal srcB As Long) As Long
-    GetLuminance = (213 * srcR + 715 * srcG + 72 * srcB) \ 1000
+Private Function GetLuminanceFromRGB(ByVal srcR As Long, ByVal srcG As Long, ByVal srcB As Long) As Long
+    If m_LuminanceMode = PDLM_VALUE Then
+        GetLuminanceFromRGB = Color_Functions.getLuminance(srcR, srcG, srcB)
+    Else
+        GetLuminanceFromRGB = Color_Functions.getHQLuminance(srcR, srcG, srcB)
+    End If
 End Function
 
 'After the caller has successfully processed a pixel, they can call these functions to move to the next pixel
@@ -552,7 +561,7 @@ Friend Function MoveXRight() As Long
                     End If
                                     
                 Else
-                    a = GetLuminance(r, g, b)
+                    a = GetLuminanceFromRGB(r, g, b)
                     m_Luminance(a) = m_Luminance(a) - 1
                 End If
                 
@@ -584,7 +593,7 @@ Friend Function MoveXRight() As Long
                     End If
                     
                 Else
-                    a = GetLuminance(r, g, b)
+                    a = GetLuminanceFromRGB(r, g, b)
                     m_Luminance(a) = m_Luminance(a) + 1
                 End If
                 
@@ -633,7 +642,7 @@ Friend Function MoveXRight() As Long
                         End If
                         
                     Else
-                        a = GetLuminance(r, g, b)
+                        a = GetLuminanceFromRGB(r, g, b)
                         m_Luminance(a) = m_Luminance(a) - 1
                     End If
                     
@@ -664,7 +673,7 @@ Friend Function MoveXRight() As Long
                         End If
                         
                     Else
-                        a = GetLuminance(r, g, b)
+                        a = GetLuminanceFromRGB(r, g, b)
                         m_Luminance(a) = m_Luminance(a) + 1
                     End If
                     
@@ -725,7 +734,7 @@ Friend Function MoveYDown() As Long
                     End If
                     
                 Else
-                    a = GetLuminance(r, g, b)
+                    a = GetLuminanceFromRGB(r, g, b)
                     m_Luminance(a) = m_Luminance(a) - 1
                 End If
                 
@@ -756,7 +765,7 @@ Friend Function MoveYDown() As Long
                     End If
                     
                 Else
-                    a = GetLuminance(r, g, b)
+                    a = GetLuminanceFromRGB(r, g, b)
                     m_Luminance(a) = m_Luminance(a) + 1
                 End If
                 
@@ -807,7 +816,7 @@ Friend Function MoveYDown() As Long
                         End If
                         
                     Else
-                        a = GetLuminance(r, g, b)
+                        a = GetLuminanceFromRGB(r, g, b)
                         m_Luminance(a) = m_Luminance(a) - 1
                     End If
                     
@@ -837,7 +846,7 @@ Friend Function MoveYDown() As Long
                         End If
                         
                     Else
-                        a = GetLuminance(r, g, b)
+                        a = GetLuminanceFromRGB(r, g, b)
                         m_Luminance(a) = m_Luminance(a) + 1
                     End If
                     
@@ -898,7 +907,7 @@ Friend Function MoveYUp() As Long
                     End If
                     
                 Else
-                    a = GetLuminance(r, g, b)
+                    a = GetLuminanceFromRGB(r, g, b)
                     m_Luminance(a) = m_Luminance(a) - 1
                 End If
                 
@@ -929,7 +938,7 @@ Friend Function MoveYUp() As Long
                     End If
                     
                 Else
-                    a = GetLuminance(r, g, b)
+                    a = GetLuminanceFromRGB(r, g, b)
                     m_Luminance(a) = m_Luminance(a) + 1
                 End If
                 
@@ -981,7 +990,7 @@ Friend Function MoveYUp() As Long
                         End If
                         
                     Else
-                        a = GetLuminance(r, g, b)
+                        a = GetLuminanceFromRGB(r, g, b)
                         m_Luminance(a) = m_Luminance(a) - 1
                     End If
                     
@@ -1011,7 +1020,7 @@ Friend Function MoveYUp() As Long
                         End If
                         
                     Else
-                        a = GetLuminance(r, g, b)
+                        a = GetLuminanceFromRGB(r, g, b)
                         m_Luminance(a) = m_Luminance(a) + 1
                     End If
                     

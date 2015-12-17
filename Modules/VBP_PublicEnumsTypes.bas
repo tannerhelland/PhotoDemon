@@ -450,3 +450,12 @@ End Enum
 #If False Then
     Private Const PDPIM_RGBA = 0, PDPIM_LUMINANCE = 1
 #End If
+
+Public Enum PD_LUMINANCE_MODE
+    PDLM_VALUE = 0
+    PDLM_LIGHTNESS = 1
+End Enum
+
+#If False Then
+    Private Const PDLM_VALUE = 0, PDLM_LIGHTNESS = 1
+#End If
