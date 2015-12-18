@@ -107,32 +107,23 @@ Begin VB.Form FormLensCorrect
    Begin PhotoDemon.pdComboBox cboEdges 
       Height          =   375
       Left            =   6240
-      TabIndex        =   7
+      TabIndex        =   2
       Top             =   4680
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   661
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "if pixels lie outside the corrected area..."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   2
       Top             =   4320
-      Width           =   4170
+      Width           =   5850
+      _ExtentX        =   10319
+      _ExtentY        =   503
+      Caption         =   "if pixels lie outside the corrected area..."
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormLensCorrect"
@@ -465,5 +456,6 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 
 

@@ -24,24 +24,14 @@ Begin VB.Form FormGrayscale
    ScaleWidth      =   793
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin VB.ComboBox cboDithering 
-      Appearance      =   0  'Flat
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   6120
-      Style           =   2  'Dropdown List
-      TabIndex        =   13
+   Begin PhotoDemon.pdComboBox cboDithering 
+      Height          =   375
+      Left            =   6240
+      TabIndex        =   1
       Top             =   4080
       Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   661
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -55,9 +45,9 @@ Begin VB.Form FormGrayscale
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltShades 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   11
+      TabIndex        =   10
       Top             =   2700
       Width           =   5655
       _ExtentX        =   9975
@@ -72,30 +62,11 @@ Begin VB.Form FormGrayscale
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   9922
-   End
-   Begin VB.ComboBox cboMethod 
-      Appearance      =   0  'Flat
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   6120
-      Style           =   2  'Dropdown List
-      TabIndex        =   1
-      Top             =   1560
-      Width           =   5535
    End
    Begin VB.PictureBox picDecompose 
       Appearance      =   0  'Flat
@@ -107,14 +78,14 @@ Begin VB.Form FormGrayscale
       ScaleHeight     =   33
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   377
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   2040
       Width           =   5655
       Begin PhotoDemon.smartOptionButton optDecompose 
          Height          =   360
          Index           =   0
          Left            =   120
-         TabIndex        =   6
+         TabIndex        =   5
          Top             =   0
          Width           =   2235
          _ExtentX        =   3942
@@ -126,7 +97,7 @@ Begin VB.Form FormGrayscale
          Height          =   360
          Index           =   1
          Left            =   2400
-         TabIndex        =   7
+         TabIndex        =   6
          Top             =   0
          Width           =   2235
          _ExtentX        =   3942
@@ -144,14 +115,14 @@ Begin VB.Form FormGrayscale
       ScaleHeight     =   33
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   369
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   2040
       Width           =   5535
       Begin PhotoDemon.smartOptionButton optChannel 
          Height          =   360
          Index           =   0
          Left            =   120
-         TabIndex        =   8
+         TabIndex        =   7
          Top             =   0
          Width           =   1500
          _ExtentX        =   2646
@@ -163,7 +134,7 @@ Begin VB.Form FormGrayscale
          Height          =   360
          Index           =   1
          Left            =   1680
-         TabIndex        =   9
+         TabIndex        =   8
          Top             =   0
          Width           =   1500
          _ExtentX        =   2646
@@ -174,7 +145,7 @@ Begin VB.Form FormGrayscale
          Height          =   360
          Index           =   2
          Left            =   3360
-         TabIndex        =   10
+         TabIndex        =   9
          Top             =   0
          Width           =   1500
          _ExtentX        =   2646
@@ -182,45 +153,36 @@ Begin VB.Form FormGrayscale
          Caption         =   "blue"
       End
    End
-   Begin VB.Label lblDithering 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "dithering options"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   6000
-      TabIndex        =   12
-      Top             =   3720
-      Width           =   1800
+   Begin PhotoDemon.pdComboBox cboMethod 
+      Height          =   375
+      Left            =   6240
+      TabIndex        =   11
+      Top             =   1560
+      Width           =   5535
+      _ExtentX        =   9763
+      _ExtentY        =   661
    End
-   Begin VB.Label lblAlgorithm 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "style"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblDithering 
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
+      Top             =   3720
+      Width           =   5760
+      _ExtentX        =   10160
+      _ExtentY        =   503
+      Caption         =   "dithering options"
+      FontSize        =   12
+      ForeColor       =   4210752
+   End
+   Begin PhotoDemon.pdLabel lblAlgorithm 
+      Height          =   285
+      Left            =   6000
       Top             =   1200
-      Width           =   480
+      Width           =   5760
+      _ExtentX        =   10160
+      _ExtentY        =   503
+      Caption         =   "style"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormGrayscale"
@@ -1323,5 +1285,6 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 
 

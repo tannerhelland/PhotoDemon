@@ -75,7 +75,7 @@ Begin VB.Form FormFindEdges
       Height          =   360
       Index           =   0
       Left            =   6240
-      TabIndex        =   7
+      TabIndex        =   2
       Top             =   3360
       Width           =   5625
       _ExtentX        =   9922
@@ -86,75 +86,48 @@ Begin VB.Form FormFindEdges
       Height          =   360
       Index           =   1
       Left            =   6240
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   3840
       Width           =   5625
       _ExtentX        =   9922
       _ExtentY        =   582
       Caption         =   "vertical"
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "other options"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   6
       Top             =   4560
-      Width           =   1410
+      Width           =   5970
+      _ExtentX        =   10530
+      _ExtentY        =   503
+      Caption         =   "other options"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "detection direction(s)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   5
       Top             =   3000
-      Width           =   2235
+      Width           =   5955
+      _ExtentX        =   10504
+      _ExtentY        =   503
+      Caption         =   "detection direction(s)"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "edge detection technique"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   2
       Top             =   120
-      Width           =   2640
+      Width           =   6000
+      _ExtentX        =   10583
+      _ExtentY        =   503
+      Caption         =   "edge detection technique"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormFindEdges"
@@ -314,8 +287,8 @@ Public Sub ApplyEdgeDetection(ByVal edgeDetectionType As PD_EDGE_DETECTION, Opti
     Set srcDIB = Nothing
     
     'The compositor requires premultiplied alpha, so convert both top and bottom layers now
-    workingDIB.setAlphaPremultiplication True
-    secondDstDIB.setAlphaPremultiplication True
+    workingDIB.SetAlphaPremultiplication True
+    secondDstDIB.SetAlphaPremultiplication True
     
     'Last step is to blend the two result arrays together.  Use the pdCompositor class to do this.
     Dim cComposite As pdCompositor
@@ -690,5 +663,6 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 
 

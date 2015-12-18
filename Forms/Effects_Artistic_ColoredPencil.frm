@@ -23,24 +23,14 @@ Begin VB.Form FormPencil
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin VB.ComboBox cboStyle 
-      Appearance      =   0  'Flat
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
+   Begin PhotoDemon.pdComboBox cboStyle 
+      Height          =   375
       Left            =   6000
-      Style           =   2  'Dropdown List
-      TabIndex        =   5
-      Top             =   1740
+      TabIndex        =   4
+      Top             =   1680
       Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   661
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -63,7 +53,7 @@ Begin VB.Form FormPencil
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   2520
@@ -76,7 +66,7 @@ Begin VB.Form FormPencil
       Value           =   5
    End
    Begin PhotoDemon.sliderTextCombo sltIntensity 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   3600
@@ -87,26 +77,16 @@ Begin VB.Form FormPencil
       Min             =   -100
       Max             =   200
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "style"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
-      Index           =   2
       Left            =   6000
-      TabIndex        =   4
       Top             =   1320
-      Width           =   480
+      Width           =   5880
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "style"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormPencil"
@@ -259,8 +239,8 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
         
         'Apply premultiplication to the layers prior to compositing
-        blurDIB.setAlphaPremultiplication True
-        workingDIB.setAlphaPremultiplication True
+        blurDIB.SetAlphaPremultiplication True
+        workingDIB.SetAlphaPremultiplication True
         
         'A pdCompositor class will help us blend the invert+blur image back onto the original image
         Dim cComposite As pdCompositor
@@ -290,7 +270,7 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         workingDIB.createFromExistingDIB tmpLayerBottom.layerDIB
         
         'Remove premultiplied alpha
-        workingDIB.setAlphaPremultiplication False
+        workingDIB.SetAlphaPremultiplication False
         
         'Release our temporary layers and DIBs
         Set blurDIB = Nothing
@@ -456,4 +436,5 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 

@@ -64,7 +64,7 @@ Begin VB.Form FormMiscDistorts
    Begin PhotoDemon.sliderTextCombo sltQuality 
       Height          =   705
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   1
       Top             =   3360
       Width           =   5895
       _ExtentX        =   10398
@@ -79,54 +79,35 @@ Begin VB.Form FormMiscDistorts
    Begin PhotoDemon.pdComboBox cboEdges 
       Height          =   375
       Left            =   6240
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   4680
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   661
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "if pixels lie outside the corrected area..."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
-      Index           =   5
+      Index           =   1
       Left            =   6000
-      TabIndex        =   3
       Top             =   4320
-      Width           =   4170
+      Width           =   5850
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "if pixels lie outside the corrected area..."
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblType 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "distortions"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
+      Index           =   0
       Left            =   6000
-      TabIndex        =   1
       Top             =   210
-      Width           =   1110
+      Width           =   5895
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "distortions"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormMiscDistorts"
@@ -511,3 +492,4 @@ End Sub
 Private Sub sltQuality_Change()
     updatePreview
 End Sub
+

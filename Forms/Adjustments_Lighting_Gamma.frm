@@ -68,7 +68,7 @@ Begin VB.Form FormGamma
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltGamma 
-      Height          =   720
+      Height          =   705
       Index           =   0
       Left            =   6000
       TabIndex        =   5
@@ -85,7 +85,7 @@ Begin VB.Form FormGamma
       NotchValueCustom=   1
    End
    Begin PhotoDemon.sliderTextCombo sltGamma 
-      Height          =   720
+      Height          =   705
       Index           =   1
       Left            =   6000
       TabIndex        =   6
@@ -102,10 +102,10 @@ Begin VB.Form FormGamma
       NotchValueCustom=   1
    End
    Begin PhotoDemon.sliderTextCombo sltGamma 
-      Height          =   720
+      Height          =   705
       Index           =   2
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   3
       Top             =   4440
       Width           =   5895
       _ExtentX        =   10398
@@ -118,26 +118,19 @@ Begin VB.Form FormGamma
       NotchPosition   =   2
       NotchValueCustom=   1
    End
-   Begin VB.Label lblTitle 
-      BackStyle       =   0  'Transparent
-      Caption         =   "new gamma curve:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   1005
       Index           =   2
       Left            =   6000
-      TabIndex        =   3
       Top             =   1170
       Width           =   2040
-      WordWrap        =   -1  'True
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Alignment       =   1
+      Caption         =   "new gamma curve:"
+      FontSize        =   12
+      ForeColor       =   4210752
+      Layout          =   1
    End
 End
 Attribute VB_Name = "FormGamma"
@@ -412,5 +405,6 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 
 
