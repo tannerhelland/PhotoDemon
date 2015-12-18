@@ -109,55 +109,35 @@ Begin VB.Form FormFragment
    Begin PhotoDemon.pdComboBox cboEdges 
       Height          =   375
       Left            =   6120
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   3960
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   661
    End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "render emphasis"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   2
       Left            =   6000
-      TabIndex        =   8
       Top             =   4530
-      Width           =   1755
+      Width           =   5715
+      _ExtentX        =   10081
+      _ExtentY        =   503
+      Caption         =   "render emphasis"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "if pixels lie outside the image..."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   5
       Left            =   6000
-      TabIndex        =   7
       Top             =   3540
-      Width           =   3315
+      Width           =   5715
+      _ExtentX        =   10081
+      _ExtentY        =   503
+      Caption         =   "if pixels lie outside the image..."
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormFragment"
@@ -413,3 +393,4 @@ End Sub
 Private Sub sltFragments_Change()
     updatePreview
 End Sub
+

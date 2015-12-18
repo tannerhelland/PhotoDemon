@@ -28,7 +28,7 @@ Begin VB.Form FormMetadata
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   13
+      TabIndex        =   2
       Top             =   7095
       Width           =   12015
       _ExtentX        =   21193
@@ -38,7 +38,7 @@ Begin VB.Form FormMetadata
    Begin PhotoDemon.pdButton cmdTechnicalReport 
       Height          =   735
       Left            =   7440
-      TabIndex        =   12
+      TabIndex        =   3
       Top             =   4380
       Width           =   4410
       _ExtentX        =   7779
@@ -55,7 +55,7 @@ Begin VB.Form FormMetadata
       ScaleHeight     =   341
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   17
-      TabIndex        =   11
+      TabIndex        =   4
       Top             =   1740
       Width           =   255
    End
@@ -96,44 +96,95 @@ Begin VB.Form FormMetadata
       Height          =   495
       Index           =   1
       Left            =   7440
-      TabIndex        =   7
+      TabIndex        =   5
       Top             =   3240
       Width           =   4410
       _ExtentX        =   6720
       _ExtentY        =   873
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "advanced"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   270
       Index           =   5
       Left            =   7440
-      TabIndex        =   10
       Top             =   3960
-      Width           =   945
+      Width           =   4425
+      _ExtentX        =   7805
+      _ExtentY        =   476
+      Caption         =   "advanced"
+      FontSize        =   11
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblExifTool 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdLabel lblExifTool 
       Height          =   735
       Left            =   7320
-      TabIndex        =   9
       Top             =   6120
       Width           =   4575
-      WordWrap        =   -1  'True
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   ""
+      FontSize        =   9
+      ForeColor       =   -2147483640
+      Layout          =   1
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   285
+      Index           =   4
+      Left            =   7320
+      Top             =   1320
+      Width           =   4575
+      _ExtentX        =   8070
+      _ExtentY        =   503
+      Caption         =   "metadata options"
+      FontSize        =   12
+      ForeColor       =   4210752
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   270
+      Index           =   3
+      Left            =   7440
+      Top             =   2820
+      Width           =   4365
+      _ExtentX        =   7699
+      _ExtentY        =   476
+      Caption         =   "tag values"
+      FontSize        =   11
+      ForeColor       =   4210752
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   270
+      Index           =   2
+      Left            =   7440
+      Top             =   1740
+      Width           =   4410
+      _ExtentX        =   7779
+      _ExtentY        =   476
+      Caption         =   "tag names"
+      FontSize        =   11
+      ForeColor       =   4210752
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   285
+      Index           =   1
+      Left            =   120
+      Top             =   1320
+      Width           =   6810
+      _ExtentX        =   12012
+      _ExtentY        =   503
+      Caption         =   "tags in this category"
+      FontSize        =   12
+      ForeColor       =   4210752
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   285
+      Index           =   0
+      Left            =   120
+      Top             =   120
+      Width           =   11745
+      _ExtentX        =   20717
+      _ExtentY        =   503
+      Caption         =   "metadata groups in this image"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
    Begin VB.Line Line1 
       BorderColor     =   &H8000000D&
@@ -141,111 +192,6 @@ Begin VB.Form FormMetadata
       X2              =   476
       Y1              =   88
       Y2              =   464
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "metadata options"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   4
-      Left            =   7320
-      TabIndex        =   8
-      Top             =   1320
-      Width           =   1830
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "tag values"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   270
-      Index           =   3
-      Left            =   7440
-      TabIndex        =   5
-      Top             =   2820
-      Width           =   1005
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "tag names"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   270
-      Index           =   2
-      Left            =   7440
-      TabIndex        =   4
-      Top             =   1740
-      Width           =   1050
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "tags in this category"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
-      Left            =   120
-      TabIndex        =   3
-      Top             =   1320
-      Width           =   2130
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "metadata groups in this image"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   0
-      Left            =   120
-      TabIndex        =   2
-      Top             =   120
-      Width           =   3225
    End
 End
 Attribute VB_Name = "FormMetadata"
@@ -633,3 +579,4 @@ End Sub
 Private Sub vsMetadata_Scroll()
     redrawMetadataList
 End Sub
+

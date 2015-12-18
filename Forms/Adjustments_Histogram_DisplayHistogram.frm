@@ -28,7 +28,7 @@ Begin VB.Form FormHistogram
    Begin PhotoDemon.pdButton cmdOK 
       Height          =   510
       Left            =   7320
-      TabIndex        =   25
+      TabIndex        =   2
       Top             =   8400
       Width           =   3135
       _ExtentX        =   7011
@@ -38,7 +38,7 @@ Begin VB.Form FormHistogram
    Begin PhotoDemon.smartCheckBox chkLog 
       Height          =   330
       Left            =   7320
-      TabIndex        =   22
+      TabIndex        =   3
       Top             =   6000
       Width           =   2985
       _ExtentX        =   5265
@@ -48,7 +48,7 @@ Begin VB.Form FormHistogram
    Begin PhotoDemon.smartCheckBox chkSmooth 
       Height          =   330
       Left            =   7320
-      TabIndex        =   21
+      TabIndex        =   4
       Top             =   5040
       Width           =   2985
       _ExtentX        =   5265
@@ -59,7 +59,7 @@ Begin VB.Form FormHistogram
       Height          =   330
       Index           =   0
       Left            =   4680
-      TabIndex        =   17
+      TabIndex        =   5
       Top             =   5040
       Width           =   2115
       _ExtentX        =   3731
@@ -117,7 +117,7 @@ Begin VB.Form FormHistogram
       Height          =   330
       Index           =   1
       Left            =   4680
-      TabIndex        =   18
+      TabIndex        =   6
       Top             =   5520
       Width           =   2115
       _ExtentX        =   3731
@@ -128,7 +128,7 @@ Begin VB.Form FormHistogram
       Height          =   330
       Index           =   2
       Left            =   4680
-      TabIndex        =   19
+      TabIndex        =   7
       Top             =   6000
       Width           =   2115
       _ExtentX        =   3731
@@ -139,7 +139,7 @@ Begin VB.Form FormHistogram
       Height          =   330
       Index           =   3
       Left            =   4680
-      TabIndex        =   20
+      TabIndex        =   8
       Top             =   6480
       Width           =   2115
       _ExtentX        =   3731
@@ -149,373 +149,201 @@ Begin VB.Form FormHistogram
    Begin PhotoDemon.smartCheckBox chkFillCurve 
       Height          =   330
       Left            =   7320
-      TabIndex        =   23
+      TabIndex        =   9
       Top             =   5520
       Width           =   2985
       _ExtentX        =   5265
       _ExtentY        =   582
       Caption         =   "fill histogram curves"
    End
-   Begin VB.Label lblVisibleChannels 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "visible channels"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblVisibleChannels 
       Height          =   285
       Left            =   4320
-      TabIndex        =   24
       Top             =   4680
-      Width           =   1650
+      Width           =   2490
+      _ExtentX        =   4392
+      _ExtentY        =   503
+      Caption         =   "visible channels"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "statistics"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   0
       Left            =   240
-      TabIndex        =   16
       Top             =   4680
-      Width           =   885
+      Width           =   3885
+      _ExtentX        =   6853
+      _ExtentY        =   503
+      Caption         =   "statistics"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblMouseInstructions 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "(Note: move the mouse over the histogram to calculate these values)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00808080&
-      Height          =   210
+   Begin PhotoDemon.pdLabel lblMouseInstructions 
+      Height          =   450
       Left            =   480
-      TabIndex        =   15
       Top             =   7800
-      Width           =   5805
+      Width           =   9885
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "(Note: move the mouse over the histogram to calculate these values)"
+      ForeColor       =   8421504
+      Layout          =   1
+      UseCustomForeColor=   -1  'True
    End
-   Begin VB.Label lblDrawOptions 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "rendering options"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblDrawOptions 
       Height          =   285
       Left            =   6960
-      TabIndex        =   14
       Top             =   4680
-      Width           =   1875
+      Width           =   3315
+      _ExtentX        =   5847
+      _ExtentY        =   503
+      Caption         =   "rendering options"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblValue 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "level"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00400000&
+   Begin PhotoDemon.pdLabel lblValue 
       Height          =   240
       Index           =   0
       Left            =   1080
-      TabIndex        =   13
       Top             =   5880
       Width           =   390
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "level"
+      ForeColor       =   4194304
    End
-   Begin VB.Label lblMaxCount 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "maximum count:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblMaxCount 
       Height          =   240
       Left            =   480
-      TabIndex        =   12
       Top             =   5520
-      Width           =   1440
+      Width           =   3840
+      _ExtentX        =   6773
+      _ExtentY        =   423
+      Caption         =   "maximum count:"
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblValue 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "red"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H000000C0&
+   Begin PhotoDemon.pdLabel lblValue 
       Height          =   240
       Index           =   1
       Left            =   1080
-      TabIndex        =   11
       Top             =   6240
       Width           =   285
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "red"
+      ForeColor       =   192
+      Layout          =   2
+      UseCustomForeColor=   -1  'True
    End
-   Begin VB.Label lblValueTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "red:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblValueTitle 
       Height          =   240
       Index           =   1
       Left            =   480
-      TabIndex        =   10
       Top             =   6240
       Width           =   360
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "red:"
+      ForeColor       =   4210752
+      Layout          =   2
    End
-   Begin VB.Label lblValueTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "level:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblValueTitle 
       Height          =   240
       Index           =   0
       Left            =   480
-      TabIndex        =   9
       Top             =   5880
       Width           =   465
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "level:"
+      ForeColor       =   4210752
+      Layout          =   2
    End
-   Begin VB.Label lblTotalPixels 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "total pixels:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTotalPixels 
       Height          =   240
       Left            =   480
-      TabIndex        =   8
       Top             =   5160
-      Width           =   990
+      Width           =   3735
+      _ExtentX        =   6588
+      _ExtentY        =   423
+      Caption         =   "total pixels:"
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblValueTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "green:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblValueTitle 
       Height          =   240
       Index           =   2
       Left            =   480
-      TabIndex        =   7
       Top             =   6600
       Width           =   570
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "green:"
+      ForeColor       =   4210752
+      Layout          =   2
    End
-   Begin VB.Label lblValue 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "green"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00008000&
+   Begin PhotoDemon.pdLabel lblValue 
       Height          =   240
       Index           =   2
       Left            =   1200
-      TabIndex        =   6
       Top             =   6600
       Width           =   495
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "green"
+      ForeColor       =   32768
+      Layout          =   2
+      UseCustomForeColor=   -1  'True
    End
-   Begin VB.Label lblValueTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "blue:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblValueTitle 
       Height          =   240
       Index           =   3
       Left            =   480
-      TabIndex        =   5
       Top             =   6960
       Width           =   435
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "blue:"
+      ForeColor       =   4210752
+      Layout          =   2
    End
-   Begin VB.Label lblValue 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "blue"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00C00000&
+   Begin PhotoDemon.pdLabel lblValue 
       Height          =   240
       Index           =   3
       Left            =   1200
-      TabIndex        =   4
       Top             =   6960
       Width           =   360
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "blue"
+      ForeColor       =   12582912
+      Layout          =   2
+      UseCustomForeColor=   -1  'True
    End
-   Begin VB.Label lblValueTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "luminance:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblValueTitle 
       Height          =   240
       Index           =   4
       Left            =   480
-      TabIndex        =   3
       Top             =   7320
       Width           =   945
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "luminance:"
+      ForeColor       =   4210752
+      Layout          =   2
    End
-   Begin VB.Label lblValue 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "luminance"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H80000008&
+   Begin PhotoDemon.pdLabel lblValue 
       Height          =   240
       Index           =   4
       Left            =   1680
-      TabIndex        =   2
       Top             =   7320
       Width           =   870
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "luminance"
+      ForeColor       =   -2147483640
+      Layout          =   2
+      UseCustomForeColor=   -1  'True
    End
 End
 Attribute VB_Name = "FormHistogram"
@@ -631,7 +459,7 @@ Private Sub Form_Activate()
     Dim i As Long
     For i = 0 To lblValue.Count - 1
         lblValue(i).Left = lblValueTitle(i).Left + lblValueTitle(i).Width + FixDPI(8)
-        lblValue(i) = ""
+        lblValue(i).Caption = ""
     Next i
     
     If Not histogramGenerated Then TallyHistogramValues
@@ -1050,7 +878,7 @@ Public Sub TallyHistogramValues()
     notifyFont.AttachToDC tmpDIB.getDIBDC
     
     notifyFont.FastRenderText picH.ScaleWidth / 2, picH.ScaleHeight / 2, g_Language.TranslateMessage("Please wait while the histogram is updated...")
-    tmpDIB.renderToPictureBox picH
+    tmpDIB.RenderToPictureBox picH
     
     notifyFont.ReleaseFromDC
     Set tmpDIB = Nothing
@@ -1060,7 +888,7 @@ Public Sub TallyHistogramValues()
     'Blank the red, green, blue, and luminance count text boxes
     Dim i As Long
     For i = 0 To lblValue.Count - 1
-        lblValue(i) = ""
+        lblValue(i).Caption = ""
     Next i
     
     'Use our new external function to fill the important histogram arrays
@@ -1198,3 +1026,4 @@ Public Sub StretchHistogram()
     finalizeImageData
         
 End Sub
+

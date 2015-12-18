@@ -25,34 +25,24 @@ Begin VB.Form FormNewLayer
    ScaleWidth      =   642
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
+   Begin PhotoDemon.pdComboBox cboPosition 
+      Height          =   375
+      Left            =   480
+      TabIndex        =   8
+      Top             =   4200
+      Width           =   8895
+      _ExtentX        =   15690
+      _ExtentY        =   661
+   End
    Begin PhotoDemon.pdTextBox txtLayerName 
       Height          =   345
       Left            =   480
-      TabIndex        =   11
+      TabIndex        =   1
       Top             =   480
       Width           =   8895
       _ExtentX        =   15690
       _ExtentY        =   609
       FontSize        =   11
-   End
-   Begin VB.ComboBox cboPosition 
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   330
-      Left            =   480
-      Style           =   2  'Dropdown List
-      TabIndex        =   9
-      Top             =   4200
-      Width           =   8895
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -63,15 +53,6 @@ Begin VB.Form FormNewLayer
       Width           =   9630
       _ExtentX        =   16986
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.smartOptionButton optLayer 
@@ -79,7 +60,7 @@ Begin VB.Form FormNewLayer
       Height          =   330
       Index           =   0
       Left            =   480
-      TabIndex        =   3
+      TabIndex        =   2
       Top             =   1560
       Width           =   8850
       _ExtentX        =   15610
@@ -92,7 +73,7 @@ Begin VB.Form FormNewLayer
       Height          =   330
       Index           =   1
       Left            =   480
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   1920
       Width           =   8850
       _ExtentX        =   15610
@@ -104,7 +85,7 @@ Begin VB.Form FormNewLayer
       Height          =   330
       Index           =   2
       Left            =   480
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   2280
       Width           =   8850
       _ExtentX        =   15610
@@ -116,7 +97,7 @@ Begin VB.Form FormNewLayer
       Height          =   330
       Index           =   3
       Left            =   480
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   2640
       Width           =   8850
       _ExtentX        =   15610
@@ -126,7 +107,7 @@ Begin VB.Form FormNewLayer
    Begin PhotoDemon.colorSelector colorPicker 
       Height          =   615
       Left            =   840
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   3000
       Width           =   8535
       _ExtentX        =   15055
@@ -136,75 +117,48 @@ Begin VB.Form FormNewLayer
    Begin PhotoDemon.smartCheckBox chkAutoSelectLayer 
       Height          =   300
       Left            =   480
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   4680
       Width           =   8820
       _ExtentX        =   6059
       _ExtentY        =   582
       Caption         =   "make the new layer the active layer"
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "position"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   2
       Left            =   240
-      TabIndex        =   8
       Top             =   3840
-      Width           =   840
+      Width           =   9240
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "position"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "background"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   1
       Left            =   240
-      TabIndex        =   2
       Top             =   1200
-      Width           =   1245
+      Width           =   9165
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "background"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "name"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   0
       Left            =   240
-      TabIndex        =   1
       Top             =   120
-      Width           =   585
+      Width           =   9105
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "name"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormNewLayer"
@@ -257,7 +211,7 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub Form_Activate()
-    makeFormPretty Me
+    MakeFormPretty Me
 End Sub
 
 Private Sub Form_Load()
@@ -271,3 +225,4 @@ Private Sub Form_Load()
     cboPosition.ListIndex = 0
 
 End Sub
+

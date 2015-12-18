@@ -27,28 +27,60 @@ Begin VB.Form FormLanguageEditor
    Begin PhotoDemon.pdButton cmdPrevious 
       Height          =   615
       Left            =   10080
-      TabIndex        =   43
+      TabIndex        =   6
       Top             =   8310
       Width           =   1725
       _extentx        =   3043
       _extenty        =   1085
       caption         =   "&Previous"
    End
-   Begin PhotoDemon.pdButton cmdAutoTranslate 
-      Height          =   615
-      Left            =   3720
-      TabIndex        =   41
-      Top             =   7320
-      Width           =   4455
-      _extentx        =   7858
-      _extenty        =   1085
-      caption         =   "Initiate auto-translation of all missing phrases"
-   End
    Begin VB.Timer tmrProgBar 
       Enabled         =   0   'False
       Interval        =   50
       Left            =   14760
       Top             =   120
+   End
+   Begin PhotoDemon.pdButton cmdNext 
+      Height          =   615
+      Left            =   11880
+      TabIndex        =   21
+      Top             =   8310
+      Width           =   1725
+      _extentx        =   3043
+      _extenty        =   1085
+      caption         =   "&Next"
+   End
+   Begin PhotoDemon.pdButton cmdCancel 
+      Height          =   615
+      Left            =   13860
+      TabIndex        =   23
+      Top             =   8310
+      Width           =   1365
+      _extentx        =   2408
+      _extenty        =   1085
+      caption         =   "&Cancel"
+   End
+   Begin PhotoDemon.pdLabel lblExplanation 
+      Height          =   7320
+      Left            =   120
+      Top             =   780
+      Width           =   3135
+      _extentx        =   0
+      _extenty        =   0
+      caption         =   "(text populated at run-time)"
+      forecolor       =   4210752
+      layout          =   1
+   End
+   Begin PhotoDemon.pdLabel lblWizardTitle 
+      Height          =   405
+      Left            =   120
+      Top             =   120
+      Width           =   14475
+      _extentx        =   0
+      _extenty        =   0
+      caption         =   "Step 1: select a language file"
+      fontsize        =   12
+      forecolor       =   4210752
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -61,14 +93,23 @@ Begin VB.Form FormLanguageEditor
       ScaleHeight     =   497
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   785
-      TabIndex        =   12
+      TabIndex        =   10
       TabStop         =   0   'False
       Top             =   720
       Width           =   11775
+      Begin PhotoDemon.pdComboBox cboPhraseFilter 
+         Height          =   375
+         Left            =   240
+         TabIndex        =   26
+         Top             =   6000
+         Width           =   4455
+         _ExtentX        =   7858
+         _ExtentY        =   661
+      End
       Begin PhotoDemon.pdButton cmdNextPhrase 
          Height          =   615
          Left            =   5040
-         TabIndex        =   42
+         TabIndex        =   7
          Top             =   6600
          Width           =   6615
          _extentx        =   11668
@@ -78,7 +119,7 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdTextBox txtTranslation 
          Height          =   2325
          Left            =   5040
-         TabIndex        =   33
+         TabIndex        =   9
          Top             =   3120
          Width           =   6615
          _extentx        =   11668
@@ -88,7 +129,7 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdTextBox txtOriginal 
          Height          =   2355
          Left            =   5040
-         TabIndex        =   32
+         TabIndex        =   11
          Top             =   360
          Width           =   6615
          _extentx        =   11668
@@ -98,31 +139,12 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.smartCheckBox chkGoogleTranslate 
          Height          =   330
          Left            =   5040
-         TabIndex        =   5
+         TabIndex        =   4
          Top             =   5520
          Width           =   6600
          _extentx        =   11642
          _extenty        =   582
          caption         =   "automatically estimate missing translations (via Google Translate)"
-      End
-      Begin VB.ComboBox cmbPhraseFilter 
-         BackColor       =   &H00FFFFFF&
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00800000&
-         Height          =   360
-         Left            =   240
-         Style           =   2  'Dropdown List
-         TabIndex        =   4
-         Top             =   5985
-         Width           =   4500
       End
       Begin VB.ListBox lstPhrases 
          BeginProperty Font 
@@ -144,94 +166,68 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.smartCheckBox chkShortcut 
          Height          =   330
          Left            =   5040
-         TabIndex        =   6
+         TabIndex        =   5
          Top             =   6000
          Width           =   6600
          _extentx        =   11642
          _extenty        =   582
          caption         =   "ENTER key automatically saves and proceeds to next phrase"
       End
-      Begin VB.Label lblTranslatedPhrase 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "translated phrase"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTranslatedPhrase 
          Height          =   285
          Left            =   4920
-         TabIndex        =   26
          Top             =   2760
-         Width           =   1815
+         Width           =   6735
+         _extentx        =   11880
+         _extenty        =   503
+         caption         =   "translated phrase"
+         fontsize        =   12
+         forecolor       =   4210752
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "original phrase"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   9
          Left            =   4920
-         TabIndex        =   25
          Top             =   0
-         Width           =   1575
+         Width           =   6735
+         _extentx        =   11880
+         _extenty        =   503
+         caption         =   "original phrase"
+         fontsize        =   12
+         forecolor       =   4210752
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "phrases to display"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   2
          Left            =   0
-         TabIndex        =   14
          Top             =   5625
-         Width           =   1905
+         Width           =   4665
+         _extentx        =   8229
+         _extenty        =   503
+         caption         =   "phrases to display"
+         fontsize        =   12
+         forecolor       =   4210752
       End
-      Begin VB.Label lblPhraseBox 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "list of phrases (%1 items)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblPhraseBox 
          Height          =   285
          Left            =   0
-         TabIndex        =   13
          Top             =   0
-         Width           =   2745
+         Width           =   4785
+         _extentx        =   8440
+         _extenty        =   503
+         caption         =   "list of phrases (%1 items)"
+         fontsize        =   12
+         forecolor       =   4210752
+      End
+      Begin PhotoDemon.pdButton cmdAutoTranslate 
+         Height          =   615
+         Left            =   240
+         TabIndex        =   24
+         Top             =   6600
+         Width           =   4455
+         _extentx        =   7858
+         _extenty        =   1085
+         caption         =   "Initiate auto-translation of all missing phrases"
       End
    End
    Begin VB.PictureBox picContainer 
@@ -245,14 +241,14 @@ Begin VB.Form FormLanguageEditor
       ScaleHeight     =   497
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   785
-      TabIndex        =   10
+      TabIndex        =   8
       TabStop         =   0   'False
       Top             =   720
       Width           =   11775
       Begin PhotoDemon.pdButton cmdDeleteLanguage 
          Height          =   615
          Left            =   8400
-         TabIndex        =   40
+         TabIndex        =   12
          Top             =   6360
          Width           =   3135
          _extentx        =   5530
@@ -300,26 +296,17 @@ Begin VB.Form FormLanguageEditor
          _extenty        =   582
          caption         =   "edit an existing language file:"
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "language files currently available"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   0
          Left            =   840
-         TabIndex        =   11
-         Top             =   1140
-         Width           =   3450
+         Top             =   1200
+         Width           =   10650
+         _extentx        =   18785
+         _extenty        =   503
+         caption         =   "language files currently available"
+         fontsize        =   12
+         forecolor       =   4210752
       End
    End
    Begin VB.PictureBox picContainer 
@@ -333,7 +320,7 @@ Begin VB.Form FormLanguageEditor
       ScaleHeight     =   497
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   785
-      TabIndex        =   22
+      TabIndex        =   20
       TabStop         =   0   'False
       Top             =   720
       Width           =   11775
@@ -347,30 +334,22 @@ Begin VB.Form FormLanguageEditor
          ScaleHeight     =   33
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   785
-         TabIndex        =   24
+         TabIndex        =   22
          TabStop         =   0   'False
          Top             =   3000
          Width           =   11775
       End
-      Begin VB.Label lblPleaseWait 
-         Alignment       =   2  'Center
-         BackStyle       =   0  'Transparent
-         Caption         =   "please wait..."
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblPleaseWait 
          Height          =   405
          Left            =   0
-         TabIndex        =   23
          Top             =   2400
          Width           =   11760
+         _extentx        =   0
+         _extenty        =   0
+         alignment       =   2
+         caption         =   "please wait..."
+         fontsize        =   12
+         forecolor       =   4210752
       End
    End
    Begin VB.PictureBox picContainer 
@@ -384,7 +363,7 @@ Begin VB.Form FormLanguageEditor
       ScaleHeight     =   497
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   785
-      TabIndex        =   15
+      TabIndex        =   13
       TabStop         =   0   'False
       Top             =   720
       Width           =   11775
@@ -392,7 +371,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   345
          Index           =   1
          Left            =   240
-         TabIndex        =   35
+         TabIndex        =   14
          Top             =   1335
          Width           =   630
          _extentx        =   1111
@@ -404,7 +383,7 @@ Begin VB.Form FormLanguageEditor
          Height          =   345
          Index           =   0
          Left            =   240
-         TabIndex        =   34
+         TabIndex        =   15
          Top             =   375
          Width           =   630
          _extentx        =   1111
@@ -415,7 +394,7 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdTextBox txtLangName 
          Height          =   345
          Left            =   240
-         TabIndex        =   36
+         TabIndex        =   16
          Top             =   2295
          Width           =   2910
          _extentx        =   5133
@@ -426,7 +405,7 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdTextBox txtLangStatus 
          Height          =   345
          Left            =   240
-         TabIndex        =   37
+         TabIndex        =   17
          Top             =   3255
          Width           =   2910
          _extentx        =   5133
@@ -437,7 +416,7 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdTextBox txtLangVersion 
          Height          =   345
          Left            =   240
-         TabIndex        =   38
+         TabIndex        =   18
          Top             =   4215
          Width           =   2910
          _extentx        =   5133
@@ -448,7 +427,7 @@ Begin VB.Form FormLanguageEditor
       Begin PhotoDemon.pdTextBox txtLangAuthor 
          Height          =   345
          Left            =   240
-         TabIndex        =   39
+         TabIndex        =   19
          Top             =   5190
          Width           =   11415
          _extentx        =   20135
@@ -456,293 +435,138 @@ Begin VB.Form FormLanguageEditor
          fontsize        =   11
          text            =   "enter your name here"
       End
-      Begin VB.Label lblSubheader 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "e.g. ""1.0.0"".  Please use Major.Minor.Revision format."
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblSubheader 
          Height          =   240
          Index           =   4
          Left            =   3360
-         TabIndex        =   31
          Top             =   4290
-         Width           =   4620
+         Width           =   8100
+         _extentx        =   14288
+         _extenty        =   423
+         caption         =   "e.g. ""1.0.0"".  Please use Major.Minor.Revision format."
+         fontsize        =   9
+         forecolor       =   4210752
       End
-      Begin VB.Label lblSubheader 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "e.g. ""complete"", ""unfinished"", etc.  Any descriptive text is acceptable."
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblSubheader 
          Height          =   240
          Index           =   3
          Left            =   3360
-         TabIndex        =   30
          Top             =   3330
-         Width           =   5910
+         Width           =   8295
+         _extentx        =   14631
+         _extenty        =   423
+         caption         =   "e.g. ""complete"", ""unfinished"", etc.  Any descriptive text is acceptable."
+         fontsize        =   9
+         forecolor       =   4210752
       End
-      Begin VB.Label lblSubheader 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "e.g. ""English"" or ""English (US)"".  This text will be displayed in PhotoDemon's Language menu."
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblSubheader 
          Height          =   240
          Index           =   2
          Left            =   3360
-         TabIndex        =   29
          Top             =   2370
          Width           =   7995
+         _extentx        =   0
+         _extenty        =   0
+         caption         =   "e.g. ""English"" or ""English (US)"".  This text will be displayed in PhotoDemon's Language menu."
+         fontsize        =   9
+         forecolor       =   4210752
       End
-      Begin VB.Label lblSubheader 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "e.g. ""US"" for ""United States"".  Please use the official 2-character ISO 3166-1 format."
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblSubheader 
          Height          =   240
          Index           =   1
          Left            =   1080
-         TabIndex        =   28
          Top             =   1410
-         Width           =   7245
+         Width           =   10125
+         _extentx        =   17859
+         _extenty        =   423
+         caption         =   "e.g. ""US"" for ""United States"".  Please use the official 2-character ISO 3166-1 format."
+         fontsize        =   9
+         forecolor       =   4210752
       End
-      Begin VB.Label lblSubheader 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "e.g. ""en"" for ""English"".  Please use the official 2-character ISO 639-1 format."
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   9.75
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblSubheader 
          Height          =   240
          Index           =   0
          Left            =   1080
-         TabIndex        =   27
          Top             =   435
-         Width           =   6570
+         Width           =   10050
+         _extentx        =   17727
+         _extenty        =   423
+         caption         =   "e.g. ""en"" for ""English"".  Please use the official 2-character ISO 639-1 format."
+         fontsize        =   9
+         forecolor       =   4210752
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "author name(s)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   8
          Left            =   0
-         TabIndex        =   21
          Top             =   4800
-         Width           =   1635
+         Width           =   11595
+         _extentx        =   20452
+         _extenty        =   503
+         caption         =   "author name(s)"
+         fontsize        =   12
+         forecolor       =   4210752
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "translation status"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   4
          Left            =   0
-         TabIndex        =   20
          Top             =   2880
-         Width           =   1800
+         Width           =   11520
+         _extentx        =   20320
+         _extenty        =   503
+         caption         =   "translation status"
+         fontsize        =   12
+         forecolor       =   4210752
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "translation version"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   3
          Left            =   0
-         TabIndex        =   19
          Top             =   3840
-         Width           =   1950
+         Width           =   11535
+         _extentx        =   20346
+         _extenty        =   503
+         caption         =   "translation version"
+         fontsize        =   12
+         forecolor       =   4210752
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "language name"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   7
          Left            =   0
-         TabIndex        =   18
          Top             =   1920
-         Width           =   1620
+         Width           =   11460
+         _extentx        =   20214
+         _extenty        =   503
+         caption         =   "language name"
+         fontsize        =   12
+         forecolor       =   4210752
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "country ID"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   6
          Left            =   0
-         TabIndex        =   17
          Top             =   960
-         Width           =   1125
+         Width           =   11445
+         _extentx        =   20188
+         _extenty        =   503
+         caption         =   "country ID"
+         fontsize        =   12
+         forecolor       =   4210752
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "language ID"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   5
          Left            =   0
-         TabIndex        =   16
          Top             =   0
-         Width           =   1290
+         Width           =   11490
+         _extentx        =   20267
+         _extenty        =   503
+         caption         =   "language ID"
+         fontsize        =   12
+         forecolor       =   4210752
       End
-   End
-   Begin PhotoDemon.pdButton cmdNext 
-      Height          =   615
-      Left            =   11880
-      TabIndex        =   44
-      Top             =   8310
-      Width           =   1725
-      _extentx        =   3043
-      _extenty        =   1085
-      caption         =   "&Next"
-   End
-   Begin PhotoDemon.pdButton cmdCancel 
-      Height          =   615
-      Left            =   13860
-      TabIndex        =   45
-      Top             =   8310
-      Width           =   1365
-      _extentx        =   2408
-      _extenty        =   1085
-      caption         =   "&Cancel"
-   End
-   Begin VB.Label lblBackground 
-      BeginProperty Font 
-         Name            =   "MS Sans Serif"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   855
-      Left            =   -240
-      TabIndex        =   9
-      Top             =   8235
-      Width           =   17415
-   End
-   Begin VB.Label lblExplanation 
-      BackStyle       =   0  'Transparent
-      Caption         =   "(text populated at run-time)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   7320
-      Left            =   120
-      TabIndex        =   8
-      Top             =   780
-      Width           =   3135
-      WordWrap        =   -1  'True
    End
    Begin VB.Line Line1 
       BorderColor     =   &H8000000D&
@@ -752,25 +576,13 @@ Begin VB.Form FormLanguageEditor
       Y1              =   48
       Y2              =   544
    End
-   Begin VB.Label lblWizardTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "Step 1: select a language file"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   120
-      TabIndex        =   7
-      Top             =   120
-      Width           =   3555
+   Begin VB.Label lblCommandBar 
+      BackColor       =   &H00C0C0C0&
+      Height          =   900
+      Left            =   0
+      TabIndex        =   25
+      Top             =   8220
+      Width           =   15375
    End
 End
 Attribute VB_Name = "FormLanguageEditor"
@@ -856,14 +668,14 @@ Private curBackupFile As Long
 Private Const backupFileName As String = "PD_LANG_EDIT_BACKUP_"
 
 'During phrase editing, the user can choose to display all phrases, only translated phrases, or only untranslated phrases.
-Private Sub cmbPhraseFilter_Click()
+Private Sub cboPhraseFilter_Click()
 
     lstPhrases.Clear
     LockWindowUpdate lstPhrases.hWnd
     
     Dim i As Long
                 
-    Select Case cmbPhraseFilter.ListIndex
+    Select Case cboPhraseFilter.ListIndex
     
         'All phrases
         Case 0
@@ -908,7 +720,7 @@ Private Sub cmdAutoTranslate_Click()
     
     'Because this process can take a very long time, warn the user in advance.
     Dim msgReturn As VbMsgBoxResult
-    msgReturn = pdMsgBox("This action can take a very long time to complete.  Once started, it cannot be canceled.  Are you sure you want to continue?", vbYesNo + vbApplicationModal + vbInformation, "Automatic translation warning")
+    msgReturn = PDMsgBox("This action can take a very long time to complete.  Once started, it cannot be canceled.  Are you sure you want to continue?", vbYesNo + vbApplicationModal + vbInformation, "Automatic translation warning")
 
     If msgReturn <> vbYes Then Exit Sub
     
@@ -970,7 +782,7 @@ Private Sub cmdAutoTranslate_Click()
     cmdAutoTranslate.Caption = g_Language.TranslateMessage("Automatic translation complete!")
     
     'Select the "show untranslated phrases" option, which will refresh the list of untranslated phrases
-    cmbPhraseFilter.ListIndex = 2
+    cboPhraseFilter.ListIndex = 2
     
     Exit Sub
     
@@ -980,7 +792,7 @@ AutoTranslateFailure:
     performAutosave
     
     'Notify the user, then exit
-    pdMsgBox "Automatic translations were interrupted (the translation object stopped responding).  The existing work has been auto-saved.", vbApplicationModal + vbCritical + vbOKOnly, "Translations interrupted"
+    PDMsgBox "Automatic translations were interrupted (the translation object stopped responding).  The existing work has been auto-saved.", vbApplicationModal + vbCritical + vbOKOnly, "Translations interrupted"
     
 End Sub
 
@@ -1005,7 +817,7 @@ Private Sub cmdDeleteLanguage_Click()
         'Make sure we have write access to this folder before attempting to delete anything
         If cFile.FolderExist(getDirectory(listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex)).FileName), True) Then
         
-            msgReturn = pdMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Even though this is an official PhotoDemon language file, you can safely delete it.)", vbYesNo + vbApplicationModal + vbInformation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
+            msgReturn = PDMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Even though this is an official PhotoDemon language file, you can safely delete it.)", vbYesNo + vbApplicationModal + vbInformation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
             
             If msgReturn = vbYes Then
                 cFile.KillFile listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex)).FileName
@@ -1015,13 +827,13 @@ Private Sub cmdDeleteLanguage_Click()
         
         'Write access not available
         Else
-            pdMsgBox "You do not have access to this folder.  Please log in as an administrator and try again.", vbOKOnly + vbInformation + vbApplicationModal, "Administrator access required"
+            PDMsgBox "You do not have access to this folder.  Please log in as an administrator and try again.", vbOKOnly + vbInformation + vbApplicationModal, "Administrator access required"
         End If
     
     'User-folder languages are gone forever once deleted, so change the wording of the deletion confirmation.
     Else
     
-        msgReturn = pdMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Unless you have manually backed up this language file, this action cannot be undone.)", vbYesNo + vbApplicationModal + vbInformation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
+        msgReturn = PDMsgBox("Are you sure you want to delete %1?" & vbCrLf & vbCrLf & "(Unless you have manually backed up this language file, this action cannot be undone.)", vbYesNo + vbApplicationModal + vbInformation, "Delete language file", lstLanguages.List(lstLanguages.ListIndex))
         
         If msgReturn = vbYes Then
             cFile.KillFile listOfAvailableLanguages(lstLanguages.itemData(lstLanguages.ListIndex)).FileName
@@ -1053,7 +865,7 @@ Private Sub cmdNextPhrase_Click()
     'If a specific type of phrase list is displayed, refresh it as necessary
     Dim newIndex As Long
     
-    Select Case cmbPhraseFilter.ListIndex
+    Select Case cboPhraseFilter.ListIndex
     
         'All phrases
         Case 0
@@ -1135,7 +947,7 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
             'If the user wants to edit an existing language, make sure they've selected one.  (I hate OK-only message boxes, but am
             ' currently too lazy to write a more elegant warning!)
             If optBaseLanguage(1) And (lstLanguages.ListIndex = -1) Then
-                pdMsgBox "Please select a language before continuing to the next step.", vbOKOnly + vbInformation + vbApplicationModal, "Please select a language"
+                PDMsgBox "Please select a language before continuing to the next step.", vbOKOnly + vbInformation + vbApplicationModal, "Please select a language"
                 Exit Sub
             End If
             
@@ -1186,7 +998,7 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
                 Else
                     Screen.MousePointer = vbDefault
                     tmrProgBar.Enabled = False
-                    pdMsgBox "Unfortunately, the master language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds." & vbCrLf & vbCrLf & "To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.", vbOKOnly + vbInformation + vbApplicationModal, "Master language file missing"
+                    PDMsgBox "Unfortunately, the master language file could not be located on this PC.  This file is included with the official release of PhotoDemon, but it may not be included with development or beta builds." & vbCrLf & vbCrLf & "To start a new translation, please download a fresh copy of PhotoDemon from photodemon.org.", vbOKOnly + vbInformation + vbApplicationModal, "Master language file missing"
                     Unload Me
                 End If
             
@@ -1207,7 +1019,7 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
                 Else
                     Screen.MousePointer = vbDefault
                     tmrProgBar.Enabled = False
-                    pdMsgBox "Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date." & vbCrLf & vbCrLf & "To continue, please download a fresh copy of PhotoDemon from photodemon.org.", vbOKOnly + vbInformation + vbApplicationModal, "Language file could not be loaded"
+                    PDMsgBox "Unfortunately, this language file could not be loaded.  It's possible the copy on this PC is out-of-date." & vbCrLf & vbCrLf & "To continue, please download a fresh copy of PhotoDemon from photodemon.org.", vbOKOnly + vbInformation + vbApplicationModal, "Language file could not be loaded"
                     Unload Me
                 End If
             
@@ -1341,8 +1153,8 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
                 xmlLoaded = True
                 
                 'Setting the ListIndex property will fire the _Click event, which will handle the actual phrase population
-                cmbPhraseFilter.ListIndex = 0
-                cmbPhraseFilter_Click
+                cboPhraseFilter.ListIndex = 0
+                cboPhraseFilter_Click
                 
             End If
                 
@@ -1405,11 +1217,7 @@ Private Sub changeWizardPage(ByVal moveForward As Boolean)
     End Select
     
     lblExplanation.Caption = helpText
-    lblExplanation.Refresh
-    
-    'If translations are active, the translated text may not fit the label.  Automatically adjust it to fit.
-    fitWordwrapLabel lblExplanation, Me
-    
+        
 End Sub
 
 Private Sub Form_KeyDown(KeyCode As Integer, Shift As Integer)
@@ -1434,18 +1242,18 @@ Private Sub Form_Load()
     curWizardPage = -1
         
     'Fill the "phrases to display" combo box
-    cmbPhraseFilter.Clear
-    cmbPhraseFilter.AddItem "All phrases", 0
-    cmbPhraseFilter.AddItem "Translated phrases", 1
-    cmbPhraseFilter.AddItem "Untranslated phrases", 2
-    cmbPhraseFilter.ListIndex = 0
+    cboPhraseFilter.Clear
+    cboPhraseFilter.AddItem "All phrases", 0
+    cboPhraseFilter.AddItem "Translated phrases", 1
+    cboPhraseFilter.AddItem "Untranslated phrases", 2
+    cboPhraseFilter.ListIndex = 0
     
     'Initialize the Google Translate interface
     Set autoTranslate = New clsGoogleTranslate
     autoTranslate.setSrcLanguage "en"
     
     'Apply translations and visual styles
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Advance to the first page
     changeWizardPage True
@@ -1468,7 +1276,6 @@ Private Function loadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
         If xmlEngine.isPDDataType("Translation") And xmlEngine.validateLoadedXMLData("phrase") Then
         
             lblPleaseWait.Caption = g_Language.TranslateMessage("Please wait while the language file is validated...")
-            lblPleaseWait.Refresh
             
             'New as of August '14 is the ability to set text comparison mode.  To ensure output matches
             ' the rest of PD, the language editor now uses binary comparison mode exclusively.
@@ -1479,7 +1286,6 @@ Private Function loadAllPhrasesFromFile(ByVal srcLangFile As String) As Boolean
             If xmlEngine.findAllTagLocations(phraseLocations, "phrase", True) Then
             
                 lblPleaseWait.Caption = g_Language.TranslateMessage("Validation successful!  Loading all phrases and preparing translation engine...")
-                lblPleaseWait.Refresh
                 
                 numOfPhrases = UBound(phraseLocations) + 1
                 ReDim allPhrases(0 To numOfPhrases - 1) As Phrase
@@ -1542,10 +1348,10 @@ Private Sub lstPhrases_Click()
     
     If Len(allPhrases(lstPhrases.itemData(lstPhrases.ListIndex)).Translation) <> 0 Then
         txtTranslation = allPhrases(lstPhrases.itemData(lstPhrases.ListIndex)).Translation
-        lblTranslatedPhrase = lblTranslatedPhrase & " " & g_Language.TranslateMessage("(saved):")
+        lblTranslatedPhrase.Caption = lblTranslatedPhrase.Caption & " " & g_Language.TranslateMessage("(saved):")
     Else
     
-        lblTranslatedPhrase = lblTranslatedPhrase & " " & g_Language.TranslateMessage("(NOT YET SAVED):")
+        lblTranslatedPhrase.Caption = lblTranslatedPhrase.Caption & " " & g_Language.TranslateMessage("(NOT YET SAVED):")
         lblTranslatedPhrase.ForeColor = RGB(208, 52, 52)
     
         If CBool(chkGoogleTranslate) Then
@@ -1730,4 +1536,5 @@ Private Sub populateAvailableLanguages()
     lstLanguages.ListIndex = -1
     
 End Sub
+
 

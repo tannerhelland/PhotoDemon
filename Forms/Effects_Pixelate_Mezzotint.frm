@@ -41,15 +41,6 @@ Begin VB.Form FormMezzotint
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -62,7 +53,7 @@ Begin VB.Form FormMezzotint
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltSmoothness 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   2520
@@ -76,7 +67,7 @@ Begin VB.Form FormMezzotint
       NotchValueCustom=   10
    End
    Begin PhotoDemon.sliderTextCombo sltRandom 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   5
       Top             =   1560
@@ -92,53 +83,35 @@ Begin VB.Form FormMezzotint
    Begin PhotoDemon.buttonStrip btsStippling 
       Height          =   615
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   2
       Top             =   4020
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1085
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "stippling"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   3
       Left            =   6000
-      TabIndex        =   7
       Top             =   3600
-      Width           =   900
+      Width           =   5820
+      _ExtentX        =   10266
+      _ExtentY        =   503
+      Caption         =   "stippling"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "type"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   2
       Top             =   180
-      Width           =   450
+      Width           =   5850
+      _ExtentX        =   10319
+      _ExtentY        =   503
+      Caption         =   "type"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormMezzotint"
@@ -195,7 +168,7 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
     
     'From that, grab a grayscale map
     Dim grayMap() As Byte
-    DIB_Handler.getDIBGrayscaleMap workingDIB, grayMap, True
+    DIB_Handler.GetDIBGrayscaleMap workingDIB, grayMap, True
     
     If Not toPreview Then SetProgBarVal 1
     
@@ -257,7 +230,7 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
     
     If alphaIsRelevant Then
         overlayDIB.copyAlphaFromExistingDIB workingDIB
-        overlayDIB.setAlphaPremultiplication True
+        overlayDIB.SetAlphaPremultiplication True
     End If
     
     If Not toPreview Then SetProgBarVal 7
@@ -310,7 +283,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply translations and visual themes
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
@@ -361,3 +334,4 @@ End Sub
 Private Sub sltSmoothness_Change()
     updatePreview
 End Sub
+

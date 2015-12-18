@@ -35,7 +35,7 @@ Begin VB.Form FormGaussianBlur
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   1800
@@ -60,32 +60,23 @@ Begin VB.Form FormGaussianBlur
    Begin PhotoDemon.buttonStrip btsQuality 
       Height          =   600
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   3180
       Width           =   5835
       _ExtentX        =   11774
       _ExtentY        =   1058
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "quality"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   3
       Top             =   2730
-      Width           =   705
+      Width           =   5865
+      _ExtentX        =   10345
+      _ExtentY        =   503
+      Caption         =   "quality"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormGaussianBlur"
@@ -229,5 +220,6 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 
 

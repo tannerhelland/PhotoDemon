@@ -44,9 +44,9 @@ Begin VB.Form FormMonoToColor
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   4
+      TabIndex        =   2
       Top             =   2040
       Width           =   5895
       _ExtentX        =   10398
@@ -56,46 +56,28 @@ Begin VB.Form FormMonoToColor
       Max             =   8
       Value           =   3
    End
-   Begin VB.Label Label1 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "advice from the experts"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Left            =   6000
-      TabIndex        =   3
       Top             =   3240
-      Width           =   2490
+      Width           =   5850
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "advice from the experts"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblExplanation 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "Explanation"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   210
+   Begin PhotoDemon.pdLabel lblExplanation 
+      Height          =   1770
       Left            =   6120
-      TabIndex        =   2
       Top             =   3840
       Width           =   5535
-      WordWrap        =   -1  'True
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "Explanation"
+      FontSize        =   9
+      ForeColor       =   4210752
+      Layout          =   1
    End
 End
 Attribute VB_Name = "FormMonoToColor"
@@ -465,4 +447,5 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 

@@ -47,7 +47,7 @@ Begin VB.Form FormLens
       PointSelection  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   3240
@@ -62,7 +62,7 @@ Begin VB.Form FormLens
       NotchValueCustom=   50
    End
    Begin PhotoDemon.sliderTextCombo sltIndex 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   2280
@@ -104,9 +104,9 @@ Begin VB.Form FormLens
       NotchValueCustom=   0.5
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   6
       Top             =   4200
       Width           =   5895
       _ExtentX        =   10398
@@ -118,38 +118,29 @@ Begin VB.Form FormLens
       NotchPosition   =   2
       NotchValueCustom=   2
    End
-   Begin VB.Label lblExplanation 
-      BackStyle       =   0  'Transparent
-      Caption         =   "Note: you can also set a center position by clicking the preview window."
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblExplanation 
       Height          =   435
       Index           =   0
       Left            =   6120
-      TabIndex        =   7
       Top             =   1770
       Width           =   5655
-      WordWrap        =   -1  'True
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "Note: you can also set a center position by clicking the preview window."
+      ForeColor       =   4210752
+      Layout          =   1
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "center position (x, y)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   6
       Top             =   840
-      Width           =   2205
+      Width           =   5925
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "center position (x, y)"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormLens"
@@ -500,3 +491,4 @@ End Sub
 Private Sub sltYCenter_Change()
     updatePreview
 End Sub
+

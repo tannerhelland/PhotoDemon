@@ -27,7 +27,7 @@ Begin VB.Form FormLevels
    Begin PhotoDemon.pdButton cmdAutoLevels 
       Height          =   600
       Left            =   120
-      TabIndex        =   19
+      TabIndex        =   1
       Top             =   6000
       Width           =   5655
       _ExtentX        =   9975
@@ -38,7 +38,7 @@ Begin VB.Form FormLevels
       Height          =   375
       Index           =   0
       Left            =   7740
-      TabIndex        =   17
+      TabIndex        =   2
       Top             =   3135
       Width           =   375
       _ExtentX        =   661
@@ -219,73 +219,46 @@ Begin VB.Form FormLevels
       Height          =   375
       Index           =   1
       Left            =   10530
-      TabIndex        =   18
+      TabIndex        =   16
       Top             =   3135
       Width           =   375
       _ExtentX        =   661
       _ExtentY        =   661
       StickyToggle    =   -1  'True
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "channel"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   16
       Top             =   5640
-      Width           =   810
+      Width           =   6690
+      _ExtentX        =   11800
+      _ExtentY        =   503
+      Caption         =   "channel"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblOutput 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "output levels"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblOutput 
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
       Top             =   3840
-      Width           =   1350
+      Width           =   6735
+      _ExtentX        =   11880
+      _ExtentY        =   503
+      Caption         =   "output levels"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblInput 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "input levels"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblInput 
       Height          =   285
       Left            =   6000
-      TabIndex        =   1
       Top             =   120
-      Width           =   1200
+      Width           =   6720
+      _ExtentX        =   11853
+      _ExtentY        =   503
+      Caption         =   "input levels"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormLevels"
@@ -1449,4 +1422,5 @@ Private Function getLevelsParamString() As String
     getLevelsParamString = tmpString
     
 End Function
+
 

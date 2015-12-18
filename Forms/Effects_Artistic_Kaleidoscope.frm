@@ -55,6 +55,18 @@ Begin VB.Form FormKaleidoscope
       _ExtentX        =   9869
       _ExtentY        =   1058
    End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   285
+      Index           =   6
+      Left            =   6000
+      Top             =   4200
+      Width           =   5700
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "options"
+      FontSize        =   12
+      ForeColor       =   4210752
+   End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
@@ -70,7 +82,7 @@ Begin VB.Form FormKaleidoscope
       Top             =   360
       Width           =   6135
       Begin PhotoDemon.sliderTextCombo sltMirrors 
-         Height          =   720
+         Height          =   705
          Left            =   120
          TabIndex        =   6
          Top             =   1560
@@ -85,7 +97,7 @@ Begin VB.Form FormKaleidoscope
          NotchValueCustom=   8
       End
       Begin PhotoDemon.sliderTextCombo sltAngle 
-         Height          =   720
+         Height          =   705
          Left            =   120
          TabIndex        =   7
          Top             =   2520
@@ -124,38 +136,29 @@ Begin VB.Form FormKaleidoscope
          NotchPosition   =   2
          NotchValueCustom=   0.5
       End
-      Begin VB.Label lblExplanation 
-         BackStyle       =   0  'Transparent
-         Caption         =   "Note: you can also set a center position by clicking the preview window."
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblExplanation 
          Height          =   435
          Index           =   0
          Left            =   240
-         TabIndex        =   11
          Top             =   1170
          Width           =   5655
-         WordWrap        =   -1  'True
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Caption         =   "Note: you can also set a center position by clicking the preview window."
+         ForeColor       =   4210752
+         Layout          =   1
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "center position (x, y)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   5
          Left            =   120
-         TabIndex        =   10
          Top             =   240
-         Width           =   2205
+         Width           =   5805
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Caption         =   "center position (x, y)"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
    End
    Begin VB.PictureBox picContainer 
@@ -174,9 +177,9 @@ Begin VB.Form FormKaleidoscope
       Visible         =   0   'False
       Width           =   6135
       Begin PhotoDemon.sliderTextCombo sltAngle2 
-         Height          =   720
+         Height          =   705
          Left            =   120
-         TabIndex        =   12
+         TabIndex        =   2
          Top             =   240
          Width           =   5895
          _ExtentX        =   10398
@@ -186,9 +189,9 @@ Begin VB.Form FormKaleidoscope
          SigDigits       =   1
       End
       Begin PhotoDemon.sliderTextCombo sltRadius 
-         Height          =   720
+         Height          =   705
          Left            =   120
-         TabIndex        =   13
+         TabIndex        =   10
          Top             =   1200
          Width           =   5895
          _ExtentX        =   10398
@@ -203,58 +206,24 @@ Begin VB.Form FormKaleidoscope
       Begin PhotoDemon.buttonStrip btsQuality 
          Height          =   600
          Left            =   240
-         TabIndex        =   15
+         TabIndex        =   11
          Top             =   2640
          Width           =   5595
          _ExtentX        =   9869
          _ExtentY        =   1058
       End
-      Begin VB.Label lblTitle 
-         Appearance      =   0  'Flat
-         AutoSize        =   -1  'True
-         BackColor       =   &H80000005&
-         BackStyle       =   0  'Transparent
-         Caption         =   "render emphasis"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
          Index           =   2
          Left            =   120
-         TabIndex        =   14
          Top             =   2265
-         Width           =   1755
+         Width           =   5835
+         _ExtentX        =   10292
+         _ExtentY        =   503
+         Caption         =   "render emphasis"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
-   End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "options"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   6
-      Left            =   6000
-      TabIndex        =   2
-      Top             =   4200
-      Width           =   780
    End
 End
 Attribute VB_Name = "FormKaleidoscope"
@@ -527,4 +496,5 @@ End Sub
 Private Sub sltYCenter_Change()
     updatePreview
 End Sub
+
 

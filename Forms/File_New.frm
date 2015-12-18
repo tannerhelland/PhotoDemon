@@ -98,7 +98,7 @@ Begin VB.Form FormNewImage
    Begin PhotoDemon.smartResize ucResize 
       Height          =   2850
       Left            =   360
-      TabIndex        =   7
+      TabIndex        =   1
       Top             =   360
       Width           =   8775
       _ExtentX        =   15478
@@ -114,26 +114,17 @@ Begin VB.Form FormNewImage
       EndProperty
       DisablePercentOption=   -1  'True
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "background"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   1
       Left            =   240
-      TabIndex        =   1
       Top             =   3480
-      Width           =   1245
+      Width           =   9045
+      _ExtentX        =   15954
+      _ExtentY        =   503
+      Caption         =   "background"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormNewImage"
@@ -189,7 +180,7 @@ End Sub
 Private Sub Form_Activate()
     calculateDefaultSize
     
-    makeFormPretty Me
+    MakeFormPretty Me
     
 End Sub
 
@@ -240,3 +231,4 @@ Private Sub calculateDefaultSize()
     End If
 
 End Sub
+

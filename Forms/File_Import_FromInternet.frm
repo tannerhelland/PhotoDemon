@@ -27,7 +27,7 @@ Begin VB.Form FormInternetImport
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   3
+      TabIndex        =   0
       Top             =   1935
       Width           =   10050
       _ExtentX        =   17727
@@ -37,44 +37,35 @@ Begin VB.Form FormInternetImport
    Begin PhotoDemon.pdTextBox txtURL 
       Height          =   315
       Left            =   240
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   840
       Width           =   9615
       _ExtentX        =   16960
       _ExtentY        =   556
       Text            =   "http://"
    End
-   Begin VB.Label lblCopyrightWarning 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "Copyright"
-      ForeColor       =   &H00808080&
+   Begin PhotoDemon.pdLabel lblCopyrightWarning 
       Height          =   615
       Left            =   240
-      TabIndex        =   1
       Top             =   1320
       Width           =   9615
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "Copyright"
+      FontSize        =   9
+      ForeColor       =   8421504
+      Layout          =   1
    End
-   Begin VB.Label lblDownloadPath 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "full download path (must begin with ""http://"" or ""ftp://"")"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblDownloadPath 
       Height          =   285
       Left            =   120
-      TabIndex        =   0
       Top             =   360
-      Width           =   6000
+      Width           =   9720
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "full download path (must begin with ""http://"" or ""ftp://"")"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormInternetImport"
@@ -383,4 +374,5 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
+
 

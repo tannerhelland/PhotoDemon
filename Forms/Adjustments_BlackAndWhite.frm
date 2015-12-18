@@ -24,7 +24,7 @@ Begin VB.Form FormMonochrome
    ScaleWidth      =   810
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.sliderTextCombo sltThreshold 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   6
       Top             =   960
@@ -81,7 +81,7 @@ Begin VB.Form FormMonochrome
       Height          =   615
       Index           =   0
       Left            =   6120
-      TabIndex        =   7
+      TabIndex        =   2
       Top             =   3840
       Width           =   2775
       _ExtentX        =   9763
@@ -92,7 +92,7 @@ Begin VB.Form FormMonochrome
       Height          =   615
       Index           =   1
       Left            =   9000
-      TabIndex        =   8
+      TabIndex        =   3
       Top             =   3840
       Width           =   2775
       _ExtentX        =   4895
@@ -109,45 +109,29 @@ Begin VB.Form FormMonochrome
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin VB.Label Label1 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "final colors"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
+      Index           =   1
       Left            =   6000
-      TabIndex        =   3
       Top             =   3480
-      Width           =   1155
+      Width           =   5955
+      _ExtentX        =   10504
+      _ExtentY        =   503
+      Caption         =   "final colors"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblDither 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "dithering technique"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
+      Index           =   0
       Left            =   6000
-      TabIndex        =   2
       Top             =   2520
-      Width           =   2040
+      Width           =   5880
+      _ExtentX        =   10372
+      _ExtentY        =   503
+      Caption         =   "dithering technique"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormMonochrome"
@@ -922,5 +906,6 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 
 
