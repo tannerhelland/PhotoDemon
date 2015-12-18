@@ -24,10 +24,19 @@ Begin VB.Form FormPolar
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   807
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.buttonStrip btsRender 
+      Height          =   615
+      Left            =   6120
+      TabIndex        =   6
+      Top             =   4560
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1085
+   End
    Begin PhotoDemon.smartCheckBox chkSwapXY 
       Height          =   330
       Left            =   6120
-      TabIndex        =   9
+      TabIndex        =   1
       Top             =   1590
       Width           =   5670
       _ExtentX        =   10001
@@ -45,25 +54,6 @@ Begin VB.Form FormPolar
       _ExtentY        =   1323
       BackColor       =   14802140
    End
-   Begin VB.ComboBox cboConvert 
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   6120
-      Style           =   2  'Dropdown List
-      TabIndex        =   4
-      Top             =   1200
-      Width           =   5700
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
       Left            =   120
@@ -74,33 +64,10 @@ Begin VB.Form FormPolar
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
    End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   6
-      Top             =   4560
-      Width           =   5685
-      _ExtentX        =   10028
-      _ExtentY        =   582
-      Caption         =   "quality"
-      Value           =   -1  'True
-   End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   1
-      Left            =   6120
-      TabIndex        =   7
-      Top             =   4920
-      Width           =   5685
-      _ExtentX        =   10028
-      _ExtentY        =   582
-      Caption         =   "speed"
-   End
    Begin PhotoDemon.sliderTextCombo sltRadius 
       Height          =   705
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   2280
       Width           =   5895
       _ExtentX        =   10398
@@ -115,76 +82,56 @@ Begin VB.Form FormPolar
    Begin PhotoDemon.pdComboBox cboEdges 
       Height          =   375
       Left            =   6120
-      TabIndex        =   10
+      TabIndex        =   2
       Top             =   3600
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   661
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "if pixels lie outside the image..."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   5
+   Begin PhotoDemon.pdComboBox cboConvert 
+      Height          =   375
+      Left            =   6120
+      TabIndex        =   4
+      Top             =   1170
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   661
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   315
+      Index           =   1
       Left            =   6000
-      TabIndex        =   5
       Top             =   3210
-      Width           =   3315
+      Width           =   5835
+      _ExtentX        =   10292
+      _ExtentY        =   556
+      Caption         =   "if pixels lie outside the image..."
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblInterpolation 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "render emphasis"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   315
+      Index           =   2
       Left            =   6000
-      TabIndex        =   2
       Top             =   4170
-      Width           =   1755
+      Width           =   5835
+      _ExtentX        =   10292
+      _ExtentY        =   556
+      Caption         =   "render emphasis"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblConvert 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "conversion"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   315
+      Index           =   0
       Left            =   6000
-      TabIndex        =   1
       Top             =   840
-      Width           =   1140
+      Width           =   5820
+      _ExtentX        =   10266
+      _ExtentY        =   556
+      Caption         =   "conversion"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormPolar"
@@ -213,6 +160,10 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+Private Sub btsRender_Click(ByVal buttonIndex As Long)
+    updatePreview
+End Sub
 
 Private Sub cboConvert_Click()
     updatePreview
@@ -262,7 +213,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Polar conversion", , buildParams(cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cboEdges.ListIndex), OptInterpolate(0).Value), UNDO_LAYER
+    Process "Polar conversion", , buildParams(cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -291,6 +242,10 @@ Private Sub Form_Load()
     'Disable previews until the dialog is fully initialized
     cmdBar.markPreviewStatus False
     
+    btsRender.AddItem "speed", 0
+    btsRender.AddItem "quality", 1
+    btsRender.ListIndex = 1
+    
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
     PopDistortEdgeBox cboEdges, EDGE_ERASE
@@ -307,21 +262,18 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub OptInterpolate_Click(Index As Integer)
-    updatePreview
-End Sub
-
 Private Sub sltRadius_Change()
     updatePreview
 End Sub
 
 'Redraw the on-screen preview of the transformed image
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ConvertToPolar cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cboEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
+    If cmdBar.previewsAllowed Then ConvertToPolar cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 

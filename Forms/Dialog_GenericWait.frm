@@ -42,32 +42,21 @@ Begin VB.Form FormWait
       ScaleHeight     =   33
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   585
-      TabIndex        =   1
+      TabIndex        =   0
       Top             =   840
       Width           =   8775
    End
-   Begin VB.Label lblWaitTitle 
-      Alignment       =   2  'Center
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "please wait"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00900000&
+   Begin PhotoDemon.pdLabel lblWaitTitle 
       Height          =   405
       Left            =   240
-      TabIndex        =   0
       Top             =   240
-      UseMnemonic     =   0   'False
       Width           =   8490
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Alignment       =   2
+      Caption         =   "please wait"
+      FontSize        =   12
+      ForeColor       =   9437184
    End
 End
 Attribute VB_Name = "FormWait"
@@ -103,3 +92,4 @@ Private Sub tmrProgBar_Timer()
     sysProgBar.Refresh
     
 End Sub
+

@@ -112,32 +112,22 @@ Begin VB.Form FormWaves
    Begin PhotoDemon.pdComboBox cboEdges 
       Height          =   375
       Left            =   6240
-      TabIndex        =   8
+      TabIndex        =   2
       Top             =   4800
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   661
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "if pixels lie outside the image..."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
-      Index           =   5
       Left            =   6000
-      TabIndex        =   2
       Top             =   4440
-      Width           =   3315
+      Width           =   5955
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "if pixels lie outside the image..."
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormWaves"
@@ -442,4 +432,5 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 

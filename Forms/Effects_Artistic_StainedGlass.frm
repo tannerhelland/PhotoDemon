@@ -24,43 +24,23 @@ Begin VB.Form FormStainedGlass
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
-   Begin VB.ComboBox cboDistance 
-      Appearance      =   0  'Flat
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
+   Begin PhotoDemon.pdComboBox cboDistance 
+      Height          =   375
       Left            =   6120
-      Style           =   2  'Dropdown List
-      TabIndex        =   6
-      Top             =   5205
+      TabIndex        =   4
+      Top             =   5190
       Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   661
    End
-   Begin VB.ComboBox cboColorSampling 
-      Appearance      =   0  'Flat
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
+   Begin PhotoDemon.pdComboBox cboColorSampling 
+      Height          =   375
       Left            =   6120
-      Style           =   2  'Dropdown List
       TabIndex        =   5
       Top             =   4260
       Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   661
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -83,7 +63,7 @@ Begin VB.Form FormStainedGlass
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltSize 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   120
@@ -96,7 +76,7 @@ Begin VB.Form FormStainedGlass
       Value           =   50
    End
    Begin PhotoDemon.sliderTextCombo sltTurbulence 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   1080
@@ -111,9 +91,9 @@ Begin VB.Form FormStainedGlass
       NotchValueCustom=   100
    End
    Begin PhotoDemon.sliderTextCombo sltEdge 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   6
       Top             =   3000
       Width           =   5895
       _ExtentX        =   10398
@@ -125,9 +105,9 @@ Begin VB.Form FormStainedGlass
       NotchValueCustom=   100
    End
    Begin PhotoDemon.sliderTextCombo sltShadeQuality 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   7
       Top             =   2040
       Width           =   5895
       _ExtentX        =   10398
@@ -139,47 +119,29 @@ Begin VB.Form FormStainedGlass
       NotchPosition   =   2
       NotchValueCustom=   100
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "distance method"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   5
-      Left            =   6000
-      TabIndex        =   7
-      Top             =   4845
-      Width           =   1740
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "color sampling"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   1
       Left            =   6000
-      TabIndex        =   4
+      Top             =   4845
+      Width           =   5940
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "distance method"
+      FontSize        =   12
+      ForeColor       =   4210752
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   285
+      Index           =   0
+      Left            =   6000
       Top             =   3900
-      Width           =   1560
+      Width           =   5880
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "color sampling"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormStainedGlass"
@@ -623,3 +585,4 @@ End Sub
 Private Sub sltTurbulence_Change()
     updatePreview
 End Sub
+

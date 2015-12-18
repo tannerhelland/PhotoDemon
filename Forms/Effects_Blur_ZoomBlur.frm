@@ -26,7 +26,7 @@ Begin VB.Form FormZoomBlur
    Begin PhotoDemon.buttonStrip btsStyle 
       Height          =   615
       Left            =   6180
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   2160
       Width           =   5610
       _ExtentX        =   9895
@@ -54,7 +54,7 @@ Begin VB.Form FormZoomBlur
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltDistance 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   3120
@@ -65,26 +65,17 @@ Begin VB.Form FormZoomBlur
       Min             =   -200
       Max             =   200
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "style"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   3
       Top             =   1800
-      Width           =   480
+      Width           =   5880
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "style"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormZoomBlur"
@@ -395,4 +386,5 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 

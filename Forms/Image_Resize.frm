@@ -26,7 +26,7 @@ Begin VB.Form FormResize
    Begin PhotoDemon.pdComboBox cmbFit 
       Height          =   375
       Left            =   840
-      TabIndex        =   8
+      TabIndex        =   3
       Top             =   5640
       Width           =   7935
       _ExtentX        =   13996
@@ -94,55 +94,33 @@ Begin VB.Form FormResize
    Begin PhotoDemon.pdComboBox cboResampleTechnical 
       Height          =   375
       Left            =   840
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   3960
       Width           =   7935
       _ExtentX        =   13996
       _ExtentY        =   635
    End
-   Begin VB.Label lblFit 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "when changing aspect ratio, fit image to new size by"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
+   Begin PhotoDemon.pdLabel lblFit 
+      Height          =   315
       Left            =   480
-      TabIndex        =   4
       Top             =   5160
-      Width           =   5565
+      Width           =   8685
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "when changing aspect ratio, fit image to new size by"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblResample 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "resize quality"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
+   Begin PhotoDemon.pdLabel lblResample 
+      Height          =   315
       Left            =   480
-      TabIndex        =   3
       Top             =   3480
-      Width           =   1380
+      Width           =   8820
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "resize quality"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormResize"
@@ -472,7 +450,7 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
     If g_ImageFormats.FreeImageEnabled Then
         
         'If the original image is 32bpp, remove premultiplication now
-        If srcDIB.getDIBColorDepth = 32 Then srcDIB.setAlphaPremultiplication
+        If srcDIB.getDIBColorDepth = 32 Then srcDIB.SetAlphaPremultiplication
         
         'Convert the current image to a FreeImage-type DIB
         Dim fi_DIB As Long
@@ -496,7 +474,7 @@ Private Sub FreeImageResize(ByRef dstDIB As pdDIB, ByRef srcDIB As pdDIB, ByVal 
         End If
         
         'If the original image is 32bpp, add back in premultiplication now
-        If srcDIB.getDIBColorDepth = 32 Then dstDIB.setAlphaPremultiplication True
+        If srcDIB.getDIBColorDepth = 32 Then dstDIB.SetAlphaPremultiplication True
         
     End If
     
@@ -750,4 +728,5 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
     Message "Finished."
     
 End Sub
+
 

@@ -6,8 +6,8 @@ Begin VB.Form FormTwins
    Caption         =   " Generate Twins"
    ClientHeight    =   6525
    ClientLeft      =   -15
-   ClientTop       =   225
-   ClientWidth     =   9555
+   ClientTop       =   390
+   ClientWidth     =   12030
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -22,30 +22,27 @@ Begin VB.Form FormTwins
    MinButton       =   0   'False
    ScaleHeight     =   435
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   637
+   ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.buttonStrip btsOrientation 
+      Height          =   615
+      Left            =   6240
+      TabIndex        =   2
+      Top             =   2520
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   1085
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
       TabIndex        =   0
       Top             =   5775
-      Width           =   9555
-      _ExtentX        =   16854
+      Width           =   12030
+      _ExtentX        =   21220
       _ExtentY        =   1323
       BackColor       =   14802140
-   End
-   Begin PhotoDemon.smartOptionButton optTwins 
-      Height          =   375
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   3
-      Top             =   2640
-      Width           =   3240
-      _ExtentX        =   5715
-      _ExtentY        =   582
-      Caption         =   "horizontal"
-      Value           =   -1  'True
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -57,36 +54,16 @@ Begin VB.Form FormTwins
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
    End
-   Begin PhotoDemon.smartOptionButton optTwins 
-      Height          =   375
-      Index           =   1
-      Left            =   6120
-      TabIndex        =   4
-      Top             =   3090
-      Width           =   3240
-      _ExtentX        =   5715
-      _ExtentY        =   582
-      Caption         =   "vertical"
-   End
-   Begin VB.Label lblAlgorithm 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "orientation"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Left            =   6000
-      TabIndex        =   2
       Top             =   2160
-      Width           =   1140
+      Width           =   5820
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "orientation"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormTwins"
@@ -217,8 +194,12 @@ Public Sub GenerateTwins(ByVal tType As Long, Optional ByVal toPreview As Boolea
         
 End Sub
 
+Private Sub btsOrientation_Click(ByVal buttonIndex As Long)
+    updatePreview
+End Sub
+
 Private Sub cmdBar_OKClick()
-    Process "Twins", , buildParams(CLng(optTwins(1))), UNDO_LAYER
+    Process "Twins", , buildParams(btsOrientation.ListIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -231,7 +212,18 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Render an image preview
+    cmdBar.markPreviewStatus True
     updatePreview
+    
+End Sub
+
+Private Sub Form_Load()
+    
+    cmdBar.markPreviewStatus False
+    
+    btsOrientation.AddItem "horizontal", 0
+    btsOrientation.AddItem "vertical", 1
+    btsOrientation.ListIndex = 0
     
 End Sub
 
@@ -239,16 +231,13 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub optTwins_Click(Index As Integer)
-    updatePreview
-End Sub
-
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then GenerateTwins optTwins(1), True, fxPreview
+    If cmdBar.previewsAllowed Then GenerateTwins btsOrientation.ListIndex, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 

@@ -24,6 +24,15 @@ Begin VB.Form FormTile
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   773
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdComboBox cboTarget 
+      Height          =   375
+      Left            =   6240
+      TabIndex        =   1
+      Top             =   1680
+      Width           =   5175
+      _ExtentX        =   9128
+      _ExtentY        =   661
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   805
@@ -35,39 +44,20 @@ Begin VB.Form FormTile
       _ExtentY        =   1429
       BackColor       =   14802140
    End
-   Begin VB.ComboBox cboTarget 
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   6240
-      Style           =   2  'Dropdown List
-      TabIndex        =   2
-      Top             =   1680
-      Width           =   5175
-   End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
-      Height          =   5625
+      Height          =   5505
       Left            =   120
-      TabIndex        =   4
+      TabIndex        =   3
       Top             =   120
       Width           =   5625
       _ExtentX        =   9922
-      _ExtentY        =   9922
+      _ExtentY        =   9710
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.textUpDown tudWidth 
       Height          =   345
       Left            =   8040
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   2400
       Width           =   1200
       _ExtentX        =   2117
@@ -79,7 +69,7 @@ Begin VB.Form FormTile
    Begin PhotoDemon.textUpDown tudHeight 
       Height          =   345
       Left            =   8040
-      TabIndex        =   6
+      TabIndex        =   2
       Top             =   3030
       Width           =   1200
       _ExtentX        =   2117
@@ -88,163 +78,87 @@ Begin VB.Form FormTile
       Max             =   32767
       Value           =   1
    End
-   Begin VB.Label lblFlatten 
-      Alignment       =   2  'Center
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "Note: this operation will flatten the image before tiling it."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblFlatten 
       Height          =   525
       Left            =   5880
-      TabIndex        =   11
       Top             =   5160
       Visible         =   0   'False
       Width           =   5610
-      WordWrap        =   -1  'True
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Alignment       =   2
+      Caption         =   "Note: this operation will flatten the image before tiling it."
+      ForeColor       =   4210752
+      Layout          =   1
    End
-   Begin VB.Label lblWidth 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
+   Begin PhotoDemon.pdLabel lblWidth 
+      Height          =   285
+      Left            =   5880
+      Top             =   2430
+      Width           =   1905
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Alignment       =   1
       Caption         =   "width"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   7200
-      TabIndex        =   10
-      Top             =   2430
-      Width           =   585
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblHeight 
-      Alignment       =   1  'Right Justify
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
+   Begin PhotoDemon.pdLabel lblHeight 
+      Height          =   285
+      Left            =   5880
+      Top             =   3060
+      Width           =   1980
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Alignment       =   1
       Caption         =   "height"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Left            =   7200
-      TabIndex        =   9
-      Top             =   3060
-      Width           =   660
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblWidthUnit 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "pixels"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00808080&
+   Begin PhotoDemon.pdLabel lblWidthUnit 
       Height          =   285
       Left            =   9330
-      TabIndex        =   8
       Top             =   2430
-      Width           =   600
-   End
-   Begin VB.Label lblHeightUnit 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
+      Width           =   2160
+      _ExtentX        =   0
+      _ExtentY        =   0
       Caption         =   "pixels"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00808080&
+      FontSize        =   12
+      ForeColor       =   8421504
+   End
+   Begin PhotoDemon.pdLabel lblHeightUnit 
       Height          =   285
       Left            =   9330
-      TabIndex        =   7
       Top             =   3060
-      Width           =   600
+      Width           =   2160
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "pixels"
+      FontSize        =   12
+      ForeColor       =   8421504
    End
-   Begin VB.Label lblDescription 
-      Alignment       =   2  'Center
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   11.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblDescription 
       Height          =   1155
       Left            =   6000
-      TabIndex        =   3
       Top             =   3720
       Width           =   5355
-      WordWrap        =   -1  'True
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Alignment       =   2
+      Caption         =   ""
+      ForeColor       =   4210752
+      Layout          =   1
    End
-   Begin VB.Label lblAmount 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "render tiled image using"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblAmount 
       Height          =   285
       Left            =   6000
-      TabIndex        =   1
       Top             =   1320
-      Width           =   2580
+      Width           =   5460
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "render tiled image using"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormTile"
@@ -302,15 +216,15 @@ Private Sub cboTarget_Click()
             
             tudWidth.Enabled = False
             tudHeight.Enabled = False
-            lblWidthUnit = g_Language.TranslateMessage("pixels")
-            lblHeightUnit = g_Language.TranslateMessage("pixels")
+            lblWidthUnit.Caption = g_Language.TranslateMessage("pixels")
+            lblHeightUnit.Caption = g_Language.TranslateMessage("pixels")
         
         'Custom size (in pixels)
         Case 1
             tudWidth.Enabled = True
             tudHeight.Enabled = True
-            lblWidthUnit = g_Language.TranslateMessage("pixels")
-            lblHeightUnit = g_Language.TranslateMessage("pixels")
+            lblWidthUnit.Caption = g_Language.TranslateMessage("pixels")
+            lblHeightUnit.Caption = g_Language.TranslateMessage("pixels")
             
             'If the user was previously measuring in tiles, convert that value to pixels
             If (lastTargetMode = 2) And tudWidth.IsValid And tudHeight.IsValid Then
@@ -322,8 +236,8 @@ Private Sub cboTarget_Click()
         Case 2
             tudWidth.Enabled = True
             tudHeight.Enabled = True
-            lblWidthUnit = g_Language.TranslateMessage("tiles")
-            lblHeightUnit = g_Language.TranslateMessage("tiles")
+            lblWidthUnit.Caption = g_Language.TranslateMessage("tiles")
+            lblHeightUnit.Caption = g_Language.TranslateMessage("tiles")
             
             'Since the user will have previously been measuring in pixels, convert that value to tiles
             If tudWidth.IsValid And tudHeight.IsValid Then
@@ -458,7 +372,7 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
     Else
     
         'Render the preview and erase the temporary DIB to conserve memory
-        tmpDIB.renderToPictureBox fxPreview.getPreviewPic
+        tmpDIB.RenderToPictureBox fxPreview.getPreviewPic
         fxPreview.setFXImage tmpDIB
         
         Set tmpDIB = Nothing
@@ -560,7 +474,7 @@ Private Sub updateDescription()
             
     End Select
     
-    lblDescription = g_Language.TranslateMessage("the new image will be %1 %3 wide by %2 %3 tall", xText, yText, metricText)
+    lblDescription.Caption = g_Language.TranslateMessage("the new image will be %1 %3 wide by %2 %3 tall", xText, yText, metricText)
 
 End Sub
 
@@ -583,4 +497,5 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 

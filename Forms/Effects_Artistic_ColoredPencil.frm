@@ -78,12 +78,12 @@ Begin VB.Form FormPencil
       Max             =   200
    End
    Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
+      Height          =   330
       Left            =   6000
       Top             =   1320
       Width           =   5880
-      _ExtentX        =   0
-      _ExtentY        =   0
+      _ExtentX        =   10372
+      _ExtentY        =   582
       Caption         =   "style"
       FontSize        =   12
       ForeColor       =   4210752

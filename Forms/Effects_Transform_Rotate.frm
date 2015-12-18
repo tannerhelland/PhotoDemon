@@ -24,6 +24,15 @@ Begin VB.Form FormRotateDistort
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
+   Begin PhotoDemon.buttonStrip btsRender 
+      Height          =   615
+      Left            =   6120
+      TabIndex        =   6
+      Top             =   3960
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   1085
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -46,33 +55,10 @@ Begin VB.Form FormRotateDistort
       DisableZoomPan  =   -1  'True
       PointSelection  =   -1  'True
    End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   2
-      Top             =   3960
-      Width           =   5685
-      _ExtentX        =   10028
-      _ExtentY        =   582
-      Caption         =   "quality"
-      Value           =   -1  'True
-   End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   1
-      Left            =   6120
-      TabIndex        =   3
-      Top             =   4380
-      Width           =   5685
-      _ExtentX        =   10028
-      _ExtentY        =   582
-      Caption         =   "speed"
-   End
    Begin PhotoDemon.sliderTextCombo sltAngle 
       Height          =   705
       Left            =   6000
-      TabIndex        =   6
+      TabIndex        =   4
       Top             =   1680
       Width           =   5895
       _ExtentX        =   10398
@@ -85,7 +71,7 @@ Begin VB.Form FormRotateDistort
    Begin PhotoDemon.sliderTextCombo sltXCenter 
       Height          =   405
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   2
       Top             =   600
       Width           =   2895
       _ExtentX        =   5106
@@ -99,7 +85,7 @@ Begin VB.Form FormRotateDistort
    Begin PhotoDemon.sliderTextCombo sltYCenter 
       Height          =   405
       Left            =   9000
-      TabIndex        =   9
+      TabIndex        =   3
       Top             =   600
       Width           =   2895
       _ExtentX        =   5106
@@ -113,110 +99,74 @@ Begin VB.Form FormRotateDistort
    Begin PhotoDemon.pdComboBox cboEdges 
       Height          =   375
       Left            =   6120
-      TabIndex        =   12
+      TabIndex        =   5
       Top             =   3000
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   661
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "center position (x, y)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   0
       Left            =   6000
-      TabIndex        =   11
       Top             =   240
-      Width           =   2205
+      Width           =   5925
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "center position (x, y)"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblExplanation 
-      BackStyle       =   0  'Transparent
-      Caption         =   "Note: you can also set a center position by clicking the preview window."
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblExplanation 
       Height          =   435
       Index           =   0
       Left            =   6120
-      TabIndex        =   10
       Top             =   1170
       Width           =   5655
-      WordWrap        =   -1  'True
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Alignment       =   2
+      Caption         =   "Note: you can also set a center position by clicking the preview window."
+      FontSize        =   9
+      ForeColor       =   4210752
+      Layout          =   1
    End
-   Begin VB.Label lblExplanation 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblExplanation 
       Height          =   885
       Index           =   1
       Left            =   6000
-      TabIndex        =   7
       Top             =   4800
       Width           =   5925
-      WordWrap        =   -1  'True
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Alignment       =   2
+      Caption         =   ""
+      ForeColor       =   4210752
+      Layout          =   1
    End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "render emphasis"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
-      Index           =   3
+      Index           =   2
       Left            =   6000
-      TabIndex        =   5
       Top             =   3570
-      Width           =   1755
+      Width           =   5835
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "render emphasis"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "if pixels lie outside the image..."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
-      Index           =   5
+      Index           =   1
       Left            =   6000
-      TabIndex        =   4
       Top             =   2640
-      Width           =   3315
+      Width           =   5835
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "if pixels lie outside the image..."
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormRotateDistort"
@@ -241,6 +191,10 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+Private Sub btsRender_Click(ByVal buttonIndex As Long)
+    updatePreview
+End Sub
 
 Private Sub cboEdges_Click()
     updatePreview
@@ -274,7 +228,7 @@ Public Sub RotateFilter(ByVal rotateAngle As Double, ByVal edgeHandling As Long,
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Rotate", , buildParams(sltAngle.Value, CLng(cboEdges.ListIndex), OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
+    Process "Rotate", , buildParams(sltAngle.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1), sltXCenter.Value, sltYCenter.Value), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -306,6 +260,10 @@ Private Sub Form_Load()
     'Suspend previews while we initialize all the controls
     cmdBar.markPreviewStatus False
     
+    btsRender.AddItem "speed", 0
+    btsRender.AddItem "quality", 1
+    btsRender.ListIndex = 1
+    
     'I use a central function to populate the edge handling combo box; this way, I can add new methods and have
     ' them immediately available to all distort functions.
     PopDistortEdgeBox cboEdges, EDGE_WRAP
@@ -318,7 +276,7 @@ End Sub
 
 'Redraw the effect preview
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then RotateFilter sltAngle.Value, CLng(cboEdges.ListIndex), OptInterpolate(0).Value, sltXCenter.Value, sltYCenter.Value, True, fxPreview
+    If cmdBar.previewsAllowed Then RotateFilter sltAngle.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1), sltXCenter.Value, sltYCenter.Value, True, fxPreview
 End Sub
 
 'The user can right-click the preview area to select a new center point
@@ -330,10 +288,6 @@ Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
     cmdBar.markPreviewStatus True
     updatePreview
 
-End Sub
-
-Private Sub OptInterpolate_Click(Index As Integer)
-    updatePreview
 End Sub
 
 Private Sub sltAngle_Change()
@@ -352,3 +306,4 @@ End Sub
 Private Sub sltYCenter_Change()
     updatePreview
 End Sub
+

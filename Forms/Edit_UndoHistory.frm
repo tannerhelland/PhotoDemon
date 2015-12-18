@@ -37,7 +37,7 @@ Begin VB.Form FormUndoHistory
       EndProperty
       Height          =   495
       Left            =   7590
-      TabIndex        =   4
+      TabIndex        =   0
       Top             =   5670
       Width           =   1365
    End
@@ -83,33 +83,24 @@ Begin VB.Form FormUndoHistory
       Top             =   600
       Width           =   330
    End
-   Begin VB.Label lblBackground 
-      Height          =   855
-      Left            =   0
-      TabIndex        =   5
-      Top             =   5520
-      Width           =   11535
-   End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "available image states"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   330
       Left            =   240
-      TabIndex        =   0
-      Top             =   150
-      Width           =   2310
+      Top             =   120
+      Width           =   8655
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "available image states"
+      FontSize        =   12
+      ForeColor       =   4210752
+   End
+   Begin VB.Label lblBackground 
+      BackColor       =   &H00E0E0E0&
+      Height          =   900
+      Left            =   0
+      TabIndex        =   4
+      Top             =   5490
+      Width           =   9135
    End
 End
 Attribute VB_Name = "FormUndoHistory"
@@ -387,7 +378,7 @@ Private Sub Form_Load()
     
     'Enable some key events as well
     Set cKeyEvents = New pdInputKeyboard
-    cKeyEvents.createKeyboardTracker "Undo History picBuffer", picBuffer.hWnd, VK_UP, VK_DOWN
+    cKeyEvents.CreateKeyboardTracker "Undo History picBuffer", picBuffer.hWnd, VK_UP, VK_DOWN
     
     'Create a background buffer the same size as the buffer picture box
     Set bufferDIB = New pdDIB
@@ -491,3 +482,4 @@ End Sub
 Private Sub vsBuffer_Scroll()
     redrawUndoList
 End Sub
+

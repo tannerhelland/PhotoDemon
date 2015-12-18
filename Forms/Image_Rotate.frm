@@ -69,9 +69,9 @@ Begin VB.Form FormRotate
       Caption         =   "keep image at its present size"
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   5
+      TabIndex        =   1
       Top             =   1920
       Width           =   5895
       _ExtentX        =   10398
@@ -81,27 +81,16 @@ Begin VB.Form FormRotate
       Max             =   360
       SigDigits       =   2
    End
-   Begin VB.Label lblRotatedCanvas 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "rotated image size"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
+   Begin PhotoDemon.pdLabel lblRotatedCanvas 
+      Height          =   330
       Left            =   6000
-      TabIndex        =   1
       Top             =   2880
-      Width           =   1935
+      Width           =   5895
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "rotated image size"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormRotate"
@@ -233,7 +222,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
             If returnDIB <> 0 Then FreeImage_UnloadEx returnDIB
             
             'Finally, render the preview and erase the temporary DIB to conserve memory
-            tmpDIB.renderToPictureBox fxPreview.getPreviewPic
+            tmpDIB.RenderToPictureBox fxPreview.getPreviewPic
             fxPreview.setFXImage tmpDIB
             
             Set tmpDIB = Nothing
@@ -279,7 +268,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
                 Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
                 
                 'Remove premultiplied alpha, if any
-                tmpLayerRef.layerDIB.setAlphaPremultiplication False
+                tmpLayerRef.layerDIB.SetAlphaPremultiplication False
                 
                 'If we are only resizing a single layer, make a copy of the layer's current offset.  We will use these
                 ' to re-center the layer after it has been resized.
@@ -458,7 +447,7 @@ Private Sub Form_Activate()
     End If
         
     'Remove premultiplied alpha from the small DIB copy
-    smallDIB.setAlphaPremultiplication False
+    smallDIB.SetAlphaPremultiplication False
     
     'Give the preview object a copy of this image data so it can show it to the user if requested
     fxPreview.setOriginalImage smallDIB
@@ -508,4 +497,5 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 
