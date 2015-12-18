@@ -61,78 +61,6 @@ Begin VB.Form FormRipple
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   4335
-      Index           =   1
-      Left            =   5880
-      ScaleHeight     =   289
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   409
-      TabIndex        =   5
-      Top             =   120
-      Visible         =   0   'False
-      Width           =   6135
-      Begin PhotoDemon.sliderTextCombo sltRadius 
-         Height          =   705
-         Left            =   120
-         TabIndex        =   13
-         Top             =   1440
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1270
-         Caption         =   "radius (percentage)"
-         Min             =   1
-         Max             =   100
-         Value           =   100
-         NotchPosition   =   2
-         NotchValueCustom=   100
-      End
-      Begin PhotoDemon.sliderTextCombo sltPhase 
-         Height          =   705
-         Left            =   120
-         TabIndex        =   14
-         Top             =   2400
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1270
-         Caption         =   "time (phase)"
-         Max             =   360
-      End
-      Begin PhotoDemon.pdComboBox cboEdges 
-         Height          =   375
-         Left            =   360
-         TabIndex        =   16
-         Top             =   3720
-         Width           =   5655
-         _ExtentX        =   9975
-         _ExtentY        =   661
-      End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "if pixels lie outside the image..."
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   5
-         Left            =   120
-         TabIndex        =   15
-         Top             =   3360
-         Width           =   3315
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4335
       Index           =   0
       Left            =   5880
       ScaleHeight     =   289
@@ -209,60 +137,107 @@ Begin VB.Form FormRipple
          NotchPosition   =   2
          NotchValueCustom=   0.5
       End
-      Begin VB.Label lblTitle 
-         AutoSize        =   -1  'True
-         BackStyle       =   0  'Transparent
-         Caption         =   "center position (x, y)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   12
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00404040&
-         Height          =   285
-         Index           =   6
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   330
+         Index           =   0
          Left            =   120
-         TabIndex        =   12
          Top             =   120
-         Width           =   2205
+         Width           =   5685
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Caption         =   "center position (x, y)"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
-      Begin VB.Label lblExplanation 
-         BackStyle       =   0  'Transparent
-         Caption         =   "Note: you can also set a center position by clicking the preview window."
-         ForeColor       =   &H00404040&
+      Begin PhotoDemon.pdLabel lblExplanation 
          Height          =   435
          Index           =   0
          Left            =   240
-         TabIndex        =   11
          Top             =   1050
          Width           =   5655
-         WordWrap        =   -1  'True
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Alignment       =   2
+         Caption         =   "Note: you can also set a center position by clicking the preview window."
+         FontSize        =   9
+         ForeColor       =   4210752
+         Layout          =   1
       End
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "options"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   7
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   330
+      Index           =   2
       Left            =   6000
-      TabIndex        =   3
       Top             =   4800
-      Width           =   780
+      Width           =   5940
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "options"
+      FontSize        =   12
+      ForeColor       =   4210752
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4335
+      Index           =   1
+      Left            =   5880
+      ScaleHeight     =   289
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   409
+      TabIndex        =   5
+      Top             =   120
+      Visible         =   0   'False
+      Width           =   6135
+      Begin PhotoDemon.sliderTextCombo sltRadius 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   3
+         Top             =   1440
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "radius (percentage)"
+         Min             =   1
+         Max             =   100
+         Value           =   100
+         NotchPosition   =   2
+         NotchValueCustom=   100
+      End
+      Begin PhotoDemon.sliderTextCombo sltPhase 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   11
+         Top             =   2400
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "time (phase)"
+         Max             =   360
+      End
+      Begin PhotoDemon.pdComboBox cboEdges 
+         Height          =   375
+         Left            =   360
+         TabIndex        =   12
+         Top             =   3720
+         Width           =   5655
+         _ExtentX        =   9975
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   330
+         Index           =   1
+         Left            =   120
+         Top             =   3360
+         Width           =   5955
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Caption         =   "if pixels lie outside the image..."
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
    End
 End
 Attribute VB_Name = "FormRipple"
@@ -642,5 +617,6 @@ End Sub
 Private Sub sltYCenter_Change()
     updatePreview
 End Sub
+
 
 

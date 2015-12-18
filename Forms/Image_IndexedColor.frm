@@ -38,7 +38,7 @@ Begin VB.Form FormReduceColors
       Height          =   360
       Index           =   0
       Left            =   6120
-      TabIndex        =   4
+      TabIndex        =   1
       Top             =   2040
       Width           =   6000
       _ExtentX        =   10583
@@ -59,7 +59,7 @@ Begin VB.Form FormReduceColors
       Height          =   360
       Index           =   1
       Left            =   6120
-      TabIndex        =   5
+      TabIndex        =   2
       Top             =   2520
       Width           =   6000
       _ExtentX        =   10583
@@ -67,71 +67,41 @@ Begin VB.Form FormReduceColors
       Caption         =   "NeuQuant neural network"
       FontSize        =   11
    End
-   Begin VB.Label lblFlatten 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "Note: this operation will flatten the image before converting it to indexed color mode."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblFlatten 
       Height          =   1125
       Left            =   6000
-      TabIndex        =   6
-      Top             =   3360
+      Top             =   3240
       Visible         =   0   'False
       Width           =   6090
-      WordWrap        =   -1  'True
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "Note: this operation will flatten the image before converting it to indexed color mode."
+      ForeColor       =   4210752
+      Layout          =   1
    End
-   Begin VB.Label lblWarning 
-      BackStyle       =   0  'Transparent
-      Caption         =   "The FreeImage plugin is missing.  Please install it if you wish to use this tool."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H000000C0&
+   Begin PhotoDemon.pdLabel lblWarning 
       Height          =   975
       Left            =   6000
-      TabIndex        =   2
       Top             =   4680
       Visible         =   0   'False
       Width           =   6015
-      WordWrap        =   -1  'True
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "The FreeImage plugin is missing.  Please install it if you wish to use this tool."
+      ForeColor       =   192
+      Layout          =   1
+      UseCustomForeColor=   -1  'True
    End
-   Begin VB.Label lblQuantMethod 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "quantization method:="
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
+   Begin PhotoDemon.pdLabel lblQuantMethod 
+      Height          =   315
       Left            =   6000
-      TabIndex        =   1
       Top             =   1560
-      Width           =   2445
+      Width           =   6135
+      _ExtentX        =   10821
+      _ExtentY        =   556
+      Caption         =   "quantization method"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormReduceColors"
@@ -281,13 +251,13 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
             
             'If this is a preview, copy the FreeImage data into the global workingDIB object.
             If toPreview Then
-                Plugin_FreeImage_Interface.getPDDibFromFreeImageHandle returnDIB, workingDIB
+                Plugin_FreeImage_Interface.GetPDDibFromFreeImageHandle returnDIB, workingDIB
                 
             'This is not a preview.  Overwrite the current active layer with the quantized FreeImage data.
             Else
                 
                 SetProgBarVal 3
-                Plugin_FreeImage_Interface.getPDDibFromFreeImageHandle returnDIB, pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB
+                Plugin_FreeImage_Interface.GetPDDibFromFreeImageHandle returnDIB, pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB
                 pdImages(g_CurrentImage).getLayerByIndex(0).layerDIB.convertTo32bpp
                 
                 'Ask FreeImage for the size of the quantized image's palette
@@ -338,4 +308,5 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 

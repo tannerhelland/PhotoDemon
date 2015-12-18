@@ -23,6 +23,15 @@ Begin VB.Form FormRadialBlur
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.buttonStrip btsRender 
+      Height          =   615
+      Left            =   6120
+      TabIndex        =   4
+      Top             =   3720
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   1085
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -45,7 +54,7 @@ Begin VB.Form FormRadialBlur
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   1680
@@ -58,61 +67,27 @@ Begin VB.Form FormRadialBlur
       SigDigits       =   1
       Value           =   1
    End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   3
-      Top             =   3750
-      Width           =   5685
-      _ExtentX        =   10028
-      _ExtentY        =   582
-      Caption         =   "quality"
-      Value           =   -1  'True
-   End
-   Begin PhotoDemon.smartOptionButton OptInterpolate 
-      Height          =   360
-      Index           =   1
-      Left            =   6120
-      TabIndex        =   4
-      Top             =   4200
-      Width           =   5685
-      _ExtentX        =   10028
-      _ExtentY        =   582
-      Caption         =   "speed"
-   End
    Begin PhotoDemon.smartCheckBox chkSymmetry 
       Height          =   300
       Left            =   6120
-      TabIndex        =   6
+      TabIndex        =   3
       Top             =   2760
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   582
       Caption         =   "blur symmetrically"
    End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "render emphasis"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
-      Index           =   1
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   315
+      Index           =   0
       Left            =   6000
-      TabIndex        =   5
       Top             =   3360
-      Width           =   1755
+      Width           =   5835
+      _ExtentX        =   10292
+      _ExtentY        =   556
+      Caption         =   "render emphasis"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormRadialBlur"
@@ -245,12 +220,16 @@ Public Sub RadialBlurFilter(ByVal bRadius As Double, ByVal blurSymmetrically As 
     
 End Sub
 
+Private Sub btsRender_Click(ByVal buttonIndex As Long)
+    updatePreview
+End Sub
+
 Private Sub chkSymmetry_Click()
     updatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
-    Process "Radial blur", , buildParams(sltRadius, CBool(chkSymmetry), OptInterpolate(0)), UNDO_LAYER
+    Process "Radial blur", , buildParams(sltRadius, CBool(chkSymmetry), CBool(btsRender.ListIndex = 1)), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -273,14 +252,14 @@ Private Sub Form_Load()
     'Disable previews until the form is fully initialized
     cmdBar.markPreviewStatus False
     
+    btsRender.AddItem "speed", 0
+    btsRender.AddItem "accuracy", 1
+    btsRender.ListIndex = 1
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
-End Sub
-
-Private Sub OptInterpolate_Click(Index As Integer)
-    updatePreview
 End Sub
 
 Private Sub sltRadius_Change()
@@ -289,11 +268,12 @@ End Sub
 
 'Render a new effect preview
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then RadialBlurFilter sltRadius, CBool(chkSymmetry), OptInterpolate(0), True, fxPreview
+    If cmdBar.previewsAllowed Then RadialBlurFilter sltRadius, CBool(chkSymmetry), CBool(btsRender.ListIndex = 1), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 

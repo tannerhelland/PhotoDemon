@@ -24,7 +24,7 @@ Begin VB.Form FormSunshine
    ScaleWidth      =   806
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   1
       Top             =   1560
@@ -48,7 +48,7 @@ Begin VB.Form FormSunshine
       PointSelection  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltRayCount 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   2520
@@ -102,7 +102,7 @@ Begin VB.Form FormSunshine
    Begin PhotoDemon.colorSelector cpShine 
       Height          =   975
       Left            =   6000
-      TabIndex        =   8
+      TabIndex        =   5
       Top             =   3555
       Width           =   5775
       _ExtentX        =   10186
@@ -111,9 +111,9 @@ Begin VB.Form FormSunshine
       curColor        =   8978431
    End
    Begin PhotoDemon.sliderTextCombo sltVariance 
-      Height          =   720
+      Height          =   705
       Left            =   6000
-      TabIndex        =   9
+      TabIndex        =   6
       Top             =   4800
       Width           =   5895
       _ExtentX        =   10398
@@ -121,38 +121,30 @@ Begin VB.Form FormSunshine
       Caption         =   "color variance"
       Max             =   100
    End
-   Begin VB.Label lblExplanation 
-      BackStyle       =   0  'Transparent
-      Caption         =   "Note: you can also set a center position by clicking the preview window."
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblExplanation 
       Height          =   435
       Index           =   0
       Left            =   6120
-      TabIndex        =   6
       Top             =   1050
       Width           =   5655
-      WordWrap        =   -1  'True
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Alignment       =   2
+      Caption         =   "Note: you can also set a center position by clicking the preview window."
+      FontSize        =   9
+      ForeColor       =   4210752
+      Layout          =   1
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "center position (x, y)"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
-      Index           =   4
       Left            =   6000
-      TabIndex        =   5
       Top             =   120
-      Width           =   2205
+      Width           =   5925
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "center position (x, y)"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormSunshine"
@@ -480,3 +472,4 @@ End Sub
 Private Sub sltYCenter_Change()
     updatePreview
 End Sub
+

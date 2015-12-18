@@ -115,7 +115,7 @@ End Property
 Public Property Let BackColor(ByVal newColor As OLE_COLOR)
     If m_BackColor <> newColor Then
         m_BackColor = newColor
-        redrawBackBuffer
+        RedrawBackBuffer
     End If
 End Property
 
@@ -125,6 +125,7 @@ End Property
 '                  but I can revisit in the future if that ever becomes relevant.
 Public Property Get Caption() As String
 Attribute Caption.VB_UserMemId = -518
+Attribute Caption.VB_MemberFlags = "200"
     Caption = ucSupport.GetCaptionText
 End Property
 
@@ -156,7 +157,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     PropertyChanged "Enabled"
     
     'Redraw the control
-    redrawBackBuffer
+    RedrawBackBuffer
     
 End Property
 
@@ -194,7 +195,7 @@ End Property
 Public Property Let ForeColor(ByVal newColor As OLE_COLOR)
     If m_ForeColor <> newColor Then
         m_ForeColor = newColor
-        redrawBackBuffer
+        RedrawBackBuffer
     End If
 End Property
 
@@ -232,7 +233,7 @@ End Property
 Public Property Let UseCustomBackColor(ByVal newSetting As Boolean)
     If newSetting <> m_UseCustomBackColor Then
         m_UseCustomBackColor = newSetting
-        redrawBackBuffer
+        RedrawBackBuffer
     End If
 End Property
 
@@ -243,13 +244,13 @@ End Property
 Public Property Let UseCustomForeColor(ByVal newSetting As Boolean)
     If newSetting <> m_UseCustomForeColor Then
         m_UseCustomForeColor = newSetting
-        redrawBackBuffer
+        RedrawBackBuffer
     End If
 End Property
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then updateControlLayout
-    redrawBackBuffer
+    RedrawBackBuffer
 End Sub
 
 'hWnds aren't exposed by default
@@ -259,8 +260,8 @@ Attribute hWnd.VB_UserMemId = -515
 End Property
 
 'Container hWnd must be exposed for external tooltip handling
-Public Property Get containerHwnd() As Long
-    containerHwnd = UserControl.containerHwnd
+Public Property Get ContainerHwnd() As Long
+    ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
@@ -457,13 +458,13 @@ Private Sub updateControlLayout()
     End If
     
     'With all size metrics handled, we can now paint the back buffer
-    redrawBackBuffer
+    RedrawBackBuffer
             
 End Sub
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
-Private Sub redrawBackBuffer()
+Private Sub RedrawBackBuffer()
     
     'Because labels are so prevalent throughout the program, this function may end up being called when PD is going down.
     ' As such, we need to perform a failsafe check on the theming class.
@@ -542,12 +543,12 @@ Public Sub UpdateAgainstCurrentTheme()
 End Sub
 
 'Post-translation, we can request an immediate refresh
-Public Sub RequestRefresh()
+Public Sub requestRefresh()
     ucSupport.RequestRepaint
 End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    ucSupport.AssignTooltip UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub

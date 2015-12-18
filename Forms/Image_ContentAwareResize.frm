@@ -53,29 +53,18 @@ Begin VB.Form FormResizeContentAware
          Strikethrough   =   0   'False
       EndProperty
    End
-   Begin VB.Label lblFlatten 
-      Alignment       =   2  'Center
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "Note: this operation will flatten the image before resizing it."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblFlatten 
       Height          =   645
       Left            =   240
-      TabIndex        =   2
       Top             =   3480
       Visible         =   0   'False
       Width           =   9330
-      WordWrap        =   -1  'True
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Alignment       =   2
+      Caption         =   "Note: this operation will flatten the image before resizing it."
+      ForeColor       =   4210752
+      Layout          =   1
    End
 End
 Attribute VB_Name = "FormResizeContentAware"
@@ -271,7 +260,7 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
     tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB
-    If tmpDIB.getAlphaPremultiplication Then tmpDIB.setAlphaPremultiplication False
+    If tmpDIB.getAlphaPremultiplication Then tmpDIB.SetAlphaPremultiplication False
     
     'In past versions of the software, we could assume the passed measurements were always in pixels,
     ' but that is no longer the case!  Using the supplied "unit of measurement", convert the passed
@@ -283,7 +272,7 @@ Public Sub SmartResizeImage(ByVal iWidth As Long, ByVal iHeight As Long, Optiona
     If SeamCarveDIB(tmpDIB, iWidth, iHeight) Then
         
         'Premultiply alpha
-        If Not tmpDIB.getAlphaPremultiplication Then tmpDIB.setAlphaPremultiplication True
+        If Not tmpDIB.getAlphaPremultiplication Then tmpDIB.SetAlphaPremultiplication True
         
         'Copy the newly resized DIB back into its parent image
         pdImages(g_CurrentImage).getActiveLayer.layerDIB.createFromExistingDIB tmpDIB
@@ -360,3 +349,4 @@ Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal iWidth As Long, ByVal 
     End If
     
 End Function
+

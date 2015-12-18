@@ -44,7 +44,7 @@ Begin VB.Form FormScreenCapture
       Align           =   2  'Align Bottom
       Height          =   750
       Left            =   0
-      TabIndex        =   8
+      TabIndex        =   0
       Top             =   6255
       Width           =   13095
       _ExtentX        =   23098
@@ -125,47 +125,29 @@ Begin VB.Form FormScreenCapture
       _ExtentY        =   582
       Caption         =   "include window decorations"
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "preview"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   1
       Left            =   6120
-      TabIndex        =   7
       Top             =   180
-      Width           =   825
+      Width           =   6825
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "preview"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "screenshot source"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   0
       Left            =   240
-      TabIndex        =   0
       Top             =   180
-      Width           =   1890
+      Width           =   5730
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "screenshot source"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormScreenCapture"
@@ -194,11 +176,11 @@ Option Explicit
 Private Declare Function EnumWindows Lib "user32" (ByVal lpEnumFunc As Long, ByVal lParam As Long) As Long
 
 Private Sub chkChrome_Click()
-    UpdatePreview
+    updatePreview
 End Sub
 
 Private Sub chkMinimize_Click()
-    UpdatePreview
+    updatePreview
 End Sub
 
 Private Sub cmdBarMini_OKClick()
@@ -243,7 +225,7 @@ Private Sub Form_Load()
     Sleep 500
     
     'Render a preview of whichever item is currently selected
-    UpdatePreview
+    updatePreview
     
 End Sub
 
@@ -260,7 +242,7 @@ End Function
 Private Sub lstWindows_Click()
     
     If Not optSource(1) Then optSource(1) = True
-    UpdatePreview
+    updatePreview
     
 End Sub
 
@@ -271,12 +253,12 @@ Private Sub optSource_Click(Index As Integer)
         If lstWindows.ListIndex = -1 Then lstWindows.ListIndex = 0
     End If
     
-    UpdatePreview
+    updatePreview
     
 End Sub
 
 'Live previews of the screen capture are now provided
-Private Sub UpdatePreview()
+Private Sub updatePreview()
 
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB
@@ -332,3 +314,4 @@ Private Sub DisplayScreenCaptureError()
     lblMinimizedWarning.Visible = False
     
 End Sub
+

@@ -44,7 +44,7 @@ Begin VB.Form FormUnsharpMask
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltThreshold 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   2880
@@ -55,7 +55,7 @@ Begin VB.Form FormUnsharpMask
       Max             =   255
    End
    Begin PhotoDemon.sliderTextCombo sltAmount 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   1920
@@ -70,7 +70,7 @@ Begin VB.Form FormUnsharpMask
       NotchValueCustom=   1
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   4
       Top             =   960
@@ -92,26 +92,16 @@ Begin VB.Form FormUnsharpMask
       _ExtentX        =   10425
       _ExtentY        =   1058
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "quality"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
-      Index           =   0
       Left            =   6000
-      TabIndex        =   6
       Top             =   3840
-      Width           =   705
+      Width           =   5865
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "quality"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormUnsharpMask"
@@ -343,7 +333,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply visual themes to the form
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
@@ -388,4 +378,5 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 

@@ -23,6 +23,18 @@ Begin VB.Form FormPhotoFilters
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   983
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.pdScrollBar vsFilter 
+      Height          =   4245
+      Left            =   14295
+      TabIndex        =   4
+      Top             =   480
+      Width           =   255
+      _ExtentX        =   450
+      _ExtentY        =   7488
+      BackColor       =   0
+      Max             =   100
+      LargeChange     =   32
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   744
@@ -46,17 +58,9 @@ Begin VB.Form FormPhotoFilters
       ScaleHeight     =   281
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   551
-      TabIndex        =   5
+      TabIndex        =   3
       Top             =   480
       Width           =   8295
-   End
-   Begin VB.VScrollBar vsFilter 
-      Height          =   4185
-      LargeChange     =   32
-      Left            =   14280
-      TabIndex        =   4
-      Top             =   480
-      Width           =   330
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -82,26 +86,17 @@ Begin VB.Form FormPhotoFilters
       Value           =   30
       GradientColorLeft=   16777215
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "available filters"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
-      Height          =   285
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   330
       Index           =   1
       Left            =   6000
-      TabIndex        =   3
       Top             =   120
-      Width           =   1575
+      Width           =   8535
+      _ExtentX        =   15055
+      _ExtentY        =   582
+      Caption         =   "available filters"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormPhotoFilters"
@@ -461,7 +456,7 @@ Private Sub Form_Load()
     
     'Track a few keypresses to make list navigation easier
     Set cKeyEvents = New pdInputKeyboard
-    cKeyEvents.createKeyboardTracker "Photo Filters picBuffer", picBuffer.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN
+    cKeyEvents.CreateKeyboardTracker "Photo Filters picBuffer", picBuffer.hWnd, VK_LEFT, VK_UP, VK_RIGHT, VK_DOWN
     
     'Create a background buffer the same size as the buffer picture box
     Set bufferDIB = New pdDIB
@@ -690,12 +685,11 @@ Private Sub vsFilter_Change()
     redrawFilterList
 End Sub
 
-Private Sub vsFilter_Scroll()
-    redrawFilterList
-End Sub
-
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
 
+Private Sub vsFilter_Scroll(ByVal eventIsCritical As Boolean)
+    redrawFilterList
+End Sub

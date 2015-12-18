@@ -1240,7 +1240,7 @@ Public Sub DisplayWaitScreen(ByVal waitTitle As String, ByRef ownerForm As Form)
     
     FormWait.lblWaitTitle.Caption = waitTitle
     FormWait.lblWaitTitle.Visible = True
-    FormWait.lblWaitTitle.Refresh
+    FormWait.lblWaitTitle.requestRefresh
     
     Screen.MousePointer = vbHourglass
     
@@ -1253,55 +1253,6 @@ End Sub
 Public Sub HideWaitScreen()
     Screen.MousePointer = vbDefault
     Unload FormWait
-End Sub
-
-'Given a wordwrap label with a set size, attempt to fit the label's text inside it
-Public Sub FitWordwrapLabel(ByRef srcLabel As Label, ByRef srcForm As Form)
-
-    'We will use a pdFont object to help us measure the label in question
-    Dim tmpFont As pdFont
-    Set tmpFont = New pdFont
-    tmpFont.SetFontBold srcLabel.FontBold
-    tmpFont.SetFontItalic srcLabel.FontItalic
-    tmpFont.SetFontFace srcLabel.fontName
-    tmpFont.SetFontSize srcLabel.FontSize
-    tmpFont.CreateFontObject
-    tmpFont.SetTextAlignment srcLabel.Alignment
-    tmpFont.AttachToDC srcForm.hDC
-    
-    'Retrieve the height from the pdFont class
-    Dim lblHeight As Long
-    lblHeight = tmpFont.GetHeightOfWordwrapString(srcLabel.Caption, srcLabel.Width - 1)
-    
-    Dim curFontSize As Long
-    curFontSize = srcLabel.FontSize
-    
-    'If the text is too tall, shrink the font until an acceptable size is found.  Note that the reported text value tends to be
-    ' smaller than the space actually required.  I do not know why this happens.  To account for it, I cut a further 10% from
-    ' the requested height, just to be safe.
-    If (lblHeight > srcLabel.Height * 0.85) Then
-            
-        'Try shrinking the font size until an acceptable width is found
-        Do While (lblHeight > srcLabel.Height * 0.85) And (curFontSize >= 8)
-        
-            curFontSize = curFontSize - 1
-            
-            tmpFont.ReleaseFromDC
-            tmpFont.SetFontSize curFontSize
-            tmpFont.CreateFontObject
-            tmpFont.AttachToDC srcForm.hDC
-            lblHeight = tmpFont.GetHeightOfWordwrapString(srcLabel.Caption, srcLabel.Width)
-            
-        Loop
-            
-    End If
-    
-    tmpFont.ReleaseFromDC
-    
-    'When an acceptable size is found, set it and exit.
-    srcLabel.FontSize = curFontSize
-    srcLabel.Refresh
-
 End Sub
 
 'Because VB6 apps look terrible on modern version of Windows, I do a bit of beautification to every form upon at load-time.
@@ -1482,7 +1433,6 @@ Private Function GetWindowCaption(ByRef srcImage As pdImage) As String
     GetWindowCaption = captionBase & "  -  " & getPhotoDemonNameAndVersion()
 
 End Function
-
 
 'Display the specified size in the main form's status bar
 Public Sub DisplaySize(ByRef srcImage As pdImage)

@@ -32,15 +32,6 @@ Begin VB.Form FormSurfaceBlur
       Width           =   12030
       _ExtentX        =   21220
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -53,7 +44,7 @@ Begin VB.Form FormSurfaceBlur
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   1920
@@ -67,7 +58,7 @@ Begin VB.Form FormSurfaceBlur
       Value           =   5
    End
    Begin PhotoDemon.sliderTextCombo sltThreshold 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   4
       Top             =   2880
@@ -90,55 +81,35 @@ Begin VB.Form FormSurfaceBlur
    Begin PhotoDemon.buttonStrip btsArea 
       Height          =   600
       Left            =   6000
-      TabIndex        =   7
+      TabIndex        =   2
       Top             =   1080
       Width           =   5910
       _ExtentX        =   10425
       _ExtentY        =   1058
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "quality"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
-      Index           =   3
+      Index           =   1
       Left            =   6000
-      TabIndex        =   6
       Top             =   3840
-      Width           =   705
+      Width           =   5865
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "quality"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblTitle 
-      Appearance      =   0  'Flat
-      AutoSize        =   -1  'True
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "target"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
-      Index           =   2
+      Index           =   0
       Left            =   6000
-      TabIndex        =   2
       Top             =   720
-      Width           =   615
+      Width           =   5895
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "target"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormSurfaceBlur"
@@ -368,7 +339,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply visual themes
-    makeFormPretty Me
+    MakeFormPretty Me
         
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
@@ -418,4 +389,5 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 

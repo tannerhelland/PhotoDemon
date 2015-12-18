@@ -639,9 +639,6 @@ Private Sub Form_Activate()
     addInstructions = addInstructions & "  + " & g_Language.TranslateMessage("right-click to remove nodes")
     
     lblExplanation.Caption = addInstructions
-        
-    'If translations are active, the translated text may not fit the explanation label.  Automatically adjust it to fit.
-    FitWordwrapLabel lblExplanation, Me
     
     'Mark the mouse as not being down
     isMouseDown = False

@@ -24,25 +24,6 @@ Begin VB.Form FormPerspective
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1009
    ShowInTaskbar   =   0   'False
-   Begin VB.ComboBox cmbMapping 
-      BackColor       =   &H00FFFFFF&
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00800000&
-      Height          =   360
-      Left            =   240
-      Style           =   2  'Dropdown List
-      TabIndex        =   5
-      Top             =   6240
-      Width           =   5550
-   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -81,7 +62,7 @@ Begin VB.Form FormPerspective
    Begin PhotoDemon.sliderTextCombo sltQuality 
       Height          =   705
       Left            =   120
-      TabIndex        =   6
+      TabIndex        =   2
       Top             =   6840
       Width           =   5775
       _ExtentX        =   10186
@@ -96,53 +77,44 @@ Begin VB.Form FormPerspective
    Begin PhotoDemon.pdComboBox cboEdges 
       Height          =   375
       Left            =   240
-      TabIndex        =   7
+      TabIndex        =   4
       Top             =   8160
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   661
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "transformation type"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   0
       Left            =   120
-      TabIndex        =   4
       Top             =   5880
-      Width           =   2085
+      Width           =   5685
+      _ExtentX        =   10028
+      _ExtentY        =   503
+      Caption         =   "transformation type"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "if pixels lie outside the image..."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
-      Index           =   5
+      Index           =   1
       Left            =   120
-      TabIndex        =   2
       Top             =   7800
-      Width           =   3315
+      Width           =   5715
+      _ExtentX        =   10081
+      _ExtentY        =   503
+      Caption         =   "if pixels lie outside the image..."
+      FontSize        =   12
+      ForeColor       =   4210752
+   End
+   Begin PhotoDemon.pdComboBox cboMapping 
+      Height          =   375
+      Left            =   240
+      TabIndex        =   5
+      Top             =   6240
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   661
    End
 End
 Attribute VB_Name = "FormPerspective"
@@ -576,7 +548,7 @@ Public Sub PerspectiveImage(ByVal listOfModifiers As String, Optional ByVal toPr
         
 End Sub
 
-Private Sub cmbMapping_Click()
+Private Sub cboMapping_Click()
     redrawPreviewBox
     updatePreview
 End Sub
@@ -683,9 +655,9 @@ Private Sub Form_Load()
     PopDistortEdgeBox cboEdges, EDGE_ERASE
     
     'Populate the mapping type combo box
-    cmbMapping.Clear
-    cmbMapping.AddItem " forward (outline defines destination area)", 0
-    cmbMapping.AddItem " reverse (outline defines source area)", 1
+    cboMapping.Clear
+    cboMapping.AddItem " forward (outline defines destination area)", 0
+    cboMapping.AddItem " reverse (outline defines source area)", 1
     
     'Note the current image's width and height, which will be needed to adjust the preview effect
     If pdImages(g_CurrentImage).selectionActive Then
@@ -746,7 +718,7 @@ Private Sub redrawPreviewBox()
     'Next, we will do one of two things:
     ' 1) For forward mapping, draw a silhouette around the original image outline.
     ' 2) For reverse mapping, just draw the image itself.
-    If cmbMapping.ListIndex = 0 Then
+    If cboMapping.ListIndex = 0 Then
         Dim i As Long
         For i = 0 To 3
             If i < 3 Then
@@ -885,7 +857,7 @@ Private Function getPerspectiveParamString() As String
     paramString = paramString & "|" & (iHeight + (m_nPoints(3).pY - m_oPoints(3).pY) * (iHeight / m_previewHeight))
     
     'Quad to square or square to quad
-    paramString = paramString & "|" & CLng(cmbMapping.ListIndex)
+    paramString = paramString & "|" & CLng(cboMapping.ListIndex)
     
     'Edge handling
     paramString = paramString & "|" & CLng(cboEdges.ListIndex)
@@ -905,3 +877,4 @@ End Sub
 Private Sub sltQuality_Change()
     updatePreview
 End Sub
+

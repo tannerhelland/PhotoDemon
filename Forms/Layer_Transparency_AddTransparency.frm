@@ -79,7 +79,7 @@ Begin VB.Form FormTransparency_Basic
    Begin PhotoDemon.sliderTextCombo sltConstant 
       Height          =   675
       Left            =   6600
-      TabIndex        =   6
+      TabIndex        =   2
       Top             =   3360
       Width           =   5085
       _ExtentX        =   8969
@@ -90,26 +90,16 @@ Begin VB.Form FormTransparency_Basic
       Max             =   254
       Value           =   127
    End
-   Begin VB.Label lblTitle 
-      AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
-      Caption         =   "make image:"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   12
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00404040&
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
-      Index           =   0
       Left            =   6000
-      TabIndex        =   2
       Top             =   1440
-      Width           =   1380
+      Width           =   5610
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "make image"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormTransparency_Basic"
@@ -215,4 +205,5 @@ End Sub
 Private Sub fxPreview_ViewportChanged()
     updatePreview
 End Sub
+
 
