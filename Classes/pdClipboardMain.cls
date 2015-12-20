@@ -1644,7 +1644,7 @@ Private Sub RenderClipboard_DIB(Optional ByVal useV5Header As Boolean = False, O
             yFinal = m_ClipboardDIB.getDIBHeight - 1
             dibStride = m_ClipboardDIB.getDIBArrayWidth
             
-            If (Not programShuttingDown) Or (useV5Header) Then
+            If (Not programShuttingDown) Then
                 For y = 0 To yFinal
                     CopyMemoryStrict hGlobalPtr + headerSize + (y * dibStride), dibPointer + (yFinal - y) * dibStride, dibStride
                 Next y

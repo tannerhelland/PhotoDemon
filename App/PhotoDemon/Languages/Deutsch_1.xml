@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.119</langversion>
+<langversion>6.7.120</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -6238,6 +6238,11 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 <!-- BEGIN text for Adjustments_Curves.frm (FormCurves) -->
 
 <phrase>
+<original>display</original>
+<translation>Anzeige</translation>
+</phrase>
+
+<phrase>
 <original>original curve (diagonal line)</original>
 <translation>Originalkurve (diagonale Gerade)</translation>
 </phrase>
@@ -6250,11 +6255,6 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 <phrase>
 <original>histogram overlay</original>
 <translation>Histogramm-Überlagerung</translation>
-</phrase>
-
-<phrase>
-<original>display</original>
-<translation>Anzeige</translation>
 </phrase>
 
 <phrase>
@@ -8430,7 +8430,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>Radial-Unschärfe verwenden</translation>
 </phrase>
 
-<!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>accuracy</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_RadialBlur.frm-->
 
@@ -8681,11 +8686,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Distort_Ripple.frm (FormRipple) -->
 
 <phrase>
-<original>time (phase)</original>
-<translation>Zeit (Phase)</translation>
-</phrase>
-
-<phrase>
 <original>height of ripples (amplitude)</original>
 <translation>Höhe der Falten (Amplitude)</translation>
 </phrase>
@@ -8693,6 +8693,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>length of ripples (wavelength)</original>
 <translation>Länge der Falten (Wellenlänge)</translation>
+</phrase>
+
+<phrase>
+<original>time (phase)</original>
+<translation>Zeit (Phase)</translation>
 </phrase>
 
 <phrase>
@@ -8956,16 +8961,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_LightAndShadow_LensFlare.frm (FormLensFlare) -->
 
 <phrase>
-<original>Note: you can also set a position by clicking the preview window.</original>
-<translation>Hinweis: Die Position können Sie auch mit einem Klick auf das Vorschaufenster setzen.</translation>
-</phrase>
-
-<phrase>
-<original>position (x, y)</original>
-<translation>Position (x, y)</translation>
-</phrase>
-
-<phrase>
 <original>secondary intensity</original>
 <translation>zweitrangige Intensität</translation>
 </phrase>
@@ -8978,6 +8973,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>synchronize intensity</original>
 <translation>Intensität synchronisieren</translation>
+</phrase>
+
+<phrase>
+<original>Note: you can also set a position by clicking the preview window.</original>
+<translation>Hinweis: Die Position können Sie auch mit einem Klick auf das Vorschaufenster setzen.</translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>Position (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -9669,6 +9674,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>Step 1: select the photo editing action(s) to apply to each image</original>
+<translation>Schritt 1: Wählen Sie den/die Fotobearbeitungsschritt(e), der/die auf jedes Bild anzuwenden ist/sind</translation>
+</phrase>
+
+<phrase>
 <original>Select macro</original>
 <translation>Makro auswählen</translation>
 </phrase>
@@ -9986,11 +9996,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>maximum compression</original>
 <translation>maximale Kompression</translation>
-</phrase>
-
-<phrase>
-<original>Step 1: select the photo editing action(s) to apply to each image</original>
-<translation>Schritt 1: Wählen Sie den/die Fotobearbeitungsschritt(e), der/die auf jedes Bild anzuwenden ist/sind</translation>
 </phrase>
 
 <phrase>
@@ -11369,7 +11374,7 @@ Für diesen unbequemen Umweg möchte ich mich wirklich entschuldigen; unglückli
 </phrase>
 
 <phrase>
-<original>quantization method:=</original>
+<original>quantization method</original>
 <translation></translation>
 </phrase>
 
@@ -12843,8 +12848,8 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 <!-- BEGIN text for Tools_LanguageEditor.frm (FormLanguageEditor) -->
 
 <phrase>
-<original>Initiate auto-translation of all missing phrases</original>
-<translation>Automatische Übersetzung aller fehlenden Textstücke beginnen</translation>
+<original>Step 1: select a language file</original>
+<translation>Schritt 1: Wählen Sie eine Sprachdatei</translation>
 </phrase>
 
 <phrase>
@@ -12880,6 +12885,11 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 <phrase>
 <original>list of phrases (%1 items)</original>
 <translation>Liste von Textstücken (%1 Einträge)</translation>
+</phrase>
+
+<phrase>
+<original>Initiate auto-translation of all missing phrases</original>
+<translation>Automatische Übersetzung aller fehlenden Textstücke beginnen</translation>
 </phrase>
 
 <phrase>
@@ -12955,11 +12965,6 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 <phrase>
 <original>language ID</original>
 <translation>ID der Sprache</translation>
-</phrase>
-
-<phrase>
-<original>Step 1: select a language file</original>
-<translation>Schritt 1: Wählen Sie eine Sprachdatei</translation>
 </phrase>
 
 <phrase>
@@ -14164,51 +14169,6 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 </phrase>
 
 <phrase>
-<original>Disable ExifTool</original>
-<translation>ExifTool ausschalten</translation>
-</phrase>
-
-<phrase>
-<original>installed, enabled, and up to date</original>
-<translation>installiert, aktiviert und auf dem neuesten Stand</translation>
-</phrase>
-
-<phrase>
-<original>status</original>
-<translation>Status</translation>
-</phrase>
-
-<phrase>
-<original>current plugin status</original>
-<translation>aktueller Plugin-Status</translation>
-</phrase>
-
-<phrase>
-<original>GOOD</original>
-<translation>GUT</translation>
-</phrase>
-
-<phrase>
-<original>Disable FreeImage</original>
-<translation>FreeImage ausschalten</translation>
-</phrase>
-
-<phrase>
-<original>Disable zLib</original>
-<translation>zLib ausschalten</translation>
-</phrase>
-
-<phrase>
-<original>Disable EZTwain</original>
-<translation>EZTwain ausschalten</translation>
-</phrase>
-
-<phrase>
-<original>Disable PNGQuant</original>
-<translation>PNGQuant ausschalten</translation>
-</phrase>
-
-<phrase>
 <original>improve IE6 compatibility (reduces image quality; use with caution)</original>
 <translation>Kompatibilität mit IE6 erhöhen (Vorsicht - führt zu schlechteren Bildern!)</translation>
 </phrase>
@@ -14341,6 +14301,51 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 <phrase>
 <original>FreeImage Public License (FIPL)</original>
 <translation>FreeImage Public License (FIPL)</translation>
+</phrase>
+
+<phrase>
+<original>Disable ExifTool</original>
+<translation>ExifTool ausschalten</translation>
+</phrase>
+
+<phrase>
+<original>installed, enabled, and up to date</original>
+<translation>installiert, aktiviert und auf dem neuesten Stand</translation>
+</phrase>
+
+<phrase>
+<original>status</original>
+<translation>Status</translation>
+</phrase>
+
+<phrase>
+<original>current plugin status</original>
+<translation>aktueller Plugin-Status</translation>
+</phrase>
+
+<phrase>
+<original>GOOD</original>
+<translation>GUT</translation>
+</phrase>
+
+<phrase>
+<original>Disable FreeImage</original>
+<translation>FreeImage ausschalten</translation>
+</phrase>
+
+<phrase>
+<original>Disable zLib</original>
+<translation>zLib ausschalten</translation>
+</phrase>
+
+<phrase>
+<original>Disable EZTwain</original>
+<translation>EZTwain ausschalten</translation>
+</phrase>
+
+<phrase>
+<original>Disable PNGQuant</original>
+<translation>PNGQuant ausschalten</translation>
 </phrase>
 
 <phrase>
@@ -14549,10 +14554,10 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2500</phrasecount>
+<phrasecount>2501</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4294 phrases. -->
-<!-- 1794 are duplicates, so only 2500 unique phrases have been written to file. -->
-<!-- These 2500 phrases contain approximately 13374 total words. -->
+<!-- 1793 are duplicates, so only 2501 unique phrases have been written to file. -->
+<!-- These 2501 phrases contain approximately 13376 total words. -->
 
 </pdData>

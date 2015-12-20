@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.119</langversion>
+<langversion>6.7.120</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -6240,6 +6240,11 @@ Note förändrats framgångsrikt: några mindre program kan inte vara levande up
 <!-- BEGIN text for Adjustments_Curves.frm (FormCurves) -->
 
 <phrase>
+<original>display</original>
+<translation>display</translation>
+</phrase>
+
+<phrase>
 <original>original curve (diagonal line)</original>
 <translation>ursprungliga kurvan (diagonal linje)</translation>
 </phrase>
@@ -6252,11 +6257,6 @@ Note förändrats framgångsrikt: några mindre program kan inte vara levande up
 <phrase>
 <original>histogram overlay</original>
 <translation>histogramövertäckning</translation>
-</phrase>
-
-<phrase>
-<original>display</original>
-<translation>display</translation>
 </phrase>
 
 <phrase>
@@ -8432,7 +8432,12 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <translation>Tillämpa radiell oskärpa</translation>
 </phrase>
 
-<!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>accuracy</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_RadialBlur.frm-->
 
@@ -8683,11 +8688,6 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <!-- BEGIN text for Effects_Distort_Ripple.frm (FormRipple) -->
 
 <phrase>
-<original>time (phase)</original>
-<translation>tid (fas)</translation>
-</phrase>
-
-<phrase>
 <original>height of ripples (amplitude)</original>
 <translation>höjd av krus (amplitud)</translation>
 </phrase>
@@ -8695,6 +8695,11 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <phrase>
 <original>length of ripples (wavelength)</original>
 <translation>längd krus (våglängd)</translation>
+</phrase>
+
+<phrase>
+<original>time (phase)</original>
+<translation>tid (fas)</translation>
 </phrase>
 
 <phrase>
@@ -8958,16 +8963,6 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <!-- BEGIN text for Effects_LightAndShadow_LensFlare.frm (FormLensFlare) -->
 
 <phrase>
-<original>Note: you can also set a position by clicking the preview window.</original>
-<translation>Obs: Du kan också ställa in en position genom att klicka på förhandsgranskningsfönstret.</translation>
-</phrase>
-
-<phrase>
-<original>position (x, y)</original>
-<translation>positionen (x, y)</translation>
-</phrase>
-
-<phrase>
 <original>secondary intensity</original>
 <translation>sekundär intensitet</translation>
 </phrase>
@@ -8980,6 +8975,16 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <phrase>
 <original>synchronize intensity</original>
 <translation>synkronisera intensitet</translation>
+</phrase>
+
+<phrase>
+<original>Note: you can also set a position by clicking the preview window.</original>
+<translation>Obs: Du kan också ställa in en position genom att klicka på förhandsgranskningsfönstret.</translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>positionen (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -9671,6 +9676,11 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 </phrase>
 
 <phrase>
+<original>Step 1: select the photo editing action(s) to apply to each image</original>
+<translation>Steg 1: Välj fotoredigering åtgärd (er) att gälla för varje bild</translation>
+</phrase>
+
+<phrase>
 <original>Select macro</original>
 <translation>Välj makro</translation>
 </phrase>
@@ -9988,11 +9998,6 @@ If du vill spara den med ett annat filnamn, välj "Avbryt" och använd sedan Ark
 <phrase>
 <original>maximum compression</original>
 <translation>maximal kompression</translation>
-</phrase>
-
-<phrase>
-<original>Step 1: select the photo editing action(s) to apply to each image</original>
-<translation>Steg 1: Välj fotoredigering åtgärd (er) att gälla för varje bild</translation>
 </phrase>
 
 <phrase>
@@ -11371,7 +11376,7 @@ I uppriktigt ber om ursäkt för besväret, men tyvärr finns det inget %2 kan g
 </phrase>
 
 <phrase>
-<original>quantization method:=</original>
+<original>quantization method</original>
 <translation></translation>
 </phrase>
 
@@ -12845,8 +12850,8 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 <!-- BEGIN text for Tools_LanguageEditor.frm (FormLanguageEditor) -->
 
 <phrase>
-<original>Initiate auto-translation of all missing phrases</original>
-<translation>Initiera automatisk översättning av alla saknade fraser</translation>
+<original>Step 1: select a language file</original>
+<translation>Steg 1: Välj en språkfil</translation>
 </phrase>
 
 <phrase>
@@ -12882,6 +12887,11 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 <phrase>
 <original>list of phrases (%1 items)</original>
 <translation>lista över fraser ( %1 artiklar)</translation>
+</phrase>
+
+<phrase>
+<original>Initiate auto-translation of all missing phrases</original>
+<translation>Initiera automatisk översättning av alla saknade fraser</translation>
 </phrase>
 
 <phrase>
@@ -12957,11 +12967,6 @@ To aktivera stöd för denna funktion, vänligen kopiera FreeImage.dll filen til
 <phrase>
 <original>language ID</original>
 <translation>språk-ID</translation>
-</phrase>
-
-<phrase>
-<original>Step 1: select a language file</original>
-<translation>Steg 1: Välj en språkfil</translation>
 </phrase>
 
 <phrase>
@@ -14166,51 +14171,6 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 </phrase>
 
 <phrase>
-<original>Disable ExifTool</original>
-<translation>inaktivera ExifTool</translation>
-</phrase>
-
-<phrase>
-<original>installed, enabled, and up to date</original>
-<translation>installerat, aktiverat och aktuell</translation>
-</phrase>
-
-<phrase>
-<original>status</original>
-<translation>status</translation>
-</phrase>
-
-<phrase>
-<original>current plugin status</original>
-<translation>nuvarande plugin status</translation>
-</phrase>
-
-<phrase>
-<original>GOOD</original>
-<translation>BRA</translation>
-</phrase>
-
-<phrase>
-<original>Disable FreeImage</original>
-<translation>inaktivera Freeimage</translation>
-</phrase>
-
-<phrase>
-<original>Disable zLib</original>
-<translation>Inaktivera zlib</translation>
-</phrase>
-
-<phrase>
-<original>Disable EZTwain</original>
-<translation>inaktivera EZTwain</translation>
-</phrase>
-
-<phrase>
-<original>Disable PNGQuant</original>
-<translation>Disable pngquant</translation>
-</phrase>
-
-<phrase>
 <original>improve IE6 compatibility (reduces image quality; use with caution)</original>
 <translation>förbättra IE6 kompatibilitet (reducerar bildkvaliteten, använd med försiktighet)</translation>
 </phrase>
@@ -14343,6 +14303,51 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 <phrase>
 <original>FreeImage Public License (FIPL)</original>
 <translation>Freeimage Public License (FIPL)</translation>
+</phrase>
+
+<phrase>
+<original>Disable ExifTool</original>
+<translation>inaktivera ExifTool</translation>
+</phrase>
+
+<phrase>
+<original>installed, enabled, and up to date</original>
+<translation>installerat, aktiverat och aktuell</translation>
+</phrase>
+
+<phrase>
+<original>status</original>
+<translation>status</translation>
+</phrase>
+
+<phrase>
+<original>current plugin status</original>
+<translation>nuvarande plugin status</translation>
+</phrase>
+
+<phrase>
+<original>GOOD</original>
+<translation>BRA</translation>
+</phrase>
+
+<phrase>
+<original>Disable FreeImage</original>
+<translation>inaktivera Freeimage</translation>
+</phrase>
+
+<phrase>
+<original>Disable zLib</original>
+<translation>Inaktivera zlib</translation>
+</phrase>
+
+<phrase>
+<original>Disable EZTwain</original>
+<translation>inaktivera EZTwain</translation>
+</phrase>
+
+<phrase>
+<original>Disable PNGQuant</original>
+<translation>Disable pngquant</translation>
 </phrase>
 
 <phrase>
@@ -14551,10 +14556,10 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2500</phrasecount>
+<phrasecount>2501</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4294 phrases. -->
-<!-- 1794 are duplicates, so only 2500 unique phrases have been written to file. -->
-<!-- These 2500 phrases contain approximately 13374 total words. -->
+<!-- 1793 are duplicates, so only 2501 unique phrases have been written to file. -->
+<!-- These 2501 phrases contain approximately 13376 total words. -->
 
 </pdData>
