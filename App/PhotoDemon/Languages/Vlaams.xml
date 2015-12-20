@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.119</langversion>
+<langversion>6.7.120</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -6239,6 +6239,11 @@ Nota: enkele kleine programmateksten kunnen niet live worden  bijgewerkt. Een de
 <!-- BEGIN text for Adjustments_Curves.frm (FormCurves) -->
 
 <phrase>
+<original>display</original>
+<translation>weergeven</translation>
+</phrase>
+
+<phrase>
 <original>original curve (diagonal line)</original>
 <translation>oorspronkelijke curve (diagonale lijn)</translation>
 </phrase>
@@ -6251,11 +6256,6 @@ Nota: enkele kleine programmateksten kunnen niet live worden  bijgewerkt. Een de
 <phrase>
 <original>histogram overlay</original>
 <translation>histogram overlay</translation>
-</phrase>
-
-<phrase>
-<original>display</original>
-<translation>weergeven</translation>
 </phrase>
 
 <phrase>
@@ -8431,7 +8431,12 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <translation>Toepassen radiale vervaging</translation>
 </phrase>
 
-<!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>accuracy</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_RadialBlur.frm-->
 
@@ -8682,11 +8687,6 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <!-- BEGIN text for Effects_Distort_Ripple.frm (FormRipple) -->
 
 <phrase>
-<original>time (phase)</original>
-<translation>tijd (fase)</translation>
-</phrase>
-
-<phrase>
 <original>height of ripples (amplitude)</original>
 <translation>hoogte van rimpels (amplitude)</translation>
 </phrase>
@@ -8694,6 +8694,11 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <phrase>
 <original>length of ripples (wavelength)</original>
 <translation>lengte van rimpels (golflengte)</translation>
+</phrase>
+
+<phrase>
+<original>time (phase)</original>
+<translation>tijd (fase)</translation>
 </phrase>
 
 <phrase>
@@ -8957,16 +8962,6 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <!-- BEGIN text for Effects_LightAndShadow_LensFlare.frm (FormLensFlare) -->
 
 <phrase>
-<original>Note: you can also set a position by clicking the preview window.</original>
-<translation>Opmerking: je kan ook positioneren door te klikken op hetvoorbeeldvenster.</translation>
-</phrase>
-
-<phrase>
-<original>position (x, y)</original>
-<translation>positie (x, y)</translation>
-</phrase>
-
-<phrase>
 <original>secondary intensity</original>
 <translation>secundaire intensiteit</translation>
 </phrase>
@@ -8979,6 +8974,16 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <phrase>
 <original>synchronize intensity</original>
 <translation>synchroniseren intensiteit</translation>
+</phrase>
+
+<phrase>
+<original>Note: you can also set a position by clicking the preview window.</original>
+<translation>Opmerking: je kan ook positioneren door te klikken op hetvoorbeeldvenster.</translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>positie (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -9670,6 +9675,11 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 </phrase>
 
 <phrase>
+<original>Step 1: select the photo editing action(s) to apply to each image</original>
+<translation>Stap 1: selecteer fotobewerkingsactie(s) om op iedere afbeelding toe te passen</translation>
+</phrase>
+
+<phrase>
 <original>Select macro</original>
 <translation>Selecteer macro</translation>
 </phrase>
@@ -9987,11 +9997,6 @@ Als je ze wilt opslaan onder een andere bestandsnaam, selecteer dan 'Annuleren',
 <phrase>
 <original>maximum compression</original>
 <translation>maximale compressie</translation>
-</phrase>
-
-<phrase>
-<original>Step 1: select the photo editing action(s) to apply to each image</original>
-<translation>Stap 1: selecteer fotobewerkingsactie(s) om op iedere afbeelding toe te passen</translation>
 </phrase>
 
 <phrase>
@@ -11370,7 +11375,7 @@ Mijn oprechte excuses voor dit ongemak, maar helaas is er niets dat %2 kan doen 
 </phrase>
 
 <phrase>
-<original>quantization method:=</original>
+<original>quantization method</original>
 <translation></translation>
 </phrase>
 
@@ -12844,8 +12849,8 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <!-- BEGIN text for Tools_LanguageEditor.frm (FormLanguageEditor) -->
 
 <phrase>
-<original>Initiate auto-translation of all missing phrases</original>
-<translation>Initiëren automatische vertaling van alle ontbrekende zinnen</translation>
+<original>Step 1: select a language file</original>
+<translation>Stap1: selecteer een taalbestand</translation>
 </phrase>
 
 <phrase>
@@ -12881,6 +12886,11 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <phrase>
 <original>list of phrases (%1 items)</original>
 <translation>lijst zinnen (%1 items)</translation>
+</phrase>
+
+<phrase>
+<original>Initiate auto-translation of all missing phrases</original>
+<translation>Initiëren automatische vertaling van alle ontbrekende zinnen</translation>
 </phrase>
 
 <phrase>
@@ -12956,11 +12966,6 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <phrase>
 <original>language ID</original>
 <translation>taal ID</translation>
-</phrase>
-
-<phrase>
-<original>Step 1: select a language file</original>
-<translation>Stap1: selecteer een taalbestand</translation>
 </phrase>
 
 <phrase>
@@ -14165,51 +14170,6 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 </phrase>
 
 <phrase>
-<original>Disable ExifTool</original>
-<translation>Uitschakelen ExifTool</translation>
-</phrase>
-
-<phrase>
-<original>installed, enabled, and up to date</original>
-<translation>geïnstalleerd, ingeschakeld en actueel</translation>
-</phrase>
-
-<phrase>
-<original>status</original>
-<translation>status</translation>
-</phrase>
-
-<phrase>
-<original>current plugin status</original>
-<translation>huidige insteekmodule status</translation>
-</phrase>
-
-<phrase>
-<original>GOOD</original>
-<translation>GOED</translation>
-</phrase>
-
-<phrase>
-<original>Disable FreeImage</original>
-<translation>Uitschakelen FreeImage</translation>
-</phrase>
-
-<phrase>
-<original>Disable zLib</original>
-<translation>Uitschakelen zLib</translation>
-</phrase>
-
-<phrase>
-<original>Disable EZTwain</original>
-<translation>Uitschakelen EZTwain</translation>
-</phrase>
-
-<phrase>
-<original>Disable PNGQuant</original>
-<translation>Uitschakelen pngquant</translation>
-</phrase>
-
-<phrase>
 <original>improve IE6 compatibility (reduces image quality; use with caution)</original>
 <translation>verbeteren IE6 compatibiliteit (vermindert de beeldkwaliteit; gebruik met de nodige voorzichtigheid)</translation>
 </phrase>
@@ -14342,6 +14302,51 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 <phrase>
 <original>FreeImage Public License (FIPL)</original>
 <translation>FreeImage Publieke Licentie (FIPL)</translation>
+</phrase>
+
+<phrase>
+<original>Disable ExifTool</original>
+<translation>Uitschakelen ExifTool</translation>
+</phrase>
+
+<phrase>
+<original>installed, enabled, and up to date</original>
+<translation>geïnstalleerd, ingeschakeld en actueel</translation>
+</phrase>
+
+<phrase>
+<original>status</original>
+<translation>status</translation>
+</phrase>
+
+<phrase>
+<original>current plugin status</original>
+<translation>huidige insteekmodule status</translation>
+</phrase>
+
+<phrase>
+<original>GOOD</original>
+<translation>GOED</translation>
+</phrase>
+
+<phrase>
+<original>Disable FreeImage</original>
+<translation>Uitschakelen FreeImage</translation>
+</phrase>
+
+<phrase>
+<original>Disable zLib</original>
+<translation>Uitschakelen zLib</translation>
+</phrase>
+
+<phrase>
+<original>Disable EZTwain</original>
+<translation>Uitschakelen EZTwain</translation>
+</phrase>
+
+<phrase>
+<original>Disable PNGQuant</original>
+<translation>Uitschakelen pngquant</translation>
 </phrase>
 
 <phrase>
@@ -14550,10 +14555,10 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2500</phrasecount>
+<phrasecount>2501</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4294 phrases. -->
-<!-- 1794 are duplicates, so only 2500 unique phrases have been written to file. -->
-<!-- These 2500 phrases contain approximately 13374 total words. -->
+<!-- 1793 are duplicates, so only 2501 unique phrases have been written to file. -->
+<!-- These 2501 phrases contain approximately 13376 total words. -->
 
 </pdData>

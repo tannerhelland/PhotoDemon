@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.831</langversion>
+<langversion>6.8.832</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ILoveVB</author>
@@ -6231,6 +6231,11 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 <!-- BEGIN text for Adjustments_Curves.frm (FormCurves) -->
 
 <phrase>
+<original>display</original>
+<translation>显示</translation>
+</phrase>
+
+<phrase>
 <original>original curve (diagonal line)</original>
 <translation>原始曲线（对角线）</translation>
 </phrase>
@@ -6243,11 +6248,6 @@ Note: some minor program text cannot be live-updated.  Such text will be properl
 <phrase>
 <original>histogram overlay</original>
 <translation>直方图覆盖</translation>
-</phrase>
-
-<phrase>
-<original>display</original>
-<translation>显示</translation>
 </phrase>
 
 <phrase>
@@ -8424,7 +8424,12 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <translation>应用径向模糊</translation>
 </phrase>
 
-<!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 7 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<phrase>
+<original>accuracy</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_RadialBlur.frm-->
 
@@ -8675,11 +8680,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Distort_Ripple.frm (FormRipple) -->
 
 <phrase>
-<original>time (phase)</original>
-<translation>时相</translation>
-</phrase>
-
-<phrase>
 <original>height of ripples (amplitude)</original>
 <translation>波纹高度（振幅）</translation>
 </phrase>
@@ -8687,6 +8687,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>length of ripples (wavelength)</original>
 <translation>波纹长度（波长）</translation>
+</phrase>
+
+<phrase>
+<original>time (phase)</original>
+<translation>时相</translation>
 </phrase>
 
 <phrase>
@@ -8950,16 +8955,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_LightAndShadow_LensFlare.frm (FormLensFlare) -->
 
 <phrase>
-<original>Note: you can also set a position by clicking the preview window.</original>
-<translation>注意：您还可以设置一个位置，通过单击预览窗口。</translation>
-</phrase>
-
-<phrase>
-<original>position (x, y)</original>
-<translation>位置(x,y)</translation>
-</phrase>
-
-<phrase>
 <original>secondary intensity</original>
 <translation>二级强度</translation>
 </phrase>
@@ -8972,6 +8967,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>synchronize intensity</original>
 <translation>同步强度</translation>
+</phrase>
+
+<phrase>
+<original>Note: you can also set a position by clicking the preview window.</original>
+<translation>注意：您还可以设置一个位置，通过单击预览窗口。</translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>位置(x,y)</translation>
 </phrase>
 
 <phrase>
@@ -9663,6 +9668,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>Step 1: select the photo editing action(s) to apply to each image</original>
+<translation>第一步：选择适用于每个图像的编辑操作</translation>
+</phrase>
+
+<phrase>
 <original>Select macro</original>
 <translation>选择宏</translation>
 </phrase>
@@ -9980,11 +9990,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>maximum compression</original>
 <translation>最大压缩</translation>
-</phrase>
-
-<phrase>
-<original>Step 1: select the photo editing action(s) to apply to each image</original>
-<translation>第一步：选择适用于每个图像的编辑操作</translation>
 </phrase>
 
 <phrase>
@@ -11360,8 +11365,8 @@ I sincerely apologize for this inconvenience, but unfortunately there is nothing
 </phrase>
 
 <phrase>
-<original>quantization method:=</original>
-<translation>量化方法：=</translation>
+<original>quantization method</original>
+<translation></translation>
 </phrase>
 
 <phrase>
@@ -12837,8 +12842,8 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <!-- BEGIN text for Tools_LanguageEditor.frm (FormLanguageEditor) -->
 
 <phrase>
-<original>Initiate auto-translation of all missing phrases</original>
-<translation>启动自动翻译的所有缺失词组</translation>
+<original>Step 1: select a language file</original>
+<translation>第一步：选择一个语言文件</translation>
 </phrase>
 
 <phrase>
@@ -12874,6 +12879,11 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <phrase>
 <original>list of phrases (%1 items)</original>
 <translation>总项目数(%1)</translation>
+</phrase>
+
+<phrase>
+<original>Initiate auto-translation of all missing phrases</original>
+<translation>启动自动翻译的所有缺失词组</translation>
 </phrase>
 
 <phrase>
@@ -12949,11 +12959,6 @@ To enable support for this feature, please copy the FreeImage.dll file into the 
 <phrase>
 <original>language ID</original>
 <translation>语言代码:</translation>
-</phrase>
-
-<phrase>
-<original>Step 1: select a language file</original>
-<translation>第一步：选择一个语言文件</translation>
 </phrase>
 
 <phrase>
@@ -14155,51 +14160,6 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 </phrase>
 
 <phrase>
-<original>Disable ExifTool</original>
-<translation>禁用ExifTool</translation>
-</phrase>
-
-<phrase>
-<original>installed, enabled, and up to date</original>
-<translation>安装，允许，和最新的</translation>
-</phrase>
-
-<phrase>
-<original>status</original>
-<translation>状态</translation>
-</phrase>
-
-<phrase>
-<original>current plugin status</original>
-<translation>当前插件状态</translation>
-</phrase>
-
-<phrase>
-<original>GOOD</original>
-<translation>好</translation>
-</phrase>
-
-<phrase>
-<original>Disable FreeImage</original>
-<translation>禁用FreeImage</translation>
-</phrase>
-
-<phrase>
-<original>Disable zLib</original>
-<translation>禁用ZLIB</translation>
-</phrase>
-
-<phrase>
-<original>Disable EZTwain</original>
-<translation>禁用EZTwain</translation>
-</phrase>
-
-<phrase>
-<original>Disable PNGQuant</original>
-<translation>禁用PNGQuant</translation>
-</phrase>
-
-<phrase>
 <original>improve IE6 compatibility (reduces image quality; use with caution)</original>
 <translation>提高IE6兼容性（降低图像质量;请小心使用）</translation>
 </phrase>
@@ -14332,6 +14292,51 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <phrase>
 <original>FreeImage Public License (FIPL)</original>
 <translation>FreeImage的公共许可（FIPL）</translation>
+</phrase>
+
+<phrase>
+<original>Disable ExifTool</original>
+<translation>禁用ExifTool</translation>
+</phrase>
+
+<phrase>
+<original>installed, enabled, and up to date</original>
+<translation>安装，允许，和最新的</translation>
+</phrase>
+
+<phrase>
+<original>status</original>
+<translation>状态</translation>
+</phrase>
+
+<phrase>
+<original>current plugin status</original>
+<translation>当前插件状态</translation>
+</phrase>
+
+<phrase>
+<original>GOOD</original>
+<translation>好</translation>
+</phrase>
+
+<phrase>
+<original>Disable FreeImage</original>
+<translation>禁用FreeImage</translation>
+</phrase>
+
+<phrase>
+<original>Disable zLib</original>
+<translation>禁用ZLIB</translation>
+</phrase>
+
+<phrase>
+<original>Disable EZTwain</original>
+<translation>禁用EZTwain</translation>
+</phrase>
+
+<phrase>
+<original>Disable PNGQuant</original>
+<translation>禁用PNGQuant</translation>
 </phrase>
 
 <phrase>
@@ -14540,10 +14545,10 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2500</phrasecount>
+<phrasecount>2501</phrasecount>
 
 <!-- As of this build, PhotoDemon contains 4294 phrases. -->
-<!-- 1794 are duplicates, so only 2500 unique phrases have been written to file. -->
-<!-- These 2500 phrases contain approximately 13374 total words. -->
+<!-- 1793 are duplicates, so only 2501 unique phrases have been written to file. -->
+<!-- These 2501 phrases contain approximately 13376 total words. -->
 
 </pdData>
