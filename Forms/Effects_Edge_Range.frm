@@ -132,7 +132,6 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Apply a "range filter" filter to the current master image (basically a max/min rank algorithm, with some tweaks)
-'Input: radius of the search (min 1, no real max - but the scroll bar is maxed at 200 presently)
 Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
     'Parse out the parameter list

@@ -6,7 +6,7 @@
 
 <langid>ms-MY</langid>
 <langname>Malay</langname>
-<langversion>6.7.120</langversion>
+<langversion>6.7.121</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -4891,6 +4891,11 @@ or menu Fail > Import dan Fail > Buka.</translation>
 </phrase>
 
 <phrase>
+<original>Portrait glow</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Solarize</original>
 <translation>Solarize</translation>
 </phrase>
@@ -5751,7 +5756,7 @@ Note: beberapa teks program minor tidak boleh hidup dikemaskini. Teks tersebut a
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 565 phrases. 179 were duplicates of existing phrases, so only 386 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 180 were duplicates of existing phrases, so only 387 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14554,12 +14559,33 @@ If anda masih memilih untuk melumpuhkan kemas kini, jangan lupa untuk melawat ph
 
 <!-- END text for Effects_Blur_SNN.frm-->
 
+<!-- BEGIN text for Effects_Stylize_PortraitGlow.frm (FormPortraitGlow) -->
+
+<phrase>
+<original>glow radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>exposure boost</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying petroleum jelly to camera lens</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_PortraitGlow.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+
+<!-- END text for Effects_Stylize_PortraitGlow.frm-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2501</phrasecount>
+<phrasecount>2505</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4294 phrases. -->
-<!-- 1793 are duplicates, so only 2501 unique phrases have been written to file. -->
-<!-- These 2501 phrases contain approximately 13376 total words. -->
+<!-- As of this build, PhotoDemon contains 4302 phrases. -->
+<!-- 1797 are duplicates, so only 2505 unique phrases have been written to file. -->
+<!-- These 2505 phrases contain approximately 13388 total words. -->
 
 </pdData>

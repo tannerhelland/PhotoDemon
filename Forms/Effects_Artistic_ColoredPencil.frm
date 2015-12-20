@@ -149,8 +149,8 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
     Dim dstSA As SAFEARRAY2D
     prepImageData dstSA, toPreview, dstPic
     
-    'Create a copy of the image.  "Colored pencil" requires a blurred image copy as part of the effect, and we maintain that
-    ' copy seprate from the original (as the two must be blended as the final step of the filter).
+    'Create a copy of the image.  "Colored pencil" requires a blurred image copy as part of the effect, and we maintain
+    ' that copy separate from the original (as the two must be blended as the final step of the filter).
     Dim blurDIB As pdDIB
     Set blurDIB = New pdDIB
     blurDIB.createFromExistingDIB workingDIB
