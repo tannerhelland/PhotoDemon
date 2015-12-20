@@ -1787,7 +1787,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormDiffuse.DiffuseCustom cParams.GetLong(1), cParams.GetLong(2), cParams.GetBool(3)
             End If
-                
+        
+        Case "Portrait glow"
+            If showDialog Then
+                ShowPDDialog vbModal, FormPortraitGlow
+            Else
+                FormPortraitGlow.ApplyPortraitGlow cXMLParams.getParamString()
+            End If
+        
         Case "Solarize"
             If showDialog Then
                 ShowPDDialog vbModal, FormSolarize
