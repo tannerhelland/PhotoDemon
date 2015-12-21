@@ -23,6 +23,25 @@ Begin VB.Form FormPortraitGlow
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.buttonStrip btsStyle 
+      Height          =   615
+      Left            =   6120
+      TabIndex        =   5
+      Top             =   1320
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1085
+   End
+   Begin PhotoDemon.pdLabel lblTitle 
+      Height          =   255
+      Left            =   6000
+      Top             =   960
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   450
+      Caption         =   "style"
+      FontSize        =   12
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -47,7 +66,7 @@ Begin VB.Form FormPortraitGlow
       Height          =   705
       Left            =   6000
       TabIndex        =   2
-      Top             =   1800
+      Top             =   2040
       Width           =   5895
       _ExtentX        =   10398
       _ExtentY        =   1270
@@ -60,7 +79,7 @@ Begin VB.Form FormPortraitGlow
       Height          =   705
       Left            =   6000
       TabIndex        =   3
-      Top             =   2640
+      Top             =   2880
       Width           =   5925
       _ExtentX        =   10451
       _ExtentY        =   1270
@@ -71,7 +90,7 @@ Begin VB.Form FormPortraitGlow
       Height          =   705
       Left            =   6000
       TabIndex        =   4
-      Top             =   3480
+      Top             =   3720
       Width           =   5925
       _ExtentX        =   10451
       _ExtentY        =   1270
@@ -110,10 +129,11 @@ Public Sub ApplyPortraitGlow(ByVal parameterList As String, Optional ByVal toPre
     Set cParams = New pdParamXML
     cParams.setParamString parameterList
     
-    Dim glowRadius As Double, glowBoost As Double, glowOpacity As Double
+    Dim glowRadius As Double, glowBoost As Double, glowOpacity As Double, glowStyle As Long
     glowRadius = cParams.GetDouble("radius", 1#)
     glowBoost = cParams.GetDouble("exposure", 0#)
     glowOpacity = cParams.GetDouble("strength", 100#)
+    glowStyle = cParams.GetLong("style", 0&)
     
     'Change the exposure boost to a 1-based measurement, where 1 = no change
     glowBoost = 1# + (glowBoost / 100)
@@ -185,7 +205,17 @@ Public Sub ApplyPortraitGlow(ByVal parameterList As String, Optional ByVal toPre
         
         'Composite our invert+blur image against the base layer (workingDIB) using the COLOR DODGE blend mode;
         ' this will emphasize areas where the layers differ, while ignoring areas where they're the same.
-        cComposite.quickMergeTwoDibsOfEqualSize workingDIB, blurDIB, BL_SCREEN, glowOpacity
+        Dim dstBlendMode As LAYER_BLENDMODE
+        Select Case glowStyle
+            Case 0
+                dstBlendMode = BL_SCREEN
+            Case 1
+                dstBlendMode = BL_OVERLAY
+            Case 2
+                dstBlendMode = BL_SOFTLIGHT
+        End Select
+        
+        cComposite.quickMergeTwoDibsOfEqualSize workingDIB, blurDIB, dstBlendMode, glowOpacity
         
         'Release our temporary DIB
         blurDIB.eraseDIB
@@ -195,6 +225,10 @@ Public Sub ApplyPortraitGlow(ByVal parameterList As String, Optional ByVal toPre
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic, True
     
+End Sub
+
+Private Sub btsStyle_Click(ByVal buttonIndex As Long)
+    updatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
@@ -226,6 +260,10 @@ Private Sub Form_Load()
     'Disable previews until the dialog is fully loaded
     cmdBar.markPreviewStatus False
     
+    btsStyle.AddItem "classic", 0
+    btsStyle.AddItem "modern", 1
+    btsStyle.AddItem "subtle", 2
+    
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -254,5 +292,5 @@ Private Sub updatePreview()
 End Sub
 
 Private Function GetLocalParamString() As String
-    GetLocalParamString = buildParamList("radius", sltRadius.Value, "exposure", sltBoost.Value, "strength", sltStrength.Value)
+    GetLocalParamString = buildParamList("style", btsStyle.ListIndex, "radius", sltRadius.Value, "exposure", sltBoost.Value, "strength", sltStrength.Value)
 End Function
