@@ -243,7 +243,7 @@ Public Sub ApplyMezzotintEffect(ByVal mType As Long, ByVal mRandom As Long, ByVa
     If mStipplingLevel = 2 Then
         cCompositor.quickMergeTwoDibsOfEqualSize workingDIB, overlayDIB, BL_OVERLAY
     Else
-        cCompositor.quickMergeTwoDibsOfEqualSize overlayDIB, workingDIB, BL_HARDMIX
+        cCompositor.quickMergeTwoDibsOfEqualSize workingDIB, overlayDIB, BL_HARDMIX
     End If
     
     If Not toPreview Then SetProgBarVal 8
@@ -266,7 +266,7 @@ End Sub
 
 'OK button
 Private Sub cmdBar_OKClick()
-    Process "Mezzotint", , buildParams(btsType.ListIndex, sltRandom, sltSmoothness, btsStippling.ListIndex), UNDO_LAYER
+    Process "Mezzotint", , buildParams(btsType.ListIndex, sltRandom.Value, sltSmoothness.Value, btsStippling.ListIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -315,7 +315,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub updatePreview()
-    If cmdBar.previewsAllowed Then ApplyMezzotintEffect btsType.ListIndex, sltRandom, sltSmoothness, btsStippling.ListIndex, True, fxPreview
+    If cmdBar.previewsAllowed Then ApplyMezzotintEffect btsType.ListIndex, sltRandom.Value, sltSmoothness.Value, btsStippling.ListIndex, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
