@@ -178,7 +178,7 @@ End Function
 ' inside some base folder.  When performing something like a tree copy, I like to pre-sort the subfolder list by length.  This greatly simplifies the
 ' code required to create the new folder tree prior to performing the copy; creating the folders in advance greatly accelerates the copy operation, as we
 ' don't have to perform "do my folders exist?" checks on every damn file.
-Public Sub sortStackByLength(Optional ByVal sortAscending As Boolean = True)
+Public Sub SortStackByLength(Optional ByVal sortAscending As Boolean = True)
 
     If m_NumOfStrings > 1 Then
     
@@ -193,11 +193,11 @@ Public Sub sortStackByLength(Optional ByVal sortAscending As Boolean = True)
                 
                 'Compare two entries, and if the longer one precedes the shorter one, swap them
                 If sortAscending Then
-                    If Len(m_Strings(i)) < Len(m_Strings(j)) Then swapStrings i, j
+                    If Len(m_Strings(i)) < Len(m_Strings(j)) Then SwapStrings i, j
                 
                 'An opposite check is used for descending order.
                 Else
-                    If Len(m_Strings(i)) > Len(m_Strings(j)) Then swapStrings i, j
+                    If Len(m_Strings(i)) > Len(m_Strings(j)) Then SwapStrings i, j
                 End If
                 
             Next j
@@ -208,7 +208,7 @@ Public Sub sortStackByLength(Optional ByVal sortAscending As Boolean = True)
 End Sub
 
 'Helper for string sorting, above.  This is not optimized at all, but it's sufficient for PD's current usage...
-Private Sub swapStrings(ByVal strIndex1 As Long, ByVal strIndex2 As Long)
+Private Sub SwapStrings(ByVal strIndex1 As Long, ByVal strIndex2 As Long)
     Dim tmpString As String
     tmpString = m_Strings(strIndex1)
     m_Strings(strIndex1) = m_Strings(strIndex2)
@@ -467,10 +467,10 @@ Private Sub SnakeSortMerge(pvarSource As Variant, plngLeft As Long, plngMid As L
 End Sub
 
 'Clone another string stack
-Public Sub cloneStack(ByRef stackToClone As pdStringStack)
+Public Sub CloneStack(ByRef stackToClone As pdStringStack)
     
     'Initialize this stack to the size of the target
-    Me.resetStack stackToClone.getNumOfStrings
+    Me.ResetStack stackToClone.getNumOfStrings
     
     'Copy all strings
     Dim i As Long
@@ -481,7 +481,7 @@ Public Sub cloneStack(ByRef stackToClone As pdStringStack)
 End Sub
 
 'Clear the current stack.  An optional stack size can be passed; if it is not passed, it will default to INIT_STACK_SIZE
-Public Sub resetStack(Optional ByVal newStackSize As Long = INIT_STACK_SIZE)
+Public Sub ResetStack(Optional ByVal newStackSize As Long = INIT_STACK_SIZE)
     
     On Error GoTo FailsafeReset
     
@@ -508,12 +508,12 @@ End Sub
 Private Sub Class_Initialize()
     
     'Always start with an initialized array
-    resetStack
+    ResetStack
         
 End Sub
 
 Private Sub Class_Terminate()
-    resetStack
+    ResetStack
 End Sub
 
 'DEBUG ONLY!  I sometimes find it helpful to investigate the contents of the stack.  This function makes it trivial to do so.

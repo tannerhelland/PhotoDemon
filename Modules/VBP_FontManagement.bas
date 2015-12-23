@@ -383,7 +383,15 @@ End Function
 'If functions want their own copy of all available fonts on this PC, call this function
 Public Function GetCopyOfSystemFontList(ByRef dstStringStack As pdStringStack) As Boolean
     If dstStringStack Is Nothing Then Set dstStringStack = New pdStringStack
-    dstStringStack.cloneStack m_PDFontCache
+    dstStringStack.CloneStack m_PDFontCache
+End Function
+
+'If the caller just wants to know the size of a default string, it's better to use this function.  That spares them from having to
+' create a redundant font object just to measure text.
+Public Function GetDefaultStringHeight(ByVal FontSize As Single, Optional ByVal isBold As Boolean = False, Optional ByVal isItalic As Boolean = False, Optional ByVal isUnderline As Boolean = False) As Single
+    Dim tmpFont As pdFont
+    Set tmpFont = Font_Management.GetMatchingUIFont(FontSize, isBold, isItalic, isUnderline)
+    GetDefaultStringHeight = tmpFont.GetHeightOfString("FfAaBbCctbpqjy1234567890")
 End Function
 
 'Build a system font cache.  Note that this is an expensive operation, and should never be called more than once.
@@ -399,7 +407,7 @@ Public Function BuildFontCaches() As Long
     
     'Next, prep a full font list for the advanced typography tool.
     '(We won't know the full number of available fonts until the Enum function finishes, so prep an extra-large buffer in advance.)
-    m_PDFontCache.resetStack INITIAL_PDFONTCACHE_SIZE
+    m_PDFontCache.ResetStack INITIAL_PDFONTCACHE_SIZE
     GetAllAvailableFonts
     
     'Because the font cache(s) will potentially be accessed by tons of external functions, it pays to sort them just once,
@@ -704,9 +712,9 @@ End Function
 
 'Given a filled LOGFONTW struct (hopefully filled by the fillLogFontW_* functions above!), attempt to create an actual font object.
 ' Returns TRUE if successful; FALSE otherwise.
-Public Function createGDIFont(ByRef srcLogFont As LOGFONTW, ByRef dstFontHandle As Long) As Boolean
+Public Function CreateGDIFont(ByRef srcLogFont As LOGFONTW, ByRef dstFontHandle As Long) As Boolean
     dstFontHandle = CreateFontIndirect(srcLogFont)
-    createGDIFont = CBool(dstFontHandle <> 0)
+    CreateGDIFont = CBool(dstFontHandle <> 0)
 End Function
 
 'Delete a GDI font; returns TRUE if successful
@@ -756,7 +764,7 @@ Public Function QuickCreateFontAndDC(ByRef srcFontName As String, ByRef dstFont 
     
     Dim tmpLogFont As LOGFONTW
     FillLogFontW_Basic tmpLogFont, srcFontName, False, False, False, False
-    If createGDIFont(tmpLogFont, dstFont) Then
+    If CreateGDIFont(tmpLogFont, dstFont) Then
         
         'Create a temporary DC and select the font into it
         dstDC = Drawing.GetMemoryDC()

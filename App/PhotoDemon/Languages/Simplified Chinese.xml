@@ -6,7 +6,7 @@
 
 <langid>cn-CN</langid>
 <langname>简体中文</langname>
-<langversion>6.8.833</langversion>
+<langversion>6.8.835</langversion>
 <langstatus>未完成</langstatus>
 
 <author>ILoveVB</author>
@@ -14565,16 +14565,32 @@ If you still choose to disable updates, don't forget to visit photodemon.org fro
 <translation></translation>
 </phrase>
 
-<!-- Effects_Stylize_PortraitGlow.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
+<phrase>
+<original>classic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>subtle</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_PortraitGlow.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_PortraitGlow.frm-->
 
+<!-- BEGIN text for pdListSupport.cls -->
+
+<!-- pdListSupport.cls contains 0 phrases. -->
+
+<!-- END text for pdListSupport.cls-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2505</phrasecount>
+<phrasecount>2507</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4302 phrases. -->
-<!-- 1797 are duplicates, so only 2505 unique phrases have been written to file. -->
-<!-- These 2505 phrases contain approximately 13388 total words. -->
+<!-- As of this build, PhotoDemon contains 4306 phrases. -->
+<!-- 1799 are duplicates, so only 2507 unique phrases have been written to file. -->
+<!-- These 2507 phrases contain approximately 13390 total words. -->
 
 </pdData>
