@@ -459,3 +459,14 @@ End Enum
 #If False Then
     Private Const PDLM_VALUE = 0, PDLM_LIGHTNESS = 1
 #End If
+
+'List boxes support several different per-item height modes
+Public Enum PD_LISTBOX_HEIGHT
+    PDLH_FIXED = 0
+    PDLH_SEPARATORS = 1
+    PDLH_CUSTOM = 2
+End Enum
+
+#If False Then
+    Private Const PDLH_FIXED = 0, PDLH_SEPARATORS = 1, PDLH_CUSTOM = 2
+#End If
