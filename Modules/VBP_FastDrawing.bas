@@ -186,7 +186,7 @@ Public Sub previewNonStandardImage(ByRef tmpSA As SAFEARRAY2D, ByRef srcDIB As p
     If Not previewTarget.hasOriginalImage Then previewTarget.setOriginalImage workingDIB
     
     'For 32bpp layers, fix premultiplication now, as all effects assume UN-premultiplied alpha
-    If (workingDIB.getDIBColorDepth = 32) And (Not leaveAlphaPremultiplied) Then workingDIB.setAlphaPremultiplication False
+    If (workingDIB.getDIBColorDepth = 32) And (Not leaveAlphaPremultiplied) Then workingDIB.SetAlphaPremultiplication False
     
     'With our temporary DIB successfully created, populate the relevant SafeArray variable
     prepSafeArray tmpSA, workingDIB
@@ -225,7 +225,7 @@ Public Sub finalizeNonstandardPreview(ByRef previewTarget As fxPreviewCtl, Optio
     'Because is a preview, we only need to repaint a preview box
     
     'Fix premultiplied alpha if necessary
-    If (workingDIB.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then workingDIB.setAlphaPremultiplication True
+    If (workingDIB.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then workingDIB.SetAlphaPremultiplication True
     
     'Pass the modified image on to the specified preview control
     previewTarget.setFXImage workingDIB
@@ -283,17 +283,12 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             'Now we can proceed to crop out the relevant parts of the layer from the selection boundary.
             workingDIB.createBlank pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth
             BitBlt workingDIB.getDIBDC, 0, 0, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, tmpLayer.layerDIB.getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, vbSrcCopy
+            workingDIB.setInitialAlphaPremultiplicationState pdImages(g_CurrentImage).getActiveLayer.layerDIB.getAlphaPremultiplication
             
         Else
             workingDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB()
         End If
         
-        'Premultiplied alpha is removed prior to processing; this allows various tools to return proper results.
-        ' Note that individual tools can override this behavior - this is helpful in certain cases, e.g. area filters like
-        ' blur, where *not* premultiplying alpha causes the black RGB values from transparent areas to be "picked up"
-        ' by the area handling.
-        If (workingDIB.getDIBColorDepth = 32) And (Not doNotUnPremultiplyAlpha) Then workingDIB.setAlphaPremultiplication False
-    
     'This IS a preview, meaning more work is involved.  We must prepare a unique copy of the active layer that matches
     ' the requested dimensions of the preview area (which are not assumed to be universal), while accounting for the
     ' selection area!  Aaahhh!
@@ -416,9 +411,9 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
                     End If
                     
                     BitBlt workingDIB.getDIBDC, 0, 0, dstWidth, dstHeight, tmpDIB.getDIBDC, hOffset, vOffset, vbSrcCopy
+                    workingDIB.setInitialAlphaPremultiplicationState pdImages(g_CurrentImage).getActiveDIB().getAlphaPremultiplication
                 
                 End If
-                
                 
                 'Release our temporary DIB
                 tmpDIB.eraseDIB
@@ -454,7 +449,11 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             'Give the preview object a copy of this original, unmodified image data so it can show it to the user if requested
             If Not previewTarget.hasOriginalImage Then previewTarget.setOriginalImage workingDIB
             
-            If (workingDIB.getDIBColorDepth = 32) And (Not doNotUnPremultiplyAlpha) Then workingDIB.setAlphaPremultiplication False
+            'We're also going to apply the requested alpha premultiplication in advance, which saves us some time on
+            ' subsequent requests (assuming the caller always wants the same alpha state for a given filter).
+            If (workingDIB.getDIBColorDepth = 32) And (workingDIB.getAlphaPremultiplication <> doNotUnPremultiplyAlpha) Then
+                workingDIB.SetAlphaPremultiplication doNotUnPremultiplyAlpha
+            End If
             
             'Make a note of this preview target's unique ID value.  We can use this in the future to avoid regenerating workingDIB
             ' from scratch.
@@ -466,9 +465,15 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
             
         'End "preview copy is valid" vs "preview must be regenerated from scratch" handling
         End If
-    
+        
     'End non-preview vs preview mode handling
     End If
+    
+    'Premultiplied alpha is typically removed prior to processing; this allows various tools to return proper results.
+    ' Note that individual tools can override this behavior - this is helpful in certain cases, e.g. area filters like
+    ' blur, where *not* premultiplying alpha causes the black RGB values from transparent areas to be "picked up"
+    ' by the area handling.
+    If (workingDIB.getDIBColorDepth = 32) And (workingDIB.getAlphaPremultiplication <> doNotUnPremultiplyAlpha) Then workingDIB.SetAlphaPremultiplication doNotUnPremultiplyAlpha
     
     'If a selection is active, make a backup of the selected area.  (We do this regardless of whether the current
     ' action is a preview or not.)
@@ -520,7 +525,6 @@ Public Sub prepImageData(ByRef tmpSA As SAFEARRAY2D, Optional isPreview As Boole
     'Debug.Print "prepImageData worked: " & workingDIB.getDIBHeight & ", " & workingDIB.getDIBWidth & " (" & workingDIB.getDIBArrayWidth & ")" & ", " & workingDIB.getActualDIBBits
 
 End Sub
-
 
 'The counterpart to prepImageData, finalizeImageData copies the working DIB back into the source image, then renders
 ' everything to the screen.  Like prepImageData(), a preview target can also be named.  In this case, finalizeImageData
@@ -683,7 +687,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         'If a selection is active, copy the processed area into its proper place.
         If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.isLockedIn Then
         
-            If (workingDIBBackup.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then workingDIBBackup.setAlphaPremultiplication True
+            If (workingDIBBackup.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then workingDIBBackup.SetAlphaPremultiplication True
             BitBlt pdImages(g_CurrentImage).getActiveDIB().getDIBDC, pdImages(g_CurrentImage).mainSelection.boundLeft, pdImages(g_CurrentImage).mainSelection.boundTop, pdImages(g_CurrentImage).mainSelection.boundWidth, pdImages(g_CurrentImage).mainSelection.boundHeight, workingDIBBackup.getDIBDC, 0, 0, vbSrcCopy
             
             'Un-pad any null pixels we may have added as part of the selection interaction
@@ -693,7 +697,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         Else
             
             If (workingDIB.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then
-                workingDIB.setAlphaPremultiplication True
+                workingDIB.SetAlphaPremultiplication True
             Else
                 workingDIB.setInitialAlphaPremultiplicationState True
             End If
@@ -724,7 +728,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         If pdImages(g_CurrentImage).selectionActive And pdImages(g_CurrentImage).mainSelection.isLockedIn Then
             
             If (workingDIBBackup.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then
-                workingDIBBackup.setAlphaPremultiplication True
+                workingDIBBackup.SetAlphaPremultiplication True
             Else
                 workingDIBBackup.setInitialAlphaPremultiplicationState True
             End If
@@ -734,7 +738,7 @@ Public Sub finalizeImageData(Optional isPreview As Boolean = False, Optional pre
         Else
             
             If (workingDIB.getDIBColorDepth = 32) And (Not alphaAlreadyPremultiplied) Then
-                workingDIB.setAlphaPremultiplication True
+                workingDIB.SetAlphaPremultiplication True
             Else
                 workingDIB.setInitialAlphaPremultiplicationState True
             End If
