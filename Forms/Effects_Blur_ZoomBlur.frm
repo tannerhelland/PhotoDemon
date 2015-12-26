@@ -129,7 +129,7 @@ Public Sub ZoomBlurModern(ByVal zDistance As Long, Optional ByVal toPreview As B
     
     'Call prepImageData, which will initialize a workingDIB object for us (with all selection tool masks applied)
     Dim dstSA As SAFEARRAY2D
-    prepImageData dstSA, toPreview, dstPic
+    prepImageData dstSA, toPreview, dstPic, , , True
     
     Dim finalX As Long, finalY As Long
     finalX = workingDIB.getDIBWidth
@@ -172,7 +172,7 @@ Public Sub ZoomBlurModern(ByVal zDistance As Long, Optional ByVal toPreview As B
     End If
     
     'Zoom distance must be adjusted during a preview, so that the preview accurately represents the finished product.
-    If toPreview Then zDistance = zDistance * curDIBValues.previewModifier
+    If toPreview Then zDistance = Int(CDbl(zDistance) * curDIBValues.previewModifier)
     
     'Now comes the actual transform.  We basically just repeat a series of AlphaBlend calls on the image, blending at 50% opacity
     ' as we go.  Ridiculous?  Yes.  Simple?  Yes.  :)
@@ -236,7 +236,7 @@ Public Sub ZoomBlurModern(ByVal zDistance As Long, Optional ByVal toPreview As B
     End If
     
     'Pass control to finalizeImageData, which will handle the rest of the rendering using the data inside workingDIB
-    finalizeImageData toPreview, dstPic
+    finalizeImageData toPreview, dstPic, True
     
 End Sub
 
@@ -295,8 +295,12 @@ Public Sub ZoomBlurTraditional(ByVal bDistance As Double, Optional ByVal toPrevi
         'Start by converting the image to polar coordinates, using a specific set of actions to maximize quality
         If CreatePolarCoordDIB(1, 100, EDGE_CLAMP, True, srcDIB, workingDIB, toPreview, newProgBarMax) Then
             
+            workingDIB.SetAlphaPremultiplication True
+            
             'Now we can apply the box blur to the temporary DIB, using the blur radius supplied by the user
             If CreateVerticalBlurDIB(backwardBlurDistance, forwardBlurDistance, workingDIB, srcDIB, toPreview, newProgBarMax, finalX) Then
+                
+                srcDIB.SetAlphaPremultiplication False
                 
                 'Finally, convert back to rectangular coordinates, using the opposite parameters of the first conversion
                 CreatePolarCoordDIB 0, 100, EDGE_CLAMP, True, srcDIB, workingDIB, toPreview, newProgBarMax, finalX + finalX
@@ -313,8 +317,12 @@ Public Sub ZoomBlurTraditional(ByVal bDistance As Double, Optional ByVal toPrevi
         'Start by converting the image to polar coordinates, using a specific set of actions to maximize quality
         If CreateXSwappedPolarCoordDIB(1, 100, EDGE_CLAMP, True, srcDIB, workingDIB, toPreview, newProgBarMax) Then
             
+            workingDIB.SetAlphaPremultiplication True
+            
             'Now we can apply the box blur to the temporary DIB, using the blur radius supplied by the user
             If CreateHorizontalBlurDIB(backwardBlurDistance, forwardBlurDistance, workingDIB, srcDIB, toPreview, newProgBarMax, finalX) Then
+                
+                srcDIB.SetAlphaPremultiplication False
                 
                 'Finally, convert back to rectangular coordinates, using the opposite parameters of the first conversion
                 CreateXSwappedPolarCoordDIB 0, 100, EDGE_CLAMP, True, srcDIB, workingDIB, toPreview, newProgBarMax, finalX + finalY
