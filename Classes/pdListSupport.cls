@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'PhotoDemon List Box support class
 'Copyright 2015-2015 by Tanner Helland
 'Created: 22/December/15
-'Last updated: 22/December/15
-'Last update: initial build
+'Last updated: 26/December/15
+'Last update: start adding rendering logic to the class
 '
 'PD makes use of a lot of custom-drawn list boxes.  To simplify these, I've tried to move a bunch of list-box-agnostic
 ' code elements into this class, elements that can then be reused by individual boxes.
@@ -27,6 +27,11 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+'This control raises a few helper events, mostly related to rendering
+Public Event RenderStart()
+Public Event RenderListItem(ByVal ListIndex As Long, ByVal listText As String, ByVal itemPosition As Single, ByVal itemHeight As Single, ByVal isSeparator As Boolean)
+Public Event RenderEnd()
 
 'This class can calculate list box element offsets using three different systems:
 ' - Fixed size (all list elements are the same height)
@@ -68,6 +73,10 @@ Private m_FontSize As Single
 'This class will track .ListIndex for you.  It needs to know that value to auto-suggest things like scroll bar position
 ' after a keypress.
 Private m_ListIndex As Long
+
+'Scroll bar values.  This class doesn't do any actual rendering, but it will track things like scroll value to make life easier
+' on the caller (and because we have sufficient data to do all those calculations anyway).
+Private m_ScrollMax As Long, m_ScrollValue As Long, m_ContainerHeight As Long, m_ContainerWidth As Long
 
 Private Sub Class_Initialize()
     m_DefaultHeight = 0
@@ -136,7 +145,7 @@ Public Sub AddItem(Optional ByVal srcItemText As String = vbNullString, Optional
         End If
         
         'Increase the net height of the entire list
-        m_TotalHeight = m_TotalHeight + m_DefaultHeight
+        m_TotalHeight = m_TotalHeight + .itemHeight
         
         'Positioning values are really only used if separators are active, or if user-specified heights are involved,
         ' but right now we right those positions correctly for any insertion action.  (We can revisit in the future
@@ -266,7 +275,11 @@ End Property
 
 'As a convenience, this class also lets the caller set a ListIndex by string.  (If a match cannot be found,
 ' the list index will not be changed.)
-Public Sub ListIndexByString(ByRef srcString As String, Optional ByVal compareMode As VbCompareMethod = vbBinaryCompare)
+'The optional ReadValueOnly parameter can be used to simply RETURN the value of the discovered ListIndex, without actually
+' changing the ListIndex property.
+Public Function ListIndexByString(ByRef srcString As String, Optional ByVal compareMode As VbCompareMethod = vbBinaryCompare, Optional ByVal ReadValueOnly As Boolean = False) As Long
+    
+    ListIndexByString = -1
     
     If m_NumOfItems > 0 Then
         
@@ -282,11 +295,69 @@ Public Sub ListIndexByString(ByRef srcString As String, Optional ByVal compareMo
         Next i
         
         'If a match was found, change the list index now
-        If (newIndex >= 0) And (newIndex <> m_ListIndex) Then m_ListIndex = newIndex
+        If (newIndex >= 0) And (newIndex <> m_ListIndex) Then
+            If Not ReadValueOnly Then m_ListIndex = newIndex
+            ListIndexByString = newIndex
+        End If
         
     End If
     
-End Sub
+End Function
+
+'As a convenience, this class also lets the caller set a ListIndex by mouse position within the container.  (If a match cannot
+' be found, the list index will not be changed.)
+'The optional ReadValueOnly parameter can be used to simply RETURN the value of the discovered ListIndex, without actually
+' changing the ListIndex property.
+Public Function ListIndexByPosition(ByVal srcX As Single, ByVal srcY As Single, Optional ByVal checkXAsWell As Boolean = True) As Long
+    
+    ListIndexByPosition = -1
+    
+    'First, do a spot-check on srcX.  If it lies outside the list region, skip this whole step.
+    If checkXAsWell Then
+        If (srcX < 0) Or (srcX > m_ContainerWidth) Then
+            ListIndexByPosition = -1
+            Exit Function
+        End If
+    End If
+    
+    'Convert the y-position to an absolute value
+    srcY = srcY + m_ScrollValue
+    
+    'On a fixed-size list, this calculation can be automated.
+    If m_SizeMode = PDLH_FIXED Then
+        ListIndexByPosition = srcY \ m_DefaultHeight
+        If ListIndexByPosition > m_TotalHeight Then ListIndexByPosition = -1
+    
+    'On a variable-size list, this calculation is more complicated
+    Else
+        
+        Dim tmpRect As RECTF
+        tmpRect.Left = 0
+        tmpRect.Width = m_ContainerWidth
+        
+        'Because the (x, y) position may lie outside the visible container area, we need to perform a comprehensive hit search.
+        Dim i As Long
+        For i = 0 To m_NumOfItems - 1
+            
+            tmpRect.Top = m_Items(i).itemPosition
+            tmpRect.Height = m_Items(i).itemHeight
+            
+            If checkXAsWell Then
+                If Math_Functions.isPointInRectF(srcX, srcY, tmpRect) Then
+                    ListIndexByPosition = i
+                    Exit For
+                End If
+            Else
+                If Math_Functions.isPointInRectF(1&, srcY, tmpRect) Then
+                    ListIndexByPosition = i
+                    Exit For
+                End If
+            End If
+        Next i
+        
+    End If
+    
+End Function
 
 'Remove an item from the combo box
 Public Sub RemoveItem(ByVal itemIndex As Long)
@@ -319,3 +390,108 @@ Public Sub RemoveItem(ByVal itemIndex As Long)
     
 End Sub
 
+'While this class doesn't do any actual rendering, it does calculate all relevant scroll bar and positioning values.
+' This makes life easier on the caller.
+Public Function ScrollMax(ByVal pxWidthOfList As Long, ByVal pxHeightOfList As Long) As Long
+    m_ContainerHeight = pxHeightOfList
+    m_ContainerWidth = pxWidthOfList
+    m_ScrollMax = m_TotalHeight - pxHeightOfList
+    ScrollMax = m_ScrollMax
+End Function
+
+Public Property Get ScrollValue() As Long
+    ScrollValue = m_ScrollValue
+End Property
+
+'When assigning a new scroll value, you should probably double-check the passed newValue.  This class will automatically reset the
+' value to an appropriate range if it's too small or too large.
+Public Property Let ScrollValue(ByRef newValue As Long)
+    
+    'Range-check the incoming value
+    If newValue < 0 Then newValue = 0
+    If newValue > m_ScrollMax Then newValue = m_ScrollMax
+    m_ScrollValue = newValue
+    
+    'Raise a series of draw events, each one describing an item and a position.
+    RequestListRedraw
+    
+End Property
+
+'Call this sub to request a full redraw of the list.  This sub doesn't actually perform any drawing; instead, it raises a series of
+' RenderListItem() events, which the caller can then handle on their own terms.
+Public Sub RequestListRedraw()
+    
+    'Notify the user that rendering is beginning.  This allows them to cache any relevent rendering items.
+    RaiseEvent RenderStart
+    
+    Dim i As Long
+    
+    'Lists with uniform item sizes can skip a lot of messy handling.
+    If m_SizeMode = PDLH_FIXED Then
+    
+        'Calculate the first overlapping item
+        i = m_ScrollValue \ m_DefaultHeight
+        
+        'Render all overlapping items in turn
+        Do
+            
+            'Raise the event
+            RaiseEvent RenderListItem(i, m_Items(i).textTranslated, (i * m_DefaultHeight) - m_ScrollValue, m_DefaultHeight, False)
+            
+            'Move to the next entry in the list
+            i = i + 1
+            
+        Loop While (i * m_DefaultHeight) < m_ScrollValue + m_ContainerHeight
+    
+    'If list entries have variable height, we need to loop through all list entries and look for ones that overlap the viewport.
+    ' This step could be optimized by using something like a binary search to detect the first overlapping item, but because PD
+    ' only uses short lists, I'm not particularly concerned with optimizing this right now.
+    Else
+        
+        'To spare us from looping through unnecessary tail-end entries, if we've already raised at least one draw event, and we
+        ' encounter a list item that exists outside the list, we can immediately exit the function.
+        Dim oneItemFound As Boolean
+        oneItemFound = False
+        
+        'Hit detection is easily performed using rectangle intersection.
+        ' (Note that the .Top parameter must always be set mathematically, later in this function.)
+        Dim tmpRect As RECTF
+        tmpRect.Left = 0
+        tmpRect.Width = m_ContainerWidth
+        tmpRect.Height = m_DefaultHeight
+        
+        'Create a dummy rect at the size of the current viewport.  We'll use this for intersection testing.
+        Dim listRect As RECTF
+        With listRect
+            .Left = 0
+            .Width = m_ContainerWidth
+            .Top = m_ScrollValue
+            .Height = m_ContainerHeight
+        End With
+        
+        Dim intersectionRect As RECTF
+        
+        For i = 0 To m_NumOfItems - 1
+            
+            'Populate our temporary rect.
+            tmpRect.Top = m_Items(i).itemPosition
+            tmpRect.Height = m_Items(i).itemHeight
+            
+            'If overlap is found, render the rect
+            If GDI_Plus.IntersectRectF(intersectionRect, tmpRect, listRect) Then
+                RaiseEvent RenderListItem(i, m_Items(i).textTranslated, tmpRect.Top, tmpRect.Height, m_Items(i).isSeparator)
+                oneItemFound = True
+            
+            'If no overlap is found, but overlap was found for a PREVIOUS entry, exit immediately
+            Else
+                If oneItemFound Then Exit For
+            End If
+            
+        Next i
+        
+    End If
+    
+    'Notify the user that rendering is ending.  This allows them to release any relevent rendering items.
+    RaiseEvent RenderEnd
+    
+End Sub
