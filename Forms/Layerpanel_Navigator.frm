@@ -28,8 +28,8 @@ Begin VB.Form layerpanel_Navigator
       TabIndex        =   0
       Top             =   120
       Width           =   975
-      _extentx        =   1720
-      _extenty        =   1296
+      _ExtentX        =   1720
+      _ExtentY        =   1296
    End
 End
 Attribute VB_Name = "layerpanel_Navigator"
@@ -39,7 +39,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Navigation/Overview Tool Panel
-'Copyright 2015-2015 by Tanner Helland
+'Copyright 2015-2016 by Tanner Helland
 'Created: 15/October/15
 'Last updated: 15/October/15
 'Last update: initial build

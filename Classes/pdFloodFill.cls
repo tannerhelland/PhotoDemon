@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Flood Fill Engine
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 11/October/14
 'Last updated: 13/October/14
 'Last update: wrap up initial build
@@ -197,10 +197,10 @@ Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     ReDim m_AlreadyChecked(0 To xBound, 0 To yBound) As Byte
     
     'Populate the initial stack point
-    pushOntoStack m_InitPoint.x, m_InitPoint.y
+    PushOntoStack m_InitPoint.x, m_InitPoint.y
     
     'Make sure 24 and 32bpp sources are both handled correctly
-    Dim x As Long, y As Long, QuickX As Long, dstQuickX As Long, xOffset As Long, hasAlpha As Boolean
+    Dim x As Long, y As Long, quickX As Long, dstQuickX As Long, xOffset As Long, hasAlpha As Boolean
     xOffset = srcDIB.getDIBColorDepth \ 8
     If srcDIB.getDIBColorDepth = 32 Then hasAlpha = True Else hasAlpha = False
     
@@ -225,13 +225,13 @@ Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
     
     Dim referenceValue As Double, thisValue As Double
     
-    QuickX = m_InitPoint.x * xOffset
+    quickX = m_InitPoint.x * xOffset
     y = m_InitPoint.y
     
-    refR = srcImageData(QuickX + 2, y)
-    refG = srcImageData(QuickX + 1, y)
-    refB = srcImageData(QuickX, y)
-    If hasAlpha Then refA = srcImageData(QuickX + 3, y) Else refA = 0
+    refR = srcImageData(quickX + 2, y)
+    refG = srcImageData(quickX + 1, y)
+    refB = srcImageData(quickX, y)
+    If hasAlpha Then refA = srcImageData(quickX + 3, y) Else refA = 0
     
     refL = 213 * refR + 715 * refG + 72 * refB
     
@@ -279,14 +279,14 @@ Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
         isWithinTolerance = False
         
         'Retrieve the next point from the stack
-        popFromStack x, y
+        PopFromStack x, y
                 
         'Retrieve RGB/A values for this point
-        QuickX = x * xOffset
-        r = srcImageData(QuickX + 2, y)
-        g = srcImageData(QuickX + 1, y)
-        b = srcImageData(QuickX, y)
-        If hasAlpha Then a = srcImageData(QuickX + 3, y)
+        quickX = x * xOffset
+        r = srcImageData(quickX + 2, y)
+        g = srcImageData(quickX + 1, y)
+        b = srcImageData(quickX, y)
+        If hasAlpha Then a = srcImageData(quickX + 3, y)
     
         'Compare this pixel against the reference
         Select Case m_CompareMode
@@ -330,11 +330,11 @@ Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDI
             If m_AntialiasingMode Then m_AlreadyChecked(x, y) = 2
         
             'Push our four neighboring pixels onto the stack, as necessary
-            If x > 0 Then If m_AlreadyChecked(x - 1, y) = 0 Then pushOntoStack x - 1, y
-            If x < xBound Then If m_AlreadyChecked(x + 1, y) = 0 Then pushOntoStack x + 1, y
+            If x > 0 Then If m_AlreadyChecked(x - 1, y) = 0 Then PushOntoStack x - 1, y
+            If x < xBound Then If m_AlreadyChecked(x + 1, y) = 0 Then PushOntoStack x + 1, y
             
-            If y > 0 Then If m_AlreadyChecked(x, y - 1) = 0 Then pushOntoStack x, y - 1
-            If y < yBound Then If m_AlreadyChecked(x, y + 1) = 0 Then pushOntoStack x, y + 1
+            If y > 0 Then If m_AlreadyChecked(x, y - 1) = 0 Then PushOntoStack x, y - 1
+            If y < yBound Then If m_AlreadyChecked(x, y + 1) = 0 Then PushOntoStack x, y + 1
             
         End If
                 
@@ -358,7 +358,7 @@ Private Function floodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) A
     yBound = srcDIB.getDIBHeight - 1
     
     'Make sure 24 and 32bpp sources are both handled correctly
-    Dim x As Long, y As Long, QuickX As Long, dstQuickX As Long, xOffset As Long, hasAlpha As Boolean
+    Dim x As Long, y As Long, quickX As Long, dstQuickX As Long, xOffset As Long, hasAlpha As Boolean
     xOffset = srcDIB.getDIBColorDepth \ 8
     If srcDIB.getDIBColorDepth = 32 Then hasAlpha = True Else hasAlpha = False
     
@@ -382,13 +382,13 @@ Private Function floodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) A
     
     Dim referenceValue As Double, thisValue As Double
     
-    QuickX = m_InitPoint.x * xOffset
+    quickX = m_InitPoint.x * xOffset
     y = m_InitPoint.y
     
-    refR = srcImageData(QuickX + 2, y)
-    refG = srcImageData(QuickX + 1, y)
-    refB = srcImageData(QuickX, y)
-    If hasAlpha Then refA = srcImageData(QuickX + 3, y) Else refA = 0
+    refR = srcImageData(quickX + 2, y)
+    refG = srcImageData(quickX + 1, y)
+    refB = srcImageData(quickX, y)
+    If hasAlpha Then refA = srcImageData(quickX + 3, y) Else refA = 0
     
     refL = (213 * refR + 715 * refG + 72 * refB)
     
@@ -431,17 +431,17 @@ Private Function floodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) A
     
     'Start processing the image!
     For x = 0 To xBound
-        QuickX = x * xOffset
+        quickX = x * xOffset
     For y = 0 To yBound
     
         'Reset the tolerance check
         isWithinTolerance = False
         
         'Retrieve RGB/A values for this point
-        r = srcImageData(QuickX + 2, y)
-        g = srcImageData(QuickX + 1, y)
-        b = srcImageData(QuickX, y)
-        If hasAlpha Then a = srcImageData(QuickX + 3, y)
+        r = srcImageData(quickX + 2, y)
+        g = srcImageData(quickX + 1, y)
+        b = srcImageData(quickX, y)
+        If hasAlpha Then a = srcImageData(quickX + 3, y)
     
         'Compare this pixel against the reference
         Select Case m_CompareMode
@@ -493,7 +493,7 @@ Private Function floodFillGlobal(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) A
 End Function
 
 'Stack helper functions
-Private Sub pushOntoStack(ByVal x As Long, ByVal y As Long)
+Private Sub PushOntoStack(ByVal x As Long, ByVal y As Long)
     
     m_StackPosition = m_StackPosition + 1
     
@@ -514,7 +514,7 @@ Private Sub pushOntoStack(ByVal x As Long, ByVal y As Long)
 
 End Sub
 
-Private Sub popFromStack(ByRef x As Long, ByRef y As Long)
+Private Sub PopFromStack(ByRef x As Long, ByRef y As Long)
     
     With m_Stack(m_StackPosition)
         x = .x
@@ -535,7 +535,7 @@ Private Function floodFillCustomAA(ByRef floodFillDIB As pdDIB) As Boolean
     yBound = floodFillDIB.getDIBHeight - 1
     
     'Make sure 24 and 32bpp sources are both handled correctly
-    Dim x As Long, y As Long, QuickX As Long
+    Dim x As Long, y As Long, quickX As Long
     
     'Generate direct references to the source and destination DIB data
     Dim fImageData() As Byte
@@ -553,7 +553,7 @@ Private Function floodFillCustomAA(ByRef floodFillDIB As pdDIB) As Boolean
     
     'Start processing the image!
     For x = 0 To xBound
-        QuickX = x * 3
+        quickX = x * 3
     For y = 0 To yBound
     
         'The floodfill map is used to calculate antialiasing.  If it contains a 1 at this location, it means this pixel
@@ -594,9 +594,9 @@ Private Function floodFillCustomAA(ByRef floodFillDIB As pdDIB) As Boolean
             'We know the floodfill map at this position is unfilled, so we don't even need to retrieve the value to
             ' calculate proper AA.
             finalResult = aaStrength * constMultiplier
-            fImageData(QuickX, y) = finalResult
-            fImageData(QuickX + 1, y) = finalResult
-            fImageData(QuickX + 2, y) = finalResult
+            fImageData(quickX, y) = finalResult
+            fImageData(quickX + 1, y) = finalResult
+            fImageData(quickX + 2, y) = finalResult
         
         End If
         

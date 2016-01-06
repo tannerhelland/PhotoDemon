@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_ExifTool_Interface"
 '***************************************************************************
 'ExifTool Plugin Interface
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 24/May/13
 'Last updated: 22/October/14
 'Last update: many technical improvements to metadata writing.  Formats that support only XMP or Exif will now have
@@ -99,7 +99,7 @@ Private Declare Function GetCurrentProcess Lib "kernel32" () As Long
 Private Declare Function ReadFile Lib "kernel32" (ByVal hFile As Long, lpBuffer As Any, ByVal nNumberOfBytesToRead As Long, lpNumberOfBytesRead As Long, lpOverlapped As Any) As Long
 
 'A great deal of extra code is required for finding ExifTool instances left by previous unsafe shutdowns, and silently terminating them.
-Private Declare Function AdjustTokenPrivileges Lib "advapi32" (ByVal TokenHandle As Long, ByVal DisableAllPrivileges As Long, NewState As TOKEN_PRIVILEGES, ByVal BufferLength As Long, PreviousState As Any, ReturnLength As Any) As Long
+Private Declare Function AdjustTokenPrivileges Lib "advapi32" (ByVal TokenHandle As Long, ByVal DisableAllPrivileges As Long, newState As TOKEN_PRIVILEGES, ByVal BufferLength As Long, PreviousState As Any, ReturnLength As Any) As Long
 Private Declare Function CreateToolhelpSnapshot Lib "kernel32" Alias "CreateToolhelp32Snapshot" (ByVal lFlags As Long, lProcessID As Long) As Long
 Private Declare Function LookupPrivilegeValue Lib "advapi32" Alias "LookupPrivilegeValueA" (ByVal lpSystemName As String, ByVal lpName As String, lpLuid As LUID) As Long
 Private Declare Function OpenProcess Lib "kernel32" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long
@@ -723,7 +723,7 @@ Public Function writeMetadata(ByVal srcMetadataFile As String, ByVal dstImageFil
     
     'GPS removal indicates the user wants privacy tags removed; if the user has NOT requested removal of these, list PD as
     ' the processing software.
-    If Not removeGPS Then cmdParams = cmdParams & "-Software=" & getPhotoDemonNameAndVersion() & vbCrLf
+    If Not removeGPS Then cmdParams = cmdParams & "-Software=" & GetPhotoDemonNameAndVersion() & vbCrLf
     
     'ExifTool will always note itself as the XMP toolkit unless we specifically tell it not to; when "privacy mode" is active,
     ' do not list any toolkit at all.

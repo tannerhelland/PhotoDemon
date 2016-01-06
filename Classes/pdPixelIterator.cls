@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Pixel Iterator class
-'Copyright 2015-2015 by Tanner Helland
+'Copyright 2015-2016 by Tanner Helland
 'Created: 04/December/14
 'Last updated: 08/December/15
 'Last update: add circular kernel support
@@ -422,7 +422,7 @@ End Sub
 ' meant to be applied to other shapes!
 Private Function GenerateInitialWindow_Square() As Long
     
-    Dim x As Long, y As Long, QuickX As Long
+    Dim x As Long, y As Long, quickX As Long
     Dim r As Long, g As Long, b As Long, a As Long
     Dim xStart As Long, xFinal As Long
     xStart = m_InitX * m_PixelWidth
@@ -464,7 +464,7 @@ End Function
 ' meant to be applied to other shapes!
 Private Function GenerateInitialWindow_ArbitraryShape() As Long
     
-    Dim x As Long, y As Long, QuickX As Long
+    Dim x As Long, y As Long, quickX As Long
     Dim r As Long, g As Long, b As Long, a As Long
     
     For y = m_InitY To m_InitY + m_YBBottom
@@ -473,10 +473,10 @@ Private Function GenerateInitialWindow_ArbitraryShape() As Long
         'Only calculate pixels that lie inside the reference map
         If m_ReferenceMap((x - m_InitX) + m_XBLeft, (y - m_InitY) + m_YBTop) > 0 Then
             
-            QuickX = x * m_PixelWidth
-            b = m_Pixels(QuickX, y)
-            g = m_Pixels(QuickX + 1, y)
-            r = m_Pixels(QuickX + 2, y)
+            quickX = x * m_PixelWidth
+            b = m_Pixels(quickX, y)
+            g = m_Pixels(quickX + 1, y)
+            r = m_Pixels(quickX + 2, y)
             
             If m_HistogramMode = PDPIM_RGBA Then
             
@@ -485,7 +485,7 @@ Private Function GenerateInitialWindow_ArbitraryShape() As Long
                 m_Red(r) = m_Red(r) + 1
                 
                 If m_AlphaSupport Then
-                    a = m_Pixels(QuickX + 3, y)
+                    a = m_Pixels(quickX + 3, y)
                     m_Alpha(a) = m_Alpha(a) + 1
                 End If
                             

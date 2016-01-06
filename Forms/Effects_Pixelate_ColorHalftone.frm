@@ -120,7 +120,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Halftone Effect Interface
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 01/April/15
 'Last updated: 01/April/15
 'Last update: initial build
@@ -178,7 +178,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -196,7 +196,7 @@ Private Sub Form_Activate()
     
     'Request a preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
         
 End Sub
 
@@ -212,22 +212,22 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Redraw the effect preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then ColorHalftoneFilter sltRadius.Value, sltAngle(0).Value, sltAngle(1).Value, sltAngle(2).Value, sltDensity.Value, True, fxPreview
 End Sub
 
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltAngle_Change(Index As Integer)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltDensity_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltRadius_Change()
-    updatePreview
+    UpdatePreview
 End Sub

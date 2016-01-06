@@ -1,7 +1,7 @@
 Attribute VB_Name = "Uniscribe_Interface"
 '***************************************************************************
 'Uniscribe API Types
-'Copyright 2015-2015 by Tanner Helland
+'Copyright 2015-2016 by Tanner Helland
 'Created: 14/May/15
 'Last updated: 19/May/15
 'Last update: refactor the module to only keep types here; functions were split into the new pdUniscribe class.
@@ -293,7 +293,7 @@ Public Function getScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
     
         'Create a dummy font handle matching the current name
         Dim tmpFont As Long, tmpDC As Long
-        If Font_Management.quickCreateFontAndDC(srcFontName, tmpFont, tmpDC) Then
+        If Font_Management.QuickCreateFontAndDC(srcFontName, tmpFont, tmpDC) Then
             
             'As of May 2015, OpenType only supports 114 tags, so a font can't return more values than this!
             ' (We actually size it to 114 + 1, just in case Uniscribe gets picky about having a little extra breathing room.)
@@ -387,7 +387,7 @@ Public Function getScriptsSupportedByFont(ByVal srcFontName As String, ByRef dst
             End If
             
             'Remember to free our temporary font and DC when we're done with them
-            Font_Management.quickDeleteFontAndDC tmpFont, tmpDC
+            Font_Management.QuickDeleteFontAndDC tmpFont, tmpDC
             
             'Also, let Uniscribe know we're done with our copy of their cache
             ScriptFreeCache tmpCache

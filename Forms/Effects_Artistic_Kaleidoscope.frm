@@ -233,7 +233,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Kaleiodoscope" Distortion
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 14/January/13
 'Last updated: 25/September/14
 'Last update: interface improvements
@@ -392,7 +392,7 @@ Private Sub btsOptions_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub btsQuality_Click(ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 'OK button
@@ -401,7 +401,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -417,7 +417,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
         
     'Create the preview
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -440,27 +440,27 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub OptInterpolate_Click(Index As Integer)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltAngle_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltAngle2_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltMirrors_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltRadius_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Redraw the on-screen preview of the transformed image
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then KaleidoscopeImage sltMirrors, sltAngle, sltAngle2, sltRadius, (btsQuality.ListIndex = 0), sltXCenter.Value, sltYCenter.Value, True, fxPreview
 End Sub
 
@@ -475,7 +475,7 @@ End Function
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'The user can right-click the preview area to select a new center point
@@ -485,16 +485,16 @@ Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
     sltXCenter.Value = xRatio
     sltYCenter.Value = yRatio
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
 
 End Sub
 
 Private Sub sltXCenter_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltYCenter_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

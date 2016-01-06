@@ -1,7 +1,7 @@
 Attribute VB_Name = "Layer_Handler"
 '***************************************************************************
 'Layer Interface
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 24/March/14
 'Last updated: 04/July/14
 'Last update: added eraseLayerByIndex() function
@@ -982,17 +982,17 @@ Public Function getRGBAPixelFromLayer(ByVal layerIndex As Long, ByVal x As Long,
         prepSafeArray tSA, tmpLayerRef.layerDIB
         CopyMemory ByVal VarPtrArray(tmpData()), VarPtr(tSA), 4
         
-        Dim QuickX As Long
-        QuickX = x * (tmpLayerRef.layerDIB.getDIBColorDepth \ 8)
+        Dim quickX As Long
+        quickX = x * (tmpLayerRef.layerDIB.getDIBColorDepth \ 8)
         
         'Failsafe bounds check
-        If ((QuickX + 3) < tmpLayerRef.layerDIB.getDIBArrayWidth) And (y < tmpLayerRef.layerDIB.getDIBHeight) Then
+        If ((quickX + 3) < tmpLayerRef.layerDIB.getDIBArrayWidth) And (y < tmpLayerRef.layerDIB.getDIBHeight) Then
         
             With dstQuad
-                .Red = tmpData(QuickX + 2, y)
-                .Green = tmpData(QuickX + 1, y)
-                .Blue = tmpData(QuickX, y)
-                If tmpLayerRef.layerDIB.getDIBColorDepth = 32 Then .Alpha = tmpData(QuickX + 3, y)
+                .Red = tmpData(quickX + 2, y)
+                .Green = tmpData(quickX + 1, y)
+                .Blue = tmpData(quickX, y)
+                If tmpLayerRef.layerDIB.getDIBColorDepth = 32 Then .Alpha = tmpData(quickX + 3, y)
             End With
             
         End If

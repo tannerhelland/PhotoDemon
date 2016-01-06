@@ -44,7 +44,7 @@ Begin VB.Form FormCrossScreen
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   2040
@@ -57,7 +57,7 @@ Begin VB.Form FormCrossScreen
       Value           =   45
    End
    Begin PhotoDemon.sliderTextCombo sltDistance 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   2940
@@ -71,7 +71,7 @@ Begin VB.Form FormCrossScreen
       Value           =   10
    End
    Begin PhotoDemon.sliderTextCombo sltStrength 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   4
       Top             =   3840
@@ -84,7 +84,7 @@ Begin VB.Form FormCrossScreen
       Value           =   50
    End
    Begin PhotoDemon.sliderTextCombo sltThreshold 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   5
       Top             =   1140
@@ -97,7 +97,7 @@ Begin VB.Form FormCrossScreen
       Value           =   20
    End
    Begin PhotoDemon.sliderTextCombo sltSpokes 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   6
       Top             =   240
@@ -110,7 +110,7 @@ Begin VB.Form FormCrossScreen
       Value           =   4
    End
    Begin PhotoDemon.sliderTextCombo sltSoftness 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   7
       Top             =   4740
@@ -127,7 +127,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Cross-Screen (Star) Tool
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 20/January/15
 'Last updated: 26/January/15
 'Last update: minor performance and quality tweaks
@@ -216,12 +216,12 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     m_thresholdDIB.createFromExistingDIB workingDIB
     
     'Use the ever-excellent pdFilterLUT class to apply the threshold
-    Dim cLUT As pdFilterLUT
-    Set cLUT = New pdFilterLUT
+    Dim cLut As pdFilterLUT
+    Set cLut = New pdFilterLUT
     
     Dim tmpLUT() As Byte
-    cLUT.fillLUT_RemappedRange tmpLUT, 255 - csThreshold, 255, 0, 255
-    cLUT.applyLUTsToDIB_Gray m_thresholdDIB, tmpLUT, True
+    cLut.fillLUT_RemappedRange tmpLUT, 255 - csThreshold, 255, 0, 255
+    cLut.applyLUTsToDIB_Gray m_thresholdDIB, tmpLUT, True
     
     'Progress is reported artificially, because it's too complex to handle using normal means
     If Not toPreview Then
@@ -324,20 +324,20 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     
     'Remove premultipled alpha from the final, fully composited DIB, and release any temporary DIBs that
     ' are no longer needed.
-    If alphaIsRelevant Then m_mbDIB.setAlphaPremultiplication False
+    If alphaIsRelevant Then m_mbDIB.SetAlphaPremultiplication False
     m_thresholdDIB.eraseDIB
     If Not toPreview Then Set m_mbDIBTemp = Nothing
     
     'We now need to brighten up m_mbDIB.
     Dim lMax As Long, lMin As Long
     getDIBMaxMinLuminance m_mbDIB, lMin, lMax
-    cLUT.fillLUT_RemappedRange tmpLUT, lMin, lMax, 0, 255
+    cLut.fillLUT_RemappedRange tmpLUT, lMin, lMax, 0, 255
     
     'On top of the remapped range (which is most important), we also gamma-correct the DIB according to the input strength parameter
     Dim gammaLUT() As Byte, finalLUT() As Byte
-    cLUT.fillLUT_Gamma gammaLUT, 0.5 + (csStrength / 100)
-    cLUT.MergeLUTs tmpLUT, gammaLUT, finalLUT
-    cLUT.applyLUTsToDIB_Gray m_mbDIB, finalLUT, True
+    cLut.fillLUT_Gamma gammaLUT, 0.5 + (csStrength / 100)
+    cLut.MergeLUTs tmpLUT, gammaLUT, finalLUT
+    cLut.applyLUTsToDIB_Gray m_mbDIB, finalLUT, True
     
     'We also want to apply a slight blur to the final result, to improve the feathering of the light boundaries (as they may be
     ' quite sharp due to the remapping).
@@ -361,8 +361,8 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     ' underlying image.
     m_thresholdDIB.createFromExistingDIB workingDIB
     If alphaIsRelevant Then
-        m_thresholdDIB.setAlphaPremultiplication True
-        m_mbDIB.setAlphaPremultiplication True
+        m_thresholdDIB.SetAlphaPremultiplication True
+        m_mbDIB.SetAlphaPremultiplication True
     End If
     cComposite.quickMergeTwoDibsOfEqualSize m_thresholdDIB, m_mbDIB, BL_HARDLIGHT, 100
     
@@ -374,13 +374,13 @@ Public Sub CrossScreenFilter(ByVal csSpokes As Long, ByVal csThreshold As Double
     
     'The final step is to merge the light effect onto the original image, using the Strength input parameter
     ' to control opacity of the merge.
-    If alphaIsRelevant Then workingDIB.setAlphaPremultiplication True
+    If alphaIsRelevant Then workingDIB.SetAlphaPremultiplication True
     cComposite.quickMergeTwoDibsOfEqualSize workingDIB, m_thresholdDIB, BL_LINEARDODGE, 100
     
     If alphaIsRelevant Then
-        workingDIB.setAlphaPremultiplication False
+        workingDIB.SetAlphaPremultiplication False
         workingDIB.copyAlphaFromExistingDIB alphaBackupDIB
-        workingDIB.setAlphaPremultiplication True
+        workingDIB.SetAlphaPremultiplication True
     End If
     
     If Not toPreview Then
@@ -434,7 +434,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -452,7 +452,7 @@ Private Sub Form_Activate()
         
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -477,39 +477,39 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Render a new effect preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then CrossScreenFilter sltSpokes, sltThreshold, sltAngle, sltDistance, sltStrength, sltSoftness, True, fxPreview
 End Sub
 
 Private Sub sliderTextCombo1_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltAngle_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltDistance_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltSoftness_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltSpokes_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltStrength_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltThreshold_Change()
-    updatePreview
+    UpdatePreview
 End Sub

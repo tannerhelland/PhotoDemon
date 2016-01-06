@@ -53,15 +53,6 @@ Begin VB.Form FormNoise
       Width           =   12120
       _ExtentX        =   21378
       _ExtentY        =   1323
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       BackColor       =   14802140
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
@@ -74,7 +65,7 @@ Begin VB.Form FormNoise
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltNoise 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   1920
@@ -94,7 +85,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Noise Interface
-'Copyright 2001-2015 by Tanner Helland
+'Copyright 2001-2016 by Tanner Helland
 'Created: 3/15/01
 'Last updated: 23/August/13
 'Last update: add command bar
@@ -110,7 +101,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub ChkM_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Subroutine for adding noise to an image
@@ -214,7 +205,7 @@ Public Sub AddNoise(ByVal Noise As Long, ByVal MC As Boolean, Optional ByVal toP
 End Sub
 
 Private Sub btsColor_Click(ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 'OK button
@@ -223,16 +214,16 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
     
     'Apply translations and visual themes
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Render a preview
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -249,15 +240,15 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltNoise_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then AddNoise sltNoise.Value, CBool(btsColor.ListIndex = 1), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 

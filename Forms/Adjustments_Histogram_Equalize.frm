@@ -124,7 +124,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Histogram Equalization Interface
-'Copyright 2012-2015 by Tanner Helland
+'Copyright 2012-2016 by Tanner Helland
 'Created: 19/September/12
 'Last updated: 16/December/15
 'Last update: overhaul from the ground up so we can support local histogram operations, multiple luminance types,
@@ -176,11 +176,11 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickX As Long, qvDepth As Long
+    Dim quickX As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
         
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim X As Long, Y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long, initXStride As Long, finalXStride As Long
+    Dim x As Long, y As Long, initX As Long, initY As Long, finalX As Long, finalY As Long, initXStride As Long, finalXStride As Long
     initX = curDIBValues.Left
     initY = curDIBValues.Top
     initXStride = initX * qvDepth
@@ -250,13 +250,13 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
         If Not toPreview Then Message "Analyzing image histogram..."
         
         'Start by generating the initial histogram(s)
-        For Y = initY To finalY
-        For X = initXStride To finalXStride Step qvDepth
+        For y = initY To finalY
+        For x = initXStride To finalXStride Step qvDepth
             
             'Get the source pixel color values
-            b = ImageData(X, Y)
-            g = ImageData(X + 1, Y)
-            r = ImageData(X + 2, Y)
+            b = ImageData(x, y)
+            g = ImageData(x + 1, y)
+            r = ImageData(x + 2, y)
             
             'Store those values in the correct histogram
             'RGB
@@ -271,11 +271,11 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
                 lValues(a) = lValues(a) + 1
             End If
             
-        Next X
+        Next x
             If Not toPreview Then
-                If (Y And progBarCheck) = 0 Then SetProgBarVal Y
+                If (y And progBarCheck) = 0 Then SetProgBarVal y
             End If
-        Next Y
+        Next y
         
         'With the histograms successfully calculated, it's now time to equalize them
         'RGB
@@ -320,44 +320,44 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
         'Apply the new histogram to the image
         If Not toPreview Then Message "Equalizing image..."
         
-        For Y = initY To finalY
-        For X = initXStride To finalXStride Step qvDepth
+        For y = initY To finalY
+        For x = initXStride To finalXStride Step qvDepth
         
             'Get the source RGB values
-            b = ImageData(X, Y)
-            g = ImageData(X + 1, Y)
-            r = ImageData(X + 2, Y)
+            b = ImageData(x, y)
+            g = ImageData(x + 1, y)
+            r = ImageData(x + 2, y)
             
             'Apply new values
             If ehTarget = 0 Then
-                ImageData(X, Y) = bData(b)
-                ImageData(X + 1, Y) = gData(g)
-                ImageData(X + 2, Y) = rData(r)
+                ImageData(x, y) = bData(b)
+                ImageData(x + 1, y) = gData(g)
+                ImageData(x + 2, y) = rData(r)
             Else
                 If ehTarget = 1 Then
                     Color_Functions.tRGBToHSL r, g, b, h, s, v
                     Color_Functions.tHSLToRGB h, s, floatLookup(lData(Int(v * 255))), r, g, b
-                    ImageData(X, Y) = b
-                    ImageData(X + 1, Y) = g
-                    ImageData(X + 2, Y) = r
+                    ImageData(x, y) = b
+                    ImageData(x + 1, y) = g
+                    ImageData(x + 2, y) = r
                 Else
                     Color_Functions.fRGBtoHSV floatLookup(r), floatLookup(g), floatLookup(b), h, s, v
                     Color_Functions.fHSVtoRGB h, s, floatLookup(lData(Int(v * 255))), rFloat, gFloat, bFloat
-                    ImageData(X, Y) = Int(bFloat * 255)
-                    ImageData(X + 1, Y) = Int(gFloat * 255)
-                    ImageData(X + 2, Y) = Int(rFloat * 255)
+                    ImageData(x, y) = Int(bFloat * 255)
+                    ImageData(x + 1, y) = Int(gFloat * 255)
+                    ImageData(x + 2, y) = Int(rFloat * 255)
                 End If
                 
             End If
             
-        Next X
+        Next x
             If Not toPreview Then
-                If (Y And progBarCheck) = 0 Then
+                If (y And progBarCheck) = 0 Then
                     If userPressedESC() Then Exit For
-                    SetProgBarVal Y + finalY
+                    SetProgBarVal y + finalY
                 End If
             End If
-        Next Y
+        Next y
         
     'Local histogram
     Else
@@ -377,7 +377,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
             End If
             
             'Loop through each pixel in the image, applying the filter as we go
-            For X = initXStride To finalXStride Step qvDepth
+            For x = initXStride To finalXStride Step qvDepth
                 
                 'Based on the direction we're traveling, reverse the interior loop boundaries as necessary.
                 If directionDown Then
@@ -391,15 +391,15 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
                 End If
                 
                 'Process the next column.  This step is pretty much identical to the row steps above (but in a vertical direction, obviously)
-                For Y = startY To stopY Step yStep
+                For y = startY To stopY Step yStep
                 
                     'With a local histogram successfully built for the area surrounding this pixel, we can now proceed
                     ' with processing the local histogram.
                     
                     'Start by retrieving the color at this pixel location.
-                    b = ImageData(X, Y)
-                    g = ImageData(X + 1, Y)
-                    r = ImageData(X + 2, Y)
+                    b = ImageData(x, y)
+                    g = ImageData(x + 1, y)
+                    r = ImageData(x + 2, y)
                     
                     'Partially equalize each histogram
                     scaleFactor = 255 / NumOfPixels
@@ -440,9 +440,9 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
                         r = (r + rData(r)) \ 2
                         
                         'Apply the equalized value to the image
-                        ImageData(X, Y) = b
-                        ImageData(X + 1, Y) = g
-                        ImageData(X + 2, Y) = r
+                        ImageData(x, y) = b
+                        ImageData(x + 1, y) = g
+                        ImageData(x + 2, y) = r
                         
                     'Luminance
                     Else
@@ -466,40 +466,40 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
                         
                         If ehTarget = 1 Then
                             Color_Functions.tHSLToRGB h, s, v, r, g, b
-                            ImageData(X, Y) = b
-                            ImageData(X + 1, Y) = g
-                            ImageData(X + 2, Y) = r
+                            ImageData(x, y) = b
+                            ImageData(x + 1, y) = g
+                            ImageData(x + 2, y) = r
                         Else
                             Color_Functions.fHSVtoRGB h, s, v, rFloat, gFloat, bFloat
-                            ImageData(X, Y) = Int(bFloat * 255)
-                            ImageData(X + 1, Y) = Int(gFloat * 255)
-                            ImageData(X + 2, Y) = Int(rFloat * 255)
+                            ImageData(x, y) = Int(bFloat * 255)
+                            ImageData(x + 1, y) = Int(gFloat * 255)
+                            ImageData(x + 2, y) = Int(rFloat * 255)
                         End If
                         
                     End If
                     
                     'Move the iterator in the correct direction
                     If directionDown Then
-                        If Y < finalY Then NumOfPixels = cPixelIterator.MoveYDown
+                        If y < finalY Then NumOfPixels = cPixelIterator.MoveYDown
                     Else
-                        If Y > initY Then NumOfPixels = cPixelIterator.MoveYUp
+                        If y > initY Then NumOfPixels = cPixelIterator.MoveYUp
                     End If
                     
-                Next Y
+                Next y
                 
                 'Reverse y-directionality on each pass
                 directionDown = Not directionDown
-                If X < finalXStride Then NumOfPixels = cPixelIterator.MoveXRight
+                If x < finalXStride Then NumOfPixels = cPixelIterator.MoveXRight
                 
                 'Update the progress bar every (progBarCheck) lines
                 If Not toPreview Then
-                    If (X And progBarCheck) = 0 Then
+                    If (x And progBarCheck) = 0 Then
                         If userPressedESC() Then Exit For
-                        SetProgBarVal X
+                        SetProgBarVal x
                     End If
                 End If
                     
-            Next X
+            Next x
             
             'Release the pixel iterator and second copy of the source image
             If ehTarget = 0 Then
@@ -524,16 +524,16 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
 End Sub
 
 Private Sub btsKernelShape_Click(ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub btsMode_Click(ByVal buttonIndex As Long)
     UpdateRadiusVisibility
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub btsTarget_Click(ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
@@ -541,7 +541,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -551,7 +551,7 @@ Private Sub Form_Activate()
     
     'Request a preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -580,11 +580,11 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltRadius_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub UpdateRadiusVisibility()
@@ -593,7 +593,7 @@ Private Sub UpdateRadiusVisibility()
     btsKernelShape.Visible = CBool(btsMode.ListIndex = 1)
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then EqualizeHistogram GetLocalParamString(), True, fxPreview
 End Sub
 

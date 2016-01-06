@@ -1,7 +1,7 @@
 Attribute VB_Name = "Selection_Handler"
 '***************************************************************************
 'Selection Interface
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 21/June/13
 'Last updated: 13/January/15
 'Last update: fix selection export to file functions to work with layers.  (Not sure how I missed that prior to 6.4's

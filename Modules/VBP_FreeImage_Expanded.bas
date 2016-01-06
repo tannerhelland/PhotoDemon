@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_FreeImage_Interface"
 '***************************************************************************
 'FreeImage Interface (Advanced)
-'Copyright 2012-2015 by Tanner Helland
+'Copyright 2012-2016 by Tanner Helland
 'Created: 3/September/12
 'Last updated: 04/December/14
 'Last update: overhaul all code related to high bit-depth images
@@ -1195,7 +1195,7 @@ Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
     ' and simply copy the value directly into the destination (after redistributing to the proper range, of course).
     Dim aDstF As Double, aDstL As Long
     
-    Dim x As Long, y As Long, QuickX As Long
+    Dim x As Long, y As Long, quickX As Long
     
     For y = 0 To iHeight
     
@@ -1218,11 +1218,11 @@ Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
             'Retrieve the source values.  This includes an implicit cast to Double, which I've done because some formats support IEEE constants
             ' like NaN or Infinity.  VB doesn't deal with these gracefully, and an implicit cast to Double seems to reduce unpredictable errors,
             ' possibly by giving any range-check code some breathing room.
-            QuickX = x * qvDepth
-            rSrcF = CDbl(srcImageData(QuickX))
-            gSrcF = CDbl(srcImageData(QuickX + 1))
-            bSrcF = CDbl(srcImageData(QuickX + 2))
-            If qvDepth = 4 Then aDstF = CDbl(srcImageData(QuickX + 3))
+            quickX = x * qvDepth
+            rSrcF = CDbl(srcImageData(quickX))
+            gSrcF = CDbl(srcImageData(quickX + 1))
+            bSrcF = CDbl(srcImageData(quickX + 2))
+            If qvDepth = 4 Then aDstF = CDbl(srcImageData(quickX + 3))
             
             'If normalization is required, apply it now
             If mustNormalize Then
@@ -1336,10 +1336,10 @@ Private Function convertFreeImageRGBFTo24bppDIB(ByVal fi_Handle As Long, Optiona
             End If
                         
             'Copy the final, safe values into the destination
-            dstImageData(QuickX, iHeightInv) = bDstL
-            dstImageData(QuickX + 1, iHeightInv) = gDstL
-            dstImageData(QuickX + 2, iHeightInv) = rDstL
-            If qvDepth = 4 Then dstImageData(QuickX + 3, iHeightInv) = aDstL
+            dstImageData(quickX, iHeightInv) = bDstL
+            dstImageData(quickX + 1, iHeightInv) = gDstL
+            dstImageData(quickX + 2, iHeightInv) = rDstL
+            If qvDepth = 4 Then dstImageData(quickX + 3, iHeightInv) = aDstL
             
         Next x
         
@@ -1445,7 +1445,7 @@ Private Function toneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
     ' and simply copy the value directly into the destination (after redistributing to the proper range, of course).
     Dim aDstF As Double, aDstL As Long
     
-    Dim x As Long, y As Long, QuickX As Long
+    Dim x As Long, y As Long, quickX As Long
     
     For y = 0 To iHeight
     
@@ -1466,11 +1466,11 @@ Private Function toneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
         For x = 0 To iWidth
             
             'Retrieve the source values.
-            QuickX = x * qvDepth
-            rSrcF = srcImageData(QuickX)
-            gSrcF = srcImageData(QuickX + 1)
-            bSrcF = srcImageData(QuickX + 2)
-            If qvDepth = 4 Then aDstF = CDbl(srcImageData(QuickX + 3))
+            quickX = x * qvDepth
+            rSrcF = srcImageData(quickX)
+            gSrcF = srcImageData(quickX + 1)
+            bSrcF = srcImageData(quickX + 2)
+            If qvDepth = 4 Then aDstF = CDbl(srcImageData(quickX + 3))
             
             'Apply filmic tone-mapping.  See http://fr.slideshare.net/ozlael/hable-john-uncharted2-hdr-lighting for details
             rDstF = fFilmicTonemap(exposureCompensation * rSrcF) / fWhitePoint
@@ -1537,10 +1537,10 @@ Private Function toneMapFilmic_RGBFTo24bppDIB(ByVal fi_Handle As Long, Optional 
             End If
                         
             'Copy the final, safe values into the destination
-            dstImageData(QuickX, iHeightInv) = bDstL
-            dstImageData(QuickX + 1, iHeightInv) = gDstL
-            dstImageData(QuickX + 2, iHeightInv) = rDstL
-            If qvDepth = 4 Then dstImageData(QuickX + 3, iHeightInv) = aDstL
+            dstImageData(quickX, iHeightInv) = bDstL
+            dstImageData(quickX + 1, iHeightInv) = gDstL
+            dstImageData(quickX + 2, iHeightInv) = rDstL
+            If qvDepth = 4 Then dstImageData(quickX + 3, iHeightInv) = aDstL
             
         Next x
         
@@ -1611,7 +1611,7 @@ Private Function isNormalizeRequired(ByVal fi_Handle As Long, ByRef dstMinR As D
     If fi_DataType = FIT_RGBF Then qvDepth = 3 Else qvDepth = 4
     
     Dim srcR As Single, srcG As Single, srcB As Single
-    Dim x As Long, y As Long, QuickX As Long
+    Dim x As Long, y As Long, quickX As Long
     
     For y = 0 To iHeight
         
@@ -1628,11 +1628,11 @@ Private Function isNormalizeRequired(ByVal fi_Handle As Long, ByRef dstMinR As D
         'Iterate through this line, checking values as we go
         For x = 0 To iWidth
             
-            QuickX = x * qvDepth
+            quickX = x * qvDepth
             
-            srcR = srcImageData(QuickX)
-            srcG = srcImageData(QuickX + 1)
-            srcB = srcImageData(QuickX + 2)
+            srcR = srcImageData(quickX)
+            srcG = srcImageData(quickX + 1)
+            srcB = srcImageData(quickX + 2)
             
             'Check max/min values independently for each channel
             If srcR < minR Then

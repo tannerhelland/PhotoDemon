@@ -1,7 +1,7 @@
 Attribute VB_Name = "Drawing"
 '***************************************************************************
 'PhotoDemon Drawing Routines
-'Copyright 2001-2015 by Tanner Helland
+'Copyright 2001-2016 by Tanner Helland
 'Created: 4/3/01
 'Last updated: 01/December/12
 'Last update: Added DrawSystemIcon function (previously used for only the "unsaved changes" dialog
@@ -95,7 +95,7 @@ Public Sub drawHueBox_HSV(ByRef dstPic As PictureBox, Optional ByVal dstSaturati
     Next x
     
     'With the hue box complete, render it onto the destination picture box, with color management applied
-    tmpDIB.renderToPictureBox dstPic
+    tmpDIB.RenderToPictureBox dstPic
 
 End Sub
 
@@ -124,7 +124,7 @@ Public Sub drawSaturationBox_HSV(ByRef dstPic As PictureBox, Optional ByVal dstH
     Next x
     
     'With the hue box complete, render it onto the destination picture box, with color management applied
-    tmpDIB.renderToPictureBox dstPic
+    tmpDIB.RenderToPictureBox dstPic
 
 End Sub
 
@@ -223,10 +223,10 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
             If pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth = 32 Then
                 Set tmpDIB = New pdDIB
                 tmpDIB.createFromExistingDIB pdImages(g_CurrentImage).getActiveDIB(), newWidth, newHeight, True
-                If forceWhiteBackground Then tmpDIB.compositeBackgroundColor 255, 255, 255
-                tmpDIB.renderToPictureBox dstPicture
+                If forceWhiteBackground Then tmpDIB.CompositeBackgroundColor 255, 255, 255
+                tmpDIB.RenderToPictureBox dstPicture
             Else
-                pdImages(g_CurrentImage).getActiveDIB().renderToPictureBox dstPicture
+                pdImages(g_CurrentImage).getActiveDIB().RenderToPictureBox dstPicture
             End If
         
         Else
@@ -238,10 +238,10 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
         
             'If the image is transparent, composite it; otherwise, render the preview using the temporary object
             If pdImages(g_CurrentImage).getActiveDIB().getDIBColorDepth = 32 Then
-                If forceWhiteBackground Then tmpDIB.compositeBackgroundColor 255, 255, 255
+                If forceWhiteBackground Then tmpDIB.CompositeBackgroundColor 255, 255, 255
             End If
             
-            tmpDIB.renderToPictureBox dstPicture
+            tmpDIB.RenderToPictureBox dstPicture
             
         End If
         
@@ -250,10 +250,10 @@ Public Sub DrawPreviewImage(ByRef dstPicture As PictureBox, Optional ByVal useOt
         If otherPictureSrc.getDIBColorDepth = 32 Then
             Set tmpDIB = New pdDIB
             tmpDIB.createFromExistingDIB otherPictureSrc, newWidth, newHeight, True
-            If forceWhiteBackground Then tmpDIB.compositeBackgroundColor 255, 255, 255
-            tmpDIB.renderToPictureBox dstPicture
+            If forceWhiteBackground Then tmpDIB.CompositeBackgroundColor 255, 255, 255
+            tmpDIB.RenderToPictureBox dstPicture
         Else
-            otherPictureSrc.renderToPictureBox dstPicture
+            otherPictureSrc.RenderToPictureBox dstPicture
         End If
         
     End If
@@ -431,19 +431,19 @@ Public Sub createAlphaCheckerboardDIB(ByRef srcDIB As pdDIB)
     CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
     
     'Fill the source DIB with the checkerboard pattern
-    Dim x As Long, y As Long, QuickX As Long
+    Dim x As Long, y As Long, quickX As Long
     For x = 0 To srcDIB.getDIBWidth - 1
-        QuickX = x * 3
+        quickX = x * 3
     For y = 0 To srcDIB.getDIBHeight - 1
          
         If (((x \ chkSize) + (y \ chkSize)) And 1) = 0 Then
-            srcImageData(QuickX + 2, y) = r1
-            srcImageData(QuickX + 1, y) = g1
-            srcImageData(QuickX, y) = b1
+            srcImageData(quickX + 2, y) = r1
+            srcImageData(quickX + 1, y) = g1
+            srcImageData(quickX, y) = b1
         Else
-            srcImageData(QuickX + 2, y) = r2
-            srcImageData(QuickX + 1, y) = g2
-            srcImageData(QuickX, y) = b2
+            srcImageData(quickX + 2, y) = r2
+            srcImageData(quickX + 1, y) = g2
+            srcImageData(quickX, y) = b2
         End If
         
     Next y

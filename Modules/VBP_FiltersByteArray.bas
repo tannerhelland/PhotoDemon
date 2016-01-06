@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_ByteArray"
 '***************************************************************************
 'Byte Array Filters Module
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 02/April/15
 'Last updated: 02/April/15
 'Last update: start assembling byte-array-specific filter collection
@@ -622,7 +622,7 @@ Public Function thresholdPlusDither_ByteArray(ByRef srcArray() As Byte, ByVal ar
     
     Dim i As Long, j As Long
     Dim g As Long, newG As Long
-    Dim QuickX As Long, QuickY As Long
+    Dim quickX As Long, QuickY As Long
     
     'Now loop through the array, calculating errors as we go
     For x = initX To finalX
@@ -654,16 +654,16 @@ Public Function thresholdPlusDither_ByteArray(ByRef srcArray() As Byte, ByVal ar
                 'Second, ignore pixels that have a zero in the dither table
                 If DitherTable(i, j) = 0 Then GoTo NextDitheredPixel
                 
-                QuickX = x + i
+                quickX = x + i
                 QuickY = y + j
                 
                 'Next, ignore target pixels that are off the image boundary
-                If QuickX < initX Then GoTo NextDitheredPixel
-                If QuickX > finalX Then GoTo NextDitheredPixel
+                If quickX < initX Then GoTo NextDitheredPixel
+                If quickX > finalX Then GoTo NextDitheredPixel
                 If QuickY > finalY Then GoTo NextDitheredPixel
                 
                 'If we've made it all the way here, we are able to actually spread the error to this location
-                dErrors(QuickX, QuickY) = dErrors(QuickX, QuickY) + (errorVal * (CSng(DitherTable(i, j)) / dDivisor))
+                dErrors(quickX, QuickY) = dErrors(quickX, QuickY) + (errorVal * (CSng(DitherTable(i, j)) / dDivisor))
             
 NextDitheredPixel:
             Next j
@@ -696,13 +696,13 @@ Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As L
     
     'Build a look-up table for our custom conversion
     Dim g As Long, newG As Long
-    Dim grayLookup() As Byte
-    ReDim grayLookup(0 To 255) As Byte
+    Dim grayLookUp() As Byte
+    ReDim grayLookUp(0 To 255) As Byte
     
     For x = 0 To 255
         g = Int((CDbl(x) / conversionFactor) + 0.5) * conversionFactor
         If g > 255 Then g = 255
-        grayLookup(x) = g
+        grayLookUp(x) = g
     Next x
     
     'Prep a dither table.  Note that any tables from the masterBlackWhiteConversion function could be used, but at present,
@@ -732,7 +732,7 @@ Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As L
     ReDim dErrors(initX To finalX, initY To finalY) As Single
     
     Dim i As Long, j As Long
-    Dim QuickX As Long, QuickY As Long
+    Dim quickX As Long, QuickY As Long
     
     'Now loop through the array, calculating errors as we go
     For x = initX To finalX
@@ -753,10 +753,10 @@ Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As L
         End If
         
         'Write out the new luminance
-        srcArray(x, y) = grayLookup(newG)
+        srcArray(x, y) = grayLookUp(newG)
         
         'Calculate an error
-        errorVal = g - grayLookup(newG)
+        errorVal = g - grayLookUp(newG)
         
         'If there is an error, spread it according to the dither table formula
         If errorVal <> 0 Then
@@ -770,16 +770,16 @@ Public Function Dither_ByteArray(ByRef srcArray() As Byte, ByVal arrayWidth As L
                 'Second, ignore pixels that have a zero in the dither table
                 If DitherTable(i, j) = 0 Then GoTo NextDitheredPixel
                 
-                QuickX = x + i
+                quickX = x + i
                 QuickY = y + j
                 
                 'Next, ignore target pixels that are off the image boundary
-                If QuickX < initX Then GoTo NextDitheredPixel
-                If QuickX > finalX Then GoTo NextDitheredPixel
+                If quickX < initX Then GoTo NextDitheredPixel
+                If quickX > finalX Then GoTo NextDitheredPixel
                 If QuickY > finalY Then GoTo NextDitheredPixel
                 
                 'If we've made it all the way here, we are able to actually spread the error to this location
-                dErrors(QuickX, QuickY) = dErrors(QuickX, QuickY) + (errorVal * (CSng(DitherTable(i, j)) / dDivisor))
+                dErrors(quickX, QuickY) = dErrors(quickX, QuickY) + (errorVal * (CSng(DitherTable(i, j)) / dDivisor))
             
 NextDitheredPixel:
             Next j

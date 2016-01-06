@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon API Scroll bar interface
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 12/February/14
 'Last updated: 05/January/15
 'Last update: modify some window size decisions to better reflect the container's size and orientation
@@ -146,7 +146,7 @@ Private Declare Function SetScrollInfo Lib "user32" (ByVal hWnd As Long, ByVal n
 Private Declare Function ShowScrollBar Lib "user32" (ByVal hWnd As Long, ByVal wBar As Long, ByVal bShow As Long) As Long
 
 Private Declare Function EnableWindow Lib "user32" (ByVal hWnd As Long, ByVal bEnable As Long) As Long
-Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
+Private Declare Sub SetWindowPos Lib "user32" (ByVal targetHwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 
 'Additional APIs and constants used to assign the hand cursor to created scroll bars
 Private m_PreviousCursor As Long
@@ -252,11 +252,11 @@ Public Property Get Enabled() As Boolean
     Enabled = m_Enabled
 End Property
 
-Public Property Let Enabled(NewValue As Boolean)
+Public Property Let Enabled(newValue As Boolean)
 
-    m_Enabled = NewValue
+    m_Enabled = newValue
 
-    If NewValue Then
+    If newValue Then
         EnableScrollBar m_ScrollHwnd, SB_CTL, ESB_ENABLE_BOTH
     Else
         EnableScrollBar m_ScrollHwnd, SB_CTL, ESB_DISABLE_BOTH
@@ -269,13 +269,13 @@ Public Property Get Value() As Long
     Value = m_Value
 End Property
 
-Public Property Let Value(NewValue As Long)
+Public Property Let Value(newValue As Long)
 
     'Check range
-    If NewValue < m_Min Then NewValue = m_Min
-    If NewValue > m_Max Then NewValue = m_Max
+    If newValue < m_Min Then newValue = m_Min
+    If newValue > m_Max Then newValue = m_Max
 
-    m_Value = NewValue
+    m_Value = newValue
     
     'Update the scroll bar as well
     Dim scrollData As SCROLLINFO
@@ -283,7 +283,7 @@ Public Property Let Value(NewValue As Long)
     With scrollData
         .cbSize = Len(scrollData)
         .fMask = SIF_POS
-        .nPos = NewValue
+        .nPos = newValue
     End With
     
     SetScrollInfo m_ScrollHwnd, SB_CTL, scrollData, True
@@ -298,15 +298,15 @@ Public Property Get Min() As Long
     Min = m_Min
 End Property
 
-Public Property Let Min(NewValue As Long)
+Public Property Let Min(newValue As Long)
 
     'Check range
-    If NewValue > m_Max Then
+    If newValue > m_Max Then
         Debug.Print "WARNING! Invalid scroll bar minimum value requested!"
-        NewValue = m_Max - 1
+        newValue = m_Max - 1
     End If
     
-    m_Min = NewValue
+    m_Min = newValue
     
     'Similarly, check to make sure our current value is not less than the new minimum
     Dim forcedToChangeValue As Boolean
@@ -340,15 +340,15 @@ Public Property Get Max() As Long
     Max = m_Max
 End Property
 
-Public Property Let Max(NewValue As Long)
+Public Property Let Max(newValue As Long)
 
     'Check range
-    If NewValue < m_Min Then
+    If newValue < m_Min Then
         Debug.Print "WARNING! Invalid scroll bar maximum value requested!"
-        NewValue = m_Min + 1
+        newValue = m_Min + 1
     End If
     
-    m_Max = NewValue
+    m_Max = newValue
     
     'Similarly, check to make sure our current value is not more than the new maximum
     Dim forcedToChangeValue As Boolean
@@ -382,8 +382,8 @@ Public Property Get LargeChange() As Long
     LargeChange = m_LargeChange
 End Property
 
-Public Property Let LargeChange(NewValue As Long)
-    m_LargeChange = NewValue
+Public Property Let LargeChange(newValue As Long)
+    m_LargeChange = newValue
 End Property
 
 'INITIALIZE class

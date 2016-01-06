@@ -241,7 +241,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Canvas User Control (previously a standalone form)
-'Copyright 2002-2015 by Tanner Helland
+'Copyright 2002-2016 by Tanner Helland
 'Created: 11/29/02
 'Last updated: 12/December/14
 'Last update: performance optimizations

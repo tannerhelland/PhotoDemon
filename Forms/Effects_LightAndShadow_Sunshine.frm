@@ -154,7 +154,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Sunshine Effect Form
-'Copyright 2014-2015 by Audioglider and Tanner Helland
+'Copyright 2014-2016 by Audioglider and Tanner Helland
 'Created: 30/May/14
 'Last updated: 04/June/14
 'Last update: added "color variance" control
@@ -399,7 +399,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -411,7 +411,7 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub cpShine_ColorChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -421,7 +421,7 @@ Private Sub Form_Activate()
     
     'Display the previewed effect in the neighboring window
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -441,35 +441,35 @@ Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
     sltXCenter.Value = xRatio
     sltYCenter.Value = yRatio
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltRadius_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltRayCount_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then SunShine sltRadius.Value, sltRayCount.Value, cpShine.Color, sltVariance.Value, sltXCenter.Value, sltYCenter.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltVariance_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltXCenter_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltYCenter_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 

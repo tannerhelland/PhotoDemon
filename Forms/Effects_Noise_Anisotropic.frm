@@ -129,7 +129,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Anisotropic Diffusion dialog
-'Copyright 2015-2015 by Tanner Helland
+'Copyright 2015-2016 by Tanner Helland
 'Created: 11/December/15
 'Last updated: 11/December/15
 'Last update: initial build
@@ -247,7 +247,7 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
             
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickX As Long, quickXInner As Long, QuickY As Long, qvDepth As Long
+    Dim quickX As Long, quickXInner As Long, QuickY As Long, qvDepth As Long
     qvDepth = curDIBValues.BytesPerPixel
     
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
@@ -274,14 +274,14 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
         
         'Loop through each pixel in the image, converting values as we go
         For x = initX To finalX
-            QuickX = x * qvDepth
+            quickX = x * qvDepth
         For y = initY To finalY
         
             'Grab a copy of the original pixel values; these form the basis of all subsequent comparisons
-            bDst = dstImageData(QuickX, y)
-            gDst = dstImageData(QuickX + 1, y)
-            rDst = dstImageData(QuickX + 2, y)
-            If qvDepth = 4 Then aDst = dstImageData(QuickX + 3, y)
+            bDst = dstImageData(quickX, y)
+            gDst = dstImageData(quickX + 1, y)
+            rDst = dstImageData(quickX + 2, y)
+            If qvDepth = 4 Then aDst = dstImageData(quickX + 3, y)
             
             'Reset all comparison values
             rSum = 0
@@ -294,10 +294,10 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
                 
                 'North
                 QuickY = y - 1
-                bSrc = srcImageData(QuickX, QuickY)
-                gSrc = srcImageData(QuickX + 1, QuickY)
-                rSrc = srcImageData(QuickX + 2, QuickY)
-                If qvDepth = 4 Then aSrc = srcImageData(QuickX + 3, QuickY)
+                bSrc = srcImageData(quickX, QuickY)
+                gSrc = srcImageData(quickX + 1, QuickY)
+                rSrc = srcImageData(quickX + 2, QuickY)
+                If qvDepth = 4 Then aSrc = srcImageData(quickX + 3, QuickY)
                 
                 'Calculate nabla (gradient) and conduction, and add them to the running total
                 rNabla = (rSrc - rDst)
@@ -313,10 +313,10 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
                 
                 'South
                 QuickY = y + 1
-                bSrc = srcImageData(QuickX, QuickY)
-                gSrc = srcImageData(QuickX + 1, QuickY)
-                rSrc = srcImageData(QuickX + 2, QuickY)
-                If qvDepth = 4 Then aSrc = srcImageData(QuickX + 3, QuickY)
+                bSrc = srcImageData(quickX, QuickY)
+                gSrc = srcImageData(quickX + 1, QuickY)
+                rSrc = srcImageData(quickX + 2, QuickY)
+                If qvDepth = 4 Then aSrc = srcImageData(quickX + 3, QuickY)
                 
                 rNabla = (rSrc - rDst)
                 rSum = rSum + rNabla * conduction(rNabla)
@@ -330,7 +330,7 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
                 End If
                 
                 'West
-                quickXInner = QuickX - qvDepth
+                quickXInner = quickX - qvDepth
                 bSrc = srcImageData(quickXInner, y)
                 gSrc = srcImageData(quickXInner + 1, y)
                 rSrc = srcImageData(quickXInner + 2, y)
@@ -348,7 +348,7 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
                 End If
                 
                 'East
-                quickXInner = QuickX + qvDepth
+                quickXInner = quickX + qvDepth
                 bSrc = srcImageData(quickXInner, y)
                 gSrc = srcImageData(quickXInner + 1, y)
                 rSrc = srcImageData(quickXInner + 2, y)
@@ -371,7 +371,7 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
             If adOrdinal Then
 
                 'North-west
-                quickXInner = QuickX - qvDepth
+                quickXInner = quickX - qvDepth
                 QuickY = y - 1
                 bSrc = srcImageData(quickXInner, QuickY)
                 gSrc = srcImageData(quickXInner + 1, QuickY)
@@ -390,7 +390,7 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
                 End If
 
                 'North-east
-                quickXInner = QuickX + qvDepth
+                quickXInner = quickX + qvDepth
                 QuickY = y - 1
                 bSrc = srcImageData(quickXInner, QuickY)
                 gSrc = srcImageData(quickXInner + 1, QuickY)
@@ -409,7 +409,7 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
                 End If
 
                 'South-west
-                quickXInner = QuickX - qvDepth
+                quickXInner = quickX - qvDepth
                 QuickY = y + 1
                 bSrc = srcImageData(quickXInner, QuickY)
                 gSrc = srcImageData(quickXInner + 1, QuickY)
@@ -428,7 +428,7 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
                 End If
 
                 'South-east
-                quickXInner = QuickX + qvDepth
+                quickXInner = quickX + qvDepth
                 QuickY = y + 1
                 bSrc = srcImageData(quickXInner, QuickY)
                 gSrc = srcImageData(quickXInner + 1, QuickY)
@@ -466,10 +466,10 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
             If aNew > 255 Then aNew = 255
                 
             'Store the new values
-            dstImageData(QuickX, y) = bNew
-            dstImageData(QuickX + 1, y) = gNew
-            dstImageData(QuickX + 2, y) = rNew
-            If qvDepth = 4 Then dstImageData(QuickX + 3, y) = aNew
+            dstImageData(quickX, y) = bNew
+            dstImageData(quickX + 1, y) = gNew
+            dstImageData(quickX + 2, y) = rNew
+            If qvDepth = 4 Then dstImageData(quickX + 3, y) = aNew
             
         Next y
             If Not toPreview Then
@@ -501,11 +501,11 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
 End Sub
 
 Private Sub btsDirection_Click(ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub btsEmphasis_Click(ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
@@ -513,7 +513,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -530,7 +530,7 @@ Private Sub Form_Activate()
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -556,23 +556,23 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then Me.ApplyAnisotropicDiffusion GetLocalParamString(), True, fxPreview
 End Sub
 
 Private Sub sltFlow_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltIterations_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltStrength_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Function GetLocalParamString() As String

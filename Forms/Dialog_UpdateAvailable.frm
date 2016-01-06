@@ -87,7 +87,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Update Notification form
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 03/March/14
 'Last updated: 06/September/15
 'Last update: convert buttons to pdButton
@@ -144,9 +144,9 @@ Private Sub Form_Load()
         
     'Set the release announcement URL
     Dim raURL As String
-    raURL = Software_Updater.getReleaseAnnouncementURL
+    raURL = Update_Support.GetReleaseAnnouncementURL
     If Len(raURL) <> 0 Then
-        lblReleaseAnnouncement.Caption = g_Language.TranslateMessage("Learn more about the new features in %1", Software_Updater.getUpdateVersion_Friendly)
+        lblReleaseAnnouncement.Caption = g_Language.TranslateMessage("Learn more about the new features in %1", Update_Support.GetUpdateVersion_Friendly)
         lblReleaseAnnouncement.Visible = True
         lblReleaseAnnouncement.URL = raURL
     Else

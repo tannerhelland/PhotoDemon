@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Area"
 '***************************************************************************
 'Filter (Area) Interface
-'Copyright 2001-2015 by Tanner Helland
+'Copyright 2001-2016 by Tanner Helland
 'Created: 12/June/01
 'Last updated: 14/March/15
 'Last update: finish work on an IIR Gaussian Blur implementation
@@ -496,7 +496,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickX As Long, QuickX2 As Long, QuickY As Long, qvDepth As Long
+    Dim quickX As Long, QuickX2 As Long, QuickY As Long, qvDepth As Long
     qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'Determine if alpha handling is necessary for this image
@@ -559,19 +559,19 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     
     'Copy the contents of the current image into the float arrays
     For x = initX To finalX
-        QuickX = x * qvDepth
+        quickX = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(QuickX + 2, y)
-        g = ImageData(QuickX + 1, y)
-        b = ImageData(QuickX, y)
+        r = ImageData(quickX + 2, y)
+        g = ImageData(quickX + 1, y)
+        b = ImageData(quickX, y)
         
         rFloat(x, y) = r / 255
         gFloat(x, y) = g / 255
         bFloat(x, y) = b / 255
         
         If hasAlpha Then
-            a = ImageData(QuickX + 3, y)
+            a = ImageData(quickX + 3, y)
             aFloat(x, y) = a / 255
         End If
 
@@ -603,10 +603,10 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
             
             'Filter left
             For x = finalX To 1 Step -1
-                QuickX = (x - 1)
-                rFloat(QuickX, y) = rFloat(QuickX, y) + nu * rFloat(x, y)
-                gFloat(QuickX, y) = gFloat(QuickX, y) + nu * gFloat(x, y)
-                bFloat(QuickX, y) = bFloat(QuickX, y) + nu * bFloat(x, y)
+                quickX = (x - 1)
+                rFloat(quickX, y) = rFloat(quickX, y) + nu * rFloat(x, y)
+                gFloat(quickX, y) = gFloat(quickX, y) + nu * gFloat(x, y)
+                bFloat(quickX, y) = bFloat(quickX, y) + nu * bFloat(x, y)
             Next x
             
             'Apply alpha separately
@@ -621,8 +621,8 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
                 aFloat(finalX, y) = aFloat(finalX, y) * boundaryScale
                 
                 For x = finalX To 1 Step -1
-                    QuickX = (x - 1)
-                    aFloat(QuickX, y) = aFloat(QuickX, y) + nu * aFloat(x, y)
+                    quickX = (x - 1)
+                    aFloat(quickX, y) = aFloat(quickX, y) + nu * aFloat(x, y)
                 Next x
             
             End If
@@ -706,7 +706,7 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
     If Not cancelCurrentAction Then
         
         For x = initX To finalX
-            QuickX = x * qvDepth
+            quickX = x * qvDepth
         For y = initY To finalY
         
             r = rFloat(x, y) * postScale
@@ -718,15 +718,15 @@ Public Function GaussianBlur_IIRImplementation(ByRef srcDIB As pdDIB, ByVal radi
             If g > 255 Then g = 255
             If b > 255 Then b = 255
             
-            ImageData(QuickX, y) = b
-            ImageData(QuickX + 1, y) = g
-            ImageData(QuickX + 2, y) = r
+            ImageData(quickX, y) = b
+            ImageData(quickX + 1, y) = g
+            ImageData(quickX + 2, y) = r
             
             'Handle alpha separately
             If hasAlpha Then
                 a = aFloat(x, y) * postScale
                 If a > 255 Then a = 255
-                ImageData(QuickX + 3, y) = a
+                ImageData(quickX + 3, y) = a
             End If
         
         Next y
@@ -767,7 +767,7 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     
     'These values will help us access locations in the array more quickly.
     ' (qvDepth is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickX As Long, QuickX2 As Long, QuickY As Long, qvDepth As Long
+    Dim quickX As Long, QuickX2 As Long, QuickY As Long, qvDepth As Long
     qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'Determine if alpha handling is necessary for this image
@@ -834,19 +834,19 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     
     'Copy the contents of the current image into the float arrays
     For x = initX To finalX
-        QuickX = x * qvDepth
+        quickX = x * qvDepth
     For y = initY To finalY
         
-        r = ImageData(QuickX + 2, y)
-        g = ImageData(QuickX + 1, y)
-        b = ImageData(QuickX, y)
+        r = ImageData(quickX + 2, y)
+        g = ImageData(quickX + 1, y)
+        b = ImageData(quickX, y)
         
         rFloat(x, y) = r / 255
         gFloat(x, y) = g / 255
         bFloat(x, y) = b / 255
         
         If hasAlpha Then
-            a = ImageData(QuickX + 3, y)
+            a = ImageData(quickX + 3, y)
             aFloat(x, y) = a / 255
         End If
 
@@ -880,10 +880,10 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
                 bFloat(finalX, y) = bFloat(finalX, y) * boundaryScale
                 
                 For x = finalX To 1 Step -1
-                    QuickX = (x - 1)
-                    rFloat(QuickX, y) = rFloat(QuickX, y) + nu * rFloat(x, y)
-                    gFloat(QuickX, y) = gFloat(QuickX, y) + nu * gFloat(x, y)
-                    bFloat(QuickX, y) = bFloat(QuickX, y) + nu * bFloat(x, y)
+                    quickX = (x - 1)
+                    rFloat(quickX, y) = rFloat(quickX, y) + nu * rFloat(x, y)
+                    gFloat(quickX, y) = gFloat(quickX, y) + nu * gFloat(x, y)
+                    bFloat(quickX, y) = bFloat(quickX, y) + nu * bFloat(x, y)
                 Next x
                 
             End If
@@ -900,8 +900,8 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
                 If blurSymmetric Then
                     aFloat(finalX, y) = aFloat(finalX, y) * boundaryScale
                     For x = finalX To 1 Step -1
-                        QuickX = (x - 1)
-                        aFloat(QuickX, y) = aFloat(QuickX, y) + nu * aFloat(x, y)
+                        quickX = (x - 1)
+                        aFloat(quickX, y) = aFloat(quickX, y) + nu * aFloat(x, y)
                     Next x
                 End If
             
@@ -922,7 +922,7 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
     If Not cancelCurrentAction Then
         
         For x = initX To finalX
-            QuickX = x * qvDepth
+            quickX = x * qvDepth
         For y = initY To finalY
         
             r = rFloat(x, y) * postScale
@@ -934,15 +934,15 @@ Public Function HorizontalBlur_IIR(ByRef srcDIB As pdDIB, ByVal radius As Double
             If g > 255 Then g = 255
             If b > 255 Then b = 255
             
-            ImageData(QuickX, y) = b
-            ImageData(QuickX + 1, y) = g
-            ImageData(QuickX + 2, y) = r
+            ImageData(quickX, y) = b
+            ImageData(quickX + 1, y) = g
+            ImageData(quickX + 2, y) = r
             
             'Handle alpha separately
             If hasAlpha Then
                 a = aFloat(x, y) * postScale
                 If a > 255 Then a = 255
-                ImageData(QuickX + 3, y) = a
+                ImageData(quickX + 3, y) = a
             End If
         
         Next y

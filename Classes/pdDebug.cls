@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Custom Debug helper class
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 17/July/14
 'Last updated: 23/June/15
 'Last update: integrated pdSystemInfo for various OS interaction bits
@@ -150,7 +150,7 @@ Public Function InitializeDebugger(Optional ByVal writeLogDataToFile As Boolean 
             
             debugHeader = debugHeader & "-- PROGRAM INFORMATION -- " & vbCrLf & vbCrLf
             
-            debugHeader = debugHeader & "Version: " & getPhotoDemonNameAndVersion & vbCrLf
+            debugHeader = debugHeader & "Version: " & GetPhotoDemonNameAndVersion & vbCrLf
             debugHeader = debugHeader & "Translations active: " & CStr(g_Language.translationActive()) & vbCrLf
             debugHeader = debugHeader & "Language in use: " & CStr(g_Language.getCurrentLanguage()) & vbCrLf
             debugHeader = debugHeader & "GDI+ available: " & CStr(g_GDIPlusAvailable) & vbCrLf

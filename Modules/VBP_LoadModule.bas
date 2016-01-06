@@ -1,7 +1,7 @@
 Attribute VB_Name = "Loading"
 '***************************************************************************
 'Program/File Loading Handler
-'Copyright 2001-2015 by Tanner Helland
+'Copyright 2001-2016 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 28/April/15
 'Last update: thanks to the new pdGlyphCollection class, PD now caches a list of all fonts, not just TrueType ones.
@@ -476,9 +476,9 @@ Public Sub LoadTheProgram()
     
     'Set up the program's title bar.  Odd-numbered releases are development releases.  Even-numbered releases are formal builds.
     If Not (g_WindowManager Is Nothing) Then
-        g_WindowManager.SetWindowCaptionW FormMain.hWnd, getPhotoDemonNameAndVersion()
+        g_WindowManager.SetWindowCaptionW FormMain.hWnd, GetPhotoDemonNameAndVersion()
     Else
-        FormMain.Caption = getPhotoDemonNameAndVersion()
+        FormMain.Caption = GetPhotoDemonNameAndVersion()
     End If
     
     'PhotoDemon renders many of its own icons dynamically.  Initialize that engine now.

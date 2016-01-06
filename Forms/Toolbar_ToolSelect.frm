@@ -343,7 +343,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Primary Toolbar
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 02/Oct/13
 'Last updated: 18/Oct/14
 'Last update: start work on an all-new toolbox for the 6.6 release
@@ -939,28 +939,6 @@ Public Sub resetToolButtonStates()
         Next i
         
     End If
-        
-    'Display the current tool options panel, while hiding all inactive ones.  The On Error Resume statement is used to fix
-    ' trouble with the .SetFocus line, below.  That .SetFocus line is helpful for fixing some VB issues with controls embedded
-    ' on a picture box (specifically, combo boxes which do not drop-down properly unless a picture box or its child already
-    ' has focus).  Sometimes, VB will inexplicably fail to set focus, and it will raise an Error 5 to match; as this is not
-    ' a crucial error, just a VB quirk, I don't mind using OERN here.
-    '
-    'DISABLED PENDING ADDITIONAL TESTING WITH THE NEW PER-WINDOW OPTIONS PANEL SYSTEM (APRIL 2015)
-    '
-    'On Error Resume Next
-    'For i = 0 To toolbar_Options.picTools.Count - 1
-    '    If i = activeToolPanel Then
-    '        If Not toolbar_Options.picTools(i).Visible Then
-    '            toolbar_Options.picTools(i).Visible = True
-    '            toolbar_Options.picTools(i).Refresh
-    '            setArrowCursor toolbar_Options.picTools(i)
-    '        End If
-    '        If toolbar_Options.Visible And toolbar_Options.picTools(i).Visible Then toolbar_Options.picTools(i).SetFocus
-    '    Else
-    '        If toolbar_Options.picTools(i).Visible Then toolbar_Options.picTools(i).Visible = False
-    '    End If
-    'Next i
             
     newToolSelected
         

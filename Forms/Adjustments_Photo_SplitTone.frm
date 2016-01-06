@@ -45,7 +45,7 @@ Begin VB.Form FormSplitTone
       _ExtentY        =   9710
    End
    Begin PhotoDemon.sliderTextCombo sltBalance 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   1
       Top             =   2040
@@ -81,7 +81,7 @@ Begin VB.Form FormSplitTone
       curColor        =   32767
    End
    Begin PhotoDemon.sliderTextCombo sltStrength 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   5
       Top             =   4440
@@ -102,7 +102,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Split Toning Dialog
-'Copyright 2014-2015 by Audioglider and Tanner Helland
+'Copyright 2014-2016 by Audioglider and Tanner Helland
 'Created: 07/May/14
 'Last updated: 09/May/14
 'Last update: tweak the split toning algorithm to perfection (I hope?)
@@ -277,7 +277,7 @@ End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     updateBalanceSlider
-    updatePreview
+    UpdatePreview
 End Sub
 
 'To help orient the user, slightly different reset values are used for this tool.
@@ -290,12 +290,12 @@ End Sub
 
 Private Sub cpHighlight_ColorChanged()
     updateBalanceSlider
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cpShadow_ColorChanged()
     updateBalanceSlider
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -304,7 +304,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Display the previewed effect in the neighboring window
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -312,21 +312,21 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then SplitTone cpHighlight.Color, cpShadow.Color, sltBalance.Value, sltStrength.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltStrength_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltBalance_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Redraw the balance slider gradient to match the currently selected split-toning values

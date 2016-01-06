@@ -32,9 +32,9 @@ Begin VB.Form dialog_GenericMemory
       TabIndex        =   1
       Top             =   1560
       Width           =   6780
-      _extentx        =   11959
-      _extenty        =   1085
-      caption         =   "&Yes"
+      _ExtentX        =   11959
+      _ExtentY        =   1085
+      Caption         =   "&Yes"
    End
    Begin PhotoDemon.smartCheckBox chkRemember 
       Height          =   330
@@ -42,20 +42,20 @@ Begin VB.Form dialog_GenericMemory
       TabIndex        =   0
       Top             =   4200
       Width           =   6735
-      _extentx        =   11880
-      _extenty        =   582
-      caption         =   " "
+      _ExtentX        =   11880
+      _ExtentY        =   582
+      Caption         =   " "
    End
    Begin PhotoDemon.pdLabel lblExplanation 
       Height          =   1290
       Left            =   960
       Top             =   150
       Width           =   6015
-      _extentx        =   10610
-      _extenty        =   2275
-      caption         =   ""
-      forecolor       =   2105376
-      layout          =   1
+      _ExtentX        =   10610
+      _ExtentY        =   2275
+      Caption         =   ""
+      ForeColor       =   2105376
+      Layout          =   1
    End
    Begin PhotoDemon.pdButton cmdAnswer 
       Height          =   735
@@ -64,9 +64,9 @@ Begin VB.Form dialog_GenericMemory
       TabIndex        =   2
       Top             =   2400
       Width           =   6780
-      _extentx        =   11959
-      _extenty        =   1296
-      caption         =   "&No"
+      _ExtentX        =   11959
+      _ExtentY        =   1296
+      Caption         =   "&No"
    End
    Begin PhotoDemon.pdButton cmdAnswer 
       Height          =   735
@@ -75,9 +75,9 @@ Begin VB.Form dialog_GenericMemory
       TabIndex        =   3
       Top             =   3240
       Width           =   6780
-      _extentx        =   11959
-      _extenty        =   1296
-      caption         =   "&Cancel"
+      _ExtentX        =   11959
+      _ExtentY        =   1296
+      Caption         =   "&Cancel"
    End
 End
 Attribute VB_Name = "dialog_GenericMemory"
@@ -87,7 +87,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Generic Yes/No/Cancel Dialog with automatic "Remember My Choice" handling
-'Copyright 2012-2015 by Tanner Helland
+'Copyright 2012-2016 by Tanner Helland
 'Created: 01/December/12
 'Last updated: 04/May/15
 'Last update: merge code from other dialogs into a single, universal version
@@ -133,9 +133,9 @@ Public Sub showDialog(ByVal questionText As String, ByVal yesButtonText As Strin
 
     'Automatically draw the requested icon using the system icon set
     Dim iconY As Long
-    iconY = fixDPI(18)
-    If g_UseFancyFonts Then iconY = iconY + fixDPI(2)
-    DrawSystemIcon icon, Me.hDC, fixDPI(22), iconY
+    iconY = FixDPI(18)
+    If g_UseFancyFonts Then iconY = iconY + FixDPI(2)
+    DrawSystemIcon icon, Me.hDC, FixDPI(22), iconY
     
     'Set the default answer.  (When the form is displayed, this will be used to assign focus to the corresponding button.)
     userAnswer = defaultAnswer
@@ -156,10 +156,10 @@ Public Sub showDialog(ByVal questionText As String, ByVal yesButtonText As Strin
     End If
 
     'Apply visual themes and translations
-    makeFormPretty Me
+    MakeFormPretty Me
 
     'Display the form
-    showPDDialog vbModal, Me, True
+    ShowPDDialog vbModal, Me, True
 
 End Sub
 

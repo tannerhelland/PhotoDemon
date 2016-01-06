@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon ICC (International Color Consortium) Profile Manager
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 05/November/13
 'Last updated: 31/January/14
 'Last update: retrieve the rendering intent from embedded ICC profiles, and use that for the first stage of color
@@ -117,7 +117,7 @@ Public Function applyICCtoSelf(ByRef copyOfThisInstance As pdDIB) As Boolean
     'Use the Color_Management module to convert the raw ICC profile into an internal Windows profile handle.  Note that
     ' this function will also validate the profile for us.
     Dim srcProfile As Long
-    srcProfile = loadICCProfileFromMemory(VarPtr(iccData(0)), UBound(iccData) + 1)
+    srcProfile = LoadICCProfileFromMemory(VarPtr(iccData(0)), UBound(iccData) + 1)
     
     'If we successfully opened and validated our source profile, continue on to the next step!
     If srcProfile <> 0 Then
@@ -127,7 +127,7 @@ Public Function applyICCtoSelf(ByRef copyOfThisInstance As pdDIB) As Boolean
             
         'Use the Color_Management module to request a standard sRGB profile.
         Dim dstProfile As Long
-        dstProfile = loadStandardICCProfile(LCS_sRGB)
+        dstProfile = LoadStandardICCProfile(LCS_sRGB)
         
         'It's highly unlikely that a request for a standard ICC profile will fail, but just be safe, double-check the
         ' returned handle before continuing.
@@ -136,12 +136,12 @@ Public Function applyICCtoSelf(ByRef copyOfThisInstance As pdDIB) As Boolean
             'Before proceeding, check to see if the source and destination profiles are identical.  Some dSLRs will embed
             ' sRGB transforms in their JPEGs, and applying another sRGB transform atop them is a waste of time and resources.
             ' Thanks to VB developer LaVolpe for this suggestion.
-            If Not Color_Management.areColorProfilesEqual(srcProfile, dstProfile) Then
+            If Not Color_Management.AreColorProfilesEqual(srcProfile, dstProfile) Then
             
                 'We can now use our profile matrix to generate a transformation object, which we will use to directly modify
                 ' the DIB's RGB values.
                 Dim iccTransformation As Long
-                iccTransformation = requestProfileTransform(srcProfile, dstProfile, INTENT_PERCEPTUAL, getSourceRenderIntent)
+                iccTransformation = RequestProfileTransform(srcProfile, dstProfile, INTENT_PERCEPTUAL, getSourceRenderIntent)
                 
                 'If the transformation was generated successfully, carry on!
                 If iccTransformation <> 0 Then
@@ -152,7 +152,7 @@ Public Function applyICCtoSelf(ByRef copyOfThisInstance As pdDIB) As Boolean
                     'Note that a color format must be explicitly specified - we vary this contingent on the parent image's
                     ' color depth.
                     Dim transformCheck As Boolean
-                    transformCheck = applyColorTransformToDIB(iccTransformation, copyOfThisInstance)
+                    transformCheck = ApplyColorTransformToDIB(iccTransformation, copyOfThisInstance)
                     
                     'If the transform was successful, pat ourselves on the back.
                     If transformCheck Then
@@ -168,7 +168,7 @@ Public Function applyICCtoSelf(ByRef copyOfThisInstance As pdDIB) As Boolean
                     End If
                     
                     'Release our transformation
-                    releaseColorTransform iccTransformation
+                    ReleaseColorTransform iccTransformation
                                     
                 Else
                     Message "Both ICC profiles loaded successfully, but transformation could not be created."
@@ -182,14 +182,14 @@ Public Function applyICCtoSelf(ByRef copyOfThisInstance As pdDIB) As Boolean
                 applyICCtoSelf = True
             End If
         
-            releaseICCProfile dstProfile
+            ReleaseICCProfile dstProfile
         
         Else
             Message "Could not obtain standard sRGB color profile.  Color management has been disabled for this image."
             applyICCtoSelf = False
         End If
         
-        releaseICCProfile srcProfile
+        ReleaseICCProfile srcProfile
     
     Else
         Message "Embedded ICC profile is invalid.  Color management has been disabled for this image."

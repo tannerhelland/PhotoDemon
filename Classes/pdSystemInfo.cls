@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Generic "System Information" interface
-'Copyright 2012-2015 by Tanner Helland
+'Copyright 2012-2016 by Tanner Helland
 'Created: 27/November/12
 'Last updated: 14/September/15
 'Last update: greatly simplify the way PD measures its own memory usage

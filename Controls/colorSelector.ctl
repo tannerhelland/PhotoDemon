@@ -31,7 +31,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Color Selector custom control
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 17/August/13
 'Last updated: 28/October/15
 'Last update: finish integration with pdUCSupport, which let us cut a ton of redundant code
@@ -105,7 +105,7 @@ End Property
 Public Property Let Color(ByVal newColor As OLE_COLOR)
     
     curColor = newColor
-    redrawBackBuffer
+    RedrawBackBuffer
     
     PropertyChanged "Color"
     RaiseEvent ColorChanged
@@ -121,7 +121,7 @@ End Property
 Public Property Let Enabled(ByVal newValue As Boolean)
     UserControl.Enabled = newValue
     PropertyChanged "Enabled"
-    redrawBackBuffer
+    RedrawBackBuffer
 End Property
 
 Public Property Get FontSize() As Single
@@ -177,14 +177,14 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
 End Sub
 
 Private Sub ucSupport_MouseEnter(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
-    redrawBackBuffer
+    RedrawBackBuffer
     UpdateCursor x, y
 End Sub
 
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_MouseInPrimaryButton = False
     m_MouseInSecondaryButton = False
-    redrawBackBuffer
+    RedrawBackBuffer
     UpdateCursor -100, -100
 End Sub
 
@@ -204,7 +204,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     End If
     
     If redrawRequired Then
-        redrawBackBuffer
+        RedrawBackBuffer
         MakeNewTooltip
     End If
     
@@ -221,13 +221,13 @@ End Sub
 Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long, bHandled As Boolean)
     
     'On program-wide color changes, redraw ourselves accordingly
-    If wMsg = WM_PD_PRIMARY_COLOR_CHANGE Then redrawBackBuffer
+    If wMsg = WM_PD_PRIMARY_COLOR_CHANGE Then RedrawBackBuffer
     
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
     If updateLayoutToo Then updateControlLayout
-    redrawBackBuffer
+    RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
@@ -374,7 +374,7 @@ Private Function IsMouseInSecondaryButton(ByVal x As Single, ByVal y As Single) 
 End Function
 
 'Redraw the entire control, including the caption (if present)
-Private Sub redrawBackBuffer()
+Private Sub RedrawBackBuffer()
     
     'Request the back buffer DC, and ask the support module to erase any existing rendering for us.
     Dim bufferDC As Long
@@ -474,5 +474,5 @@ End Sub
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    ucSupport.AssignTooltip UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub

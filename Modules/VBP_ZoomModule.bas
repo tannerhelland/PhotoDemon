@@ -1,7 +1,7 @@
 Attribute VB_Name = "Viewport_Engine"
 '***************************************************************************
 'Viewport Handler - builds and draws the image viewport and associated scroll bars
-'Copyright 2001-2015 by Tanner Helland
+'Copyright 2001-2016 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 13/September/15
 'Last update: completely overhaul the viewport pipeline to prep for paint tools!
@@ -138,7 +138,7 @@ Public Sub Stage5_FlipBufferAndDrawUI(ByRef srcImage As pdImage, ByRef dstCanvas
     'FYI, in the future, any additional UI compositing can be handled here.
     
     'With all rendering complete, copy the form's image into the .Picture (e.g. render it on-screen) and refresh
-    dstCanvas.requestBufferSync
+    dstCanvas.RequestBufferSync
 
 End Sub
 

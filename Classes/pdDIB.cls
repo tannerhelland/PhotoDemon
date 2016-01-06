@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon DIB Wrapper class (formerly known as "pdLayer")
-'Copyright 2012-2015 by Tanner Helland
+'Copyright 2012-2016 by Tanner Helland
 'Created: 29/August/12
 'Last updated: 28/October/15
 'Last update: if we've already created a DC for this class, attempt to reuse it instead of deleting it and creating a new one
@@ -301,17 +301,17 @@ Friend Function GetPixelRGBQuad(ByVal x As Long, ByVal y As Long, ByRef dstQuad 
         prepInternalSafeArray tSA
         CopyMemory ByVal VarPtrArray(tmpData()), VarPtr(tSA), 4&
         
-        Dim QuickX As Long
-        QuickX = x * (m_DibColorDepth \ 8)
+        Dim quickX As Long
+        quickX = x * (m_DibColorDepth \ 8)
         
         'Failsafe bounds check
-        If ((QuickX + 2) < m_dibArrayWidth) Then
+        If ((quickX + 2) < m_dibArrayWidth) Then
         
             With dstQuad
-                .Red = tmpData(QuickX + 2, y)
-                .Green = tmpData(QuickX + 1, y)
-                .Blue = tmpData(QuickX, y)
-                If m_DibColorDepth = 32 Then .Alpha = tmpData(QuickX + 3, y)
+                .Red = tmpData(quickX + 2, y)
+                .Green = tmpData(quickX + 1, y)
+                .Blue = tmpData(quickX, y)
+                If m_DibColorDepth = 32 Then .Alpha = tmpData(quickX + 3, y)
             End With
             
         End If
@@ -346,7 +346,7 @@ Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
             prepInternalSafeArray tmpSA
             CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
-            Dim x As Long, y As Long, QuickX As Long
+            Dim x As Long, y As Long, quickX As Long
             
             Dim chkAlpha As Byte
             Dim tmpAlpha As Double
@@ -361,10 +361,10 @@ Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
                 
             'Loop through the image, checking alphas as we go
             For x = 0 To m_dibWidth - 1
-                QuickX = x * 4
+                quickX = x * 4
             For y = 0 To m_dibHeight - 1
                 
-                chkAlpha = iData(QuickX + 3, y)
+                chkAlpha = iData(quickX + 3, y)
                 
                 'If the alpha value is less than the cutoff, mark this pixel
                 If chkAlpha < cutOff Then
@@ -373,20 +373,20 @@ Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
                     If m_trnsX = -1 Then
                         m_trnsX = x
                         m_trnsY = y
-                        m_OriginalTransparentColor = RGB(iData(QuickX + 2, y), iData(QuickX + 1, y), iData(QuickX, y))
+                        m_OriginalTransparentColor = RGB(iData(quickX + 2, y), iData(quickX + 1, y), iData(quickX, y))
                     End If
                     
                     'When previewing this effect, we don't actually want to change pixel colors. Otherwise,
                     ' HALFTONE-mode resampling may bleed the magenta into the preview and give poor results.
                     If forceColor Then
                         'Color this pixel with magic magenta (253,0,253)
-                        iData(QuickX + 2, y) = 253
-                        iData(QuickX + 1, y) = 0
-                        iData(QuickX, y) = 253
+                        iData(quickX + 2, y) = 253
+                        iData(quickX + 1, y) = 0
+                        iData(quickX, y) = 253
                     End If
                     
                     'Blank the alpha channel
-                    iData(QuickX + 3, y) = 0
+                    iData(quickX + 3, y) = 0
                     
                 'If the pixel is not beneath the cut-off, and not fully opaque, composite it against white
                 ElseIf chkAlpha < 255 Then
@@ -395,12 +395,12 @@ Public Sub applyAlphaCutoff(Optional ByVal cutOff As Long = 127, Optional ByVal 
                     tmpAlpha = CDbl(chkAlpha) / 255
             
                     'Use that alpha value to blend the current color against white
-                    iData(QuickX + 2, y) = Blend2Colors(iData(QuickX + 2, y), backR, tmpAlpha)
-                    iData(QuickX + 1, y) = Blend2Colors(iData(QuickX + 1, y), backG, tmpAlpha)
-                    iData(QuickX, y) = Blend2Colors(iData(QuickX, y), backB, tmpAlpha)
+                    iData(quickX + 2, y) = Blend2Colors(iData(quickX + 2, y), backR, tmpAlpha)
+                    iData(quickX + 1, y) = Blend2Colors(iData(quickX + 1, y), backG, tmpAlpha)
+                    iData(quickX, y) = Blend2Colors(iData(quickX, y), backB, tmpAlpha)
                     
                     'Opaque-ify the alpha channel
-                    iData(QuickX + 3, y) = 255
+                    iData(quickX + 3, y) = 255
                 
                 End If
                 
@@ -435,13 +435,13 @@ Public Sub ForceNewAlpha(ByVal newAlpha As Byte)
             prepInternalSafeArray tmpSA
             CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
-            Dim x As Long, y As Long, QuickX As Long
+            Dim x As Long, y As Long, quickX As Long
                 
             'Loop through the image, checking alphas as we go
             For x = 0 To m_dibWidth - 1
-                QuickX = x * 4
+                quickX = x * 4
             For y = 0 To m_dibHeight - 1
-                iData(QuickX + 3, y) = newAlpha
+                iData(quickX + 3, y) = newAlpha
             Next y
             Next x
     
@@ -664,7 +664,7 @@ Public Function convertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
 
         Dim iData() As Byte
         Dim tmpSA As SAFEARRAY2D
-        Dim x As Long, y As Long, QuickX As Long
+        Dim x As Long, y As Long, quickX As Long
         
         Dim newTransFloat As Double
         newTransFloat = newTransparency / 255
@@ -681,10 +681,10 @@ Public Function convertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
             
             'Loop through the image, setting the alpha of each pixel to 255 (opaque)
             For x = 0 To m_dibWidth - 1
-                QuickX = x * 4
+                quickX = x * 4
             For y = 0 To m_dibHeight - 1
                 
-                iData(QuickX + 3, y) = iData(QuickX + 3, y) * newTransFloat
+                iData(quickX + 3, y) = iData(quickX + 3, y) * newTransFloat
                 
             Next y
             Next x
@@ -722,10 +722,10 @@ Public Function convertTo32bpp(Optional ByVal newTransparency As Byte = 255) As 
                 
                 'Loop through the image, setting the alpha of each pixel to 255 (opaque)
                 For x = 0 To m_dibWidth - 1
-                    QuickX = x * 4
+                    quickX = x * 4
                 For y = 0 To m_dibHeight - 1
                     
-                    iData(QuickX + 3, y) = newTransparency
+                    iData(quickX + 3, y) = newTransparency
                     
                 Next y
                 Next x
@@ -1683,15 +1683,15 @@ Public Sub copyAlphaFromExistingDIB(ByRef srcDIB As pdDIB)
     PrepExternalSafeArray srcDIB, srcSA
     CopyMemory ByVal VarPtrArray(aData()), VarPtr(srcSA), 4
     
-    Dim x As Long, y As Long, QuickX As Long
+    Dim x As Long, y As Long, quickX As Long
     
     'Loop through the image, copying alpha values as we go
     For x = 0 To m_dibWidth - 1
-        QuickX = x * 4
+        quickX = x * 4
     For y = 0 To m_dibHeight - 1
         
         'Access the alpha data for this pixel
-        iData(QuickX + 3, y) = aData(QuickX + 3, y)
+        iData(quickX + 3, y) = aData(quickX + 3, y)
         
     Next y
     Next x
@@ -1751,7 +1751,7 @@ Public Sub SetAlphaPremultiplication(Optional ByVal applyPremultiplication As Bo
     Dim dibPixels() As Byte, dibSA As SAFEARRAY1D
     prepInternalSafeArray1D dibSA
     
-    Dim x As Long, y As Long, QuickX As Long
+    Dim x As Long, y As Long, quickX As Long
     Dim r As Long, g As Long, b As Long
     Dim tmpAlpha As Byte, tmpAlphaModifier As Double
     

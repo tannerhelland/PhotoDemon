@@ -121,7 +121,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Exposure Dialog
-'Copyright 2013-2015 by Audioglider and Tanner Helland
+'Copyright 2013-2016 by Audioglider and Tanner Helland
 'Created: 13/July/13
 'Last updated: 05/November/15
 'Last update: add the other (non-exposure, but whatevs) controls provided by Photoshop's exposure dialog
@@ -259,7 +259,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -272,7 +272,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Draw a preview of the effect
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -281,7 +281,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Redrawing a preview of the exposure effect also redraws the exposure curve (which isn't really a curve, but oh well)
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     
     If cmdBar.previewsAllowed And sltExposure.IsValid And sltOffset.IsValid And sltGamma.IsValid Then
     
@@ -347,19 +347,19 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Update the preview whenever the combination slider/text control has its value changed
 Private Sub sltExposure_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltGamma_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltOffset_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 

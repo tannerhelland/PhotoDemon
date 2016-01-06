@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Flicker-Free Window Painter class
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 20/October/14  (but built from many parts existing earlier)
 'Last updated: 05/September/15
 'Last update: add option for "raise immediate draw event" in .requestRepaint()

@@ -375,7 +375,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Move/Size Tool Panel
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 02/Oct/13
 'Last updated: 13/May/15
 'Last update: finish migrating all relevant controls to this dedicated form

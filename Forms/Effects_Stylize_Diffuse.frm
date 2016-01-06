@@ -35,7 +35,7 @@ Begin VB.Form FormDiffuse
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltX 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   1680
@@ -65,7 +65,7 @@ Begin VB.Form FormDiffuse
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltY 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   4
       Top             =   2640
@@ -83,7 +83,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Diffuse Filter Handler
-'Copyright 2001-2015 by Tanner Helland
+'Copyright 2001-2016 by Tanner Helland
 'Created: 8/14/01
 'Last updated: 22/August/13
 'Last update: add command bar user control
@@ -102,7 +102,7 @@ Option Explicit
 Private iWidth As Long, iHeight As Long
 
 Private Sub ChkWrap_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'OK button
@@ -111,7 +111,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -121,7 +121,7 @@ Private Sub Form_Activate()
     
     'Re-enable previews and request an initial render
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -269,20 +269,20 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
 End Sub
 
 Private Sub sltX_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then DiffuseCustom sltX.Value, sltY.Value, CBool(chkWrap.Value), True, fxPreview
 End Sub
 
 Private Sub sltY_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

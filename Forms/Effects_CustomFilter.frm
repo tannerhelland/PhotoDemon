@@ -444,7 +444,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Custom Filter Handler
-'Copyright 2001-2015 by Tanner Helland
+'Copyright 2001-2016 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 21/August/13
 'Last update: rebuilt the entire form due to the new command bar.  Custom load/save buttons and functions are now gone, as the
@@ -463,7 +463,7 @@ Option Explicit
 
 'Normalizing automatically computes divisor and offset for the user
 Private Sub chkNormalize_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
@@ -471,7 +471,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -488,7 +488,7 @@ Private Sub Form_Activate()
     cmdBar.markPreviewStatus True
     
     'Render a preview
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -502,7 +502,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'When the filter is changed, update the preview to match
-Private Sub updatePreview()
+Private Sub UpdatePreview()
 
     If cmdBar.previewsAllowed Then
         
@@ -549,15 +549,15 @@ Private Sub updatePreview()
 End Sub
 
 Private Sub tudDivisor_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub tudF_Change(Index As Integer)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub tudOffset_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Stick all the current filter values into a parameter string, which can then be passed to the ApplyConvolutionFilter function
@@ -593,7 +593,7 @@ End Function
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

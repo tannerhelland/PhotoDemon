@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Miscellaneous"
 '***************************************************************************
 'Filter Module
-'Copyright 2000-2015 by Tanner Helland
+'Copyright 2000-2016 by Tanner Helland
 'Created: 13/October/00
 'Last updated: 07/September/15
 'Last update: continued work on moving crap out of this module
@@ -979,8 +979,8 @@ Public Sub MenuTest()
     'Color_Management.convertRGBUsingCustomEndpoints pdImages(g_CurrentImage).getActiveDIB, 0.15, 0.06, 0.3, 0.6, 0.64, 0.33, 0.3127, 0.329
     
     'Create a LUT class for testing
-    Dim cLUT As pdFilterLUT
-    Set cLUT = New pdFilterLUT
+    Dim cLut As pdFilterLUT
+    Set cLut = New pdFilterLUT
     
     Dim rLUT() As Byte, gLUT() As Byte, bLUT() As Byte
     Dim rLUT2() As Byte, gLUT2() As Byte, bLUT2() As Byte
@@ -1000,9 +1000,9 @@ Public Sub MenuTest()
     
     '*******************************
     'Gamma test
-    cLUT.fillLUT_Gamma rLUT, 2.2
-    cLUT.fillLUT_Gamma gLUT, 2.2
-    cLUT.fillLUT_Gamma bLUT, 2.2
+    cLut.fillLUT_Gamma rLUT, 2.2
+    cLut.fillLUT_Gamma gLUT, 2.2
+    cLut.fillLUT_Gamma bLUT, 2.2
     '*******************************
     
     '*******************************
@@ -1027,7 +1027,7 @@ Public Sub MenuTest()
     '*******************************
     
     'Apply the test LUTs to the image
-    cLUT.applyLUTsToDIB_Color pdImages(g_CurrentImage).getActiveDIB, rLUT, gLUT, bLUT
+    cLut.applyLUTsToDIB_Color pdImages(g_CurrentImage).getActiveDIB, rLUT, gLUT, bLUT
         
     'Reflect any image changes on the screen.
     releaseProgressBar

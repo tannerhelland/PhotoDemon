@@ -27,7 +27,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Unicode Hyperlink (clickable label) control
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 28/October/14
 'Last updated: 18/March/15
 'Last update: add support for non-URL behavior
@@ -237,7 +237,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     PropertyChanged "Enabled"
     
     'Redraw the control
-    redrawBackBuffer
+    RedrawBackBuffer
     
 End Property
 
@@ -354,7 +354,7 @@ Private Sub cMouseEvents_ClickCustom(ByVal Button As PDMouseButtonConstants, ByV
             Dim targetAction As String
             targetAction = "Open"
             
-            ShellExecute containerHwnd, StrPtr(targetAction), StrPtr(m_URL), 0&, 0&, SW_SHOWNORMAL
+            ShellExecute ContainerHwnd, StrPtr(targetAction), StrPtr(m_URL), 0&, 0&, SW_SHOWNORMAL
             
         End If
     End If
@@ -451,8 +451,8 @@ Attribute hWnd.VB_UserMemId = -515
 End Property
 
 'Container hWnd must be exposed for external tooltip handling
-Public Property Get containerHwnd() As Long
-    containerHwnd = UserControl.containerHwnd
+Public Property Get ContainerHwnd() As Long
+    ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
 'INITIALIZE control
@@ -518,7 +518,7 @@ Private Sub UserControl_Paint()
     
     'Provide minimal painting within the designer
     If Not g_IsProgramRunning Then
-        If m_BufferDirty Then UpdateControlSize Else redrawBackBuffer
+        If m_BufferDirty Then UpdateControlSize Else RedrawBackBuffer
     End If
     
 End Sub
@@ -716,7 +716,7 @@ Private Sub UpdateControlSize()
     End If
     
     'With all size metrics handled, we can now paint the back buffer
-    redrawBackBuffer
+    RedrawBackBuffer
             
 End Sub
 
@@ -781,7 +781,7 @@ End Sub
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
-Private Sub redrawBackBuffer()
+Private Sub RedrawBackBuffer()
     
     'During initialization, this function may be called, but various needed drawing elements may not yet exist.
     ' If this happens, ignore repaint requests, obviously.
@@ -846,5 +846,5 @@ End Sub
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    toolTipManager.setTooltip Me.hWnd, Me.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    toolTipManager.SetTooltip Me.hWnd, Me.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub

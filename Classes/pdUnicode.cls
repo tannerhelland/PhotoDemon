@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Unicode Helper Class
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 04/February/15
 'Last updated: 23/February/15
 'Last update: split out this class from pdFSO
@@ -518,7 +518,7 @@ Public Function RemapString(ByRef srcString As String, ByVal remapType As PD_STR
     End If
     
     'If the remap type is "titlecase" and we're on Vista or earlier, do nothing
-    If (remapType = PDRS_TITLECASE_WIN7) And (Not cSysInfo.isOSWin7OrLater) Then
+    If (remapType = PDRS_TITLECASE_WIN7) And (Not cSysInfo.IsOSWin7OrLater) Then
         RemapString = srcString
         Exit Function
     End If
@@ -559,7 +559,7 @@ Public Function RemapString(ByRef srcString As String, ByVal remapType As PD_STR
     'Use the Vista+ variant preferentially, as it has received additional updates versus the backward-compatible function.
     Dim apiSuccess As Boolean
     
-    If cSysInfo.isOSVistaOrLater Then
+    If cSysInfo.IsOSVistaOrLater Then
         
         If LCMapStringEx(0&, apiFlags, StrPtr(srcString), Len(srcString), StrPtr(dstString), Len(dstString), 0&, 0&, 0&) = 0 Then
             Debug.Print "WARNING!  LCMapStringEx() failed on /" & srcString & "/ and PD remap type " & remapType & "."

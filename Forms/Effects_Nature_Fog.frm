@@ -46,7 +46,7 @@ Begin VB.Form FormFog
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltScale 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   600
@@ -72,7 +72,7 @@ Begin VB.Form FormFog
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltContrast 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   1680
@@ -86,7 +86,7 @@ Begin VB.Form FormFog
       NotchValueCustom=   50
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   4
       Top             =   3840
@@ -101,7 +101,7 @@ Begin VB.Form FormFog
       NotchValueCustom=   5
    End
    Begin PhotoDemon.sliderTextCombo sltDensity 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   5
       Top             =   2760
@@ -123,7 +123,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fog Effect
-'Copyright 2002-2015 by Tanner Helland
+'Copyright 2002-2016 by Tanner Helland
 'Created: 8/April/02
 'Last updated: 10/July/14
 'Last update: rewrite filter from scratch, give it a dialog, and basically rethink the whole way the function is implemented
@@ -149,7 +149,7 @@ Option Explicit
 Dim m_zOffset As Double
 
 Private Sub cmbEdges_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Apply a "fog" effect to an image, using Perlin Noise as the base
@@ -290,8 +290,8 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     Erase dstImageData
     
     'Apply premultiplication prior to compositing
-    tmpFogDIB.setAlphaPremultiplication True
-    workingDIB.setAlphaPremultiplication True
+    tmpFogDIB.SetAlphaPremultiplication True
+    workingDIB.SetAlphaPremultiplication True
     
     'A pdCompositor class will help us selectively blend the fog results back onto the main image
     Dim cComposite As pdCompositor
@@ -328,7 +328,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -352,18 +352,18 @@ Private Sub cmdRandomize_Click()
     Randomize (Timer * Now)
     m_zOffset = Rnd * &HEFFFFFFF
     
-    updatePreview
+    UpdatePreview
 
 End Sub
 
 Private Sub Form_Activate()
     
     'Apply visual themes and translations
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Create the preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
         
 End Sub
 
@@ -384,29 +384,29 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltContrast_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltDensity_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltQuality_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltScale_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Redraw the on-screen preview of the transformed image
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then fxFog sltScale, sltContrast, sltDensity, sltQuality, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

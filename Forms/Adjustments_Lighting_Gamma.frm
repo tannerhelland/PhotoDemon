@@ -140,7 +140,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Gamma Correction Handler
-'Copyright 2000-2015 by Tanner Helland
+'Copyright 2000-2016 by Tanner Helland
 'Created: 12/May/01
 'Last updated: 23/April/13
 'Last update: replaced all scroll bars and text boxes with my new combo text/scroll control.  Floating-point entry is
@@ -171,7 +171,7 @@ Private Sub chkUnison_Click()
         userChange = True
     End If
     
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -186,7 +186,7 @@ Private Sub cmdBar_RandomizeClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -203,7 +203,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Finally, render a preview
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -307,7 +307,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Redraw the preview effect and the gamma chart
-Private Sub updatePreview()
+Private Sub UpdatePreview()
 
     If cmdBar.previewsAllowed Then
     
@@ -396,14 +396,14 @@ Private Sub sltGamma_Change(Index As Integer)
         
         userChange = True
         
-        updatePreview
+        UpdatePreview
     End If
 
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

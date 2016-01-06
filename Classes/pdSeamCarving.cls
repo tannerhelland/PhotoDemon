@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image seam carving (smart resize/"content-aware scale"/"liquid rescale") Engine
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 06/January/14
 'Last updated: 29/July/14
 'Last update: fixed some 32bpp issues, added serpentine scanning for ideal treatment of images on uniform backgrounds
@@ -142,13 +142,13 @@ Public Sub getVerticalSeamMap(ByRef seamMap() As Long, ByVal finalX As Long, ByV
         seamMap(0, y) = m_Energy(0, y)
     Next y
     
-    Dim LeftUp As Long, leftMiddle As Long, leftDown As Long, curEnergy As Long, QuickX As Long
+    Dim LeftUp As Long, leftMiddle As Long, leftDown As Long, curEnergy As Long, quickX As Long
     
     'Now we can start traversing the energy array.  At each point, generate a new energy for the pixel using
     ' the smallest energy value above said pixel
     For x = 1 To finalX
         xCheck = (x - 1)
-        QuickX = x * 3
+        quickX = x * 3
     For y = 0 To finalY
         
         leftMiddle = seamMap(xCheck, y)
@@ -447,7 +447,7 @@ Private Function growVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams A
     Dim newEnergyMap() As Byte
     ReDim newEnergyMap(0 To finalX, 0 To finalY + numOfAddedSeams) As Byte
         
-    Dim QuickX As Long, QuickY As Long, yOffset As Long
+    Dim quickX As Long, QuickY As Long, yOffset As Long
     
     Dim alphaPresent As Boolean, colorDepthOffset As Long
     If m_SourceImage.getDIBColorDepth = 32 Then
@@ -466,7 +466,7 @@ Private Function growVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams A
         'Loop through each pixel in the SOURCE image
         For y = 0 To finalY
         
-            QuickX = x * colorDepthOffset
+            quickX = x * colorDepthOffset
             
             QuickY = y + yOffset
             
@@ -474,13 +474,13 @@ Private Function growVertically(ByRef seamMap() As Long, ByVal numOfAddedSeams A
             For i = 0 To visibilityMap(x, y)
                 
                 'Remap RGB data to the destination image
-                dstImageData(QuickX, QuickY + i) = srcImageData(QuickX, y)
-                dstImageData(QuickX + 1, QuickY + i) = srcImageData(QuickX + 1, y)
-                dstImageData(QuickX + 2, QuickY + i) = srcImageData(QuickX + 2, y)
+                dstImageData(quickX, QuickY + i) = srcImageData(quickX, y)
+                dstImageData(quickX + 1, QuickY + i) = srcImageData(quickX + 1, y)
+                dstImageData(quickX + 2, QuickY + i) = srcImageData(quickX + 2, y)
                 
                 'If present, remap alpha data as well
                 If alphaPresent Then
-                    dstImageData(QuickX + 3, QuickY + i) = srcImageData(QuickX + 3, y)
+                    dstImageData(quickX + 3, QuickY + i) = srcImageData(quickX + 3, y)
                 End If
                 
                 'Update the energy map as well

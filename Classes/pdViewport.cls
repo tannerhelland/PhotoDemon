@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Viewport Support Class
-'Copyright 2001-2015 by Tanner Helland
+'Copyright 2001-2016 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 13/September/15
 'Last update: overhaul the class completely as part of prepping for paint tools
@@ -62,8 +62,8 @@ Public Sub setVScrollValue(ByVal newValue As Long)
     vScrollValue = newValue
 End Sub
 
-Friend Sub setIntersectState(ByRef NewState As Boolean)
-    doCanvasAndImageIntersect = NewState
+Friend Sub setIntersectState(ByRef newState As Boolean)
+    doCanvasAndImageIntersect = newState
 End Sub
 
 Friend Sub setIntersectRectCanvas(ByRef srcRectF As RECTF)

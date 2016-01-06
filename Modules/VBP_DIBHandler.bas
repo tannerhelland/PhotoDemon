@@ -1,7 +1,7 @@
 Attribute VB_Name = "DIB_Handler"
 '***************************************************************************
 'DIB Support Functions
-'Copyright 2012-2015 by Tanner Helland
+'Copyright 2012-2016 by Tanner Helland
 'Created: 27/March/15
 'Last updated: 27/March/16
 'Last update: start migrating rare functions out of pdDIB and into this module.
@@ -42,7 +42,7 @@ Public Function verifyDIBAlphaChannel(ByRef srcDIB As pdDIB) As Boolean
     prepSafeArray tmpSA, srcDIB
     CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
-    Dim x As Long, y As Long, QuickX As Long
+    Dim x As Long, y As Long, quickX As Long
     Dim checkAlpha As Boolean, initAlpha As Double
     checkAlpha = False
     
@@ -62,11 +62,11 @@ Public Function verifyDIBAlphaChannel(ByRef srcDIB As pdDIB) As Boolean
         
     'Loop through the image, comparing colors as we go
     For x = 0 To srcDIB.getDIBWidth - 1
-        QuickX = x * 4
+        quickX = x * 4
     For y = 0 To srcDIB.getDIBHeight - 1
         
         'Compare the alpha data for this pixel to the initial pixel. If they DO NOT match, this is a valid alpha channel.
-        If initAlpha <> iData(QuickX + 3, y) Then
+        If initAlpha <> iData(quickX + 3, y) Then
             checkAlpha = True
             Exit For
         End If
@@ -108,7 +108,7 @@ Public Function isDIBAlphaBinary(ByRef srcDIB As pdDIB, Optional ByVal checkForZ
             prepSafeArray tmpSA, srcDIB
             CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
     
-            Dim x As Long, y As Long, QuickX As Long
+            Dim x As Long, y As Long, quickX As Long
                 
             'By default, assume that the image does not have a binary alpha channel. (This is the preferable
             ' default, as we will exit the loop IFF a non-0 or non-255 value is found.)
@@ -119,11 +119,11 @@ Public Function isDIBAlphaBinary(ByRef srcDIB As pdDIB, Optional ByVal checkForZ
                 
             'Loop through the image, checking alphas as we go
             For x = 0 To srcDIB.getDIBWidth - 1
-                QuickX = x * 4
+                quickX = x * 4
             For y = 0 To srcDIB.getDIBHeight - 1
             
                 'Retrieve the alpha value of the current pixel
-                chkAlpha = iData(QuickX + 3, y)
+                chkAlpha = iData(quickX + 3, y)
                 
                 'For optimization reasons, this is stated as two IFs instead of an OR.
                 If chkAlpha <> 255 Then
@@ -180,7 +180,7 @@ Public Function isDIBGrayscale(ByRef srcDIB As pdDIB) As Boolean
         prepSafeArray tmpSA, srcDIB
         CopyMemory ByVal VarPtrArray(iData()), VarPtr(tmpSA), 4
         
-        Dim x As Long, y As Long, QuickX As Long
+        Dim x As Long, y As Long, quickX As Long
                         
         Dim r As Long, g As Long, b As Long
         
@@ -189,12 +189,12 @@ Public Function isDIBGrayscale(ByRef srcDIB As pdDIB) As Boolean
                         
         'Loop through the image, checking alphas as we go
         For x = 0 To srcDIB.getDIBWidth - 1
-            QuickX = x * qvDepth
+            quickX = x * qvDepth
         For y = 0 To srcDIB.getDIBHeight - 1
             
-            r = iData(QuickX + 2, y)
-            g = iData(QuickX + 1, y)
-            b = iData(QuickX, y)
+            r = iData(quickX + 2, y)
+            g = iData(quickX + 1, y)
+            b = iData(quickX, y)
             
             'For optimization reasons, this is stated as multiple IFs instead of an OR.
             If r <> g Then

@@ -28,8 +28,8 @@ Begin VB.Form layerpanel_Colors
       TabIndex        =   1
       Top             =   120
       Width           =   1335
-      _extentx        =   2355
-      _extenty        =   1720
+      _ExtentX        =   2355
+      _ExtentY        =   1720
    End
    Begin PhotoDemon.pdColorWheel clrWheel 
       Height          =   975
@@ -37,8 +37,8 @@ Begin VB.Form layerpanel_Colors
       TabIndex        =   0
       Top             =   120
       Width           =   1215
-      _extentx        =   2143
-      _extenty        =   1720
+      _ExtentX        =   2143
+      _ExtentY        =   1720
    End
 End
 Attribute VB_Name = "layerpanel_Colors"
@@ -48,7 +48,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Color Selector Tool Panel
-'Copyright 2015-2015 by Tanner Helland
+'Copyright 2015-2016 by Tanner Helland
 'Created: 15/October/15
 'Last updated: 20/October/15
 'Last update: actually implement color selection controls!

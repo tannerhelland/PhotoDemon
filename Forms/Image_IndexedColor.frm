@@ -111,7 +111,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Reduction Form
-'Copyright 2000-2015 by Tanner Helland
+'Copyright 2000-2016 by Tanner Helland
 'Created: 4/October/00
 'Last updated: 14/April/14
 'Last update: rewrite function against layers; note that this will now flatten a layered image before proceeding
@@ -148,7 +148,7 @@ Private Sub Form_Activate()
     
     'Render a preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -179,7 +179,7 @@ End Sub
 
 'Enable/disable the manual settings depending on which option button has been selected
 Private Sub OptQuant_Click(Index As Integer)
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Automatic 8-bit color reduction via the FreeImage DLL.
@@ -292,7 +292,7 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
 End Sub
 
 'Use this sub to update the on-screen preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     
     If cmdBar.previewsAllowed Then
         If optQuant(0).Value Then
@@ -306,7 +306,7 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

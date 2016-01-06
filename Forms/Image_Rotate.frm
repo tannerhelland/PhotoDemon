@@ -100,7 +100,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Rotation Interface
-'Copyright 2012-2015 by Tanner Helland
+'Copyright 2012-2016 by Tanner Helland
 'Created: 12/November/12
 'Last updated: 14/April/14
 'Last update: rotate now works with layers!
@@ -378,7 +378,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -457,7 +457,7 @@ Private Sub Form_Activate()
         
     'Render a preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
         
 End Sub
 
@@ -473,11 +473,11 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub OptRotate_Click(Index As Integer)
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Redraw the on-screen preview of the rotated image
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     
     If cmdBar.previewsAllowed Then
         If optRotate(0).Value Then
@@ -490,12 +490,12 @@ Private Sub updatePreview()
 End Sub
 
 Private Sub sltAngle_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

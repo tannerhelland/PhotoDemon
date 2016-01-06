@@ -417,7 +417,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Printer Interface (including Print Preview)
-'Copyright 2000-2015 by Tanner Helland
+'Copyright 2000-2016 by Tanner Helland
 'Created: 4/April/03
 'Last updated: 26/June/12
 'Last update: redesign from the ground up.  Print previewing via FreeImage. Manual and automatic DPI calculation support.
@@ -592,7 +592,7 @@ Private Sub Form_Load()
     Dim tmpComposite As pdDIB
     Set tmpComposite = New pdDIB
     pdImages(g_CurrentImage).getCompositedImage tmpComposite
-    tmpComposite.renderToPictureBox picOut
+    tmpComposite.RenderToPictureBox picOut
     
     picOut.ScaleMode = vbTwips
     

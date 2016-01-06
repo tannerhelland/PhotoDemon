@@ -38,7 +38,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Tools Toolbox
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 03/October/13
 'Last updated: 16/October/14
 'Last update: rework all selection interface code to use the new property dictionary functions
@@ -91,9 +91,9 @@ Public Sub UpdateAgainstCurrentTheme()
     
     'The top separator line is colored according to the current shadow accent color
     If Not g_Themer Is Nothing Then
-        lnSeparatorTop.BorderColor = g_Themer.getThemeColor(PDTC_GRAY_SHADOW)
+        lnSeparatorTop.borderColor = g_Themer.GetThemeColor(PDTC_GRAY_SHADOW)
     Else
-        lnSeparatorTop.BorderColor = vbHighlight
+        lnSeparatorTop.borderColor = vbHighlight
     End If
     
 End Sub

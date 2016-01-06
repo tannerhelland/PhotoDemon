@@ -122,7 +122,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Crystallize Effect Interface
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 14/July/14
 'Last updated: 05/April/15
 'Last update: split off Crystallize into its own function, separate from Stained Glass
@@ -371,11 +371,11 @@ Public Sub fxCrystallize(ByVal cellSize As Long, ByVal fxTurbulence As Double, B
 End Sub
 
 Private Sub cboColorSampling_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cboDistance_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'OK button
@@ -384,7 +384,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -399,7 +399,7 @@ Private Sub Form_Activate()
     
     'Request a preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -433,20 +433,20 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Redraw the effect preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then fxCrystallize sltSize, sltTurbulence, cboColorSampling.ListIndex, cboDistance.ListIndex, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltSize_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltTurbulence_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 

@@ -115,7 +115,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Film Noir Effect Interface
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: some time 2013
 'Last updated: 04/October/15
 'Last update: rewrite the old "one-click" filter from scratch, and completely rethink the algorithm while I'm at it.
@@ -264,7 +264,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -280,7 +280,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Draw a preview of the effect
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -290,31 +290,31 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then fxFilmNoir GetLocalParamString(), True, fxPreview
 End Sub
 
 Private Sub sltContrast_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltGrain_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltHighlight_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltMidpoint_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltShadow_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Function GetLocalParamString() As String

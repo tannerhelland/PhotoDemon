@@ -126,7 +126,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Pan and Zoom Effect Interface
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 28/May/13
 'Last updated: 25/September/14
 'Last update: integrate new adaptive supersampling engine
@@ -145,7 +145,7 @@ Option Explicit
 Private iWidth As Long, iHeight As Long
 
 Private Sub cboEdges_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Apply a Ken Burns effect (basically, variable pan and zoom parameters with optional wrapping)
@@ -372,7 +372,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -387,7 +387,7 @@ Private Sub Form_Activate()
     
     'Request a preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
         
 End Sub
 
@@ -421,29 +421,29 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Redraw the effect preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then PanAndZoomFilter sltHorizontal.Value, sltVertical.Value, sltZoom.Value, CLng(cboEdges.ListIndex), sltQuality, True, fxPreview
 End Sub
 
 Private Sub sltQuality_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltVertical_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltHorizontal_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltZoom_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

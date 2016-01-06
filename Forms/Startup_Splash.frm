@@ -59,7 +59,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Splash Screen
-'Copyright 2001-2015 by Tanner Helland
+'Copyright 2001-2016 by Tanner Helland
 'Created: 15/April/01
 'Last updated: 01/December/14
 'Last update: overhauled splash screen
@@ -140,7 +140,7 @@ Public Sub prepareRestOfSplash()
             .Bottom = .Top + formHeight
         End With
         
-        Screen_Capture.getPartialDesktopAsDIB screenDIB, captureRect
+        Screen_Capture.GetPartialDesktopAsDIB screenDIB, captureRect
         
         'Copy the screen background, shadow, and logo onto a single composite DIB
         Set splashDIB = New pdDIB
@@ -184,7 +184,7 @@ Public Sub prepareRestOfSplash()
         Dim versionString As String
         Dim versionWidth As Long, versionHeight As Long
         
-        versionString = g_Language.TranslateMessage("version %1", getPhotoDemonVersion)
+        versionString = g_Language.TranslateMessage("version %1", GetPhotoDemonVersion)
         
         'Render the version string just below the logo text
         curFontVersion.AttachToDC splashDIB.getDIBDC

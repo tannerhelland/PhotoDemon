@@ -44,7 +44,7 @@ Begin VB.Form FormRelief
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltDistance 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   2400
@@ -57,7 +57,7 @@ Begin VB.Form FormRelief
       Value           =   1
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   1320
@@ -70,7 +70,7 @@ Begin VB.Form FormRelief
       SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltDepth 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   4
       Top             =   3480
@@ -90,7 +90,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Relief Artistic Effect Dialog
-'Copyright 2003-2015 by Tanner Helland
+'Copyright 2003-2016 by Tanner Helland
 'Created: sometime 2003
 'Last updated: 30/June/14
 'Last update: complete overhaul: angle, thickness, and depth parameters added, entire algorithm rewritten, interface
@@ -114,7 +114,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -128,7 +128,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Render a preview of the effect
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -282,23 +282,23 @@ Public Sub ApplyReliefEffect(ByVal eDistance As Double, ByVal eAngle As Double, 
 End Sub
 
 'Render a new preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then ApplyReliefEffect sltDistance.Value, sltAngle.Value, sltDepth.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltAngle_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltDepth_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltDistance_Change()
-    updatePreview
+    UpdatePreview
 End Sub

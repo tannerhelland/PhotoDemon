@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Glyph Collection Interface
-'Copyright 2015-2015 by Tanner Helland
+'Copyright 2015-2016 by Tanner Helland
 'Created: 27/April/15
 'Last updated: 19/May/15
 'Last update: overhaul of the Uniscribe interface to use a class system (m_Uniscribe is the relevant instance)
@@ -198,13 +198,13 @@ Public Sub notifyOfGDIFontChoice(ByVal srcGDIFontHandle As Long, Optional ByVal 
     m_oldFontHandle = SelectObject(m_tmpDIB.getDIBDC, m_GDIFont)
     
     'Retrieve basic text metrics for this font, and cache any metrics required on the inner glyph parsing loop
-    Font_Management.fillTextMetrics m_tmpDIB.getDIBDC, m_TextMetrics
+    Font_Management.FillTextMetrics m_tmpDIB.getDIBDC, m_TextMetrics
     m_FontAscent = m_TextMetrics.tmAscent
     m_FontDescent = m_TextMetrics.tmDescent
     m_FontHeight = m_TextMetrics.tmHeight
     
     'Also retrieve outline text metrics, which include basic text metrics plus a whole bunch more.
-    Font_Management.fillOutlineTextMetrics m_tmpDIB.getDIBDC, m_OutlineTextMetrics
+    Font_Management.FillOutlineTextMetrics m_tmpDIB.getDIBDC, m_OutlineTextMetrics
     
     'Cache the underline and strikeout values as well
     m_StyleUnderline = underlineActive

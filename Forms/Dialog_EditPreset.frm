@@ -64,7 +64,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Preset Editor Dialog
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 06/March/15
 'Last updated: 02/September/15
 'Last update: convert to the new mini-command-bar UC
@@ -116,7 +116,7 @@ Public Sub showDialog(ByRef srcPresetManager As pdToolPreset, ByRef parentForm A
     Set m_Presets = srcPresetManager
     
     'Theme the dialog
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Display the dialog
     Me.Show vbModal, parentForm
@@ -137,7 +137,7 @@ Private Sub cmdBarMini_OKClick()
         
             'This name already exists.  Ask the user if an overwrite is okay.
             Dim msgReturn As VbMsgBoxResult
-            msgReturn = pdMsgBox("A preset with this name already exists.  Do you want to overwrite it?", vbYesNoCancel + vbApplicationModal + vbInformation, "Overwrite existing preset")
+            msgReturn = PDMsgBox("A preset with this name already exists.  Do you want to overwrite it?", vbYesNoCancel + vbApplicationModal + vbInformation, "Overwrite existing preset")
             
             'Based on the user's answer to the confirmation message box, continue or exit
             Select Case msgReturn
@@ -167,7 +167,7 @@ Private Sub cmdBarMini_OKClick()
         
     Else
         
-        pdMsgBox "Please enter a name for this preset.", vbInformation + vbOKOnly + vbApplicationModal, "Preset name required"
+        PDMsgBox "Please enter a name for this preset.", vbInformation + vbOKOnly + vbApplicationModal, "Preset name required"
         
         txtName.Text = g_Language.TranslateMessage("(enter name here)")
         txtName.SetFocus

@@ -46,7 +46,7 @@ Begin VB.Form FormStraighten
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   2160
@@ -66,7 +66,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Straightening Interface
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 11/May/14
 'Last updated: 11/May/14
 'Last update: initial build, based heavily off PD's existing Rotate dialog
@@ -223,7 +223,7 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
             Next j
                         
             'Finally, render the preview and erase the temporary DIB to conserve memory
-            finalDIB.renderToPictureBox fxPreview.getPreviewPic
+            finalDIB.RenderToPictureBox fxPreview.getPreviewPic
             fxPreview.setFXImage finalDIB
             
             Set tmpDIB = Nothing
@@ -269,7 +269,7 @@ Public Sub StraightenImage(ByVal rotationAngle As Double, Optional ByVal thingTo
                 Set tmpLayerRef = pdImages(g_CurrentImage).getLayerByIndex(i)
                 
                 'Remove premultiplied alpha, if any
-                tmpLayerRef.layerDIB.setAlphaPremultiplication False
+                tmpLayerRef.layerDIB.SetAlphaPremultiplication False
                 
                 'Null-pad the layer
                 If thingToRotate = PD_AT_WHOLEIMAGE Then tmpLayerRef.convertToNullPaddedLayer pdImages(g_CurrentImage).Width, pdImages(g_CurrentImage).Height
@@ -376,7 +376,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -445,7 +445,7 @@ Private Sub Form_Activate()
     End If
         
     'Remove premultiplied alpha from the small DIB copy
-    smallDIB.setAlphaPremultiplication False
+    smallDIB.SetAlphaPremultiplication False
     
     'Give the preview object a copy of this image data so it can show it to the user if requested
     fxPreview.setOriginalImage smallDIB
@@ -455,7 +455,7 @@ Private Sub Form_Activate()
         
     'Render a preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
         
 End Sub
 
@@ -471,16 +471,16 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Redraw the on-screen preview of the rotated image
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then StraightenImage sltAngle, m_StraightenTarget, True
 End Sub
 
 Private Sub sltAngle_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 

@@ -1,7 +1,7 @@
 Attribute VB_Name = "Macro_Interface"
 '***************************************************************************
 'PhotoDemon Macro Interface
-'Copyright 2001-2015 by Tanner Helland
+'Copyright 2001-2016 by Tanner Helland
 'Created: 10/21/01
 'Last updated: 17/February/15
 'Last updated by: Raj

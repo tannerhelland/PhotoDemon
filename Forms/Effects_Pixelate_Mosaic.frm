@@ -55,7 +55,7 @@ Begin VB.Form FormMosaic
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltWidth 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   2280
@@ -68,7 +68,7 @@ Begin VB.Form FormMosaic
       Value           =   2
    End
    Begin PhotoDemon.sliderTextCombo sltHeight 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   3240
@@ -81,7 +81,7 @@ Begin VB.Form FormMosaic
       Value           =   2
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   1
       Top             =   1320
@@ -100,7 +100,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Pixelate/Mosaic filter interface
-'Copyright 2000-2015 by Tanner Helland
+'Copyright 2000-2016 by Tanner Helland
 'Created: 08/May/00
 'Last updated: 02/October/15
 'Last update: add support for variable angles
@@ -116,7 +116,7 @@ Option Explicit
 
 Private Sub chkUnison_Click()
     If CBool(chkUnison) Then syncScrollBars True
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Apply a pixelate effect (sometimes called "mosaic") to an image
@@ -315,7 +315,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -331,7 +331,7 @@ Private Sub Form_Activate()
     
     'Request a preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -373,26 +373,26 @@ Private Sub syncScrollBars(ByVal srcHorizontal As Boolean)
 End Sub
 
 'Redraw the effect preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then MosaicFilter sltWidth.Value, sltHeight.Value, sltAngle.Value, True, fxPreview
 End Sub
 
 Private Sub sltAngle_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltHeight_Change()
     If CBool(chkUnison) Then syncScrollBars False
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltWidth_Change()
     If CBool(chkUnison) Then syncScrollBars True
-    updatePreview
+    UpdatePreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 

@@ -1,7 +1,7 @@
 Attribute VB_Name = "File_And_Path_Handling"
 '***************************************************************************
 'Miscellaneous Functions Related to File and Folder Interactions
-'Copyright 2001-2015 by Tanner Helland
+'Copyright 2001-2016 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 02/February/15
 'Last update: add small helper functions for reading/writing arrays to file

@@ -109,7 +109,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '"Add basic transparency" (e.g. constant alpha channel) interface
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 13/August/13
 'Last updated: 21/August/13
 'Last update: moved "make color transparent" to its own form.  This dialog is now much simpler.
@@ -132,7 +132,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -145,7 +145,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Render a preview of the alpha effect
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -154,7 +154,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub optAlpha_Click(Index As Integer)
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Convert a DIB from 24bpp to 32bpp, using a constant alpha channel (specified by the user)
@@ -177,7 +177,7 @@ End Sub
 'Note that if the user is moving this slider, they presumably want the corresponding option button selected
 Private Sub sltConstant_Change()
     If Not optAlpha(2) Then optAlpha(2).Value = True
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Translate the current option button selection into a relevant alpha value
@@ -197,13 +197,13 @@ Private Function getRelevantAlpha() As Long
 End Function
 
 'Render a new preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then simpleConvert32bpp getRelevantAlpha(), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

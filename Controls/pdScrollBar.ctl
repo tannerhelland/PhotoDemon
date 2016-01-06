@@ -81,7 +81,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Scrollbar control
-'Copyright 2015-2015 by Tanner Helland
+'Copyright 2015-2016 by Tanner Helland
 'Created: 07/October/15
 'Last updated: 11/October/15
 'Last update: wrap up initial build
@@ -211,8 +211,8 @@ End Enum
 Private m_VisualStyle As ScrollBarVisualStyle
 
 'Container hWnd must be exposed for external tooltip handling
-Public Property Get containerHwnd() As Long
-    containerHwnd = UserControl.containerHwnd
+Public Property Get ContainerHwnd() As Long
+    ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
 'hWnds aren't exposed by default
@@ -233,7 +233,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     PropertyChanged "Enabled"
     
     'Redraw the control
-    redrawBackBuffer
+    RedrawBackBuffer
     
 End Property
 
@@ -266,7 +266,7 @@ Public Property Let Max(ByVal newValue As Double)
     
     'Recalculate thumb size and position
     determineThumbSize
-    If g_IsProgramRunning Then cPainter.requestRepaint
+    If g_IsProgramRunning Then cPainter.RequestRepaint
     
     PropertyChanged "Max"
     
@@ -290,7 +290,7 @@ Public Property Let Min(ByVal newValue As Double)
     
     'Recalculate thumb size and position, then redraw the button to match
     determineThumbSize
-    If g_IsProgramRunning Then cPainter.requestRepaint
+    If g_IsProgramRunning Then cPainter.RequestRepaint
     
     PropertyChanged "Min"
     
@@ -356,7 +356,7 @@ Public Property Let Value(ByVal newValue As Double)
         
         'Recalculate the current thumb position, then redraw the button
         determineThumbSize
-        redrawBackBuffer True
+        RedrawBackBuffer True
         
         'Mark the value property as being changed, and raise the corresponding event.
         PropertyChanged "Value"
@@ -375,7 +375,7 @@ Public Property Let VisualStyle(ByVal newStyle As ScrollBarVisualStyle)
     
     If newStyle <> m_VisualStyle Then
         m_VisualStyle = newStyle
-        redrawBackBuffer
+        RedrawBackBuffer
         PropertyChanged "VisualStyle"
     End If
     
@@ -387,7 +387,7 @@ Private Sub cFocusDetector_GotFocusReliable()
     'If the mouse is *not* over the user control, assume focus was set via keyboard
     If Not m_MouseInsideUC Then
         m_FocusRectActive = True
-        redrawBackBuffer
+        RedrawBackBuffer
     End If
     
     RaiseEvent GotFocusAPI
@@ -410,7 +410,7 @@ Private Sub makeLostFocusUIChanges()
         m_MouseOverDownButton = False
         m_MouseOverThumb = False
         m_MouseOverTrack = False
-        redrawBackBuffer
+        RedrawBackBuffer
     End If
     
 End Sub
@@ -525,7 +525,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
                 End If
                 
                 'Request a redraw
-                redrawBackBuffer
+                RedrawBackBuffer
                     
             'Right button raises the default scroll context menu
             Case pdRightButton
@@ -559,7 +559,7 @@ Private Sub cMouseEvents_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVa
         m_MouseOverTrack = False
         
         m_MouseInsideUC = False
-        redrawBackBuffer
+        RedrawBackBuffer
         
     End If
     
@@ -626,7 +626,7 @@ Private Sub cMouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants,
         End If
         
         'Repaint the control
-        redrawBackBuffer
+        RedrawBackBuffer
         
     End If
     
@@ -649,7 +649,7 @@ Private Sub cMouseEvents_MouseUpCustom(ByVal Button As PDMouseButtonConstants, B
         RaiseEvent Scroll(True)
         
         'Request a redraw
-        redrawBackBuffer
+        RedrawBackBuffer
         
     End If
     
@@ -677,7 +677,7 @@ Public Sub RelayMouseWheelEvent(ByVal wheelIsVertical As Boolean, ByVal Button A
         ' cursor's position.  As such, we must update that value here.
         If m_MouseOverThumb <> isPointInRectF(x, y, thumbRect) Then
             m_MouseOverThumb = Not m_MouseOverThumb
-            redrawBackBuffer
+            RedrawBackBuffer
         End If
         
     End If
@@ -760,11 +760,11 @@ Private Sub UserControl_Initialize()
         cMouseEvents.setSystemCursor IDC_HAND
         
         Set cKeyEvents = New pdInputKeyboard
-        cKeyEvents.createKeyboardTracker "pdScrollBar", Me.hWnd, VK_UP, VK_DOWN, VK_RIGHT, VK_LEFT, VK_END, VK_HOME, VK_PAGEUP, VK_PAGEDOWN
+        cKeyEvents.CreateKeyboardTracker "pdScrollBar", Me.hWnd, VK_UP, VK_DOWN, VK_RIGHT, VK_LEFT, VK_END, VK_HOME, VK_PAGEUP, VK_PAGEDOWN
         
         'Also start a flicker-free window painter
         Set cPainter = New pdWindowPainter
-        cPainter.startPainter Me.hWnd
+        cPainter.StartPainter Me.hWnd
         
         'Also start a focus detector
         Set cFocusDetector = New pdFocusDetector
@@ -806,7 +806,7 @@ End Sub
 Private Sub UserControl_Paint()
     
     'Provide minimal painting within the designer
-    If Not g_IsProgramRunning Then redrawBackBuffer
+    If Not g_IsProgramRunning Then RedrawBackBuffer
     
 End Sub
 
@@ -984,13 +984,13 @@ Private Sub updateControlLayout()
     determineThumbSize
     
     'No other special preparation is required for this control, so proceed with recreating the back buffer
-    redrawBackBuffer True
+    RedrawBackBuffer True
             
 End Sub
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
 ' existing buffer to the screen, so only redraw the backbuffer if the control state has somehow changed.
-Private Sub redrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False)
+Private Sub RedrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False)
     
     'Start by erasing the back buffer
     If g_IsProgramRunning Then
@@ -1016,110 +1016,110 @@ Private Sub redrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
             
             'Track
             If m_VisualStyle = SBVS_Standard Then
-                trackBackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
+                trackBackColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_COMMANDBAR)
             Else
-                trackBackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
+                trackBackColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_COMMANDBAR)
             End If
             
             'Thumb
             If m_MouseDownThumb Then
                 
                 If m_VisualStyle = SBVS_Standard Then
-                    thumbBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-                    thumbFillColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
+                    thumbBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+                    thumbFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
                 Else
-                    thumbBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
-                    thumbFillColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+                    thumbBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
+                    thumbFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
                 End If
                 
             Else
             
                 If m_MouseOverThumb Then
                     If m_VisualStyle = SBVS_Standard Then
-                        thumbBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                        thumbFillColor = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
+                        thumbBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
+                        thumbFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
                     Else
-                        thumbBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                        thumbFillColor = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
+                        thumbBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
+                        thumbFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
                     End If
                 Else
                     If m_VisualStyle = SBVS_Standard Then
-                        thumbBorderColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
-                        thumbFillColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+                        thumbBorderColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
+                        thumbFillColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
                     Else
-                        thumbBorderColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
-                        thumbFillColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+                        thumbBorderColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
+                        thumbFillColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
                     End If
                 End If
                 
             End If
             
             If m_MouseDownUpButton Then
-                upButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-                upButtonArrowColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
-                upButtonFillColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+                upButtonBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+                upButtonArrowColor = g_Themer.GetThemeColor(PDTC_TEXT_INVERT)
+                upButtonFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
             Else
                 If m_MouseOverUpButton Then
                     If m_VisualStyle = SBVS_Standard Then
-                        upButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
-                        upButtonArrowColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-                        upButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                        upButtonBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
+                        upButtonArrowColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+                        upButtonFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
                     Else
-                        upButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                        upButtonArrowColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-                        upButtonFillColor = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
+                        upButtonBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
+                        upButtonArrowColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+                        upButtonFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
                     End If
                 Else
                     If m_VisualStyle = SBVS_Standard Then
-                        upButtonBorderColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-                        upButtonArrowColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
-                        upButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                        upButtonBorderColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
+                        upButtonArrowColor = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
+                        upButtonFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
                     Else
-                        upButtonBorderColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
-                        upButtonArrowColor = g_Themer.getThemeColor(PDTC_GRAY_SHADOW)
-                        upButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
+                        upButtonBorderColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_COMMANDBAR)
+                        upButtonArrowColor = g_Themer.GetThemeColor(PDTC_GRAY_SHADOW)
+                        upButtonFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_COMMANDBAR)
                     End If
                 End If
             End If
             
             If m_MouseDownDownButton Then
-                downButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-                downButtonArrowColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
-                downButtonFillColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+                downButtonBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+                downButtonArrowColor = g_Themer.GetThemeColor(PDTC_TEXT_INVERT)
+                downButtonFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
             Else
                 If m_MouseOverDownButton Then
                     If m_VisualStyle = SBVS_Standard Then
-                        downButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
-                        downButtonArrowColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-                        downButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                        downButtonBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
+                        downButtonArrowColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+                        downButtonFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
                     Else
-                        downButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                        downButtonArrowColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-                        downButtonFillColor = g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
+                        downButtonBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
+                        downButtonArrowColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+                        downButtonFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
                     End If
                 Else
                     If m_VisualStyle = SBVS_Standard Then
-                        downButtonBorderColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-                        downButtonArrowColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
-                        downButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+                        downButtonBorderColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
+                        downButtonArrowColor = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
+                        downButtonFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
                     Else
-                        downButtonBorderColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
-                        downButtonArrowColor = g_Themer.getThemeColor(PDTC_GRAY_SHADOW)
-                        downButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_COMMANDBAR)
+                        downButtonBorderColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_COMMANDBAR)
+                        downButtonArrowColor = g_Themer.GetThemeColor(PDTC_GRAY_SHADOW)
+                        downButtonFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_COMMANDBAR)
                     End If
                 End If
             End If
         
         Else
-            trackBackColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
-            thumbBorderColor = g_Themer.getThemeColor(PDTC_GRAY_SHADOW)
-            thumbFillColor = g_Themer.getThemeColor(PDTC_GRAY_SHADOW)
-            upButtonBorderColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
-            upButtonFillColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
-            upButtonArrowColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
-            downButtonBorderColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
-            downButtonFillColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
-            downButtonArrowColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
+            trackBackColor = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
+            thumbBorderColor = g_Themer.GetThemeColor(PDTC_GRAY_SHADOW)
+            thumbFillColor = g_Themer.GetThemeColor(PDTC_GRAY_SHADOW)
+            upButtonBorderColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
+            upButtonFillColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
+            upButtonArrowColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
+            downButtonBorderColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
+            downButtonFillColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
+            downButtonArrowColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
         End If
         
     Else
@@ -1224,7 +1224,7 @@ Private Sub redrawBackBuffer(Optional ByVal redrawImmediately As Boolean = False
     End If
     
     'Paint the buffer to the screen
-    If g_IsProgramRunning Then cPainter.requestRepaint redrawImmediately Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
+    If g_IsProgramRunning Then cPainter.RequestRepaint redrawImmediately Else BitBlt UserControl.hDC, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
 
 End Sub
 
@@ -1443,5 +1443,5 @@ End Sub
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    toolTipManager.setTooltip Me.hWnd, Me.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    toolTipManager.SetTooltip Me.hWnd, Me.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub

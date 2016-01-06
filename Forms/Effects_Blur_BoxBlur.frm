@@ -24,7 +24,7 @@ Begin VB.Form FormBoxBlur
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.sliderTextCombo sltWidth 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   2040
@@ -56,7 +56,7 @@ Begin VB.Form FormBoxBlur
       Caption         =   "keep both dimensions in sync"
    End
    Begin PhotoDemon.sliderTextCombo sltHeight 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   4
       Top             =   3000
@@ -87,7 +87,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Box Blur Tool
-'Copyright 2000-2015 by Tanner Helland
+'Copyright 2000-2016 by Tanner Helland
 'Created: some time 2000
 'Last updated: 17/September/13
 'Last update: replace on the old accumulation technique with separable horizontal and vertical blurs.  Hot damn,
@@ -152,7 +152,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -161,7 +161,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Draw a preview of the effect
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -185,21 +185,21 @@ Private Sub syncScrollBars(ByVal srcHorizontal As Boolean)
     End If
     
 End Sub
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then BoxBlurFilter sltWidth, sltHeight, True, fxPreview
 End Sub
 
 Private Sub sltHeight_Change()
     If CBool(chkUnison) Then syncScrollBars False
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltWidth_Change()
     If CBool(chkUnison) Then syncScrollBars True
-    updatePreview
+    UpdatePreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub

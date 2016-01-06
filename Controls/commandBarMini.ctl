@@ -49,7 +49,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "Mini" Command Bar control
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 14/August/13
 'Last updated: 02/September/15
 'Last update: separate from the main command bar, to allow for simpler code.
@@ -190,7 +190,7 @@ Private Sub updateControlLayout()
     On Error GoTo skipUpdateLayout
 
     'Force a standard user control size
-    UserControl.Height = fixDPI(50) * TwipsPerPixelYFix
+    UserControl.Height = FixDPI(50) * TwipsPerPixelYFix
     
     'Make the control the same width as its parent
     If g_IsProgramRunning Then
@@ -198,8 +198,8 @@ Private Sub updateControlLayout()
         UserControl.Width = UserControl.Parent.ScaleWidth * TwipsPerPixelXFix
         
         'Right-align the Cancel and OK buttons
-        cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - fixDPI(8)
-        cmdOK.Left = cmdCancel.Left - cmdOK.Width - fixDPI(8)
+        cmdCancel.Left = UserControl.Parent.ScaleWidth - cmdCancel.Width - FixDPI(8)
+        cmdOK.Left = cmdCancel.Left - cmdOK.Width - FixDPI(8)
         
     End If
     

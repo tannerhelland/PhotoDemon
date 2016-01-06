@@ -170,7 +170,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Channel Mixer Form
-'Copyright 2013-2015 by Audioglider and Tanner Helland
+'Copyright 2013-2016 by Audioglider and Tanner Helland
 'Created: 08/June/13
 'Last updated: 23/September/14
 'Last update: rework the interface a bit; add a button strip, increase white space, improve title labels
@@ -226,12 +226,12 @@ Private Sub btsChannel_Click(ByVal buttonIndex As Long)
     sltConstant.Value = curSliderValues(btsChannel.ListIndex, ConstantInput)
     forbidUpdate = False
     
-    updatePreview
+    UpdatePreview
 
 End Sub
 
 Private Sub chkLuminance_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'To match GIMP's behavior (which is actually well-designed in this case), disable the output combo box
@@ -265,7 +265,7 @@ Private Sub chkMonochrome_Click()
         
     End If
     
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -474,7 +474,7 @@ End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     updateStoredValues
-    updatePreview
+    UpdatePreview
 End Sub
 
 'RESET button
@@ -538,7 +538,7 @@ Private Sub Form_Activate()
     chkLuminance.Enabled = Not CBool(chkMonochrome)
     
     'Display the previewed effect in the neighboring window
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -569,32 +569,32 @@ End Sub
 Private Sub sltBlue_Change()
     If Not forbidUpdate Then
         updateStoredValues
-        updatePreview
+        UpdatePreview
     End If
 End Sub
 
 Private Sub sltConstant_Change()
     If Not forbidUpdate Then
         updateStoredValues
-        updatePreview
+        UpdatePreview
     End If
 End Sub
 
 Private Sub sltGreen_Change()
     If Not forbidUpdate Then
         updateStoredValues
-        updatePreview
+        UpdatePreview
     End If
 End Sub
 
 Private Sub sltRed_Change()
     If Not forbidUpdate Then
         updateStoredValues
-        updatePreview
+        UpdatePreview
     End If
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then ApplyChannelMixer createChannelParamString(), True, fxPreview
 End Sub
 
@@ -643,7 +643,7 @@ End Function
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

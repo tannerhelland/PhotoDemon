@@ -62,7 +62,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Convert image to 24bpp (remove alpha channel) interface
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 14/June/13
 'Last updated: 14/June/13
 'Last update: initial build
@@ -84,11 +84,11 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub colorPicker_ColorChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -97,7 +97,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Render a preview of the emboss/engrave effect
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -107,11 +107,11 @@ End Sub
 
 Private Sub fxPreview_ColorSelected()
     colorPicker.Color = fxPreview.SelectedColor
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Render a new preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then
         Dim tmpSA As SAFEARRAY2D
         prepImageData tmpSA, True, fxPreview
@@ -122,7 +122,7 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

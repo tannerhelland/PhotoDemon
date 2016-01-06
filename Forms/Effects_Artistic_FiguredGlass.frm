@@ -115,7 +115,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Figured Glass" Distortion
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 08/January/13
 'Last updated: 23/September/14
 'Last update: add supersampling support
@@ -145,7 +145,7 @@ Option Explicit
 Private m_zOffset As Double
 
 Private Sub cboEdges_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Apply a "figured glass" effect to an image
@@ -370,7 +370,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -390,7 +390,7 @@ Private Sub Form_Activate()
     
     'Create the preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
         
 End Sub
 
@@ -415,23 +415,23 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub OptInterpolate_Click(Index As Integer)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltQuality_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltScale_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltTurbulence_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Redraw the on-screen preview of the transformed image
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then
         FiguredGlassFX sltScale, sltTurbulence, CLng(cboEdges.ListIndex), sltQuality, True, fxPreview
     End If
@@ -439,7 +439,7 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

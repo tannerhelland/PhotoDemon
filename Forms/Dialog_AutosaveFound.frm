@@ -139,7 +139,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Autosave (unsafe shutdown) Prompt/Dialog
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 19/January/14
 'Last updated: 21/May/14
 'Last update: rewrote the entire dialog against the new Undo/Redo engine
@@ -268,7 +268,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Update the active image preview in the top-right
-Private Sub updatePreview(ByVal srcImagePath As String)
+Private Sub UpdatePreview(ByVal srcImagePath As String)
     
     'Display a preview of the selected image
     Dim tmpDIBExists As Boolean
@@ -330,7 +330,7 @@ Private Sub lstAutosaves_Click()
     Dim previewPath As String
     previewPath = m_XmlEntries(lstAutosaves.itemData(lstAutosaves.ListIndex)).xmlPath & ".asp"
     
-    updatePreview previewPath
+    UpdatePreview previewPath
     
 End Sub
 

@@ -120,7 +120,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Right-side ("Layers") Toolbar
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 25/March/14
 'Last updated: 30/September/15
 'Last update: implement collapsible panels
@@ -327,9 +327,9 @@ Public Sub UpdateAgainstCurrentTheme()
     
     'The left separator line is colored according to the current shadow accent color
     If Not (g_Themer Is Nothing) Then
-        lnSeparatorLeft.BorderColor = g_Themer.getThemeColor(PDTC_GRAY_SHADOW)
+        lnSeparatorLeft.borderColor = g_Themer.GetThemeColor(PDTC_GRAY_SHADOW)
     Else
-        lnSeparatorLeft.BorderColor = vbHighlight
+        lnSeparatorLeft.borderColor = vbHighlight
     End If
     
     'TODO: pass along the request to any active child forms.
