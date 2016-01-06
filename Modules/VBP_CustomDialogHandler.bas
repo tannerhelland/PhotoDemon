@@ -1,7 +1,7 @@
 Attribute VB_Name = "Dialog_Handler"
 '***************************************************************************
 'Custom Dialog Interface
-'Copyright 2012-2015 by Tanner Helland
+'Copyright 2012-2016 by Tanner Helland
 'Created: 30/November/12
 'Last updated: 04/May/15
 'Last update: start work on a generic "remember my choice" dialog, which will greatly simplify future tasks
@@ -195,7 +195,7 @@ Public Sub showResizeDialog(ByVal ResizeTarget As PD_ACTION_TARGET)
     FormResize.ResizeTarget = ResizeTarget
 
     'Display the resize dialog
-    showPDDialog vbModal, FormResize
+    ShowPDDialog vbModal, FormResize
 
 End Sub
 
@@ -206,7 +206,7 @@ Public Sub showContentAwareResizeDialog(ByVal ResizeTarget As PD_ACTION_TARGET)
     FormResizeContentAware.ResizeTarget = ResizeTarget
 
     'Display the resize dialog
-    showPDDialog vbModal, FormResizeContentAware
+    ShowPDDialog vbModal, FormResizeContentAware
 
 End Sub
 
@@ -217,7 +217,7 @@ Public Sub showRotateDialog(ByVal RotateTarget As PD_ACTION_TARGET)
     FormRotate.RotateTarget = RotateTarget
 
     'Display the resize dialog
-    showPDDialog vbModal, FormRotate
+    ShowPDDialog vbModal, FormRotate
 
 End Sub
 
@@ -228,7 +228,7 @@ Public Sub showStraightenDialog(ByVal StraightenTarget As PD_ACTION_TARGET)
     FormStraighten.StraightenTarget = StraightenTarget
 
     'Display the resize dialog
-    showPDDialog vbModal, FormStraighten
+    ShowPDDialog vbModal, FormStraighten
 
 End Sub
 

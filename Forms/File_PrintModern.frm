@@ -389,7 +389,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Combined Print / Print Preview Interface
-'Copyright 2003-2015 by Tanner Helland
+'Copyright 2003-2016 by Tanner Helland
 'Created: 4/April/03
 'Last updated: 12/November/13
 'Last update: rewritten from scratch.  Literally.
@@ -503,10 +503,10 @@ Private Sub updatePrintTypeSampleImage()
     xOffset = (picPrintJobSample.ScaleWidth - sampleOneImageOnePage.getDIBWidth) \ 2
 
     If optPrintJob(0) Then
-        sampleOneImageOnePage.renderToPictureBox picPrintJobSample
+        sampleOneImageOnePage.RenderToPictureBox picPrintJobSample
     
     ElseIf optPrintJob(1) Then
-        sampleMultipleImagesOnePage.renderToPictureBox picPrintJobSample
+        sampleMultipleImagesOnePage.RenderToPictureBox picPrintJobSample
     
     Else
         picPrintJobSample.Picture = LoadPicture("")

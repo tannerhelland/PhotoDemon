@@ -35,7 +35,7 @@ Begin VB.Form FormMetal
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   1680
@@ -57,7 +57,7 @@ Begin VB.Form FormMetal
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltDetail 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   600
@@ -100,7 +100,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '"Metal" or "Chrome" Image effect
-'Copyright 2002-2015 by Tanner Helland
+'Copyright 2002-2016 by Tanner Helland
 'Created: sometime 2002
 'Last updated: 04/April/15
 'Last update: rewrite function from scratch
@@ -147,7 +147,7 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
     
     'Retrieve a normalized luminance map of the current image
     Dim grayMap() As Byte
-    DIB_Handler.getDIBGrayscaleMap workingDIB, grayMap, True
+    DIB_Handler.GetDIBGrayscaleMap workingDIB, grayMap, True
     
     'If the user specified a non-zero smoothness, apply it now
     If steelSmoothness > 0 Then Filters_ByteArray.GaussianBlur_IIR_ByteArray grayMap, workingDIB.getDIBWidth, workingDIB.getDIBHeight, steelSmoothness, 3
@@ -193,11 +193,11 @@ Public Sub ApplyMetalFilter(ByVal steelDetail As Long, ByVal steelSmoothness As 
     'Convert our point array into color curves
     Dim rLookup() As Byte, gLookUp() As Byte, bLookup() As Byte
     
-    Dim cLUT As pdFilterLUT
-    Set cLUT = New pdFilterLUT
-    cLUT.fillLUT_Curve rLookup, rCurve
-    cLUT.fillLUT_Curve gLookUp, gCurve
-    cLUT.fillLUT_Curve bLookup, bCurve
+    Dim cLut As pdFilterLUT
+    Set cLut = New pdFilterLUT
+    cLut.fillLUT_Curve rLookup, rCurve
+    cLut.fillLUT_Curve gLookUp, gCurve
+    cLut.fillLUT_Curve bLookup, bCurve
         
     'We are now ready to apply the final curve to the image!
     
@@ -257,7 +257,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -268,20 +268,20 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub csHighlight_ColorChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub csShadow_ColorChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
     
     'Apply translations and visual themes
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Draw an initial preview of the effect
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -289,21 +289,21 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then ApplyMetalFilter sltDetail.Value, sltRadius.Value, csShadow.Color, csHighlight.Color, True, fxPreview
 End Sub
 
 Private Sub sltDetail_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltRadius_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

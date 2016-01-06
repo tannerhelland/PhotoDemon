@@ -151,7 +151,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Stained Glass Effect Interface
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 14/July/14
 'Last updated: 23/June/15
 'Last update: move randomize responsibilities over to pdRandomize
@@ -499,11 +499,11 @@ Public Sub fxStainedGlass(ByVal cellSize As Long, ByVal fxTurbulence As Double, 
 End Sub
 
 Private Sub cboColorSampling_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cboDistance_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'OK button
@@ -512,7 +512,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -528,7 +528,7 @@ Private Sub Form_Activate()
     
     'Request a preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -561,28 +561,28 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Redraw the effect preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then fxStainedGlass sltSize, sltTurbulence, cboColorSampling.ListIndex, sltShadeQuality, sltEdge, cboDistance.ListIndex, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltEdge_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltShadeQuality_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltSize_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltTurbulence_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 

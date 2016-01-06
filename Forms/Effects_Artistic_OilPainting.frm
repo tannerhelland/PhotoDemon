@@ -77,7 +77,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Oil Painting Effect Tool
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 09/August/13
 'Last updated: 09/August/13
 'Last update: initial build
@@ -166,8 +166,8 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
     End If
     
     'The number of pixels in the current median box are tracked dynamically.
-    Dim numOfPixels As Long
-    numOfPixels = 0
+    Dim NumOfPixels As Long
+    NumOfPixels = 0
             
     'Oil painting takes a lot of variables
     Dim rValues(0 To 255) As Long, gValues(0 To 255) As Long, bValues(0 To 255) As Long, lValues(0 To 255) As Long
@@ -480,7 +480,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -490,7 +490,7 @@ Private Sub Form_Activate()
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -506,20 +506,20 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltPercent_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltRadius_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then ApplyOilPaintingEffect GetLocalParamString(), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Function GetLocalParamString() As String

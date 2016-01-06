@@ -128,7 +128,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Edge Enhancement Interface
-'Copyright 2002-2015 by Tanner Helland
+'Copyright 2002-2016 by Tanner Helland
 'Created: sometimes 2002
 'Last updated: 12/June/14
 'Last update: give tool its own form, and open it up to all available edge detection techniques
@@ -165,7 +165,7 @@ Private Sub chkDirection_Click(Index As Integer)
     
     ignoreStateChanges = False
     
-    updatePreview
+    UpdatePreview
 
 End Sub
 
@@ -175,7 +175,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -185,7 +185,7 @@ Private Sub Form_Activate()
     
     'Update the descriptions (this will also draw a preview of the selected edge-detection algorithm)
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -627,7 +627,7 @@ Private Sub LstEdgeOptions_Click()
     End Select
     
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -667,7 +667,7 @@ Private Function getDirectionality() As PD_EDGE_DETECTION_DIRECTION
 End Function
 
 'Update the live preview of the selected edge detection options
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     
     If cmdBar.previewsAllowed Then
         ApplyEdgeEnhancement LstEdgeOptions.ListIndex, getDirectionality(), sltStrength.Value, True, fxPreview
@@ -677,10 +677,10 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltStrength_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 

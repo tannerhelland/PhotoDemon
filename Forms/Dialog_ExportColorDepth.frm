@@ -116,7 +116,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Exported Color Depth Dialog
-'Copyright 2011-2015 by Tanner Helland
+'Copyright 2011-2016 by Tanner Helland
 'Created: 11/December/12
 'Last updated: 11/December/12
 'Last update: initial build

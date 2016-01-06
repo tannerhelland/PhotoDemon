@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Unicode Tooltip class
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 09/January/15
 'Last updated: 09/January/15
 'Last update: initial build

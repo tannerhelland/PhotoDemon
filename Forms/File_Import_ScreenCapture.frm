@@ -157,7 +157,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Custom Screen Capture Dialog
-'Copyright 2012-2015 by Tanner Helland
+'Copyright 2012-2016 by Tanner Helland
 'Created: 01/January/12 (approx)
 'Last updated: 15/January/14
 'Last update: minor bugfixes to account for delays caused by window animations
@@ -176,11 +176,11 @@ Option Explicit
 Private Declare Function EnumWindows Lib "user32" (ByVal lpEnumFunc As Long, ByVal lParam As Long) As Long
 
 Private Sub chkChrome_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub chkMinimize_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBarMini_OKClick()
@@ -225,7 +225,7 @@ Private Sub Form_Load()
     Sleep 500
     
     'Render a preview of whichever item is currently selected
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -242,7 +242,7 @@ End Function
 Private Sub lstWindows_Click()
     
     If Not optSource(1) Then optSource(1) = True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -253,12 +253,12 @@ Private Sub optSource_Click(Index As Integer)
         If lstWindows.ListIndex = -1 Then lstWindows.ListIndex = 0
     End If
     
-    updatePreview
+    UpdatePreview
     
 End Sub
 
 'Live previews of the screen capture are now provided
-Private Sub updatePreview()
+Private Sub UpdatePreview()
 
     Dim tmpDIB As pdDIB
     Set tmpDIB = New pdDIB

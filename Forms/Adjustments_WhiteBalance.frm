@@ -44,7 +44,7 @@ Begin VB.Form FormWhiteBalance
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltStrength 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   2520
@@ -65,7 +65,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'White Balance Handler
-'Copyright 2012-2015 by Tanner Helland
+'Copyright 2012-2016 by Tanner Helland
 'Created: 03/July/12
 'Last updated: 24/August/13
 'Last update: added command bar
@@ -94,7 +94,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -129,15 +129,15 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltStrength_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then AutoWhiteBalance sltStrength, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 

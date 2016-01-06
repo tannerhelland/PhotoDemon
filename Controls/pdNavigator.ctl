@@ -40,7 +40,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Navigation custom control
-'Copyright 2015-2015 by Tanner Helland
+'Copyright 2015-2016 by Tanner Helland
 'Created: 16/October/15
 'Last updated: 17/October/15
 'Last update: wrap up initial build
@@ -113,8 +113,8 @@ Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
 
-Public Property Get containerHwnd() As Long
-    containerHwnd = UserControl.containerHwnd
+Public Property Get ContainerHwnd() As Long
+    ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
 'When the control receives focus, relay the event externally
@@ -223,7 +223,7 @@ Private Sub UserControl_Initialize()
         
         'Also start a flicker-free window painter
         Set cPainter = New pdWindowPainter
-        cPainter.startPainter picNavigator.hWnd
+        cPainter.StartPainter picNavigator.hWnd
         
         'Create a tooltip engine
         Set toolTipManager = New pdToolTip
@@ -298,7 +298,7 @@ Private Sub DrawNavigator()
     If g_IsProgramRunning Then
     
         'Repaint the background.  Color is still TBD.
-        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT), 255
+        GDI_Plus.GDIPlusFillDIBRect m_BackBuffer, 0, 0, m_BackBuffer.getDIBWidth, m_BackBuffer.getDIBHeight, g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT), 255
         
         'If no images are open, do nothing
         If g_OpenImageCount <= 0 Then
@@ -399,7 +399,7 @@ Private Sub DrawNavigator()
     
     'Paint the final result to the screen, as relevant
     If g_IsProgramRunning Then
-        cPainter.requestRepaint
+        cPainter.RequestRepaint
     Else
         BitBlt picNavigator.hDC, 0, 0, picNavigator.ScaleWidth, picNavigator.ScaleHeight, m_BackBuffer.getDIBDC, 0, 0, vbSrcCopy
     End If
@@ -430,7 +430,7 @@ End Sub
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    toolTipManager.setTooltip Me.hWnd, Me.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    toolTipManager.SetTooltip Me.hWnd, Me.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
 
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,

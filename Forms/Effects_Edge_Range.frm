@@ -108,7 +108,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Range filter edge detection tool
-'Copyright 2015-2015 by Tanner Helland
+'Copyright 2015-2016 by Tanner Helland
 'Created: 23/November/15
 'Last updated: 23/November/15
 'Last update: initial build
@@ -348,7 +348,7 @@ Public Sub ApplyRangeFilter(ByVal parameterList As String, Optional ByVal toPrev
 End Sub
 
 Private Sub btsKernelShape_Click(ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub chkSynchronize_Click()
@@ -361,7 +361,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -371,7 +371,7 @@ Private Sub Form_Activate()
         
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -389,13 +389,13 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then ApplyRangeFilter GetLocalParamString(), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltRadius_Change(Index As Integer)
@@ -404,7 +404,7 @@ Private Sub sltRadius_Change(Index As Integer)
         If sltRadius(Abs(Index - 1)).Value <> sltRadius(Index).Value Then sltRadius(Abs(Index - 1)).Value = sltRadius(Index).Value
     End If
     
-    updatePreview
+    UpdatePreview
     
 End Sub
 

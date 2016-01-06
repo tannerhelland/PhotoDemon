@@ -27,7 +27,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon "Button Strip Vertical" control
-'Copyright 2015-2015 by Tanner Helland
+'Copyright 2015-2016 by Tanner Helland
 'Created: 15/March/15
 'Last updated: 04/November/15
 'Last update: convert to master usercontrol support class; switch to spitesheets for button images
@@ -136,7 +136,7 @@ End Property
 Public Property Let FontBold(ByVal newBoldSetting As Boolean)
     If newBoldSetting <> m_FontBold Then
         m_FontBold = newBoldSetting
-        UpdateControlLayout
+        updateControlLayout
     End If
 End Property
 
@@ -147,7 +147,7 @@ End Property
 Public Property Let FontSize(ByVal newSize As Single)
     If newSize <> m_FontSize Then
         m_FontSize = newSize
-        UpdateControlLayout
+        updateControlLayout
     End If
 End Property
 
@@ -295,12 +295,12 @@ Private Function isMouseOverButton(ByVal mouseX As Single, ByVal mouseY As Singl
 End Function
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then UpdateControlLayout
+    If updateLayoutToo Then updateControlLayout
     RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
+    updateControlLayout
     RedrawBackBuffer
 End Sub
 
@@ -388,7 +388,7 @@ Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long =
     End With
     
     'Before we can redraw the control, we need to recalculate all button positions - do that now!
-    UpdateControlLayout
+    updateControlLayout
 
 End Sub
 
@@ -440,7 +440,7 @@ Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As 
     m_ImagesActive = True
     If m_Buttons(itemIndex).btImageWidth > m_ImageSize Then
         m_ImageSize = m_Buttons(itemIndex).btImageWidth
-        UpdateControlLayout
+        updateControlLayout
     End If
 
 End Sub
@@ -495,7 +495,7 @@ End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
 ' of internal sizing metrics whenever the control size changes.
-Private Sub UpdateControlLayout()
+Private Sub updateControlLayout()
 
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
@@ -837,7 +837,7 @@ Public Sub UpdateAgainstCurrentTheme()
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
         
     'Because translations can change text layout, we need to recalculate font metrics prior to redrawing the button
-    UpdateControlLayout
+    updateControlLayout
     
 End Sub
 

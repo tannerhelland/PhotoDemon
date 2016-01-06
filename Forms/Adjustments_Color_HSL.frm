@@ -35,7 +35,7 @@ Begin VB.Form FormHSL
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltHue 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   1560
@@ -57,7 +57,7 @@ Begin VB.Form FormHSL
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltSaturation 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   2520
@@ -70,7 +70,7 @@ Begin VB.Form FormHSL
       SliderTrackStyle=   2
    End
    Begin PhotoDemon.sliderTextCombo sltLuminance 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   4
       Top             =   3480
@@ -90,7 +90,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'HSL Adjustment Form
-'Copyright 2012-2015 by Tanner Helland
+'Copyright 2012-2016 by Tanner Helland
 'Created: 05/October/12
 'Last updated: 26/April/13
 'Last update: simplify code by relying on new slider/text custom control
@@ -202,7 +202,7 @@ End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     redrawSaturationSlider
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -211,7 +211,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Display the previewed effect in the neighboring window
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -221,24 +221,24 @@ End Sub
 
 Private Sub sltHue_Change()
     redrawSaturationSlider
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltLuminance_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltSaturation_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then AdjustImageHSL sltHue.Value, sltSaturation.Value, sltLuminance.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub redrawSaturationSlider()

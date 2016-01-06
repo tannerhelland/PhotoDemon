@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Window Manager class
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 02/October/13
 'Last updated: 20/September/15
 'Last update: start purging this class of "floating window" code.  It's time to simplify PD, and this class is more overdue than most.

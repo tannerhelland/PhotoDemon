@@ -70,7 +70,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Text / UpDown custom control
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 19/April/13
 'Last updated: 06/January/15
 'Last update: replace scroll bar with custom buttons that behave like a scroll bar
@@ -316,7 +316,7 @@ Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, By
     
     'Flip the button back buffer to the screen
     If Not (buttonDIB Is Nothing) Then
-        BitBlt cPainter.getPaintStructDC, 0, 0, buttonDIB.getDIBWidth, buttonDIB.getDIBHeight, buttonDIB.getDIBDC, 0, 0, vbSrcCopy
+        BitBlt cPainter.GetPaintStructDC, 0, 0, buttonDIB.getDIBWidth, buttonDIB.getDIBHeight, buttonDIB.getDIBDC, 0, 0, vbSrcCopy
     End If
     
 End Sub
@@ -534,7 +534,7 @@ Private Sub UserControl_Initialize()
     
     'Prepare a window painter for the spin button area
     Set cPainter = New pdWindowPainter
-    If g_IsProgramRunning Then cPainter.startPainter picScroll.hWnd
+    If g_IsProgramRunning Then cPainter.StartPainter picScroll.hWnd
     
     'Prepare an input handler for the spin button area
     Set cMouseEvents = New pdInputMouse
@@ -652,8 +652,8 @@ Private Sub RedrawButton()
     Dim upButtonArrowColor As Long, downButtonArrowColor As Long
     
     If Not (g_Themer Is Nothing) Then
-        buttonBackColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-        buttonBorderColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT)
+        buttonBackColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
+        buttonBorderColor = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
     Else
         buttonBackColor = vbWindowBackground
         buttonBorderColor = RGB(128, 128, 128)
@@ -667,20 +667,20 @@ Private Sub RedrawButton()
     If m_MouseOverUpButton And Me.Enabled And (Not (g_Themer Is Nothing)) Then
     
         If m_MouseDownUpButton Then
-            upButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-            upButtonArrowColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
-            upButtonFillColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+            upButtonBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+            upButtonArrowColor = g_Themer.GetThemeColor(PDTC_TEXT_INVERT)
+            upButtonFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
         Else
-            upButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
-            upButtonArrowColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-            upButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+            upButtonBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
+            upButtonArrowColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+            upButtonFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
         End If
     
     Else
         If Not (g_Themer Is Nothing) Then
-            upButtonBorderColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-            If Me.Enabled Then upButtonArrowColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT) Else upButtonArrowColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
-            upButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+            upButtonBorderColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
+            If Me.Enabled Then upButtonArrowColor = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT) Else upButtonArrowColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
+            upButtonFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
         Else
             upButtonBorderColor = vbWindowBackground
             upButtonArrowColor = RGB(128, 128, 128)
@@ -691,20 +691,20 @@ Private Sub RedrawButton()
     If m_MouseOverDownButton And Me.Enabled And (Not (g_Themer Is Nothing)) Then
     
         If m_MouseDownDownButton Then
-            downButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-            downButtonArrowColor = g_Themer.getThemeColor(PDTC_TEXT_INVERT)
-            downButtonFillColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+            downButtonBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+            downButtonArrowColor = g_Themer.GetThemeColor(PDTC_TEXT_INVERT)
+            downButtonFillColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
         Else
-            downButtonBorderColor = g_Themer.getThemeColor(PDTC_ACCENT_SHADOW)
-            downButtonArrowColor = g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
-            downButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+            downButtonBorderColor = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
+            downButtonArrowColor = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
+            downButtonFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
         End If
     
     Else
         If Not (g_Themer Is Nothing) Then
-            downButtonBorderColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
-            If Me.Enabled Then downButtonArrowColor = g_Themer.getThemeColor(PDTC_GRAY_DEFAULT) Else downButtonArrowColor = g_Themer.getThemeColor(PDTC_GRAY_HIGHLIGHT)
-            downButtonFillColor = g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+            downButtonBorderColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
+            If Me.Enabled Then downButtonArrowColor = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT) Else downButtonArrowColor = g_Themer.GetThemeColor(PDTC_GRAY_HIGHLIGHT)
+            downButtonFillColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
         Else
             downButtonBorderColor = vbWindowBackground
             downButtonArrowColor = RGB(128, 128, 128)
@@ -749,7 +749,7 @@ Private Sub RedrawButton()
     GDI_Plus.GDIPlusDrawLineToDC buttonDIB.getDIBDC, buttonPt2.x, buttonPt2.y, buttonPt3.x, buttonPt3.y, downButtonArrowColor, 255, 2, True, LineCapRound
     
     'As a final step, request a repaint onto the button's container
-    cPainter.requestRepaint
+    cPainter.RequestRepaint
 
 End Sub
 
@@ -866,13 +866,13 @@ Public Sub UpdateAgainstCurrentTheme()
     If g_IsProgramRunning Then toolTipManager.UpdateAgainstCurrentTheme
     
     'Request a repaint
-    If Not cPainter Is Nothing Then cPainter.requestRepaint
+    If Not cPainter Is Nothing Then cPainter.RequestRepaint
     
 End Sub
 
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    toolTipManager.setTooltip Me.hWnd, UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
-    toolTipManager.setTooltip picScroll.hWnd, UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    toolTipManager.SetTooltip Me.hWnd, UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    toolTipManager.SetTooltip picScroll.hWnd, UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub

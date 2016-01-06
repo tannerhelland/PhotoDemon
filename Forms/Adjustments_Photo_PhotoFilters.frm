@@ -106,7 +106,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Photo Filter Application Tool
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 06/June/13
 'Last updated: 18/June/14
 'Last update: add arrow key nav support to the custom list
@@ -316,7 +316,7 @@ Private Sub cKeyEvents_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode
         
     End If
     
-    updatePreview
+    UpdatePreview
 
 End Sub
 
@@ -342,7 +342,7 @@ End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     redrawFilterList
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -363,7 +363,7 @@ Private Sub cMouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants,
 
     curFilter = getFilterAtPosition(x, y)
     redrawFilterList
-    updatePreview
+    UpdatePreview
 
 End Sub
 
@@ -425,7 +425,7 @@ Private Sub Form_Activate()
     
     'Display the previewed effect in the neighboring window, then render the list of available filters
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -575,11 +575,11 @@ Private Function getFilterAtPosition(ByVal x As Long, ByVal y As Long) As Long
 End Function
 
 Private Sub sltDensity_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Render a new preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     
     'Sync the density slider to match the currently selected color
     If sltDensity.GradientColorRight <> fArray(curFilter).RGBColor Then sltDensity.GradientColorRight = fArray(curFilter).RGBColor
@@ -687,7 +687,7 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub vsFilter_Scroll(ByVal eventIsCritical As Boolean)

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Compositor class
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 01/May/14
 'Last updated: 16/October/15
 'Last update: implement level-of-detail (LOD) caches for compositor requests
@@ -336,7 +336,7 @@ Friend Sub getCompositedImage(ByRef srcImage As pdImage, ByRef dstDIB As pdDIB, 
     If premultiplicationStatus Then
         dstDIB.setInitialAlphaPremultiplicationState True
     Else
-        If dstDIB.getDIBColorDepth = 32 Then dstDIB.setAlphaPremultiplication False
+        If dstDIB.getDIBColorDepth = 32 Then dstDIB.SetAlphaPremultiplication False
     End If
     
 End Sub
@@ -1073,7 +1073,7 @@ End Sub
 Public Sub applyNDFXToDIB(ByRef parentLayer As pdLayer, ByRef targetDIB As pdDIB)
 
     'Start by unpremultiplying the layer alpha
-    If (targetDIB.getDIBColorDepth = 32) And targetDIB.getAlphaPremultiplication Then targetDIB.setAlphaPremultiplication False
+    If (targetDIB.getDIBColorDepth = 32) And targetDIB.getAlphaPremultiplication Then targetDIB.SetAlphaPremultiplication False
 
     'Calculate each non-destructive FX in turn
     
@@ -1088,7 +1088,7 @@ Public Sub applyNDFXToDIB(ByRef parentLayer As pdLayer, ByRef targetDIB As pdDIB
     End If
     
     'Re-premultiply alpha
-    If targetDIB.getDIBColorDepth = 32 Then targetDIB.setAlphaPremultiplication True
+    If targetDIB.getDIBColorDepth = 32 Then targetDIB.SetAlphaPremultiplication True
 
 End Sub
 

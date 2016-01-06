@@ -523,7 +523,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Selection Dialog
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 11/November/13
 'Last updated: 11/February/14
 'Last update: allow color selection from anywhere on the screen
@@ -1095,7 +1095,7 @@ Private Sub syncInterfaceToCurrentColor()
     prepSafeArray psa, primaryBox
     CopyMemory ByVal VarPtrArray(pImageData()), VarPtr(psa), 4
     
-    Dim x As Long, y As Long, QuickX As Long
+    Dim x As Long, y As Long, quickX As Long
     
     Dim tmpR As Long, tmpG As Long, tmpB As Long
     

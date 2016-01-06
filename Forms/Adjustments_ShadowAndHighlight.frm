@@ -218,7 +218,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Shadow / Midtone / Highlight Adjustment Tool
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 17/February/13
 'Last updated: 31/March/15
 'Last update: total overhaul of the shadow/highlight adjustment strategy
@@ -248,7 +248,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -264,7 +264,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Render an initial preview
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -298,40 +298,40 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then ApplyShadowHighlight sltShadowAmount, sltMidtoneContrast, sltHighlightAmount, sltShadowWidth, sltShadowRadius, sltHighlightWidth, sltHighlightRadius, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltHighlightAmount_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltHighlightRadius_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltHighlightWidth_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltMidtoneContrast_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltShadowAmount_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltShadowRadius_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltShadowWidth_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 

@@ -30,9 +30,9 @@ Begin VB.Form FormLanguageEditor
       TabIndex        =   6
       Top             =   8310
       Width           =   1725
-      _extentx        =   3043
-      _extenty        =   1085
-      caption         =   "&Previous"
+      _ExtentX        =   3043
+      _ExtentY        =   1085
+      Caption         =   "&Previous"
    End
    Begin VB.Timer tmrProgBar 
       Enabled         =   0   'False
@@ -46,9 +46,9 @@ Begin VB.Form FormLanguageEditor
       TabIndex        =   21
       Top             =   8310
       Width           =   1725
-      _extentx        =   3043
-      _extenty        =   1085
-      caption         =   "&Next"
+      _ExtentX        =   3043
+      _ExtentY        =   1085
+      Caption         =   "&Next"
    End
    Begin PhotoDemon.pdButton cmdCancel 
       Height          =   615
@@ -56,31 +56,31 @@ Begin VB.Form FormLanguageEditor
       TabIndex        =   23
       Top             =   8310
       Width           =   1365
-      _extentx        =   2408
-      _extenty        =   1085
-      caption         =   "&Cancel"
+      _ExtentX        =   2408
+      _ExtentY        =   1085
+      Caption         =   "&Cancel"
    End
    Begin PhotoDemon.pdLabel lblExplanation 
       Height          =   7320
       Left            =   120
       Top             =   780
       Width           =   3135
-      _extentx        =   0
-      _extenty        =   0
-      caption         =   "(text populated at run-time)"
-      forecolor       =   4210752
-      layout          =   1
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "(text populated at run-time)"
+      ForeColor       =   4210752
+      Layout          =   1
    End
    Begin PhotoDemon.pdLabel lblWizardTitle 
       Height          =   405
       Left            =   120
       Top             =   120
       Width           =   14475
-      _extentx        =   0
-      _extenty        =   0
-      caption         =   "Step 1: select a language file"
-      fontsize        =   12
-      forecolor       =   4210752
+      _ExtentX        =   0
+      _ExtentY        =   0
+      Caption         =   "Step 1: select a language file"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -112,9 +112,9 @@ Begin VB.Form FormLanguageEditor
          TabIndex        =   7
          Top             =   6600
          Width           =   6615
-         _extentx        =   11668
-         _extenty        =   1085
-         caption         =   "Save this translation and proceed to the next phrase"
+         _ExtentX        =   11668
+         _ExtentY        =   1085
+         Caption         =   "Save this translation and proceed to the next phrase"
       End
       Begin PhotoDemon.pdTextBox txtTranslation 
          Height          =   2325
@@ -122,9 +122,9 @@ Begin VB.Form FormLanguageEditor
          TabIndex        =   9
          Top             =   3120
          Width           =   6615
-         _extentx        =   11668
-         _extenty        =   3519
-         multiline       =   -1  'True
+         _ExtentX        =   11668
+         _ExtentY        =   3519
+         Multiline       =   -1  'True
       End
       Begin PhotoDemon.pdTextBox txtOriginal 
          Height          =   2355
@@ -132,9 +132,9 @@ Begin VB.Form FormLanguageEditor
          TabIndex        =   11
          Top             =   360
          Width           =   6615
-         _extentx        =   11668
-         _extenty        =   3519
-         multiline       =   -1  'True
+         _ExtentX        =   11668
+         _ExtentY        =   3519
+         Multiline       =   -1  'True
       End
       Begin PhotoDemon.smartCheckBox chkGoogleTranslate 
          Height          =   330
@@ -142,9 +142,9 @@ Begin VB.Form FormLanguageEditor
          TabIndex        =   4
          Top             =   5520
          Width           =   6600
-         _extentx        =   11642
-         _extenty        =   582
-         caption         =   "automatically estimate missing translations (via Google Translate)"
+         _ExtentX        =   11642
+         _ExtentY        =   582
+         Caption         =   "automatically estimate missing translations (via Google Translate)"
       End
       Begin VB.ListBox lstPhrases 
          BeginProperty Font 
@@ -169,20 +169,20 @@ Begin VB.Form FormLanguageEditor
          TabIndex        =   5
          Top             =   6000
          Width           =   6600
-         _extentx        =   11642
-         _extenty        =   582
-         caption         =   "ENTER key automatically saves and proceeds to next phrase"
+         _ExtentX        =   11642
+         _ExtentY        =   582
+         Caption         =   "ENTER key automatically saves and proceeds to next phrase"
       End
       Begin PhotoDemon.pdLabel lblTranslatedPhrase 
          Height          =   285
          Left            =   4920
          Top             =   2760
          Width           =   6735
-         _extentx        =   11880
-         _extenty        =   503
-         caption         =   "translated phrase"
-         fontsize        =   12
-         forecolor       =   4210752
+         _ExtentX        =   11880
+         _ExtentY        =   503
+         Caption         =   "translated phrase"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
@@ -190,11 +190,11 @@ Begin VB.Form FormLanguageEditor
          Left            =   4920
          Top             =   0
          Width           =   6735
-         _extentx        =   11880
-         _extenty        =   503
-         caption         =   "original phrase"
-         fontsize        =   12
-         forecolor       =   4210752
+         _ExtentX        =   11880
+         _ExtentY        =   503
+         Caption         =   "original phrase"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
@@ -202,22 +202,22 @@ Begin VB.Form FormLanguageEditor
          Left            =   0
          Top             =   5625
          Width           =   4665
-         _extentx        =   8229
-         _extenty        =   503
-         caption         =   "phrases to display"
-         fontsize        =   12
-         forecolor       =   4210752
+         _ExtentX        =   8229
+         _ExtentY        =   503
+         Caption         =   "phrases to display"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblPhraseBox 
          Height          =   285
          Left            =   0
          Top             =   0
          Width           =   4785
-         _extentx        =   8440
-         _extenty        =   503
-         caption         =   "list of phrases (%1 items)"
-         fontsize        =   12
-         forecolor       =   4210752
+         _ExtentX        =   8440
+         _ExtentY        =   503
+         Caption         =   "list of phrases (%1 items)"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
       Begin PhotoDemon.pdButton cmdAutoTranslate 
          Height          =   615
@@ -225,9 +225,9 @@ Begin VB.Form FormLanguageEditor
          TabIndex        =   24
          Top             =   6600
          Width           =   4455
-         _extentx        =   7858
-         _extenty        =   1085
-         caption         =   "Initiate auto-translation of all missing phrases"
+         _ExtentX        =   7858
+         _ExtentY        =   1085
+         Caption         =   "Initiate auto-translation of all missing phrases"
       End
    End
    Begin VB.PictureBox picContainer 
@@ -251,9 +251,9 @@ Begin VB.Form FormLanguageEditor
          TabIndex        =   12
          Top             =   6360
          Width           =   3135
-         _extentx        =   5530
-         _extenty        =   1085
-         caption         =   "Delete selected language file"
+         _ExtentX        =   5530
+         _ExtentY        =   1085
+         Caption         =   "Delete selected language file"
       End
       Begin VB.ListBox lstLanguages 
          BeginProperty Font 
@@ -280,10 +280,10 @@ Begin VB.Form FormLanguageEditor
          TabIndex        =   0
          Top             =   120
          Width           =   11325
-         _extentx        =   19976
-         _extenty        =   582
-         caption         =   "start a new language file from scratch"
-         value           =   -1  'True
+         _ExtentX        =   19976
+         _ExtentY        =   582
+         Caption         =   "start a new language file from scratch"
+         Value           =   -1  'True
       End
       Begin PhotoDemon.smartOptionButton optBaseLanguage 
          Height          =   375
@@ -292,9 +292,9 @@ Begin VB.Form FormLanguageEditor
          TabIndex        =   1
          Top             =   600
          Width           =   11325
-         _extentx        =   19976
-         _extenty        =   582
-         caption         =   "edit an existing language file:"
+         _ExtentX        =   19976
+         _ExtentY        =   582
+         Caption         =   "edit an existing language file:"
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
@@ -302,11 +302,11 @@ Begin VB.Form FormLanguageEditor
          Left            =   840
          Top             =   1200
          Width           =   10650
-         _extentx        =   18785
-         _extenty        =   503
-         caption         =   "language files currently available"
-         fontsize        =   12
-         forecolor       =   4210752
+         _ExtentX        =   18785
+         _ExtentY        =   503
+         Caption         =   "language files currently available"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
    End
    Begin VB.PictureBox picContainer 
@@ -344,12 +344,12 @@ Begin VB.Form FormLanguageEditor
          Left            =   0
          Top             =   2400
          Width           =   11760
-         _extentx        =   0
-         _extenty        =   0
-         alignment       =   2
-         caption         =   "please wait..."
-         fontsize        =   12
-         forecolor       =   4210752
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Alignment       =   2
+         Caption         =   "please wait..."
+         FontSize        =   12
+         ForeColor       =   4210752
       End
    End
    Begin VB.PictureBox picContainer 
@@ -374,10 +374,10 @@ Begin VB.Form FormLanguageEditor
          TabIndex        =   14
          Top             =   1335
          Width           =   630
-         _extentx        =   1111
-         _extenty        =   609
-         fontsize        =   11
-         text            =   "US"
+         _ExtentX        =   1111
+         _ExtentY        =   609
+         FontSize        =   11
+         Text            =   "US"
       End
       Begin PhotoDemon.pdTextBox txtLangID 
          Height          =   345
@@ -386,10 +386,10 @@ Begin VB.Form FormLanguageEditor
          TabIndex        =   15
          Top             =   375
          Width           =   630
-         _extentx        =   1111
-         _extenty        =   609
-         fontsize        =   11
-         text            =   "en"
+         _ExtentX        =   1111
+         _ExtentY        =   609
+         FontSize        =   11
+         Text            =   "en"
       End
       Begin PhotoDemon.pdTextBox txtLangName 
          Height          =   345
@@ -397,10 +397,10 @@ Begin VB.Form FormLanguageEditor
          TabIndex        =   16
          Top             =   2295
          Width           =   2910
-         _extentx        =   5133
-         _extenty        =   609
-         fontsize        =   11
-         text            =   "English (US)"
+         _ExtentX        =   5133
+         _ExtentY        =   609
+         FontSize        =   11
+         Text            =   "English (US)"
       End
       Begin PhotoDemon.pdTextBox txtLangStatus 
          Height          =   345
@@ -408,10 +408,10 @@ Begin VB.Form FormLanguageEditor
          TabIndex        =   17
          Top             =   3255
          Width           =   2910
-         _extentx        =   5133
-         _extenty        =   609
-         fontsize        =   11
-         text            =   "incomplete"
+         _ExtentX        =   5133
+         _ExtentY        =   609
+         FontSize        =   11
+         Text            =   "incomplete"
       End
       Begin PhotoDemon.pdTextBox txtLangVersion 
          Height          =   345
@@ -419,10 +419,10 @@ Begin VB.Form FormLanguageEditor
          TabIndex        =   18
          Top             =   4215
          Width           =   2910
-         _extentx        =   5133
-         _extenty        =   609
-         fontsize        =   11
-         text            =   "1.0.0"
+         _ExtentX        =   5133
+         _ExtentY        =   609
+         FontSize        =   11
+         Text            =   "1.0.0"
       End
       Begin PhotoDemon.pdTextBox txtLangAuthor 
          Height          =   345
@@ -430,10 +430,10 @@ Begin VB.Form FormLanguageEditor
          TabIndex        =   19
          Top             =   5190
          Width           =   11415
-         _extentx        =   20135
-         _extenty        =   609
-         fontsize        =   11
-         text            =   "enter your name here"
+         _ExtentX        =   20135
+         _ExtentY        =   609
+         FontSize        =   11
+         Text            =   "enter your name here"
       End
       Begin PhotoDemon.pdLabel lblSubheader 
          Height          =   240
@@ -441,11 +441,11 @@ Begin VB.Form FormLanguageEditor
          Left            =   3360
          Top             =   4290
          Width           =   8100
-         _extentx        =   14288
-         _extenty        =   423
-         caption         =   "e.g. ""1.0.0"".  Please use Major.Minor.Revision format."
-         fontsize        =   9
-         forecolor       =   4210752
+         _ExtentX        =   14288
+         _ExtentY        =   423
+         Caption         =   "e.g. ""1.0.0"".  Please use Major.Minor.Revision format."
+         FontSize        =   9
+         ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblSubheader 
          Height          =   240
@@ -453,11 +453,11 @@ Begin VB.Form FormLanguageEditor
          Left            =   3360
          Top             =   3330
          Width           =   8295
-         _extentx        =   14631
-         _extenty        =   423
-         caption         =   "e.g. ""complete"", ""unfinished"", etc.  Any descriptive text is acceptable."
-         fontsize        =   9
-         forecolor       =   4210752
+         _ExtentX        =   14631
+         _ExtentY        =   423
+         Caption         =   "e.g. ""complete"", ""unfinished"", etc.  Any descriptive text is acceptable."
+         FontSize        =   9
+         ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblSubheader 
          Height          =   240
@@ -465,11 +465,11 @@ Begin VB.Form FormLanguageEditor
          Left            =   3360
          Top             =   2370
          Width           =   7995
-         _extentx        =   0
-         _extenty        =   0
-         caption         =   "e.g. ""English"" or ""English (US)"".  This text will be displayed in PhotoDemon's Language menu."
-         fontsize        =   9
-         forecolor       =   4210752
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Caption         =   "e.g. ""English"" or ""English (US)"".  This text will be displayed in PhotoDemon's Language menu."
+         FontSize        =   9
+         ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblSubheader 
          Height          =   240
@@ -477,11 +477,11 @@ Begin VB.Form FormLanguageEditor
          Left            =   1080
          Top             =   1410
          Width           =   10125
-         _extentx        =   17859
-         _extenty        =   423
-         caption         =   "e.g. ""US"" for ""United States"".  Please use the official 2-character ISO 3166-1 format."
-         fontsize        =   9
-         forecolor       =   4210752
+         _ExtentX        =   17859
+         _ExtentY        =   423
+         Caption         =   "e.g. ""US"" for ""United States"".  Please use the official 2-character ISO 3166-1 format."
+         FontSize        =   9
+         ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblSubheader 
          Height          =   240
@@ -489,11 +489,11 @@ Begin VB.Form FormLanguageEditor
          Left            =   1080
          Top             =   435
          Width           =   10050
-         _extentx        =   17727
-         _extenty        =   423
-         caption         =   "e.g. ""en"" for ""English"".  Please use the official 2-character ISO 639-1 format."
-         fontsize        =   9
-         forecolor       =   4210752
+         _ExtentX        =   17727
+         _ExtentY        =   423
+         Caption         =   "e.g. ""en"" for ""English"".  Please use the official 2-character ISO 639-1 format."
+         FontSize        =   9
+         ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
@@ -501,11 +501,11 @@ Begin VB.Form FormLanguageEditor
          Left            =   0
          Top             =   4800
          Width           =   11595
-         _extentx        =   20452
-         _extenty        =   503
-         caption         =   "author name(s)"
-         fontsize        =   12
-         forecolor       =   4210752
+         _ExtentX        =   20452
+         _ExtentY        =   503
+         Caption         =   "author name(s)"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
@@ -513,11 +513,11 @@ Begin VB.Form FormLanguageEditor
          Left            =   0
          Top             =   2880
          Width           =   11520
-         _extentx        =   20320
-         _extenty        =   503
-         caption         =   "translation status"
-         fontsize        =   12
-         forecolor       =   4210752
+         _ExtentX        =   20320
+         _ExtentY        =   503
+         Caption         =   "translation status"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
@@ -525,11 +525,11 @@ Begin VB.Form FormLanguageEditor
          Left            =   0
          Top             =   3840
          Width           =   11535
-         _extentx        =   20346
-         _extenty        =   503
-         caption         =   "translation version"
-         fontsize        =   12
-         forecolor       =   4210752
+         _ExtentX        =   20346
+         _ExtentY        =   503
+         Caption         =   "translation version"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
@@ -537,11 +537,11 @@ Begin VB.Form FormLanguageEditor
          Left            =   0
          Top             =   1920
          Width           =   11460
-         _extentx        =   20214
-         _extenty        =   503
-         caption         =   "language name"
-         fontsize        =   12
-         forecolor       =   4210752
+         _ExtentX        =   20214
+         _ExtentY        =   503
+         Caption         =   "language name"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
@@ -549,11 +549,11 @@ Begin VB.Form FormLanguageEditor
          Left            =   0
          Top             =   960
          Width           =   11445
-         _extentx        =   20188
-         _extenty        =   503
-         caption         =   "country ID"
-         fontsize        =   12
-         forecolor       =   4210752
+         _ExtentX        =   20188
+         _ExtentY        =   503
+         Caption         =   "country ID"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
@@ -561,11 +561,11 @@ Begin VB.Form FormLanguageEditor
          Left            =   0
          Top             =   0
          Width           =   11490
-         _extentx        =   20267
-         _extenty        =   503
-         caption         =   "language ID"
-         fontsize        =   12
-         forecolor       =   4210752
+         _ExtentX        =   20267
+         _ExtentY        =   503
+         Caption         =   "language ID"
+         FontSize        =   12
+         ForeColor       =   4210752
       End
    End
    Begin VB.Line Line1 
@@ -592,7 +592,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Interactive Language (Translation) Editor
-'Copyright 2013-2015 by Frank Donckers and Tanner Helland
+'Copyright 2013-2016 by Frank Donckers and Tanner Helland
 'Created: 28/August/13
 'Last updated: 03/September/15
 'Last update: convert all buttons to pdButton and overhaul UI code accordingly

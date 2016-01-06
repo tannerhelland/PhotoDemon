@@ -137,7 +137,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Waves" Distortion
-'Copyright 2000-2015 by Tanner Helland
+'Copyright 2000-2016 by Tanner Helland
 'Created: 07/January/13
 'Last updated: 27/September/14
 'Last update: add supersampling support
@@ -160,7 +160,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub cboEdges_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Apply a "wave-like" effect to an image
@@ -369,7 +369,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -384,7 +384,7 @@ Private Sub Form_Activate()
     
     'Create the preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -404,33 +404,33 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltAmplitudeX_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltAmplitudeY_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltQuality_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltWavelengthX_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltWavelengthY_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Redraw the on-screen preview of the transformed image
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then WaveImage sltWavelengthX, sltAmplitudeX, sltWavelengthY, sltAmplitudeY, CLng(cboEdges.ListIndex), sltQuality, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

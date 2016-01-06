@@ -116,7 +116,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Rechannel Interface
-'Copyright 2000-2015 by Tanner Helland
+'Copyright 2000-2016 by Tanner Helland
 'Created: original rechannel algorithm - sometimes 2001, this form 28/September/12
 'Last updated: 04/December/15
 'Last update: overhaul interface, switch to new XML parameter class
@@ -132,7 +132,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub btsChannel_Click(Index As Integer, ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub btsColorSpace_Click(ByVal buttonIndex As Long)
@@ -142,7 +142,7 @@ Private Sub btsColorSpace_Click(ByVal buttonIndex As Long)
         btsChannel(i).Visible = CBool(i = buttonIndex)
     Next i
     
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -151,7 +151,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -188,7 +188,7 @@ Private Sub Form_Activate()
     
     'Apply translations and visual themes, and supply an initial effect preview
     MakeFormPretty Me
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -352,12 +352,12 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then RechannelImage GetLocalParamString(), True, fxPreview
 End Sub
 
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'This function displays a user-friendly message with the name of the destination color channel.  Use this function to generate such

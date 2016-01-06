@@ -45,7 +45,7 @@ Begin VB.Form FormReplaceColor
       ColorSelection  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltErase 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   3000
@@ -57,7 +57,7 @@ Begin VB.Form FormReplaceColor
       Value           =   15
    End
    Begin PhotoDemon.sliderTextCombo sltBlend 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   4080
@@ -98,7 +98,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Replace color dialog
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 29/October/13
 'Last updated: 30/October/13
 'Last update: finished initial build
@@ -120,7 +120,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -131,7 +131,7 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub colorNew_ColorChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -140,7 +140,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Render a preview of the alpha effect
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -151,7 +151,7 @@ End Sub
 'The user can select a color from the preview window; this helps green screen calculation immensely
 Private Sub fxPreview_ColorSelected()
     colorOld.Color = fxPreview.SelectedColor
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Replace one color in an image with another color, with full blending and feathering support
@@ -288,20 +288,20 @@ Public Sub ReplaceSelectedColor(ByVal oldColor As Long, ByVal newColor As Long, 
 End Sub
 
 Private Sub sltBlend_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltErase_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Render a new preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then ReplaceSelectedColor colorOld.Color, colorNew.Color, sltErase.Value, sltBlend.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 

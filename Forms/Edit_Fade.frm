@@ -87,7 +87,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fade Previous Action Dialog
-'Copyright 2000-2015 by Tanner Helland
+'Copyright 2000-2016 by Tanner Helland
 'Created: 13/October/00
 'Last updated: 14/April/14
 'Last update: give function a full dialog, with variable opacity and blend modes of the user's choosing
@@ -118,7 +118,7 @@ Dim m_relevantLayerID As Long
 Dim m_actionName As String
     
 Private Sub cboBlendMode_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'OK button
@@ -137,7 +137,7 @@ Private Sub Form_Activate()
     
     'Render a preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -253,16 +253,16 @@ Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As L
 End Sub
 
 'Use this sub to update the on-screen preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then fxFadeLastAction sltOpacity, cboBlendMode.ListIndex, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltOpacity_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 

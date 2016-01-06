@@ -1,7 +1,7 @@
 Attribute VB_Name = "Color_Functions"
 '***************************************************************************
 'Miscellaneous Color Functions
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 13/June/13
 'Last updated: 13/August/13
 'Last update: added XYZ and CieLAB color conversions
@@ -40,7 +40,7 @@ Public Function convertEntireDIBToLabColor(ByRef srcDIB As pdDIB, ByRef dstArray
     CopyMemory ByVal VarPtrArray(ImageData()), VarPtr(tmpSA), 4
     
     'Iterate through the image, converting colors as we go
-    Dim x As Long, y As Long, finalX As Long, finalY As Long, QuickX As Long
+    Dim x As Long, y As Long, finalX As Long, finalY As Long, quickX As Long
     
     finalX = srcDIB.getDIBWidth - 1
     finalY = srcDIB.getDIBHeight - 1
@@ -49,21 +49,21 @@ Public Function convertEntireDIBToLabColor(ByRef srcDIB As pdDIB, ByRef dstArray
     Dim labL As Double, labA As Double, labB As Double
     
     For x = 0 To finalX
-        QuickX = x * 3
+        quickX = x * 3
     For y = 0 To finalY
     
         'Get the source pixel color values
-        r = ImageData(QuickX + 2, y)
-        g = ImageData(QuickX + 1, y)
-        b = ImageData(QuickX, y)
+        r = ImageData(quickX + 2, y)
+        g = ImageData(quickX + 1, y)
+        b = ImageData(quickX, y)
         
         'Convert the color to the L*a*b* color space
         RGBtoLAB r, g, b, labL, labA, labB
         
         'Store the L*a*b* values
-        dstArray(QuickX, y) = labL
-        dstArray(QuickX + 1, y) = labA
-        dstArray(QuickX + 2, y) = labB
+        dstArray(quickX, y) = labL
+        dstArray(quickX + 1, y) = labA
+        dstArray(quickX + 2, y) = labB
     
     Next y
     Next x

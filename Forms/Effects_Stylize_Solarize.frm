@@ -44,7 +44,7 @@ Begin VB.Form FormSolarize
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltThreshold 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   2280
@@ -66,7 +66,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Solarizing Effect Handler
-'Copyright 2001-2015 by Tanner Helland
+'Copyright 2001-2016 by Tanner Helland
 'Created: 4/14/01
 'Last updated: 24/August/13
 'Last update: added command bar
@@ -150,7 +150,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -163,7 +163,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Render a preview
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -172,15 +172,15 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltThreshold_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then SolarizeImage sltThreshold.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 

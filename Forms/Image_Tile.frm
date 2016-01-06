@@ -168,7 +168,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Tile Rendering Interface
-'Copyright 2012-2015 by Tanner Helland
+'Copyright 2012-2016 by Tanner Helland
 'Created: 25/August/12
 'Last updated: 24/August/13
 'Last update: clean up and modernize all code; install new text up/down user controls, add command bar
@@ -259,7 +259,7 @@ Private Sub cboTarget_Click()
     cmdBar.markPreviewStatus True
 
     'Finally, draw a preview
-    updatePreview
+    UpdatePreview
 
 End Sub
 
@@ -386,7 +386,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -401,7 +401,7 @@ Private Sub Form_Activate()
     
     'Render a preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -479,14 +479,14 @@ Private Sub updateDescription()
 End Sub
 
 Private Sub tudHeight_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub tudWidth_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then
         updateDescription
         GenerateTile cboTarget.ListIndex, tudWidth, tudHeight, True
@@ -495,7 +495,7 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

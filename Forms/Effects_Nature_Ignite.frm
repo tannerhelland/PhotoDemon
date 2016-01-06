@@ -24,7 +24,7 @@ Begin VB.Form FormIgnite
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.sliderTextCombo sltIntensity 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   1320
@@ -59,7 +59,7 @@ Begin VB.Form FormIgnite
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   2520
@@ -72,7 +72,7 @@ Begin VB.Form FormIgnite
       Value           =   50
    End
    Begin PhotoDemon.sliderTextCombo sltOpacity 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   4
       Top             =   3720
@@ -92,7 +92,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '"Burn" Fire FX Form
-'Copyright 2001-2015 by Tanner Helland
+'Copyright 2001-2016 by Tanner Helland
 'Created: some time 2001
 'Last updated: 09/July/14
 'Last update: give tool its own form; overhaul algorithm completely
@@ -269,8 +269,8 @@ Public Sub fxBurn(ByVal fxIntensity As Double, ByVal fxRadius As Long, ByVal fxO
     Erase ImageData
     
     'Apply premultiplication prior to compositing
-    edgeDIB.setAlphaPremultiplication True
-    workingDIB.setAlphaPremultiplication True
+    edgeDIB.SetAlphaPremultiplication True
+    workingDIB.SetAlphaPremultiplication True
     
     'A pdCompositor class will help us selectively blend the flame results back onto the main image
     Dim cComposite As pdCompositor
@@ -307,7 +307,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -322,7 +322,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Draw a preview of the effect
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -332,22 +332,22 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Update the preview whenever the combination slider/text control has its value changed
 Private Sub sltIntensity_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then fxBurn sltIntensity, sltRadius, sltOpacity, True, fxPreview
 End Sub
 
 Private Sub sltOpacity_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltRadius_Change()
-    updatePreview
+    UpdatePreview
 End Sub

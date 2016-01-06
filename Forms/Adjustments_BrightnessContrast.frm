@@ -87,7 +87,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Brightness and Contrast Handler
-'Copyright 2001-2015 by Tanner Helland
+'Copyright 2001-2016 by Tanner Helland
 'Created: 2/6/01
 'Last updated: 16/August/13
 'Last update: this dialog is my testbed for the new command bar user control, so it received a number of changes
@@ -111,7 +111,7 @@ Private previewSampledContrast As Long
 
 'Update the preview when the "sample contrast" checkbox value is changed
 Private Sub chkSample_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Single routine for modifying both brightness and contrast.  Brightness is in the range (-255,255) while
@@ -299,7 +299,7 @@ End Sub
 'Sometimes the command bar will perform actions (like loading a preset) that require an updated preview.  This function
 ' is fired by the control when it's ready for such an update.
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'RESET button.  All control default values will be reset according to the rules specified in the commandBar user control
@@ -324,20 +324,20 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltBright_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltContrast_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then BrightnessContrast sltBright, sltContrast, CBool(chkSample.Value), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

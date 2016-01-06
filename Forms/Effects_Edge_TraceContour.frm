@@ -84,7 +84,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Trace Contour (Outline) Tool
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 15/Feb/13
 'Last updated: 10/January/14
 'Last update: greatly improve performance by switching to approximate gaussian blur function
@@ -103,7 +103,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub chkSmoothing_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Convolve an image using a gaussian kernel (separable implementation!)
@@ -177,7 +177,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -186,7 +186,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Draw a preview of the effect
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -195,20 +195,20 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub chkBlackBackground_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltThickness_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then TraceContour sltThickness, CBool(chkBlackBackground.Value), CBool(chkSmoothing.Value), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

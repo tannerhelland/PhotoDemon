@@ -6,7 +6,7 @@
 
 <langid>sv-SE</langid>
 <langname>Swedish</langname>
-<langversion>6.7.123</langversion>
+<langversion>6.7.125</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -1375,22 +1375,7 @@ In version 6.0, var PhotoDemon makro filer omgjorda för att stödja nya funktio
 <translation>Cancel bildbehandling</translation>
 </phrase>
 
-<phrase>
-<original>pre-alpha</original>
-<translation>pre-alfa</translation>
-</phrase>
-
-<phrase>
-<original>alpha</original>
-<translation>alfa</translation>
-</phrase>
-
-<phrase>
-<original>beta</original>
-<translation>beta</translation>
-</phrase>
-
-<!-- VBP_Misc_Uncategorized.bas contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- VBP_Misc_Uncategorized.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for VBP_Misc_Uncategorized.bas-->
 
@@ -2319,7 +2304,22 @@ To aktivera stöd för detta bildformat, vänligen kopiera FreeImage.dll filen (
 <translation> %1. %2 Beta %3</translation>
 </phrase>
 
-<!-- VBP_SoftwareUpdater.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<phrase>
+<original>pre-alpha</original>
+<translation>pre-alfa</translation>
+</phrase>
+
+<phrase>
+<original>alpha</original>
+<translation>alfa</translation>
+</phrase>
+
+<phrase>
+<original>beta</original>
+<translation>beta</translation>
+</phrase>
+
+<!-- VBP_SoftwareUpdater.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_SoftwareUpdater.bas-->
 
@@ -4526,6 +4526,11 @@ or Arkiv> Öppna och Arkiv> Importera menyer.</translation>
 </phrase>
 
 <phrase>
+<original>Red-eye removal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Split toning</original>
 <translation>Split toning</translation>
 </phrase>
@@ -5756,7 +5761,7 @@ Note förändrats framgångsrikt: några mindre program kan inte vara levande up
 <translation>Ta bort alfakanal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 180 were duplicates of existing phrases, so only 387 new phrases were written to file. -->
+<!-- MainWindow.frm contains 569 phrases. 181 were duplicates of existing phrases, so only 388 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14596,12 +14601,46 @@ If du ändå välja att inaktivera uppdateringar, glöm inte att besöka photode
 
 <!-- END text for pdListSupport.cls-->
 
+<!-- BEGIN text for pdListBox.ctl -->
+
+<!-- pdListBox.ctl contains 0 phrases. -->
+
+<!-- END text for pdListBox.ctl-->
+
+<!-- BEGIN text for Adjustments_Photo_RedEye.frm (FormRedEye) -->
+
+<phrase>
+<original>Red eye removal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Searching image for red-eye artifacts</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_Photo_RedEye.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Adjustments_Photo_RedEye.frm-->
+
+<!-- BEGIN text for pdRedEye.cls -->
+
+<!-- pdRedEye.cls contains 0 phrases. -->
+
+<!-- END text for pdRedEye.cls-->
+
+<!-- BEGIN text for VB_Hacks.bas -->
+
+<!-- VB_Hacks.bas contains 0 phrases. -->
+
+<!-- END text for VB_Hacks.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2507</phrasecount>
+<phrasecount>2510</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4306 phrases. -->
-<!-- 1799 are duplicates, so only 2507 unique phrases have been written to file. -->
-<!-- These 2507 phrases contain approximately 13390 total words. -->
+<!-- As of this build, PhotoDemon contains 4312 phrases. -->
+<!-- 1802 are duplicates, so only 2510 unique phrases have been written to file. -->
+<!-- These 2510 phrases contain approximately 13400 total words. -->
 
 </pdData>

@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Filter LUT (Look Up Table) Support Class
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 15/January/15
 'Last updated: 16/January/15
 'Last update: continue fleshing out features
@@ -503,7 +503,7 @@ Public Function applyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte
     Dim srcWasPremultiplied As Boolean
     If (srcDIB.getDIBColorDepth = 32) And srcDIB.getAlphaPremultiplication Then
         srcWasPremultiplied = True
-        srcDIB.setAlphaPremultiplication False
+        srcDIB.SetAlphaPremultiplication False
     Else
         srcWasPremultiplied = False
     End If
@@ -570,7 +570,7 @@ Public Function applyLUTsToDIB_Color(ByRef srcDIB As pdDIB, ByRef rLUT() As Byte
     Erase ImageData
     
     'Reset alpha premultiplication, as necessary
-    If srcWasPremultiplied Then srcDIB.setAlphaPremultiplication True
+    If srcWasPremultiplied Then srcDIB.SetAlphaPremultiplication True
     
     If cancelCurrentAction Then applyLUTsToDIB_Color = 0 Else applyLUTsToDIB_Color = 1
     
@@ -585,7 +585,7 @@ Public Function applyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte,
     Dim srcWasPremultiplied As Boolean
     If (srcDIB.getDIBColorDepth = 32) And srcDIB.getAlphaPremultiplication Then
         srcWasPremultiplied = True
-        srcDIB.setAlphaPremultiplication False
+        srcDIB.SetAlphaPremultiplication False
     Else
         srcWasPremultiplied = False
     End If
@@ -657,7 +657,7 @@ Public Function applyLUTsToDIB_Gray(ByRef srcDIB As pdDIB, ByRef gLUT() As Byte,
     Erase ImageData
     
     'Reset alpha premultiplication, as necessary
-    If srcWasPremultiplied Then srcDIB.setAlphaPremultiplication True
+    If srcWasPremultiplied Then srcDIB.SetAlphaPremultiplication True
     
     If cancelCurrentAction Then applyLUTsToDIB_Gray = 0 Else applyLUTsToDIB_Gray = 1
     
@@ -668,13 +668,13 @@ End Function
 ' TODO: try wrapping GDI+ on Vista and later, and do some performance profiling to compare results.
 '
 ' RETURNS: 1 if successful, 0 if unsuccessful or canceled by the user.
-Public Function applyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLUT() As Byte, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
+Public Function applyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLut() As Byte, Optional ByVal suppressMessages As Boolean = False, Optional ByVal modifyProgBarMax As Long = -1, Optional ByVal modifyProgBarOffset As Long = 0) As Long
     
     'Unpremultiply the source DIB's alpha, as necessary
     Dim srcWasPremultiplied As Boolean
     If (srcDIB.getDIBColorDepth = 32) And srcDIB.getAlphaPremultiplication Then
         srcWasPremultiplied = True
-        srcDIB.setAlphaPremultiplication False
+        srcDIB.SetAlphaPremultiplication False
     Else
         srcWasPremultiplied = False
     End If
@@ -723,9 +723,9 @@ Public Function applyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLUT() A
         b = ImageData(QuickVal, y)
         
         'Assign the look-up table values
-        ImageData(QuickVal + 2, y) = cLUT(r)
-        ImageData(QuickVal + 1, y) = cLUT(g)
-        ImageData(QuickVal, y) = cLUT(b)
+        ImageData(QuickVal + 2, y) = cLut(r)
+        ImageData(QuickVal + 1, y) = cLut(g)
+        ImageData(QuickVal, y) = cLut(b)
         
     Next y
         If Not suppressMessages Then
@@ -741,7 +741,7 @@ Public Function applyLUTToAllColorChannels(ByRef srcDIB As pdDIB, ByRef cLUT() A
     Erase ImageData
     
     'Reset alpha premultiplication, as necessary
-    If srcWasPremultiplied Then srcDIB.setAlphaPremultiplication True
+    If srcWasPremultiplied Then srcDIB.SetAlphaPremultiplication True
     
     If cancelCurrentAction Then applyLUTToAllColorChannels = 0 Else applyLUTToAllColorChannels = 1
     

@@ -192,7 +192,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Grayscale Conversion Handler
-'Copyright 2002-2015 by Tanner Helland
+'Copyright 2002-2016 by Tanner Helland
 'Created: 1/12/02
 'Last updated: 16/February/14
 'Last update: rewrite code so that all conversion methods provide an option for specific # of gray shades and/or dithering,
@@ -210,17 +210,17 @@ Attribute VB_Exposed = False
 Option Explicit
 
 'Preview the current grayscale conversion technique
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then masterGrayscaleFunction cboMethod.ListIndex, getExtraGrayscaleParams(cboMethod.ListIndex), sltShades.Value, cboDithering.ListIndex, True, fxPreview
 End Sub
 
 Private Sub cboDithering_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cboMethod_Click()
     UpdateVisibleControls
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Certain algorithms require additional user input.  This routine enables/disables the controls associated with a given algorithm.
@@ -241,7 +241,7 @@ Private Sub UpdateVisibleControls()
 End Sub
 
 Private Sub chkDither_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'OK button
@@ -292,7 +292,7 @@ End Function
 
 Private Sub cmdBar_RequestPreviewUpdate()
     UpdateVisibleControls
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Recommend ITU grayscale correction by default, and max shades without dithering
@@ -310,7 +310,7 @@ Private Sub Form_Activate()
     
     'Draw the initial preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -773,7 +773,7 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
         
         Dim i As Long, j As Long
         
-        Dim QuickX As Long, QuickY As Long
+        Dim quickX As Long, QuickY As Long
         
         'Now loop through the image, calculating errors as we go
         For y = initY To finalY
@@ -818,16 +818,16 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
                     'Second, ignore pixels that have a zero in the dither table
                     If DitherTable(i, j) = 0 Then GoTo NextDitheredPixel
                     
-                    QuickX = x + i
+                    quickX = x + i
                     QuickY = y + j
                     
                     'Next, ignore target pixels that are off the image boundary
-                    If QuickX < initX Then GoTo NextDitheredPixel
-                    If QuickX > finalX Then GoTo NextDitheredPixel
+                    If quickX < initX Then GoTo NextDitheredPixel
+                    If quickX > finalX Then GoTo NextDitheredPixel
                     If QuickY > finalY Then GoTo NextDitheredPixel
                     
                     'If we've made it all the way here, we are able to actually spread the error to this location
-                    dErrors(QuickX, QuickY) = dErrors(QuickX, QuickY) + (errorVal * (CSng(DitherTable(i, j)) / dDivisor))
+                    dErrors(quickX, QuickY) = dErrors(quickX, QuickY) + (errorVal * (CSng(DitherTable(i, j)) / dDivisor))
                 
 NextDitheredPixel:     Next j
                 Next i
@@ -1270,20 +1270,20 @@ End Sub
 
 'When option buttons are used, update the preview accordingly
 Private Sub optChannel_Click(Index As Integer)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub optDecompose_Click(Index As Integer)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltShades_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

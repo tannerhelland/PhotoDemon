@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Metadata Handler
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 23/May/13
 'Last updated: 05/January/15
 'Last update: perform special checks for certain PNG chunks (sRGB, cHRM, gAMA).  PD now processes the data in these
@@ -780,7 +780,7 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
                     pdDebug.LogAction "PNG file contains sRGB chunk. Applying color conversion now..."
                 #End If
                 
-                Color_Management.convertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, 0.64, 0.33, 0.3, 0.6, 0.15, 0.06, 0.3127, 0.329, 0, False, True
+                Color_Management.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, 0.64, 0.33, 0.3, 0.6, 0.15, 0.06, 0.3127, 0.329, 0, False, True
                 
                 sRGBHandled = True
             
@@ -847,9 +847,9 @@ Public Function loadAllMetadata(ByVal mdString As String, ByVal parentImageID As
                             '
                             'If the cHRM chunk is any other color space, we'll use the supplied gamma value, per the PNG spec
                             If (RedX = 0.64) And (RedY = 0.33) And (GreenX = 0.3) And (GreenY = 0.6) And (BlueX = 0.15) And (BlueY = 0.06) And (WhiteX = 0.3127) And (WhiteY = 0.329) Then
-                                Color_Management.convertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, RedX, RedY, GreenX, GreenY, BlueX, BlueY, WhiteX, WhiteY, 0, False, True
+                                Color_Management.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, RedX, RedY, GreenX, GreenY, BlueX, BlueY, WhiteX, WhiteY, 0, False, True
                             Else
-                                Color_Management.convertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, RedX, RedY, GreenX, GreenY, BlueX, BlueY, WhiteX, WhiteY, srcGamma, False, True
+                                Color_Management.ConvertRGBUsingCustomEndpoints pdImages(parentImageID).getActiveDIB, RedX, RedY, GreenX, GreenY, BlueX, BlueY, WhiteX, WhiteY, srcGamma, False, True
                             End If
                             
                             'FOR TESTING PURPOSES: this sample line of code uses hard-coded sRGB values

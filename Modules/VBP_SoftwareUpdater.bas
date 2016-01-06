@@ -1,10 +1,10 @@
-Attribute VB_Name = "Software_Updater"
+Attribute VB_Name = "Update_Support"
 '***************************************************************************
 'Automatic Software Updater (note: at present this doesn't technically DO the updating (e.g. overwriting program files), it just CHECKS for updates)
-'Copyright 2012-2015 by Tanner Helland
+'Copyright 2012-2016 by Tanner Helland
 'Created: 19/August/12
-'Last updated: 04/March/15
-'Last update: convert remaining file access functions to pdFSO
+'Last updated: 06/January/16
+'Last update: migrate misc update functions from other modules to this one
 '
 'This module includes various support functions for determining if a new version of PhotoDemon is available for download.
 '
@@ -66,7 +66,7 @@ Private m_BetaNumber As String
 ' 2) At least 10 days have passed since the last update check...
 ' 3) ...or 10 days haven't passed, but we have never checked for updates before, and this is NOT the first time the user
 '    is running the program
-Public Function isItTimeForAnUpdate() As Boolean
+Public Function IsItTimeForAnUpdate() As Boolean
 
     'Locale settings can sometimes screw with the DateDiff function in unpredictable ways.  (For example, if a
     ' user is using PD on a pen drive, and they move between PCs with wildly different date representations)
@@ -151,19 +151,19 @@ Public Function isItTimeForAnUpdate() As Boolean
         allowedToUpdate = False
     End If
     
-    isItTimeForAnUpdate = allowedToUpdate
+    IsItTimeForAnUpdate = allowedToUpdate
     
     Exit Function
 
 'In the event of an error, simply disallow updates for this session.
 noUpdates:
 
-    isItTimeForAnUpdate = False
+    IsItTimeForAnUpdate = False
     
 End Function
 
 'Given the XML string of a download language version XML report from photodemon.org, initiate downloads of any languages that need to be updated.
-Public Sub processLanguageUpdateFile(ByRef srcXML As String)
+Public Sub ProcessLanguageUpdateFile(ByRef srcXML As String)
     
     'This boolean array will be track which (if any) language files are in need of an update.  The matching "numOfUpdates"
     ' value will be > 0 if any files need updating.
@@ -198,7 +198,7 @@ Public Sub processLanguageUpdateFile(ByRef srcXML As String)
                 
                 'Start by retrieving the current PD executable version.
                 Dim currentPDVersion As String
-                currentPDVersion = getPhotoDemonVersionMajorMinorOnly
+                currentPDVersion = GetPhotoDemonVersionMajorMinorOnly
                 
                 'This step is simply going to flag language files in need of an update.  This array will be used to track
                 ' such language; a separate step will initiate the actual update downloads.
@@ -211,7 +211,7 @@ Public Sub processLanguageUpdateFile(ByRef srcXML As String)
                     'Retrieve the major/minor version of this language file.  (String format is fine, as we're just
                     ' checking equality.)
                     langVersion = xmlEngine.getUniqueTag_String("version", , , "language", "updateID", langList(i))
-                    langVersion = retrieveVersionMajorMinorAsString(langVersion)
+                    langVersion = RetrieveVersionMajorMinorAsString(langVersion)
                     
                     'Retrieve the language's revision as well.  This is explicitly retrieved as a LONG, because we need to perform
                     ' a >= check between it and the current language file revision.
@@ -229,10 +229,10 @@ Public Sub processLanguageUpdateFile(ByRef srcXML As String)
                         If g_Language.getPDLanguageFileObject(tmpLanguage, langID) Then
                         
                             'A matching language file was found.  Compare version numbers.
-                            If StrComp(langVersion, retrieveVersionMajorMinorAsString(tmpLanguage.langVersion), vbBinaryCompare) = 0 Then
+                            If StrComp(langVersion, RetrieveVersionMajorMinorAsString(tmpLanguage.langVersion), vbBinaryCompare) = 0 Then
                             
                                 'The major/minor version of this language file matches the current language.  Compare revisions.
-                                If langRevision > retrieveVersionRevisionAsLong(tmpLanguage.langVersion) Then
+                                If langRevision > RetrieveVersionRevisionAsLong(tmpLanguage.langVersion) Then
                                 
                                     'Holy shit, this language actually needs to be updated!  :P  Mark the corresponding location
                                     ' in the update array, and increment the update counter.
@@ -246,7 +246,7 @@ Public Sub processLanguageUpdateFile(ByRef srcXML As String)
                                 'The current file is up-to-date.
                                 Else
                                 
-                                    Debug.Print "Language ID " & langID & " is already up-to-date (updated: "; langVersion & "." & langRevision & ", current: "; retrieveVersionMajorMinorAsString(tmpLanguage.langVersion) & "." & retrieveVersionRevisionAsLong(tmpLanguage.langVersion) & ")"
+                                    Debug.Print "Language ID " & langID & " is already up-to-date (updated: "; langVersion & "." & langRevision & ", current: "; RetrieveVersionMajorMinorAsString(tmpLanguage.langVersion) & "." & RetrieveVersionRevisionAsLong(tmpLanguage.langVersion) & ")"
                                 
                                 End If
                             
@@ -329,7 +329,7 @@ Public Sub processLanguageUpdateFile(ByRef srcXML As String)
 End Sub
 
 'After a language file has successfully downloaded, FormMain calls this function to actually apply the patch.
-Public Function patchLanguageFile(ByVal entryKey As String, downloadedData() As Byte, ByVal savedToThisFile As String) As Boolean
+Public Function PatchLanguageFile(ByVal entryKey As String, downloadedData() As Byte, ByVal savedToThisFile As String) As Boolean
     
     On Error GoTo LanguagePatchingFailure
     
@@ -386,31 +386,31 @@ Public Function patchLanguageFile(ByVal entryKey As String, downloadedData() As 
                     
                         'Perform a final failsafe checksum verification of the extracted file
                         If (newChecksum = cPackage.checkSumArbitraryFile(newFilename)) Then
-                            patchLanguageFile = True
+                            PatchLanguageFile = True
                         Else
                             'Failsafe checksum verification didn't pass.  Restore the old file.
                             Debug.Print "WARNING!  Downloaded language file was written, but final checksum failsafe failed.  Restoring old language file..."
                             cFile.SaveByteArrayToFile rawOldFile, newFilename
-                            patchLanguageFile = False
+                            PatchLanguageFile = False
                         End If
                         
                     End If
                 
                 Else
                     Debug.Print "WARNING! pdPackage refused to return filename."
-                    patchLanguageFile = False
+                    PatchLanguageFile = False
                 End If
                 
             Else
                 Debug.Print "WARNING! Secondary checksum failsafe failed (" & newChecksum & " != " & cPackage.checkSumArbitraryArray(rawNewFile) & ").  Language update abandoned."
-                patchLanguageFile = False
+                PatchLanguageFile = False
             End If
         
         End If
     
     Else
         Debug.Print "WARNING! Language file downloaded, but pdPackager rejected it.  Language update abandoned."
-        patchLanguageFile = False
+        PatchLanguageFile = False
     End If
     
     'Regardless of outcome, we kill the update file when we're done with it.
@@ -420,7 +420,7 @@ Public Function patchLanguageFile(ByVal entryKey As String, downloadedData() As 
     
 LanguagePatchingFailure:
 
-    patchLanguageFile = False
+    PatchLanguageFile = False
     
 End Function
 
@@ -430,10 +430,10 @@ End Function
 ' job is simply to initiate a larger package download if necessary.
 '
 'Returns TRUE is an update is available; FALSE otherwise
-Public Function processProgramUpdateFile(ByRef srcXML As String) As Boolean
+Public Function ProcessProgramUpdateFile(ByRef srcXML As String) As Boolean
     
     'In most cases, we assume there to *not* be an update
-    processProgramUpdateFile = False
+    ProcessProgramUpdateFile = False
     
     'A pdXML object handles XML parsing for us.
     Dim xmlEngine As pdXML
@@ -482,7 +482,7 @@ Public Function processProgramUpdateFile(ByRef srcXML As String) As Boolean
             
             'We start with the current PD version as a baseline.  If newer update targets are found, this string will be updated with those targets instead.
             Dim curVersionMatch As String
-            curVersionMatch = getPhotoDemonVersionCanonical()
+            curVersionMatch = GetPhotoDemonVersionCanonical()
             
             'FAKE TESTING VERSION ONLY!
             'curVersionMatch = "6.4.0"
@@ -507,11 +507,11 @@ Public Function processProgramUpdateFile(ByRef srcXML As String) As Boolean
                         Dim newPDVersionString As String
                         newPDVersionString = xmlEngine.getTagValueAtPreciseLocation(pdTagPosition)
                         
-                        Debug.Print "Update track " & i & " reports version " & newPDVersionString & " (our version: " & getPhotoDemonVersionCanonical() & ")"
+                        Debug.Print "Update track " & i & " reports version " & newPDVersionString & " (our version: " & GetPhotoDemonVersionCanonical() & ")"
                         
                         'If this value is higher than our current update target, mark it and proceed.  Note that this approach gives us the
                         ' highest possible update target from all available/enabled update tracks.
-                        If isNewVersionHigher(curVersionMatch, newPDVersionString) Then
+                        If IsNewVersionHigher(curVersionMatch, newPDVersionString) Then
                             
                             trackWithValidUpdate = i
                             
@@ -576,7 +576,7 @@ Public Function processProgramUpdateFile(ByRef srcXML As String) As Boolean
                     Debug.Print "Download successfully initiated for program patch file at " & updateURL
                     
                     'Only now do we report SUCCESS to the caller
-                    processProgramUpdateFile = True
+                    ProcessProgramUpdateFile = True
                     
                 Else
                     Debug.Print "WARNING! FormMain.requestAsynchronousDownload refused to initiate download of " & updateURL & " patch file."
@@ -603,7 +603,7 @@ End Function
 
 'When live-patching program files, we double-check checksums of both the temp files and the final binary copies.  This prevents hijackers from
 ' intercepting the files mid-transit, and replacing them with their own.
-Private Function getFailsafeChecksum(ByRef xmlEngine As pdXML, ByVal relativePath As String) As Long
+Private Function GetFailsafeChecksum(ByRef xmlEngine As pdXML, ByVal relativePath As String) As Long
 
     'Find the position of this file's checksum
     Dim pdTagPosition As Long
@@ -617,11 +617,11 @@ Private Function getFailsafeChecksum(ByRef xmlEngine As pdXML, ByVal relativePat
         thisChecksum = xmlEngine.getTagValueAtPreciseLocation(pdTagPosition)
         
         'Convert the checksum to a long and return it
-        getFailsafeChecksum = thisChecksum
+        GetFailsafeChecksum = thisChecksum
         
     'If the checksum doesn't exist in the file, return 0
     Else
-        getFailsafeChecksum = 0
+        GetFailsafeChecksum = 0
     End If
     
     'Debug.Print pdTagPosition & " (" & m_TrackStartPosition & ", " & m_TrackEndPosition & "): " & relativePath
@@ -630,13 +630,13 @@ End Function
 
 'If a program update file has successfully downloaded during this session, FormMain calls this function at program termination.
 ' This lovely function actually patches any/all relevant files.
-Public Function patchProgramFiles() As Boolean
+Public Function PatchProgramFiles() As Boolean
     
     On Error GoTo ProgramPatchingFailure
     
     'If no update file is available, exit without doing anything
     If Len(m_UpdateFilePath) = 0 Then
-        patchProgramFiles = True
+        PatchProgramFiles = True
         Exit Function
     End If
     
@@ -687,28 +687,28 @@ Public Function patchProgramFiles() As Boolean
     End If
     
     'Exit now
-    patchProgramFiles = True
+    PatchProgramFiles = True
     Exit Function
     
 ProgramPatchingFailure:
 
-    patchProgramFiles = False
+    PatchProgramFiles = False
     
 End Function
 
 'Rather than apply updates mid-session, any patches are applied by a separate application, at shutdown time
-Public Sub notifyUpdatePackageAvailable(ByVal tmpUpdateFile As String)
+Public Sub NotifyUpdatePackageAvailable(ByVal tmpUpdateFile As String)
     m_UpdateFilePath = tmpUpdateFile
 End Sub
 
-Public Function isUpdatePackageAvailable() As Boolean
-    isUpdatePackageAvailable = (Len(m_UpdateFilePath) <> 0)
+Public Function IsUpdatePackageAvailable() As Boolean
+    IsUpdatePackageAvailable = (Len(m_UpdateFilePath) <> 0)
 End Function
 
 'Replacing files at run-time is unpredictable; sometimes we can delete the files, sometimes we can't.
 '
 'As such, this function is called when PD starts. It scans the update folder for old temp files and deletes them as encountered.
-Public Sub cleanPreviousUpdateFiles()
+Public Sub CleanPreviousUpdateFiles()
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Looking for previous update files and cleaning as necessary..."
@@ -729,7 +729,7 @@ Public Sub cleanPreviousUpdateFiles()
     tmpFileList.AddString g_UserPreferences.getUpdatePath & "updates.xml"
     
     'Next, we auto-add any .tmp files in the update folder, which should cover all other potential use-cases
-    cFile.retrieveAllFiles g_UserPreferences.getUpdatePath, tmpFileList, False, False, "TMP|tmp"
+    cFile.RetrieveAllFiles g_UserPreferences.getUpdatePath, tmpFileList, False, False, "TMP|tmp"
     
     'If temp files exist, remove them now.
     Do While tmpFileList.PopString(tmpFile)
@@ -744,7 +744,7 @@ Public Sub cleanPreviousUpdateFiles()
         
     'Do the same thing for temp files in the base PD folder
     Set tmpFileList = Nothing
-    If cFile.retrieveAllFiles(g_UserPreferences.getProgramPath, tmpFileList, False, False, "TMP|tmp") Then
+    If cFile.RetrieveAllFiles(g_UserPreferences.getProgramPath, tmpFileList, False, False, "TMP|tmp") Then
         
         Do While tmpFileList.PopString(tmpFile)
             
@@ -760,7 +760,7 @@ Public Sub cleanPreviousUpdateFiles()
         
     '...And just to be safe, do the same thing for temp files in the plugin folder
     Set tmpFileList = Nothing
-    If cFile.retrieveAllFiles(g_PluginPath, tmpFileList, False, False, "TMP|tmp") Then
+    If cFile.RetrieveAllFiles(g_PluginPath, tmpFileList, False, False, "TMP|tmp") Then
         
         Do While tmpFileList.PopString(tmpFile)
         
@@ -782,7 +782,7 @@ End Sub
 'At start-up, PD calls this function to find out if the program started via a PD-generated restart event (e.g. the presence of restart.bat).
 ' Returns TRUE if restart.bat is found; FALSE otherwise.
 ' (Also, this function deletes restart.bat if present)
-Public Function wasProgramStartedViaRestart() As Boolean
+Public Function WasProgramStartedViaRestart() As Boolean
     
     Dim restartFile As String
     restartFile = g_UserPreferences.getProgramPath & "PD_Update_Patcher.exe"
@@ -798,20 +798,20 @@ Public Function wasProgramStartedViaRestart() As Boolean
             pdDebug.LogAction "FYI: this session was started by an update process (PD_Update_Patcher is present)"
         #End If
         
-        wasProgramStartedViaRestart = True
+        WasProgramStartedViaRestart = True
     Else
         
         #If DEBUGMODE = 1 Then
             pdDebug.LogAction "FYI: this session was started by the user (PD_Update_Patcher is not present)"
         #End If
     
-        wasProgramStartedViaRestart = False
+        WasProgramStartedViaRestart = False
     End If
     
 End Function
 
 'If an update is ready, you may call this function to display an update notification to the user
-Public Sub displayUpdateNotification()
+Public Sub DisplayUpdateNotification()
     
     'If a modal dialog is active, raising a new window will cause a crash; we must deal with this accordingly
     On Error GoTo couldNotDisplayUpdateNotification
@@ -838,18 +838,18 @@ End Sub
 
 'PD should always be able to provide a release announcement URL, but I still recommend testing this string for emptiness prior to displaying
 ' it to the user.
-Public Function getReleaseAnnouncementURL() As String
-    getReleaseAnnouncementURL = m_UpdateReleaseAnnouncementURL
+Public Function GetReleaseAnnouncementURL() As String
+    GetReleaseAnnouncementURL = m_UpdateReleaseAnnouncementURL
 End Function
 
 'Outside functions can also the track of the currently active update.  Note that this doesn't predictably correspond to the user's current
 ' update preference, as most users will allow updates from multiple potential tracks (e.g. both stable and beta).
-Public Function getUpdateTrack() As PD_UPDATE_TRACK
-    getUpdateTrack = m_UpdateTrack
+Public Function GetUpdateTrack() As PD_UPDATE_TRACK
+    GetUpdateTrack = m_UpdateTrack
 End Function
 
 'Outside functions can also request a human-readable string of the literal update number (e.g. Major.Minor.Build, untouched).
-Public Function getUpdateVersion_Literal(Optional ByVal forceRevisionDisplay As Boolean = False) As String
+Public Function GetUpdateVersion_Literal(Optional ByVal forceRevisionDisplay As Boolean = False) As String
     
     'Parse the version string, which is currently on the form Major.Minor.Build.Revision
     Dim verStrings() As String
@@ -859,39 +859,39 @@ Public Function getUpdateVersion_Literal(Optional ByVal forceRevisionDisplay As 
     'We always want major and minor version numbers
     If UBound(verStrings) >= 1 Then
         
-        getUpdateVersion_Literal = verStrings(0) & "." & verStrings(1)
+        GetUpdateVersion_Literal = verStrings(0) & "." & verStrings(1)
         
         'If the revision value is non-zero, or the user demands a revision number, include it
         If (UBound(verStrings) >= 3) Or forceRevisionDisplay Then
             
             'If the revision number exists, use it
             If UBound(verStrings) >= 3 Then
-                If StrComp(verStrings(3), "0", vbBinaryCompare) <> 0 Then getUpdateVersion_Literal = getUpdateVersion_Literal & "." & verStrings(3)
+                If StrComp(verStrings(3), "0", vbBinaryCompare) <> 0 Then GetUpdateVersion_Literal = GetUpdateVersion_Literal & "." & verStrings(3)
             
             'If the revision number does not exist, append 0 in its place
             Else
-                getUpdateVersion_Literal = getUpdateVersion_Literal & ".0"
+                GetUpdateVersion_Literal = GetUpdateVersion_Literal & ".0"
             End If
             
         End If
         
     Else
-        getUpdateVersion_Literal = m_UpdateVersion
+        GetUpdateVersion_Literal = m_UpdateVersion
     End If
     
 End Function
 
 'Outside functions can use this to request a human-readable string of the "friendly" update number (e.g. beta releases are properly identified and
 ' bumped up to the next stable release).
-Public Function getUpdateVersion_Friendly() As String
+Public Function GetUpdateVersion_Friendly() As String
     
     'Start by retrieving the literal version number
     Dim litVersion As String
-    litVersion = getUpdateVersion_Literal(True)
+    litVersion = GetUpdateVersion_Literal(True)
     
     'If the current update track is *NOT* a beta, the friendly string matches the literal string.  Return it now.
     If m_UpdateTrack <> PDUT_BETA Then
-        getUpdateVersion_Friendly = litVersion
+        GetUpdateVersion_Friendly = litVersion
     
     'If the current update track *IS* a beta, we need to manually update the number prior to returning it
     Else
@@ -918,7 +918,7 @@ Public Function getUpdateVersion_Friendly() As String
         End If
         
         'Construct a new version string
-        getUpdateVersion_Friendly = g_Language.TranslateMessage("%1.%2 Beta %3", vMajor, vMinor, m_BetaNumber)
+        GetUpdateVersion_Friendly = g_Language.TranslateMessage("%1.%2 Beta %3", vMajor, vMinor, m_BetaNumber)
         
     End If
     
@@ -926,6 +926,267 @@ Public Function getUpdateVersion_Friendly() As String
     
 VersionFormatError:
 
-    getUpdateVersion_Friendly = litVersion
+    GetUpdateVersion_Friendly = litVersion
 
 End Function
+
+'Retrieve PD's current name and version, modified against "beta" labels, etc
+Public Function GetPhotoDemonNameAndVersion() As String
+    GetPhotoDemonNameAndVersion = App.Title & " " & GetPhotoDemonVersion
+End Function
+
+'Retrieve PD's current version, modified against "beta" labels, etc
+Public Function GetPhotoDemonVersion() As String
+    
+    'Even-numbered releases are "official" releases, so simply return the full version string
+    If (CLng(App.Minor) Mod 2 = 0) Then
+        GetPhotoDemonVersion = App.Major & "." & App.Minor
+        
+    Else
+    
+        'Odd-numbered development releases of the pattern X.9 are production builds for the next major version, e.g. (X+1).0
+        
+        'Build state can be retrieved from the public const PD_BUILD_QUALITY
+        Dim buildStateString As String
+        
+        Select Case PD_BUILD_QUALITY
+        
+            Case PD_PRE_ALPHA
+                If g_Language Is Nothing Then
+                    buildStateString = "pre-alpha"
+                Else
+                    buildStateString = g_Language.TranslateMessage("pre-alpha")
+                End If
+            
+            Case PD_ALPHA
+                If g_Language Is Nothing Then
+                    buildStateString = "alpha"
+                Else
+                    buildStateString = g_Language.TranslateMessage("alpha")
+                End If
+            
+            Case PD_BETA
+                If g_Language Is Nothing Then
+                    buildStateString = "beta"
+                Else
+                    buildStateString = g_Language.TranslateMessage("beta")
+                End If
+        
+        End Select
+        
+        'Assemble a full title string, while handling the special case of .9 version numbers, which serve as production
+        ' builds for the next .0 release.
+        If App.Minor = 9 Then
+            GetPhotoDemonVersion = CStr(App.Major + 1) & ".0 " & buildStateString & " (build " & CStr(App.Revision) & ")"
+        Else
+            GetPhotoDemonVersion = CStr(App.Major) & "." & CStr(App.Minor + 1) & " " & buildStateString & " (build " & CStr(App.Revision) & ")"
+        End If
+        
+    End If
+    
+End Function
+
+'Retrieve PD's current version witout any appended tags (e.g. "beta"), and with a "0" automatically plugged in for build.
+Public Function GetPhotoDemonVersionCanonical() As String
+    GetPhotoDemonVersionCanonical = Trim$(Str(App.Major)) & "." & Trim$(Str(App.Minor)) & ".0." & Trim$(Str(App.Revision))
+End Function
+
+'Retrieve PD's current version (not revision!) as a pure major/minor string.  This is not generally recommended for displaying
+' to the user, but it's helpful for things like update checks.
+Public Function GetPhotoDemonVersionMajorMinorOnly() As String
+    GetPhotoDemonVersionMajorMinorOnly = Trim$(Str(App.Major)) & "." & Trim$(Str(App.Minor))
+End Function
+
+Public Function GetPhotoDemonVersionRevisionOnly() As String
+    GetPhotoDemonVersionRevisionOnly = Trim$(Str(App.Revision))
+End Function
+
+'Given an arbitrary version string (e.g. "6.0.04 stability patch" or 6.0.04" or just plain "6.0"), return a canonical major/minor string, e.g. "6.0"
+Public Function RetrieveVersionMajorMinorAsString(ByVal srcVersionString As String) As String
+
+    'To avoid locale issues, replace any "," with "."
+    If InStr(1, srcVersionString, ",") Then srcVersionString = Replace$(srcVersionString, ",", ".")
+    
+    'For this function to work, the major/minor data has to exist somewhere in the string.  Look for at least one "." occurrence.
+    Dim tmpArray() As String
+    tmpArray = Split(srcVersionString, ".")
+    
+    If UBound(tmpArray) >= 1 Then
+        RetrieveVersionMajorMinorAsString = Trim$(tmpArray(0)) & "." & Trim$(tmpArray(1))
+    Else
+        RetrieveVersionMajorMinorAsString = ""
+    End If
+
+End Function
+
+'Given an arbitrary version string (e.g. "6.0.04 stability patch" or 6.0.04" or just plain "6.0"), return the revision number
+' as a string, e.g. 4 for "6.0.04".  If no revision is found, return 0.
+Public Function RetrieveVersionRevisionAsLong(ByVal srcVersionString As String) As Long
+    
+    'An improperly formatted version number can cause failure; if this happens, we'll assume a revision of 0, which should
+    ' force a re-download of the problematic file.
+    On Error GoTo cantFormatRevisionAsLong
+    
+    'To avoid locale issues, replace any "," with "."
+    If InStr(1, srcVersionString, ",") Then srcVersionString = Replace$(srcVersionString, ",", ".")
+    
+    'For this function to work, the revision has to exist somewhere in the string.  Look for at least two "." occurrences.
+    Dim tmpArray() As String
+    tmpArray = Split(srcVersionString, ".")
+    
+    If UBound(tmpArray) >= 2 Then
+        RetrieveVersionRevisionAsLong = CLng(Trim$(tmpArray(2)))
+    
+    'If one or less "." chars are found, assume a revision of 0
+    Else
+        RetrieveVersionRevisionAsLong = 0
+    End If
+    
+    Exit Function
+    
+cantFormatRevisionAsLong:
+
+    RetrieveVersionRevisionAsLong = 0
+
+End Function
+
+'Given two version numbers, return TRUE if the second version is larger than the first.
+' If the second version equals the first, FALSE is returned.
+Public Function IsNewVersionHigher(ByVal oldVersion As String, ByVal newVersion As String) As Boolean
+    
+    'Normalize version separators
+    If InStr(1, oldVersion, ",", vbBinaryCompare) Then oldVersion = Replace$(oldVersion, ",", ".")
+    If InStr(1, newVersion, ",", vbBinaryCompare) Then oldVersion = Replace$(newVersion, ",", ".")
+    
+    'If the string representations are identical, we can exit now
+    If StrComp(oldVersion, newVersion, vbBinaryCompare) = 0 Then
+        IsNewVersionHigher = False
+        
+    'If the strings are not equal, a more detailed comparison is required.
+    Else
+    
+        'Parse the versions by "."
+        Dim oldV() As String, newV() As String
+        oldV = Split(oldVersion, ".")
+        newV = Split(newVersion, ".")
+        
+        'Fill in any missing version entries
+        Dim i As Long, oldUBound As Long
+        
+        If UBound(oldV) < 3 Then
+            
+            oldUBound = UBound(oldV)
+            ReDim Preserve oldV(0 To 3) As String
+            
+            For i = oldUBound + 1 To 3
+                oldV(i) = "0"
+            Next i
+            
+        End If
+        
+        If UBound(newV) < 3 Then
+            
+            oldUBound = UBound(newV)
+            ReDim Preserve newV(0 To 3) As String
+            
+            For i = oldUBound + 1 To 3
+                newV(i) = "0"
+            Next i
+            
+        End If
+        
+        'With both version numbers normalized, compare each entry in turn.
+        Dim newIsNewer As Boolean
+        newIsNewer = False
+        
+        'For each version, we will be comparing entries in turn, starting with the major version and working
+        ' our way down.  We only check subsequent values if all preceding ones are equal.  (This ensures that
+        ' e.g. 6.6.0 does not update to 6.5.1.)
+        Dim majorIsEqual As Boolean, minorIsEqual As Boolean, revIsEqual As Boolean, buildIsEqual As Boolean
+                
+        For i = 0 To 3
+            
+            Select Case i
+            
+                'Major version updates always trigger an update
+                Case 0
+                
+                    If CLng(newV(i)) > CLng(oldV(i)) Then
+                        newIsNewer = True
+                        Exit For
+                        
+                    Else
+                        
+                        If CLng(newV(i)) = CLng(oldV(i)) Then
+                            majorIsEqual = True
+                        Else
+                            majorIsEqual = False
+                        End If
+                    
+                    End If
+                
+                'Minor version updates trigger an update only if the major version matches
+                Case 1
+                
+                    If majorIsEqual Then
+                        
+                        If CLng(newV(i)) > CLng(oldV(i)) Then
+                            newIsNewer = True
+                            Exit For
+                        Else
+                        
+                            If CLng(newV(i)) = CLng(oldV(i)) Then
+                                minorIsEqual = True
+                            Else
+                                minorIsEqual = False
+                            End If
+                        
+                        End If
+                        
+                    End If
+                
+                'Build and revision updates follow the pattern above
+                Case 2
+                
+                    If minorIsEqual Then
+                        
+                        If CLng(newV(i)) > CLng(oldV(i)) Then
+                            newIsNewer = True
+                            Exit For
+                        Else
+                        
+                            If CLng(newV(i)) = CLng(oldV(i)) Then
+                                revIsEqual = True
+                            Else
+                                revIsEqual = False
+                            End If
+                        
+                        End If
+                        
+                    End If
+                
+                Case Else
+                
+                    If revIsEqual Then
+                        
+                        If CLng(newV(i)) > CLng(oldV(i)) Then
+                            newIsNewer = True
+                            Exit For
+                        Else
+                            newIsNewer = False
+                            Exit For
+                        End If
+                        
+                    End If
+                
+            End Select
+            
+        Next i
+        
+        IsNewVersionHigher = newIsNewer
+        
+    End If
+    
+End Function
+
+

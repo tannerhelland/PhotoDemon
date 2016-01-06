@@ -86,7 +86,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Image Selection ("Tab") Toolbar
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 15/October/13
 'Last updated: 19/February/15
 'Last updated by: Raj

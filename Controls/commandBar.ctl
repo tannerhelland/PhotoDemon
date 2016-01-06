@@ -91,7 +91,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Tool Dialog Command Bar custom control
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 14/August/13
 'Last updated: 01/September/15
 'Last update: change OK/Cancel buttons to new pdButton instances, freeing us of any stock VB controls on the command bar!
@@ -525,7 +525,7 @@ Private Sub CmdOK_Click()
         If (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Or (TypeOf eControl Is smartResize) Then
             
             'Just to be safe, verify matching container hWnd properties
-            If eControl.Container.hWnd = UserControl.containerHwnd Then
+            If eControl.Container.hWnd = UserControl.ContainerHwnd Then
                 
                 'Finally, ask the control to validate itself
                 If Not eControl.IsValid Then

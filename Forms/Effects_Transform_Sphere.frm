@@ -149,7 +149,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Spherize" Distortion
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 05/June/13
 'Last updated: 27/September/14
 'Last update: add supersampling support, rework interface a bit
@@ -176,11 +176,11 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub btsExterior_Click(ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cboEdges_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Apply a "swirl" effect to an image
@@ -467,7 +467,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -482,7 +482,7 @@ Private Sub Form_Activate()
         
     'Create the preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -507,28 +507,28 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltAngle_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Redraw the on-screen preview of the transformed image
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then SpherizeImage sltAngle, sltOffsetX, sltOffsetY, (btsExterior.ListIndex = 1), CLng(cboEdges.ListIndex), sltQuality, True, fxPreview
 End Sub
 
 Private Sub sltOffsetX_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltOffsetY_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltQuality_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 

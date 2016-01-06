@@ -6,7 +6,7 @@
 
 <langid>nl-BE</langid>
 <langname>Vlaams (Nederlands)</langname>
-<langversion>6.7.123</langversion>
+<langversion>6.7.125</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Frank Donckers</author>
@@ -1375,22 +1375,7 @@ In versie 6.0, werden PhotoDemon macrobestanden herontworpen om nieuwe functies 
 <translation>Annuleren afbeeldingsverwerking</translation>
 </phrase>
 
-<phrase>
-<original>pre-alpha</original>
-<translation>pre-alpha</translation>
-</phrase>
-
-<phrase>
-<original>alpha</original>
-<translation>alpha</translation>
-</phrase>
-
-<phrase>
-<original>beta</original>
-<translation>beta</translation>
-</phrase>
-
-<!-- VBP_Misc_Uncategorized.bas contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+<!-- VBP_Misc_Uncategorized.bas contains 2 phrases.  Both phrases were unique, so 2 new phrases were written to file. -->
 
 <!-- END text for VBP_Misc_Uncategorized.bas-->
 
@@ -2318,7 +2303,22 @@ Om ondersteuning voor dit afbeeldingsformaat mogelijk te maken, kopieer je het F
 <translation> %1.%2 Beta %3</translation>
 </phrase>
 
-<!-- VBP_SoftwareUpdater.bas contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<phrase>
+<original>pre-alpha</original>
+<translation>pre-alpha</translation>
+</phrase>
+
+<phrase>
+<original>alpha</original>
+<translation>alpha</translation>
+</phrase>
+
+<phrase>
+<original>beta</original>
+<translation>beta</translation>
+</phrase>
+
+<!-- VBP_SoftwareUpdater.bas contains 9 phrases. 4 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for VBP_SoftwareUpdater.bas-->
 
@@ -4525,6 +4525,11 @@ of de Bestand > Openen en Bestand > Import menu's.</translation>
 </phrase>
 
 <phrase>
+<original>Red-eye removal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>Split toning</original>
 <translation>Splits toning</translation>
 </phrase>
@@ -5755,7 +5760,7 @@ Nota: enkele kleine programmateksten kunnen niet live worden  bijgewerkt. Een de
 <translation>Verwijder alfakanaal</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 567 phrases. 180 were duplicates of existing phrases, so only 387 new phrases were written to file. -->
+<!-- MainWindow.frm contains 569 phrases. 181 were duplicates of existing phrases, so only 388 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -14595,12 +14600,46 @@ If u nog steeds kiezen om updates uit te schakelen, vergeet dan niet om photodem
 
 <!-- END text for pdListSupport.cls-->
 
+<!-- BEGIN text for pdListBox.ctl -->
+
+<!-- pdListBox.ctl contains 0 phrases. -->
+
+<!-- END text for pdListBox.ctl-->
+
+<!-- BEGIN text for Adjustments_Photo_RedEye.frm (FormRedEye) -->
+
+<phrase>
+<original>Red eye removal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Searching image for red-eye artifacts</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_Photo_RedEye.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+
+<!-- END text for Adjustments_Photo_RedEye.frm-->
+
+<!-- BEGIN text for pdRedEye.cls -->
+
+<!-- pdRedEye.cls contains 0 phrases. -->
+
+<!-- END text for pdRedEye.cls-->
+
+<!-- BEGIN text for VB_Hacks.bas -->
+
+<!-- VB_Hacks.bas contains 0 phrases. -->
+
+<!-- END text for VB_Hacks.bas-->
+
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2507</phrasecount>
+<phrasecount>2510</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4306 phrases. -->
-<!-- 1799 are duplicates, so only 2507 unique phrases have been written to file. -->
-<!-- These 2507 phrases contain approximately 13390 total words. -->
+<!-- As of this build, PhotoDemon contains 4312 phrases. -->
+<!-- 1802 are duplicates, so only 2510 unique phrases have been written to file. -->
+<!-- These 2510 phrases contain approximately 13400 total words. -->
 
 </pdData>

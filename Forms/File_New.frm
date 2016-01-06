@@ -134,7 +134,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'New Image Dialog
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 29/December/14
 'Last updated: 31/December/14
 'Last update: wrap up initial build

@@ -133,7 +133,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Fix Lens Distort Tool
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 22/January/13
 'Last updated: 05/June/13
 'Last update: fix typo that prevented zoom slider from being validated
@@ -156,7 +156,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub cboEdges_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Correct lens distortion in an image
@@ -394,7 +394,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -412,7 +412,7 @@ Private Sub Form_Activate()
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
             
 End Sub
 
@@ -432,29 +432,29 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltQuality_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltRadius_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltStrength_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltZoom_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Redraw the on-screen preview of the transformed image
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then ApplyLensCorrection sltStrength, sltZoom, sltRadius, CLng(cboEdges.ListIndex), sltQuality, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

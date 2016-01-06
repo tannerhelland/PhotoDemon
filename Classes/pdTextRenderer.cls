@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon GDI+ Text Manager and Renderer
-'Copyright 2015-2015 by Tanner Helland
+'Copyright 2015-2016 by Tanner Helland
 'Created: 22/April/15
 'Last updated: 19/May/15
 'Last update: various changes to improve compatibility with the new Uniscribe backend (see pdGlyphCollection)

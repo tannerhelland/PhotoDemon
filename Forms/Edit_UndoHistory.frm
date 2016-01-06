@@ -110,7 +110,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Undo History dialog
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 14/July/14
 'Last updated: 14/July/14
 'Last update: initial build

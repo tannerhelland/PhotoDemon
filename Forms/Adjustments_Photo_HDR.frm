@@ -78,7 +78,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Imitation HDR Tool
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 09/July/14
 'Last updated: 19/January/15
 'Last update: introduce new experimental approach; it's way faster, but it cannot reproduce fine details as sharply.
@@ -189,8 +189,8 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
     progBarCheck = findBestProgBarValue()
     
     'The number of pixels in the current median box are tracked dynamically.
-    Dim numOfPixels As Long
-    numOfPixels = 0
+    Dim NumOfPixels As Long
+    NumOfPixels = 0
             
     'CLAHE filtering RGB data takes a lot of variables
     Dim rValues() As Long, gValues() As Long, bValues() As Long
@@ -212,7 +212,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
     
     Dim startY As Long, stopY As Long, yStep As Long
     
-    numOfPixels = 0
+    NumOfPixels = 0
     
     'Generate an initial array of median data for the first pixel
     For x = initX To initX + mRadius - 1
@@ -227,7 +227,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
         bValues(b) = bValues(b) + 1
         
         'Increase the pixel tally
-        numOfPixels = numOfPixels + 1
+        NumOfPixels = NumOfPixels + 1
         
     Next y
     Next x
@@ -271,7 +271,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
                 rValues(r) = rValues(r) - 1
                 gValues(g) = gValues(g) - 1
                 bValues(b) = bValues(b) - 1
-                numOfPixels = numOfPixels - 1
+                NumOfPixels = NumOfPixels - 1
             Next j
         
         End If
@@ -288,7 +288,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
                 rValues(r) = rValues(r) + 1
                 gValues(g) = gValues(g) + 1
                 bValues(b) = bValues(b) + 1
-                numOfPixels = numOfPixels + 1
+                NumOfPixels = NumOfPixels + 1
             Next j
             
         End If
@@ -305,7 +305,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
                 rValues(r) = rValues(r) - 1
                 gValues(g) = gValues(g) - 1
                 bValues(b) = bValues(b) - 1
-                numOfPixels = numOfPixels - 1
+                NumOfPixels = NumOfPixels - 1
             Next i
         
         Else
@@ -320,7 +320,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
                 rValues(r) = rValues(r) - 1
                 gValues(g) = gValues(g) - 1
                 bValues(b) = bValues(b) - 1
-                numOfPixels = numOfPixels - 1
+                NumOfPixels = NumOfPixels - 1
             Next i
         
         End If
@@ -369,7 +369,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
                     rValues(r) = rValues(r) - 1
                     gValues(g) = gValues(g) - 1
                     bValues(b) = bValues(b) - 1
-                    numOfPixels = numOfPixels - 1
+                    NumOfPixels = NumOfPixels - 1
                 Next i
                         
             End If
@@ -385,7 +385,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
                     rValues(r) = rValues(r) + 1
                     gValues(g) = gValues(g) + 1
                     bValues(b) = bValues(b) + 1
-                    numOfPixels = numOfPixels + 1
+                    NumOfPixels = NumOfPixels + 1
                 Next i
             
             End If
@@ -416,7 +416,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
                     rValues(r) = rValues(r) - 1
                     gValues(g) = gValues(g) - 1
                     bValues(b) = bValues(b) - 1
-                    numOfPixels = numOfPixels - 1
+                    NumOfPixels = NumOfPixels - 1
                 Next i
                         
             End If
@@ -431,7 +431,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
                     rValues(r) = rValues(r) + 1
                     gValues(g) = gValues(g) + 1
                     bValues(b) = bValues(b) + 1
-                    numOfPixels = numOfPixels + 1
+                    NumOfPixels = NumOfPixels + 1
                 Next i
             
             End If
@@ -450,7 +450,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
         'Histogram equalization applies a unique scale factor based on the number of pixels in the histogram
         ' (Because our sliding-box technique generates different pixel counts along edge regions, we can't
         '  pre-calculate this value.)
-        histFactor = 255 / numOfPixels
+        histFactor = 255 / NumOfPixels
         
         'Partially equalize each individual channel histogram
         rValuesEq(0) = rValues(0) * histFactor
@@ -690,7 +690,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -705,7 +705,7 @@ Private Sub Form_Activate()
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -721,18 +721,18 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltRadius_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then ApplyImitationHDR sltRadius.Value, sltStrength.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltStrength_Change()
-    updatePreview
+    UpdatePreview
 End Sub

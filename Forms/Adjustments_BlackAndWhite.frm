@@ -141,7 +141,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Monochrome Conversion Form
-'Copyright 2002-2015 by Tanner Helland
+'Copyright 2002-2016 by Tanner Helland
 'Created: some time 2002
 'Last updated: 17/August/13
 'Last update: greatly simplify code by using new command bar custom control
@@ -158,7 +158,7 @@ Option Explicit
 
 Private Sub cboDither_Click()
     If CBool(chkAutoThreshold.Value) Then sltThreshold = calculateOptimalThreshold()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'When the auto threshold button is clicked, disable the scroll bar and text box and calculate the optimal value immediately
@@ -172,7 +172,7 @@ Private Sub chkAutoThreshold_Click()
     
     sltThreshold.Enabled = Not CBool(chkAutoThreshold.Value)
     
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -182,7 +182,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'When resetting, set the color boxes to black and white, and the dithering combo box to 6 (Stucki)
@@ -199,7 +199,7 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub colorPicker_ColorChanged(Index As Integer)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -208,7 +208,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Draw the preview
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -815,7 +815,7 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
         
         ReDim dErrors(0 To workingDIB.getDIBWidth, 0 To workingDIB.getDIBHeight) As Double
         
-        Dim QuickX As Long, QuickY As Long
+        Dim quickX As Long, QuickY As Long
         
         'Now loop through the image, calculating errors as we go
         For x = initX To finalX
@@ -857,16 +857,16 @@ Public Sub masterBlackWhiteConversion(ByVal cThreshold As Long, Optional ByVal D
                     'Second, ignore pixels that have a zero in the dither table
                     If DitherTable(i, j) = 0 Then GoTo NextDitheredPixel
                     
-                    QuickX = x + i
+                    quickX = x + i
                     QuickY = y + j
                     
                     'Next, ignore target pixels that are off the image boundary
-                    If QuickX < initX Then GoTo NextDitheredPixel
-                    If QuickX > finalX Then GoTo NextDitheredPixel
+                    If quickX < initX Then GoTo NextDitheredPixel
+                    If quickX > finalX Then GoTo NextDitheredPixel
                     If QuickY > finalY Then GoTo NextDitheredPixel
                     
                     'If we've made it all the way here, we are able to actually spread the error to this location
-                    dErrors(QuickX, QuickY) = dErrors(QuickX, QuickY) + (errorVal * (CSng(DitherTable(i, j)) / dDivisor))
+                    dErrors(quickX, QuickY) = dErrors(quickX, QuickY) + (errorVal * (CSng(DitherTable(i, j)) / dDivisor))
                 
 NextDitheredPixel:     Next j
                 Next i
@@ -895,16 +895,16 @@ End Sub
 
 Private Sub sltThreshold_Change()
     If CBool(chkAutoThreshold.Value) Then chkAutoThreshold.Value = vbUnchecked
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then masterBlackWhiteConversion sltThreshold, cboDither.ListIndex, colorPicker(0).Color, colorPicker(1).Color, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

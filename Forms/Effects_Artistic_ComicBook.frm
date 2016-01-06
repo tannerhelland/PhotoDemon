@@ -63,7 +63,7 @@ Begin VB.Form FormComicBook
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltInk 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   1680
@@ -75,7 +75,7 @@ Begin VB.Form FormComicBook
       Value           =   50
    End
    Begin PhotoDemon.sliderTextCombo sltColor 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   2640
@@ -93,7 +93,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Comic Book Image Effect
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 02/Feb/13 (ish... I didn't write it down, alas)
 'Last updated: 02/October/15
 'Last update: added "strength" parameter, for a really powerful comic book effect
@@ -157,7 +157,7 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, ByVa
         Filters_Layers.CreateContourDIB True, workingDIB, inkDIB, toPreview, newProgBarMax, 0
         
         'Apply premultiplication to the DIB prior to compositing
-        inkDIB.setAlphaPremultiplication True
+        inkDIB.SetAlphaPremultiplication True
         
     End If
     
@@ -187,7 +187,7 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, ByVa
     End If
     
     'Return the image to the premultiplied alpha space
-    workingDIB.setAlphaPremultiplication True
+    workingDIB.SetAlphaPremultiplication True
     
     'If the caller doesn't want us to ink the image, we're all done!
     If inkOpacity > 0 Then
@@ -228,7 +228,7 @@ Public Sub fxComicBook(ByVal inkOpacity As Long, ByVal colorSmudge As Long, ByVa
 End Sub
 
 Private Sub btsStrength_Click(ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
@@ -236,7 +236,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -251,7 +251,7 @@ Private Sub Form_Activate()
         
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -273,19 +273,19 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Render a new effect preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then fxComicBook sltInk, sltColor, btsStrength.ListIndex, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltColor_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltInk_Change()
-    updatePreview
+    UpdatePreview
 End Sub

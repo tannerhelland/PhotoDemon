@@ -27,7 +27,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Generic Button control
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 19/October/14
 'Last updated: 31/August/15
 'Last update: split off from pdButtonToolbox.  The two controls are similar, but this one needs to manage a caption.
@@ -136,7 +136,7 @@ End Property
 
 Public Property Let Caption(ByRef newCaption As String)
     
-    If m_Caption.SetCaption(newCaption) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then UpdateControlLayout
+    If m_Caption.SetCaption(newCaption) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then updateControlLayout
     PropertyChanged "Caption"
     
     'Access keys must be handled manually.
@@ -176,7 +176,7 @@ Public Property Get FontSize() As Single
 End Property
 
 Public Property Let FontSize(ByVal newSize As Single)
-    If m_Caption.SetFontSize(newSize) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then UpdateControlLayout
+    If m_Caption.SetFontSize(newSize) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then updateControlLayout
     PropertyChanged "FontSize"
 End Property
 
@@ -186,8 +186,8 @@ Public Property Get hWnd() As Long
 End Property
 
 'Container hWnd must be exposed for external tooltip handling
-Public Property Get containerHwnd() As Long
-    containerHwnd = UserControl.containerHwnd
+Public Property Get ContainerHwnd() As Long
+    ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
 'When the control receives focus, if the focus isn't received via mouse click, display a focus rect
@@ -355,7 +355,7 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
     End If
     
     'Request a control size update, which will also calculate a centered position for the new image
-    UpdateControlLayout
+    updateControlLayout
 
 End Sub
 
@@ -413,7 +413,7 @@ Private Sub UserControl_Initialize()
     m_Caption.SetWordWrapSupport True
     
     'Update the control size parameters at least once
-    UpdateControlLayout
+    updateControlLayout
                 
 End Sub
 
@@ -448,12 +448,12 @@ End Sub
 
 'The control dynamically resizes each button to match the dimensions of their relative captions.
 Private Sub UserControl_Resize()
-    UpdateControlLayout
+    updateControlLayout
 End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
 ' of internal sizing metrics whenever the control size changes.
-Private Sub UpdateControlLayout()
+Private Sub updateControlLayout()
     
     'Reset the back buffer
     If m_BackBuffer Is Nothing Then Set m_BackBuffer = New pdDIB
@@ -515,7 +515,7 @@ End Sub
 
 Private Sub UserControl_Show()
     m_ControlIsVisible = True
-    UpdateControlLayout
+    updateControlLayout
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -536,7 +536,7 @@ Public Sub UpdateAgainstCurrentTheme()
     m_Caption.UpdateAgainstCurrentTheme
     
     'Redraw the control, which will also cause a resync against any theme changes
-    UpdateControlLayout
+    updateControlLayout
     
 End Sub
 
@@ -657,6 +657,6 @@ End Sub
 'Due to complex interactions between user controls and PD's translation engine, tooltips require this dedicated function.
 ' (IMPORTANT NOTE: the tooltip class will handle translations automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    toolTipManager.setTooltip Me.hWnd, Me.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    toolTipManager.SetTooltip Me.hWnd, Me.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub
 

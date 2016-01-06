@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Layers"
 '***************************************************************************
 'DIB Filters Module
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 15/February/13
 'Last updated: 17/September/13
 'Last update: removed the old dedicated box blur routine.  A horizontal/vertical two-pass is waaaaay faster!
@@ -150,18 +150,18 @@ Public Function createShadowDIB(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As
     CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
     
     'Local loop variables can be more efficiently cached by VB's compiler, so we transfer all relevant loop data here
-    Dim x As Long, y As Long, finalX As Long, finalY As Long, QuickX As Long
+    Dim x As Long, y As Long, finalX As Long, finalY As Long, quickX As Long
     finalX = dstDIB.getDIBWidth - 1
     finalY = dstDIB.getDIBHeight - 1
     
     'Loop through all pixels in the destination image and set them to black.  Easy as pie!
     For x = 0 To finalX
-        QuickX = x * 4
+        quickX = x * 4
     For y = 0 To finalY
     
-        dstImageData(QuickX + 2, y) = 0
-        dstImageData(QuickX + 1, y) = 0
-        dstImageData(QuickX, y) = 0
+        dstImageData(quickX + 2, y) = 0
+        dstImageData(quickX + 1, y) = 0
+        dstImageData(quickX, y) = 0
         
     Next y
     Next x
@@ -955,7 +955,7 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     finalY = srcDIB.getDIBHeight - 1
             
     'Prep stride ofsets.  (This is required because the image array may be 24 or 32 bits per pixel, and we want to handle both cases.)
-    Dim QuickX As Long, qvDepth As Long
+    Dim quickX As Long, qvDepth As Long
     qvDepth = srcDIB.getDIBColorDepth \ 8
     
     'Prep color retrieval variables (Long-type, because intermediate calculates may exceed byte range)
@@ -969,14 +969,14 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
     If shadowAmount <> 0 Then
     
         For x = initX To finalX
-            QuickX = x * qvDepth
+            quickX = x * qvDepth
         For y = initY To finalY
             
             'Calculate luminance for this pixel in the *blurred* image.  (We use the blurred copy for luminance detection, to improve
             ' transitions between light and dark regions in the image.)
-            bBlur = blurImageData(QuickX, y)
-            gBlur = blurImageData(QuickX + 1, y)
-            rBlur = blurImageData(QuickX + 2, y)
+            bBlur = blurImageData(quickX, y)
+            gBlur = blurImageData(quickX + 1, y)
+            rBlur = blurImageData(quickX + 2, y)
             
             grayBlur = (213 * rBlur + 715 * gBlur + 72 * bBlur) \ 1000
             If grayBlur > 255 Then grayBlur = 255
@@ -997,9 +997,9 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
                 End If
                 
                 'Retrieve source pixel values and convert to the range [0, 1]
-                bSrc = srcImageData(QuickX, y)
-                gSrc = srcImageData(QuickX + 1, y)
-                rSrc = srcImageData(QuickX + 2, y)
+                bSrc = srcImageData(quickX, y)
+                gSrc = srcImageData(quickX + 1, y)
+                rSrc = srcImageData(quickX + 2, y)
                 
                 rSrc = rSrc / 255
                 gSrc = gSrc / 255
@@ -1022,9 +1022,9 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
                 rDst = 255 * ((pxShadowCorrection * rBlur) + ((1 - pxShadowCorrection) * rSrc))
                 
                 'Save the modified values into the source image
-                srcImageData(QuickX, y) = bDst
-                srcImageData(QuickX + 1, y) = gDst
-                srcImageData(QuickX + 2, y) = rDst
+                srcImageData(quickX, y) = bDst
+                srcImageData(quickX + 1, y) = gDst
+                srcImageData(quickX + 2, y) = rDst
                 
             End If
             
@@ -1071,14 +1071,14 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
         
         'Start per-pixel highlight processing!
         For x = initX To finalX
-            QuickX = x * qvDepth
+            quickX = x * qvDepth
         For y = initY To finalY
             
             'Calculate luminance for this pixel in the *blurred* image.  (We use the blurred copy for luminance detection, to improve
             ' transitions between light and dark regions in the image.)
-            bBlur = blurImageData(QuickX, y)
-            gBlur = blurImageData(QuickX + 1, y)
-            rBlur = blurImageData(QuickX + 2, y)
+            bBlur = blurImageData(quickX, y)
+            gBlur = blurImageData(quickX + 1, y)
+            rBlur = blurImageData(quickX + 2, y)
             
             grayBlur = (213 * rBlur + 715 * gBlur + 72 * bBlur) \ 1000
             If grayBlur > 255 Then grayBlur = 255
@@ -1099,9 +1099,9 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
                 End If
                 
                 'Retrieve source pixel values and convert to the range [0, 1]
-                bSrc = srcImageData(QuickX, y)
-                gSrc = srcImageData(QuickX + 1, y)
-                rSrc = srcImageData(QuickX + 2, y)
+                bSrc = srcImageData(quickX, y)
+                gSrc = srcImageData(quickX + 1, y)
+                rSrc = srcImageData(quickX + 2, y)
                 
                 rSrc = rSrc / 255
                 gSrc = gSrc / 255
@@ -1124,9 +1124,9 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
                 rDst = 255 * ((pxHighlightCorrection * rBlur) + ((1 - pxHighlightCorrection) * rSrc))
                 
                 'Save the modified values into the source image
-                srcImageData(QuickX, y) = bDst
-                srcImageData(QuickX + 1, y) = gDst
-                srcImageData(QuickX + 2, y) = rDst
+                srcImageData(quickX, y) = bDst
+                srcImageData(quickX + 1, y) = gDst
+                srcImageData(quickX + 2, y) = rDst
                 
             End If
             
@@ -1159,13 +1159,13 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
         
         'Start per-pixel midtone processing!
         For x = initX To finalX
-            QuickX = x * qvDepth
+            quickX = x * qvDepth
         For y = initY To finalY
             
             'Calculate luminance for this pixel in the *source* image.
-            bSrc = srcImageData(QuickX, y)
-            gSrc = srcImageData(QuickX + 1, y)
-            rSrc = srcImageData(QuickX + 2, y)
+            bSrc = srcImageData(quickX, y)
+            gSrc = srcImageData(quickX + 1, y)
+            rSrc = srcImageData(quickX + 2, y)
             
             srcBlur = (213 * rSrc + 715 * gSrc + 72 * bSrc) \ 1000
             If srcBlur > 255 Then srcBlur = 255
@@ -1207,9 +1207,9 @@ Public Function AdjustDIBShadowHighlight(ByVal shadowAmount As Double, ByVal mid
                 rDst = 255 * ((pxMidtoneCorrection * rBlur) + ((1 - pxMidtoneCorrection) * rSrc))
                 
                 'Save the modified values into the source image
-                srcImageData(QuickX, y) = bDst
-                srcImageData(QuickX + 1, y) = gDst
-                srcImageData(QuickX + 2, y) = rDst
+                srcImageData(quickX, y) = bDst
+                srcImageData(quickX + 1, y) = gDst
+                srcImageData(quickX + 2, y) = rDst
                 
             End If
             

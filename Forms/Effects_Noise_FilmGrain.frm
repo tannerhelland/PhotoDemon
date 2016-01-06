@@ -35,7 +35,7 @@ Begin VB.Form FormFilmGrain
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltNoise 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   1920
@@ -57,7 +57,7 @@ Begin VB.Form FormFilmGrain
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   3000
@@ -77,7 +77,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Add Film Grain Tool
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 31/January/13
 'Last updated: 11/January/14
 'Last update: convert softness to floating point; minor performance improvements
@@ -295,7 +295,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -304,7 +304,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Render a preview
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -326,18 +326,18 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltNoise_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltRadius_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then AddFilmGrain sltNoise, sltRadius, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub

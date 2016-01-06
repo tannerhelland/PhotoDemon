@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'Recent Files (MRU) handler for PD's primary image list (File > Open Recent)
-'Copyright 2005-2015 by Raj Chaudhuri and Tanner Helland
+'Copyright 2005-2016 by Raj Chaudhuri and Tanner Helland
 'Created: 16/February/15
 'Last updated: 17/February/15
 'Last updated by: Raj
@@ -197,7 +197,7 @@ Private Sub IMRUList_AfterListSave(ByRef mruManager As pdMRUManager)
     'Use a pdFSO instance to enumerate PNG files for us.
     Dim pngList As pdStringStack
     
-    If cFile.retrieveAllFiles(g_UserPreferences.getIconPath, pngList, False, False, "png") Then
+    If cFile.RetrieveAllFiles(g_UserPreferences.getIconPath, pngList, False, False, "png") Then
     
         Dim chkFile As String, fileOK As Boolean
         Dim i As Long

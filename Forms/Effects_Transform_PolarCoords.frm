@@ -141,7 +141,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Polar Coordinate Conversion Tool
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 14/January/13
 'Last updated: 23/August/13
 'Last update: added command bar, converted the polar coordinate routine itself to operate on any two DIBs
@@ -162,19 +162,19 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub btsRender_Click(ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cboConvert_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub chkSwapXY_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cboEdges_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Convert an image to/from polar coordinates.
@@ -217,7 +217,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -233,7 +233,7 @@ Private Sub Form_Activate()
         
     'Create the preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -263,17 +263,17 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltRadius_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Redraw the on-screen preview of the transformed image
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then ConvertToPolar cboConvert.ListIndex, CBool(chkSwapXY), sltRadius.Value, CLng(cboEdges.ListIndex), CBool(btsRender.ListIndex = 1), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

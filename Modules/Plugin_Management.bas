@@ -1,7 +1,7 @@
 Attribute VB_Name = "Plugin_Management"
 '***************************************************************************
 'Core Plugin Manager
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 30/August/15
 'Last updated: 30/August/15
 'Last update: migrate a ton of scattered plugin management code to this singular module
@@ -149,7 +149,7 @@ End Function
 Private Function getNonEssentialPluginFiles(ByVal pluginEnumID As CORE_PLUGINS, ByRef dstStringStack As pdStringStack) As Boolean
     
     If dstStringStack Is Nothing Then Set dstStringStack = New pdStringStack
-    dstStringStack.resetStack
+    dstStringStack.ResetStack
     
     Select Case pluginEnumID
     

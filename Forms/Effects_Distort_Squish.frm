@@ -114,7 +114,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Squish Distortion (formerly Fixed Perspective)
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 04/April/13
 'Last updated: 27/September/14
 'Last update: integrate supersampling engine
@@ -131,7 +131,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub cboEdges_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Apply horizontal and/or vertical perspective to an image by shrinking it in one or more directions
@@ -368,7 +368,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -383,7 +383,7 @@ Private Sub Form_Activate()
         
     'Create the preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -403,25 +403,25 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltQuality_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltRatioX_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltRatioY_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Redraw the on-screen preview of the transformed image
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then SquishImage sltRatioX, sltRatioY, CLng(cboEdges.ListIndex), sltQuality, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

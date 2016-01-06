@@ -89,7 +89,7 @@ Begin VB.Form dialog_GradientEditor
          _ExtentY        =   873
       End
       Begin PhotoDemon.sliderTextCombo sltNodeOpacity 
-         Height          =   720
+         Height          =   705
          Left            =   4320
          TabIndex        =   6
          Top             =   2220
@@ -124,7 +124,7 @@ Begin VB.Form dialog_GradientEditor
          FontSize        =   12
       End
       Begin PhotoDemon.sliderTextCombo sltNodePosition 
-         Height          =   720
+         Height          =   705
          Left            =   8280
          TabIndex        =   7
          Top             =   2220
@@ -162,7 +162,7 @@ Begin VB.Form dialog_GradientEditor
          FontSize        =   12
       End
       Begin PhotoDemon.sliderTextCombo sltAngle 
-         Height          =   720
+         Height          =   705
          Left            =   8280
          TabIndex        =   9
          Top             =   3780
@@ -291,7 +291,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Gradient Editor Dialog
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 23/July/15 (but assembled from many bits written earlier)
 'Last updated: 23/July/15
 'Last update: initial build
@@ -389,7 +389,7 @@ Public Sub showDialog(ByVal initialGradient As String, Optional ByRef callingCon
     
     'Sync all controls to the initial pen parameters
     syncControlsToGradientObject
-    updatePreview
+    UpdatePreview
     
     'Make sure that the proper cursor is set
     Screen.MousePointer = 0
@@ -397,7 +397,7 @@ Public Sub showDialog(ByVal initialGradient As String, Optional ByRef callingCon
     'Apply extra images and tooltips to certain controls
     
     'Apply visual themes
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Initialize an XML engine, which we will use to read/write recent pen data to file
     Set m_XMLEngine = New pdXML
@@ -409,7 +409,7 @@ Public Sub showDialog(ByVal initialGradient As String, Optional ByRef callingCon
     'loadRecentGradientList
         
     'Display the dialog
-    showPDDialog vbModal, Me, True
+    ShowPDDialog vbModal, Me, True
 
 End Sub
 
@@ -484,7 +484,7 @@ Private Sub cmdBar_ReadCustomPresetData()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -496,7 +496,7 @@ Private Sub cmdBar_ResetClick()
     'Synchronize all controls to the updated settings
     updateGradientObjects
     syncControlsToGradientObject
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -552,11 +552,11 @@ Private Sub Form_Load()
         
         inactiveArrowFill.setBrushProperty pgbs_BrushMode, 0
         inactiveArrowFill.setBrushProperty pgbs_PrimaryOpacity, 100
-        inactiveArrowFill.setBrushProperty pgbs_PrimaryColor, g_Themer.getThemeColor(PDTC_BACKGROUND_DEFAULT)
+        inactiveArrowFill.setBrushProperty pgbs_PrimaryColor, g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
         
         activeArrowFill.setBrushProperty pgbs_BrushMode, 0
         activeArrowFill.setBrushProperty pgbs_PrimaryOpacity, 100
-        activeArrowFill.setBrushProperty pgbs_PrimaryColor, g_Themer.getThemeColor(PDTC_ACCENT_ULTRALIGHT)
+        activeArrowFill.setBrushProperty pgbs_PrimaryColor, g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
         
         Set inactiveOutlinePen = New pdGraphicsPen
         Set activeOutlinePen = New pdGraphicsPen
@@ -565,13 +565,13 @@ Private Sub Form_Load()
         inactiveOutlinePen.setPenProperty pgps_PenOpacity, 100
         inactiveOutlinePen.setPenProperty pgps_PenWidth, 1#
         inactiveOutlinePen.setPenProperty pgps_PenLineJoin, LineJoinRound
-        inactiveOutlinePen.setPenProperty pgps_PenColor, g_Themer.getThemeColor(PDTC_GRAY_SHADOW)
+        inactiveOutlinePen.setPenProperty pgps_PenColor, g_Themer.GetThemeColor(PDTC_GRAY_SHADOW)
         
         activeOutlinePen.setPenProperty pgps_PenMode, 0
         activeOutlinePen.setPenProperty pgps_PenOpacity, 100
         activeOutlinePen.setPenProperty pgps_PenWidth, 1#
         activeOutlinePen.setPenProperty pgps_PenLineJoin, LineJoinRound
-        activeOutlinePen.setPenProperty pgps_PenColor, g_Themer.getThemeColor(PDTC_ACCENT_DEFAULT)
+        activeOutlinePen.setPenProperty pgps_PenColor, g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
                 
         'Draw the initial set of interactive gradient nodes
         syncUIToActiveNode
@@ -606,7 +606,7 @@ End Sub
 
 Private Sub Form_Resize()
     drawGradientNodes
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -671,7 +671,7 @@ Private Sub updateGradientObjects()
 
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     
     If Not m_SuspendUI Then
     
@@ -706,7 +706,7 @@ Private Sub updatePreview()
         End With
         
         'Copy the preview image to the screen
-        m_MainPreviewDIB.renderToPictureBox Me.picPreview
+        m_MainPreviewDIB.RenderToPictureBox Me.picPreview
         
         'Next, repeat all the above steps for the node-area preview
         Dim gdipBrushNodes As Long
@@ -733,14 +733,14 @@ Private Sub updatePreview()
             GDI_Plus.GDIPlusFillDC_Brush .getDIBDC, gdipBrushNodes, 0, 0, .getDIBWidth, .getDIBHeight
         End With
         
-        m_NodePreviewDIB.renderToPictureBox Me.picNodePreview
+        m_NodePreviewDIB.RenderToPictureBox Me.picNodePreview
         
         'Release our GDI+ handles
         GDI_Plus.releaseGDIPlusBrush gdipBrushMain
         GDI_Plus.releaseGDIPlusBrush gdipBrushNodes
                 
         'Notify our parent of the update
-        If Not (parentGradientControl Is Nothing) Then parentGradientControl.notifyOfLiveGradientChange m_GradientPreview.getGradientAsString
+        If Not (parentGradientControl Is Nothing) Then parentGradientControl.NotifyOfLiveGradientChange m_GradientPreview.getGradientAsString
         
     End If
     
@@ -825,7 +825,7 @@ Private Sub m_MouseEvents_MouseDownCustom(ByVal Button As PDMouseButtonConstants
     
     'Regardless of outcome, we need to resync the UI to the active node, and redraw the interaction area and preview
     syncUIToActiveNode
-    updatePreview
+    UpdatePreview
     drawGradientNodes
 
 End Sub
@@ -851,7 +851,7 @@ Private Sub m_MouseEvents_MouseMoveCustom(ByVal Button As PDMouseButtonConstants
         'Redraw the gradient interaction nodes and the gradient itself
         syncUIToActiveNode
         drawGradientNodes
-        updatePreview
+        UpdatePreview
         
     'The left mouse button is not down
     Else
@@ -1046,7 +1046,7 @@ Private Sub drawGradientNodes()
         Next i
         
         'Finally, flip the DIB to the screen
-        m_InteractiveDIB.renderToPictureBox picInteract
+        m_InteractiveDIB.RenderToPictureBox picInteract
         
     End If
 
@@ -1056,7 +1056,7 @@ End Sub
 Private Sub redrawEverything()
     updateGradientObjects
     drawGradientNodes
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltAngle_Change()

@@ -194,7 +194,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Vignette tool
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 31/January/13
 'Last updated: 09/January/14
 'Last update: added center-point selection capabilities
@@ -379,7 +379,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -392,7 +392,7 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub colorPicker_ColorChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -401,7 +401,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Draw a preview of the effect
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -411,7 +411,7 @@ End Sub
 
 Private Sub fxPreview_ColorSelected()
     colorPicker.Color = fxPreview.SelectedColor
-    updatePreview
+    UpdatePreview
 End Sub
 
 'The user can right-click the preview area to select a new center point
@@ -421,41 +421,41 @@ Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
     sltXCenter.Value = xRatio
     sltYCenter.Value = yRatio
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
 Private Sub optShape_Click(Index As Integer)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltFeathering_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltRadius_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltTransparency_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Redraw the on-screen preview of the transformed image
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then ApplyVignette sltRadius.Value, sltFeathering.Value, sltTransparency.Value, optShape(0).Value, colorPicker.Color, sltXCenter.Value, sltYCenter.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltXCenter_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltYCenter_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 

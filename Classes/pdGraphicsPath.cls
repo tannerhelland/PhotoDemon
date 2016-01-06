@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Graphics Path Wrapper
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 17/October/14 (though assembled from various parts written much earlier)
 'Last updated: 09/May/15
 'Last update: integrate with new pdGraphixMatrix class, for easier affine transformations
@@ -595,7 +595,7 @@ Public Sub strokePathToDIB_UIStyle(ByRef dstDIB As pdDIB, Optional ByVal useThis
     GdipCreatePen1 fillQuadWithVBRGB(RGB(0, 0, 0), 192), 3#, gdipUnitPixel, hBlackPen
     
     If useHighlightColor Then
-        GdipCreatePen1 fillQuadWithVBRGB(g_Themer.getThemeColor(PDTC_ACCENT_HIGHLIGHT), 220), 1.6, gdipUnitPixel, hWhitePen
+        GdipCreatePen1 fillQuadWithVBRGB(g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT), 220), 1.6, gdipUnitPixel, hWhitePen
     Else
         GdipCreatePen1 fillQuadWithVBRGB(RGB(255, 255, 255), 220), 1.6, gdipUnitPixel, hWhitePen
     End If

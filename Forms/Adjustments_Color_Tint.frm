@@ -45,7 +45,7 @@ Begin VB.Form FormTint
    End
    Begin PhotoDemon.sliderTextCombo sltTint 
       CausesValidation=   0   'False
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   2400
@@ -68,7 +68,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Tint Dialog
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 03/July/14
 'Last updated: 03/July/14
 'Last update: initial build
@@ -180,7 +180,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -189,7 +189,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Draw a preview of the effect
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -199,14 +199,14 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltTint_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then adjustTint sltTint, True, fxPreview
 End Sub
 

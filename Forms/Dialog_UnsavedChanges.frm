@@ -117,7 +117,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Unsaved Changes Dialog
-'Copyright 2011-2015 by Tanner Helland
+'Copyright 2011-2016 by Tanner Helland
 'Created: 13/November/12
 'Last updated: 01/December/12
 'Last update: removed the DrawSystemIcon sub; now it can be found in the "Drawing" module
@@ -277,7 +277,7 @@ Private Sub Form_Activate()
     End If
     
     If (Not pdImages(imageBeingClosed) Is Nothing) And (Not tmpDIB Is Nothing) Then
-        tmpDIB.renderToPictureBox picPreview
+        tmpDIB.RenderToPictureBox picPreview
     Else
         Unload Me
     End If

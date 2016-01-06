@@ -87,7 +87,7 @@ Begin VB.Form dialog_FillSettings
    End
    Begin PhotoDemon.sliderTextCombo sltFillOpacity 
       CausesValidation=   0   'False
-      Height          =   720
+      Height          =   705
       Left            =   6120
       TabIndex        =   8
       Top             =   3000
@@ -329,7 +329,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Brush Selection Dialog
-'Copyright 2015-2015 by Tanner Helland
+'Copyright 2015-2016 by Tanner Helland
 'Created: 30/June/15 (but assembled from many bits written earlier)
 'Last updated: 30/June/15
 'Last update: start migrating brush creation bits into this singular dialog
@@ -400,7 +400,7 @@ Public Sub showDialog(ByVal initialBrush As String, Optional ByRef callingContro
     
     'Sync all controls to the initial brush parameters
     syncControlsToFillObject
-    updatePreview
+    UpdatePreview
     
     Debug.Print "preview time opacity:" & m_Filler.getBrushProperty(pgbs_PrimaryOpacity) & ", " & sltFillOpacity.Value
     
@@ -410,7 +410,7 @@ Public Sub showDialog(ByVal initialBrush As String, Optional ByRef callingContro
     'Apply extra images and tooltips to certain controls
     
     'Apply visual themes
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Initialize an XML engine, which we will use to read/write recent brush data to file
     Set m_XMLEngine = New pdXML
@@ -422,7 +422,7 @@ Public Sub showDialog(ByVal initialBrush As String, Optional ByRef callingContro
     'loadRecentBrushList
         
     'Display the dialog
-    showPDDialog vbModal, Me, True
+    ShowPDDialog vbModal, Me, True
 
 End Sub
 
@@ -433,12 +433,12 @@ Private Sub btsStyle_Click(ByVal buttonIndex As Long)
         picContainer(i).Visible = CBool(i = buttonIndex)
     Next i
     
-    updatePreview
+    UpdatePreview
     
 End Sub
 
 Private Sub cboFillPattern_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'CANCEL BUTTON
@@ -462,7 +462,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -473,16 +473,16 @@ Private Sub cmdBar_ResetClick()
     
     'Synchronize all controls to the updated settings
     syncControlsToFillObject
-    updatePreview
+    UpdatePreview
     
 End Sub
 
 Private Sub csFillColor_ColorChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub csPattern_ColorChanged(Index As Integer)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Load()
@@ -533,7 +533,7 @@ Private Sub updateFillObject()
 
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     
     If Not m_SuspendRedraws Then
     
@@ -567,28 +567,28 @@ Private Sub updatePreview()
         GDI_Plus.GDIPlusFillDC_Brush m_PreviewDIB.getDIBDC, gdipBrush, 0, 0, Me.picBrushPreview.ScaleWidth, Me.picBrushPreview.ScaleHeight
         
         'Copy the preview image to the screen
-        m_PreviewDIB.renderToPictureBox Me.picBrushPreview
+        m_PreviewDIB.RenderToPictureBox Me.picBrushPreview
         
         'Release our GDI+ handle
         m_Filler.releaseBrushHandle gdipBrush
         
         'Notify our parent of the update
-        If Not (parentBrushControl Is Nothing) Then parentBrushControl.notifyOfLiveBrushChange m_Filler.getBrushAsString
+        If Not (parentBrushControl Is Nothing) Then parentBrushControl.NotifyOfLiveBrushChange m_Filler.getBrushAsString
         
     End If
     
 End Sub
 
 Private Sub gsPrimary_GradientChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltFillOpacity_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltPatternOpacity_Change(Index As Integer)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub syncControlsToFillObject()

@@ -26,7 +26,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon List Box control
-'Copyright 2015-2015 by Tanner Helland
+'Copyright 2015-2016 by Tanner Helland
 'Created: 22/December/15
 'Last updated: 28/December/15
 'Last update: continued work on initial build
@@ -135,12 +135,12 @@ Private Sub ucSupport_LostFocusAPI()
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then UpdateControlLayout
+    If updateLayoutToo Then updateControlLayout
     RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
+    updateControlLayout
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -162,7 +162,7 @@ Private Sub UserControl_Initialize()
     Set listSupport = New pdListSupport
     
     'Update the control size parameters at least once
-    UpdateControlLayout
+    updateControlLayout
     
 End Sub
 
@@ -196,7 +196,7 @@ End Sub
 
 'Whenever a control property changes that affects control size or layout (including internal changes, like caption adjustments),
 ' call this function to recalculate the control's internal layout
-Private Sub UpdateControlLayout()
+Private Sub updateControlLayout()
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long

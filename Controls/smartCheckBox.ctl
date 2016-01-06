@@ -29,7 +29,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Checkbox control
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 28/January/13
 'Last updated: 05/November/15
 'Last update: integrate with pdUCSupport, which cuts a ton of redundant code
@@ -191,12 +191,12 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then UpdateControlLayout
+    If updateLayoutToo Then updateControlLayout
     RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
+    updateControlLayout
 End Sub
 
 'See if the mouse is over the clickable portion of the control
@@ -220,7 +220,7 @@ Private Sub UserControl_Initialize()
     If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
     
     'Update the control size parameters at least once
-    UpdateControlLayout
+    updateControlLayout
                 
 End Sub
 
@@ -257,7 +257,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 End Sub
 
 'Whenever the size of the control changes, we must recalculate some internal rendering metrics.
-Private Sub UpdateControlLayout()
+Private Sub updateControlLayout()
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
@@ -441,11 +441,11 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
-    UpdateControlLayout
+    updateControlLayout
 End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.
 ' (IMPORTANT NOTE: translations are handled automatically.  Always pass the original English text!)
 Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTitle As String, Optional ByVal newTooltipIcon As TT_ICON_TYPE = TTI_NONE)
-    ucSupport.AssignTooltip UserControl.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    ucSupport.AssignTooltip UserControl.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
 End Sub

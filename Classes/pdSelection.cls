@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Selection class
-'Copyright 2012-2015 by Tanner Helland
+'Copyright 2012-2016 by Tanner Helland
 'Created: 25/September/12
 'Last updated: 18/October/14
 'Last update: add outline mode for all tools (except magic wand); also toooons of refactoring
@@ -2514,13 +2514,13 @@ Public Function readSelectionFromFile(ByVal srcFilename As String, Optional igno
             ' we can create the selection mask directly from the file data.  Otherwise, we have no choice but to perform a
             ' resize so that the old mask matches the new dimensions.
             If (origWidth = containingPDImage.Width) And (origHeight = containingPDImage.Height) Then
-                dibLoadedSuccessfully = selMask.createFromFile("", True, hFile)
+                dibLoadedSuccessfully = selMask.CreateFromFile("", True, hFile)
             Else
             
                 Dim tmpDIB As pdDIB
                 Set tmpDIB = New pdDIB
                 
-                dibLoadedSuccessfully = tmpDIB.createFromFile("", True, hFile)
+                dibLoadedSuccessfully = tmpDIB.CreateFromFile("", True, hFile)
                 
                 'Create a mask for this selection that is the size of the current image.  (Remember: the selection mask is always the full size
                 ' of the image.)  Then, copy the contents of the embedded selection mask into this selection mask, with resizing as necessary.
@@ -2613,7 +2613,7 @@ Public Function writeSelectionToFile(ByVal dstFilename As String) As Boolean
         cFile.WriteDataToFile hFile, VarPtr(writeTransformable), 2&
         
         'If this selection is *not* transformable, we must also embed the full selection mask.
-        If (sShape = sRaster) And maskHasBeenCreated Then selMask.writeToFile "", True, True, hFile
+        If (sShape = sRaster) And maskHasBeenCreated Then selMask.WriteToFile "", True, True, hFile
         
         'All done!
         cFile.CloseFileHandle hFile

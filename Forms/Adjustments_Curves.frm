@@ -213,7 +213,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Curves Adjustment Dialog
-'Copyright 2008-2015 by Tanner Helland
+'Copyright 2008-2016 by Tanner Helland
 'Created: sometime 2008
 'Last updated: 07/September/15
 'Last update: unify the histogram UI renderer with the Levels dialog, which greatly simplifies the dialog loading code
@@ -303,20 +303,20 @@ Private Sub btsChannel_Click(ByVal buttonIndex As Long)
     m_MouseY = -1
     
     'Redraw the current preview (and curve interaction box)
-    updatePreview
+    UpdatePreview
 
 End Sub
 
 Private Sub btsDiagonalLine_Click(ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub btsGrid_Click(ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub btsHistogram_Click(ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Apply four potential curves to an image; one each for RED, GREEN, BLUE, and LUMINANCE/RGB
@@ -609,7 +609,7 @@ Private Sub cmdBar_ReadCustomPresetData()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
@@ -654,7 +654,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -720,7 +720,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Redraw the on-screen preview of the transformed image
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     
     If cmdBar.previewsAllowed Then
     
@@ -1013,7 +1013,7 @@ Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, x As Single, 
             End If
             
             'Request a full redraw of the curve
-            updatePreview
+            UpdatePreview
         
         End If
         
@@ -1023,7 +1023,7 @@ Private Sub picDraw_MouseDown(Button As Integer, Shift As Integer, x As Single, 
         'Only erase a point if one was actually clicked; then request a redraw
         If selectedNode > -1 Then
             deleteCurveNode selectedNode
-            updatePreview
+            UpdatePreview
         End If
         
     End If
@@ -1100,7 +1100,7 @@ Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, x As Single, 
             If cNodes(m_curChannel, selectedNode).pY < previewBorder Then cNodes(m_curChannel, selectedNode).pY = previewBorder
             If cNodes(m_curChannel, selectedNode).pY > picDraw.ScaleHeight - previewBorder Then cNodes(m_curChannel, selectedNode).pY = picDraw.ScaleHeight - previewBorder
             
-            updatePreview
+            UpdatePreview
             
         Else
             fillResultsArray
@@ -1280,7 +1280,7 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

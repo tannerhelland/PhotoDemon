@@ -73,7 +73,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 '"Twin" Filter Interface
-'Copyright 2001-2015 by Tanner Helland
+'Copyright 2001-2016 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 24/August/13
 'Last update: added command bar
@@ -195,7 +195,7 @@ Public Sub GenerateTwins(ByVal tType As Long, Optional ByVal toPreview As Boolea
 End Sub
 
 Private Sub btsOrientation_Click(ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
@@ -203,7 +203,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -213,7 +213,7 @@ Private Sub Form_Activate()
     
     'Render an image preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -231,13 +231,13 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then GenerateTwins btsOrientation.ListIndex, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

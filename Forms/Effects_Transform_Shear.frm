@@ -114,7 +114,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Shear Distortion
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 03/April/13
 'Last updated: 27/September/14
 'Last update: add supersampling support
@@ -133,7 +133,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub cboEdges_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Shear an image in one or two directions
@@ -331,7 +331,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -346,7 +346,7 @@ Private Sub Form_Activate()
         
     'Create the preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -366,24 +366,24 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltAngleX_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltAngleY_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Redraw the on-screen preview of the transformed image
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then ShearImage sltAngleX, sltAngleY, CLng(cboEdges.ListIndex), sltQuality, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltQuality_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 

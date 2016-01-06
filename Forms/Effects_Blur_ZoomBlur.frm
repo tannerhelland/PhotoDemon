@@ -85,7 +85,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Zoom Blur Tool
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 27/August/13
 'Last updated: 25/September/14
 'Last update: improve traditional mode output, and allow negative zoom values
@@ -343,7 +343,7 @@ End Sub
 
 'Modern style allows for zooming in and out.  Traditional only allows out.
 Private Sub btsStyle_Click(ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
@@ -351,7 +351,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -361,7 +361,7 @@ Private Sub Form_Activate()
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -382,17 +382,17 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Render a new effect preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then ZoomBlurWrapper (btsStyle.ListIndex = 0), sltDistance, True, fxPreview
 End Sub
 
 Private Sub sltDistance_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

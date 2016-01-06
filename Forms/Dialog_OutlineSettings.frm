@@ -120,7 +120,7 @@ Begin VB.Form dialog_OutlineSettings
    End
    Begin PhotoDemon.sliderTextCombo sltOutlineWidth 
       CausesValidation=   0   'False
-      Height          =   720
+      Height          =   705
       Left            =   120
       TabIndex        =   5
       Top             =   6360
@@ -168,7 +168,7 @@ Begin VB.Form dialog_OutlineSettings
    End
    Begin PhotoDemon.sliderTextCombo sltMiterLimit 
       CausesValidation=   0   'False
-      Height          =   720
+      Height          =   705
       Left            =   6480
       TabIndex        =   8
       Top             =   6360
@@ -191,7 +191,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Pen Selection Dialog
-'Copyright 2015-2015 by Tanner Helland
+'Copyright 2015-2016 by Tanner Helland
 'Created: 30/June/15 (but assembled from many bits written earlier)
 'Last updated: 30/June/15
 'Last update: start migrating pen creation bits into this singular dialog
@@ -263,7 +263,7 @@ Public Sub showDialog(ByVal initialPen As String, Optional ByRef callingControl 
     
     'Sync all controls to the initial pen parameters
     syncControlsToOutlineObject
-    updatePreview
+    UpdatePreview
     
     'Make sure that the proper cursor is set
     Screen.MousePointer = 0
@@ -271,7 +271,7 @@ Public Sub showDialog(ByVal initialPen As String, Optional ByRef callingControl 
     'Apply extra images and tooltips to certain controls
     
     'Apply visual themes
-    makeFormPretty Me
+    MakeFormPretty Me
     
     'Initialize an XML engine, which we will use to read/write recent pen data to file
     Set m_XMLEngine = New pdXML
@@ -283,7 +283,7 @@ Public Sub showDialog(ByVal initialPen As String, Optional ByRef callingControl 
     'loadRecentPenList
         
     'Display the dialog
-    showPDDialog vbModal, Me, True
+    ShowPDDialog vbModal, Me, True
 
 End Sub
 
@@ -291,16 +291,16 @@ Private Sub btsStyle_Click(ByVal buttonIndex As Long)
     
     'TODO: show/hide a dash settings panel when dash mode is active
     
-    updatePreview
+    UpdatePreview
     
 End Sub
 
 Private Sub cboCorner_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cboLineCap_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'CANCEL BUTTON
@@ -324,7 +324,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -335,12 +335,12 @@ Private Sub cmdBar_ResetClick()
     
     'Synchronize all controls to the updated settings
     syncControlsToOutlineObject
-    updatePreview
+    UpdatePreview
     
 End Sub
 
 Private Sub csOutline_ColorChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Load()
@@ -402,7 +402,7 @@ Private Sub updateOutlineObject()
 
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     
     If Not m_SuspendRedraws Then
     
@@ -426,7 +426,7 @@ Private Sub updatePreview()
         Dim tmpRect As RECTF, hPadding As Single, vPadding As Single
         
         hPadding = m_PenPreview.getPenProperty(pgps_PenWidth) * 2
-        If hPadding > fixDPIFloat(12) Then hPadding = fixDPIFloat(12)
+        If hPadding > FixDPIFloat(12) Then hPadding = FixDPIFloat(12)
         vPadding = hPadding
         
         With tmpRect
@@ -444,13 +444,13 @@ Private Sub updatePreview()
         m_PreviewPath.strokePathToDIB_BarePen gdipPen, m_PreviewDIB, , True
         
         'Copy the preview image to the screen
-        m_PreviewDIB.renderToPictureBox Me.picPenPreview
+        m_PreviewDIB.RenderToPictureBox Me.picPenPreview
         
         'Release our GDI+ handle
         m_PenPreview.releasePenHandle gdipPen
         
         'Notify our parent of the update
-        If Not (parentPenControl Is Nothing) Then parentPenControl.notifyOfLivePenChange m_PenPreview.getPenAsString
+        If Not (parentPenControl Is Nothing) Then parentPenControl.NotifyOfLivePenChange m_PenPreview.getPenAsString
         
     End If
     
@@ -479,13 +479,13 @@ Private Sub syncControlsToOutlineObject()
 End Sub
 
 Private Sub sltMiterLimit_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltOutlineOpacity_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltOutlineWidth_Change()
-    updatePreview
+    UpdatePreview
 End Sub

@@ -1591,13 +1591,13 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 'Please see the included README.txt file for additional information regarding licensing and redistribution.
 
-'PhotoDemon is Copyright 1999-2015 by Tanner Helland, tannerhelland.com
+'PhotoDemon is Copyright 1999-2016 by Tanner Helland, tannerhelland.com
 
 'Please visit photodemon.org for updates and additional downloads
 
 '***************************************************************************
 'Primary PhotoDemon Window
-'Copyright 2002-2015 by Tanner Helland
+'Copyright 2002-2016 by Tanner Helland
 'Created: 15/September/02
 'Last updated: 19/November/15
 'Last update: rework the order of unloading classes, to ensure delayed clipboard rendering doesn't break

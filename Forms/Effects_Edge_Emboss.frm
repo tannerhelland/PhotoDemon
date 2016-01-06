@@ -56,7 +56,7 @@ Begin VB.Form FormEmbossEngrave
       ColorSelection  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltDistance 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   1920
@@ -69,7 +69,7 @@ Begin VB.Form FormEmbossEngrave
       Value           =   1
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   4
       Top             =   960
@@ -82,7 +82,7 @@ Begin VB.Form FormEmbossEngrave
       SigDigits       =   1
    End
    Begin PhotoDemon.sliderTextCombo sltDepth 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   5
       Top             =   2880
@@ -102,7 +102,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Emboss/Engrave Effect Dialog
-'Copyright 2003-2015 by Tanner Helland
+'Copyright 2003-2016 by Tanner Helland
 'Created: 3/6/03
 'Last updated: 12/June/14
 'Last update: complete overhaul: angle, thickness, and depth parameters added, entire algorithm rewritten, interface
@@ -126,7 +126,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -136,7 +136,7 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub colorPicker_ColorChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -145,7 +145,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Render a preview of the emboss/engrave effect
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -305,23 +305,23 @@ Public Sub ApplyEmbossEffect(ByVal eDistance As Double, ByVal eAngle As Double, 
 End Sub
 
 'Render a new preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then ApplyEmbossEffect sltDistance.Value, sltAngle.Value, sltDepth.Value, colorPicker.Color, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltAngle_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltDepth_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltDistance_Change()
-    updatePreview
+    UpdatePreview
 End Sub

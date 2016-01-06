@@ -1,7 +1,7 @@
 Attribute VB_Name = "Interface"
 '***************************************************************************
 'Miscellaneous Functions Related to the User Interface
-'Copyright 2001-2015 by Tanner Helland
+'Copyright 2001-2016 by Tanner Helland
 'Created: 6/12/01
 'Last updated: 20/June/14
 'Last update: add interface-syncing functions for non-destructive edit tools
@@ -158,9 +158,9 @@ Public Sub SyncInterfaceToCurrentImage()
         
         'Assign a generic caption to the main window
         If Not (g_WindowManager Is Nothing) Then
-            g_WindowManager.SetWindowCaptionW FormMain.hWnd, getPhotoDemonNameAndVersion()
+            g_WindowManager.SetWindowCaptionW FormMain.hWnd, GetPhotoDemonNameAndVersion()
         Else
-            FormMain.Caption = getPhotoDemonNameAndVersion()
+            FormMain.Caption = GetPhotoDemonNameAndVersion()
         End If
         
         'Erase the main viewport's status bar
@@ -1430,7 +1430,7 @@ Private Function GetWindowCaption(ByRef srcImage As pdImage) As String
     End If
     
     'Append the current PhotoDemon version number and exit
-    GetWindowCaption = captionBase & "  -  " & getPhotoDemonNameAndVersion()
+    GetWindowCaption = captionBase & "  -  " & GetPhotoDemonNameAndVersion()
 
 End Function
 

@@ -186,7 +186,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image "Pinch and Whirl" Distortion
-'Copyright 2000-2015 by Tanner Helland
+'Copyright 2000-2016 by Tanner Helland
 'Created: 05/January/13
 'Last updated: 26/September/14
 'Last update: add supersampling support
@@ -207,7 +207,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub cboEdges_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Apply a "pinch and whirl" effect to an image
@@ -462,7 +462,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -480,7 +480,7 @@ Private Sub Form_Activate()
         
     'Create the preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -500,29 +500,29 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltAmount_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltAngle_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltQuality_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltRadius_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Redraw the on-screen preview of the transformed image
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then PinchImage sltAmount, sltAngle, sltRadius, CLng(cboEdges.ListIndex), sltQuality, sltXCenter, sltYCenter, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'The user can right-click the preview area to select a new center point
@@ -532,15 +532,15 @@ Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
     sltXCenter.Value = xRatio
     sltYCenter.Value = yRatio
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
 
 End Sub
 
 Private Sub sltXCenter_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltYCenter_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 

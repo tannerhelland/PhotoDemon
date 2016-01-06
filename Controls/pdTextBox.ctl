@@ -33,7 +33,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Unicode Text Box control
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 03/November/14
 'Last updated: 21/November/14
 'Last update: incorporate many fixes from Zhu JY's testing
@@ -354,8 +354,8 @@ Attribute hWnd.VB_UserMemId = -515
 End Property
 
 'Container hWnd must be exposed for external tooltip handling
-Public Property Get containerHwnd() As Long
-    containerHwnd = UserControl.containerHwnd
+Public Property Get ContainerHwnd() As Long
+    ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
@@ -371,7 +371,7 @@ Public Property Let Enabled(ByVal newValue As Boolean)
     UserControl.Enabled = newValue
     
     'Redraw the window to match
-    If g_IsProgramRunning Then redrawBackBuffer
+    If g_IsProgramRunning Then RedrawBackBuffer
     
     PropertyChanged "Enabled"
     
@@ -690,7 +690,7 @@ Private Sub UserControl_Show()
     If Len(m_ToolString) <> 0 Then
     
         If (m_Tooltip Is Nothing) Then Set m_Tooltip = New pdToolTip
-        m_Tooltip.setTooltip m_EditBoxHwnd, Me.hWnd, m_ToolString
+        m_Tooltip.SetTooltip m_EditBoxHwnd, Me.hWnd, m_ToolString
         Extender.ToolTipText = ""
         
     End If
@@ -927,13 +927,13 @@ Private Sub UpdateControlSize()
     m_BackBuffer.createBlank UserControl.ScaleWidth, UserControl.ScaleHeight, 24
         
     'Redraw the back buffer
-    redrawBackBuffer
+    RedrawBackBuffer
 
 End Sub
 
 'After the back buffer has been correctly sized and positioned, this function handles the actual painting.  Similarly, for state changes
 ' that don't require a resize (e.g. gain/lose focus), this function should be used.
-Private Sub redrawBackBuffer()
+Private Sub RedrawBackBuffer()
     
     'Start by erasing the back buffer
     If g_IsProgramRunning Then
@@ -1038,7 +1038,7 @@ Private Sub InstallHookConditional()
         cSubclass.shk_SetHook WH_KEYBOARD, False, MSG_BEFORE, m_EditBoxHwnd, 2, Me, , True
         
         'Redraw the control to reflect focus state
-        redrawBackBuffer
+        RedrawBackBuffer
     
     End If
 
@@ -1056,7 +1056,7 @@ Private Sub RemoveHookConditional()
         cSubclass.shk_UnHook WH_KEYBOARD
         
         'Redraw the control to reflect focus state
-        redrawBackBuffer
+        RedrawBackBuffer
         
     End If
     

@@ -119,7 +119,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Surface Blur Tool (formerly "Smart Blur")
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 17/January/13
 'Last updated: 24/August/13
 'Last update: add command bar
@@ -317,11 +317,11 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
 End Sub
 
 Private Sub btsArea_Click(ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub btsQuality_Click(ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
@@ -329,7 +329,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -343,7 +343,7 @@ Private Sub Form_Activate()
         
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -369,25 +369,25 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub OptEdges_Click(Index As Integer)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltRadius_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltThreshold_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Render a new effect preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then SurfaceBlurFilter sltRadius, sltThreshold, CBool(btsArea.ListIndex = 1), btsQuality.ListIndex, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 

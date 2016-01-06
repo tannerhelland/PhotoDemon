@@ -1,7 +1,7 @@
 Attribute VB_Name = "Font_Management"
 '***************************************************************************
 'PhotoDemon Font Manager
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 31/May/13
 'Last updated: 26/April/15
 'Last update: start splitting relevant bits from pdFont into this separate manager module.  pdFont still exists for
@@ -712,9 +712,9 @@ End Function
 
 'Given a filled LOGFONTW struct (hopefully filled by the fillLogFontW_* functions above!), attempt to create an actual font object.
 ' Returns TRUE if successful; FALSE otherwise.
-Public Function CreateGDIFont(ByRef srcLogFont As LOGFONTW, ByRef dstFontHandle As Long) As Boolean
+Public Function createGDIFont(ByRef srcLogFont As LOGFONTW, ByRef dstFontHandle As Long) As Boolean
     dstFontHandle = CreateFontIndirect(srcLogFont)
-    CreateGDIFont = CBool(dstFontHandle <> 0)
+    createGDIFont = CBool(dstFontHandle <> 0)
 End Function
 
 'Delete a GDI font; returns TRUE if successful
@@ -764,7 +764,7 @@ Public Function QuickCreateFontAndDC(ByRef srcFontName As String, ByRef dstFont 
     
     Dim tmpLogFont As LOGFONTW
     FillLogFontW_Basic tmpLogFont, srcFontName, False, False, False, False
-    If CreateGDIFont(tmpLogFont, dstFont) Then
+    If createGDIFont(tmpLogFont, dstFont) Then
         
         'Create a temporary DC and select the font into it
         dstDC = Drawing.GetMemoryDC()

@@ -24,7 +24,7 @@ Begin VB.Form FormBlackLight
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.sliderTextCombo sltIntensity 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   2280
@@ -64,7 +64,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Blacklight Form
-'Copyright 2001-2015 by Tanner Helland
+'Copyright 2001-2016 by Tanner Helland
 'Created: some time 2001
 'Last updated: 01/October/13
 'Last update: use a floating-point slider for more precise results
@@ -169,7 +169,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -182,7 +182,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Draw a preview of the effect
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -192,14 +192,14 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Update the preview whenever the combination slider/text control has its value changed
 Private Sub sltIntensity_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then fxBlackLight sltIntensity, True, fxPreview
 End Sub

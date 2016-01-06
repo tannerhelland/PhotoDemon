@@ -63,7 +63,7 @@ Begin VB.Form FormMotionBlur
       _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   1200
@@ -85,7 +85,7 @@ Begin VB.Form FormMotionBlur
       Caption         =   "blur symmetrically"
    End
    Begin PhotoDemon.sliderTextCombo sltDistance 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   4
       Top             =   2160
@@ -105,7 +105,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Motion Blur Tool
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 26/August/13
 'Last updated: 02/October/15
 'Last update: rewrite against new all-in-one rotate/edge-extend function
@@ -196,11 +196,11 @@ Public Sub MotionBlurFilter(ByVal bAngle As Double, ByVal bDistance As Long, ByV
 End Sub
 
 Private Sub btsStyle_Click(ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub chkSymmetry_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
@@ -208,7 +208,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -218,7 +218,7 @@ Private Sub Form_Activate()
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -238,20 +238,20 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Render a new effect preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then MotionBlurFilter sltAngle, sltDistance, CBool(chkSymmetry), btsStyle.ListIndex, True, fxPreview
 End Sub
 
 Private Sub sltAngle_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltDistance_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 

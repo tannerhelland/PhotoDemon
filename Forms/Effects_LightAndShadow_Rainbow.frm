@@ -35,7 +35,7 @@ Begin VB.Form FormRainbow
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltOffset 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   840
@@ -57,7 +57,7 @@ Begin VB.Form FormRainbow
       DisableZoomPan  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltAngle 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   1920
@@ -68,7 +68,7 @@ Begin VB.Form FormRainbow
       Max             =   360
    End
    Begin PhotoDemon.sliderTextCombo sltStrength 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   4
       Top             =   3000
@@ -80,7 +80,7 @@ Begin VB.Form FormRainbow
       Value           =   100
    End
    Begin PhotoDemon.sliderTextCombo sltSaturation 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   5
       Top             =   4080
@@ -98,7 +98,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Rainbow Effect dialog
-'Copyright 2003-2015 by Tanner Helland
+'Copyright 2003-2016 by Tanner Helland
 'Created: sometime 2003
 'Last updated: 11/June/14
 'Last update: moved the function to its own dialog
@@ -256,7 +256,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -269,7 +269,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Display the previewed effect in the neighboring window
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -277,27 +277,27 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then ApplyRainbowEffect sltOffset.Value, sltAngle.Value, sltStrength.Value, sltSaturation.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltAngle_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltOffset_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltSaturation_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltStrength_Change()
-    updatePreview
+    UpdatePreview
 End Sub

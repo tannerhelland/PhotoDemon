@@ -35,7 +35,7 @@ Begin VB.Form FormVibrance
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltVibrance 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   2400
@@ -63,7 +63,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Vibrance Adjustment Tool
-'Copyright 2013-2015 by Audioglider
+'Copyright 2013-2016 by Audioglider
 'Created: 26/June/13
 'Last updated: 24/August/13
 'Last update: added command bar
@@ -185,7 +185,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -194,7 +194,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Draw a preview of the effect
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -204,15 +204,15 @@ End Sub
 
 'Update the preview whenever the combination slider/text control has its value changed
 Private Sub sltVibrance_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then Vibrance sltVibrance, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 

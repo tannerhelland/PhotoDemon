@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Pixel Blender class
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 01/May/14
 'Last updated: 14/October/15
 'Last update: implement alpha inheritance
@@ -322,7 +322,7 @@ Private Sub applyBlendMode_Generic(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     CopyMemory ByVal VarPtrArray(tImageData()), VarPtr(topSA), 4
     
     'Loop through the relevant portion of the top layer, compositing its pixels onto the bottom layer as we go.
-    Dim x As Long, y As Long, QuickX As Long, quickBottomX As Long, quickBottomY As Long
+    Dim x As Long, y As Long, quickX As Long, quickBottomX As Long, quickBottomY As Long
     
     'New and old RGB values
     Dim topR As Single, topG As Single, topB As Single, topA As Single
@@ -334,21 +334,21 @@ Private Sub applyBlendMode_Generic(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
     Dim bottomH As Single, bottomS As Single, bottomV As Single
     
     For x = initX To finalX
-        QuickX = x * 4
+        quickX = x * 4
         quickBottomX = (xOffset + x) * 4
     For y = initY To finalY
     
         quickBottomY = yOffset + y
         
         'Retrieve top layer RGBA values
-        topA = tImageData(QuickX + 3, y)
+        topA = tImageData(quickX + 3, y)
         
         'Ignore transparent pixels
         If topA <> 0 Then
         
-            topR = tImageData(QuickX + 2, y)
-            topG = tImageData(QuickX + 1, y)
-            topB = tImageData(QuickX, y)
+            topR = tImageData(quickX + 2, y)
+            topG = tImageData(quickX + 1, y)
+            topB = tImageData(quickX, y)
             
             'Retrieve bottom layer alpha
             bottomA = bImageData(quickBottomX + 3, quickBottomY)
@@ -579,9 +579,9 @@ Private Sub applyBlendMode_Generic(ByRef topDIB As pdDIB, ByRef bottomDIB As pdD
                 'Copy the final values into the top layer, and premultiply them.  Note that alpha remains unchanged; the final blend
                 ' is handled by a separate function.
                 topA = topA * 255
-                tImageData(QuickX + 2, y) = newR * topA
-                tImageData(QuickX + 1, y) = newG * topA
-                tImageData(QuickX, y) = newB * topA
+                tImageData(quickX + 2, y) = newR * topA
+                tImageData(quickX + 1, y) = newG * topA
+                tImageData(quickX, y) = newB * topA
                     
             End If
             

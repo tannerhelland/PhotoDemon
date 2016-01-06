@@ -200,7 +200,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Color Balance Adjustment Form
-'Copyright 2012-2015 by Tanner Helland & Audioglider
+'Copyright 2012-2016 by Tanner Helland & Audioglider
 'Created: 31/January/13
 'Last updated: 16/June/14
 'Last update: Rewrote the color balance formula to allow the adjustment of
@@ -420,11 +420,11 @@ Private Function Clamp0255(ByVal d As Double) As Double
 End Function
 
 Private Sub btsTone_Click(ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub chkLuminance_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
@@ -432,7 +432,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -449,7 +449,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Display the previewed effect in the neighboring window
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -468,23 +468,23 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltBlue_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltGreen_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltRed_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then ApplyColorBalance sltRed, sltGreen, sltBlue, btsTone.ListIndex, CBool(chkLuminance), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 

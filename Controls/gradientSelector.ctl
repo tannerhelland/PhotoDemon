@@ -28,7 +28,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Gradient Selector custom control
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 23/July/15
 'Last updated: 04/November/15
 'Last update: convert to master UC support class; add caption support; simplify rendering approach
@@ -165,12 +165,12 @@ Private Sub ucSupport_LostFocusAPI()
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then UpdateControlLayout
+    If updateLayoutToo Then updateControlLayout
     RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    UpdateControlLayout
+    updateControlLayout
 End Sub
 
 Private Sub RaiseGradientDialog()
@@ -211,7 +211,7 @@ Private Sub UserControl_Initialize()
     If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
     
     'Update the control size parameters at least once
-    UpdateControlLayout
+    updateControlLayout
     
 End Sub
 
@@ -248,7 +248,7 @@ End Sub
 
 'Whenever a control property changes that affects control size or layout (including internal changes, like caption adjustments),
 ' call this function to recalculate the control's internal layout
-Private Sub UpdateControlLayout()
+Private Sub updateControlLayout()
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long

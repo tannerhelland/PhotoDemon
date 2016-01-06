@@ -47,7 +47,7 @@ Begin VB.Form dialog_AlphaCutoff
       dontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltThreshold 
-      Height          =   720
+      Height          =   705
       Left            =   4920
       TabIndex        =   0
       Top             =   2160
@@ -120,7 +120,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Alpha Cut-Off Dialog
-'Copyright 2012-2015 by Tanner Helland
+'Copyright 2012-2016 by Tanner Helland
 'Created: 15/December/12
 'Last updated: 29/January/14
 'Last update: add an option for composite background color; with thanks to Kroc of camendesign.com for the suggestion
@@ -180,7 +180,7 @@ Public Sub showDialog()
     Set tmpDIB = New pdDIB
         
     'Render a preview of this threshold value
-    updatePreview
+    UpdatePreview
         
     Message "Waiting for user to specify alpha threshold... "
         
@@ -193,14 +193,14 @@ Public Sub showDialog()
 End Sub
 
 'Render a preview of the current alpha cut-off to the large picture box on the form
-Private Sub updatePreview()
+Private Sub UpdatePreview()
 
     tmpDIB.eraseDIB
     
     tmpDIB.createFromExistingDIB srcDIB
     tmpDIB.applyAlphaCutoff sltThreshold.Value, False, csComposite.Color
     
-    tmpDIB.renderToPictureBox picPreview
+    tmpDIB.RenderToPictureBox picPreview
 
 End Sub
 
@@ -235,7 +235,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -246,7 +246,7 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub csComposite_ColorChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -255,6 +255,6 @@ End Sub
 
 'Redraw the preview when the scroll bar is moved
 Private Sub sltThreshold_Change()
-    If sltThreshold.IsValid(False) Then updatePreview
+    If sltThreshold.IsValid(False) Then UpdatePreview
 End Sub
 

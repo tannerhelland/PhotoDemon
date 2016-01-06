@@ -106,7 +106,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Portrait glow (sometimes called "soft glow") image effect
-'Copyright 2015-2015 by Tanner Helland
+'Copyright 2015-2016 by Tanner Helland
 'Created: 20/Dec/15
 'Last updated: 20/Dec/15
 'Last update: initial build
@@ -228,7 +228,7 @@ Public Sub ApplyPortraitGlow(ByVal parameterList As String, Optional ByVal toPre
 End Sub
 
 Private Sub btsStyle_Click(ByVal buttonIndex As Long)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
@@ -236,7 +236,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -251,7 +251,7 @@ Private Sub Form_Activate()
         
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -271,23 +271,23 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltBoost_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltRadius_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltStrength_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then Me.ApplyPortraitGlow GetLocalParamString, True, fxPreview
 End Sub
 

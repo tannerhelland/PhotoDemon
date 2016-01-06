@@ -346,7 +346,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Tone Mapping (e.g. high-bit-depth image import) Dialog
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 04/December/14
 'Last updated: 07/December/14
 'Last update: add new filmic tone-mapping mode; see http://fr.slideshare.net/ozlael/hable-john-uncharted2-hdr-lighting for details
@@ -450,7 +450,7 @@ Public Sub showDialog()
     
     'Render a preview of the current settings, if any
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
         
     Message "Waiting for tone mapping instructions..."
     
@@ -463,7 +463,7 @@ Public Sub showDialog()
 End Sub
 
 'Render a preview of the current alpha cut-off to the large picture box on the form
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     
     'Ignore redraws while the dialog is not visible or disabled
     If (Not Me.Enabled) Or (Not Me.Visible) Or (Not cmdBar.previewsAllowed) Then Exit Sub
@@ -520,7 +520,7 @@ Private Sub btsMethod_Click(ByVal buttonIndex As Long)
         End If
     Next i
     
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -554,7 +554,7 @@ Private Sub cmdBar_ReadCustomPresetData()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -571,7 +571,7 @@ Private Sub cmdBar_ResetClick()
     chkRemember.Value = vbUnchecked
     cmdBar.markPreviewStatus True
     
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -646,30 +646,30 @@ Private Function getToneMapParamString() As String
 End Function
 
 Private Sub optNormalize_Click(Index As Integer)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltAdaptation_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltColorCorrection_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltExposure_Change(Index As Integer)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltGamma_Change(Index As Integer)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltIntensity_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltWhitepoint_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 

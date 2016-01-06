@@ -272,7 +272,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'JPEG Export Dialog
-'Copyright 2000-2015 by Tanner Helland
+'Copyright 2000-2016 by Tanner Helland
 'Created: 5/8/00
 'Last updated: 17/January/14
 'Last update: separate metadata panel.  (See issue #113 on GitHub.)  Users can use this to override program-wide
@@ -318,11 +318,11 @@ Private Sub btsCategory_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub chkColorMatching_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub chkSubsample_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'As of 16 January '14, PD can now choose a quality value for the user, using an RMSD comparison between the base image and
@@ -339,7 +339,7 @@ Private Sub cmbAutoQuality_Click()
         chkColorMatching.Enabled = False
     End If
     
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -375,7 +375,7 @@ Private Sub cboSubsample_Click()
     
     'Update the specific subsampling box to match
     If Not CBool(chkSubsample) Then chkSubsample.Value = vbChecked
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -423,7 +423,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -450,7 +450,7 @@ End Sub
 
 Private Sub Form_Activate()
     'Draw a preview of the effect
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -482,7 +482,7 @@ Private Sub updateComboBox()
                 
     End Select
     
-    If Not m_CheckBoxUpdatingDisabled Then updatePreview
+    If Not m_CheckBoxUpdatingDisabled Then UpdatePreview
     
 End Sub
 
@@ -634,7 +634,7 @@ Public Sub showDialog()
     MakeFormPretty Me
     
     'Update the preview
-    updatePreview
+    UpdatePreview
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True
@@ -642,7 +642,7 @@ Public Sub showDialog()
 End Sub
 
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'When clicked, allow the user to view metadata for the current image
@@ -662,7 +662,7 @@ Private Sub sltQuality_Change()
     If Not m_CheckBoxUpdatingDisabled Then updateComboBox
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
 
     If cmdBar.previewsAllowed And g_ImageFormats.FreeImageEnabled And sltQuality.IsValid Then
         

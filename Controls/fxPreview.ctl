@@ -80,7 +80,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Effect Preview custom control
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 10/January/13
 'Last updated: 05/September/15
 'Last update: overhaul drawing internals; the new version should be much faster, particularly in 1:1 zoom mode
@@ -248,7 +248,7 @@ Public Sub setOriginalImage(ByRef srcDIB As pdDIB)
     If (originalImage Is Nothing) Then Set originalImage = New pdDIB
     originalImage.createFromExistingDIB srcDIB
     
-    If (originalImage.getDIBColorDepth = 32) And (Not originalImage.getAlphaPremultiplication) Then originalImage.setAlphaPremultiplication True
+    If (originalImage.getDIBColorDepth = 32) And (Not originalImage.getAlphaPremultiplication) Then originalImage.SetAlphaPremultiplication True
     
 End Sub
 

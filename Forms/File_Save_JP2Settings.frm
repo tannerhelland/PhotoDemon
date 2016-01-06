@@ -113,7 +113,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'JPEG-2000 (JP2) Export Dialog
-'Copyright 2012-2015 by Tanner Helland
+'Copyright 2012-2016 by Tanner Helland
 'Created: 04/December/12
 'Last updated: 14/February/14
 'Last update: reworked layout to incorporate preview UC and more closely mimic the JPEG dialog
@@ -187,7 +187,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -195,12 +195,12 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltQuality_Change()
     updateComboBox
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Used to keep the "compression ratio" text box, scroll bar, and combo box in sync
@@ -259,7 +259,7 @@ Public Sub showDialog()
     imageBeingExported.getCompositedImage origImageCopy, True
     
     'Update the preview
-    updatePreview
+    UpdatePreview
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True
@@ -267,7 +267,7 @@ Public Sub showDialog()
 End Sub
 
 'Render a new JPEG-2000 preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
 
     If cmdBar.previewsAllowed And g_ImageFormats.FreeImageEnabled And sltQuality.IsValid Then
         

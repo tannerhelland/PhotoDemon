@@ -45,7 +45,7 @@ Begin VB.Form FormTransparency_FromColor
       ColorSelection  =   -1  'True
    End
    Begin PhotoDemon.sliderTextCombo sltErase 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   2640
@@ -57,7 +57,7 @@ Begin VB.Form FormTransparency_FromColor
       Value           =   15
    End
    Begin PhotoDemon.sliderTextCombo sltBlend 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   3600
@@ -87,7 +87,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Make color transparent ("green screen") tool dialog
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 13/August/13
 'Last updated: 21/August/13
 'Last update: gave this tool its own dialog, in keeping with the "do one thing and do it well" philosophy of PD dialogs
@@ -114,7 +114,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -124,7 +124,7 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub colorPicker_ColorChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
@@ -133,7 +133,7 @@ Private Sub Form_Activate()
     MakeFormPretty Me
     
     'Render a preview of the alpha effect
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -144,7 +144,7 @@ End Sub
 'The user can select a color from the preview window; this helps green screen calculation immensely
 Private Sub fxPreview_ColorSelected()
     colorPicker.Color = fxPreview.SelectedColor
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Convert a DIB from 24bpp to 32bpp, based on the supplied convertType value:
@@ -290,20 +290,20 @@ Public Sub colorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
 End Sub
 
 Private Sub sltBlend_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltErase_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Render a new preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then colorToAlpha colorPicker.Color, sltErase.Value, sltBlend.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 

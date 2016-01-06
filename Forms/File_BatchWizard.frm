@@ -1471,7 +1471,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Batch Conversion Form
-'Copyright 2007-2015 by Tanner Helland
+'Copyright 2007-2016 by Tanner Helland
 'Created: 3/Nov/07
 'Last updated: 03/September/15
 'Last update: convert all buttons to pdButton and overhaul related UI code
@@ -1556,7 +1556,7 @@ Private Sub chkEnablePreview_Click()
         picPreview.Print strToPrint
     'If the user is enabling previews, try to display the last item the user selected in the SOURCE list box
     Else
-        If lstSource.Selected(lstSource.ListIndex) Then updatePreview Dir1 & "\" & lstSource.List(lstSource.ListIndex)
+        If lstSource.Selected(lstSource.ListIndex) Then UpdatePreview Dir1 & "\" & lstSource.List(lstSource.ListIndex)
     End If
     
 End Sub
@@ -2117,7 +2117,7 @@ Private Sub cmdRemove_Click()
     updateBatchListCount
     
     'If the lower box was the source of the current image preview, erase the preview now
-    If m_LastPreviewSource = 1 Then updatePreview ""
+    If m_LastPreviewSource = 1 Then UpdatePreview ""
         
 End Sub
 
@@ -2128,7 +2128,7 @@ Private Sub cmdRemoveAll_Click()
     fixHorizontalListBoxScrolling lstFiles
     
     'If the lower box was the source of the current image preview, erase the preview now
-    If m_LastPreviewSource = 1 Then updatePreview ""
+    If m_LastPreviewSource = 1 Then UpdatePreview ""
     
     'Because all entries have been removed, disable actions that require at least one image to be present
     cmdRemove.Enabled = False
@@ -2589,7 +2589,7 @@ End Sub
 
 Private Sub lstFiles_Click()
     
-    updatePreview lstFiles.List(lstFiles.ListIndex)
+    UpdatePreview lstFiles.List(lstFiles.ListIndex)
     m_LastPreviewSource = 1
     
     'See if any files are selected.  If they are, enable the "remove selected images" button
@@ -2681,7 +2681,7 @@ Private Sub lstSource_Click()
     cmdAddFiles.Enabled = somethingSelected
     
     'Redraw the preview
-    updatePreview Dir1.Path & "\" & lstSource.List(lstSource.ListIndex)
+    UpdatePreview Dir1.Path & "\" & lstSource.List(lstSource.ListIndex)
     m_LastPreviewSource = 0
     
 End Sub
@@ -2701,7 +2701,7 @@ Private Sub fixHorizontalListBoxScrolling(ByRef srcListBox As ListBox, Optional 
 End Sub
 
 'Update the active image preview in the top-right
-Private Sub updatePreview(ByVal srcImagePath As String)
+Private Sub UpdatePreview(ByVal srcImagePath As String)
     
     'Only redraw the preview if it doesn't match the last image we previewed
     If CBool(chkEnablePreview) And (StrComp(m_CurImagePreview, srcImagePath, vbTextCompare) <> 0) Then

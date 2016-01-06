@@ -1,7 +1,7 @@
 Attribute VB_Name = "Saving"
 '***************************************************************************
 'File Saving Interface
-'Copyright 2001-2015 by Tanner Helland
+'Copyright 2001-2016 by Tanner Helland
 'Created: 4/15/01
 'Last updated: 05/October/14
 'Last update: fix a rare bug involving BMP format and binary alpha channels
@@ -2551,7 +2551,7 @@ Public Function findMeanRMSDForTwoDIBs(ByRef srcDib1 As pdDIB, ByRef srcDib2 As 
     Dim totalRMSD As Double
     totalRMSD = 0
 
-    Dim x As Long, y As Long, QuickX As Long
+    Dim x As Long, y As Long, quickX As Long
     
     Dim r1 As Long, g1 As Long, b1 As Long
     Dim r2 As Long, g2 As Long, b2 As Long
@@ -2572,17 +2572,17 @@ Public Function findMeanRMSDForTwoDIBs(ByRef srcDib1 As pdDIB, ByRef srcDib2 As 
     imgHeight = srcDib2.getDIBHeight
     
     For x = 0 To imgWidth - 1
-        QuickX = x * 3
+        quickX = x * 3
     For y = 0 To imgHeight - 1
     
         'Retrieve both sets of L*a*b* coordinates
-        r1 = srcArray1(QuickX, y)
-        g1 = srcArray1(QuickX + 1, y)
-        b1 = srcArray1(QuickX + 2, y)
+        r1 = srcArray1(quickX, y)
+        g1 = srcArray1(quickX + 1, y)
+        b1 = srcArray1(quickX + 2, y)
         
-        r2 = srcArray2(QuickX, y)
-        g2 = srcArray2(QuickX + 1, y)
-        b2 = srcArray2(QuickX + 2, y)
+        r2 = srcArray2(quickX, y)
+        g2 = srcArray2(quickX + 1, y)
+        b2 = srcArray2(quickX + 2, y)
         
         r1 = (r2 - r1) * (r2 - r1)
         g1 = (g2 - g1) * (g2 - g1)
@@ -2611,23 +2611,23 @@ Public Function findMeanRMSDForTwoArrays(ByRef srcArray1() As Single, ByRef srcA
     Dim totalRMSD As Double
     totalRMSD = 0
 
-    Dim x As Long, y As Long, QuickX As Long
+    Dim x As Long, y As Long, quickX As Long
     
     Dim LabL1 As Double, LabA1 As Double, LabB1 As Double
     Dim labL2 As Double, labA2 As Double, labB2 As Double
     
     For x = 0 To imgWidth - 1
-        QuickX = x * 3
+        quickX = x * 3
     For y = 0 To imgHeight - 1
     
         'Retrieve both sets of L*a*b* coordinates
-        LabL1 = srcArray1(QuickX, y)
-        LabA1 = srcArray1(QuickX + 1, y)
-        LabB1 = srcArray1(QuickX + 2, y)
+        LabL1 = srcArray1(quickX, y)
+        LabA1 = srcArray1(quickX + 1, y)
+        LabB1 = srcArray1(quickX + 2, y)
         
-        labL2 = srcArray2(QuickX, y)
-        labA2 = srcArray2(QuickX + 1, y)
-        labB2 = srcArray2(QuickX + 2, y)
+        labL2 = srcArray2(quickX, y)
+        labA2 = srcArray2(quickX + 1, y)
+        labB2 = srcArray2(quickX + 2, y)
         
         'Calculate an RMSD
         totalRMSD = totalRMSD + distanceThreeDimensions(LabL1, LabA1, LabB1, labL2, labA2, labB2)

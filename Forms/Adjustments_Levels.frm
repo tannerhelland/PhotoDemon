@@ -268,7 +268,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Levels
-'Copyright 2006-2015 by Tanner Helland
+'Copyright 2006-2016 by Tanner Helland
 'Created: 22/July/06
 'Last updated: 07/September/15
 'Last update: overhaul the underlying histogram UI code, using a new centralized histogram renderer
@@ -349,7 +349,7 @@ ignoreChannelRender:
     
     'Update the preview.  (The preview itself doesn't actually need to be redrawn, but that function is responsible for
     ' syncing the text box values with the arrow positions.)
-    updatePreview
+    UpdatePreview
 
 End Sub
 
@@ -374,7 +374,7 @@ Private Sub cmdAutoLevels_Click()
     updateTextBoxes
     
     'Redraw the screen
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -627,7 +627,7 @@ Private Sub cmdBar_RandomizeClick()
     updateTextBoxes
     
     'Redraw the screen
-    updatePreview
+    UpdatePreview
 
 End Sub
 
@@ -655,7 +655,7 @@ Private Sub cmdBar_ReadCustomPresetData()
         updateTextBoxes
         
         'Redraw the screen
-        updatePreview
+        UpdatePreview
     
     'Valid preset data was *not* found, possibly because the user just upgraded from a past version of the Levels tool.
     ' Reset everything to default values
@@ -666,7 +666,7 @@ Private Sub cmdBar_ReadCustomPresetData()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -694,7 +694,7 @@ Private Sub cmdBar_ResetClick()
     updateTextBoxes
     
     'Redraw the screen
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -800,7 +800,7 @@ Private Sub cMouseEventsIn_MouseMoveCustom(ByVal Button As PDMouseButtonConstant
         
         'Re-enable preview updates, and refresh the screen now
         cmdBar.markPreviewStatus True
-        updatePreview
+        UpdatePreview
         
     'Left mouse button is not down
     Else
@@ -874,7 +874,7 @@ Private Sub cMouseEventsOut_MouseMoveCustom(ByVal Button As PDMouseButtonConstan
         
         'Re-enable preview updates, and refresh the screen now
         cmdBar.markPreviewStatus True
-        updatePreview
+        UpdatePreview
         
     'Left mouse button is not down
     Else
@@ -966,7 +966,7 @@ Private Sub csHighlight_ColorChanged()
         cmdBar.markPreviewStatus True
         
         'Redraw the preview
-        updatePreview
+        UpdatePreview
         
     End If
 
@@ -1002,7 +1002,7 @@ Private Sub csShadow_ColorChanged()
         cmdBar.markPreviewStatus True
         
         'Redraw the preview
-        updatePreview
+        UpdatePreview
         
     End If
 
@@ -1052,7 +1052,7 @@ Private Sub Form_Activate()
     
     'Draw a preview image
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
 
 End Sub
 
@@ -1306,7 +1306,7 @@ Private Sub FixScrollBars()
     
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     
     If cmdBar.previewsAllowed And (Not m_Arrows(0) Is Nothing) Then
         
@@ -1388,7 +1388,7 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub tudLevels_Change(Index As Integer)
@@ -1401,7 +1401,7 @@ Private Sub tudLevels_Change(Index As Integer)
     m_LevelValues(m_curChannel, Index) = tudLevels(Index)
     
     'Redraw the on-screen preview
-    updatePreview
+    UpdatePreview
     
 End Sub
 

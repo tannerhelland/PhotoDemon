@@ -75,7 +75,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Colorize Form
-'Copyright 2006-2015 by Tanner Helland
+'Copyright 2006-2016 by Tanner Helland
 'Created: 12/January/07
 'Last updated: 22/June/14
 'Last update: replace old scroll bar with slider/text combo
@@ -95,12 +95,12 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'When the "maintain saturation" check box is clicked, redraw the image
 Private Sub chkSaturation_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Colorize an image using a hue defined between 0 and 359
@@ -199,15 +199,15 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then ColorizeImage sltHue.Value, CBool(chkSaturation.Value), True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltHue_Change()
-    updatePreview
+    UpdatePreview
 End Sub

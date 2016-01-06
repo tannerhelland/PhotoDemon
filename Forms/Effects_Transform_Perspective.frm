@@ -124,7 +124,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'Image Perspective Distortion
-'Copyright 2013-2015 by Tanner Helland
+'Copyright 2013-2016 by Tanner Helland
 'Created: 08/April/13
 'Last updated: 26/September/14
 'Last update: add supersampling support
@@ -177,11 +177,11 @@ Private m_isMouseDown As Boolean
 Private m_selPoint As Long
 
 Private Sub cboEdges_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cboEdges_Scroll()
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Apply horizontal and/or vertical perspective to an image by shrinking it in one or more directions
@@ -550,7 +550,7 @@ End Sub
 
 Private Sub cboMapping_Click()
     redrawPreviewBox
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_AddCustomPresetData()
@@ -610,7 +610,7 @@ End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
     redrawPreviewBox
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -629,7 +629,7 @@ Private Sub cmdBar_ResetClick()
     Next i
         
     redrawPreviewBox
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -641,7 +641,7 @@ Private Sub Form_Activate()
     'Create the preview
     cmdBar.markPreviewStatus True
     redrawPreviewBox
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -701,7 +701,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'Redraw the on-screen preview of the transformed image
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then PerspectiveImage getPerspectiveParamString, True, fxPreview
 End Sub
 
@@ -801,7 +801,7 @@ Private Sub picDraw_MouseMove(Button As Integer, Shift As Integer, x As Single, 
             m_nPoints(m_selPoint).pX = x
             m_nPoints(m_selPoint).pY = y
             redrawPreviewBox
-            updatePreview
+            UpdatePreview
         End If
     
     End If
@@ -871,10 +871,10 @@ End Function
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltQuality_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 

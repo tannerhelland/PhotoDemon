@@ -30,10 +30,10 @@ Begin VB.Form dialog_ExportJXR
       TabIndex        =   0
       Top             =   5835
       Width           =   12135
-      _extentx        =   21405
-      _extenty        =   1323
-      backcolor       =   14802140
-      dontautounloadparent=   -1
+      _ExtentX        =   21405
+      _ExtentY        =   1323
+      BackColor       =   14802140
+      dontAutoUnloadParent=   -1  'True
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -41,8 +41,8 @@ Begin VB.Form dialog_ExportJXR
       TabIndex        =   1
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.smartCheckBox chkProgressive 
       Height          =   360
@@ -50,9 +50,9 @@ Begin VB.Form dialog_ExportJXR
       TabIndex        =   2
       Top             =   3840
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   582
-      caption         =   "use progressive encoding"
+      _ExtentX        =   9922
+      _ExtentY        =   582
+      Caption         =   "use progressive encoding"
    End
    Begin PhotoDemon.pdComboBox cboSaveQuality 
       Height          =   375
@@ -60,8 +60,8 @@ Begin VB.Form dialog_ExportJXR
       TabIndex        =   3
       Top             =   2280
       Width           =   5655
-      _extentx        =   9975
-      _extenty        =   661
+      _ExtentX        =   9975
+      _ExtentY        =   661
    End
    Begin PhotoDemon.sliderTextCombo sltQuality 
       Height          =   405
@@ -69,39 +69,39 @@ Begin VB.Form dialog_ExportJXR
       TabIndex        =   4
       Top             =   2880
       Width           =   5775
-      _extentx        =   15055
-      _extenty        =   873
-      max             =   256
-      min             =   1
-      value           =   16
-      notchposition   =   1
+      _ExtentX        =   15055
+      _ExtentY        =   873
+      Min             =   1
+      Max             =   256
+      Value           =   16
+      NotchPosition   =   1
    End
    Begin PhotoDemon.pdLabel lblBefore 
       Height          =   435
       Left            =   6240
       Top             =   3360
       Width           =   2265
-      _extentx        =   3995
-      _extenty        =   767
-      caption         =   "high quality, large file"
-      fontitalic      =   -1  'True
-      fontsize        =   8
-      forecolor       =   4210752
-      layout          =   1
+      _ExtentX        =   3995
+      _ExtentY        =   767
+      Caption         =   "high quality, large file"
+      FontItalic      =   -1  'True
+      FontSize        =   8
+      ForeColor       =   4210752
+      Layout          =   1
    End
    Begin PhotoDemon.pdLabel lblAfter 
       Height          =   435
       Left            =   8520
       Top             =   3360
       Width           =   2190
-      _extentx        =   3863
-      _extenty        =   767
-      alignment       =   1
-      caption         =   "low quality, small file"
-      fontitalic      =   -1  'True
-      fontsize        =   8
-      forecolor       =   4210752
-      layout          =   1
+      _ExtentX        =   3863
+      _ExtentY        =   767
+      Alignment       =   1
+      Caption         =   "low quality, small file"
+      FontItalic      =   -1  'True
+      FontSize        =   8
+      ForeColor       =   4210752
+      Layout          =   1
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   360
@@ -109,11 +109,11 @@ Begin VB.Form dialog_ExportJXR
       Left            =   6000
       Top             =   1920
       Width           =   5850
-      _extentx        =   10319
-      _extenty        =   635
-      caption         =   "image compression ratio"
-      fontsize        =   12
-      forecolor       =   4210752
+      _ExtentX        =   10319
+      _ExtentY        =   635
+      Caption         =   "image compression ratio"
+      FontSize        =   12
+      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "dialog_ExportJXR"
@@ -123,7 +123,7 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 '***************************************************************************
 'JPEG XR Export Dialog
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 14/February/14
 'Last updated: 14/February/14
 'Last update: initial build
@@ -200,7 +200,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -212,12 +212,12 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltQuality_Change()
     updateComboBox
-    updatePreview
+    UpdatePreview
 End Sub
 
 'Used to keep the "compression ratio" text box, scroll bar, and combo box in sync
@@ -276,7 +276,7 @@ Public Sub showDialog()
     imageBeingExported.getCompositedImage origImageCopy, True
     
     'Update the preview
-    updatePreview
+    UpdatePreview
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True
@@ -284,7 +284,7 @@ Public Sub showDialog()
 End Sub
 
 'Render a new JXR preview
-Private Sub updatePreview()
+Private Sub UpdatePreview()
 
     If cmdBar.previewsAllowed And g_ImageFormats.FreeImageEnabled And sltQuality.IsValid Then
         

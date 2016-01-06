@@ -1,7 +1,7 @@
 Attribute VB_Name = "Filters_Stylize"
 '***************************************************************************
 'Stylize Filter Collection
-'Copyright 2002-2015 by Tanner Helland
+'Copyright 2002-2016 by Tanner Helland
 'Created: 8/April/02
 'Last updated: 02/April/15
 'Last update: finish optimizing new Color Halftone filter
@@ -88,7 +88,7 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
     Dim clampX As Long, clampY As Long
     Dim r As Long, g As Long, b As Long, a As Long
     Dim target As Long, newTarget As Long, fTarget As Double
-    Dim dX As Double, dY As Double
+    Dim dx As Double, dy As Double
     Dim tmpRadius As Double, f2 As Double, f3 As Double
     Dim overlapCheck As Long
     
@@ -203,9 +203,9 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
             target = srcImageData(clampX * qvDepth + curChannel, clampY)
                         
             'Calculate a dot size, relative to the underlying grid control point
-            dX = x - dstX
-            dY = y - dstY
-            tmpRadius = Sqr(dX * dX + dY * dY) + 1
+            dx = x - dstX
+            dy = y - dstY
+            tmpRadius = Sqr(dx * dx + dy * dy) + 1
             
             'With a circle radius calculated for this intensity value, apply some basic antialiasing if the pixel
             ' lies along the circle edge.
@@ -248,9 +248,9 @@ Public Function CreateColorHalftoneDIB(ByVal pxRadius As Double, ByVal cyanAngle
                     
                     'Calculate an intensity and radius for this overlapped point
                     newTarget = srcImageData(clampX * qvDepth + curChannel, clampY)
-                    dX = x - dstX
-                    dY = y - dstY
-                    tmpRadius = Sqr(dX * dX + dY * dY)
+                    dx = x - dstX
+                    dy = y - dstY
+                    tmpRadius = Sqr(dx * dx + dy * dy)
                     f3 = 1 - basicAA(tmpRadius, tmpRadius + 1, densityLookup(newTarget))
                     
                     'Store the *minimum* calculated value (e.g. the darkest color in this area of overlap)

@@ -36,7 +36,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 '***************************************************************************
 'PhotoDemon Hatch (Pattern) Selection Combo Box control
-'Copyright 2014-2015 by Tanner Helland
+'Copyright 2014-2016 by Tanner Helland
 'Created: 09/July/15
 'Last updated: 09/July/15
 'Last update: split off from regular pdComboBox control
@@ -640,8 +640,8 @@ Public Property Get hWnd() As Long
 End Property
 
 'Container hWnd must be exposed for external tooltip handling
-Public Property Get containerHwnd() As Long
-    containerHwnd = UserControl.containerHwnd
+Public Property Get ContainerHwnd() As Long
+    ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
@@ -973,7 +973,7 @@ Private Function createComboBox() As Boolean
         EnableWindow m_ComboBoxHwnd, IIf(Me.Enabled, 1, 0)
         
         'Mirror the tooltip (if any) to the API box
-        If Len(m_ToolString) > 0 Then toolTipManager.setTooltip m_ComboBoxHwnd, Me.containerHwnd, m_ToolString, m_ToolTitleString, m_ToolTipIcon
+        If Len(m_ToolString) > 0 Then toolTipManager.SetTooltip m_ComboBoxHwnd, Me.ContainerHwnd, m_ToolString, m_ToolTitleString, m_ToolTipIcon
     
     End If
         
@@ -1037,7 +1037,7 @@ Private Function destroyComboBox() As Boolean
         End If
         
         'If a tooltip is active, forcibly kill its window now.
-        If Len(m_ToolString) > 0 Then toolTipManager.killTooltip m_ComboBoxHwnd
+        If Len(m_ToolString) > 0 Then toolTipManager.KillTooltip m_ComboBoxHwnd
         
         'Destroy the actual combo box last
         DestroyWindow m_ComboBoxHwnd
@@ -1062,7 +1062,7 @@ Public Sub AssignTooltip(ByVal newTooltip As String, Optional ByVal newTooltipTi
     m_ToolTipIcon = newTooltipIcon
     
     'Assign the tooltip immediately, if we can; if we can't, the assignment will happen when the relevant hWnd is obtained.
-    If (m_ComboBoxHwnd) <> 0 Then toolTipManager.setTooltip m_ComboBoxHwnd, Me.containerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
+    If (m_ComboBoxHwnd) <> 0 Then toolTipManager.SetTooltip m_ComboBoxHwnd, Me.ContainerHwnd, newTooltip, newTooltipTitle, newTooltipIcon
     
 End Sub
 
