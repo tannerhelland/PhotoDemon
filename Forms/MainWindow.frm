@@ -27,8 +27,8 @@ Begin VB.Form FormMain
    Begin PhotoDemon.pdAccelerator pdHotkeys 
       Left            =   120
       Top             =   4440
-      _extentx        =   661
-      _extenty        =   661
+      _ExtentX        =   661
+      _ExtentY        =   661
    End
    Begin VB.Timer tmrMetadata 
       Enabled         =   0   'False
@@ -49,22 +49,22 @@ Begin VB.Form FormMain
       TabIndex        =   0
       Top             =   2880
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   6588
+      _ExtentX        =   10398
+      _ExtentY        =   6588
    End
    Begin PhotoDemon.pdDownload asyncDownloader 
       Left            =   120
       Top             =   3840
-      _extentx        =   873
-      _extenty        =   873
+      _ExtentX        =   873
+      _ExtentY        =   873
    End
    Begin PhotoDemon.ShellPipe shellPipeMain 
       Left            =   120
       Top             =   2520
-      _extentx        =   635
-      _extenty        =   635
-      errasout        =   0
-      pollinterval    =   5
+      _ExtentX        =   635
+      _ExtentY        =   635
+      ErrAsOut        =   0   'False
+      PollInterval    =   5
    End
    Begin VB.Menu MnuFileTop 
       Caption         =   "&File"
@@ -943,8 +943,12 @@ Begin VB.Form FormMain
             Index           =   2
          End
          Begin VB.Menu MnuAdjustmentsPhoto 
-            Caption         =   "Split toning..."
+            Caption         =   "Red-eye removal..."
             Index           =   3
+         End
+         Begin VB.Menu MnuAdjustmentsPhoto 
+            Caption         =   "Split toning..."
+            Index           =   4
          End
       End
    End
@@ -1662,7 +1666,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
             
             'Offload the rest of the check to a separate update function.  It will initiate subsequent downloads as necessary.
             Dim updateAvailable As Boolean
-            updateAvailable = Software_Updater.processProgramUpdateFile(updateXML)
+            updateAvailable = Update_Support.ProcessProgramUpdateFile(updateXML)
             
             'If the user initiated the download, display a modal notification now
             If (StrComp(entryKey, "PROGRAM_UPDATE_CHECK_USER") = 0) Then
@@ -1683,7 +1687,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
                 End If
                 
                 'If the update managed to download while the reader was staring at the message box, display the restart notification immediately
-                If g_ShowUpdateNotification Then Software_Updater.displayUpdateNotification
+                If g_ShowUpdateNotification Then Update_Support.DisplayUpdateNotification
                 
             End If
             
@@ -1699,7 +1703,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
         langUpdateXML = StrConv(downloadedData, vbUnicode)
         
         'Offload the rest of the check to a separate function.  It will initiate subsequent downloads as necessary.
-        Software_Updater.processLanguageUpdateFile langUpdateXML
+        Update_Support.ProcessLanguageUpdateFile langUpdateXML
     
     'If LANGUAGE_UPDATE_CHECK (above) finds out-of-date language files, it will trigger their download.  When such a download arrives, we can patch
     ' it through immediately.
@@ -1707,7 +1711,7 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
         
         'Make sure the downloader thought the download was successful...
         If downloadSuccessful Then
-            If Software_Updater.patchLanguageFile(entryKey, downloadedData, savedToThisFile) Then
+            If Update_Support.PatchLanguageFile(entryKey, downloadedData, savedToThisFile) Then
                 
                 'Note that one or more language files has been patched.  If this value is true and all updates have completed, we'll hot-patch
                 ' the language engine on the next PD Processor call.
@@ -1729,10 +1733,10 @@ Private Sub asyncDownloader_FinishedOneItem(ByVal downloadSuccessful As Boolean,
             
             'Notify the software updater that an update package was downloaded successfully.  It will make a note of this, so it can
             ' complete the actual patching when PD closes.
-            Software_Updater.notifyUpdatePackageAvailable savedToThisFile
+            Update_Support.NotifyUpdatePackageAvailable savedToThisFile
             
             'Display a notification to the user
-            Software_Updater.displayUpdateNotification
+            Update_Support.DisplayUpdateNotification
                         
         Else
             Debug.Print "WARNING!  A program update was found, but the download was interrupted.  PD is postponing further patches until a later session."
@@ -1871,9 +1875,13 @@ Private Sub MnuAdjustmentsPhoto_Click(Index As Integer)
         'Photo filters
         Case 2
             Process "Photo filter", True
-            
-        'Split-toning
+        
+        'Red-eye removal
         Case 3
+            Process "Red-eye removal", True
+        
+        'Split-toning
+        Case 4
             Process "Split toning", True
     
     End Select
@@ -2821,15 +2829,15 @@ Private Sub Form_Load()
     '*************************************************************************************************************************************
         
     'See if this PD session was initiated by a PD-generated restart.  This happens after an update patch is successfully applied, for example.
-    g_ProgramStartedViaRestart = Software_Updater.wasProgramStartedViaRestart
+    g_ProgramStartedViaRestart = Update_Support.WasProgramStartedViaRestart
         
     'Before updating, clear out any temp files leftover from previous updates.  (Replacing files at run-time is messy business, and Windows
     ' is unpredictable about allowing replaced files to be deleted.)
-    Software_Updater.cleanPreviousUpdateFiles
+    Update_Support.CleanPreviousUpdateFiles
         
     'Start by seeing if we're allowed to check for software updates (the user can disable this check, and we want to honor their selection)
     Dim allowedToUpdate As Boolean
-    allowedToUpdate = Software_Updater.isItTimeForAnUpdate()
+    allowedToUpdate = Update_Support.IsItTimeForAnUpdate()
     
     'If PD was restarted by an internal restart, disallow an update check now, as we would have just applied one (which caused the restart)
     If g_ProgramStartedViaRestart Then allowedToUpdate = False
@@ -3178,16 +3186,16 @@ Private Sub Form_Unload(Cancel As Integer)
     Next tmpForm
     
     'If an update package was downloaded, this is a good time to apply it
-    If Software_Updater.isUpdatePackageAvailable Then
+    If Update_Support.IsUpdatePackageAvailable Then
         
-        If Software_Updater.patchProgramFiles() Then
+        If Update_Support.PatchProgramFiles() Then
             
             #If DEBUGMODE = 1 Then
-                pdDebug.LogAction "Software_Updater.patchProgramFiles returned TRUE.  Program update will proceed after PD finishes unloading."
+                pdDebug.LogAction "Update_Support.patchProgramFiles returned TRUE.  Program update will proceed after PD finishes unloading."
             #End If
             
             'If the user wants a restart, create a restart batch file now
-            'If g_UserWantsRestart Then Software_Updater.createRestartBatchFile
+            'If g_UserWantsRestart Then Update_Support.createRestartBatchFile
             
         Else
             Debug.Print "WARNING!  One or more errors were encountered while applying an update.  PD has attempted to roll everything back to its original state."
@@ -3218,7 +3226,7 @@ Private Sub Form_Unload(Cancel As Integer)
     modMain.finalShutdown
     
     'If a restart is allowed, the last thing we do before exiting is shell a new PhotoDemon instance
-    'If g_UserWantsRestart Then Software_Updater.initiateRestart
+    'If g_UserWantsRestart Then Update_Support.initiateRestart
     
 End Sub
 
