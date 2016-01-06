@@ -1260,7 +1260,14 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
             Else
                 FormPhotoFilters.ApplyPhotoFilter cParams.GetLong(1), cParams.GetDouble(2), cParams.GetBool(3)
             End If
-            
+        
+        Case "Red-eye removal"
+            If showDialog Then
+                ShowPDDialog vbModal, FormRedEye
+            Else
+                FormRedEye.ApplyRedEyeCorrection cXMLParams.getParamString
+            End If
+        
         Case "Split toning"
             If showDialog Then
                 ShowPDDialog vbModal, FormSplitTone
@@ -2001,7 +2008,7 @@ Public Sub Process(ByVal processID As String, Optional showDialog As Boolean = F
     If m_FocusHWnd <> 0 Then g_WindowManager.SetFocusAPI m_FocusHWnd
     
     'If an update is available, and we haven't displayed a notification yet, do so now
-    If g_ShowUpdateNotification Then Software_Updater.displayUpdateNotification
+    If g_ShowUpdateNotification Then Update_Support.DisplayUpdateNotification
         
     'Mark the processor as ready
     m_Processing = False
