@@ -20,7 +20,7 @@ Attribute VB_Exposed = False
 '
 'See FormRedEye for details on interacting with this class.
 '
-'Like any array-based tool, this class will be slow inside the IDE.  Please use only when compiled if at all possible.
+'Like any array-based tool, this class will be slow inside the IDE.  Please compile before using.
 '
 'All source code in this file is licensed under a modified BSD license.  This means you may use the code in your own
 ' projects IF you provide attribution.  For more information, please visit http://photodemon.org/about/license/
@@ -50,23 +50,17 @@ Private m_RegionIDs() As Integer, m_RegionSA As SAFEARRAY2D
 Private m_Width As Long, m_Height As Long
 
 'As each region is identified, we're going to add its data to a region stack.  This stack is completely different from
-' the pixel coordinate stack used for region detection.  It stores the boundaries of the current region, which greatly
-' simplifies the subsequent step of processing each region in turn.
-Private Type PD_DYNAMIC_REGION
-    RegionID As Long
-    RegionLeft As Long
-    RegionTop As Long
-    RegionWidth As Long
-    RegionHeight As Long
-End Type
-
+' the pixel coordinate stack used for region detection.  It stores additional information about each region,
+' (like boundary positions) which greatly simplifies the subsequent steps of processing each region in turn.
 Private m_RegionStack() As PD_DYNAMIC_REGION
 Private m_RegionStackPosition As Long
 Private m_RegionStackHeight As Long
 Private Const INITIAL_REGION_STACK_HEIGHT As Long = 256
 
-'Obviously the function needs a starting x/y position
-Private m_InitPoint As POINTAPI
+'The current region ID.  The first region is marked as "1", and each subsequent region is assigned in ascending order.
+Private m_CurrentRegion As Long
+
+Private Declare Sub CopyMemoryStrict Lib "kernel32" Alias "RtlMoveMemory" (ByVal lpDst As Long, ByVal lpSrc As Long, ByVal byteLength As Long)
 
 'Initiate red-eye detection.  This step simply aliases the target arrays supplied by the user, one each for region
 ' tracking and region detection, while also prepping some internal structs.
@@ -89,210 +83,165 @@ Public Function InitializeRedEyeEngine(ByVal srcWidth As Long, ByVal srcHeight A
     ReDim m_Stack(0 To m_StackHeight) As POINTAPI
     m_StackPosition = 0
     
+    m_CurrentRegion = 0
+    
     InitializeRedEyeEngine = True
 
 End Function
 
-'TEMPORARY CODE ONLY: we're going to borrow PD's heavily optimized floodfill function as the basis for our region
-' detection code.  I'm leaving this for a single commit as a reminder of where this code originated.
-'
-''Perform a contiguous (default) flood fill.  Note that dstDIB is guaranteed to be properly initialized.
-'Private Function floodFillContiguous(ByRef srcDIB As pdDIB, ByRef dstDIB As pdDIB) As Boolean
-'
-'    'Reset the stack.  Note that we don't actually resize the stack; this is an optimization technique to improve performance
-'    ' if this class is used multiple times in a row.
-'    m_StackPosition = -1
-'
-'    'Predetermine upper bounds for x/y checks
-'    Dim xBound As Long, yBound As Long
-'    xBound = srcDIB.getDIBWidth - 1
-'    yBound = srcDIB.getDIBHeight - 1
-'
-'    'Reset the "has been filled" array
-'    ReDim m_AlreadyChecked(0 To xBound, 0 To yBound) As Byte
-'
-'    'Populate the initial stack point
-'    PushOntoStack m_InitPoint.x, m_InitPoint.y
-'
-'    'Make sure 24 and 32bpp sources are both handled correctly
-'    Dim x As Long, y As Long, quickX As Long, dstQuickX As Long, xOffset As Long, hasAlpha As Boolean
-'    xOffset = srcDIB.getDIBColorDepth \ 8
-'    If srcDIB.getDIBColorDepth = 32 Then hasAlpha = True Else hasAlpha = False
-'
-'    'Generate direct references to the source and destination DIB data
-'    Dim srcImageData() As Byte, dstImageData() As Byte
-'    Dim srcSA As SAFEARRAY2D, dstSA As SAFEARRAY2D
-'
-'    prepSafeArray srcSA, srcDIB
-'    CopyMemory ByVal VarPtrArray(srcImageData()), VarPtr(srcSA), 4
-'
-'    prepSafeArray dstSA, dstDIB
-'    CopyMemory ByVal VarPtrArray(dstImageData()), VarPtr(dstSA), 4
-'
-'    'A number of local variables are used to help optimize the flood function
-'    Dim tmpPoint As POINTAPI
-'    Dim isWithinTolerance As Boolean
-'    Dim modifiedTolerance As Double
-'
-'    'Populate our reference comparison values
-'    Dim r As Long, g As Long, b As Long, a As Long, l As Long
-'    Dim refR As Long, refG As Long, refB As Long, refA As Long, refL As Long
-'
-'    Dim referenceValue As Double, thisValue As Double
-'
-'    quickX = m_InitPoint.x * xOffset
-'    y = m_InitPoint.y
-'
-'    refR = srcImageData(quickX + 2, y)
-'    refG = srcImageData(quickX + 1, y)
-'    refB = srcImageData(quickX, y)
-'    If hasAlpha Then refA = srcImageData(quickX + 3, y) Else refA = 0
-'
-'    refL = 213 * refR + 715 * refG + 72 * refB
-'
-'    'Calculate a reference tolerance value, which serves as the base for the flood fill
-'    Select Case m_CompareMode
-'
-'        Case PDFC_COMPOSITE
-'
-'            'Composite results do not require a base value, as they are independently processed against the reference
-'            ' RGB values as we go.  However, to accelerate the required check, we premultiply the requested tolerance
-'            ' by 3, to avoid the need for a divide function in the inner loop
-'            If hasAlpha Then
-'                modifiedTolerance = m_Tolerance * 4
-'            Else
-'                modifiedTolerance = m_Tolerance * 3
-'            End If
-'
-'        Case PDFC_COLOR
-'            modifiedTolerance = m_Tolerance * 3
-'
-'        Case PDFC_LUMINANCE
-'
-'            'To save time on the inner loop, we don't divide luminance by 1000; to make this work, we must change the
-'            ' tolerance range to [0, 1000] instead of [0, 255.0]
-'            modifiedTolerance = m_Tolerance * 1000
-'
-'        Case PDFC_RED
-'            modifiedTolerance = m_Tolerance
-'
-'        Case PDFC_GREEN
-'            modifiedTolerance = m_Tolerance
-'
-'        Case PDFC_BLUE
-'            modifiedTolerance = m_Tolerance
-'
-'        Case PDFC_ALPHA
-'            modifiedTolerance = m_Tolerance
-'
-'    End Select
-'
-'    'Start processing the stack!
-'    Do
-'
-'        'Reset the tolerance check
-'        isWithinTolerance = False
-'
-'        'Retrieve the next point from the stack
-'        PopFromStack x, y
-'
-'        'Retrieve RGB/A values for this point
-'        quickX = x * xOffset
-'        r = srcImageData(quickX + 2, y)
-'        g = srcImageData(quickX + 1, y)
-'        b = srcImageData(quickX, y)
-'        If hasAlpha Then a = srcImageData(quickX + 3, y)
-'
-'        'Compare this pixel against the reference
-'        Select Case m_CompareMode
-'
-'            Case PDFC_COMPOSITE
-'                thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
-'                If hasAlpha Then thisValue = thisValue + Abs(a - refA)
-'                If thisValue <= modifiedTolerance Then isWithinTolerance = True
-'
-'            Case PDFC_COLOR
-'                thisValue = Abs(r - refR) + Abs(g - refG) + Abs(b - refB)
-'                If thisValue <= modifiedTolerance Then isWithinTolerance = True
-'
-'            Case PDFC_LUMINANCE
-'                l = 213 * r + 715 * g + 72 * b
-'                If Abs(l - refL) <= modifiedTolerance Then isWithinTolerance = True
-'
-'            Case PDFC_RED
-'                If Abs(r - refR) <= modifiedTolerance Then isWithinTolerance = True
-'
-'            Case PDFC_GREEN
-'                If Abs(g - refG) <= modifiedTolerance Then isWithinTolerance = True
-'
-'            Case PDFC_BLUE
-'                If Abs(b - refB) <= modifiedTolerance Then isWithinTolerance = True
-'
-'            Case PDFC_ALPHA
-'                If Abs(a - refA) <= modifiedTolerance Then isWithinTolerance = True
-'
-'        End Select
-'
-'        'If this value is within the requested tolerance, mark it on the destination map
-'        If isWithinTolerance Then
-'
-'            dstQuickX = x * 3
-'            dstImageData(dstQuickX, y) = 255
-'            dstImageData(dstQuickX + 1, y) = 255
-'            dstImageData(dstQuickX + 2, y) = 255
-'
-'            'If antialiasing is active, mark this pixel as filled; this simplifies the AA process
-'            If m_AntialiasingMode Then m_AlreadyChecked(x, y) = 2
-'
-'            'Push our four neighboring pixels onto the stack, as necessary
-'            If x > 0 Then If m_AlreadyChecked(x - 1, y) = 0 Then PushOntoStack x - 1, y
-'            If x < xBound Then If m_AlreadyChecked(x + 1, y) = 0 Then PushOntoStack x + 1, y
-'
-'            If y > 0 Then If m_AlreadyChecked(x, y - 1) = 0 Then PushOntoStack x, y - 1
-'            If y < yBound Then If m_AlreadyChecked(x, y + 1) = 0 Then PushOntoStack x, y + 1
-'
-'        End If
-'
-'    'As long as there are more stack points to process, rinse and repeat
-'    Loop While m_StackPosition >= 0
-'
-'    'Release our array references
-'    CopyMemory ByVal VarPtrArray(srcImageData), 0&, 4
-'    CopyMemory ByVal VarPtrArray(dstImageData), 0&, 4
-'
-'    floodFillContiguous = True
-'
-'End Function
+'When the red-eye process is finished (due to any condition - success, error, etc), the caller MUST call this
+' function to release our aliases to their local red-eye tracking arrays.
+Public Function ReleaseRedEyeEngine(ByRef srcHighlights() As Byte, ByRef srcRegions() As Integer) As Boolean
+    
+    'The only termination task that really matters is releasing our array aliases; if we don't do this, memory will
+    ' either leak, or VB will straight-up crash.
+    VB_Hacks.Unalias2DArray_Byte srcHighlights, m_HighlightData
+    VB_Hacks.Unalias2DArray_Integer srcRegions, m_RegionIDs
+    
+    ReleaseRedEyeEngine = True
+    
+End Function
 
-''Stack helper functions
-'Private Sub PushOntoStack(ByVal x As Long, ByVal y As Long)
+'Generate a new region for a given pixel.  This pixel must not already be part of a region; if it is, this function
+' will fail.
 '
-'    m_StackPosition = m_StackPosition + 1
-'
-'    'Resize the stack as necessary
-'    If m_StackPosition > m_StackHeight Then
-'        m_StackHeight = m_StackHeight * 2 + 1
-'        ReDim Preserve m_Stack(0 To m_StackHeight) As POINTAPI
-'    End If
-'
-'    'Mark this point as "due to be checked", so it does not get re-checked
-'    m_AlreadyChecked(x, y) = 1
-'
-'    'Add the point to the stack
-'    With m_Stack(m_StackPosition)
-'        .x = x
-'        .y = y
-'    End With
-'
-'End Sub
-'
-'Private Sub PopFromStack(ByRef x As Long, ByRef y As Long)
-'
-'    With m_Stack(m_StackPosition)
-'        x = .x
-'        y = .y
-'    End With
-'
-'    m_StackPosition = m_StackPosition - 1
-'
-'End Sub
+'If successful, this function will return the ID of the assigned region.
+Public Function FindRegion(ByVal inputX As Long, ByVal inputY As Long, ByVal regionMarkerID As Long) As Integer
+
+    'Increment the region counter.
+    ' (TODO: if this exceeds the upper bound of an integer, exit immediately; this is an insanely unlikely scenario,
+    ' but I want to do some tests on actual images to see if 32k+ highlight regions can be artificially induced -
+    ' if they can, I'll convert the region-detection code to use Longs instead of Integers.)
+    m_CurrentRegion = m_CurrentRegion + 1
+    
+    'Reset the stack.  Note that we don't actually resize the stack; this is an optimization technique to improve performance
+    ' if this class is used multiple times in a row.
+    m_StackPosition = -1
+    
+    'Predetermine upper bounds for x/y checks
+    Dim xBound As Long, yBound As Long
+    xBound = m_Width - 1
+    yBound = m_Height - 1
+    
+    'For each region, we also track the region's boundaries.  (This is easiest to do here, rather than waste time
+    ' retroactively calculating it in subsequent steps.)
+    Dim regLeft As Long, regTop As Long, regRight As Long, regBottom As Long
+    regLeft = xBound
+    regTop = yBound
+    regRight = 0
+    regBottom = 0
+    
+    'We'll also count the number of pixels inside this region; this simplifies things like rejecting regions that
+    ' are too large or too small.
+    Dim regPixelCount As Long
+    regPixelCount = 0
+    
+    'Populate the initial stack point
+    Dim x As Long, y As Long
+    PushOntoStack inputX, inputY
+    
+    'Start processing the stack
+    Do
+
+        'Retrieve the next point from the stack
+        PopFromStack x, y
+        
+        'If this is a highlight pixel, add it to the current region ID
+        If m_HighlightData(x, y) = regionMarkerID Then
+            
+            m_RegionIDs(x, y) = m_CurrentRegion
+            
+            'Update boundaries
+            If x < regLeft Then regLeft = x
+            If x > regRight Then regRight = x
+            If y < regTop Then regTop = y
+            If y > regBottom Then regBottom = y
+            
+            'Update pixel count
+            regPixelCount = regPixelCount + 1
+            
+            'If any of the four neighboring pixels have not yet been...
+            ' 1) assigned to a region, and...
+            ' 2) ...already added to the stack...
+            ' ...add them to the stack now.
+            If x > 0 Then If m_RegionIDs(x - 1, y) = 0 Then PushOntoStack x - 1, y
+            If x < xBound Then If m_RegionIDs(x + 1, y) = 0 Then PushOntoStack x + 1, y
+            If y > 0 Then If m_RegionIDs(x, y - 1) = 0 Then PushOntoStack x, y - 1
+            If y < yBound Then If m_RegionIDs(x, y + 1) = 0 Then PushOntoStack x, y + 1
+            
+        End If
+        
+    'As long as there are more stack points to process, rinse and repeat
+    Loop While m_StackPosition >= 0
+    
+    'With the stack cleared, we now know everything there is to know about this region.  Add the region's ID and
+    ' boundaries to our stack collection.
+    If m_RegionStackPosition > m_RegionStackHeight Then
+        m_RegionStackHeight = m_RegionStackHeight * 2 + 1
+        ReDim Preserve m_RegionStack(0 To m_RegionStackHeight) As PD_DYNAMIC_REGION
+    End If
+    
+    With m_RegionStack(m_RegionStackPosition)
+        .RegionID = m_CurrentRegion
+        .RegionValid = True
+        .RegionLeft = regLeft
+        .RegionTop = regTop
+        .RegionWidth = regRight - regLeft
+        .RegionHeight = regBottom - regTop
+        .RegionPixelCount = regPixelCount
+    End With
+    
+    'Increment the region count and exit
+    m_RegionStackPosition = m_RegionStackPosition + 1
+    
+    FindRegion = True
+    
+End Function
+
+'Return a copy of the current region stack.  If no regions were detected, this function will fail.
+Friend Function GetCopyOfRegionStack(ByRef dstArray() As PD_DYNAMIC_REGION, ByRef numOfRegions As Long) As Boolean
+    
+    numOfRegions = m_RegionStackPosition
+    
+    If numOfRegions > 0 Then
+        ReDim dstArray(0 To numOfRegions - 1) As PD_DYNAMIC_REGION
+        CopyMemoryStrict VarPtr(dstArray(0)), VarPtr(m_RegionStack(0)), LenB(m_RegionStack(0)) * numOfRegions
+        GetCopyOfRegionStack = True
+    Else
+        GetCopyOfRegionStack = False
+    End If
+
+End Function
+
+'Stack helper functions
+Private Sub PushOntoStack(ByVal x As Long, ByVal y As Long)
+
+    m_StackPosition = m_StackPosition + 1
+
+    'Resize the stack as necessary
+    If m_StackPosition > m_StackHeight Then
+        m_StackHeight = m_StackHeight * 2 + 1
+        ReDim Preserve m_Stack(0 To m_StackHeight) As POINTAPI
+    End If
+    
+    'Mark this point as "due to be checked", so it does not get re-checked
+    m_RegionIDs(x, y) = -1
+
+    'Add the point to the stack
+    With m_Stack(m_StackPosition)
+        .x = x
+        .y = y
+    End With
+
+End Sub
+
+Private Sub PopFromStack(ByRef x As Long, ByRef y As Long)
+
+    With m_Stack(m_StackPosition)
+        x = .x
+        y = .y
+    End With
+
+    m_StackPosition = m_StackPosition - 1
+
+End Sub
