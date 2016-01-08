@@ -470,3 +470,13 @@ End Enum
 #If False Then
     Private Const PDLH_FIXED = 0, PDLH_SEPARATORS = 1, PDLH_CUSTOM = 2
 #End If
+
+Public Type PD_DYNAMIC_REGION
+    RegionID As Integer
+    RegionValid As Boolean
+    RegionLeft As Long
+    RegionTop As Long
+    RegionWidth As Long
+    RegionHeight As Long
+    RegionPixelCount As Long
+End Type

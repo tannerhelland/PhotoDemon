@@ -171,23 +171,26 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
             
             If redEyeData(x, y) = PIXEL_IS_MOSTLY_RED Then
                 
-                'DEBUG ONLY!  Paint red pixels red, so we can visualize the output of our heuristics
-                ImageData(quickX, y) = 0
-                ImageData(quickX + 1, y) = 0
-                ImageData(quickX + 2, y) = 255
+'                'DEBUG ONLY!  Paint red pixels red, so we can visualize the output of our heuristics
+'                ImageData(quickX, y) = 0
+'                ImageData(quickX + 1, y) = 0
+'                ImageData(quickX + 2, y) = 255
                 
             'If this is a non-red pixel, see if we can mark it as non-skin.  This allows us to completely bypass the
             ' pixel on subsequent heuristic passes.
             Else
-                If gRatio > 0.4 Then redEyeData(x, y) = PIXEL_IS_NON_SKIN
-                If bRatio > 0.45 Then redEyeData(x, y) = PIXEL_IS_NON_SKIN
-                
-                'DEBUG ONLY!  Paint non-skin pixels blue, so we can visualize the output of our heuristics
-                If redEyeData(x, y) = PIXEL_IS_NON_SKIN Then
-                    ImageData(quickX, y) = 255
-                    ImageData(quickX + 1, y) = 0
-                    ImageData(quickX + 2, y) = 0
+                If gRatio > 0.4 Then
+                    redEyeData(x, y) = PIXEL_IS_NON_SKIN
+                ElseIf bRatio > 0.45 Then
+                    redEyeData(x, y) = PIXEL_IS_NON_SKIN
                 End If
+                
+'                'DEBUG ONLY!  Paint non-skin pixels blue, so we can visualize the output of our heuristics
+'                If redEyeData(x, y) = PIXEL_IS_NON_SKIN Then
+'                    ImageData(quickX, y) = 255
+'                    ImageData(quickX + 1, y) = 0
+'                    ImageData(quickX + 2, y) = 0
+'                End If
             End If
             
         End If
@@ -272,13 +275,13 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
             
         End If
         
-        'DEBUG ONLY!  Paint red pixels red, so we can visualize the output of our heuristics
-        If redEyeData(x, y) = PIXEL_IS_INTERIOR_HIGHLIGHT Then
-            quickX = x * qvDepth
-            ImageData(quickX, y) = 0
-            ImageData(quickX + 1, y) = 255
-            ImageData(quickX + 2, y) = 0
-        End If
+'        'DEBUG ONLY!  Paint red pixels red, so we can visualize the output of our heuristics
+'        If redEyeData(x, y) = PIXEL_IS_INTERIOR_HIGHLIGHT Then
+'            quickX = x * qvDepth
+'            ImageData(quickX, y) = 0
+'            ImageData(quickX + 1, y) = 255
+'            ImageData(quickX + 2, y) = 0
+'        End If
         
     Next x
         If Not toPreview Then
@@ -295,6 +298,75 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     
     'A dedicated "red-eye" class helps with this step.  It's basically an optimized region detector, with some
     ' optimizations applied against this dedicated use-case.
+    Dim cRedEye As pdRedEye
+    Set cRedEye = New pdRedEye
+    
+    'The red-eye class requires two input arrays: one is a byte array that contains our various red-eye pixel IDs
+    ' (e.g. red, highlight, non-skin, etc).  The other input array is a "Region ID" array, currently of Integer type.
+    ' This array will mark each pixel with a region ID > 0, IFF the pixel belongs to a potential red-eye region.
+    Dim regionIDs() As Integer
+    ReDim regionIDs(initX To finalX, initY To finalY) As Integer
+    
+    Dim iWidth As Long, iHeight As Long
+    iWidth = finalX - initX
+    iHeight = finalY - initY
+    
+    cRedEye.InitializeRedEyeEngine iWidth, iHeight, redEyeData, regionIDs
+    
+    'We're now going to use a floodfill-like algorithm to generate highlight pixel regions.  This happens in two steps.
+    
+    'In this function, we are going to scan the redEyeData() array and look for pixels that meet two criteria:
+    ' 1) Highlight pixels...
+    ' 2) ...that have not yet been added to a valid region.
+    
+    'When such pixels are found, we'll pass them to the red-eye class.  It will generate region IDs for the all pixels
+    ' touching the passed pixel, and also add a region descriptor (position and bounds) to an ever-growing region stack.
+    For y = initY To finalY
+    For x = initX To finalX
+        
+        'Is this pixel a highlight pixel?
+        If redEyeData(x, y) = PIXEL_IS_INTERIOR_HIGHLIGHT Then
+        
+            'Has it NOT been assigned to a region yet?
+            If regionIDs(x, y) = 0 Then
+            
+                'Let the red-eye handler generate a region for this pixel
+                cRedEye.FindRegion x, y, PIXEL_IS_INTERIOR_HIGHLIGHT
+            
+            End If
+        
+        End If
+        
+    Next x
+        If Not toPreview Then
+            If (y And progBarCheck) = 0 Then
+                If userPressedESC() Then Exit For
+                SetProgBarVal y
+            End If
+        End If
+    Next y
+    
+    'All potential highlight regions have now been detected.  Retrieve a copy of the region stack from the red-eye class.
+    Dim regionStack() As PD_DYNAMIC_REGION, numOfRegions As Long
+    If cRedEye.GetCopyOfRegionStack(regionStack, numOfRegions) Then
+    
+        'At least one candidate red-eye highlight region exists in the target image.
+        
+        'Loop through all highlight regions and attempt to discard regions where pixels surrounding the region bare
+        ' strong color similarity to the region itself.  This step is crucial for removing false-positive regions
+        ' caused by red-eye-like patterns in clothing and surrounding scenery.
+        For i = 0 To numOfRegions - 1
+            
+            'DEBUG ONLY!  Highlight the region boundaries, just to make sure the region analysis tool works
+            With regionStack(i)
+                GDI_Plus.GDIPlusDrawRectOutlineToDC workingDIB.getDIBDC, .RegionLeft, .RegionTop, .RegionLeft + .RegionWidth, .RegionTop + .RegionHeight, RGB(255, 0, 255), 255, 1
+            End With
+        
+        Next i
+    
+    End If
+    
+    cRedEye.ReleaseRedEyeEngine redEyeData, regionIDs
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
     CopyMemory ByVal VarPtrArray(ImageData), 0&, 4
