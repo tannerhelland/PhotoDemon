@@ -148,7 +148,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
         r = ImageData(quickX + 2, y)
         
         'Strip red bytes into a separate tracking array
-        redMap(x, y) = r    '(r + g + b) \ 3
+        redMap(x, y) = r
         
         'Calculate relative RGB sums
         pxSum = r + g + b
@@ -351,18 +351,139 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     If cRedEye.GetCopyOfRegionStack(regionStack, numOfRegions) Then
     
         'At least one candidate red-eye highlight region exists in the target image.
+        Dim regID As Long
+        Dim rSum As Long, gSum As Long, bSum As Long, rgbSum As Long
+        Dim avePctR As Double, avePctG As Double, aveR As Long
+        Dim numSimilar As Long, numNotInRegion As Long, simThreshold As Long, similarityThresholdReached As Boolean
+        Const REGION_EXPANSION_RADIUS As Long = 12
         
         'Loop through all highlight regions and attempt to discard regions where pixels surrounding the region bare
         ' strong color similarity to the region itself.  This step is crucial for removing false-positive regions
         ' caused by red-eye-like patterns in clothing and surrounding scenery.
         For i = 0 To numOfRegions - 1
             
-            'DEBUG ONLY!  Highlight the region boundaries, just to make sure the region analysis tool works
+            'First, we're going to calculate a few different average color metrics for this region.  These provide
+            ' a nice, quick-to-calculate benchmark for assessing region color validity.
+            rSum = 0&
+            gSum = 0&
+            bSum = 0&
+            
+            avePctR = 0#
+            avePctG = 0#
+            aveR = 0&
+            
+            numSimilar = 0
+            numNotInRegion = 0
+            similarityThresholdReached = False
+            
             With regionStack(i)
-                GDI_Plus.GDIPlusDrawRectOutlineToDC workingDIB.getDIBDC, .RegionLeft, .RegionTop, .RegionLeft + .RegionWidth, .RegionTop + .RegionHeight, RGB(255, 0, 255), 255, 1
+                
+                regID = .RegionID
+                
+                hlInitX = .RegionLeft
+                hlInitY = .RegionTop
+                hlFinalX = .RegionLeft + .RegionWidth
+                hlFinalY = .RegionTop + .RegionHeight
+                
+                For y = hlInitY To hlFinalY
+                For x = hlInitX To hlFinalX
+                    
+                    'For this initial step, we're only checking pixels that are actually PART of the region
+                    If regionIDs(x, y) = regID Then
+                        
+                        'Generating a running sum the original RGB values of each pixel in the region
+                        quickX = x * qvDepth
+                        bSum = bSum + ImageData(quickX, y)
+                        gSum = gSum + ImageData(quickX + 1, y)
+                        rSum = rSum + ImageData(quickX + 2, y)
+                        
+                    Else
+                        numNotInRegion = numNotInRegion + 1
+                    End If
+                    
+                Next x
+                Next y
+                
+                'Calculate averages for all pixels lying within this region
+                avePctR = (CDbl(rSum) / CDbl(rSum + gSum + bSum))
+                avePctG = (CDbl(gSum) / CDbl(rSum + gSum + bSum))
+                aveR = CDbl(rSum) / .RegionPixelCount
+                
+                'Expand the region to include a few extra pixels from the surrounding area
+                hlInitX = hlInitX - REGION_EXPANSION_RADIUS
+                hlFinalX = hlFinalX + REGION_EXPANSION_RADIUS
+                hlInitY = hlInitY - REGION_EXPANSION_RADIUS
+                hlFinalY = hlFinalY + REGION_EXPANSION_RADIUS
+                
+                If hlInitX < 0 Then hlInitX = 0
+                If hlFinalX > finalX Then hlFinalX = finalX
+                If hlInitY < 0 Then hlInitY = 0
+                If hlFinalY > finalY Then hlFinalY = finalY
+                
+                'Update the "neighboring-but-not-inside-region" pixel count
+                numNotInRegion = numNotInRegion + (hlFinalX - hlInitX) * (.RegionTop - hlInitY)
+                numNotInRegion = numNotInRegion + (hlFinalX - hlInitX) * (hlFinalY - (.RegionTop + .RegionHeight))
+                numNotInRegion = numNotInRegion + (.RegionHeight * (.RegionLeft - hlInitX))
+                numNotInRegion = numNotInRegion + (.RegionHeight * (hlFinalX - (.RegionLeft + .RegionWidth)))
+                
+                'Calculate a dynamic "matching-but-not-in-region" value based on the size of the scanned region
+                simThreshold = CDbl(numNotInRegion) * 0.1
+                
+                For y = hlInitY To hlFinalY
+                For x = hlInitX To hlFinalX
+                    
+                    'If this pixel is NOT part of the region, perform a similarity check between it and our average
+                    ' region RGB values.
+                    If regionIDs(x, y) <> regID Then
+                        
+                        'If this pixel is highly similar to its neighboring region, add it to a running tally
+                        quickX = x * qvDepth
+                        b = ImageData(quickX, y)
+                        g = ImageData(quickX + 1, y)
+                        r = ImageData(quickX + 2, y)
+                        rgbSum = b + g + r
+                        If rgbSum = 0 Then rgbSum = 1
+                        
+                        If Abs(CDbl(r / rgbSum) - avePctR) < 0.03 Then
+                            If Abs(CDbl(g / rgbSum) - avePctG) < 0.03 Then
+                                If Abs(r - aveR) < 20 Then
+                                    numSimilar = numSimilar + 1
+                                    If numSimilar > simThreshold Then similarityThresholdReached = True
+                                End If
+                            End If
+                        End If
+                        
+                    End If
+                    
+                    'If we've already found too many similarity pixels, exit the loop immediately
+                    If similarityThresholdReached Then Exit For
+                    
+                Next x
+                    If similarityThresholdReached Then Exit For
+                Next y
+                
+                'If the similarity threshold was exceeded, mark this region as invalid
+                If similarityThresholdReached Then .RegionValid = False
+                    
+                'DEBUG ONLY!  Highlight the region boundaries, just to make sure the region analysis tool works
+                If .RegionValid Then
+                    GDI_Plus.GDIPlusDrawRectOutlineToDC workingDIB.getDIBDC, .RegionLeft, .RegionTop, .RegionLeft + .RegionWidth, .RegionTop + .RegionHeight, RGB(255, 0, 255), 255, 1
+                Else
+                    'GDI_Plus.GDIPlusDrawRectOutlineToDC workingDIB.getDIBDC, .RegionLeft, .RegionTop, .RegionLeft + .RegionWidth, .RegionTop + .RegionHeight, RGB(0, 255, 255), 255, 1
+                End If
+                
             End With
         
         Next i
+        
+        'DEBUG ONLY!  Calculate a false-positive removal success rate
+        Dim validRegions As Long
+        validRegions = 0
+        For i = 0 To numOfRegions - 1
+            If regionStack(i).RegionValid Then validRegions = validRegions + 1
+        Next i
+        
+        Debug.Print validRegions / numOfRegions
     
     End If
     
