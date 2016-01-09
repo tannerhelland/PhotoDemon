@@ -1,4 +1,4 @@
-# PhotoDemon 6.8 pre-alpha
+# PhotoDemon 7.0 pre-alpha
 
 ![PhotoDemon Screenshot] (http://photodemon.org/images/PD_66_b1.jpg)
 
@@ -19,30 +19,28 @@ http://photodemon.org/downloads/nightly/PhotoDemon_nightly.zip
 ## What makes PhotoDemon unique?
 
 ### It is lightweight and completely portable
-PhotoDemon is designed to be run as a standalone program. No installer is provided or required.  It does not touch the Windows registry, and aside from a temporary file folder – which you can specify in the Tools > Options dialog – it leaves no trace of itself on your hard drive.  Many people choose to run PhotoDemon from a USB drive.
+No installer is provided or required.  PhotoDemon does not touch the Windows registry, and aside from a temporary file folder – which you can specify in the Tools > Options dialog – it leaves no trace of itself on your hard drive.  Many people choose to run PhotoDemon from a USB drive.
 
 ### It integrates macro recording and batch processing
-Complex editing actions can be automated by recording them as macros (similar to Office software).  Once recorded, a macro can be applied to other images.  Macros integrate with a built-in batch processing tool, so you can choose a saved macro and a folder or list of images, and PhotoDemon will apply the macro to every image automagically.
+Complex editing actions can be automated by recording them as macros (similar to Office software).  Macros integrate with a built-in batch processing tool, so you can easily apply any arbitrary list of actions to entire folders or sets of images.
 
 ### It emphasizes usability
-Most free, open-source image editors are usability nightmares. PhotoDemon tries not to be. The interface was built by designers (not engineers), and small touches like save/load presets on all tools, automatic last-used settings preservation, unlimited Undo/Redo, "Fade last effect", keyboard accelerators, effect previews, mouse wheel and X-button support, and descriptive menu icons make PhotoDemon easy to use for both novices and professionals.
+Many open-source photo editors are usability nightmares.  PhotoDemon tries not to be.  The interface was built by designers (not engineers), and small touches like save/load presets on all tools, unlimited Undo/Redo, "Fade last action", keyboard accelerators, effect previews, mouse wheel and X-button support, and descriptive menu icons make PhotoDemon quick and easy to use.
 
 ### It provides a comprehensive selection of pro-grade features and tools
 * Extensive file format support, including all major RAW formats
 * Powerful selection tools, with support for antialiasing, feathering, and on-canvas sizing/moving
 * Color-managed workflow, including full support for embedded ICC profiles
-* Non-destructive editing for select features, including resizing and key adjustments (exposure, clarity, vibrance, etc)
+* Non-destructive editing for select features, including resizing and common adjustments
 * 2D transformations: advanced rescale operators (Sinc, Catmull-Rom, etc), content-aware scaling (seam carving), crop, rotate, shear, zoom, tiling
 * Pro adjustment tools: levels, curves, HDR, white balance, split-toning, sepia, full-featured histogram, green screen, Wratten filters, and many more
 * Filters and effects: perspective correction, edge detection, noise removal, content-aware blur, unsharp masking, lens diffraction, vignetting, film grain, and many more
-* 100+ tools are provided in the current build.
+* 150+ tools are provided in the current build.
 
 ### What doesn't PhotoDemon do?
 
-* The current release (6.6) does not support text layers.  Text layers are planned for the next release.
-* The current release (6.6) includes partial Unicode support.  Some features may not work with Unicode filenames, but work on this is ongoing.
-* The current release (6.6) does not provide any on-canvas painting tools.  On-canvas paint tools are planned for the next release.
-* The current release (6.6) may not integrate well with high-contrast Windows themes, or non-standard Windows themes.  Improvements to theming are planned for the next release.
+* The current development builds (7.0a) do not provide on-canvas painting tools.  On-canvas paint tools are planned for the next release.
+* The current development builds (7.0a) may not integrate well with high-contrast Windows themes, or non-standard Windows themes.  Improvements to theming are planned for the next release.
 * PhotoDemon isn't designed for OSes other than Microsoft Windows.  A compatibility layer like Wine (http://www.winehq.org/) may allow PhotoDemon to work on OSX, Linux, BSD, Solaris, or Maemo systems, but program stability and performance may suffer.
 
 ### How can I get involved? 
@@ -70,7 +68,7 @@ Questions regarding licensing should be directed to: http://photodemon.org/about
 
 Full text of BSD license follows.
 
-Copyright (c) 2015, Tanner Helland and Contributors.
+Copyright (c) 2016, Tanner Helland and Contributors.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
