@@ -23,18 +23,31 @@ Begin VB.Form FormRedEye
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.sliderTextCombo sltIntensity 
+   Begin PhotoDemon.smartCheckBox chkShape 
+      Height          =   375
+      Left            =   6000
+      TabIndex        =   4
+      Top             =   3600
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   661
+      Caption         =   "reject oddly shaped regions"
+   End
+   Begin PhotoDemon.sliderTextCombo sltColor 
       Height          =   705
       Left            =   6000
       TabIndex        =   2
-      Top             =   2280
+      Top             =   1680
       Width           =   5880
       _ExtentX        =   10372
       _ExtentY        =   1270
-      Caption         =   "intensity"
+      Caption         =   "color sensitivity"
       Min             =   1
-      SigDigits       =   2
-      Value           =   2
+      Max             =   200
+      SigDigits       =   1
+      Value           =   100
+      NotchPosition   =   2
+      NotchValueCustom=   100
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -55,6 +68,22 @@ Begin VB.Form FormRedEye
       _ExtentX        =   21220
       _ExtentY        =   1323
       BackColor       =   14802140
+   End
+   Begin PhotoDemon.sliderTextCombo sltObject 
+      Height          =   705
+      Left            =   6000
+      TabIndex        =   3
+      Top             =   2640
+      Width           =   5880
+      _ExtentX        =   10372
+      _ExtentY        =   1270
+      Caption         =   "object sensitivity"
+      Min             =   1
+      Max             =   200
+      SigDigits       =   1
+      Value           =   100
+      NotchPosition   =   2
+      NotchValueCustom=   100
    End
 End
 Attribute VB_Name = "FormRedEye"
@@ -85,6 +114,17 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     Dim cParams As pdParamXML
     Set cParams = New pdParamXML
     cParams.setParamString parameterList
+    
+    Dim colorSensitivity As Double, objectSensitivity As Double
+    colorSensitivity = cParams.GetDouble("color-sensitivity", 100#)
+    objectSensitivity = cParams.GetDouble("object-sensitivity", 100#)
+    
+    'Passed sensitivity values are on the range [0, 200].  Normalize these to [-0.1, 0.1] and [-0.5, 0.5], respectively.
+    colorSensitivity = (colorSensitivity - 100#) / 1000#
+    objectSensitivity = (objectSensitivity - 100#) / 200#
+    
+    Dim rejectRectangles As Boolean
+    rejectRectangles = cParams.GetBool("confirm-aspectratio", True)
     
     If Not toPreview Then Message "Searching image for red-eye artifacts..."
     
@@ -135,6 +175,20 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     Const PIXEL_IS_MOSTLY_RED As Long = 2
     Const PIXEL_IS_INTERIOR_HIGHLIGHT As Long = 3
     
+    'Determine cut-off values for valid red-eye pixels.  These start as magic numbers, but they can be modified according
+    ' to the "color-sensitivity" parameter passed to the function.
+    ' (The magic numbers come from this paper: http://research.microsoft.com/en-us/um/people/leizhang/paper/icip04-lei.pdf)
+    Const RED_CUTOFF As Long = 50
+    Const RED_RATIO_CUTOFF As Single = 0.4
+    Const GREEN_RATIO_CUTOFF As Single = 0.31
+    Const BLUE_RATIO_CUTOFF As Single = 0.36
+    
+    Dim rCutoff As Long, rRatioCutoff As Single, gRatioCutoff As Single, bRatioCutoff As Single
+    rCutoff = RED_CUTOFF '+ (RED_CUTOFF * colorSensitivity)
+    rRatioCutoff = RED_RATIO_CUTOFF + (RED_RATIO_CUTOFF * colorSensitivity)
+    gRatioCutoff = GREEN_RATIO_CUTOFF - (GREEN_RATIO_CUTOFF * colorSensitivity)
+    bRatioCutoff = BLUE_RATIO_CUTOFF - (BLUE_RATIO_CUTOFF * colorSensitivity)
+    
     'Start with a basic red-eye analysis heuristic.  In this step, we simply want to mark "red" pixels.  This initial
     ' data set will then be sorted into "red regions", and because we pre-check redness, we can perform our region
     ' analysis much more quickly.
@@ -158,11 +212,11 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
             gRatio = g / pxSum
             bRatio = b / pxSum
         
-            'Use Microsoft's suggested threshold for "redness"; http://research.microsoft.com/en-us/um/people/leizhang/paper/icip04-lei.pdf
-            If r > 50 Then
-                If rRatio > 0.4 Then
-                    If gRatio < 0.31 Then
-                        If bRatio < 0.36 Then
+            'Compare against our predetermined cutoff values.
+            If r > rCutoff Then
+                If rRatio > rRatioCutoff Then
+                    If gRatio < gRatioCutoff Then
+                        If bRatio < bRatioCutoff Then
                             redEyeData(x, y) = PIXEL_IS_MOSTLY_RED
                         End If
                     End If
@@ -327,10 +381,10 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
         'Is this pixel a highlight pixel?
         If redEyeData(x, y) = PIXEL_IS_INTERIOR_HIGHLIGHT Then
         
-            'Has it NOT been assigned to a region yet?
+            'Does it not yet belong to a region?
             If regionIDs(x, y) = 0 Then
             
-                'Let the red-eye handler generate a region for this pixel
+                'Let the red-eye handler generate a new contiguous region, starting with this pixel
                 cRedEye.FindRegion x, y, PIXEL_IS_INTERIOR_HIGHLIGHT
             
             End If
@@ -351,11 +405,20 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     If cRedEye.GetCopyOfRegionStack(regionStack, numOfRegions) Then
     
         'At least one candidate red-eye highlight region exists in the target image.
+        
+        'Next, we're going to try and remove as many false-positive regions as we can.  We use multiple criteria to
+        ' determine whether regions are invalid; some of these are also modified by user inputs to the function.
         Dim regID As Long
         Dim rSum As Long, gSum As Long, bSum As Long, rgbSum As Long
         Dim avePctR As Double, avePctG As Double, aveR As Long
         Dim numSimilar As Long, numNotInRegion As Long, simThreshold As Long, similarityThresholdReached As Boolean
+        Dim aspectRatio As Double, simRejectThreshold As Single
         Const REGION_EXPANSION_RADIUS As Long = 12
+        Const DEFAULT_SIMILARITY_THRESHOLD As Single = 0.1
+        
+        'The rejection threshold for "pixels too similar to their surroundings" is modified by the user's
+        ' "object sensitivity" parameter.
+        simRejectThreshold = DEFAULT_SIMILARITY_THRESHOLD - (DEFAULT_SIMILARITY_THRESHOLD * objectSensitivity)
         
         'Loop through all highlight regions and attempt to discard regions where pixels surrounding the region bare
         ' strong color similarity to the region itself.  This step is crucial for removing false-positive regions
@@ -427,7 +490,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                 numNotInRegion = numNotInRegion + (.RegionHeight * (hlFinalX - (.RegionLeft + .RegionWidth)))
                 
                 'Calculate a dynamic "matching-but-not-in-region" value based on the size of the scanned region
-                simThreshold = CDbl(numNotInRegion) * 0.1
+                simThreshold = CDbl(numNotInRegion) * simRejectThreshold
                 
                 For y = hlInitY To hlFinalY
                 For x = hlInitX To hlFinalX
@@ -464,7 +527,21 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                 
                 'If the similarity threshold was exceeded, mark this region as invalid
                 If similarityThresholdReached Then .RegionValid = False
-                    
+                
+                'If this region is still valid, perform some naive failsafe checks on things like aspect ratio and size
+                
+                'Reject single-pixel regions
+                If .RegionValid Then
+                    If (.RegionHeight <= 1) Or (.RegionWidth <= 1) Then .RegionValid = False
+                End If
+                
+                'Check aspect ratio.  Valid regions should be roughly square-shaped.
+                If .RegionValid And rejectRectangles Then
+                    aspectRatio = .RegionHeight / .RegionWidth
+                    If aspectRatio < 1# Then aspectRatio = 1# / aspectRatio
+                    If aspectRatio > 2.5 Then .RegionValid = False
+                End If
+                
                 'DEBUG ONLY!  Highlight the region boundaries, just to make sure the region analysis tool works
                 If .RegionValid Then
                     GDI_Plus.GDIPlusDrawRectOutlineToDC workingDIB.getDIBDC, .RegionLeft, .RegionTop, .RegionLeft + .RegionWidth, .RegionTop + .RegionHeight, RGB(255, 0, 255), 255, 1
@@ -498,6 +575,10 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
 
 End Sub
 
+Private Sub chkShape_Click()
+    UpdatePreview
+End Sub
+
 Private Sub cmdBar_OKClick()
     Process "Red-eye removal", , GetLocalParamString(), UNDO_LAYER
 End Sub
@@ -507,7 +588,8 @@ Private Sub cmdBar_RequestPreviewUpdate()
 End Sub
 
 Private Sub cmdBar_ResetClick()
-    sltIntensity.Value = 2#
+    sltColor.Value = 100#
+    sltObject.Value = 100#
 End Sub
 
 Private Sub Form_Activate()
@@ -529,15 +611,18 @@ Private Sub fxPreview_ViewportChanged()
     UpdatePreview
 End Sub
 
-'Update the preview whenever the combination slider/text control has its value changed
-Private Sub sltIntensity_Change()
-    UpdatePreview
-End Sub
-
 Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then Me.ApplyRedEyeCorrection GetLocalParamString(), True, fxPreview
 End Sub
 
 Private Function GetLocalParamString() As String
-    GetLocalParamString = buildParamList("testing", sltIntensity.Value)
+    GetLocalParamString = buildParamList("color-sensitivity", sltColor.Value, "object-sensitivity", sltObject.Value, "confirm-aspectratio", CBool(chkShape.Value))
 End Function
+
+Private Sub sltColor_Change()
+    UpdatePreview
+End Sub
+
+Private Sub sltObject_Change()
+    UpdatePreview
+End Sub
