@@ -479,4 +479,6 @@ Public Type PD_DYNAMIC_REGION
     RegionWidth As Long
     RegionHeight As Long
     RegionPixelCount As Long
+    SeedPixelX As Long
+    SeedPixelY As Long
 End Type

@@ -85,6 +85,16 @@ Begin VB.Form FormRedEye
       NotchPosition   =   2
       NotchValueCustom=   100
    End
+   Begin PhotoDemon.smartCheckBox chkHighlight 
+      Height          =   375
+      Left            =   6000
+      TabIndex        =   5
+      Top             =   4080
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   661
+      Caption         =   "highlight detected regions (preview only)"
+   End
 End
 Attribute VB_Name = "FormRedEye"
 Attribute VB_GlobalNameSpace = False
@@ -107,6 +117,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'During debug, you can render debug data onto the final image by setting this to TRUE.
+Private Const RENDER_DEBUG_REDEYE_DATA As Boolean = False
+
 'Apply automated red-eye correction
 Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal toPreview As Boolean = False, Optional ByRef dstPic As fxPreviewCtl)
     
@@ -123,8 +136,9 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     colorSensitivity = (colorSensitivity - 100#) / 1000#
     objectSensitivity = (objectSensitivity - 100#) / 200#
     
-    Dim rejectRectangles As Boolean
+    Dim rejectRectangles As Boolean, previewHighlight As Boolean
     rejectRectangles = cParams.GetBool("confirm-aspectratio", True)
+    previewHighlight = cParams.GetBool("preview-highlight", True)
     
     If Not toPreview Then Message "Searching image for red-eye artifacts..."
     
@@ -184,7 +198,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     Const BLUE_RATIO_CUTOFF As Single = 0.36
     
     Dim rCutoff As Long, rRatioCutoff As Single, gRatioCutoff As Single, bRatioCutoff As Single
-    rCutoff = RED_CUTOFF '+ (RED_CUTOFF * colorSensitivity)
+    rCutoff = RED_CUTOFF
     rRatioCutoff = RED_RATIO_CUTOFF + (RED_RATIO_CUTOFF * colorSensitivity)
     gRatioCutoff = GREEN_RATIO_CUTOFF - (GREEN_RATIO_CUTOFF * colorSensitivity)
     bRatioCutoff = BLUE_RATIO_CUTOFF - (BLUE_RATIO_CUTOFF * colorSensitivity)
@@ -223,28 +237,14 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                 End If
             End If
             
-            If redEyeData(x, y) = PIXEL_IS_MOSTLY_RED Then
-                
-'                'DEBUG ONLY!  Paint red pixels red, so we can visualize the output of our heuristics
-'                ImageData(quickX, y) = 0
-'                ImageData(quickX + 1, y) = 0
-'                ImageData(quickX + 2, y) = 255
-                
             'If this is a non-red pixel, see if we can mark it as non-skin.  This allows us to completely bypass the
             ' pixel on subsequent heuristic passes.
-            Else
+            If redEyeData(x, y) <> PIXEL_IS_MOSTLY_RED Then
                 If gRatio > 0.4 Then
                     redEyeData(x, y) = PIXEL_IS_NON_SKIN
                 ElseIf bRatio > 0.45 Then
                     redEyeData(x, y) = PIXEL_IS_NON_SKIN
                 End If
-                
-'                'DEBUG ONLY!  Paint non-skin pixels blue, so we can visualize the output of our heuristics
-'                If redEyeData(x, y) = PIXEL_IS_NON_SKIN Then
-'                    ImageData(quickX, y) = 255
-'                    ImageData(quickX + 1, y) = 0
-'                    ImageData(quickX + 2, y) = 0
-'                End If
             End If
             
         End If
@@ -329,14 +329,6 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
             
         End If
         
-'        'DEBUG ONLY!  Paint red pixels red, so we can visualize the output of our heuristics
-'        If redEyeData(x, y) = PIXEL_IS_INTERIOR_HIGHLIGHT Then
-'            quickX = x * qvDepth
-'            ImageData(quickX, y) = 0
-'            ImageData(quickX + 1, y) = 255
-'            ImageData(quickX + 2, y) = 0
-'        End If
-        
     Next x
         If Not toPreview Then
             If (y And progBarCheck) = 0 Then
@@ -385,7 +377,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
             If regionIDs(x, y) = 0 Then
             
                 'Let the red-eye handler generate a new contiguous region, starting with this pixel
-                cRedEye.FindRegion x, y, PIXEL_IS_INTERIOR_HIGHLIGHT
+                cRedEye.FindHighlightRegion x, y, PIXEL_IS_INTERIOR_HIGHLIGHT
             
             End If
         
@@ -410,8 +402,10 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
         ' determine whether regions are invalid; some of these are also modified by user inputs to the function.
         Dim regID As Long
         Dim rSum As Long, gSum As Long, bSum As Long, rgbSum As Long
-        Dim avePctR As Double, avePctG As Double, aveR As Long
+        Dim avePctR As Double, avePctG As Double
+        Dim aveR As Long, aveG As Long, aveB As Long, aveL As Long
         Dim numSimilar As Long, numNotInRegion As Long, simThreshold As Long, similarityThresholdReached As Boolean
+        Dim numRegionTotal As Long, numRegionRed As Long
         Dim aspectRatio As Double, simRejectThreshold As Single
         Const REGION_EXPANSION_RADIUS As Long = 12
         Const DEFAULT_SIMILARITY_THRESHOLD As Single = 0.1
@@ -542,28 +536,173 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                     If aspectRatio > 2.5 Then .RegionValid = False
                 End If
                 
-                'DEBUG ONLY!  Highlight the region boundaries, just to make sure the region analysis tool works
-                If .RegionValid Then
-                    GDI_Plus.GDIPlusDrawRectOutlineToDC workingDIB.getDIBDC, .RegionLeft, .RegionTop, .RegionLeft + .RegionWidth, .RegionTop + .RegionHeight, RGB(255, 0, 255), 255, 1
-                Else
-                    'GDI_Plus.GDIPlusDrawRectOutlineToDC workingDIB.getDIBDC, .RegionLeft, .RegionTop, .RegionLeft + .RegionWidth, .RegionTop + .RegionHeight, RGB(0, 255, 255), 255, 1
-                End If
-                
             End With
         
+        'We've successfully validated this region.  Move to the next one.
         Next i
         
-        'DEBUG ONLY!  Calculate a false-positive removal success rate
-        Dim validRegions As Long
-        validRegions = 0
+        'With all regions validated, we now need to merge the red-eye data with the highlight data.  This is accomplished
+        ' by dynamically "growing" the highlight regions by any neighboring red-eye pixels; the end result is a list of
+        ' regions that cover both highlight and red-eye pixels.
+        
+        'Start by resetting the region ID array
+        For y = initY To finalY
+        For x = initX To finalX
+            regionIDs(x, y) = 0
+        Next x
+        Next y
+        
+        Dim correctionFactor As Double
+        Dim regionRectF As RECTF
+        
+        'Next, iterate through all valid regions.
         For i = 0 To numOfRegions - 1
-            If regionStack(i).RegionValid Then validRegions = validRegions + 1
+            If regionStack(i).RegionValid Then
+                
+                'Tell the red-eye class to expand this region to include any neighboring red-eye pixels.
+                cRedEye.ExpandToIncludeRedEye regionStack(i), PIXEL_IS_INTERIOR_HIGHLIGHT, PIXEL_IS_MOSTLY_RED
+                
+                'regionStack(i) now describes an updated region that includes the red-eye pixels surrounding the
+                ' original highlight region.  We're almost ready to correct the region - first, however, we want
+                ' to analyze the red-eye portion of the eye and run some heursitics.  The data we gather will
+                ' increase our odds of successfully reconstructing the original eye-color of the region.
+                
+                'First, calculate average RGB values for the region
+                aveR = 0
+                aveG = 0
+                aveB = 0
+                aveL = 0
+                numRegionTotal = 0
+                numRegionRed = 0
+                
+                regID = regionStack(i).RegionID
+                
+                For y = initY To finalY
+                For x = initX To finalX
+                    
+                    'Make sure the pixel actually belongs to this region
+                    If (regionIDs(x, y) = regID) Then
+                        quickX = x * qvDepth
+                        b = ImageData(quickX, y)
+                        g = ImageData(quickX + 1, y)
+                        r = ImageData(quickX + 2, y)
+                        
+                        'Calculate running luminance for the ENTIRE region (including the eye highlight)
+                        aveL = aveL + Color_Functions.getHQLuminance(r, g, b)
+                        numRegionTotal = numRegionTotal + 1
+                        
+                        'Perform a modified red-eye check.  This steps is where we assess the actual "redness" of the
+                        ' underlying pixel; we don't want to correct pixels unless they are obviously red.  (We will
+                        ' use these averages to determine how much red to strip out of the red-eye region.)
+                        rgbSum = r + g + b
+                        If rgbSum = 0 Then rgbSum = 1
+                        'If redEyeData(x, y) = PIXEL_IS_MOSTLY_RED Then
+                        If CDbl(r / rgbSum) > 0.35 Then
+                            aveR = aveR + r
+                            aveG = aveG + g
+                            aveB = aveB + b
+                            numRegionRed = numRegionRed + 1
+                        End If
+                        
+                    End If
+                Next x
+                Next y
+                
+                'With averages successfully detected, we can now (FINALLY) apply actual red-eye correction.
+                If numRegionTotal = 0 Then numRegionTotal = 1
+                If numRegionRed = 0 Then numRegionRed = 1
+                
+                aveL = aveL \ numRegionTotal
+                aveR = aveR \ numRegionRed
+                aveG = aveG \ numRegionRed
+                aveB = aveB \ numRegionRed
+                
+                'Calculate correction factors specific to this region, based on its overall "redness"
+                If aveG > aveB Then
+                    correctionFactor = (aveR - aveG) / 255 * 3.2
+                Else
+                    correctionFactor = (aveR - aveB) / 255 * 3.2
+                End If
+                
+                Debug.Print aveL, aveR, aveG, aveB, correctionFactor
+                
+                'Loop through all pixels and apply the correction results
+                For y = initY To finalY
+                For x = initX To finalX
+                    
+                    If (regionIDs(x, y) = regID) Then
+                        
+                        quickX = x * qvDepth
+                        b = ImageData(quickX, y)
+                        g = ImageData(quickX + 1, y)
+                        r = ImageData(quickX + 2, y)
+                        
+                        r = cRedEye.FixRedEyeColor(r, -correctionFactor, -0.1, aveL)
+                        g = cRedEye.FixRedEyeColor(g, correctionFactor / 3, -0.1, aveL)
+                        b = cRedEye.FixRedEyeColor(b, correctionFactor / 3, -0.1, aveL)
+                        
+                        ImageData(quickX, y) = b
+                        ImageData(quickX + 1, y) = g
+                        ImageData(quickX + 2, y) = r
+                        
+                    End If
+                Next x
+                Next y
+                
+            End If
+            
+            'If this is a preview, mark the eyes with a region highlight
+            If toPreview And previewHighlight Then
+                With regionStack(i)
+                    If .RegionValid Then
+                        regionRectF.Left = .RegionLeft
+                        regionRectF.Top = .RegionTop
+                        regionRectF.Width = .RegionWidth
+                        regionRectF.Height = .RegionHeight
+                        GDI_Plus.GDIPlusDrawCanvasRectF workingDIB.getDIBDC, regionRectF
+                    End If
+                End With
+            End If
+        
+        'We've successfully processed this region.  Move to the next one.
         Next i
         
-        Debug.Print validRegions / numOfRegions
-    
     End If
     
+    
+    'DEBUG ONLY!  If the form-level debug constant is active, paint the detected regions onto the image, so we can
+    ' see how well our classifier algorithms worked.
+    If RENDER_DEBUG_REDEYE_DATA Then
+        
+        For y = initY To finalY
+        For x = initX To finalX
+            quickX = x * qvDepth
+            b = ImageData(quickX, y)
+            g = ImageData(quickX + 1, y)
+            r = ImageData(quickX + 2, y)
+            
+            If redEyeData(x, y) = PIXEL_IS_MOSTLY_RED Then
+                ImageData(quickX, y) = 0
+                ImageData(quickX + 1, y) = 0
+                ImageData(quickX + 2, y) = 255
+            ElseIf redEyeData(x, y) = PIXEL_IS_INTERIOR_HIGHLIGHT Then
+                ImageData(quickX, y) = 0
+                ImageData(quickX + 1, y) = 255
+                ImageData(quickX + 2, y) = 0
+            End If
+            
+        Next x
+        Next y
+        
+        If numOfRegions > 0 Then
+            For i = 0 To numOfRegions - 1
+                
+            Next i
+        End If
+        
+    End If
+    
+    'Release the red-eye engine.  (This is extremely important, as the red-eye class unsafely aliases multiple local arrays.)
     cRedEye.ReleaseRedEyeEngine redEyeData, regionIDs
     
     'With our work complete, point ImageData() away from the DIB and deallocate it
@@ -573,6 +712,10 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     'Pass control to finalizeImageData, which will handle the rest of the rendering
     finalizeImageData toPreview, dstPic
 
+End Sub
+
+Private Sub chkHighlight_Click()
+    UpdatePreview
 End Sub
 
 Private Sub chkShape_Click()
@@ -616,7 +759,7 @@ Private Sub UpdatePreview()
 End Sub
 
 Private Function GetLocalParamString() As String
-    GetLocalParamString = buildParamList("color-sensitivity", sltColor.Value, "object-sensitivity", sltObject.Value, "confirm-aspectratio", CBool(chkShape.Value))
+    GetLocalParamString = buildParamList("color-sensitivity", sltColor.Value, "object-sensitivity", sltObject.Value, "confirm-aspectratio", CBool(chkShape.Value), "preview-highlight", CBool(chkHighlight.Value))
 End Function
 
 Private Sub sltColor_Change()
