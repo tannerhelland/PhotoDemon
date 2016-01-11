@@ -102,17 +102,22 @@ Public Function ReleaseRedEyeEngine(ByRef srcHighlights() As Byte, ByRef srcRegi
     
 End Function
 
-'Generate a new region for a given pixel.  This pixel must not already be part of a region; if it is, this function
-' will fail.
+'Generate a new highlight region using a given pixel as the seed.  The seed pixel must not already be part of a region;
+' if it is, this function will fail.
 '
 'If successful, this function will return the ID of the assigned region.
-Public Function FindRegion(ByVal inputX As Long, ByVal inputY As Long, ByVal regionMarkerID As Long) As Integer
+Public Function FindHighlightRegion(ByVal inputX As Long, ByVal inputY As Long, ByVal regionMarkerID As Long) As Integer
 
     'Increment the region counter.
     ' (TODO: if this exceeds the upper bound of an integer, exit immediately; this is an insanely unlikely scenario,
     ' but I want to do some tests on actual images to see if 32k+ highlight regions can be artificially induced -
     ' if they can, I'll convert the region-detection code to use Longs instead of Integers.)
     m_CurrentRegion = m_CurrentRegion + 1
+    
+    'Use the current region index to calculate an actual region ID.  (We don't want this to be on the range [-1, 1]
+    ' as those values have special meaning to the iterator.)
+    Dim regID As Long
+    regID = m_CurrentRegion + 1
     
     'Reset the stack.  Note that we don't actually resize the stack; this is an optimization technique to improve performance
     ' if this class is used multiple times in a row.
@@ -149,7 +154,7 @@ Public Function FindRegion(ByVal inputX As Long, ByVal inputY As Long, ByVal reg
         'If this is a highlight pixel, add it to the current region ID
         If m_HighlightData(x, y) = regionMarkerID Then
             
-            m_RegionIDs(x, y) = m_CurrentRegion
+            m_RegionIDs(x, y) = regID
             
             'Update boundaries
             If x < regLeft Then regLeft = x
@@ -182,8 +187,92 @@ Public Function FindRegion(ByVal inputX As Long, ByVal inputY As Long, ByVal reg
     End If
     
     With m_RegionStack(m_RegionStackPosition)
-        .RegionID = m_CurrentRegion
+        .RegionID = regID
         .RegionValid = True
+        .RegionLeft = regLeft
+        .RegionTop = regTop
+        .RegionWidth = regRight - regLeft
+        .RegionHeight = regBottom - regTop
+        .RegionPixelCount = regPixelCount
+        .SeedPixelX = inputX
+        .SeedPixelY = inputY
+    End With
+    
+    'Increment the region count and exit
+    m_RegionStackPosition = m_RegionStackPosition + 1
+    
+    FindHighlightRegion = m_CurrentRegion
+    
+End Function
+
+'Given an existing highlight region, expand it to include any neighboring red-eye pixels.  The end result is a region that
+' encompasses both highlight and red-eye pixels.
+Friend Function ExpandToIncludeRedEye(ByRef srcRegion As PD_DYNAMIC_REGION, ByVal highlightID As Long, ByVal redEyeID As Long) As Boolean
+    
+    'Reset the stack.  Note that we don't actually resize the stack; this is an optimization technique to improve performance
+    ' if this class is used multiple times in a row.
+    m_StackPosition = -1
+    
+    'Predetermine upper bounds for x/y checks
+    Dim xBound As Long, yBound As Long
+    xBound = m_Width - 1
+    yBound = m_Height - 1
+    
+    'Set the region dimension trackers to match the source region values
+    Dim regLeft As Long, regTop As Long, regRight As Long, regBottom As Long
+    regLeft = srcRegion.RegionLeft
+    regTop = srcRegion.RegionTop
+    regRight = srcRegion.RegionLeft + srcRegion.RegionWidth
+    regBottom = srcRegion.RegionTop + srcRegion.RegionHeight
+    
+    'We're also going to generate a new pixel count for the region, one that accurately reflects the new
+    ' highlight + red-eye criteria for pixel inclusion.
+    Dim regPixelCount As Long
+    regPixelCount = 0
+    
+    Dim regID As Long
+    regID = srcRegion.RegionID
+    
+    'Populate the initial stack point
+    Dim x As Long, y As Long
+    PushOntoStack srcRegion.SeedPixelX, srcRegion.SeedPixelY
+    
+    'Start processing the stack
+    Do
+        
+        'Retrieve the next point from the stack
+        PopFromStack x, y
+        
+        'If this is a highlight pixel OR a red-eye pixel, assign it the current region ID
+        If (m_HighlightData(x, y) = highlightID) Or (m_HighlightData(x, y) = redEyeID) Then
+            
+            m_RegionIDs(x, y) = regID
+            
+            'Update boundaries
+            If x < regLeft Then regLeft = x
+            If x > regRight Then regRight = x
+            If y < regTop Then regTop = y
+            If y > regBottom Then regBottom = y
+            
+            'Update pixel count
+            regPixelCount = regPixelCount + 1
+            
+            'If any of the four neighboring pixels have not yet been...
+            ' 1) assigned to a region, and...
+            ' 2) ...already added to the stack...
+            ' ...add them to the stack now.
+            If x > 0 Then If m_RegionIDs(x - 1, y) = 0 Then PushOntoStack x - 1, y
+            If x < xBound Then If m_RegionIDs(x + 1, y) = 0 Then PushOntoStack x + 1, y
+            If y > 0 Then If m_RegionIDs(x, y - 1) = 0 Then PushOntoStack x, y - 1
+            If y < yBound Then If m_RegionIDs(x, y + 1) = 0 Then PushOntoStack x, y + 1
+            
+        End If
+        
+    'As long as there are more stack points to process, rinse and repeat
+    Loop While m_StackPosition >= 0
+    
+    'Once the region has been assembled, we need to update the source region object to match our new region data.
+    With srcRegion
         .RegionLeft = regLeft
         .RegionTop = regTop
         .RegionWidth = regRight - regLeft
@@ -191,10 +280,7 @@ Public Function FindRegion(ByVal inputX As Long, ByVal inputY As Long, ByVal reg
         .RegionPixelCount = regPixelCount
     End With
     
-    'Increment the region count and exit
-    m_RegionStackPosition = m_RegionStackPosition + 1
-    
-    FindRegion = True
+    ExpandToIncludeRedEye = True
     
 End Function
 
@@ -215,7 +301,7 @@ End Function
 
 'Stack helper functions
 Private Sub PushOntoStack(ByVal x As Long, ByVal y As Long)
-
+    
     m_StackPosition = m_StackPosition + 1
 
     'Resize the stack as necessary
@@ -245,3 +331,28 @@ Private Sub PopFromStack(ByRef x As Long, ByRef y As Long)
     m_StackPosition = m_StackPosition - 1
 
 End Sub
+
+'Given an RGB component and properly calibrated correction values, return a corrected value
+Friend Function FixRedEyeColor(ByVal origValue As Long, ByVal brightCorrection As Double, ByVal contrastCorrection As Double, ByVal meanLight As Long) As Long
+    
+    'Apply brightness correction
+    FixRedEyeColor = (0.4 * brightCorrection * 255 + origValue)
+    
+    'Clamp to byte range
+    If FixRedEyeColor < 0 Then
+        FixRedEyeColor = 0
+    ElseIf FixRedEyeColor > 255 Then
+        FixRedEyeColor = 255
+    End If
+    
+    'Apply contrast correction on the brightened result
+    FixRedEyeColor = FixRedEyeColor + (FixRedEyeColor - meanLight) * contrastCorrection
+    
+    'Clamp to byte range
+    If FixRedEyeColor < 0 Then
+        FixRedEyeColor = 0
+    ElseIf FixRedEyeColor > 255 Then
+        FixRedEyeColor = 255
+    End If
+    
+End Function
