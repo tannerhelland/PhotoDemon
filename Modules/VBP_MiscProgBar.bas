@@ -45,7 +45,11 @@ Public Sub Replacement_DoEvents(ByVal srcHwnd As Long)
 End Sub
 
 'These three routines make it easier to interact with the progress bar; note that two are disabled while a batch
-' conversion is running - this is because the batch conversion tool appropriates the scroll bar for itself
+' conversion is running - this is because the batch conversion tool appropriates the scroll bar.
+Public Function GetProgBarMax() As Long
+    If Not curProgBar Is Nothing Then GetProgBarMax = curProgBar.Max Else GetProgBarMax = 1
+End Function
+
 Public Sub SetProgBarMax(ByVal pbVal As Long)
     
     If (MacroStatus <> MacroBATCH) And (pbVal <> 0) Then
@@ -84,10 +88,6 @@ Public Sub SetProgBarMax(ByVal pbVal As Long)
     
 End Sub
 
-Public Function getProgBarMax() As Long
-    If Not curProgBar Is Nothing Then getProgBarMax = curProgBar.Max Else getProgBarMax = 1
-End Function
-
 Public Sub SetProgBarVal(ByVal pbVal As Long)
     
     If MacroStatus <> MacroBATCH Then
@@ -103,7 +103,7 @@ Public Sub SetProgBarVal(ByVal pbVal As Long)
         End If
         
         'On Windows 7 (or later), we also update the taskbar to reflect the current progress
-        If g_IsWin7OrLater Then SetTaskbarProgressValue pbVal, getProgBarMax
+        If g_IsWin7OrLater Then SetTaskbarProgressValue pbVal, GetProgBarMax
         
     End If
     
@@ -111,11 +111,11 @@ End Sub
 
 'We only want the progress bar updating when necessary, so this function finds a power of 2 closest to the progress bar
 ' maximum divided by 20.  This is a nice compromise between responsive progress bar updates and extremely fast rendering.
-Public Function findBestProgBarValue() As Long
+Public Function FindBestProgBarValue() As Long
 
     'First, figure out what the range of this operation will be, based on the current progress bar maximum
     Dim progBarRange As Double
-    progBarRange = CDbl(getProgBarMax())
+    progBarRange = CDbl(GetProgBarMax())
     
     'Divide that value by 20.  20 is an arbitrary selection; the value can be set to any value X, where X is the number
     ' of times we want the progress bar to update during a given filter or effect.
@@ -126,12 +126,12 @@ Public Function findBestProgBarValue() As Long
     
     nearestP2 = Log(progBarRange) / Log(2#)
     
-    findBestProgBarValue = (2 ^ nearestP2) - 1
+    FindBestProgBarValue = (2 ^ nearestP2) - 1
     
 End Function
 
 'When a function is done with the progress bar, this function must be called to free up its memory and hide the associated picture box
-Public Sub releaseProgressBar()
+Public Sub ReleaseProgressBar()
 
     Debug.Print "Releasing progress bar..."
 
