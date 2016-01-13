@@ -61,6 +61,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'This implementation binding will allow us to refer to all themeable controls _
+ under a single type, making form control iteration much simpler _
+ (we won't need to maintain long lists of UserControl names)
+Implements iControlThemable
+
+
 'This control really only needs one event raised - Click
 Public Event Click()
 
@@ -286,6 +292,10 @@ Public Sub AssignImage_Pressed(Optional ByVal resName As String = "", Optional B
     'If the control is currently pressed, request a redraw
     If Value Then RedrawBackBuffer
 
+End Sub
+
+Private Sub iControlThemable_UpdateAgainstCurrentTheme()
+    Call Me.UpdateAgainstCurrentTheme
 End Sub
 
 'A few key events are also handled

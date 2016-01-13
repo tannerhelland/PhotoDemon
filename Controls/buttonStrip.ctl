@@ -55,6 +55,11 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'This implementation binding will allow us to refer to all themeable controls _
+ under a single type, making form control iteration much simpler _
+ (we won't need to maintain long lists of UserControl names)
+Implements iControlThemable
+
 'This control really only needs one event raised - Click
 Public Event Click(ByVal buttonIndex As Long)
 
@@ -165,6 +170,10 @@ Public Property Let FontSize(ByVal newSize As Single)
         updateControlLayout
     End If
 End Property
+
+Private Sub iControlThemable_UpdateAgainstCurrentTheme()
+    Call Me.UpdateAgainstCurrentTheme
+End Sub
 
 'When the control receives focus, if the focus isn't received via mouse click, display a focus rect around the active button
 Private Sub ucSupport_GotFocusAPI()

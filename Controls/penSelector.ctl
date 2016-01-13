@@ -50,6 +50,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'This implementation binding will allow us to refer to all themeable controls _
+ under a single type, making form control iteration much simpler _
+ (we won't need to maintain long lists of UserControl names)
+Implements iControlThemable
+
+
 'This control doesn't really do anything interesting, besides allow a pen to be selected.
 Public Event PenChanged()
 
@@ -133,6 +139,10 @@ End Property
 'Outside functions can call this to force a display of the pen selection window
 Public Sub DisplayPenSelection()
     RaisePenDialog
+End Sub
+
+Private Sub iControlThemable_UpdateAgainstCurrentTheme()
+    Call Me.UpdateAgainstCurrentTheme
 End Sub
 
 Private Sub ucSupport_ClickCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)

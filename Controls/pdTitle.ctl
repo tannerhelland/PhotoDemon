@@ -56,6 +56,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'This implementation binding will allow us to refer to all themeable controls _
+ under a single type, making form control iteration much simpler _
+ (we won't need to maintain long lists of UserControl names)
+Implements iControlThemable
+
+
 'This control really only needs one event raised - Click
 Public Event Click(ByVal newState As Boolean)
 
@@ -160,6 +166,10 @@ Public Property Let Value(ByVal newState As Boolean)
         RedrawBackBuffer
     End If
 End Property
+
+Private Sub iControlThemable_UpdateAgainstCurrentTheme()
+    Call Me.UpdateAgainstCurrentTheme
+End Sub
 
 'A few key events are also handled
 Private Sub ucSupport_KeyUpCustom(ByVal Shift As ShiftConstants, ByVal vkCode As Long, markEventHandled As Boolean)
