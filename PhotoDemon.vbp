@@ -320,6 +320,7 @@ UserControl=Controls\pdListBox.ctl
 Form=Forms\Adjustments_Photo_RedEye.frm
 Class=pdRedEye; Classes\pdRedEye.cls
 Module=VB_Hacks; Modules\VB_Hacks.bas
+Class=iControlThemable; Classes\iControlThemable.cls
 ResFile32="Resources\PD_icons.RES"
 IconForm="FormMain"
 Startup="Sub Main"

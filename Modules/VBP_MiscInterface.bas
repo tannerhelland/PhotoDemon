@@ -1292,15 +1292,7 @@ Public Sub MakeFormPretty(ByRef tForm As Form, Optional ByVal useDoEvents As Boo
         'PhotoDemon's custom controls now provide universal support for an UpdateAgainstCurrentTheme function.  This updates two things:
         ' 1) The control's visual appearance (to reflect any changes to visual themes)
         ' 2) The translated caption, or other text (to reflect any changes to the active language)
-        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is buttonStripVertical) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdButton) Or (TypeOf eControl Is pdButtonToolbox) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is pdHyperlink) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdCanvas) Or (TypeOf eControl Is pdScrollBar) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is brushSelector) Or (TypeOf eControl Is gradientSelector) Or (TypeOf eControl Is penSelector) Then eControl.UpdateAgainstCurrentTheme
-        If (TypeOf eControl Is pdColorVariants) Or (TypeOf eControl Is pdColorWheel) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is iControlThemable) Then Call eControl.UpdateAgainstCurrentTheme
         
         'STEP 3: remove TabStop from each picture box.  They should never receive focus, but I often forget to change this
         ' at design-time.

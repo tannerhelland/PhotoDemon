@@ -113,6 +113,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'This implementation binding will allow us to refer to all themeable controls _
+ under a single type, making form control iteration much simpler _
+ (we won't need to maintain long lists of UserControl names)
+Implements iControlThemable
+
+
 'This control really only needs one event raised - Scroll.  The "eventIsCritical" parameter can optionally be tested;
 ' it returns FALSE for events that would be considered a "scroll" by VB (e.g. click-dragging), which you could theoretically
 ' ignore if you were worried about performance.  If eventIsCritical is TRUE, however, you must respond to the event.
@@ -697,6 +703,10 @@ Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, By
         BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
     End If
     
+End Sub
+
+Private Sub iControlThemable_UpdateAgainstCurrentTheme()
+    Call Me.UpdateAgainstCurrentTheme
 End Sub
 
 Private Sub MnuScroll_Click(Index As Integer)
