@@ -208,8 +208,6 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     sizeStrictness = sizeStrictness * sizeStrictness
     If toPreview Then sizeStrictness = sizeStrictness * curDIBValues.previewModifier
     
-    Debug.Print shapeStrictness, sizeStrictness
-    
     'While in preview mode, this function can highlight the red-eye regions that have been detected.  Regardless of value,
     ' this setting has no meaning when not in preview mode.
     Dim previewHighlight As Boolean
@@ -344,7 +342,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
     hlFinalY = finalY - 3
     
     Dim hTotal As Long, sTotal As Long, rTotal As Long
-    Dim i As Long, j As Long
+    Dim i As Long, j As Long, k As Long
     
     For y = hlInitY To hlFinalY
     For x = hlInitX To hlFinalX
@@ -648,6 +646,8 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
         Dim correctionFactor As Double
         Dim regionRectF As RECTF
         
+        Dim innerInitX As Long, innerInitY As Long, innerFinalX As Long, innerFinalY As Long
+        
         'Next, iterate through all valid regions.
         For i = 0 To numOfRegions - 1
             If regionStack(i).RegionValid Then
@@ -697,13 +697,25 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                     numRegionTotal = 0
                     numRegionRed = 0
                     
-                    regID = regionStack(i).RegionID
+                    With regionStack(i)
+                        regID = .RegionID
+                        hlInitX = .RegionLeft - 1
+                        hlInitY = .RegionTop - 1
+                        hlFinalX = .RegionLeft + .RegionWidth + 1
+                        hlFinalY = .RegionTop + .RegionHeight + 1
+                    End With
                     
-                    For y = initY To finalY
-                    For x = initX To finalX
+                    If hlInitX < initX Then hlInitX = initX
+                    If hlInitY < initY Then hlInitY = initY
+                    If hlFinalX > finalX Then hlFinalX = finalX
+                    If hlFinalY > finalY Then hlFinalY = finalY
+                    
+                    For y = hlInitY To hlFinalY
+                    For x = hlInitX To hlFinalX
                         
                         'Make sure the pixel actually belongs to this region
                         If (regionIDs(x, y) = regID) Then
+                        
                             quickX = x * qvDepth
                             b = ImageData(quickX, y)
                             g = ImageData(quickX + 1, y)
@@ -718,7 +730,6 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                             ' use these averages to determine how much red to strip out of the red-eye region.)
                             rgbSum = r + g + b
                             If rgbSum = 0 Then rgbSum = 1
-                            'If redEyeData(x, y) = PIXEL_IS_MOSTLY_RED Then
                             If CDbl(r / rgbSum) > 0.35 Then
                                 aveR = aveR + r
                                 aveG = aveG + g
@@ -746,15 +757,13 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                         correctionFactor = (aveR - aveB) / 255 * 3.2
                     End If
                     
-                    Debug.Print aveL, aveR, aveG, aveB, correctionFactor
-                    
                     'Loop through all pixels and apply the correction results
-                    For y = initY To finalY
-                    For x = initX To finalX
+                    For y = hlInitY To hlFinalY
+                    For x = hlInitX To hlFinalX
                         
+                        'For pixels inside the region, correction is easy: reduce the redness and contrast, using our
+                        ' best guess of what the area's original color was.
                         If (regionIDs(x, y) = regID) Then
-                            
-                            'TODO: only correct red pixels; the highlight can remain untouched, maybe...?
                             
                             quickX = x * qvDepth
                             b = ImageData(quickX, y)
@@ -765,20 +774,116 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                             g = cRedEye.FixRedEyeColor(g, correctionFactor / 3, -0.1, aveL)
                             b = cRedEye.FixRedEyeColor(b, correctionFactor / 3, -0.1, aveL)
                             
+                            'We now want to alias this result against neighboring pixels, to try and reduce any harsh
+                            ' edges between this pixel and the result.
+                            rSum = 0
+                            gSum = 0
+                            bSum = 0
+                            numSimilar = 0
+                            
+                            innerInitX = x - 1
+                            innerInitY = y - 1
+                            innerFinalX = x + 1
+                            innerFinalY = y + 1
+                            
+                            If innerInitX < initX Then innerInitX = initX
+                            If innerInitY < initY Then innerInitY = initY
+                            If innerFinalX > finalX Then innerFinalX = finalX
+                            If innerFinalY > finalY Then innerFinalY = finalY
+                            
+                            For j = innerInitY To innerFinalY
+                            For k = innerInitX To innerFinalX
+                                If k <> j Then
+                                    If regionIDs(k, j) <> regID Then
+                                        bSum = bSum + ImageData(k * qvDepth, j)
+                                        gSum = gSum + ImageData(k * qvDepth + 1, j)
+                                        rSum = rSum + ImageData(k * qvDepth + 2, j)
+                                        numSimilar = numSimilar + 1
+                                    End If
+                                End If
+                            Next k
+                            Next j
+                            
+                            'If at least one non-red pixel was found, use its value to soften the correction result.
+                            If numSimilar > 0 Then
+                                r = Color_Functions.BlendColors(r, rSum \ numSimilar, numSimilar / 8)
+                                g = Color_Functions.BlendColors(g, gSum \ numSimilar, numSimilar / 8)
+                                b = Color_Functions.BlendColors(b, bSum \ numSimilar, numSimilar / 8)
+                            End If
+                            
                             ImageData(quickX, y) = b
                             ImageData(quickX + 1, y) = g
                             ImageData(quickX + 2, y) = r
                             
                         End If
+                        
+                    Next x
+                    Next y
+                    
+                    'Take one final pass through the region.  In this last step, we will fade any non-region pixels against their
+                    ' "inside-region" pixel neighbors, as a final attempt to smoothen out the edges of the corrected region.
+                    For y = hlInitY To hlFinalY
+                    For x = hlInitX To hlFinalX
+                        
+                        If (regionIDs(x, y) <> regID) Then
+                            
+                            quickX = x * qvDepth
+                            b = ImageData(quickX, y)
+                            g = ImageData(quickX + 1, y)
+                            r = ImageData(quickX + 2, y)
+                            
+                            'We now want to alias this result against neighboring pixels, to try and reduce any harsh
+                            ' edges between this pixel and the result.
+                            rSum = 0
+                            gSum = 0
+                            bSum = 0
+                            numSimilar = 0
+                            
+                            innerInitX = x - 1
+                            innerInitY = y - 1
+                            innerFinalX = x + 1
+                            innerFinalY = y + 1
+                            
+                            If innerInitX < initX Then innerInitX = initX
+                            If innerInitY < initY Then innerInitY = initY
+                            If innerFinalX > finalX Then innerFinalX = finalX
+                            If innerFinalY > finalY Then innerFinalY = finalY
+                            
+                            For j = innerInitY To innerFinalY
+                            For k = innerInitX To innerFinalX
+                                If k <> j Then
+                                    If regionIDs(k, j) = regID Then
+                                        bSum = bSum + ImageData(k * qvDepth, j)
+                                        gSum = gSum + ImageData(k * qvDepth + 1, j)
+                                        rSum = rSum + ImageData(k * qvDepth + 2, j)
+                                        numSimilar = numSimilar + 1
+                                    End If
+                                End If
+                            Next k
+                            Next j
+                            
+                            'If at least one non-red pixel was found, use its value to soften the correction result.
+                            If numSimilar > 0 Then
+                                r = Color_Functions.BlendColors(r, rSum \ numSimilar, numSimilar / 8)
+                                g = Color_Functions.BlendColors(g, gSum \ numSimilar, numSimilar / 8)
+                                b = Color_Functions.BlendColors(b, bSum \ numSimilar, numSimilar / 8)
+                            
+                                ImageData(quickX, y) = b
+                                ImageData(quickX + 1, y) = g
+                                ImageData(quickX + 2, y) = r
+                            End If
+                            
+                        End If
+                        
                     Next x
                     Next y
                     
                     'If this is a preview, mark the eyes with a region highlight
                     If toPreview And previewHighlight Then
-                        regionRectF.Left = regionStack(i).RegionLeft
-                        regionRectF.Top = regionStack(i).RegionTop
-                        regionRectF.Width = regionStack(i).RegionWidth
-                        regionRectF.Height = regionStack(i).RegionHeight
+                        regionRectF.Left = regionStack(i).RegionLeft - 1
+                        regionRectF.Top = regionStack(i).RegionTop - 1
+                        regionRectF.Width = regionStack(i).RegionWidth + 2
+                        regionRectF.Height = regionStack(i).RegionHeight + 2
                         GDI_Plus.GDIPlusDrawCanvasRectF workingDIB.getDIBDC, regionRectF
                     End If
                 
