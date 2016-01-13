@@ -6,7 +6,7 @@
 
 <langid>pt-BR</langid>
 <langname>Português</langname>
-<langversion>6.7.125</langversion>
+<langversion>6.7.126</langversion>
 <langstatus>raw machine translation</langstatus>
 
 <author>Google Translate</author>
@@ -14615,11 +14615,56 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 </phrase>
 
 <phrase>
-<original>Searching image for red-eye artifacts</original>
+<original>strictness</original>
 <translation></translation>
 </phrase>
 
-<!-- Adjustments_Photo_RedEye.frm contains 4 phrases. 2 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
+<phrase>
+<original>enforce shape restrictions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color sensitivity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>object sensitivity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>highlight detected regions (preview only)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>enforce size restrictions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Searching image for potential red-eye locations</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Refining list of eye candidates</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying final false-positive checks</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying final red-eye corrections (%1 of %2)</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
 
 <!-- END text for Adjustments_Photo_RedEye.frm-->
 
@@ -14637,10 +14682,10 @@ If você ainda optar por desativar as atualizações, não se esqueça de visita
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2510</phrasecount>
+<phrasecount>2519</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4312 phrases. -->
-<!-- 1802 are duplicates, so only 2510 unique phrases have been written to file. -->
-<!-- These 2510 phrases contain approximately 13400 total words. -->
+<!-- As of this build, PhotoDemon contains 4321 phrases. -->
+<!-- 1802 are duplicates, so only 2519 unique phrases have been written to file. -->
+<!-- These 2519 phrases contain approximately 13431 total words. -->
 
 </pdData>
