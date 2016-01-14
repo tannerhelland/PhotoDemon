@@ -622,7 +622,7 @@ Private Sub Form_Load()
     cmbDPI = baseDPI
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
 
     If g_UseFancyFonts Then txtCopies.Height = txtCopies.Height + 1
     

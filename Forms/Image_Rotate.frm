@@ -343,7 +343,7 @@ Public Sub RotateArbitrary(ByVal canvasResize As Long, ByVal rotationAngle As Do
             
             Message "Rotation complete."
             SetProgBarVal 0
-            releaseProgressBar
+            ReleaseProgressBar
         
         End If
         
@@ -453,7 +453,7 @@ Private Sub Form_Activate()
     fxPreview.setOriginalImage smallDIB
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
         
     'Render a preview
     cmdBar.markPreviewStatus True

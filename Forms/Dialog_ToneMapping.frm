@@ -455,7 +455,7 @@ Public Sub showDialog()
     Message "Waiting for tone mapping instructions..."
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True

@@ -434,7 +434,7 @@ Private Sub Form_Load()
     pdTextBox2(1).Text = ChrW$(&H6B22) & ChrW$(&H8FCE) & ChrW$(&H6B22) & "abc"
     pdComboBox2(0).ListIndex = 3
     
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
 End Sub
 

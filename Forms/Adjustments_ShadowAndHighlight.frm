@@ -261,7 +261,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Render an initial preview
     UpdatePreview

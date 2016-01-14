@@ -142,7 +142,7 @@ Public Sub showDialog()
     userAnswer = vbOK
 
     'Apply any custom styles to the form
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
 
     'Display the form
     ShowPDDialog vbModal, Me, True

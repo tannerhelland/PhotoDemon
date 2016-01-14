@@ -218,7 +218,7 @@ Private Sub Form_Load()
     FillListWithOpenApplications lstWindows
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Wait just a moment before continuing, to give the corresponding menu time to animate away (otherwise it may
     ' get caught in the capture preview)

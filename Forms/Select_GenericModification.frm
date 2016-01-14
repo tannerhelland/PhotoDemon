@@ -127,7 +127,7 @@ Public Sub showDialog(ByVal typeOfDialog As SelectionDialogType)
     userAnswer = vbNo
 
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
 
     'Display the form
     ShowPDDialog vbModal, Me

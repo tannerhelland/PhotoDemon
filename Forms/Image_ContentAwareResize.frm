@@ -230,7 +230,7 @@ Private Sub Form_Load()
     End If
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
 End Sub
 
@@ -338,7 +338,7 @@ Public Function SeamCarveDIB(ByRef srcDIB As pdDIB, ByVal iWidth As Long, ByVal 
     seamCarver.startSeamCarve iWidth, iHeight
     
     'Release the progress bar
-    releaseProgressBar
+    ReleaseProgressBar
     
     'Check for user cancellation; if none occurred, copy the seam-carved image into place
     If Not cancelCurrentAction Then

@@ -269,7 +269,7 @@ Public Sub showDialog()
     Message "Waiting for user to specify JPEG XR export options... "
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Retrieve a composited version of the target image
     Set origImageCopy = New pdDIB

@@ -1967,7 +1967,7 @@ Private Sub Form_Load()
     Next i
             
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'If a translation is active, realign text as necessary
     If g_Language.translationActive Then

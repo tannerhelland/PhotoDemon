@@ -227,7 +227,7 @@ Public Sub showDialog(ByRef ownerForm As Form)
     End If
     
     'Apply any custom styles to the form
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
         
     'Display the form
     ShowPDDialog vbModal, Me, True

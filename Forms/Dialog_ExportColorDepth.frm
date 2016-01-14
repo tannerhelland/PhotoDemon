@@ -210,7 +210,7 @@ Public Sub showDialog()
     Message "Waiting for user to specify color depth... "
         
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Display the dialog
     ShowPDDialog vbModal, Me, True

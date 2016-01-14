@@ -167,7 +167,7 @@ Public Sub ApplySymmetricNearestNeighbor(ByVal parameterList As String, Optional
     
     If Not toPreview Then
         SetProgBarMax finalY
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
         progBarOffset = 0
     End If
     
@@ -373,7 +373,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True

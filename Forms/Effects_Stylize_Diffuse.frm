@@ -117,7 +117,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Re-enable previews and request an initial render
     cmdBar.markPreviewStatus True
@@ -199,7 +199,7 @@ Public Sub DiffuseCustom(ByVal xDiffuse As Long, ByVal yDiffuse As Long, ByVal w
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
 
     'Seed the random number generator with a pseudo-random value (the number of milliseconds elapsed since midnight)
     Randomize Timer

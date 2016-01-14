@@ -298,7 +298,7 @@ Public Sub KaleidoscopeImage(ByVal numMirrors As Long, ByVal primaryAngle As Dou
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
           
     'Kaleidoscoping requires some specialized variables
     
@@ -414,7 +414,7 @@ End Sub
 Private Sub Form_Activate()
         
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
         
     'Create the preview
     UpdatePreview

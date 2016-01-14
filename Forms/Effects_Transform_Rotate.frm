@@ -244,7 +244,7 @@ End Sub
 Private Sub Form_Activate()
 
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Provide an explanation on why this tool doesn't enlarge the canvas to match
     lblExplanation(1).Caption = g_Language.TranslateMessage("If you want to enlarge the canvas to fit the rotated image, please use the Image -> Rotate menu instead.")

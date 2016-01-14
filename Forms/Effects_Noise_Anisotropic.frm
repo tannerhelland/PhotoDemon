@@ -256,7 +256,7 @@ Public Sub ApplyAnisotropicDiffusion(ByVal parameterList As String, Optional ByV
     
     If Not toPreview Then
         SetProgBarMax finalX * adIterations
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
         progBarOffset = 0
     End If
     
@@ -526,7 +526,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True

@@ -254,7 +254,7 @@ Public Property Let UseCustomForeColor(ByVal newSetting As Boolean)
     End If
 End Property
 
-Private Sub iControlThemable_UpdateAgainstCurrentTheme()
+Private Sub IControlThemable_UpdateAgainstCurrentTheme()
     Call Me.UpdateAgainstCurrentTheme
 End Sub
 

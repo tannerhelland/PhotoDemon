@@ -171,7 +171,7 @@ Private Sub Form_Load()
     cmdUpdate(1).AssignTooltip "If you're in the middle of something, feel free to keep working.  The update process will automatically complete whenever you next use the program.", "Apply update later"
     
     'Theme the dialog
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Position the form at the bottom-right corner of the main program window.
     Me.Move (FormMain.Left + FormMain.Width) - (Me.Width + 90), (FormMain.Top + FormMain.Height) - (Me.Height + 90)

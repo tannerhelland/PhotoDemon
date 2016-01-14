@@ -162,7 +162,7 @@ Public Sub ApplyOilPaintingEffect(ByVal parameterList As String, Optional ByVal 
     Dim progBarCheck As Long
     If Not toPreview Then
         SetProgBarMax finalX
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'The number of pixels in the current median box are tracked dynamically.
@@ -486,7 +486,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True

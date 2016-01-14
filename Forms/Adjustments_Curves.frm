@@ -348,7 +348,7 @@ Public Sub ApplyCurveToImage(ByRef listOfPoints As String, Optional ByVal toPrev
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'Color variables
     Dim r As Long, g As Long, b As Long
@@ -651,7 +651,7 @@ Private Sub Form_Activate()
     Histogram_Analysis.generateHistogramImages hDataLog, hMaxLog, hLogDIB, picDraw.ScaleWidth - (previewBorder * 2) - 1, picDraw.ScaleHeight - (previewBorder * 2) - 1
         
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     cmdBar.markPreviewStatus True
     UpdatePreview

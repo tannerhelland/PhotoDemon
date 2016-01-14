@@ -197,10 +197,10 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
         'Global and local modes use different progress calculations
         If ehMode = 0 Then
             SetProgBarMax finalY * 2
-            progBarCheck = findBestProgBarValue()
+            progBarCheck = FindBestProgBarValue()
         Else
             SetProgBarMax finalXStride
-            progBarCheck = findBestProgBarValue()
+            progBarCheck = FindBestProgBarValue()
         End If
     End If
     
@@ -547,7 +547,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Request a preview
     cmdBar.markPreviewStatus True

@@ -252,7 +252,7 @@ Public Sub showDialog()
     Message "Waiting for user to specify JPEG-2000 export options... "
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Make a copy of the current image
     Set origImageCopy = New pdDIB

@@ -140,7 +140,7 @@ Public Sub ZoomBlurModern(ByVal zDistance As Long, Optional ByVal toPreview As B
     Dim progBarCheck As Long
     If Not toPreview Then
         SetProgBarMax Abs(zDistance)
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'AlphaBlend has two limitations we have to work around: it only stretches using nearest-neighbor interpolation (which
@@ -357,7 +357,7 @@ End Sub
 Private Sub Form_Activate()
 
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True

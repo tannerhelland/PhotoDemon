@@ -229,7 +229,7 @@ End Sub
 Private Sub Form_Activate()
 
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
         
     'Create the preview
     cmdBar.markPreviewStatus True

@@ -180,7 +180,7 @@ End Sub
 Private Sub Form_Activate()
     calculateDefaultSize
     
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
 End Sub
 

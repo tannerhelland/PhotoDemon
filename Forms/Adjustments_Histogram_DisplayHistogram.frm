@@ -443,7 +443,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply visual themes and translations
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Cache the translation for several dynamic strings; this is more efficient than retranslating them over and over
     strTotalPixels = g_Language.TranslateMessage("total pixels") & ": "
@@ -931,7 +931,7 @@ Public Sub StretchHistogram()
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'Color variables
     Dim r As Long, g As Long, b As Long

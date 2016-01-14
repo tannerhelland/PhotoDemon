@@ -152,7 +152,7 @@ Public Sub showDialog(ByVal srcFilename As String, ByVal numOfImages As Long)
     End If
     
     'Apply any custom styles to the form
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
 
     'Display the form
     ShowPDDialog vbModal, Me, True

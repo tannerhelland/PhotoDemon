@@ -631,7 +631,7 @@ Public Sub showDialog()
     End If
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Update the preview
     UpdatePreview

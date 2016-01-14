@@ -172,7 +172,7 @@ Public Sub fxColoredPencil(ByVal penRadius As Long, ByVal colorIntensity As Doub
         SetProgBarMax finalY * 3 + finalX * 5
         
         Dim progBarCheck As Long
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
         
     End If
     
@@ -391,7 +391,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
         
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True

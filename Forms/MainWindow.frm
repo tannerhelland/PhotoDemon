@@ -4684,9 +4684,9 @@ Private Sub MnuZoomOut_Click()
     End If
 End Sub
 
-'Update the main form against the current theme.  At present, this is just a thin wrapper against the public makeFormPretty() function,
+'Update the main form against the current theme.  At present, this is just a thin wrapper against the public ApplyThemeAndTranslations() function,
 ' but once the form's menu is owner-drawn, we will likely need some custom code to handle menu redraws and translations.
 Public Sub UpdateAgainstCurrentTheme(Optional ByVal useDoEvents As Boolean = False)
-    MakeFormPretty Me, useDoEvents
+    ApplyThemeAndTranslations Me, useDoEvents
 End Sub
 

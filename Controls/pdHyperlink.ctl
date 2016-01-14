@@ -461,7 +461,7 @@ Public Property Get ContainerHwnd() As Long
     ContainerHwnd = UserControl.ContainerHwnd
 End Property
 
-Private Sub iControlThemable_UpdateAgainstCurrentTheme()
+Private Sub IControlThemable_UpdateAgainstCurrentTheme()
     Call Me.UpdateAgainstCurrentTheme
 End Sub
 

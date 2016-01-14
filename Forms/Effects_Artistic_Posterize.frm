@@ -156,7 +156,7 @@ End Sub
 Private Sub Form_Activate()
         
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Create a preview
     UpdatePreview
@@ -210,7 +210,7 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'Color variables
     Dim r As Long, g As Long, b As Long
@@ -301,7 +301,7 @@ Public Sub ReduceImageColors_BitRGB(ByVal rValue As Byte, ByVal gValue As Byte, 
     If smartColors And (Not cancelCurrentAction) Then
     
         If Not toPreview Then
-            SetProgBarVal getProgBarMax
+            SetProgBarVal GetProgBarMax
             Message "Applying intelligent coloring..."
         End If
         
@@ -381,7 +381,7 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
     Dim progBarCheck As Long
     If Not toPreview Then
         SetProgBarMax finalY
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Color variables
@@ -505,7 +505,7 @@ Public Sub ReduceImageColors_BitRGB_ErrorDif(ByVal rValue As Byte, ByVal gValue 
     If smartColors And (Not cancelCurrentAction) Then
         
         If Not toPreview Then
-            SetProgBarVal getProgBarMax
+            SetProgBarVal GetProgBarMax
             Message "Applying intelligent coloring..."
         End If
         

@@ -35,7 +35,7 @@ Begin VB.Form FormKuwahara
       BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   2280
@@ -125,7 +125,7 @@ Public Sub Kuwahara(ByVal filterSize As Long, Optional ByVal toPreview As Boolea
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'If this is a preview, we need to adjust the kernal
     If toPreview Then filterSize = filterSize * curDIBValues.previewModifier
@@ -299,16 +299,16 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub Form_Activate()
         
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Display the previewed effect in the neighboring window
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -317,14 +317,14 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltRadius_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then Kuwahara sltRadius.Value, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub

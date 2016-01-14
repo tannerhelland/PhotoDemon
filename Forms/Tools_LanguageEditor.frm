@@ -1253,7 +1253,7 @@ Private Sub Form_Load()
     autoTranslate.setSrcLanguage "en"
     
     'Apply translations and visual styles
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Advance to the first page
     changeWizardPage True

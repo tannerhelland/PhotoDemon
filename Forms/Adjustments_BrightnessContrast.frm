@@ -142,7 +142,7 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'If the brightness value is anything but 0, process it
     If (Bright <> 0) Then
@@ -155,7 +155,7 @@ Public Sub BrightnessContrast(ByVal Bright As Long, ByVal Contrast As Double, Op
             ' contingent on whether we're handling just brightness, or both brightness AND contrast.
             If (Contrast <> 0) Then
                 SetProgBarMax finalX * 2
-                progBarCheck = findBestProgBarValue()
+                progBarCheck = FindBestProgBarValue()
             End If
             
         End If
@@ -315,7 +315,7 @@ Private Sub Form_Activate()
     previewSampledContrast = 0
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
 End Sub
 

@@ -1258,24 +1258,30 @@ End Sub
 'Because VB6 apps look terrible on modern version of Windows, I do a bit of beautification to every form upon at load-time.
 ' This routine is nice because every form calls it at least once, so I can make centralized changes without having to rewrite
 ' code in every individual form.  This is also where run-time translation occurs.
-Public Sub MakeFormPretty(ByRef tForm As Form, Optional ByVal useDoEvents As Boolean = False)
+Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDoEvents As Boolean = False)
     
+    'Some forms call this function during the load step, meaning they will be triggered during compilation; avoid this
     If Not g_IsProgramRunning Then Exit Sub
     
-    'Before doing anything else, make sure the form's default cursor is set to an arrow
-    tForm.MouseIcon = LoadPicture("")
-    tForm.MousePointer = 0
-
+    'Reset all form mouse settings to prevent VB from interfering with our run-time mouse changes
+    dstForm.MouseIcon = LoadPicture("")
+    dstForm.MousePointer = 0
+    
     'FORM STEP 1: Enumerate through every control on the form.  We will be making changes on-the-fly on a per-control basis.
     Dim eControl As Control
     
-    For Each eControl In tForm.Controls
+    For Each eControl In dstForm.Controls
+        
+        '*******************************************
+        ' NOTE: some of these steps are based on old code, and will shortly be dying.  There are only a few remaining places in PD
+        '  where traditional VB controls are used, and I am actively replacing them as time allows.
         
         'STEP 1: give all clickable controls a hand icon instead of the default pointer.
-        ' (Note: this code will set all command buttons, scroll bars, option buttons, check boxes,
-        ' list boxes, combo boxes, and file/directory/drive boxes to use the system hand cursor)
-        If ((TypeOf eControl Is CommandButton) Or (TypeOf eControl Is HScrollBar) Or (TypeOf eControl Is VScrollBar) Or (TypeOf eControl Is OptionButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox)) And (Not TypeOf eControl Is PictureBox) Then
-            setHandCursor eControl
+        ' (Note: this code sets all command buttons, scroll bars, option buttons, check boxes, list boxes, combo boxes, and file/directory/drive boxes to use the system hand cursor)
+        If (Not TypeOf eControl Is PictureBox) And (Not TypeOf eControl Is IControlThemable) Then
+            If ((TypeOf eControl Is HScrollBar) Or (TypeOf eControl Is VScrollBar) Or (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Or (TypeOf eControl Is FileListBox) Or (TypeOf eControl Is DirListBox) Or (TypeOf eControl Is DriveListBox)) Then
+                setHandCursor eControl
+            End If
         End If
         
         'STEP 2: if the current system is Vista or later, and the user has requested modern typefaces via Edit -> Preferences,
@@ -1284,40 +1290,52 @@ Public Sub MakeFormPretty(ByRef tForm As Form, Optional ByVal useDoEvents As Boo
             eControl.fontName = g_InterfaceFont
         End If
         
+        'STEP 3: make common control drop-down boxes display their full drop-down contents, without a scroll bar.
+        '         (Note: this behavior requires a manifest, so it's entirely useless inside the IDE.)
+        '         (Also, once all combo boxes are replaced with PD's dedicated replacement, this line can be removed.)
+        If (TypeOf eControl Is ComboBox) Then SendMessage eControl.hWnd, CB_SETMINVISIBLE, CLng(eControl.ListCount), ByVal 0&
+        
         'TODO: integrate font handling directly into smartResize
         If (TypeOf eControl Is smartResize) Then
             eControl.Font.Name = g_InterfaceFont
         End If
         
-        'PhotoDemon's custom controls now provide universal support for an UpdateAgainstCurrentTheme function.  This updates two things:
-        ' 1) The control's visual appearance (to reflect any changes to visual themes)
-        ' 2) The translated caption, or other text (to reflect any changes to the active language)
-        If (TypeOf eControl Is iControlThemable) Then Call eControl.UpdateAgainstCurrentTheme
+        ' TODO 6.8: remove these steps once and for all
+        '*******************************************
         
-        'STEP 3: remove TabStop from each picture box.  They should never receive focus, but I often forget to change this
-        ' at design-time.
+        'All of PhotoDemon's custom UI controls implement the IControlThemable interface, meaning they support a standardize
+        ' UpdateAgainstCurrentTheme function.  This function updates two things:
+        ' 1) The control's visual appearance (to reflect any changes to visual themes)
+        ' 2) Updating any translatable text against the current translation
+        If (TypeOf eControl Is IControlThemable) Then Call eControl.UpdateAgainstCurrentTheme
+        
+        'While we're here, forcibly remove TabStops from each picture box.  They should never receive focus, but I often forget
+        ' to change this at design-time.
         If (TypeOf eControl Is PictureBox) Then eControl.TabStop = False
         
-        'STEP 4: make common control drop-down boxes display their full drop-down contents, without a scroll bar.
-        '         (This behavior requires a manifest, so useless in the IDE.)
-        If (TypeOf eControl Is ComboBox) Then SendMessage eControl.hWnd, CB_SETMINVISIBLE, CLng(eControl.ListCount), ByVal 0&
-        
         'Optionally, DoEvents can be called after each change.  This slows the process, but it allows external progress
-        ' bars to be automatically refreshed.
+        ' bars to be automatically refreshed.  We use this when the user actively changes the visual theme and/or translation,
+        ' as it allows the user to "see" the changes appear on the main PD window.
+        ' (TODO 6.8: investigate where else this is used, if anywhere, and consider removal.)
         If useDoEvents Then DoEvents
         
     Next
     
     'FORM STEP 2: translate the form (and all controls on it)
-    If g_Language.translationActive And tForm.Enabled Then
-        g_Language.applyTranslations tForm, useDoEvents
+    ' Note that this step is not as relevant as it used to be, because all PD controls apply their own translations if/when necessary
+    ' during the above eControl.UpdateAgainstCurrentTheme step.  This translation step only handles the form caption (which must be
+    ' set specially), and some other oddities like menus, which have not been replaced yet.
+    ' TODO 6.8: once all controls are migrated, consider killing this step entirely, and moving the specialized translation bits here.
+    If g_Language.translationActive And dstForm.Enabled Then
+        g_Language.ApplyTranslations dstForm, useDoEvents
     End If
     
     'Refresh all non-MDI forms after making the changes above
-    If tForm.Name <> "FormMain" Then
-        tForm.Refresh
+    If dstForm.Name <> "FormMain" Then
+        dstForm.Refresh
     Else
-        'The main from is a bit different - if it has been translated or changed, it needs menu icons reassigned.
+        'The main from is a bit different - if it has been translated or changed, it needs menu icons reassigned, because they are
+        ' inadvertently dropped when the menu captions change.
         If FormMain.Visible Then applyAllMenuIcons
     End If
     
