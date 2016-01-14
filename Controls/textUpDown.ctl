@@ -102,6 +102,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'This implementation binding will allow us to refer to all themeable controls _
+ under a single type, making form control iteration much simpler _
+ (we won't need to maintain long lists of UserControl names)
+Implements iControlThemable
+
+
 'This object can raise a Change (which triggers when the Value property is changed by ANY means)
 Public Event Change()
 
@@ -319,6 +325,10 @@ Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, By
         BitBlt cPainter.GetPaintStructDC, 0, 0, buttonDIB.getDIBWidth, buttonDIB.getDIBHeight, buttonDIB.getDIBDC, 0, 0, vbSrcCopy
     End If
     
+End Sub
+
+Private Sub iControlThemable_UpdateAgainstCurrentTheme()
+    Call Me.UpdateAgainstCurrentTheme
 End Sub
 
 Private Sub tmrDownButton_Timer()
