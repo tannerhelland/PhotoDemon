@@ -30,22 +30,22 @@ Begin VB.Form FormBilateral
       TabIndex        =   0
       Top             =   5790
       Width           =   12090
-      _extentx        =   21325
-      _extenty        =   1323
-      backcolor       =   14802140
+      _ExtentX        =   21325
+      _ExtentY        =   1323
+      BackColor       =   14802140
    End
    Begin PhotoDemon.sliderTextCombo sltRadius 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   2
       Top             =   720
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   1270
-      caption         =   "radius"
-      min             =   3
-      max             =   25
-      value           =   9
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "radius"
+      Min             =   3
+      Max             =   25
+      Value           =   9
    End
    Begin PhotoDemon.fxPreviewCtl fxPreview 
       Height          =   5625
@@ -53,63 +53,63 @@ Begin VB.Form FormBilateral
       TabIndex        =   1
       Top             =   120
       Width           =   5625
-      _extentx        =   9922
-      _extenty        =   9922
+      _ExtentX        =   9922
+      _ExtentY        =   9922
    End
    Begin PhotoDemon.sliderTextCombo sltSpatialFactor 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   3
       Top             =   1680
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   1270
-      caption         =   "edge strength"
-      min             =   1
-      max             =   100
-      sigdigits       =   1
-      value           =   10
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "edge strength"
+      Min             =   1
+      Max             =   100
+      SigDigits       =   1
+      Value           =   10
    End
    Begin PhotoDemon.sliderTextCombo sltSpatialPower 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   4
       Top             =   5250
       Visible         =   0   'False
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   1270
-      caption         =   "spatial power (currently hidden)"
-      min             =   1
-      sigdigits       =   2
-      value           =   2
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "spatial power (currently hidden)"
+      Min             =   1
+      SigDigits       =   2
+      Value           =   2
    End
    Begin PhotoDemon.sliderTextCombo sltColorFactor 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   5
       Top             =   2640
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   1270
-      caption         =   "color strength"
-      min             =   1
-      max             =   100
-      sigdigits       =   1
-      value           =   50
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "color strength"
+      Min             =   1
+      Max             =   100
+      SigDigits       =   1
+      Value           =   50
    End
    Begin PhotoDemon.sliderTextCombo sltColorPower 
-      Height          =   720
+      Height          =   705
       Left            =   6000
       TabIndex        =   6
       Top             =   3600
       Width           =   5895
-      _extentx        =   10398
-      _extenty        =   1270
-      caption         =   "color preservation"
-      min             =   1
-      sigdigits       =   2
-      value           =   2
+      _ExtentX        =   10398
+      _ExtentY        =   1270
+      Caption         =   "color preservation"
+      Min             =   1
+      SigDigits       =   2
+      Value           =   2
    End
    Begin PhotoDemon.smartCheckBox chkSeparable 
       Height          =   330
@@ -117,9 +117,9 @@ Begin VB.Form FormBilateral
       TabIndex        =   7
       Top             =   4560
       Width           =   5820
-      _extentx        =   10266
-      _extenty        =   582
-      caption         =   "use estimation to improve performance"
+      _ExtentX        =   10266
+      _ExtentY        =   582
+      Caption         =   "use estimation to improve performance"
    End
 End
 Attribute VB_Name = "FormBilateral"
@@ -255,7 +255,7 @@ Public Sub BilateralSmoothing(ByVal kernelRadius As Long, ByVal spatialFactor As
     'To keep processing quick, only update the progress bar when absolutely necessary. This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
         
     'Color variables
     Dim srcR As Long, srcG As Long, srcB As Long
@@ -400,7 +400,7 @@ Public Sub BilateralSmoothingSeparable(ByVal kernelRadius As Long, ByVal spatial
 End Sub
 
 Private Sub chkSeparable_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
@@ -408,7 +408,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -422,10 +422,10 @@ End Sub
 Private Sub Form_Activate()
         
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Display the previewed effect in the neighboring window
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -438,26 +438,26 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub sltColorFactor_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltColorPower_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltRadius_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltSpatialPower_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltSpatialFactor_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
 
     If cmdBar.previewsAllowed Then
     
@@ -473,5 +473,5 @@ End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub

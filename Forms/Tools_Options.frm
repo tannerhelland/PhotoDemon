@@ -1929,7 +1929,7 @@ Private Sub cmdBarMini_OKClick()
     toolbar_ImageTabs.forceRedraw
     
     SetProgBarVal 0
-    releaseProgressBar
+    ReleaseProgressBar
     FormMain.Enabled = True
     
     Message "Preferences updated."
@@ -2645,7 +2645,7 @@ Private Sub Form_Load()
     picFileContainer(g_UserPreferences.GetPref_Long("Core", "Last File Preferences Page", 1)).Visible = True
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'For some reason, the container picture boxes automatically acquire the pointer of children objects.
     ' Manually force those cursors to arrows to prevent this.

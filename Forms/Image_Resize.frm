@@ -435,7 +435,7 @@ Private Sub Form_Load()
     cmbFit.AssignTooltip "When changing an image's aspect ratio, undesirable stretching may occur.  PhotoDemon can avoid this by using empty borders or cropping instead."
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
 End Sub
 
@@ -723,7 +723,7 @@ Public Sub ResizeImage(ByVal iWidth As Double, ByVal iHeight As Double, ByVal re
     
     'Release the progress bar
     SetProgBarVal 0
-    releaseProgressBar
+    ReleaseProgressBar
     
     Message "Finished."
     

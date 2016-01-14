@@ -389,7 +389,7 @@ Private Sub Form_Load()
     GenerateThankyou g_Language.TranslateMessage("Thank you for using PhotoDemon"), "http://photodemon.org", True
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Initialize the background DIB (this allows for faster blitting than a picture box)
     ' Note that this DIB is dynamically resized; this solves issues with high-DPI screens

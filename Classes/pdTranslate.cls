@@ -651,7 +651,7 @@ End Function
 'All text to be translated should be passed here first.  This sub will perform a few automatic checks of the string, and it will record what
 ' it finds.  For example, if the text has "..." at the end, this sub will remove that.  Its counterpart - postProcessText() - will re-apply
 ' any necessary changes to the translation.
-Private Sub preProcessText(ByRef srcString As String)
+Private Sub PreProcessText(ByRef srcString As String)
 
     '1) Trim the string
     srcString = Trim$(srcString)
@@ -674,7 +674,7 @@ Private Sub preProcessText(ByRef srcString As String)
     
 End Sub
 
-Private Sub postProcessText(ByRef srcString As String)
+Private Sub PostProcessText(ByRef srcString As String)
 
     '1) Trim the string
     srcString = Trim$(srcString)
@@ -704,7 +704,7 @@ Private Function getOriginalTagFromTranslation(ByVal curCaption As String) As St
     If translationActive Then
 
         'Remove white space from the caption (if necessary, white space will be added back in after retrieving the translation from file)
-        preProcessText curCaption
+        PreProcessText curCaption
         
         Dim phraseLocation As Long
         phraseLocation = xmlEngine.getLocationOfParentTag("phrase", "translation", curCaption)
@@ -718,7 +718,7 @@ Private Function getOriginalTagFromTranslation(ByVal curCaption As String) As St
         End If
         
         'Apply any relevant post-processing, then return the text
-        postProcessText curCaption
+        PostProcessText curCaption
         getOriginalTagFromTranslation = curCaption
         
     Else
@@ -736,7 +736,7 @@ Private Function getTranslationTagFromCaption(ByVal origCaption As String) As St
     End If
 
     'Remove white space from the caption (if necessary, white space will be added back in after retrieving the translation from file)
-    preProcessText origCaption
+    PreProcessText origCaption
     
     Dim phraseLocation As Long
     phraseLocation = xmlEngine.getLocationOfParentTag("phrase", "original", origCaption)
@@ -746,7 +746,7 @@ Private Function getTranslationTagFromCaption(ByVal origCaption As String) As St
         
         'Retrieve the <translation> tag inside this phrase tag
         origCaption = xmlEngine.getUniqueTag_String("translation", "", phraseLocation)
-        postProcessText origCaption
+        PostProcessText origCaption
         If origCaption <> "" Then
             getTranslationTagFromCaption = origCaption
         Else
@@ -890,7 +890,7 @@ Public Sub restoreFormCaption(ByRef srcForm As Form)
 End Sub
 
 'Translate a form caption
-Public Sub translateFormCaption(ByRef srcForm As Form)
+Public Sub TranslateFormCaption(ByRef srcForm As Form)
 
     Dim searchString As String, newString As String
     
@@ -969,15 +969,13 @@ Public Sub undoTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents As
 End Sub
 
 'Enumerate all captions on a form (and its controls), and replace them with the translated equivalents of the current language
-Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents As Boolean = False)
-
+Public Sub ApplyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents As Boolean = False)
+    
+    'For en-US locales, we can entirely skip this step
     If Not translationActive Then Exit Sub
-
-    'Dim localTimeTaken As Long
-    'localTimeTaken = Timer
-
+    
     'Start by translating the form's caption
-    translateFormCaption srcForm
+    TranslateFormCaption srcForm
 
     'Iterate through every control on the form, and restore original captions as necessary
     Dim i As Long, strPos As Long
@@ -985,90 +983,60 @@ Public Sub applyTranslations(ByRef srcForm As Form, Optional ByVal useDoEvents A
     Dim eControl As Control
     
     For Each eControl In srcForm.Controls
-    
-        'The goal is to apply translations to any object with a non-blank, non-numeric caption property
         
-        'If this is an object with a standard .Caption property, like a label or command button, replacing the text is easy.
-        If (TypeOf eControl Is CommandButton) Or (TypeOf eControl Is CheckBox) Or (TypeOf eControl Is Label) Or (TypeOf eControl Is OptionButton) Then
-            
-            'TESTING ONLY
-            'If srcForm.Name <> "FormMain" Then MsgBox eControl.Caption
-            
-            If (Len(Trim(eControl.Caption)) <> 0) And (Not IsNumeric(eControl.Caption)) Then translateObjectCaption eControl
-            If (Len(Trim(eControl.ToolTipText)) <> 0) Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
-            
-        End If
-                        
-        'Picture boxes and text boxes can have tooltips.  Translate those too.
-        If (TypeOf eControl Is PictureBox) Or (TypeOf eControl Is TextBox) Then
-            If (Len(Trim$(eControl.ToolTipText)) <> 0) Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
-        End If
+        'PD's custom-built controls self-manage translations.  Historically, we asked them to update against the current theme here, but because
+        ' the only place this function is called is within the ApplyThemeAndTranslations function (which handles master theming/translation requests
+        ' on a per-dialog basis), it's redundant to request a second translation update!
+        '
+        'As such, PD's custom controls no longer require special attention in this function.
+        '
+        'Instead, the only controls we must deal with here are standard VB objects with non-blank, non-numeric
+        ' caption properties.  PD only has a few of these left, thankfully.
         
-        'Menus are a special case.  Some PhotoDemon menus have custom accelerators (keyboard shortcuts) that are added at run-time.
-        ' We can detect these by checking for a vbTab character in the menu entry.  If this is found, strip it out before searching
-        ' for a translation.
+        'Menus are a special case.  PhotoDemon menus use custom accelerators (keyboard shortcuts) that are added
+        ' at run-time.  We can detect these by checking for a vbTab character in the menu entry.  If a tab is found,
+        ' strip it out before searching for a translation.
         If (TypeOf eControl Is Menu) Then
             tmpString = eControl.Caption
             strPos = InStr(1, tmpString, vbTab, vbBinaryCompare)
             
             'If this menu caption has a custom accelerator appended, strip it off
-            If strPos > 0 Then tmpString = Left(tmpString, strPos - 1)
+            If strPos > 0 Then tmpString = Left$(tmpString, strPos - 1)
                 
             eControl.Caption = TranslateMessage(tmpString)
             
-        End If
+            'Note that we do not re-append the accelerator here.  This is handled by a subsequent function
+            ' (required because menu icons must be reapplied as well).
             
-        'If this is a list box or combo box, replacing the text is a bit more confusing
+        End If
+        
+        'If this is a list box or combo box, replacing the text involves a bit of work
         If (TypeOf eControl Is ListBox) Or (TypeOf eControl Is ComboBox) Then
             
             'Enumerate through each entry in the control (if any are present!)
             If eControl.ListCount > 0 Then
             
                 For i = 0 To eControl.ListCount - 1
-                    If (Len(Trim$(eControl.List(i))) <> 0) And (Not IsNumeric(eControl.List(i))) Then eControl.List(i) = TranslateMessage(eControl.List(i))
+                    tmpString = Trim$(eControl.List(i))
+                    If (Len(tmpString) <> 0) Then
+                        If (Not IsNumeric(tmpString)) Then
+                            eControl.List(i) = TranslateMessage(tmpString)
+                        End If
+                    End If
                 Next i
                 
             End If
             
-            'Translate the tooltip as well
+            'If present, translate the tooltip as well
             If (Len(Trim$(eControl.ToolTipText)) <> 0) Then eControl.ToolTipText = TranslateMessage(eControl.ToolTipText)
             
         End If
         
-        'PD's custom-built controls self-manage translations.  Historically, we asked them to update against the current theme here, but because
-        ' the only place this function is called is within the makeFormPretty function (which handles master theming/translation requests
-        ' on a per-dialog basis), it's redundant to request a second translation update!
-        '
-        'As such, PD's custom controls no longer require special attention in this function.
-        
-        Dim curFontSize As Long
-        
-        'Old common control labels receive a bit of extra attention.  Because translations can be longer than their original English text,
-        ' a translated label may extend beyond the edge of its container.  If this happens, attempt to shrink the label's font size until
-        ' it fits.  (This is only necessary until all labels are switched over to the new pdLabel object.)
-        If (TypeOf eControl Is Label) Then
-            If (eControl.Left + eControl.Width > eControl.Container.ScaleWidth) And eControl.AutoSize Then
-            
-                'Try shrinking the font size until an acceptable width is found
-                curFontSize = eControl.FontSize
-                Do While ((eControl.Left + eControl.Width) > eControl.Container.ScaleWidth) And (curFontSize >= 8)
-            
-                    curFontSize = curFontSize - 1
-                    eControl.FontSize = curFontSize
-                    eControl.Refresh
-            
-                Loop
-            
-            End If
-        End If
-        
         'Optionally, DoEvents can be called after each change.  This slows the process, but it allows external progress
-        ' bars to be automatically refreshed.
+        ' bars to be automatically refreshed.  (We use this on the main form, while the language is being changed.)
         If useDoEvents Then DoEvents
         
     Next
-    
-    'If g_DisplayTimingReports Then MsgBox "Translation of " & srcForm.Name & " took " & (Timer - localTimeTaken) & " seconds."
     
 End Sub
 

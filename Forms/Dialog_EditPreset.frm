@@ -116,7 +116,7 @@ Public Sub showDialog(ByRef srcPresetManager As pdToolPreset, ByRef parentForm A
     Set m_Presets = srcPresetManager
     
     'Theme the dialog
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Display the dialog
     Me.Show vbModal, parentForm

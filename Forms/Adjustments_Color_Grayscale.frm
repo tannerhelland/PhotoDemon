@@ -304,7 +304,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     setArrowCursor picChannel
     setArrowCursor picDecompose
     
@@ -435,7 +435,7 @@ Public Function fGrayscaleCustom(ByVal numOfShades As Long, ByRef srcDIB As pdDI
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Color variables
@@ -524,7 +524,7 @@ Public Function fGrayscaleCustomDither(ByVal numOfShades As Long, ByVal DitherMe
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Color variables
@@ -887,7 +887,7 @@ Public Function MenuGrayscaleAverage(ByRef srcDIB As pdDIB, Optional ByVal suppr
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Color and grayscale variables
@@ -965,7 +965,7 @@ Public Function MenuGrayscale(ByRef srcDIB As pdDIB, Optional ByVal suppressMess
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Color and grayscale variables
@@ -1038,7 +1038,7 @@ Public Function MenuDesaturate(ByRef srcDIB As pdDIB, Optional ByVal suppressMes
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Color and grayscale variables
@@ -1110,7 +1110,7 @@ Public Function MenuDecompose(ByVal maxOrMin As Long, ByRef srcDIB As pdDIB, Opt
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Color and grayscale variables
@@ -1182,7 +1182,7 @@ Public Function MenuGrayscaleSingleChannel(ByVal cChannel As Long, ByRef srcDIB 
         Else
             SetProgBarMax modifyProgBarMax
         End If
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'Color and grayscale variables

@@ -217,7 +217,7 @@ Public Sub UnsharpMask(ByVal umRadius As Double, ByVal umAmount As Double, ByVal
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
         ' based on the size of the area to be processed.
         Dim progBarCheck As Long
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
             
         If Not toPreview Then Message "Applying unsharp mask (step %1 of %2)...", 2, 2
             
@@ -333,7 +333,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply visual themes to the form
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True

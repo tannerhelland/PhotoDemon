@@ -106,7 +106,7 @@ Public Property Get hWnd() As Long
     hWnd = UserControl.hWnd
 End Property
 
-Private Sub iControlThemable_UpdateAgainstCurrentTheme()
+Private Sub IControlThemable_UpdateAgainstCurrentTheme()
     Call Me.UpdateAgainstCurrentTheme
 End Sub
 

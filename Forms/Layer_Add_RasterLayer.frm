@@ -211,7 +211,7 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub Form_Activate()
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
 End Sub
 
 Private Sub Form_Load()

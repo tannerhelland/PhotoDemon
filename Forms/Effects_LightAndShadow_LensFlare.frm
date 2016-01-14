@@ -615,7 +615,7 @@ Public Sub LensFlare(Optional ByVal centerX As Double = 0.5, Optional ByVal cent
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'Calculate the center of the image
     Dim midX As Double, midY As Double
@@ -762,7 +762,7 @@ Private Sub btsSyncIntensity_Click(ByVal buttonIndex As Long)
     
     End If
     
-    updatePreview
+    UpdatePreview
 
 End Sub
 
@@ -771,7 +771,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -790,10 +790,10 @@ End Sub
 Private Sub Form_Activate()
         
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Display the previewed effect in the neighboring window
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -816,7 +816,7 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then LensFlare sltXCenter.Value, sltYCenter.Value, sltRadius, sltIntensity(0), sltIntensity(1), sltIntensity(2), sltHue, True, fxPreview
 End Sub
 
@@ -825,16 +825,16 @@ Private Sub fxPreview_PointSelected(xRatio As Double, yRatio As Double)
     sltXCenter.Value = xRatio
     sltYCenter.Value = yRatio
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltHue_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltIntensity_Change(Index As Integer)
@@ -851,19 +851,19 @@ Private Sub sltIntensity_Change(Index As Integer)
         
     End If
     
-    updatePreview
+    UpdatePreview
     
 End Sub
 
 Private Sub sltRadius_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltXCenter_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltYCenter_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 

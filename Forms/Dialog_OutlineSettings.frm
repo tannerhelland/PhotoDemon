@@ -271,7 +271,7 @@ Public Sub showDialog(ByVal initialPen As String, Optional ByRef callingControl 
     'Apply extra images and tooltips to certain controls
     
     'Apply visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Initialize an XML engine, which we will use to read/write recent pen data to file
     Set m_XMLEngine = New pdXML

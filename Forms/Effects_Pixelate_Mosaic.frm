@@ -197,7 +197,7 @@ Public Sub MosaicFilter(ByVal BlockSizeX As Long, ByVal BlockSizeY As Long, ByVa
     Dim progBarCheck As Long
     If Not toPreview Then
         SetProgBarMax xLoop
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
     
     'A number of other variables are required for the nested For..Next loops
@@ -327,7 +327,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Request a preview
     cmdBar.markPreviewStatus True

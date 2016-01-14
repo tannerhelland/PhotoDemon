@@ -819,7 +819,7 @@ Public Sub showDialog(ByVal initialColor As Long, Optional ByRef callingControl 
     cmdCapture.AssignTooltip "Click this button to enable color capturing from anywhere on the screen."
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Manually assign a hand cursor to the various picture boxes.
     prepSpecialMouseHandling True

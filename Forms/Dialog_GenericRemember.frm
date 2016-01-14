@@ -156,7 +156,7 @@ Public Sub showDialog(ByVal questionText As String, ByVal yesButtonText As Strin
     End If
 
     'Apply visual themes and translations
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
 
     'Display the form
     ShowPDDialog vbModal, Me, True

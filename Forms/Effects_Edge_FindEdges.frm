@@ -196,7 +196,7 @@ End Sub
 Private Sub Form_Activate()
         
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Update the descriptions (this will also draw a preview of the selected edge-detection algorithm)
     cmdBar.markPreviewStatus True

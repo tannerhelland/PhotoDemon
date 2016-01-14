@@ -237,7 +237,7 @@ Public Sub SurfaceBlurFilter(ByVal gRadius As Double, ByVal gThreshold As Byte, 
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
         ' based on the size of the area to be processed.
         Dim progBarCheck As Long
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
             
         If Not toPreview Then Message "Applying surface blur..."
             
@@ -339,7 +339,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
         
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True

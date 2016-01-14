@@ -246,7 +246,7 @@ Public Function downloadURLToTempFile(ByVal URL As String) As String
                 If hInternetSession Then InternetCloseHandle hInternetSession
                 
                 SetProgBarVal 0
-                releaseProgressBar
+                ReleaseProgressBar
                 downloadURLToTempFile = ""
                 Screen.MousePointer = 0
                 
@@ -306,7 +306,7 @@ Public Function downloadURLToTempFile(ByVal URL As String) As String
         If hInternetSession Then InternetCloseHandle hInternetSession
         
         SetProgBarVal 0
-        releaseProgressBar
+        ReleaseProgressBar
         Screen.MousePointer = 0
         
         downloadURLToTempFile = ""
@@ -317,7 +317,7 @@ Public Function downloadURLToTempFile(ByVal URL As String) As String
     'If we made it all the way here, the file was downloaded successfully (most likely... with web stuff, it's always
     ' possible that some strange error has occurred, but we have done our due diligence in attempting a download!)
     SetProgBarVal 0
-    releaseProgressBar
+    ReleaseProgressBar
     Screen.MousePointer = 0
     
     'Return the temp file location
@@ -367,7 +367,7 @@ Private Sub Form_Load()
     Message "Waiting for user input..."
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
 
 End Sub
 

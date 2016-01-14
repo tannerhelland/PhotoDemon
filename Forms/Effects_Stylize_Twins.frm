@@ -129,7 +129,7 @@ Public Sub GenerateTwins(ByVal tType As Long, Optional ByVal toPreview As Boolea
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
             
     'This look-up table will be used for alpha-blending.  It contains the equivalent of any two color values [0,255] added
     ' together and divided by 2.
@@ -209,7 +209,7 @@ End Sub
 Private Sub Form_Activate()
         
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Render an image preview
     cmdBar.markPreviewStatus True

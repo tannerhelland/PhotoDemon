@@ -186,7 +186,7 @@ Public Sub ApplyCLAHE(ByVal fxQuality As Double, ByVal blendStrength As Double, 
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'The number of pixels in the current median box are tracked dynamically.
     Dim NumOfPixels As Long
@@ -589,7 +589,7 @@ Public Sub ApplyImitationHDR(ByVal fxQuality As Double, ByVal blendStrength As D
         'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
         ' based on the size of the area to be processed.
         Dim progBarCheck As Long
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
             
         'ScaleFactor is used to apply the unsharp mask.  Maximum strength can be any value, but PhotoDemon locks it at 10.
         Dim scaleFactor As Double, invScaleFactor As Double
@@ -701,7 +701,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Draw a preview of the effect
     cmdBar.markPreviewStatus True

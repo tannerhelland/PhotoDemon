@@ -149,7 +149,7 @@ Public Property Let Value(ByVal newValue As CheckBoxConstants)
     End If
 End Property
 
-Private Sub iControlThemable_UpdateAgainstCurrentTheme()
+Private Sub IControlThemable_UpdateAgainstCurrentTheme()
     Call Me.UpdateAgainstCurrentTheme
 End Sub
 

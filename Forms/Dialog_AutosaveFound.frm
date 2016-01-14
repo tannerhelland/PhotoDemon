@@ -217,7 +217,7 @@ Public Sub showDialog()
     cmdCancel.AssignImage "LRGCANCEL"
     
     'Apply any custom styles to the form
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
 
     'Populate the AutoSave entry list box
     displayAutosaveEntries

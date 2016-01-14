@@ -221,7 +221,7 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
     'To keep processing quick, only update the progress bar when absolutely necessary. This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'Rather than recalculating fragment positions for each pixel, calculate them as offsets from (0, 0)
     ' and store those values in x/y lookup tables.
@@ -325,7 +325,7 @@ Public Sub Fragment(ByVal fragCount As Long, ByVal fragDistance As Double, ByVal
 End Sub
 
 Private Sub cboEdges_Click()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_OKClick()
@@ -333,7 +333,7 @@ Private Sub cmdBar_OKClick()
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub cmdBar_ResetClick()
@@ -347,11 +347,11 @@ End Sub
 Private Sub Form_Activate()
         
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
         
     'Create the preview
     cmdBar.markPreviewStatus True
-    updatePreview
+    UpdatePreview
     
 End Sub
 
@@ -370,27 +370,27 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub updatePreview()
+Private Sub UpdatePreview()
     If cmdBar.previewsAllowed Then Fragment sltFragments, sltDistance, sltAngle, CLng(cboEdges.ListIndex), OptInterpolate(0).Value, True, fxPreview
 End Sub
 
 Private Sub fxPreview_ViewportChanged()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub OptInterpolate_Click(Index As Integer)
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltAngle_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltDistance_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 
 Private Sub sltFragments_Change()
-    updatePreview
+    UpdatePreview
 End Sub
 

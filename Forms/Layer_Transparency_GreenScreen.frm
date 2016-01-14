@@ -130,7 +130,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Render a preview of the alpha effect
     UpdatePreview
@@ -181,7 +181,7 @@ Public Sub colorToAlpha(Optional ByVal ConvertColor As Long, Optional ByVal eras
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'Color variables
     Dim r As Long, g As Long, b As Long, a As Long

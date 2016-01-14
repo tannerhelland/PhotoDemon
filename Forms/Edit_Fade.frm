@@ -133,7 +133,7 @@ End Sub
 Private Sub Form_Activate()
         
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Render a preview
     cmdBar.markPreviewStatus True
@@ -244,7 +244,7 @@ Public Sub fxFadeLastAction(ByVal fadeOpacity As Double, ByVal dstBlendMode As L
         Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
         
         SetProgBarVal 0
-        releaseProgressBar
+        ReleaseProgressBar
         
         Message "Fade complete."
         

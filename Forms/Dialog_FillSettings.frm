@@ -410,7 +410,7 @@ Public Sub showDialog(ByVal initialBrush As String, Optional ByRef callingContro
     'Apply extra images and tooltips to certain controls
     
     'Apply visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Initialize an XML engine, which we will use to read/write recent brush data to file
     Set m_XMLEngine = New pdXML

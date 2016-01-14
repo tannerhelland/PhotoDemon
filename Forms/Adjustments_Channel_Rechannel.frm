@@ -187,7 +187,7 @@ Private Sub Form_Activate()
     btsChannel(2).AddItem "key (black)", 3
     
     'Apply translations and visual themes, and supply an initial effect preview
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     UpdatePreview
     
 End Sub
@@ -234,7 +234,7 @@ Public Sub RechannelImage(ByVal parameterList As String, Optional ByVal toPrevie
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     Dim cK As Double, mK As Double, yK As Double, bK As Double, invBK As Double
     

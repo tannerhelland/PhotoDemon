@@ -145,7 +145,7 @@ Public Sub AddFilmGrain(ByVal gStrength As Double, ByVal gSoftness As Double, Op
     Dim progBarCheck As Long
     If Not toPreview Then
         SetProgBarMax finalY * 2 + finalX * 2
-        progBarCheck = findBestProgBarValue()
+        progBarCheck = FindBestProgBarValue()
     End If
         
     'Noise variables
@@ -301,7 +301,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Render a preview
     UpdatePreview

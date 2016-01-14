@@ -2499,7 +2499,7 @@ Private Sub Form_Load()
     Next i
         
     'Apply visual themes and translations
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'For some reason, the container picture boxes automatically acquire the cursor of children objects.
     ' Manually force those cursors to arrows to prevent this.

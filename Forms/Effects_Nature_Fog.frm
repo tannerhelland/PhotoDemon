@@ -180,7 +180,7 @@ Public Sub fxFog(ByVal fxScale As Double, ByVal fxContrast As Double, ByVal fxDe
     'To keep processing quick, only update the progress bar when absolutely necessary.  This function calculates that value
     ' based on the size of the area to be processed.
     Dim progBarCheck As Long
-    progBarCheck = findBestProgBarValue()
+    progBarCheck = FindBestProgBarValue()
     
     'Scale is used as a fraction of the image's smallest dimension.  There's no problem with using larger
     ' values, but at some point it distorts the image beyond recognition.
@@ -359,7 +359,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply visual themes and translations
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Create the preview
     cmdBar.markPreviewStatus True

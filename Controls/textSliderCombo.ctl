@@ -689,7 +689,7 @@ Private Sub cBackgroundPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop A
     
 End Sub
 
-Private Sub iControlThemable_UpdateAgainstCurrentTheme()
+Private Sub IControlThemable_UpdateAgainstCurrentTheme()
     Call Me.UpdateAgainstCurrentTheme
 End Sub
 

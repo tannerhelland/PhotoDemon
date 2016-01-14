@@ -841,7 +841,7 @@ Private Sub cResize_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long
     If Not m_InternalResizeState Then syncUserControlSizeToComboSize
 End Sub
 
-Private Sub iControlThemable_UpdateAgainstCurrentTheme()
+Private Sub IControlThemable_UpdateAgainstCurrentTheme()
     Call Me.UpdateAgainstCurrentTheme
 End Sub
 

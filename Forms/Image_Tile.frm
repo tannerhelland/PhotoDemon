@@ -358,7 +358,7 @@ Public Sub GenerateTile(ByVal tType As Byte, Optional xTarget As Long, Optional 
         DisplaySize pdImages(g_CurrentImage)
         
         SetProgBarVal 0
-        releaseProgressBar
+        ReleaseProgressBar
         
         'Notify the parent image of the change
         pdImages(g_CurrentImage).notifyImageChanged UNDO_LAYER, 0
@@ -397,7 +397,7 @@ End Sub
 Private Sub Form_Activate()
     
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Render a preview
     cmdBar.markPreviewStatus True

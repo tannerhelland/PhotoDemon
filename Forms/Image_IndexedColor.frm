@@ -144,7 +144,7 @@ End Sub
 Private Sub Form_Activate()
         
     'Apply translations and visual themes
-    MakeFormPretty Me
+    ApplyThemeAndTranslations Me
     
     'Render a preview
     cmdBar.markPreviewStatus True
@@ -278,7 +278,7 @@ Public Sub ReduceImageColors_Auto(ByVal qMethod As Long, Optional ByVal toPrevie
             Else
                 Viewport_Engine.Stage2_CompositeAllLayers pdImages(g_CurrentImage), FormMain.mainCanvas(0)
                 SetProgBarVal 0
-                releaseProgressBar
+                ReleaseProgressBar
                 Message "Image successfully quantized to %1 unique colors. ", numOfQuantizedColors
             End If
             
