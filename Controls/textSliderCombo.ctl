@@ -89,6 +89,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'This implementation binding will allow us to refer to all themeable controls _
+ under a single type, making form control iteration much simpler _
+ (we won't need to maintain long lists of UserControl names)
+Implements iControlThemable
+
+
 'This object provides a single raised event:
 ' - Change (which triggers when either the scrollbar or text box is modified in any way)
 Public Event Change()
@@ -681,6 +687,10 @@ Private Sub cBackgroundPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop A
         BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBufferControl.getDIBDC, winLeft, winTop, vbSrcCopy
     End If
     
+End Sub
+
+Private Sub iControlThemable_UpdateAgainstCurrentTheme()
+    Call Me.UpdateAgainstCurrentTheme
 End Sub
 
 Private Sub tudPrimary_Change()

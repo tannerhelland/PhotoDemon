@@ -61,6 +61,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'This implementation binding will allow us to refer to all themeable controls _
+ under a single type, making form control iteration much simpler _
+ (we won't need to maintain long lists of UserControl names)
+Implements iControlThemable
+
+
 'In its default configuration, this control raises no events.  However, if default "shell URL behavior" is not desired,
 ' properties can be modified so that a Click() event is raised instead.
 Public Event Click()
@@ -454,6 +460,10 @@ End Property
 Public Property Get ContainerHwnd() As Long
     ContainerHwnd = UserControl.ContainerHwnd
 End Property
+
+Private Sub iControlThemable_UpdateAgainstCurrentTheme()
+    Call Me.UpdateAgainstCurrentTheme
+End Sub
 
 'INITIALIZE control
 Private Sub UserControl_Initialize()

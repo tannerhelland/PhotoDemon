@@ -55,6 +55,12 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+'This implementation binding will allow us to refer to all themeable controls _
+ under a single type, making form control iteration much simpler _
+ (we won't need to maintain long lists of UserControl names)
+Implements iControlThemable
+
+
 'This control really only needs one event raised - Click
 Public Event Click()
 
@@ -366,6 +372,10 @@ Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, By
     'Flip the relevant chunk of the buffer to the screen
     BitBlt UserControl.hDC, winLeft, winTop, winWidth, winHeight, m_BackBuffer.getDIBDC, winLeft, winTop, vbSrcCopy
     
+End Sub
+
+Private Sub iControlThemable_UpdateAgainstCurrentTheme()
+    Call Me.UpdateAgainstCurrentTheme
 End Sub
 
 Private Sub UserControl_AccessKeyPress(KeyAscii As Integer)
