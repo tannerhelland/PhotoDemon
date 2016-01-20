@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	
+	<pdData>
+		
+		<pdDataType>Visual theme</pdDataType>
+		
+		<!-- This is the default "light theme" file for PhotoDemon 6.8. -->
+		
+		<!-- The Definitions section describes any custom, reusable color values you wish to create. -->
+		
+		<Definitions>
+			<BlackTest>#000000</BlackTest>
+			<BlueTest>#0000ff</BlueTest>
+			<WhiteTest>#ffffff</WhiteTest>
+		</Definitions>
+		
+		<!-- The Colors section contains a hard-coded list of colors used by PD. -->
+		<!-- Colors can be hex RGB values, or named colors that correspond to entries in the Definitions section. -->
+		<Colors>
+		
+			<!-- Default colors are not object-specific.  They are used as fallback values if an object lacks a given color name. -->
+			<Default>
+				<Background>#aaaaaa</Background>
+			</Default>
+			
+			<!-- All colors past this point are organized by object name.  Missing values will be taken from the Default section. -->
+			
+			<!-- PD's "Button Strip" control -->
+			<ButtonStrip>
+				<Background></Background>
+				<ActiveItemFill>#0000aa</ActiveItemFill>
+				<InactiveItemFill>WhiteTest</InactiveItemFill>
+				<ActiveItemBorder>BlueTest</ActiveItemBorder> 
+				<InactiveItemBorder>BlueTest</InactiveItemBorder> 
+				<ActiveText>WhiteTest</ActiveText> 
+				<InactiveText>BlackTest</InactiveText> 
+			</ButtonStrip>
+		
+		</Colors>
+		
+	</pdData>
+	

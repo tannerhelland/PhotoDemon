@@ -498,7 +498,7 @@ Private Function ResetBackBuffer(Optional ByVal newBackColor As Long = -1&, Opti
     'If the caller specifies a background color, we want to use it.  If they don't, grab the default window background from
     ' PD's central themer.
     If newBackColor = -1 Then
-        If g_Themer Is Nothing Then
+        If (g_Themer Is Nothing) Then
             newBackColor = RGB(255, 255, 255)
         Else
             If m_BackColor = -1 Then

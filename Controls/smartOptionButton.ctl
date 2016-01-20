@@ -63,7 +63,7 @@ Option Explicit
 'This implementation binding will allow us to refer to all themeable controls _
  under a single type, making form control iteration much simpler _
  (we won't need to maintain long lists of UserControl names)
-Implements iControlThemable
+Implements IControlThemable
 
 
 'This control really only needs one event raised - Click
@@ -240,12 +240,12 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then updateControlLayout
+    If updateLayoutToo Then UpdateControlLayout
     RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    updateControlLayout
+    UpdateControlLayout
 End Sub
 
 'See if the mouse is over the clickable portion of the control
@@ -266,10 +266,10 @@ Private Sub UserControl_Initialize()
     ucSupport.SetCaptionAutomaticPainting False
     
     'In design mode, initialize a base theming class, so our paint functions don't fail
-    If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
+    If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
     
     'Update the control size parameters at least once
-    updateControlLayout
+    UpdateControlLayout
                 
 End Sub
 
@@ -306,7 +306,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
 End Sub
 
 'Whenever the size of the control changes, we must recalculate some internal rendering metrics.
-Private Sub updateControlLayout()
+Private Sub UpdateControlLayout()
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
@@ -472,7 +472,7 @@ End Sub
 'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog.
 Public Sub UpdateAgainstCurrentTheme()
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
-    updateControlLayout
+    UpdateControlLayout
 End Sub
 
 'By design, PD prefers to not use design-time tooltips.  Apply tooltips at run-time, using this function.

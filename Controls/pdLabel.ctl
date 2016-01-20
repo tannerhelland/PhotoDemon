@@ -63,7 +63,7 @@ Option Explicit
 'This implementation binding will allow us to refer to all themeable controls _
  under a single type, making form control iteration much simpler _
  (we won't need to maintain long lists of UserControl names)
-Implements iControlThemable
+Implements IControlThemable
 
 
 'This control raises no events, by design.
@@ -110,7 +110,7 @@ End Property
 
 Public Property Let Alignment(ByVal newAlignment As AlignmentConstants)
     ucSupport.SetCaptionAlignment newAlignment
-    If (Not g_IsProgramRunning) Then updateControlLayout
+    If (Not g_IsProgramRunning) Then UpdateControlLayout
     PropertyChanged "Alignment"
 End Property
 
@@ -142,9 +142,9 @@ Public Property Let Caption(ByRef newCaption As String)
     'Normally we would rely on the ucSupport class to raise redraw events for us, but this label control is a weird one,
     ' since we may need to resize the entire control when the caption changes.  As such, force an immediate layout update.
     If (Not g_IsProgramRunning) Then
-        updateControlLayout
+        UpdateControlLayout
     Else
-        If (m_Layout = AutoSizeControl) Or (m_Layout = AutoSizeControlPlusWordWrap) Then updateControlLayout
+        If (m_Layout = AutoSizeControl) Or (m_Layout = AutoSizeControlPlusWordWrap) Then UpdateControlLayout
     End If
     
     PropertyChanged "Caption"
@@ -219,7 +219,7 @@ End Property
 
 Public Property Let Layout(ByVal newLayout As PD_LABEL_LAYOUT)
     m_Layout = newLayout
-    updateControlLayout
+    UpdateControlLayout
 End Property
 
 'Because there can be a delay between window resize events and VB processing the related message (and updating its internal properties),
@@ -259,7 +259,7 @@ Private Sub IControlThemable_UpdateAgainstCurrentTheme()
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then updateControlLayout
+    If updateLayoutToo Then UpdateControlLayout
     RedrawBackBuffer
 End Sub
 
@@ -275,7 +275,7 @@ Public Property Get ContainerHwnd() As Long
 End Property
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    updateControlLayout
+    UpdateControlLayout
 End Sub
 
 'Because we sometimes do run-timre rearranging of label controls, we wrap a couple helper functions to ensure proper high-DPI support
@@ -307,7 +307,7 @@ Private Sub UserControl_Initialize()
     ucSupport.SetCaptionAutomaticPainting False
     
     'In design mode, initialize a base theming class, so our paint functions don't fail
-    If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
+    If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
     
 End Sub
 
@@ -376,7 +376,7 @@ End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
 ' of internal sizing metrics whenever the control size changes.
-Private Sub updateControlLayout()
+Private Sub UpdateControlLayout()
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
@@ -493,7 +493,7 @@ Private Sub RedrawBackBuffer()
     If m_UseCustomBackColor Then
         targetColor = m_BackColor
     Else
-        If g_IsProgramRunning Then
+        If g_IsProgramRunning And Not (g_Themer Is Nothing) Then
             targetColor = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
         Else
             targetColor = vbWhite
@@ -509,7 +509,7 @@ Private Sub RedrawBackBuffer()
         If m_UseCustomForeColor Then
             targetColor = m_ForeColor
         Else
-            targetColor = g_Themer.GetThemeColor(PDTC_TEXT_DEFAULT)
+            If Not (g_Themer Is Nothing) Then targetColor = g_Themer.GetThemeColor(PDTC_TEXT_DEFAULT)
         End If
     Else
         targetColor = g_Themer.GetThemeColor(PDTC_DISABLED)

@@ -231,7 +231,7 @@ Public Function getUpdatePath() As String
 End Function
 
 'Initialize key program directories
-Public Sub initializePaths()
+Public Sub InitializePaths()
     
     Dim cFile As pdFSO
     Set cFile = New pdFSO

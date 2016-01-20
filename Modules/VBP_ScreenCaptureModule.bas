@@ -147,57 +147,46 @@ Public Sub GetDesktopAsDIB(ByRef dstDIB As pdDIB)
     ' not just the primary one.
     Dim screenLeft As Long, screenTop As Long
     Dim screenWidth As Long, screenHeight As Long
-    
     screenLeft = g_Displays.GetDesktopLeft
     screenTop = g_Displays.GetDesktopTop
     screenWidth = g_Displays.GetDesktopWidth
     screenHeight = g_Displays.GetDesktopHeight
+    
+    'Prepare the target DIB
+    dstDIB.createBlank screenWidth, screenHeight, 32
     
     #If DEBUGMODE = 1 Then
         pdDebug.LogAction "Preparing to capture screen using rect (" & screenLeft & ", " & screenTop & ")x(" & screenWidth & ", " & screenHeight & ")"
     #End If
     
-    'Retrieve an hWnd and DC for the screen
+    'Copy the image directly from the screen's DC to the target DIB's DC
     Dim screenHwnd As Long, desktopDC As Long
     screenHwnd = GetDesktopWindow()
     desktopDC = GetDC(screenHwnd)
+    BitBlt dstDIB.getDIBDC, 0, 0, screenWidth, screenHeight, desktopDC, screenLeft, screenTop, vbSrcCopy
+    ReleaseDC screenHwnd, desktopDC
     
-    'Copy the bitmap into the specified DIB
-    dstDIB.createBlank screenWidth, screenHeight, 32
-    BitBlt dstDIB.getDIBDC, 0, 0, screenWidth, screenHeight, desktopDC, 0, 0, vbSrcCopy
+    'Enforce correct alpha on the result
     dstDIB.ForceNewAlpha 255
     
-    'Release everything we generated for the capture, then exit
-    ReleaseDC screenHwnd, desktopDC
-
 End Sub
 
 'Use this function to return a subsection of the current desktop in DIB format.
 ' IMPORTANT NOTE: the source rect should be in *desktop coordinates*, which may not be zero-based on a multimonitor system.
 Public Sub GetPartialDesktopAsDIB(ByRef dstDIB As pdDIB, ByRef srcRect As RECTL)
-
-    'Use the g_Displays object to detect VIRTUAL screen size.  This will capture all monitors on a multimonitor arrangement,
-    ' not just the primary one.
-    Dim screenLeft As Long, screenTop As Long
-    Dim screenWidth As Long, screenHeight As Long
     
-    screenLeft = g_Displays.GetDesktopLeft
-    screenTop = g_Displays.GetDesktopTop
-    screenWidth = g_Displays.GetDesktopWidth
-    screenHeight = g_Displays.GetDesktopHeight
+    'Make sure the target DIB is the correct size
+    dstDIB.createBlank srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, 32
     
-    'Retrieve an hWnd and DC for the screen
+    'BitBlt the relevant portion of the screen directly from the screen DC to the specified DIB
     Dim screenHwnd As Long, desktopDC As Long
     screenHwnd = GetDesktopWindow()
     desktopDC = GetDC(screenHwnd)
-    
-    'BitBlt the relevant portion of the screen into the specified DIB
-    dstDIB.createBlank srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, 32
     BitBlt dstDIB.getDIBDC, 0, 0, srcRect.Right - srcRect.Left, srcRect.Bottom - srcRect.Top, desktopDC, srcRect.Left, srcRect.Top, vbSrcCopy
-    dstDIB.ForceNewAlpha 255
-    
-    'Release everything we generated for the capture, then exit
     ReleaseDC screenHwnd, desktopDC
+    
+    'Enforce normal alpha on the result
+    dstDIB.ForceNewAlpha 255
     
 End Sub
 

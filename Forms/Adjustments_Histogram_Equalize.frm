@@ -267,7 +267,7 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
             
             'Luminance
             Else
-                a = Color_Functions.getHQLuminance(r, g, b)
+                a = Colors.getHQLuminance(r, g, b)
                 lValues(a) = lValues(a) + 1
             End If
             
@@ -335,14 +335,14 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
                 ImageData(x + 2, y) = rData(r)
             Else
                 If ehTarget = 1 Then
-                    Color_Functions.tRGBToHSL r, g, b, h, s, v
-                    Color_Functions.tHSLToRGB h, s, floatLookup(lData(Int(v * 255))), r, g, b
+                    Colors.tRGBToHSL r, g, b, h, s, v
+                    Colors.tHSLToRGB h, s, floatLookup(lData(Int(v * 255))), r, g, b
                     ImageData(x, y) = b
                     ImageData(x + 1, y) = g
                     ImageData(x + 2, y) = r
                 Else
-                    Color_Functions.fRGBtoHSV floatLookup(r), floatLookup(g), floatLookup(b), h, s, v
-                    Color_Functions.fHSVtoRGB h, s, floatLookup(lData(Int(v * 255))), rFloat, gFloat, bFloat
+                    Colors.fRGBtoHSV floatLookup(r), floatLookup(g), floatLookup(b), h, s, v
+                    Colors.fHSVtoRGB h, s, floatLookup(lData(Int(v * 255))), rFloat, gFloat, bFloat
                     ImageData(x, y) = Int(bFloat * 255)
                     ImageData(x + 1, y) = Int(gFloat * 255)
                     ImageData(x + 2, y) = Int(rFloat * 255)
@@ -448,9 +448,9 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
                     Else
                         
                         If ehTarget = 1 Then
-                            Color_Functions.tRGBToHSL r, g, b, h, s, v
+                            Colors.tRGBToHSL r, g, b, h, s, v
                         Else
-                            Color_Functions.fRGBtoHSV floatLookup(r), floatLookup(g), floatLookup(b), h, s, v
+                            Colors.fRGBtoHSV floatLookup(r), floatLookup(g), floatLookup(b), h, s, v
                         End If
                         
                         lData(0) = CDbl(lValues(0)) * scaleFactor
@@ -465,12 +465,12 @@ Public Sub EqualizeHistogram(ByVal parameterList As String, Optional ByVal toPre
                         v = (v + floatLookup(lData(vLong))) / 2
                         
                         If ehTarget = 1 Then
-                            Color_Functions.tHSLToRGB h, s, v, r, g, b
+                            Colors.tHSLToRGB h, s, v, r, g, b
                             ImageData(x, y) = b
                             ImageData(x + 1, y) = g
                             ImageData(x + 2, y) = r
                         Else
-                            Color_Functions.fHSVtoRGB h, s, v, rFloat, gFloat, bFloat
+                            Colors.fHSVtoRGB h, s, v, rFloat, gFloat, bFloat
                             ImageData(x, y) = Int(bFloat * 255)
                             ImageData(x + 1, y) = Int(gFloat * 255)
                             ImageData(x + 2, y) = Int(rFloat * 255)

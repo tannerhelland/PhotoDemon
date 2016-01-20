@@ -55,10 +55,8 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'This implementation binding will allow us to refer to all themeable controls _
- under a single type, making form control iteration much simpler _
- (we won't need to maintain long lists of UserControl names)
-Implements iControlThemable
+'All user-facing controls implement a simple translation/theme interface, which requires a single sub (UpdateAgainstCurrentTheme)
+Implements IControlThemable
 
 'This control really only needs one event raised - Click
 Public Event Click(ByVal buttonIndex As Long)
@@ -124,6 +122,28 @@ Attribute ucSupport.VB_VarHelpID = -1
 ' Windows default of 96 DPI
 Private Const IMG_TEXT_PADDING As Long = 4
 
+'Local list of themable colors.  This list includes all potential colors used by the control, regardless of state change
+' or internal control settings.  The list is updated by calling the UpdateColorList function.
+' (Note also that this list does not include variants, e.g. "BorderColor" vs "BorderColor_Hovered".  Variant values are
+'  automatically calculated by the color management class, and they are retrieved by passing boolean modifiers to that
+'  class, rather than treating every imaginable variant as a separate constant.)
+Private Enum BTS_COLOR_LIST
+    [_First] = 0
+    BTS_Background = 0
+    BTS_ActiveItemFill = 1
+    BTS_InactiveItemFill = 2
+    BTS_ActiveItemBorder = 3
+    BTS_InactiveItemBorder = 4
+    BTS_ActiveText = 5
+    BTS_InactiveText = 6
+    [_Last] = 6
+    [_Count] = 7
+End Enum
+
+'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
+' without worrying about the details locally.
+Private m_Colors As pdThemeColors
+
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
 Attribute Enabled.VB_UserMemId = -514
@@ -156,7 +176,7 @@ End Property
 Public Property Let FontBold(ByVal newBoldSetting As Boolean)
     If newBoldSetting <> m_FontBold Then
         m_FontBold = newBoldSetting
-        updateControlLayout
+        UpdateControlLayout
     End If
 End Property
 
@@ -167,7 +187,7 @@ End Property
 Public Property Let FontSize(ByVal newSize As Single)
     If newSize <> m_FontSize Then
         m_FontSize = newSize
-        updateControlLayout
+        UpdateControlLayout
     End If
 End Property
 
@@ -251,7 +271,7 @@ End Sub
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
         
     Dim mouseClickIndex As Long
-    mouseClickIndex = isMouseOverButton(x, y)
+    mouseClickIndex = IsMouseOverButton(x, y)
     
     'Disable any keyboard-generated focus rectangles
     m_FocusRectActive = -1
@@ -276,7 +296,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     
     'If the mouse is over the relevant portion of the user control, display the cursor as clickable
     Dim mouseHoverIndex As Long
-    mouseHoverIndex = isMouseOverButton(x, y)
+    mouseHoverIndex = IsMouseOverButton(x, y)
     
     'Only refresh the control if the hover value has changed
     If mouseHoverIndex <> m_ButtonHoverIndex Then
@@ -297,31 +317,31 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then updateControlLayout
+    If updateLayoutToo Then UpdateControlLayout
     RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    updateControlLayout
+    UpdateControlLayout
     RedrawBackBuffer
 End Sub
 
 'See if the mouse is over the clickable portion of the control
-Private Function isMouseOverButton(ByVal mouseX As Single, ByVal mouseY As Single) As Long
+Private Function IsMouseOverButton(ByVal mouseX As Single, ByVal mouseY As Single) As Long
     
     'Search each set of button coords, looking for a match
     Dim i As Long
     For i = 0 To m_numOfButtons - 1
     
         If Math_Functions.isPointInRect(mouseX, mouseY, m_Buttons(i).btBounds) Then
-            isMouseOverButton = i
+            IsMouseOverButton = i
             Exit Function
         End If
     
     Next i
     
     'No match was found; return -1
-    isMouseOverButton = -1
+    IsMouseOverButton = -1
 
 End Function
 
@@ -409,7 +429,7 @@ Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long =
     End With
     
     'Before we can redraw the control, we need to recalculate all button positions - do that now!
-    updateControlLayout
+    UpdateControlLayout
 
 End Sub
 
@@ -458,7 +478,7 @@ Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As 
     End With
     
     'Update the control layout to account for this new button
-    updateControlLayout
+    UpdateControlLayout
 
 End Sub
 
@@ -476,8 +496,17 @@ Private Sub UserControl_Initialize()
     ucSupport.SpecifyRequiredKeys VK_RIGHT, VK_LEFT, VK_SPACE
     
     'In design mode, initialize a base theming class, so our paint functions don't fail
-    If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
+    If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
     
+    'Prep the color manager and load default colors (if inside the IDE, only; otherwise, color loading will happen when
+    ' external theming functions call UpdateAgainstCurrentTheme)
+    Set m_Colors = New pdThemeColors
+    Dim colorCount As BTS_COLOR_LIST
+    colorCount = [_Count]
+    m_Colors.InitializeColorList "ButtonStrip", colorCount
+    If Not g_IsProgramRunning Then UpdateColorList
+    
+    'Set various UI trackers to default values.
     m_FocusRectActive = -1
     m_ButtonHoverIndex = -1
                     
@@ -513,7 +542,7 @@ End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
 ' of internal sizing metrics whenever the control size changes.
-Private Sub updateControlLayout()
+Private Sub UpdateControlLayout()
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
@@ -907,9 +936,32 @@ Public Sub UpdateAgainstCurrentTheme()
     
     'Update all text managed by the support class (e.g. tooltips)
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
-        
+    
+    'This control potentially uses a lot of colors; update its list now
+    UpdateColorList
+    
     'Because translations can change text layout, we need to recalculate font metrics prior to redrawing the button
-    updateControlLayout
+    UpdateControlLayout
+    
+End Sub
+
+'Before the control is rendered, we need to retrieve all painting colors from PD's primary theming class.  Note that this
+' step must also be called if/when PD's visual theme settings change.
+Private Sub UpdateColorList()
+    
+    'Color list retrieval is pretty darn easy - just load each color one at a time, and leave the rest to the color class.
+    ' It will build an internal hash table of the colors we request, which makes rendering much faster.
+    Dim colorValues As BTS_COLOR_LIST
+    
+    With m_Colors
+        .LoadThemeColor BTS_Background, "Background", "#ffffff"
+        .LoadThemeColor BTS_ActiveItemFill, "ActiveItemFill", "#6666ff"
+        .LoadThemeColor BTS_InactiveItemFill, "InactiveItemFill", "#ffffff"
+        .LoadThemeColor BTS_ActiveItemBorder, "ActiveItemBorder", "#0000ff"
+        .LoadThemeColor BTS_InactiveItemBorder, "InactiveItemBorder", "#6666ff"
+        .LoadThemeColor BTS_ActiveText, "ActiveText", "#ffffff"
+        .LoadThemeColor BTS_InactiveText, "InactiveText", "#666666"
+    End With
     
 End Sub
 

@@ -14,7 +14,7 @@ Attribute VB_Name = "Text_Support"
 Option Explicit
 
 'Validate a given text box entry.
-Public Sub textValidate(ByRef srcTextBox As TextBox, Optional ByVal negAllowed As Boolean = False, Optional ByVal floatAllowed As Boolean = False)
+Public Sub TextValidate(ByRef srcTextBox As TextBox, Optional ByVal negAllowed As Boolean = False, Optional ByVal floatAllowed As Boolean = False)
 
     'Convert the input number to a string
     Dim numString As String
@@ -160,7 +160,7 @@ End Function
 
 'For a given string, see if it has a trailing number value in parentheses (e.g. "Image (2)").  If it does have a
 ' trailing number, return the string with the number incremented by one.  If there is no trailing number, apply one.
-Public Function incrementTrailingNumber(ByVal srcString As String) As String
+Public Function IncrementTrailingNumber(ByVal srcString As String) As String
 
     'Start by figuring out if the string is already in the format: "text (#)"
     srcString = Trim(srcString)
@@ -201,7 +201,7 @@ Public Function incrementTrailingNumber(ByVal srcString As String) As String
         numToAppend = 2
     End If
     
-    incrementTrailingNumber = srcString & " (" & Trim$(CStr(numToAppend)) & ")"
+    IncrementTrailingNumber = srcString & " (" & Trim$(CStr(numToAppend)) & ")"
 
 End Function
 
@@ -274,7 +274,7 @@ End Function
 
 'As of PD 7.0, XML strings are universally used for parameter parsing.  The old pipe-delimited system is currently being
 ' replaced in favor of this lovely little helper function.
-Public Function buildParamList(ParamArray allParams() As Variant) As String
+Public Function BuildParamList(ParamArray allParams() As Variant) As String
     
     'pdParamXML handles all the messy work for us
     Dim cParams As pdParamXML
@@ -305,7 +305,7 @@ Public Function buildParamList(ParamArray allParams() As Variant) As String
     
     End If
     
-    buildParamList = cParams.getParamString
+    BuildParamList = cParams.getParamString
     
     Exit Function
     
@@ -315,6 +315,37 @@ buildParamListFailure:
         pdDebug.LogAction "WARNING!  buildParamList failed to create a parameter string!"
     #End If
     
-    buildParamList = ""
+    BuildParamList = ""
     
 End Function
+
+'Given two strings - a test candidate string, and a string comprised only of valid characters - return TRUE if the
+' test string is comprised only of characters from the valid character list.
+Public Function ValidateCharacters(ByVal srcText As String, ByVal listOfValidChars As String, Optional ByVal compareCaseInsensitive As Boolean = True) As Boolean
+    
+    Dim invLoc As Long, testChar As String
+    
+    ValidateCharacters = True
+    
+    'For case-insensitive comparisons, lcase both strings in advance
+    If compareCaseInsensitive Then
+        srcText = LCase$(srcText)
+        listOfValidChars = LCase$(listOfValidChars)
+    End If
+    
+    'I'm not sure if there's a better way to do this, but basically, we need to individually check each character
+    ' in the string against the valid char list.  If a character is NOT located in the valid char list, return FALSE,
+    ' and if the whole string checks out, return TRUE.
+    Dim i As Long
+    For i = 1 To Len(srcText)
+        
+        'If this invalid character exists in the target string, replace it with whatever the user specified
+        If InStr(1, listOfValidChars, Mid$(srcText, i, 1), vbBinaryCompare) = 0 Then
+            ValidateCharacters = False
+            Exit For
+        End If
+        
+    Next i
+    
+End Function
+
