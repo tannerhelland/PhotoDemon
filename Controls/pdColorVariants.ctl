@@ -52,7 +52,7 @@ Option Explicit
 'This implementation binding will allow us to refer to all themeable controls _
  under a single type, making form control iteration much simpler _
  (we won't need to maintain long lists of UserControl names)
-Implements iControlThemable
+Implements IControlThemable
 
 
 'Just like PD's old color selector, this control will raise a ColorChanged event after user interactions.
@@ -293,7 +293,7 @@ Private Sub UserControl_Initialize()
     
     'In design mode, initialize a base theming class, so our paint function doesn't fail
     Else
-        If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
+        If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
     End If
     
     m_MouseInsideRegion = -1
@@ -571,10 +571,10 @@ Private Sub CalculateVariantColors()
     
     'The primary color serves as the base color for all subsequent calculations.  Retrieve its RGB and HSV quads now.
     Dim rPrimary As Long, gPrimary As Long, bPrimary As Long, hPrimary As Double, sPrimary As Double, vPrimary As Double
-    rPrimary = Color_Functions.ExtractR(m_ColorList(CV_Primary))
-    gPrimary = Color_Functions.ExtractG(m_ColorList(CV_Primary))
-    bPrimary = Color_Functions.ExtractB(m_ColorList(CV_Primary))
-    Color_Functions.RGBtoHSV rPrimary, gPrimary, bPrimary, hPrimary, sPrimary, vPrimary
+    rPrimary = Colors.ExtractR(m_ColorList(CV_Primary))
+    gPrimary = Colors.ExtractG(m_ColorList(CV_Primary))
+    bPrimary = Colors.ExtractB(m_ColorList(CV_Primary))
+    Colors.RGBtoHSV rPrimary, gPrimary, bPrimary, hPrimary, sPrimary, vPrimary
     
     'We now need to calculate new RGB values.  How we do this varies by variant, obviously!
     Dim rNew As Long, gNew As Long, bNew As Long, hNew As Double, sNew As Double, vNew As Double
@@ -599,12 +599,12 @@ Private Sub CalculateVariantColors()
             Case CV_HueUp
                 hNew = hNew + hChange
                 If hNew > 1 Then hNew = 1 - hNew
-                Color_Functions.HSVtoRGB hNew, sNew, vNew, rNew, gNew, bNew
+                Colors.HSVtoRGB hNew, sNew, vNew, rNew, gNew, bNew
                 
             Case CV_SaturationUp
                 
                 'Use a fake saturation calculation
-                grayNew = Color_Functions.getHQLuminance(rNew, gNew, bNew)
+                grayNew = Colors.getHQLuminance(rNew, gNew, bNew)
                 rNew = rNew + (rNew - grayNew) * 0.4
                 gNew = gNew + (gNew - grayNew) * 0.4
                 bNew = bNew + (bNew - grayNew) * 0.4
@@ -638,7 +638,7 @@ Private Sub CalculateVariantColors()
             Case CV_SaturationDown
                 
                 'Use a fake saturation calculation
-                grayNew = Color_Functions.getHQLuminance(rNew, gNew, bNew)
+                grayNew = Colors.getHQLuminance(rNew, gNew, bNew)
                 rNew = rNew + (grayNew - rNew) * 0.3
                 gNew = gNew + (grayNew - gNew) * 0.3
                 bNew = bNew + (grayNew - bNew) * 0.3
@@ -649,7 +649,7 @@ Private Sub CalculateVariantColors()
             Case CV_HueDown
                 hNew = hNew - hChange
                 If hNew < 0 Then hNew = 1 + hNew
-                Color_Functions.HSVtoRGB hNew, sNew, vNew, rNew, gNew, bNew
+                Colors.HSVtoRGB hNew, sNew, vNew, rNew, gNew, bNew
             
             Case CV_BlueDown
                 bNew = Math_Functions.ClampL(bNew - rgbChange, 0, 255)
@@ -747,8 +747,8 @@ Private Sub MakeNewTooltip(ByVal activeIndex As COLOR_VARIANTS)
     Dim toolString As String, hexString As String, rgbString As String
     
     If activeIndex >= 0 Then
-        hexString = "#" & UCase(Color_Functions.getHexStringFromRGB(m_ColorList(activeIndex)))
-        rgbString = Color_Functions.ExtractR(m_ColorList(activeIndex)) & ", " & Color_Functions.ExtractG(m_ColorList(activeIndex)) & ", " & Color_Functions.ExtractB(m_ColorList(activeIndex))
+        hexString = "#" & UCase(Colors.GetHexStringFromRGB(m_ColorList(activeIndex)))
+        rgbString = Colors.ExtractR(m_ColorList(activeIndex)) & ", " & Colors.ExtractG(m_ColorList(activeIndex)) & ", " & Colors.ExtractB(m_ColorList(activeIndex))
         toolString = hexString & vbCrLf & rgbString
         If activeIndex = CV_Primary Then toolString = toolString & vbCrLf & g_Language.TranslateMessage("Click to enter a full color selection screen.")
     End If

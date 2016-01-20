@@ -3961,7 +3961,8 @@ Private Sub mnuLanguages_Click(Index As Integer)
     Screen.MousePointer = vbDefault
     
     'Added 09 January 2014.  Let the user know that some translations will not take affect until the program is restarted.
-    PDMsgBox "Language changed successfully!" & vbCrLf & vbCrLf & "Note: some minor program text cannot be live-updated.  Such text will be properly translated the next time you start the application.", vbApplicationModal + vbOKOnly + vbInformation, "Language changed successfully"
+    ' (Subsequently removed 15 Jan 2016.  TODO 6.8: consider removing permanently.)
+    'PDMsgBox "Language changed successfully!" & vbCrLf & vbCrLf & "Note: some minor program text cannot be live-updated.  Such text will be properly translated the next time you start the application.", vbApplicationModal + vbOKOnly + vbInformation, "Language changed successfully"
     
 End Sub
 

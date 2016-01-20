@@ -1,4 +1,4 @@
-Attribute VB_Name = "Color_Functions"
+Attribute VB_Name = "Colors"
 '***************************************************************************
 'Miscellaneous Color Functions
 'Copyright 2013-2016 by Tanner Helland
@@ -16,6 +16,19 @@ Attribute VB_Name = "Color_Functions"
 '***************************************************************************
 
 Option Explicit
+
+'PhotoDemon tries to support a variety of textual color representations.  Not all of these are implemented at present.
+' (TODO 6.8: get all formats working)
+Public Enum PD_COLOR_STRING
+    ColorInvalid = -1
+    ColorUnknown = 0
+    ColorHex = 1
+    ColorRGB = 2
+    ColorRGBA = 3
+    ColorHSL = 4
+    ColorHSLA = 5
+    ColorNamed = 6
+End Enum
 
 'Convert a system color (such as "button face" or "inactive window") to a literal RGB value
 Private Declare Function OleTranslateColor Lib "olepro32" (ByVal oColor As OLE_COLOR, ByVal HPALETTE As Long, ByRef cColorRef As Long) As Long
@@ -889,9 +902,11 @@ Private Function fMin(x As Double, y As Double) As Double
     If x > y Then fMin = y Else fMin = x
 End Function
 
-'Given a hex color representation, return a matching RGB Long.  Note that this function DOES NOT validate the incoming string;
-' as an internal function, it's assumed you won't be sending gibberish!
-Public Function getRGBLongFromHex(ByVal srcHex As String) As Long
+'Given a hex color representation, return a matching RGB Long.
+' NOTE: this function does not handle alpha, so incoming hex values must be 1, 3, or 6 chars long
+' NOTE: that this function DOES NOT validate the incoming string; as a purely internal function, it's assumed you
+'       won't send it gibberish!
+Public Function GetRGBLongFromHex(ByVal srcHex As String) As Long
     
     'To make things simpler, remove variability from the source string
     If InStr(1, srcHex, "#") > 0 Then srcHex = Replace(srcHex, "#", "")
@@ -927,22 +942,106 @@ Public Function getRGBLongFromHex(ByVal srcHex As String) As Long
     b = Val("&H" & Right$(srcHex, 2))
     
     'Return the RGB Long
-    getRGBLongFromHex = RGB(r, g, b)
+    GetRGBLongFromHex = RGB(r, g, b)
 
 End Function
 
 'Given an RGB triplet (Long-type), return a matching hex representation.
-Public Function getHexStringFromRGB(ByVal srcRGB As Long) As String
-    srcRGB = Color_Functions.ConvertSystemColor(srcRGB)
-    getHexStringFromRGB = getHexFromByte(ExtractR(srcRGB)) & getHexFromByte(ExtractG(srcRGB)) & getHexFromByte(ExtractB(srcRGB))
+Public Function GetHexStringFromRGB(ByVal srcRGB As Long) As String
+    srcRGB = Colors.ConvertSystemColor(srcRGB)
+    GetHexStringFromRGB = GetHexFromByte(ExtractR(srcRGB)) & GetHexFromByte(ExtractG(srcRGB)) & GetHexFromByte(ExtractB(srcRGB))
 End Function
 
 'HTML hex requires each RGB entry to be two characters wide, but the VB Hex$ function won't add a leading 0.  We do this manually.
-Private Function getHexFromByte(ByVal srcByte As Byte) As String
+Private Function GetHexFromByte(ByVal srcByte As Byte) As String
     If srcByte < 16 Then
-        getHexFromByte = "0" & LCase(Hex$(srcByte))
+        GetHexFromByte = "0" & LCase(Hex$(srcByte))
     Else
-        getHexFromByte = LCase(Hex$(srcByte))
+        GetHexFromByte = LCase(Hex$(srcByte))
     End If
 End Function
 
+'Given some string value, attempt to wring color information out of it.  The goal is to eventually support all valid CSS
+' color descriptors (e.g. http://www.w3schools.com/cssref/css_colors_legal.asp), but for now PD primarily uses hex representations.
+Public Function IsStringAColor(ByRef srcString As String, Optional ByRef dstColorType As PD_COLOR_STRING = ColorUnknown) As Boolean
+    
+    dstColorType = ColorUnknown
+    
+    Dim testString As String, validChars As String
+    
+    'Hex validation is fairly easy: is the string prepended with a hash?
+    If StrComp(Left$(srcString, 1), "#", vbBinaryCompare) = 0 Then
+        
+        'Trim out the non-hash characters
+        testString = Right$(srcString, Len(srcString) - 1)
+        
+        'Is the string 1/3/6 chars long?
+        If (Len(testString) = 1) Or (Len(testString) = 3) Or (Len(testString) = 6) Then
+        
+            'Does the string only consist of the chars 0-9 and A-F?
+            validChars = "0123456789abcdef"
+            If Text_Support.ValidateCharacters(testString, validChars, True) Then
+                'We can convert this into a hex color value
+                dstColorType = ColorHex
+            End If
+        End If
+    End If
+    '/End hex validation
+    
+    'TODO 6.8: if the color is still unkown, continue checking other color possibilities
+    If dstColorType = ColorUnknown Then
+        'TODO: additional checks
+    End If
+    
+    'If we've attempted to match all existing color types without success, return failure
+    If (dstColorType = ColorUnknown) Then
+        dstColorType = ColorInvalid
+        IsStringAColor = False
+    Else
+        IsStringAColor = True
+    End If
+    
+End Function
+
+'Given a string representation of a color and the type of representation (optionally; this function will look it up if
+' it's missing), return an RGB value and a matching opacity.
+' NOTE: at present, opacity is not actually retrieved; it always returns 100.0.  Also, per comments elsewhere in this module,
+' not all color representations have been implemented.  Stick to hex for now.
+' RETURNS: TRUE if successful; FALSE otherwise
+Public Function GetColorFromString(ByRef srcString As String, ByRef dstRGBLong As Long, Optional ByVal srcColorType As PD_COLOR_STRING = ColorUnknown, Optional ByRef dstOpacity As Double = 100#) As Boolean
+
+    'If the color type is unknown, attempt to identify it now.
+    If (srcColorType = ColorInvalid) Or (srcColorType = ColorUnknown) Then
+        GetColorFromString = IsStringAColor(srcString, srcColorType)
+    End If
+    
+    'If the color type is STILL unknown and/or invalid, there's nothing we can do.  Exit immediately.
+    If (srcColorType = ColorInvalid) Or (srcColorType = ColorUnknown) Then
+        If g_IsProgramRunning Then pdDebug.LogAction "WARNING!  Colors.GetColorFromString was unable to resolve the color string " & srcString & "."
+        GetColorFromString = False
+        Exit Function
+    End If
+    
+    'If we made it here safely, the chances of returning a valid color are very good.  Assume a success state.
+    GetColorFromString = True
+    
+    'Depending on the color type, return a matching RGB long now (with optional opacity, depending on the color description)
+    Select Case srcColorType
+    
+        Case ColorHex
+            dstRGBLong = GetRGBLongFromHex(srcString)
+            dstOpacity = 100#
+        
+        Case ColorRGB
+        
+        Case ColorRGBA
+        
+        Case ColorHSL
+        
+        Case ColorHSLA
+        
+        Case ColorNamed
+    
+    End Select
+    
+End Function

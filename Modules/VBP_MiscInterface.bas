@@ -23,9 +23,6 @@ Option Explicit
 Private Declare Function GetWindowRect Lib "user32" (ByVal hndWindow As Long, ByRef lpRect As winRect) As Long
 Private Declare Function MoveWindow Lib "user32" (ByVal hndWindow As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 
-'Used to measure the expected length of a string
-Private Declare Function GetTextExtentPoint32 Lib "gdi32" Alias "GetTextExtentPoint32A" (ByVal hDC As Long, ByVal lpsz As String, ByVal cbString As Long, ByRef lpSize As POINTAPI) As Long
-
 'These constants are used to toggle visibility of display elements.
 Public Const VISIBILITY_TOGGLE As Long = 0
 Public Const VISIBILITY_FORCEDISPLAY As Long = 1
@@ -1403,7 +1400,6 @@ End Sub
 'When a themed form is unloaded, it may be desirable to release certain changes made to it - or in our case, unsubclass it.
 ' This function should be called when any themed form is unloaded.
 Public Sub ReleaseFormTheming(ByRef tForm As Object)
-    'g_Themer.releaseContainerSubclass tForm.hWnd
     Set tForm = Nothing
 End Sub
 
@@ -1640,19 +1636,6 @@ Public Sub PopKernelShapeButtonStrip(ByRef srcBTS As buttonStrip, Optional ByVal
     srcBTS.ListIndex = defaultShape
     
 End Sub
-
-'Return the width (and below, height) of a string, in pixels, according to the font assigned to fontContainerDC
-Public Function GetPixelWidthOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
-    Dim txtSize As POINTAPI
-    GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    GetPixelWidthOfString = txtSize.x
-End Function
-
-Public Function GetPixelHeightOfString(ByVal srcString As String, ByVal fontContainerDC As Long) As Long
-    Dim txtSize As POINTAPI
-    GetTextExtentPoint32 fontContainerDC, srcString, Len(srcString), txtSize
-    GetPixelHeightOfString = txtSize.y
-End Function
 
 'Use whenever you want the user to not be allowed to interact with the primary PD window.  Make sure that call "enableUserInput", below,
 ' when you are done processing!

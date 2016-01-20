@@ -848,7 +848,7 @@ Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
             Else
                 SetProgBarMax modifyProgBarMax
             End If
-            progBarCheck = findBestProgBarValue()
+            progBarCheck = FindBestProgBarValue()
         End If
         
         'Color values
@@ -881,13 +881,13 @@ Public Function ConvertRGBUsingCustomEndpoints(ByRef srcDIB As pdDIB, ByVal RedX
                 tmpZ = mFinal(2, 0) * fR + mFinal(2, 1) * fG + mFinal(2, 2) * fB
                 
                 'Convert back to sRGB
-                Color_Functions.XYZtoRGB tmpX, tmpY, tmpZ, r, g, b
+                Colors.XYZtoRGB tmpX, tmpY, tmpZ, r, g, b
             
             'Reverse transform
             Else
             
                 'Use sRGB for the initial XYZ conversion
-                Color_Functions.RGBtoXYZ r, g, b, tmpX, tmpY, tmpZ
+                Colors.RGBtoXYZ r, g, b, tmpX, tmpY, tmpZ
             
                 'Convert back to [0, 1] RGB, using our custom endpoints
                 fR = mFinalInvert(0, 0) * tmpX + mFinalInvert(0, 1) * tmpY + mFinalInvert(0, 2) * tmpZ

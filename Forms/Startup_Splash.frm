@@ -23,34 +23,11 @@ Begin VB.Form FormSplash
    MaxButton       =   0   'False
    MinButton       =   0   'False
    Moveable        =   0   'False
+   NegotiateMenus  =   0   'False
    ScaleHeight     =   220
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   779
    ShowInTaskbar   =   0   'False
-   Begin VB.Label lblMessage 
-      Alignment       =   2  'Center
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BackStyle       =   0  'Transparent
-      Caption         =   "Live updates..."
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   9.75
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H00E0E0E0&
-      Height          =   330
-      Left            =   240
-      TabIndex        =   0
-      Top             =   2940
-      Visible         =   0   'False
-      Width           =   11205
-      WordWrap        =   -1  'True
-   End
 End
 Attribute VB_Name = "FormSplash"
 Attribute VB_GlobalNameSpace = False
@@ -70,6 +47,9 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
+
+Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As RECTL) As Long
+Private Declare Function GetClientRect Lib "user32" (ByVal hWnd As Long, ByRef lpRect As RECTL) As Long
 
 'A logo, drop shadow and screen backdrop are used to generate the splash.  These DIBs are released once splashDIB (below)
 ' has been successfully assembled.
@@ -126,27 +106,20 @@ Public Sub prepareRestOfSplash()
     
         'Use the getDesktopAsDIB function to retrieve a copy of the current screen.  We will use this to mimic window
         ' transparency.  (It's faster, and works more smoothly than attempting to use layered Windows, especially on XP.)
-        Dim formLeft As Long, formTop As Long, formWidth As Long, formHeight As Long
-        formLeft = Me.Left * (1 / TwipsPerPixelXFix)
-        formTop = Me.Top * (1 / TwipsPerPixelYFix)
-        formWidth = Me.ScaleWidth
-        formHeight = Me.ScaleHeight
-        
         Dim captureRect As RECTL
-        With captureRect
-            .Left = formLeft
-            .Top = formTop
-            .Right = .Left + formWidth
-            .Bottom = .Top + formHeight
-        End With
-        
+        GetWindowRect Me.hWnd, captureRect
         Screen_Capture.GetPartialDesktopAsDIB screenDIB, captureRect
+        
+        Dim formLeft As Long, formTop As Long, formWidth As Long, formHeight As Long
+        formLeft = captureRect.Left
+        formTop = captureRect.Top
+        GetClientRect Me.hWnd, captureRect
+        formWidth = captureRect.Right - captureRect.Left
+        formHeight = captureRect.Bottom - captureRect.Top
         
         'Copy the screen background, shadow, and logo onto a single composite DIB
         Set splashDIB = New pdDIB
         splashDIB.createFromExistingDIB screenDIB
-        'GDIPlus_StretchBlt splashDIB, fixDPI(1), fixDPI(1), formWidth, formWidth / logoAspectRatio, shadowDIB, 0, 0, shadowDIB.getDIBWidth, shadowDIB.getDIBHeight
-        'GDIPlus_StretchBlt splashDIB, 0, 0, formWidth, formWidth / logoAspectRatio, logoDIB, 0, 0, shadowDIB.getDIBWidth, shadowDIB.getDIBHeight
         shadowDIB.alphaBlendToDC splashDIB.getDIBDC, , FixDPI(1), FixDPI(1), formWidth, formWidth / logoAspectRatio
         logoDIB.alphaBlendToDC splashDIB.getDIBDC, , 0, 0, formWidth, formWidth / logoAspectRatio
         
@@ -198,7 +171,7 @@ Public Sub prepareRestOfSplash()
         Me.Picture = Me.Image
         
     Else
-        Debug.Print "Splash DIBs could not be loaded."
+        pdDebug.LogAction "WARNING!  Splash DIBs could not be loaded; something may be catastrophically wrong."
     End If
     
 End Sub

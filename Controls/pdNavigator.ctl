@@ -61,7 +61,7 @@ Option Explicit
 'This implementation binding will allow us to refer to all themeable controls _
  under a single type, making form control iteration much simpler _
  (we won't need to maintain long lists of UserControl names)
-Implements iControlThemable
+Implements IControlThemable
 
 
 'If the control is resized at run-time, it will request a new thumbnail via this function.  The passed DIB will already
@@ -240,7 +240,7 @@ Private Sub UserControl_Initialize()
     
     'In design mode, initialize a base theming class, so our paint function doesn't fail
     Else
-        If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
+        If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
     End If
     
     'Draw the control at least once

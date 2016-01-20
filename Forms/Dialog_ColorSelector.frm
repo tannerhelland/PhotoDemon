@@ -1224,7 +1224,7 @@ Private Sub redrawAllTextBoxes()
     sValue.RenderToPictureBox picSampleHSV(2)
     
     'Update the hex representation box
-    txtHex = Color_Functions.getHexStringFromRGB(RGB(curRed, curGreen, curBlue))
+    txtHex = Colors.GetHexStringFromRGB(RGB(curRed, curGreen, curBlue))
     
     'Re-enable syncing
     suspendTextResync = False
@@ -1570,7 +1570,7 @@ Private Sub txtHex_LostFocus()
         
         Case Else
             'We can't handle this character string, so reset it
-            newText = Color_Functions.getHexStringFromRGB(RGB(curRed, curGreen, curBlue))
+            newText = Colors.GetHexStringFromRGB(RGB(curRed, curGreen, curBlue))
     
     End Select
     

@@ -8,7 +8,6 @@ Begin VB.Form FormAbout
    ClientLeft      =   2340
    ClientTop       =   1875
    ClientWidth     =   11685
-   ControlBox      =   0   'False
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25

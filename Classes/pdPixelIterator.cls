@@ -508,9 +508,9 @@ End Function
 'Given source RGB values, return a corresponding luminance value (high-quality calculation)
 Private Function GetLuminanceFromRGB(ByVal srcR As Long, ByVal srcG As Long, ByVal srcB As Long) As Long
     If m_LuminanceMode = PDLM_VALUE Then
-        GetLuminanceFromRGB = Color_Functions.getLuminance(srcR, srcG, srcB)
+        GetLuminanceFromRGB = Colors.getLuminance(srcR, srcG, srcB)
     Else
-        GetLuminanceFromRGB = Color_Functions.getHQLuminance(srcR, srcG, srcB)
+        GetLuminanceFromRGB = Colors.getHQLuminance(srcR, srcG, srcB)
     End If
 End Function
 

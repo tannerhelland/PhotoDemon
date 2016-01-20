@@ -27,11 +27,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-'In order to make themed controls transparent, we must subclass their parent containers, and manually process the
-' WM_PRINTCLIENT message using the API decs below.  Many thanks to pro VB programmer LaVolpe for this workaround.
-Private Const WM_PRINTCLIENT As Long = &H318
-Private Const WM_PAINT As Long = &HF&
-
 'I have no idea what colors will actually be used in the final theme format; these are just placeholders for now,
 ' to enable centralized coloration of a few UCs.  The end goal is to provide the smallest possible subset of colors
 ' necessary to render PD's various UI elements.
@@ -106,8 +101,8 @@ Private curThemeContrast As PD_THEME_CONTRAST
 ' extremely fast and easy.  Also, it makes it possible to create themes at run-time with minimal effort.
 Private curThemeColors() As Long
 
-'cSubclass handles all subclassing duties for us
-Private cSubclass As cSelfSubHookCallback
+'XML object for parsing theme files.
+Private m_XML As pdXML
 
 'Despite an identical name, this function does *not* use the Win32 API to retrieve a color from the system theme.
 ' Instead, it retrieves a color from PD's current theme color cache.
@@ -127,23 +122,6 @@ Friend Function GetThemeColor(ByVal colorType As PD_THEME_COLOR) As Long
         
 End Function
 
-'When a container object needs to render contained controls transparently, register it using this function
-Public Sub RequestContainerSubclass(ByVal ContainerHwnd As Long)
-
-    If (cSubclass Is Nothing) Then
-        Set cSubclass = New cSelfSubHookCallback
-    End If
-    
-    cSubclass.ssc_Subclass ContainerHwnd, , , Me
-    cSubclass.ssc_AddMsg ContainerHwnd, MSG_BEFORE, WM_PRINTCLIENT
-
-End Sub
-
-'While not strictly required, it is good behavior to unsubclass container objects when they are unloaded
-Public Sub ReleaseContainerSubclass(ByVal ContainerHwnd As Long)
-    cSubclass.ssc_UnSubclass ContainerHwnd
-End Sub
-
 'Reset the theme color cache to all -1 values.
 Private Sub ResetThemeCache()
 
@@ -158,7 +136,25 @@ End Sub
 Private Sub LoadDefaultPDTheme()
 
     'Default to the light theme
+    ' (TODO: read the user's preference for theme, which should probably be just a path to the theme file?)
     curThemeContrast = THEME_LIGHT
+    
+    'Retrieve the preferred theme file from the user preferences file.  (NOTE: this step will fail inside the IDE.)
+    Dim themePath As String
+    If g_IsProgramRunning Then
+        themePath = g_UserPreferences.getThemePath & "Default.xml"
+    Else
+        'TODO: pull the theme directly from the resource file, or perhaps trigger some kind of failsafe IDE mode...?
+    End If
+    
+    'Load the preferred XML file, and if it fails, fall back to PD's default theme
+    Dim themeLoadedCorrectly As Boolean
+    themeLoadedCorrectly = Me.LoadThemeFile(themePath)
+    
+    'Theme colors are loaded on-demand, so we have no further work to do here
+    
+    'OLD CODE FOLLOWS:
+    
     
     'Loop through the curThemeColors array, filling each entry with the PD default
     Dim i As Long
@@ -167,6 +163,26 @@ Private Sub LoadDefaultPDTheme()
     Next i
 
 End Sub
+
+'Load a given theme file.  If the operation fails, PD will automatically load its default theme.
+Public Function LoadThemeFile(ByVal themePath As String) As Boolean
+    
+    If m_XML.loadXMLFile(themePath) Then
+        
+        'Perform minor validation on the file
+        LoadThemeFile = m_XML.isPDDataType("Visual theme") And m_XML.validateLoadedXMLData("Colors")
+        
+    Else
+        ' (TODO: if the theme file doesn't exist, load PD's default theme)
+    End If
+    
+    'If the user's choice of theme didn't load correctly, or the default theme failed to load, run some heuristics
+    ' on the theme folder.
+    If Not LoadThemeFile Then
+        ' (TODO: this entire step, including pulling themes from the .exe's resource section as necessary)
+    End If
+    
+End Function
 
 'Retrieve a default PD theme color.  These values are hard-coded, and will be superceded by any values supplied
 ' by a user-selected theme.
@@ -205,77 +221,77 @@ Private Function GetDefaultPDColor(ByVal colorType As PD_THEME_COLOR) As Long
             
             'Accent lines, etc
             Case PDTC_ACCENT_DEFAULT
-                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("3296dc")
+                GetDefaultPDColor = Colors.GetRGBLongFromHex("3296dc")
             
             'Slider track, large contiguous blocks of color
             Case PDTC_ACCENT_HIGHLIGHT
-                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#3cafe6")
+                GetDefaultPDColor = Colors.GetRGBLongFromHex("#3cafe6")
             
             'Background on toolbox images (which can't afford to be as dark as the usual highlight value)
             Case PDTC_ACCENT_ULTRALIGHT
-                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("d2f0fa")
+                GetDefaultPDColor = Colors.GetRGBLongFromHex("d2f0fa")
             
             'Small or heavily aliased items (e.g. check box check, radio button dot)
             Case PDTC_ACCENT_SHADOW
-                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#3270dc")
+                GetDefaultPDColor = Colors.GetRGBLongFromHex("#3270dc")
             
             
             'Non-interactive variations (used to render control outlines, etc)
             Case PDTC_GRAY_DEFAULT
-                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#929292")
+                GetDefaultPDColor = Colors.GetRGBLongFromHex("#929292")
                 
             Case PDTC_GRAY_HIGHLIGHT
-                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#bababa")
+                GetDefaultPDColor = Colors.GetRGBLongFromHex("#bababa")
             
             Case PDTC_GRAY_ULTRALIGHT
-                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#e2e2e2")
+                GetDefaultPDColor = Colors.GetRGBLongFromHex("#e2e2e2")
             
             Case PDTC_GRAY_SHADOW
-                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#5b5b5b")
+                GetDefaultPDColor = Colors.GetRGBLongFromHex("#5b5b5b")
             
             'Background variations
             Case PDTC_BACKGROUND_DEFAULT
-                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#ffffff")
+                GetDefaultPDColor = Colors.GetRGBLongFromHex("#ffffff")
                 
             Case PDTC_BACKGROUND_CANVAS
-                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#a0a0a0")
+                GetDefaultPDColor = Colors.GetRGBLongFromHex("#a0a0a0")
                 
             Case PDTC_BACKGROUND_COMMANDBAR
-                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#dcdce1")
+                GetDefaultPDColor = Colors.GetRGBLongFromHex("#dcdce1")
             
             'Text variations
             Case PDTC_TEXT_DEFAULT
-                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#404040")
+                GetDefaultPDColor = Colors.GetRGBLongFromHex("#404040")
                 
             Case PDTC_TEXT_EDITBOX
-                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#202020")
+                GetDefaultPDColor = Colors.GetRGBLongFromHex("#202020")
                 
             Case PDTC_TEXT_HYPERLINK
-                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#3170c0")
+                GetDefaultPDColor = Colors.GetRGBLongFromHex("#3170c0")
                 
             Case PDTC_TEXT_TITLE
             
             Case PDTC_TEXT_INVERT
-                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#ffffff")
+                GetDefaultPDColor = Colors.GetRGBLongFromHex("#ffffff")
             
             'Misc colors
             Case PDTC_DISABLED
-                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#b1bac2")
+                GetDefaultPDColor = Colors.GetRGBLongFromHex("#b1bac2")
             
             Case PDTC_OK_GREEN
             Case PDTC_CANCEL_RED
-                GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#e81828")
+                GetDefaultPDColor = Colors.GetRGBLongFromHex("#e81828")
             
             Case PDTC_FOCUS_RECT
             
             Case PDTC_CHANNEL_RED
-                    GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#dc2824")
+                    GetDefaultPDColor = Colors.GetRGBLongFromHex("#dc2824")
                     
             Case PDTC_CHANNEL_GREEN
-                    GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#3ccf31")
+                    GetDefaultPDColor = Colors.GetRGBLongFromHex("#3ccf31")
                     
             Case PDTC_CHANNEL_BLUE
-                    GetDefaultPDColor = Color_Functions.getRGBLongFromHex("#317bcf")
+                    GetDefaultPDColor = Colors.GetRGBLongFromHex("#317bcf")
             
         End Select
     
@@ -289,8 +305,84 @@ Private Function GetDefaultPDColor(ByVal colorType As PD_THEME_COLOR) As Long
 
 End Function
 
-Private Sub Class_Initialize()
+'Call this function to verify that an object exists inside the current theme file.  If it doesn't, you should not
+' proceed with color loading.
+Public Function VerifyThemeObject(ByRef objectName As String) As Boolean
+    VerifyThemeObject = m_XML.doesTagExist(objectName)
+End Function
 
+'Look up a unique theme color in the current theme.  Object name is required, and this class will automatically fall back
+' to the Default namespace as necessary.  Also, colors described by definition will automatically be tracked back to their
+' source.  (Note, however, that this function has no way to deal with circular references, so please avoid that.)
+' RETURNS: a color hexadecimal value if successful; a null-string otherwise.
+Public Function LookUpColor(ByRef objectName As String, ByRef colorName As String) As String
+
+    'First things first: see if the object name exists in the theme file.  If it doesn't, we need to fall back to the
+    ' "default" namespace.
+    Dim objectNameExists As Boolean
+    objectNameExists = m_XML.doesTagExist(objectName)
+    If Not objectNameExists Then
+        objectName = "Default"
+        objectNameExists = m_XML.doesTagExist(objectName)
+    End If
+    
+    'If the color exists in either the Default or object-specific namespace, we can proceed with parsing.
+    If objectNameExists Then
+        
+        'Inside the current object's color definition block, retrieve the specified color
+        Dim colorDescription As String
+        colorDescription = m_XML.getUniqueTag_String(colorName, vbNullString, , objectName)
+        
+        'If we retrieved any valid string, attempt to resolve it to an actual color value.  (At this point, the color
+        ' may just be a variable instead of an actual hex value.)
+        If Len(colorDescription) <> 0 Then
+            Dim finalColor As String
+            finalColor = ResolveColor(colorDescription)
+        End If
+        
+    Else
+        LookUpColor = vbNullString
+    End If
+
+End Function
+
+'Given the raw value retrieved by LookUpColor(), above, retrieve that color to its ultimate hex representation.
+Private Function ResolveColor(ByVal initialColorValue As String) As String
+
+    Do
+        
+        'First, reject any empty strings (to prevent subsequent parse errors)
+        If Len(initialColorValue) = 0 Then
+            ResolveColor = vbNullString
+            Exit Function
+        End If
+        
+        'Next, see if the current color value appears to be some kind of valid color representation
+        If Colors.IsStringAColor(initialColorValue) Then
+            ResolveColor = initialColorValue
+            Exit Function
+        
+        'This is not a valid color representation, so assume it's a custom color descriptor (or invalid, I suppose)
+        Else
+            
+            'Attempt to retrieve a new value from the theme's color definition section, then run our validation
+            ' checks a second time.  (We'll repeat this until we fail to retrieve a new definition, or we identify
+            ' a string that can be parsed into an actual color.)
+            initialColorValue = m_XML.getUniqueTag_String(initialColorValue, vbNullString, , "Definitions")
+            
+        End If
+    
+    Loop
+
+End Function
+
+Private Sub Class_Initialize()
+    
+    'Prep our XML parser
+    Set m_XML = New pdXML
+    
+    'OLD CODE FOLLOWS
+    
     'Prepare our color cache
     ReDim curThemeColors(0 To NUM_THEME_COLORS - 1) As Long
     
@@ -303,42 +395,4 @@ Private Sub Class_Initialize()
     ' user's theme of choice, this at least ensures that we have a valid fallback.
     LoadDefaultPDTheme
     
-End Sub
-
-'All events subclassed by this class are processed here.
-Private Sub myWndProc(ByVal bBefore As Boolean, _
-                      ByRef bHandled As Boolean, _
-                      ByRef lReturn As Long, _
-                      ByVal lng_hWnd As Long, _
-                      ByVal uMsg As Long, _
-                      ByVal wParam As Long, _
-                      ByVal lParam As Long, _
-                      ByRef lParamUser As Long)
-'*************************************************************************************************
-'* bBefore    - Indicates whether the callback is before or after the original WndProc. Usually
-'*              you will know unless the callback for the uMsg value is specified as
-'*              MSG_BEFORE_AFTER (both before and after the original WndProc).
-'* bHandled   - In a before original WndProc callback, setting bHandled to True will prevent the
-'*              message being passed to the original WndProc and (if set to do so) the after
-'*              original WndProc callback.
-'* lReturn    - WndProc return value. Set as per the MSDN documentation for the message value,
-'*              and/or, in an after the original WndProc callback, act on the return value as set
-'*              by the original WndProc.
-'* lng_hWnd   - Window handle.
-'* uMsg       - Message value.
-'* wParam     - Message related data.
-'* lParam     - Message related data.
-'* lParamUser - User-defined callback parameter. Change vartype as needed (i.e., Object, UDT, etc)
-'*************************************************************************************************
-
-    If uMsg = WM_PRINTCLIENT Then
-        SendMessage lng_hWnd, WM_PAINT, wParam, ByVal 0&
-        bHandled = True
-    End If
-
-' *************************************************************
-' C A U T I O N   C A U T I O N   C A U T I O N   C A U T I O N
-' -------------------------------------------------------------
-' DO NOT ADD ANY OTHER CODE BELOW THE "END SUB" STATEMENT BELOW
-' *************************************************************
 End Sub

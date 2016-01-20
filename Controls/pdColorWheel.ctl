@@ -49,7 +49,7 @@ Option Explicit
 'This implementation binding will allow us to refer to all themeable controls _
  under a single type, making form control iteration much simpler _
  (we won't need to maintain long lists of UserControl names)
-Implements iControlThemable
+Implements IControlThemable
 
 
 'Just like PD's old color selector, this control will raise a ColorChanged event after user interactions.
@@ -125,7 +125,7 @@ End Property
 Public Property Let Color(ByVal newColor As Long)
     
     'Extract matching HSV values, then redraw the control to match
-    Color_Functions.RGBtoHSV Color_Functions.ExtractR(newColor), Color_Functions.ExtractG(newColor), Color_Functions.ExtractB(newColor), m_Hue, m_Saturation, m_Value
+    Colors.RGBtoHSV Colors.ExtractR(newColor), Colors.ExtractG(newColor), Colors.ExtractB(newColor), m_Hue, m_Saturation, m_Value
     CreateSVSquare
     DrawUC
     
@@ -399,7 +399,7 @@ Private Sub UserControl_Initialize()
     
     'In design mode, initialize a base theming class, so our paint function doesn't fail
     Else
-        If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
+        If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
     End If
     
     'Draw the control at least once
@@ -538,7 +538,7 @@ Private Sub CreateColorWheel()
                 pxAngle = (pxAngle + PI) / PI_DOUBLE
                 
                 'Calculate an RGB triplet that corresponds to this hue (with max value and saturation)
-                Color_Functions.HSVtoRGB pxAngle, 1#, 1#, r, g, b
+                Colors.HSVtoRGB pxAngle, 1#, 1#, r, g, b
                 
                 'Retrieve the "alpha" clue for this pixel
                 a = hPixels(x, y)
@@ -773,7 +773,7 @@ End Function
 'Convert the control's current HSV triplet into a corresponding RGB long
 Private Function GetCurrentRGB() As Long
     Dim r As Long, g As Long, b As Long
-    Color_Functions.HSVtoRGB m_Hue, m_Saturation, m_Value, r, g, b
+    Colors.HSVtoRGB m_Hue, m_Saturation, m_Value, r, g, b
     GetCurrentRGB = RGB(r, g, b)
 End Function
 

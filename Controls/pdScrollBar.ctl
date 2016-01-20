@@ -116,7 +116,7 @@ Option Explicit
 'This implementation binding will allow us to refer to all themeable controls _
  under a single type, making form control iteration much simpler _
  (we won't need to maintain long lists of UserControl names)
-Implements iControlThemable
+Implements IControlThemable
 
 
 'This control really only needs one event raised - Scroll.  The "eventIsCritical" parameter can optionally be tested;
@@ -318,7 +318,7 @@ Public Property Let OrientationHorizontal(ByVal newState As Boolean)
         updatePopupText
         
         'Update the positioning of the buttons, track, thumb, etc
-        updateControlLayout
+        UpdateControlLayout
         PropertyChanged "OrientationHorizontal"
     End If
     
@@ -785,14 +785,14 @@ Private Sub UserControl_Initialize()
         
     'In design mode, initialize a base theming class, so our paint function doesn't fail
     Else
-        If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
+        If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
     End If
     
     m_MouseInsideUC = False
     m_FocusRectActive = False
     
     'Update the control size parameters at least once
-    updateControlLayout
+    UpdateControlLayout
                 
 End Sub
 
@@ -837,12 +837,12 @@ End Sub
 
 'The control dynamically resizes each button to match the dimensions of their relative captions.
 Private Sub UserControl_Resize()
-    updateControlLayout
+    UpdateControlLayout
 End Sub
 
 Private Sub UserControl_Show()
     m_ControlIsVisible = True
-    updateControlLayout
+    UpdateControlLayout
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -920,7 +920,7 @@ End Sub
 
 'Any changes to size (or control orientation) must call this function to recalculate the positions of all button and
 ' slider regions.
-Private Sub updateControlLayout()
+Private Sub UpdateControlLayout()
     
     'First, make sure the back buffer exists and mirrors the current control size
     If m_BackBuffer Is Nothing Then Set m_BackBuffer = New pdDIB
@@ -1446,7 +1446,7 @@ Public Sub UpdateAgainstCurrentTheme()
     toolTipManager.UpdateAgainstCurrentTheme
     
     'Redraw the control, which will also cause a resync against any theme changes
-    updateControlLayout
+    UpdateControlLayout
     
 End Sub
 

@@ -55,7 +55,7 @@ Option Explicit
 'This implementation binding will allow us to refer to all themeable controls _
  under a single type, making form control iteration much simpler _
  (we won't need to maintain long lists of UserControl names)
-Implements iControlThemable
+Implements IControlThemable
 
 
 'This control doesn't really do anything interesting, besides allow a color to be selected.
@@ -151,7 +151,7 @@ End Property
 Public Property Let ShowMainWindowColor(ByVal newState As Boolean)
     m_ShowMainWindowColor = newState
     PropertyChanged "ShowMainWindowColor"
-    updateControlLayout
+    UpdateControlLayout
 End Property
 
 'Call this to force a display of the color window.  Note that it's *public*, so outside callers can raise dialogs, too.
@@ -236,12 +236,12 @@ Private Sub ucSupport_CustomMessage(ByVal wMsg As Long, ByVal wParam As Long, By
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then updateControlLayout
+    If updateLayoutToo Then UpdateControlLayout
     RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    updateControlLayout
+    UpdateControlLayout
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -260,10 +260,10 @@ Private Sub UserControl_Initialize()
     ucSupport.SubclassCustomMessage WM_PD_PRIMARY_COLOR_CHANGE, True
     
     'In design mode, initialize a base theming class, so our paint functions don't fail
-    If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
+    If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
     
     'Update the control size parameters at least once
-    updateControlLayout
+    UpdateControlLayout
     
 End Sub
 
@@ -303,7 +303,7 @@ End Sub
 
 'Whenever a control property changes that affects control size or layout (including internal changes, like caption adjustments),
 ' call this function to recalculate the control's layout
-Private Sub updateControlLayout()
+Private Sub UpdateControlLayout()
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
@@ -452,11 +452,11 @@ Private Sub MakeNewTooltip()
         End If
         
         'Make sure the color is an actual RGB triplet, and not an OLE color constant
-        targetColor = Color_Functions.ConvertSystemColor(targetColor)
+        targetColor = Colors.ConvertSystemColor(targetColor)
         
         'Construct hex and RGB string representations of the target color
-        hexString = "#" & UCase(Color_Functions.getHexStringFromRGB(targetColor))
-        rgbString = Color_Functions.ExtractR(targetColor) & ", " & Color_Functions.ExtractG(targetColor) & ", " & Color_Functions.ExtractB(targetColor)
+        hexString = "#" & UCase(Colors.GetHexStringFromRGB(targetColor))
+        rgbString = Colors.ExtractR(targetColor) & ", " & Colors.ExtractG(targetColor) & ", " & Colors.ExtractB(targetColor)
         toolString = hexString & vbCrLf & rgbString
         
         'Append a description string to the color data

@@ -64,7 +64,7 @@ Option Explicit
 'This implementation binding will allow us to refer to all themeable controls _
  under a single type, making form control iteration much simpler _
  (we won't need to maintain long lists of UserControl names)
-Implements iControlThemable
+Implements IControlThemable
 
 
 'This control really only needs one event raised - Click
@@ -259,7 +259,7 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
     If Len(resName) <> 0 Then Set srcDIB = Nothing
     
     'Request a control layout update, which will also calculate a centered position for the new image
-    updateControlLayout
+    UpdateControlLayout
 
 End Sub
 
@@ -396,12 +396,12 @@ Private Sub ucSupport_LostFocusAPI()
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then updateControlLayout
+    If updateLayoutToo Then UpdateControlLayout
     RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    updateControlLayout
+    UpdateControlLayout
     RedrawBackBuffer
 End Sub
 
@@ -417,10 +417,10 @@ Private Sub UserControl_Initialize()
     ucSupport.SpecifyRequiredKeys VK_SPACE
     
     'In design mode, initialize a base theming class, so our paint functions don't fail
-    If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
+    If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
         
     'Update the control size parameters at least once
-    updateControlLayout
+    UpdateControlLayout
                 
 End Sub
 
@@ -462,7 +462,7 @@ End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
 ' of internal sizing metrics whenever the control size changes.
-Private Sub updateControlLayout()
+Private Sub UpdateControlLayout()
     
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long

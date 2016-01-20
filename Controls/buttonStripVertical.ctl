@@ -58,7 +58,7 @@ Option Explicit
 'This implementation binding will allow us to refer to all themeable controls _
  under a single type, making form control iteration much simpler _
  (we won't need to maintain long lists of UserControl names)
-Implements iControlThemable
+Implements IControlThemable
 
 
 'This control really only needs one event raised - Click
@@ -142,7 +142,7 @@ End Property
 Public Property Let FontBold(ByVal newBoldSetting As Boolean)
     If newBoldSetting <> m_FontBold Then
         m_FontBold = newBoldSetting
-        updateControlLayout
+        UpdateControlLayout
     End If
 End Property
 
@@ -153,7 +153,7 @@ End Property
 Public Property Let FontSize(ByVal newSize As Single)
     If newSize <> m_FontSize Then
         m_FontSize = newSize
-        updateControlLayout
+        UpdateControlLayout
     End If
 End Property
 
@@ -237,7 +237,7 @@ End Sub
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
 
     Dim mouseClickIndex As Long
-    mouseClickIndex = isMouseOverButton(x, y)
+    mouseClickIndex = IsMouseOverButton(x, y)
     
     'Disable any keyboard-generated focus rectangles
     m_FocusRectActive = -1
@@ -262,7 +262,7 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     
     'If the mouse is over the relevant portion of the user control, display the cursor as clickable
     Dim mouseHoverIndex As Long
-    mouseHoverIndex = isMouseOverButton(x, y)
+    mouseHoverIndex = IsMouseOverButton(x, y)
     
     'Only refresh the control if the hover value has changed
     If mouseHoverIndex <> m_ButtonHoverIndex Then
@@ -286,31 +286,31 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
 End Sub
 
 'See if the mouse is over the clickable portion of the control
-Private Function isMouseOverButton(ByVal mouseX As Single, ByVal mouseY As Single) As Long
+Private Function IsMouseOverButton(ByVal mouseX As Single, ByVal mouseY As Single) As Long
     
     'Search each set of button coords, looking for a match
     Dim i As Long
     For i = 0 To m_numOfButtons - 1
     
         If Math_Functions.isPointInRect(mouseX, mouseY, m_Buttons(i).btBounds) Then
-            isMouseOverButton = i
+            IsMouseOverButton = i
             Exit Function
         End If
     
     Next i
     
     'No match was found; return -1
-    isMouseOverButton = -1
+    IsMouseOverButton = -1
 
 End Function
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
-    If updateLayoutToo Then updateControlLayout
+    If updateLayoutToo Then UpdateControlLayout
     RedrawBackBuffer
 End Sub
 
 Private Sub ucSupport_WindowResize(ByVal newWidth As Long, ByVal newHeight As Long)
-    updateControlLayout
+    UpdateControlLayout
     RedrawBackBuffer
 End Sub
 
@@ -398,7 +398,7 @@ Public Sub AddItem(ByVal srcString As String, Optional ByVal itemIndex As Long =
     End With
     
     'Before we can redraw the control, we need to recalculate all button positions - do that now!
-    updateControlLayout
+    UpdateControlLayout
 
 End Sub
 
@@ -450,7 +450,7 @@ Public Sub AssignImageToItem(ByVal itemIndex As Long, Optional ByVal resName As 
     m_ImagesActive = True
     If m_Buttons(itemIndex).btImageWidth > m_ImageSize Then
         m_ImageSize = m_Buttons(itemIndex).btImageWidth
-        updateControlLayout
+        UpdateControlLayout
     End If
 
 End Sub
@@ -469,7 +469,7 @@ Private Sub UserControl_Initialize()
     ucSupport.SpecifyRequiredKeys VK_UP, VK_DOWN, VK_SPACE
     
     'In design mode, initialize a base theming class, so our paint functions don't fail
-    If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
+    If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
     
     m_FocusRectActive = -1
     m_ButtonHoverIndex = -1
@@ -505,7 +505,7 @@ End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
 ' of internal sizing metrics whenever the control size changes.
-Private Sub updateControlLayout()
+Private Sub UpdateControlLayout()
 
     'Retrieve DPI-aware control dimensions from the support class
     Dim bWidth As Long, bHeight As Long
@@ -847,7 +847,7 @@ Public Sub UpdateAgainstCurrentTheme()
     If g_IsProgramRunning Then ucSupport.UpdateAgainstThemeAndLanguage
         
     'Because translations can change text layout, we need to recalculate font metrics prior to redrawing the button
-    updateControlLayout
+    UpdateControlLayout
     
 End Sub
 

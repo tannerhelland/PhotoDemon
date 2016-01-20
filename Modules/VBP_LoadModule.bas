@@ -262,9 +262,6 @@ Public Sub LoadTheProgram()
     End If
     
     Set tmpFontCheck = Nothing
-        
-    'Make the splash screen's message display match the rest of PD
-    FormSplash.lblMessage.fontName = g_InterfaceFont
     
     'Ask the splash screen to finish whatever initializing it needs prior to displaying itself
     FormSplash.prepareSplashLogo NUMBER_OF_LOADING_STEPS

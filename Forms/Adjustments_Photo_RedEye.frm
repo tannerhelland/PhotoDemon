@@ -722,7 +722,7 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                             r = ImageData(quickX + 2, y)
                             
                             'Calculate running luminance for the ENTIRE region (including the eye highlight)
-                            aveL = aveL + Color_Functions.getHQLuminance(r, g, b)
+                            aveL = aveL + Colors.getHQLuminance(r, g, b)
                             numRegionTotal = numRegionTotal + 1
                             
                             'Perform a modified red-eye check.  This steps is where we assess the actual "redness" of the
@@ -806,9 +806,9 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                             
                             'If at least one non-red pixel was found, use its value to soften the correction result.
                             If numSimilar > 0 Then
-                                r = Color_Functions.BlendColors(r, rSum \ numSimilar, numSimilar / 8)
-                                g = Color_Functions.BlendColors(g, gSum \ numSimilar, numSimilar / 8)
-                                b = Color_Functions.BlendColors(b, bSum \ numSimilar, numSimilar / 8)
+                                r = Colors.BlendColors(r, rSum \ numSimilar, numSimilar / 8)
+                                g = Colors.BlendColors(g, gSum \ numSimilar, numSimilar / 8)
+                                b = Colors.BlendColors(b, bSum \ numSimilar, numSimilar / 8)
                             End If
                             
                             ImageData(quickX, y) = b
@@ -864,9 +864,9 @@ Public Sub ApplyRedEyeCorrection(ByVal parameterList As String, Optional ByVal t
                             
                             'If at least one non-red pixel was found, use its value to soften the correction result.
                             If numSimilar > 0 Then
-                                r = Color_Functions.BlendColors(r, rSum \ numSimilar, numSimilar / 8)
-                                g = Color_Functions.BlendColors(g, gSum \ numSimilar, numSimilar / 8)
-                                b = Color_Functions.BlendColors(b, bSum \ numSimilar, numSimilar / 8)
+                                r = Colors.BlendColors(r, rSum \ numSimilar, numSimilar / 8)
+                                g = Colors.BlendColors(g, gSum \ numSimilar, numSimilar / 8)
+                                b = Colors.BlendColors(b, bSum \ numSimilar, numSimilar / 8)
                             
                                 ImageData(quickX, y) = b
                                 ImageData(quickX + 1, y) = g

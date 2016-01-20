@@ -58,7 +58,7 @@ Option Explicit
 'This implementation binding will allow us to refer to all themeable controls _
  under a single type, making form control iteration much simpler _
  (we won't need to maintain long lists of UserControl names)
-Implements iControlThemable
+Implements IControlThemable
 
 
 'This control really only needs one event raised - Click
@@ -142,7 +142,7 @@ End Property
 
 Public Property Let Caption(ByRef newCaption As String)
     
-    If m_Caption.SetCaption(newCaption) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then updateControlLayout
+    If m_Caption.SetCaption(newCaption) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then UpdateControlLayout
     PropertyChanged "Caption"
     
     'Access keys must be handled manually.
@@ -182,7 +182,7 @@ Public Property Get FontSize() As Single
 End Property
 
 Public Property Let FontSize(ByVal newSize As Single)
-    If m_Caption.SetFontSize(newSize) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then updateControlLayout
+    If m_Caption.SetFontSize(newSize) And (m_ControlIsVisible Or (Not g_IsProgramRunning)) Then UpdateControlLayout
     PropertyChanged "FontSize"
 End Property
 
@@ -361,7 +361,7 @@ Public Sub AssignImage(Optional ByVal resName As String = "", Optional ByRef src
     End If
     
     'Request a control size update, which will also calculate a centered position for the new image
-    updateControlLayout
+    UpdateControlLayout
 
 End Sub
 
@@ -412,7 +412,7 @@ Private Sub UserControl_Initialize()
         
     'In design mode, initialize a base theming class, so our paint function doesn't fail
     Else
-        If g_Themer Is Nothing Then Set g_Themer = New pdVisualThemes
+        If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
     End If
     
     m_MouseInsideUC = False
@@ -423,7 +423,7 @@ Private Sub UserControl_Initialize()
     m_Caption.SetWordWrapSupport True
     
     'Update the control size parameters at least once
-    updateControlLayout
+    UpdateControlLayout
                 
 End Sub
 
@@ -458,12 +458,12 @@ End Sub
 
 'The control dynamically resizes each button to match the dimensions of their relative captions.
 Private Sub UserControl_Resize()
-    updateControlLayout
+    UpdateControlLayout
 End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
 ' of internal sizing metrics whenever the control size changes.
-Private Sub updateControlLayout()
+Private Sub UpdateControlLayout()
     
     'Reset the back buffer
     If m_BackBuffer Is Nothing Then Set m_BackBuffer = New pdDIB
@@ -525,7 +525,7 @@ End Sub
 
 Private Sub UserControl_Show()
     m_ControlIsVisible = True
-    updateControlLayout
+    UpdateControlLayout
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -546,7 +546,7 @@ Public Sub UpdateAgainstCurrentTheme()
     m_Caption.UpdateAgainstCurrentTheme
     
     'Redraw the control, which will also cause a resync against any theme changes
-    updateControlLayout
+    UpdateControlLayout
     
 End Sub
 
