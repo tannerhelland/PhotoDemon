@@ -721,7 +721,7 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 'When a new tool is selected, we may need to initialize certain values.
-Private Sub newToolSelected()
+Private Sub NewToolSelected()
     
     Select Case g_CurrentTool
     
@@ -940,7 +940,7 @@ Public Sub resetToolButtonStates()
         
     End If
             
-    newToolSelected
+    NewToolSelected
         
 End Sub
 

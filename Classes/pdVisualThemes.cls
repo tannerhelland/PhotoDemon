@@ -151,6 +151,12 @@ Private Sub LoadDefaultPDTheme()
     Dim themeLoadedCorrectly As Boolean
     themeLoadedCorrectly = Me.LoadThemeFile(themePath)
     
+    #If DEBUGMODE = 1 Then
+        If Not themeLoadedCorrectly Then
+            If g_IsProgramRunning Then pdDebug.LogAction "WARNING!  Failed to load theme file: " & themePath
+        End If
+    #End If
+    
     'Theme colors are loaded on-demand, so we have no further work to do here
     
     'OLD CODE FOLLOWS:
@@ -179,6 +185,9 @@ Public Function LoadThemeFile(ByVal themePath As String) As Boolean
     'If the user's choice of theme didn't load correctly, or the default theme failed to load, run some heuristics
     ' on the theme folder.
     If Not LoadThemeFile Then
+        #If DEBUGMODE = 1 Then
+            If g_IsProgramRunning Then pdDebug.LogAction "WARNING!  PD's default theme failed to load!"
+        #End If
         ' (TODO: this entire step, including pulling themes from the .exe's resource section as necessary)
     End If
     
@@ -315,14 +324,15 @@ End Function
 ' to the Default namespace as necessary.  Also, colors described by definition will automatically be tracked back to their
 ' source.  (Note, however, that this function has no way to deal with circular references, so please avoid that.)
 ' RETURNS: a color hexadecimal value if successful; a null-string otherwise.
-Public Function LookUpColor(ByRef objectName As String, ByRef colorName As String) As String
+Public Function LookUpColor(ByVal objectName As String, ByRef colorName As String) As String
 
     'First things first: see if the object name exists in the theme file.  If it doesn't, we need to fall back to the
     ' "default" namespace.
+    Const DEFAULT_NAMESPACE As String = "Default"
     Dim objectNameExists As Boolean
     objectNameExists = m_XML.doesTagExist(objectName)
     If Not objectNameExists Then
-        objectName = "Default"
+        objectName = DEFAULT_NAMESPACE
         objectNameExists = m_XML.doesTagExist(objectName)
     End If
     
@@ -330,15 +340,27 @@ Public Function LookUpColor(ByRef objectName As String, ByRef colorName As Strin
     If objectNameExists Then
         
         'Inside the current object's color definition block, retrieve the specified color
-        Dim colorDescription As String
+        Dim colorDescription As String, finalColor As String
         colorDescription = m_XML.getUniqueTag_String(colorName, vbNullString, , objectName)
         
         'If we retrieved any valid string, attempt to resolve it to an actual color value.  (At this point, the color
         ' may just be a variable instead of an actual hex value.)
         If Len(colorDescription) <> 0 Then
-            Dim finalColor As String
             finalColor = ResolveColor(colorDescription)
+        
+        'If we used a custom object name, but no color is defined for that value, try a new retrieval from
+        ' the "Default" namespace.  (Empty colors are still valid, as long as their Default variant is defined.)
+        Else
+            If StrComp(objectName, DEFAULT_NAMESPACE, vbBinaryCompare) <> 0 Then
+                objectName = DEFAULT_NAMESPACE
+                If m_XML.doesTagExist(objectName) Then
+                    colorDescription = m_XML.getUniqueTag_String(colorName, vbNullString, , objectName)
+                    If Len(colorDescription) <> 0 Then finalColor = ResolveColor(colorDescription)
+                End If
+            End If
         End If
+        
+        LookUpColor = finalColor
         
     Else
         LookUpColor = vbNullString

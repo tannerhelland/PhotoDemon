@@ -78,6 +78,7 @@ Private m_FontBold As Boolean
 'Current button indices
 Private m_ButtonIndex As Long
 Private m_ButtonHoverIndex As Long
+Private m_ButtonMouseDown As Long
 
 'Array of current button entries
 Private Type buttonEntry
@@ -130,14 +131,21 @@ Private Const IMG_TEXT_PADDING As Long = 4
 Private Enum BTS_COLOR_LIST
     [_First] = 0
     BTS_Background = 0
-    BTS_ActiveItemFill = 1
-    BTS_InactiveItemFill = 2
-    BTS_ActiveItemBorder = 3
-    BTS_InactiveItemBorder = 4
-    BTS_ActiveText = 5
-    BTS_InactiveText = 6
-    [_Last] = 6
-    [_Count] = 7
+    BTS_SelectedItemFill = 1
+    BTS_UnselectedItemFill = 2
+    BTS_SelectedItemBorder = 3
+    BTS_UnselectedItemBorder = 4
+    BTS_SelectedText = 5
+    BTS_UnselectedText = 6
+    BTS_Light_Background = 7
+    BTS_Light_SelectedItemFill = 8
+    BTS_Light_UnselectedItemFill = 9
+    BTS_Light_SelectedItemBorder = 10
+    BTS_Light_UnselectedItemBorder = 11
+    BTS_Light_SelectedText = 12
+    BTS_Light_UnselectedText = 13
+    [_Last] = 13
+    [_Count] = 14
 End Enum
 
 'Color retrieval and storage is handled by a dedicated class; this allows us to optimize theme interactions,
@@ -263,10 +271,6 @@ Private Sub ucSupport_KeyDownCustom(ByVal Shift As ShiftConstants, ByVal vkCode 
 
 End Sub
 
-Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
-    RaiseEvent MouseWheelVertical(Button, Shift, x, y, scrollAmount)
-End Sub
-
 'To improve responsiveness, MouseDown is used instead of Click
 Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
         
@@ -280,19 +284,27 @@ Private Sub ucSupport_MouseDownCustom(ByVal Button As PDMouseButtonConstants, By
         If m_ButtonIndex <> mouseClickIndex Then
             ListIndex = mouseClickIndex
         End If
+        m_ButtonMouseDown = mouseClickIndex
+    Else
+        m_ButtonMouseDown = -1
     End If
+    
+    RedrawBackBuffer
 
 End Sub
 
 'When the mouse leaves the UC, we must repaint the control (as it's no longer hovered)
 Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
     m_ButtonHoverIndex = -1
+    m_ButtonMouseDown = -1
     RedrawBackBuffer
     ucSupport.RequestCursor IDC_DEFAULT
 End Sub
 
 'When the mouse enters the clickable portion of the UC, we must repaint the hovered button
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    'TODO 6.8: what to do if the mouse button is down...?  Possibly just exit this sub?
     
     'If the mouse is over the relevant portion of the user control, display the cursor as clickable
     Dim mouseHoverIndex As Long
@@ -314,6 +326,15 @@ Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, By
     
     End If
     
+End Sub
+
+Private Sub ucSupport_MouseUpCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal ClickEventAlsoFiring As Boolean)
+    m_ButtonMouseDown = -1
+    RedrawBackBuffer
+End Sub
+
+Private Sub ucSupport_MouseWheelVertical(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long, ByVal scrollAmount As Double)
+    RaiseEvent MouseWheelVertical(Button, Shift, x, y, scrollAmount)
 End Sub
 
 Private Sub ucSupport_RepaintRequired(ByVal updateLayoutToo As Boolean)
@@ -498,8 +519,7 @@ Private Sub UserControl_Initialize()
     'In design mode, initialize a base theming class, so our paint functions don't fail
     If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
     
-    'Prep the color manager and load default colors (if inside the IDE, only; otherwise, color loading will happen when
-    ' external theming functions call UpdateAgainstCurrentTheme)
+    'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As BTS_COLOR_LIST
     colorCount = [_Count]
@@ -509,6 +529,7 @@ Private Sub UserControl_Initialize()
     'Set various UI trackers to default values.
     m_FocusRectActive = -1
     m_ButtonHoverIndex = -1
+    m_ButtonMouseDown = -1
                     
 End Sub
 
@@ -730,61 +751,68 @@ Private Sub RedrawBackBuffer()
     bHeight = ucSupport.GetBackBufferHeight
     
     'Colors used throughout this paint function are determined primarily control enablement
-    Dim btnColorActiveBorder As Long, btnColorActiveFill As Long, btnColorHoverBorder As Long
-    Dim btnColorInactiveBorder As Long, btnColorInactiveFill As Long
-    Dim fontColorActive As Long, fontColorInactive As Long, fontColorHover As Long
+    Dim btnColorBackground As Long
+    Dim btnColorSelectedBorder As Long, btnColorSelectedFill As Long
+    Dim btnColorSelectedBorderHover As Long, btnColorSelectedFillHover As Long
+    Dim btnColorUnselectedBorder As Long, btnColorUnselectedFill As Long
+    Dim btnColorUnselectedBorderHover As Long, btnColorUnselectedFillHover As Long
+    Dim fontColorSelected As Long, fontColorSelectedHover As Long
+    Dim fontColorUnselected As Long, fontColorUnselectedHover As Long
+    
     Dim curColor As Long
+    Dim isButtonSelected As Boolean, isButtonHovered As Boolean
     
     'All colors are determined by PD's central themer
-    If Not g_Themer Is Nothing Then
-    
-        If Me.Enabled Then
-            
-            'This control has a unique "ColorScheme" property that is used for image-only button strips (as the invert
-            ' color scheme tends to drown out the images themselves, and we don't need to invert any text).
-            
-            If m_ColoringMode = CM_DEFAULT Then
-            
-                btnColorInactiveBorder = g_Themer.GetThemeColor(PDTC_GRAY_DEFAULT)
-                btnColorInactiveFill = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-                btnColorActiveBorder = g_Themer.GetThemeColor(PDTC_ACCENT_SHADOW)
-                btnColorActiveFill = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-                btnColorHoverBorder = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-                
-            Else
-            
-                btnColorInactiveBorder = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-                btnColorInactiveFill = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-                btnColorActiveBorder = g_Themer.GetThemeColor(PDTC_ACCENT_HIGHLIGHT)
-                btnColorActiveFill = g_Themer.GetThemeColor(PDTC_ACCENT_ULTRALIGHT)
-                btnColorHoverBorder = g_Themer.GetThemeColor(PDTC_ACCENT_DEFAULT)
-            
-            End If
-            
-            fontColorInactive = g_Themer.GetThemeColor(PDTC_TEXT_DEFAULT)
-            fontColorActive = g_Themer.GetThemeColor(PDTC_TEXT_INVERT)
-            fontColorHover = g_Themer.GetThemeColor(PDTC_TEXT_HYPERLINK)
+    If Not (g_Themer Is Nothing) Then
         
+        'Retrieving colors is very simple: we simply pass the enabled/active/hover values to the central themer,
+        ' and it figures out which color to return based on those values.
+        Dim enabledState As Boolean
+        enabledState = Me.Enabled
+        
+        'Note also that this control has a unique "ColorScheme" property that is used for image-only button strips
+        ' (as the default "invert" coloring tends to drown out the images themselves).
+        If m_ColoringMode = CM_DEFAULT Then
+            btnColorBackground = m_Colors.RetrieveColor(BTS_Background, enabledState, False, False)
+            
+            btnColorUnselectedBorder = m_Colors.RetrieveColor(BTS_UnselectedItemBorder, enabledState, False, False)
+            btnColorUnselectedFill = m_Colors.RetrieveColor(BTS_UnselectedItemFill, enabledState, False, False)
+            btnColorUnselectedBorderHover = m_Colors.RetrieveColor(BTS_UnselectedItemBorder, enabledState, False, True)
+            btnColorUnselectedFillHover = m_Colors.RetrieveColor(BTS_UnselectedItemFill, enabledState, False, True)
+            
+            btnColorSelectedBorder = m_Colors.RetrieveColor(BTS_SelectedItemBorder, enabledState, False, False)
+            btnColorSelectedFill = m_Colors.RetrieveColor(BTS_SelectedItemFill, enabledState, False, False)
+            btnColorSelectedBorderHover = m_Colors.RetrieveColor(BTS_SelectedItemBorder, enabledState, False, True)
+            btnColorSelectedFillHover = m_Colors.RetrieveColor(BTS_SelectedItemFill, enabledState, False, True)
+            
         Else
-        
-            btnColorInactiveBorder = g_Themer.GetThemeColor(PDTC_DISABLED)
-            btnColorInactiveFill = g_Themer.GetThemeColor(PDTC_BACKGROUND_DEFAULT)
-            btnColorActiveBorder = g_Themer.GetThemeColor(PDTC_DISABLED)
-            btnColorActiveFill = g_Themer.GetThemeColor(PDTC_DISABLED)
-            btnColorHoverBorder = g_Themer.GetThemeColor(PDTC_DISABLED)
+            btnColorBackground = m_Colors.RetrieveColor(BTS_Light_Background, enabledState, False, False)
             
-            fontColorInactive = g_Themer.GetThemeColor(PDTC_DISABLED)
-            fontColorActive = g_Themer.GetThemeColor(PDTC_TEXT_INVERT)
-            fontColorHover = g_Themer.GetThemeColor(PDTC_DISABLED)
+            btnColorUnselectedBorder = m_Colors.RetrieveColor(BTS_Light_UnselectedItemBorder, enabledState, False, False)
+            btnColorUnselectedFill = m_Colors.RetrieveColor(BTS_Light_UnselectedItemFill, enabledState, False, False)
+            btnColorUnselectedBorderHover = m_Colors.RetrieveColor(BTS_Light_UnselectedItemBorder, enabledState, False, True)
+            btnColorUnselectedFillHover = m_Colors.RetrieveColor(BTS_Light_UnselectedItemFill, enabledState, False, True)
             
+            btnColorSelectedBorder = m_Colors.RetrieveColor(BTS_Light_SelectedItemBorder, enabledState, False, False)
+            btnColorSelectedFill = m_Colors.RetrieveColor(BTS_Light_SelectedItemFill, enabledState, False, False)
+            btnColorSelectedBorderHover = m_Colors.RetrieveColor(BTS_Light_SelectedItemBorder, enabledState, False, True)
+            btnColorSelectedFillHover = m_Colors.RetrieveColor(BTS_Light_SelectedItemFill, enabledState, False, True)
         End If
+        
+        '"Light mode" colors are only used for icon-only button strips, so font colors aren't affected by it.
+        fontColorSelected = m_Colors.RetrieveColor(BTS_SelectedText, enabledState, False, False)
+        fontColorSelectedHover = m_Colors.RetrieveColor(BTS_SelectedText, enabledState, False, True)
+        fontColorUnselected = m_Colors.RetrieveColor(BTS_UnselectedText, enabledState, False, False)
+        fontColorUnselectedHover = m_Colors.RetrieveColor(BTS_UnselectedText, enabledState, False, True)
         
     End If
     
-    'A single-pixel border is always drawn around the control
-    GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, btnColorInactiveBorder, 255, 1
+    'Start by filling the desired backgruond color, then rendering a single-pixel unselected border around the control.
+    ' (The border will be overwritten with Selected or Hovered borders, as necessary.)
+    GDI_Plus.GDIPlusFillRectToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, btnColorBackground
+    GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, btnColorUnselectedBorder, 255, 1
     
-    'This control doesn't maintain its own fonts; instead, it borrows it from the public PD font cache, as necessary
+    'This control doesn't maintain its own fonts; instead, it borrows it from the public PD UI font cache, as necessary
     Dim tmpFont As pdFont
     
     'Next, each individual button is rendered in turn.
@@ -792,44 +820,43 @@ Private Sub RedrawBackBuffer()
     
         Dim i As Long
         For i = 0 To m_numOfButtons - 1
-        
+            
+            isButtonSelected = CBool(i = m_ButtonIndex)
+            isButtonHovered = CBool(i = m_ButtonHoverIndex)
+            
             With m_Buttons(i)
             
                 'Fill the current button with its target fill color
-                If i = m_ButtonIndex Then
-                    curColor = btnColorActiveFill
-                Else
-                    curColor = btnColorInactiveFill
-                End If
-                
+                If isButtonSelected Then curColor = btnColorSelectedFill Else curColor = btnColorUnselectedFill
                 GDI_Plus.GDIPlusFillRectToDC bufferDC, .btBounds.Left, .btBounds.Top, .btBounds.Right - .btBounds.Left + 1, .btBounds.Bottom - .btBounds.Top, curColor
                 
-                'For performance reasons, we only render right borders
+                'For performance reasons, we first render each button's right-side border using the inactive border color
                 If i < (m_numOfButtons - 1) Then
-                    GDI_Plus.GDIPlusDrawLineToDC bufferDC, .btBounds.Right + 1, 0, .btBounds.Right + 1, bHeight, btnColorInactiveBorder, 255, 1
+                    GDI_Plus.GDIPlusDrawLineToDC bufferDC, .btBounds.Right + 1, 0, .btBounds.Right + 1, bHeight, btnColorUnselectedBorder, 255, 1
                 End If
                 
-                'Disable the next block of rendering if the control is disabled.
-                If Me.Enabled Then
+                'Active/hover changes are only rendered if the control is enabled
+                If enabledState Then
                 
-                    'If this is the active button, paint it with a special border.
-                    If i = m_ButtonIndex Then
-                        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom, btnColorActiveBorder, 255, 1
-                    
-                    'If this control is hovered by the mouse, paint it with an extra-thick border
-                    ElseIf (i = m_ButtonHoverIndex) Then
+                    'If this is the selected button (.ListIndex), paint its border with a special color.
+                    If isButtonSelected Then
+                        If isButtonHovered Then curColor = btnColorSelectedBorderHover Else curColor = btnColorSelectedBorder
+                        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom, curColor, 255, 1
                         
-                        If (m_ColoringMode = CM_DEFAULT) Then
-                            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left, .btBounds.Top, .btBounds.Right + 1, .btBounds.Bottom, btnColorHoverBorder, 255, 2, False, LineJoinMiter
-                        Else
-                            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom, btnColorHoverBorder, 255, 1, False, LineJoinMiter
+                    'If the user is hovering an inactive button, paint that button with a chunky border
+                    Else
+                        If isButtonHovered Then
+                            If (m_ColoringMode = CM_DEFAULT) Then
+                                GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left, .btBounds.Top, .btBounds.Right + 1, .btBounds.Bottom, btnColorUnselectedBorderHover, 255, 2, False, LineJoinMiter
+                            Else
+                                GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom, btnColorUnselectedBorderHover, 255, 1, False, LineJoinMiter
+                            End If
                         End If
-                    
                     End If
                     
                     'If this button has received focus via keyboard, paint it with a special interior border
                     If i = m_FocusRectActive Then
-                        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left + 2, .btBounds.Top + 2, .btBounds.Right - 2, .btBounds.Bottom - 3, btnColorActiveBorder, 255, 1
+                        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left + 2, .btBounds.Top + 2, .btBounds.Right - 2, .btBounds.Bottom - 3, btnColorSelectedBorder, 255, 1
                     End If
                     
                 End If
@@ -837,13 +864,17 @@ Private Sub RedrawBackBuffer()
                 'Paint the caption, if one exists
                 If Len(.btCaptionTranslated) <> 0 Then
                 
-                    If i = m_ButtonIndex Then
-                        curColor = fontColorActive
-                    Else
-                        If i = m_ButtonHoverIndex Then
-                            curColor = fontColorHover
+                    If isButtonSelected Then
+                        If isButtonHovered Then
+                            curColor = fontColorSelectedHover
                         Else
-                            curColor = fontColorInactive
+                            curColor = fontColorSelected
+                        End If
+                    Else
+                        If isButtonHovered Then
+                            curColor = fontColorUnselectedHover
+                        Else
+                            curColor = fontColorUnselected
                         End If
                     End If
                     
@@ -874,25 +905,22 @@ Private Sub RedrawBackBuffer()
                 
                 End If
                 
-                'Paint the button image, if any
+                'Paint the button image, if any, while branching for enabled/disabled/hovered variants
                 If Not (.btImages Is Nothing) Then
-                    
-                    If Me.Enabled Then
-                    
-                        If i = m_ButtonHoverIndex Then
+                    If enabledState Then
+                        If isButtonHovered Then
                             .btImages.alphaBlendToDCEx bufferDC, .btImageCoords.x, .btImageCoords.y, .btImageWidth, .btImageHeight, 0, .btImageHeight, .btImageWidth, .btImageHeight
                         Else
                             .btImages.alphaBlendToDCEx bufferDC, .btImageCoords.x, .btImageCoords.y, .btImageWidth, .btImageHeight, 0, 0, .btImageWidth, .btImageHeight
                         End If
-                        
                     Else
                         .btImages.alphaBlendToDCEx bufferDC, .btImageCoords.x, .btImageCoords.y, .btImageWidth, .btImageHeight, 0, .btImageHeight * 2, .btImageWidth, .btImageHeight
                     End If
-                    
                 End If
                 
             End With
         
+        'This button has been rendered successfully.  Move on to the next one.
         Next i
         
     End If
@@ -954,13 +982,20 @@ Private Sub UpdateColorList()
     Dim colorValues As BTS_COLOR_LIST
     
     With m_Colors
-        .LoadThemeColor BTS_Background, "Background", "#ffffff"
-        .LoadThemeColor BTS_ActiveItemFill, "ActiveItemFill", "#6666ff"
-        .LoadThemeColor BTS_InactiveItemFill, "InactiveItemFill", "#ffffff"
-        .LoadThemeColor BTS_ActiveItemBorder, "ActiveItemBorder", "#0000ff"
-        .LoadThemeColor BTS_InactiveItemBorder, "InactiveItemBorder", "#6666ff"
-        .LoadThemeColor BTS_ActiveText, "ActiveText", "#ffffff"
-        .LoadThemeColor BTS_InactiveText, "InactiveText", "#666666"
+        .LoadThemeColor BTS_Background, "Background", IDE_WHITE
+        .LoadThemeColor BTS_SelectedItemFill, "SelectedItemFill", IDE_BLUE
+        .LoadThemeColor BTS_UnselectedItemFill, "UnselectedItemFill", IDE_WHITE
+        .LoadThemeColor BTS_SelectedItemBorder, "SelectedItemBorder", IDE_BLUE
+        .LoadThemeColor BTS_UnselectedItemBorder, "UnselectedItemBorder", IDE_BLUE
+        .LoadThemeColor BTS_SelectedText, "SelectedText", IDE_WHITE
+        .LoadThemeColor BTS_UnselectedText, "UnselectedText", IDE_GRAY
+        .LoadThemeColor BTS_Light_Background, "BackgroundLightMode", IDE_WHITE
+        .LoadThemeColor BTS_Light_SelectedItemFill, "SelectedItemFillLightMode", IDE_LIGHTBLUE
+        .LoadThemeColor BTS_Light_UnselectedItemFill, "UnselectedItemFillLightMode", IDE_WHITE
+        .LoadThemeColor BTS_Light_SelectedItemBorder, "SelectedItemBorderLightMode", IDE_LIGHTBLUE
+        .LoadThemeColor BTS_Light_UnselectedItemBorder, "UnselectedItemBorderLightMode", IDE_LIGHTBLUE
+        .LoadThemeColor BTS_Light_SelectedText, "SelectedTextLightMode", IDE_BLUE
+        .LoadThemeColor BTS_Light_UnselectedText, "UnselectedTextLightMode", IDE_GRAY
     End With
     
 End Sub

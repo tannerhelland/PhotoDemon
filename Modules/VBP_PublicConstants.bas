@@ -145,3 +145,11 @@ Public Const PDPACKAGE_UNICODE_FRIENDLY_VERSION As Long = 66
 'PD uses some of its own window messages to simplify things like notifications.
 Public Const WM_APP As Long = &H8000&
 Public Const WM_PD_PRIMARY_COLOR_CHANGE As Long = (WM_APP + 16&)
+
+'Inside the IDE, we can't rely on PD's central themer for color decisions (as it won't be initialized).
+' A few constants are used instead.
+Public Const IDE_WHITE As String = "#ffffff"
+Public Const IDE_BLUE As String = "#3296dc"
+Public Const IDE_LIGHTBLUE As String = "#3cafe6"
+Public Const IDE_GRAY As String = "#404040"
+Public Const IDE_BLACK As String = "#000000"

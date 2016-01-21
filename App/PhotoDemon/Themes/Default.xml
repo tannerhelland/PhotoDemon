@@ -9,9 +9,16 @@
 		<!-- The Definitions section describes any custom, reusable color values you wish to create. -->
 		
 		<Definitions>
-			<BlackTest>#000000</BlackTest>
-			<BlueTest>#0000ff</BlueTest>
-			<WhiteTest>#ffffff</WhiteTest>
+			<AccentDefault>#3296dc</AccentDefault>
+			<AccentShadow>#3270dc</AccentShadow>
+			<AccentHighlight>#3cafe6</AccentHighlight>
+			<AccentUltralight>#d2f0fa</AccentUltralight>
+			<DefaultGray>#929292</DefaultGray>
+			<DefaultBackground>#ffffff</DefaultBackground>
+			<DisabledGray>#b1bac2</DisabledGray>
+			<TextDefault>#404040</TextDefault>
+			<TextHyperlink>#3170c0</TextHyperlink>
+			<TextInvert>#ffffff</TextInvert>
 		</Definitions>
 		
 		<!-- The Colors section contains a hard-coded list of colors used by PD. -->
@@ -20,21 +27,49 @@
 		
 			<!-- Default colors are not object-specific.  They are used as fallback values if an object lacks a given color name. -->
 			<Default>
-				<Background>#aaaaaa</Background>
+				<Background>DefaultBackground</Background>
 			</Default>
 			
 			<!-- All colors past this point are organized by object name.  Missing values will be taken from the Default section. -->
 			
+			<!-- ****************************************************************************************** -->
 			<!-- PD's "Button Strip" control -->
+			
 			<ButtonStrip>
 				<Background></Background>
-				<ActiveItemFill>#0000aa</ActiveItemFill>
-				<InactiveItemFill>WhiteTest</InactiveItemFill>
-				<ActiveItemBorder>BlueTest</ActiveItemBorder> 
-				<InactiveItemBorder>BlueTest</InactiveItemBorder> 
-				<ActiveText>WhiteTest</ActiveText> 
-				<InactiveText>BlackTest</InactiveText> 
+				<SelectedItemFill>AccentDefault</SelectedItemFill>
+				<SelectedItemBorder>AccentShadow</SelectedItemBorder> 
+				<SelectedText>TextInvert</SelectedText> 
+				<UnselectedItemFill>DefaultBackground</UnselectedItemFill>
+				<UnselectedItemBorder>DefaultGray</UnselectedItemBorder>
+				<UnselectedItemBorder-hover>AccentDefault</UnselectedItemBorder-hover>
+				<UnselectedText>TextDefault</UnselectedText>
+				<UnselectedText-hover>TextHyperlink</UnselectedText-hover>
+				<SelectedItemFill-disabled>DisabledGray</SelectedItemFill-disabled>
+				<SelectedItemBorder-disabled>DisabledGray</SelectedItemBorder-disabled> 
+				<UnselectedItemBorder-disabled>DisabledGray</UnselectedItemBorder-disabled> 
+				<SelectedText-disabled>DefaultBackground</SelectedText-disabled> 
+				<UnselectedText-disabled>DisabledGray</UnselectedText-disabled>
+				
+				<!-- On the Text and Typography tool panels, the button strip uses a "lighter" color scheme for the text justification options.  The control internally defines this as "light mode" and it requires special colors. -->
+				<BackgroundLightMode>DefaultBackground</BackgroundLightMode>
+				<SelectedItemFillLightMode>AccentUltralight</SelectedItemFillLightMode>
+				<SelectedItemBorderLightMode>AccentHighlight</SelectedItemBorderLightMode> 
+				<SelectedItemBorderLightMode-hover>AccentDefault</SelectedItemBorderLightMode-hover> 
+				<SelectedTextLightMode>TextDefault</SelectedTextLightMode> 
+				<UnselectedItemFillLightMode>DefaultBackground</UnselectedItemFillLightMode>
+				<UnselectedItemBorderLightMode>DefaultBackground</UnselectedItemBorderLightMode> 
+				<UnselectedItemBorderLightMode-hover>AccentDefault</UnselectedItemBorderLightMode-hover> 
+				<UnselectedTextLightMode>TextDefault</UnselectedTextLightMode>
+				<SelectedItemFillLightMode-disabled>DisabledGray</SelectedItemFillLightMode-disabled>
+				<SelectedItemBorderLightMode-disabled>DisabledGray</SelectedItemBorderLightMode-disabled> 
+				<UnselectedItemBorderLightMode-disabled>DisabledGray</UnselectedItemBorderLightMode-disabled> 
+				<SelectedTextLightMode-disabled>DefaultBackground</SelectedTextLightMode-disabled> 
+				<UnselectedTextLightMode-disabled>DisabledGray</UnselectedTextLightMode-disabled>
 			</ButtonStrip>
+			
+			<!-- End "Button Strip" -->
+			<!-- ****************************************************************************************** -->
 		
 		</Colors>
 		
