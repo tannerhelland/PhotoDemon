@@ -233,7 +233,7 @@ End Property
 Public Property Let AllowZoomPan(ByVal isAllowed As Boolean)
     disableZoomPanAbility = Not isAllowed
     PropertyChanged "DisableZoomPan"
-    redrawControl
+    RedrawControl
     UserControl.Refresh
 End Property
 
@@ -735,7 +735,7 @@ End Sub
 
 'Redraw the user control after it has been resized
 Private Sub UserControl_Resize()
-    redrawControl
+    RedrawControl
 End Sub
 
 Private Sub UserControl_Show()
@@ -744,7 +744,7 @@ Private Sub UserControl_Show()
     m_UniqueID = Timer
     
     'Ensure the control is redrawn at least once
-    redrawControl
+    RedrawControl
     
     'Set an initial max/min for the preview offsets if the user chooses to preview at 100% zoom
     If g_IsProgramRunning Then
@@ -799,7 +799,7 @@ Private Sub UserControl_Terminate()
 End Sub
 
 'After a resize or paint request, update the layout of our control
-Private Sub redrawControl()
+Private Sub RedrawControl()
     
     'The primary object in this control is the preview picture box.  Everything else is positioned relative to it.
     Dim newPicWidth As Long, newPicHeight As Long
@@ -838,4 +838,11 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         .WriteProperty "PointSelection", AllowPointSelection, False
     End With
     
+End Sub
+
+'External functions can call this to request a redraw.  This is helpful for live-updating theme settings, as in the Preferences dialog,
+' and/or retranslating all button captions against the current language.
+Public Sub UpdateAgainstCurrentTheme()
+    btsState.UpdateAgainstCurrentTheme
+    btsZoom.UpdateAgainstCurrentTheme
 End Sub

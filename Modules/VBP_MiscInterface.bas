@@ -1305,11 +1305,29 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         ' TODO 6.8: remove these steps once and for all
         '*******************************************
         
+        'NOTE: as of 21 January 2016, I'm disabling the code below while trying to solve some bothersome issues with TypeOf failing
+        ' to report TRUE for implemented interfaces.  I don't have a good explanation at present, although this may be a step in
+        ' the right direction: http://stackoverflow.com/questions/863039/problems-passing-in-a-usercontrol-as-a-parameter-in-vb6
+        
         'All of PhotoDemon's custom UI controls implement the IControlThemable interface, meaning they support a standardize
         ' UpdateAgainstCurrentTheme function.  This function updates two things:
         ' 1) The control's visual appearance (to reflect any changes to visual themes)
         ' 2) Updating any translatable text against the current translation
-        If (TypeOf eControl Is IControlThemable) Then Call eControl.UpdateAgainstCurrentTheme
+        'If (TypeOf eControl Is IControlThemable) Then
+        '    Debug.Print "I found a themable object!"
+        '    eControl.UpdateAgainstCurrentTheme
+        'End If
+        
+        If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is buttonStripVertical) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdButton) Or (TypeOf eControl Is pdButtonToolbox) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdLabel) Or (TypeOf eControl Is pdHyperlink) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is sliderTextCombo) Or (TypeOf eControl Is textUpDown) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdComboBox) Or (TypeOf eControl Is pdComboBox_Font) Or (TypeOf eControl Is pdComboBox_Hatch) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdCanvas) Or (TypeOf eControl Is pdScrollBar) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is brushSelector) Or (TypeOf eControl Is gradientSelector) Or (TypeOf eControl Is penSelector) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is pdColorVariants) Or (TypeOf eControl Is pdColorWheel) Then eControl.UpdateAgainstCurrentTheme
+        If (TypeOf eControl Is fxPreviewCtl) Then eControl.UpdateAgainstCurrentTheme
         
         'While we're here, forcibly remove TabStops from each picture box.  They should never receive focus, but I often forget
         ' to change this at design-time.

@@ -15,8 +15,8 @@ Attribute VB_Exposed = False
 'Visual Theme Color List class
 'Copyright 2016-2016 by Tanner Helland
 'Created: 15/January/16
-'Last updated: 15/January/16
-'Last update: initial build
+'Last updated: 21/January/16
+'Last update: continue fleshing out features
 '
 'Each individual PD control uses a unique list of colors.  Some of these colors may be modified by different settings
 ' or actions (e.g. enabled vs disabled, hovered vs active).
@@ -42,7 +42,7 @@ Private m_NumOfColors As Long
 'Color definition.  If a variation is missing, it will be replaced by the BaseColor value.  (As such, the BaseColor
 ' value must always be present in a color definition.)
 Private Type pdThemeColor
-    BaseColor As Long
+    baseColor As Long
     DisabledColor As Long
     ActiveColor As Long
     HoverColor As Long
@@ -119,7 +119,7 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByVal colorName As Stri
                 If colorLookupSuccessful Then
                     
                     'Store the base color value.  We'll use this as the basis for all subsequent color calculations.
-                    m_ColorList(colorIndex).BaseColor = baseColorValue
+                    m_ColorList(colorIndex).baseColor = baseColorValue
                     
                     'Because this color successfully exists, we are now going to check for disabled, active, hovered,
                     ' and active+hovered variants.  Each must be handled individually, and all are optional.  (If an
@@ -146,7 +146,7 @@ Public Function LoadThemeColor(ByVal colorIndex As Long, ByVal colorName As Stri
             colorLookupSuccessful = Colors.GetColorFromString(IDE_FailsafeColor, baseColorValue)
             If colorLookupSuccessful Then
                 With m_ColorList(colorIndex)
-                    .BaseColor = baseColorValue
+                    .baseColor = baseColorValue
                     .DisabledColor = baseColorValue
                     .ActiveColor = baseColorValue
                     .HoverColor = baseColorValue
@@ -186,3 +186,35 @@ Private Sub FillInColorVariant(ByRef objectName As String, ByRef colorName As St
     End If
     
 End Sub
+
+'Once all colors have been populated, this function is used to return actual color values.  It's all lookup-table based,
+' so feel free to use it inside actual rendering functions.
+Public Function RetrieveColor(ByVal colorIndex As Long, Optional ByVal enabledState As Boolean = True, Optional ByVal activeState As Boolean = False, Optional ByVal hoverState As Boolean = False) As Long
+
+    'Before doing anything else, validate the color index
+    If (colorIndex >= 0) And (colorIndex < m_NumOfColors) Then
+    
+        'Branch according to the passed control state.  The combination of values determines which color we return.
+        If enabledState Then
+            If activeState Then
+                If hoverState Then
+                    RetrieveColor = m_ColorList(colorIndex).ActiveHoverColor
+                Else
+                    RetrieveColor = m_ColorList(colorIndex).ActiveColor
+                End If
+            Else
+                If hoverState Then
+                    RetrieveColor = m_ColorList(colorIndex).HoverColor
+                Else
+                    RetrieveColor = m_ColorList(colorIndex).baseColor
+                End If
+            End If
+        Else
+            RetrieveColor = m_ColorList(colorIndex).DisabledColor
+        End If
+    
+    Else
+        Debug.Print "WARNING!  You've requested an invalid color index from pdThemeColors.RetrieveColor()!"
+    End If
+
+End Function
