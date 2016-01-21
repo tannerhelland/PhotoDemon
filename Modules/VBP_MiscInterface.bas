@@ -954,6 +954,11 @@ Public Sub ShowPDDialog(ByRef dialogModality As FormShowConstants, ByRef dialogF
     newLeft = centerX - ((dialogRect.x2 - dialogRect.x1) \ 2)
     newTop = centerY - ((dialogRect.y2 - dialogRect.y1) \ 2)
     
+    'If this position results in the dialog sitting off-screen, move it so that its bottom-right corner is always on-screen.
+    ' (All PD dialogs have bottom-right OK/Cancel buttons, so that's the most important part of the dialog to show.)
+    If newLeft + (dialogRect.x2 - dialogRect.x1) > g_Displays.GetDesktopRight Then newLeft = g_Displays.GetDesktopRight - (dialogRect.x2 - dialogRect.x1)
+    If newTop + (dialogRect.y2 - dialogRect.y1) > g_Displays.GetDesktopBottom Then newTop = g_Displays.GetDesktopBottom - (dialogRect.y2 - dialogRect.y1)
+    
     'Move the dialog into place, but do not repaint it (that will be handled in a moment by the .Show event)
     MoveWindow dialogHwnd, newLeft, newTop, dialogRect.x2 - dialogRect.x1, dialogRect.y2 - dialogRect.y1, 0
     
