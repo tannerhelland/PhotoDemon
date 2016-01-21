@@ -115,6 +115,14 @@ Public Function GetDesktopTop() As Long
     GetDesktopTop = GetSystemMetrics(SM_YVIRTUALSCREEN)
 End Function
 
+Public Function GetDesktopRight() As Long
+    GetDesktopRight = Me.GetDesktopLeft + Me.GetDesktopWidth
+End Function
+
+Public Function GetDesktopBottom() As Long
+    GetDesktopBottom = Me.GetDesktopTop + Me.GetDesktopHeight
+End Function
+
 Public Function GetDesktopWidth() As Long
     GetDesktopWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN)
 End Function
