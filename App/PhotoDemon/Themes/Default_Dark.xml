@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	
+	<pdData>
+		
+		<pdDataType>Visual theme</pdDataType>
+		
+		<!-- This is the default "dark theme" file for PhotoDemon 6.8. -->
+		
+		<!-- The Definitions section describes any custom, reusable color values you wish to create. -->
+		
+		<Definitions>
+			<AccentDefault>#3cafe6</AccentDefault>
+			<AccentShadow>#d2f0fa</AccentShadow>
+			<AccentHighlight>#3296dc</AccentHighlight>
+			<AccentUltralight>#3270dc</AccentUltralight>
+			<DefaultGray>#b1bac2</DefaultGray>
+			<DefaultBackground>#313131</DefaultBackground>
+			<DisabledGray>#929292</DisabledGray>
+			<TextDefault>#c0c0c0</TextDefault>
+			<TextHyperlink>#3170c0</TextHyperlink>
+			<TextInvert>#313131</TextInvert>
+		</Definitions>
+		
+		<!-- The Colors section contains a hard-coded list of colors used by PD. -->
+		<!-- Colors can be hex RGB values, or named colors that correspond to entries in the Definitions section. -->
+		<Colors>
+		
+			<!-- Default colors are not object-specific.  They are used as fallback values if an object lacks a given color name. -->
+			<Default>
+				<Background>DefaultBackground</Background>
+			</Default>
+			
+			<!-- All colors past this point are organized by object name.  Missing values will be taken from the Default section. -->
+			
+			<!-- ****************************************************************************************** -->
+			<!-- PD's "Button Strip" control -->
+			
+			<ButtonStrip>
+				<Background></Background>
+				<SelectedItemFill>AccentDefault</SelectedItemFill>
+				<SelectedItemBorder>AccentShadow</SelectedItemBorder> 
+				<SelectedText>TextInvert</SelectedText> 
+				<UnselectedItemFill>DefaultBackground</UnselectedItemFill>
+				<UnselectedItemBorder>DefaultGray</UnselectedItemBorder>
+				<UnselectedItemBorder-hover>AccentDefault</UnselectedItemBorder-hover>
+				<UnselectedText>TextDefault</UnselectedText>
+				<UnselectedText-hover>TextHyperlink</UnselectedText-hover>
+				<SelectedItemFill-disabled>DisabledGray</SelectedItemFill-disabled>
+				<SelectedItemBorder-disabled>DisabledGray</SelectedItemBorder-disabled> 
+				<UnselectedItemBorder-disabled>DisabledGray</UnselectedItemBorder-disabled> 
+				<SelectedText-disabled>DefaultBackground</SelectedText-disabled> 
+				<UnselectedText-disabled>DisabledGray</UnselectedText-disabled>
+				
+				<!-- On the Text and Typography tool panels, the button strip uses a "lighter" color scheme for the text justification options.  The control internally defines this as "light mode" and it requires special colors. -->
+				<BackgroundLightMode>DefaultBackground</BackgroundLightMode>
+				<SelectedItemFillLightMode>AccentUltralight</SelectedItemFillLightMode>
+				<SelectedItemBorderLightMode>AccentHighlight</SelectedItemBorderLightMode> 
+				<SelectedItemBorderLightMode-hover>AccentDefault</SelectedItemBorderLightMode-hover> 
+				<SelectedTextLightMode>TextDefault</SelectedTextLightMode> 
+				<UnselectedItemFillLightMode>DefaultBackground</UnselectedItemFillLightMode>
+				<UnselectedItemBorderLightMode>DefaultBackground</UnselectedItemBorderLightMode> 
+				<UnselectedItemBorderLightMode-hover>AccentDefault</UnselectedItemBorderLightMode-hover> 
+				<UnselectedTextLightMode>TextDefault</UnselectedTextLightMode>
+				<SelectedItemFillLightMode-disabled>DisabledGray</SelectedItemFillLightMode-disabled>
+				<SelectedItemBorderLightMode-disabled>DisabledGray</SelectedItemBorderLightMode-disabled> 
+				<UnselectedItemBorderLightMode-disabled>DisabledGray</UnselectedItemBorderLightMode-disabled> 
+				<SelectedTextLightMode-disabled>DefaultBackground</SelectedTextLightMode-disabled> 
+				<UnselectedTextLightMode-disabled>DisabledGray</UnselectedTextLightMode-disabled>
+			</ButtonStrip>
+			
+			<!-- End "Button Strip" -->
+			<!-- ****************************************************************************************** -->
+		
+		</Colors>
+		
+	</pdData>
+	
