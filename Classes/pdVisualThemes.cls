@@ -140,20 +140,20 @@ Private Sub LoadDefaultPDTheme()
     curThemeContrast = THEME_LIGHT
     
     'Retrieve the preferred theme file from the user preferences file.  (NOTE: this step will fail inside the IDE.)
-    Dim themePath As String
+    Dim themeFilename As String
     If g_IsProgramRunning Then
-        themePath = g_UserPreferences.getThemePath & "Default.xml"
+        themeFilename = "Default_Light.xml"
     Else
         'TODO: pull the theme directly from the resource file, or perhaps trigger some kind of failsafe IDE mode...?
     End If
     
     'Load the preferred XML file, and if it fails, fall back to PD's default theme
     Dim themeLoadedCorrectly As Boolean
-    themeLoadedCorrectly = Me.LoadThemeFile(themePath)
+    themeLoadedCorrectly = Me.LoadThemeFile(themeFilename)
     
     #If DEBUGMODE = 1 Then
         If Not themeLoadedCorrectly Then
-            If g_IsProgramRunning Then pdDebug.LogAction "WARNING!  Failed to load theme file: " & themePath
+            If g_IsProgramRunning Then pdDebug.LogAction "WARNING!  Failed to load theme file: " & themeFilename
         End If
     #End If
     
@@ -170,25 +170,52 @@ Private Sub LoadDefaultPDTheme()
 
 End Sub
 
-'Load a given theme file.  If the operation fails, PD will automatically load its default theme.
-Public Function LoadThemeFile(ByVal themePath As String) As Boolean
+'Load a given theme file.  Note that the filename SHOULD NOT INCLUDE THE FULL PATH - just the filename.  PD will
+' automatically search the /App and /Data folders as necessary to find the file.
+'
+'Also, while this function does return success/failure status, if the load operation fails, PD will automatically
+' fall back to its default theme to prevent the program from exploding.
+Public Function LoadThemeFile(ByVal themeFilename As String) As Boolean
     
-    If m_XML.loadXMLFile(themePath) Then
-        
-        'Perform minor validation on the file
-        LoadThemeFile = m_XML.isPDDataType("Visual theme") And m_XML.validateLoadedXMLData("Colors")
-        
-    Else
-        ' (TODO: if the theme file doesn't exist, load PD's default theme)
-    End If
+    'Like most things in PD, themes can exist in two places:
+    ' 1) The "untouchable" /App folder, which contains PD's core data
+    ' 2) The /Data folder, which contains user-specific data (and can be deleted willy-nilly)
     
-    'If the user's choice of theme didn't load correctly, or the default theme failed to load, run some heuristics
-    ' on the theme folder.
-    If Not LoadThemeFile Then
-        #If DEBUGMODE = 1 Then
-            If g_IsProgramRunning Then pdDebug.LogAction "WARNING!  PD's default theme failed to load!"
-        #End If
-        ' (TODO: this entire step, including pulling themes from the .exe's resource section as necessary)
+    'Attempt to resolve the passed themeFilename to one of these locations, giving preference to the /App folder.
+    ' (TODO 6.8: make a decision on how much control we expose over theme editing; maybe the /Data folder is unnecessary)
+    If g_IsProgramRunning And Not g_ProgramShuttingDown Then
+    
+        Dim themePath As String
+        themePath = g_UserPreferences.getThemePath & themeFilename
+        
+        If m_XML.loadXMLFile(themePath) Then
+            
+            'Perform minor validation on the file
+            LoadThemeFile = m_XML.isPDDataType("Visual theme") And m_XML.validateLoadedXMLData("Colors")
+            
+        Else
+            #If DEBUGMODE = 1 Then
+                If g_IsProgramRunning Then
+                    pdDebug.LogAction "WARNING! Failed to load requested theme: " & themePath
+                    pdDebug.LogAction "WARNING! Falling back to default PD theme..."
+                End If
+            #End If
+            
+            themePath = g_UserPreferences.getThemePath & "Default_Light.xml"
+            LoadThemeFile = m_XML.loadXMLFile(themePath)
+            LoadThemeFile = LoadThemeFile And m_XML.isPDDataType("Visual theme") And m_XML.validateLoadedXMLData("Colors")
+            
+        End If
+        
+        'If the user's choice of theme didn't load correctly, or the default theme failed to load, run some heuristics
+        ' on the theme folder.
+        If Not LoadThemeFile Then
+            #If DEBUGMODE = 1 Then
+                If g_IsProgramRunning Then pdDebug.LogAction "WARNING!  PD's default theme failed to load!  Catastrophic failure imminent!"
+            #End If
+            ' (TODO: this entire step, including pulling themes from the .exe's resource section as necessary)
+        End If
+        
     End If
     
 End Function
