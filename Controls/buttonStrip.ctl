@@ -516,13 +516,9 @@ Private Sub UserControl_Initialize()
     ucSupport.RequestExtraFunctionality True, True
     ucSupport.SpecifyRequiredKeys VK_RIGHT, VK_LEFT, VK_SPACE
     
-    'In design mode, initialize a base theming class, so our paint functions don't fail
-    If (g_Themer Is Nothing) And (Not g_IsProgramRunning) Then Set g_Themer = New pdVisualThemes
-    
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
-    Dim colorCount As BTS_COLOR_LIST
-    colorCount = [_Count]
+    Dim colorCount As BTS_COLOR_LIST: colorCount = [_Count]
     m_Colors.InitializeColorList "ButtonStrip", colorCount
     If Not g_IsProgramRunning Then UpdateColorList
     
@@ -750,7 +746,7 @@ Private Sub RedrawBackBuffer()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
-    'Colors used throughout this paint function are determined primarily control enablement
+    'To improve rendering performance, we cache all colors locally prior to rendering
     Dim btnColorBackground As Long
     Dim btnColorSelectedBorder As Long, btnColorSelectedFill As Long
     Dim btnColorSelectedBorderHover As Long, btnColorSelectedFillHover As Long
@@ -761,51 +757,43 @@ Private Sub RedrawBackBuffer()
     
     Dim curColor As Long
     Dim isButtonSelected As Boolean, isButtonHovered As Boolean
-    
-    'All colors are determined by PD's central themer
-    If Not (g_Themer Is Nothing) Then
+    Dim enabledState As Boolean
+    enabledState = Me.Enabled
         
-        'Retrieving colors is very simple: we simply pass the enabled/active/hover values to the central themer,
-        ' and it figures out which color to return based on those values.
-        Dim enabledState As Boolean
-        enabledState = Me.Enabled
+    'Note also that this control has a unique "ColorScheme" property that is used for image-only button strips
+    ' (as the default "invert" coloring tends to drown out the images themselves).
+    If m_ColoringMode = CM_DEFAULT Then
+        btnColorBackground = m_Colors.RetrieveColor(BTS_Background, enabledState, False, False)
         
-        'Note also that this control has a unique "ColorScheme" property that is used for image-only button strips
-        ' (as the default "invert" coloring tends to drown out the images themselves).
-        If m_ColoringMode = CM_DEFAULT Then
-            btnColorBackground = m_Colors.RetrieveColor(BTS_Background, enabledState, False, False)
-            
-            btnColorUnselectedBorder = m_Colors.RetrieveColor(BTS_UnselectedItemBorder, enabledState, False, False)
-            btnColorUnselectedFill = m_Colors.RetrieveColor(BTS_UnselectedItemFill, enabledState, False, False)
-            btnColorUnselectedBorderHover = m_Colors.RetrieveColor(BTS_UnselectedItemBorder, enabledState, False, True)
-            btnColorUnselectedFillHover = m_Colors.RetrieveColor(BTS_UnselectedItemFill, enabledState, False, True)
-            
-            btnColorSelectedBorder = m_Colors.RetrieveColor(BTS_SelectedItemBorder, enabledState, False, False)
-            btnColorSelectedFill = m_Colors.RetrieveColor(BTS_SelectedItemFill, enabledState, False, False)
-            btnColorSelectedBorderHover = m_Colors.RetrieveColor(BTS_SelectedItemBorder, enabledState, False, True)
-            btnColorSelectedFillHover = m_Colors.RetrieveColor(BTS_SelectedItemFill, enabledState, False, True)
-            
-        Else
-            btnColorBackground = m_Colors.RetrieveColor(BTS_Light_Background, enabledState, False, False)
-            
-            btnColorUnselectedBorder = m_Colors.RetrieveColor(BTS_Light_UnselectedItemBorder, enabledState, False, False)
-            btnColorUnselectedFill = m_Colors.RetrieveColor(BTS_Light_UnselectedItemFill, enabledState, False, False)
-            btnColorUnselectedBorderHover = m_Colors.RetrieveColor(BTS_Light_UnselectedItemBorder, enabledState, False, True)
-            btnColorUnselectedFillHover = m_Colors.RetrieveColor(BTS_Light_UnselectedItemFill, enabledState, False, True)
-            
-            btnColorSelectedBorder = m_Colors.RetrieveColor(BTS_Light_SelectedItemBorder, enabledState, False, False)
-            btnColorSelectedFill = m_Colors.RetrieveColor(BTS_Light_SelectedItemFill, enabledState, False, False)
-            btnColorSelectedBorderHover = m_Colors.RetrieveColor(BTS_Light_SelectedItemBorder, enabledState, False, True)
-            btnColorSelectedFillHover = m_Colors.RetrieveColor(BTS_Light_SelectedItemFill, enabledState, False, True)
-        End If
+        btnColorUnselectedBorder = m_Colors.RetrieveColor(BTS_UnselectedItemBorder, enabledState, False, False)
+        btnColorUnselectedFill = m_Colors.RetrieveColor(BTS_UnselectedItemFill, enabledState, False, False)
+        btnColorUnselectedBorderHover = m_Colors.RetrieveColor(BTS_UnselectedItemBorder, enabledState, False, True)
+        btnColorUnselectedFillHover = m_Colors.RetrieveColor(BTS_UnselectedItemFill, enabledState, False, True)
         
-        '"Light mode" colors are only used for icon-only button strips, so font colors aren't affected by it.
-        fontColorSelected = m_Colors.RetrieveColor(BTS_SelectedText, enabledState, False, False)
-        fontColorSelectedHover = m_Colors.RetrieveColor(BTS_SelectedText, enabledState, False, True)
-        fontColorUnselected = m_Colors.RetrieveColor(BTS_UnselectedText, enabledState, False, False)
-        fontColorUnselectedHover = m_Colors.RetrieveColor(BTS_UnselectedText, enabledState, False, True)
+        btnColorSelectedBorder = m_Colors.RetrieveColor(BTS_SelectedItemBorder, enabledState, False, False)
+        btnColorSelectedFill = m_Colors.RetrieveColor(BTS_SelectedItemFill, enabledState, False, False)
+        btnColorSelectedBorderHover = m_Colors.RetrieveColor(BTS_SelectedItemBorder, enabledState, False, True)
+        btnColorSelectedFillHover = m_Colors.RetrieveColor(BTS_SelectedItemFill, enabledState, False, True)
         
+    Else
+        btnColorBackground = m_Colors.RetrieveColor(BTS_Light_Background, enabledState, False, False)
+        
+        btnColorUnselectedBorder = m_Colors.RetrieveColor(BTS_Light_UnselectedItemBorder, enabledState, False, False)
+        btnColorUnselectedFill = m_Colors.RetrieveColor(BTS_Light_UnselectedItemFill, enabledState, False, False)
+        btnColorUnselectedBorderHover = m_Colors.RetrieveColor(BTS_Light_UnselectedItemBorder, enabledState, False, True)
+        btnColorUnselectedFillHover = m_Colors.RetrieveColor(BTS_Light_UnselectedItemFill, enabledState, False, True)
+        
+        btnColorSelectedBorder = m_Colors.RetrieveColor(BTS_Light_SelectedItemBorder, enabledState, False, False)
+        btnColorSelectedFill = m_Colors.RetrieveColor(BTS_Light_SelectedItemFill, enabledState, False, False)
+        btnColorSelectedBorderHover = m_Colors.RetrieveColor(BTS_Light_SelectedItemBorder, enabledState, False, True)
+        btnColorSelectedFillHover = m_Colors.RetrieveColor(BTS_Light_SelectedItemFill, enabledState, False, True)
     End If
+    
+    '"Light mode" colors are only used for icon-only button strips, so font colors aren't affected by it.
+    fontColorSelected = m_Colors.RetrieveColor(BTS_SelectedText, enabledState, False, False)
+    fontColorSelectedHover = m_Colors.RetrieveColor(BTS_SelectedText, enabledState, False, True)
+    fontColorUnselected = m_Colors.RetrieveColor(BTS_UnselectedText, enabledState, False, False)
+    fontColorUnselectedHover = m_Colors.RetrieveColor(BTS_UnselectedText, enabledState, False, True)
     
     'Start by filling the desired backgruond color, then rendering a single-pixel unselected border around the control.
     ' (The border will be overwritten with Selected or Hovered borders, as necessary.)
@@ -830,7 +818,8 @@ Private Sub RedrawBackBuffer()
                 If isButtonSelected Then curColor = btnColorSelectedFill Else curColor = btnColorUnselectedFill
                 GDI_Plus.GDIPlusFillRectToDC bufferDC, .btBounds.Left, .btBounds.Top, .btBounds.Right - .btBounds.Left + 1, .btBounds.Bottom - .btBounds.Top, curColor
                 
-                'For performance reasons, we first render each button's right-side border using the inactive border color
+                'For performance reasons, we only render each button's right-side border at this stage, and we always start
+                ' with the inactive border color.
                 If i < (m_numOfButtons - 1) Then
                     GDI_Plus.GDIPlusDrawLineToDC bufferDC, .btBounds.Right + 1, 0, .btBounds.Right + 1, bHeight, btnColorUnselectedBorder, 255, 1
                 End If
@@ -865,57 +854,45 @@ Private Sub RedrawBackBuffer()
                 If Len(.btCaptionTranslated) <> 0 Then
                 
                     If isButtonSelected Then
-                        If isButtonHovered Then
-                            curColor = fontColorSelectedHover
-                        Else
-                            curColor = fontColorSelected
-                        End If
+                        If isButtonHovered Then curColor = fontColorSelectedHover Else curColor = fontColorSelected
                     Else
-                        If isButtonHovered Then
-                            curColor = fontColorUnselectedHover
-                        Else
-                            curColor = fontColorUnselected
-                        End If
+                        If isButtonHovered Then curColor = fontColorUnselectedHover Else curColor = fontColorUnselected
                     End If
                     
                     'Borrow a relevant UI font from the public UI font cache, then render the button caption using the clipping
                     ' rect we already calculated in previous steps.
                     
-                    'Text fits just fine, so use the control font size
+                    '(Remember that a font size of "0" means that text fits inside this button at the control's default font size)
                     If .btFontSize = 0 Then
-                        
                         Set tmpFont = Font_Management.GetMatchingUIFont(m_FontSize, m_FontBold)
-                        tmpFont.SetFontColor curColor
-                        tmpFont.AttachToDC bufferDC
-                        tmpFont.SetTextAlignment vbLeftJustify
-                        tmpFont.DrawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
-                        tmpFont.ReleaseFromDC
-                    
+                        
                     'Text does not fit the button area; use the custom font size we calculated in a previous step
                     Else
-                        
                         Set tmpFont = Font_Management.GetMatchingUIFont(.btFontSize, m_FontBold)
-                        tmpFont.SetFontColor curColor
-                        tmpFont.AttachToDC bufferDC
-                        tmpFont.SetTextAlignment vbLeftJustify
-                        tmpFont.DrawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
-                        tmpFont.ReleaseFromDC
-                        
                     End If
-                
+                    
+                    'Render the text onto the button
+                    tmpFont.SetFontColor curColor
+                    tmpFont.AttachToDC bufferDC
+                    tmpFont.SetTextAlignment vbLeftJustify
+                    tmpFont.DrawCenteredTextToRect .btCaptionTranslated, .btCaptionRect
+                    tmpFont.ReleaseFromDC
+                    
                 End If
                 
                 'Paint the button image, if any, while branching for enabled/disabled/hovered variants
                 If Not (.btImages Is Nothing) Then
+                    
+                    'Determine which image from the spritesheet to use.  (This is just a pixel offset.)
+                    Dim pxOffset As Long
                     If enabledState Then
-                        If isButtonHovered Then
-                            .btImages.alphaBlendToDCEx bufferDC, .btImageCoords.x, .btImageCoords.y, .btImageWidth, .btImageHeight, 0, .btImageHeight, .btImageWidth, .btImageHeight
-                        Else
-                            .btImages.alphaBlendToDCEx bufferDC, .btImageCoords.x, .btImageCoords.y, .btImageWidth, .btImageHeight, 0, 0, .btImageWidth, .btImageHeight
-                        End If
+                        If isButtonHovered Then pxOffset = .btImageHeight Else pxOffset = 0
                     Else
-                        .btImages.alphaBlendToDCEx bufferDC, .btImageCoords.x, .btImageCoords.y, .btImageWidth, .btImageHeight, 0, .btImageHeight * 2, .btImageWidth, .btImageHeight
+                        pxOffset = .btImageHeight * 2
                     End If
+                    
+                    .btImages.alphaBlendToDCEx bufferDC, .btImageCoords.x, .btImageCoords.y, .btImageWidth, .btImageHeight, 0, pxOffset, .btImageWidth, .btImageHeight
+                    
                 End If
                 
             End With
