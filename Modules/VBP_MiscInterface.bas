@@ -30,7 +30,7 @@ Public Const VISIBILITY_FORCEHIDE As Long = 2
 
 'These values are used to remember the user's current font smoothing setting.  We try to be polite and restore
 ' the original setting when the application terminates.
-Private Declare Function SystemParametersInfo Lib "user32" Alias "SystemParametersInfoA" (ByVal uiAction As Long, ByVal uiParam As Long, ByRef pvParam As Long, ByVal fWinIni As Long) As Long
+Private Declare Function SystemParametersInfo Lib "user32" Alias "SystemParametersInfoW" (ByVal uiAction As Long, ByVal uiParam As Long, ByRef pvParam As Long, ByVal fWinIni As Long) As Long
 
 Private Const SPI_GETFONTSMOOTHING As Long = &H4A
 Private Const SPI_SETFONTSMOOTHING As Long = &H4B
