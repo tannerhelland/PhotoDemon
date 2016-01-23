@@ -25,13 +25,14 @@ Begin VB.Form FormRotateDistort
    ShowInTaskbar   =   0   'False
    Visible         =   0   'False
    Begin PhotoDemon.buttonStrip btsRender 
-      Height          =   615
-      Left            =   6120
+      Height          =   975
+      Left            =   6000
       TabIndex        =   6
-      Top             =   3960
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   1085
+      Top             =   3600
+      Width           =   5775
+      _ExtentX        =   10186
+      _ExtentY        =   1720
+      Caption         =   "render emphasis"
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -143,18 +144,6 @@ Begin VB.Form FormRotateDistort
       Caption         =   ""
       ForeColor       =   4210752
       Layout          =   1
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   2
-      Left            =   6000
-      Top             =   3570
-      Width           =   5835
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Caption         =   "render emphasis"
-      FontSize        =   12
-      ForeColor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285

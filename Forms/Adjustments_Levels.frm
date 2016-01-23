@@ -207,13 +207,14 @@ Begin VB.Form FormLevels
       ShowMainWindowColor=   0   'False
    End
    Begin PhotoDemon.buttonStrip btsChannel 
-      Height          =   600
-      Left            =   6030
+      Height          =   1080
+      Left            =   6000
       TabIndex        =   15
-      Top             =   6000
+      Top             =   5520
       Width           =   6675
       _ExtentX        =   11774
-      _ExtentY        =   1058
+      _ExtentY        =   1905
+      Caption         =   "channel"
    End
    Begin PhotoDemon.pdButtonToolbox cmdColorSelect 
       Height          =   375
@@ -228,18 +229,7 @@ Begin VB.Form FormLevels
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
-      Index           =   0
-      Left            =   6000
-      Top             =   5640
-      Width           =   6690
-      _ExtentX        =   11800
-      _ExtentY        =   503
-      Caption         =   "channel"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblOutput 
-      Height          =   285
+      Index           =   1
       Left            =   6000
       Top             =   3840
       Width           =   6735
@@ -249,8 +239,9 @@ Begin VB.Form FormLevels
       FontSize        =   12
       ForeColor       =   4210752
    End
-   Begin PhotoDemon.pdLabel lblInput 
+   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
+      Index           =   0
       Left            =   6000
       Top             =   120
       Width           =   6720

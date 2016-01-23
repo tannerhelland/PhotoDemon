@@ -80,13 +80,14 @@ Begin VB.Form dialog_GradientEditor
          Width           =   12135
       End
       Begin PhotoDemon.buttonStrip btsShape 
-         Height          =   495
-         Left            =   360
+         Height          =   915
+         Left            =   240
          TabIndex        =   8
-         Top             =   4140
-         Width           =   7740
-         _ExtentX        =   9975
-         _ExtentY        =   873
+         Top             =   3720
+         Width           =   7860
+         _ExtentX        =   13864
+         _ExtentY        =   1614
+         Caption         =   "shape"
       End
       Begin PhotoDemon.sliderTextCombo sltNodeOpacity 
          Height          =   705
@@ -104,11 +105,11 @@ Begin VB.Form dialog_GradientEditor
       End
       Begin PhotoDemon.colorSelector csNode 
          Height          =   855
-         Left            =   360
+         Left            =   240
          TabIndex        =   5
          Top             =   2220
-         Width           =   3750
-         _ExtentX        =   6615
+         Width           =   3870
+         _ExtentX        =   6826
          _ExtentY        =   1508
          Caption         =   "color"
       End
@@ -141,24 +142,13 @@ Begin VB.Form dialog_GradientEditor
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
-         Index           =   4
+         Index           =   3
          Left            =   120
          Top             =   3360
          Width           =   12135
          _ExtentX        =   16536
          _ExtentY        =   556
          Caption         =   "full gradient settings"
-         FontSize        =   12
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   315
-         Index           =   5
-         Left            =   360
-         Top             =   3780
-         Width           =   7740
-         _ExtentX        =   16536
-         _ExtentY        =   556
-         Caption         =   "shape"
          FontSize        =   12
       End
       Begin PhotoDemon.sliderTextCombo sltAngle 
@@ -176,7 +166,7 @@ Begin VB.Form dialog_GradientEditor
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
          Index           =   2
-         Left            =   240
+         Left            =   120
          Top             =   0
          Width           =   9255
          _ExtentX        =   16536
@@ -198,7 +188,7 @@ Begin VB.Form dialog_GradientEditor
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
-         Index           =   6
+         Index           =   4
          Left            =   120
          Top             =   4800
          Width           =   12135
@@ -209,13 +199,14 @@ Begin VB.Form dialog_GradientEditor
       End
    End
    Begin PhotoDemon.buttonStrip btsEdit 
-      Height          =   495
-      Left            =   240
+      Height          =   915
+      Left            =   120
       TabIndex        =   2
-      Top             =   2400
-      Width           =   12135
-      _ExtentX        =   21405
-      _ExtentY        =   873
+      Top             =   1980
+      Width           =   12255
+      _ExtentX        =   21616
+      _ExtentY        =   1614
+      Caption         =   "edit mode"
       FontSize        =   12
    End
    Begin VB.PictureBox picPreview 
@@ -224,13 +215,13 @@ Begin VB.Form dialog_GradientEditor
       BackColor       =   &H00FFFFFF&
       ForeColor       =   &H00000000&
       Height          =   1455
-      Left            =   240
+      Left            =   300
       ScaleHeight     =   95
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   807
+      ScaleWidth      =   803
       TabIndex        =   1
       Top             =   480
-      Width           =   12135
+      Width           =   12075
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -249,7 +240,7 @@ Begin VB.Form dialog_GradientEditor
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   315
       Index           =   1
-      Left            =   240
+      Left            =   120
       Top             =   120
       Width           =   9255
       _ExtentX        =   16536
@@ -271,17 +262,6 @@ Begin VB.Form dialog_GradientEditor
       TabIndex        =   4
       Top             =   3000
       Width           =   12615
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   315
-      Index           =   3
-      Left            =   240
-      Top             =   2040
-      Width           =   9255
-      _ExtentX        =   16536
-      _ExtentY        =   556
-      Caption         =   "edit mode"
-      FontSize        =   12
    End
 End
 Attribute VB_Name = "dialog_GradientEditor"

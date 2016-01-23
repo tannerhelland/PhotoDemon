@@ -24,23 +24,14 @@ Begin VB.Form FormMotionBlur
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.buttonStrip btsStyle 
-      Height          =   615
-      Left            =   6120
-      TabIndex        =   5
-      Top             =   3600
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   1085
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   375
+      Height          =   1095
       Left            =   6000
+      TabIndex        =   5
       Top             =   3120
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   661
+      _ExtentY        =   1931
       Caption         =   "style"
-      FontSize        =   12
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom

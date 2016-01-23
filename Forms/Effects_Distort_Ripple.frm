@@ -47,13 +47,77 @@ Begin VB.Form FormRipple
       PointSelection  =   -1  'True
    End
    Begin PhotoDemon.buttonStrip btsOptions 
-      Height          =   600
-      Left            =   6240
+      Height          =   1080
+      Left            =   6000
       TabIndex        =   2
-      Top             =   5160
-      Width           =   5595
-      _ExtentX        =   9869
-      _ExtentY        =   1058
+      Top             =   4680
+      Width           =   5835
+      _ExtentX        =   10292
+      _ExtentY        =   1905
+      Caption         =   "options"
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4335
+      Index           =   1
+      Left            =   5880
+      ScaleHeight     =   289
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   409
+      TabIndex        =   5
+      Top             =   120
+      Visible         =   0   'False
+      Width           =   6135
+      Begin PhotoDemon.sliderTextCombo sltRadius 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   3
+         Top             =   1440
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "radius (percentage)"
+         Min             =   1
+         Max             =   100
+         Value           =   100
+         NotchPosition   =   2
+         NotchValueCustom=   100
+      End
+      Begin PhotoDemon.sliderTextCombo sltPhase 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   11
+         Top             =   2400
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "time (phase)"
+         Max             =   360
+      End
+      Begin PhotoDemon.pdComboBox cboEdges 
+         Height          =   375
+         Left            =   360
+         TabIndex        =   12
+         Top             =   3720
+         Width           =   5655
+         _ExtentX        =   9975
+         _ExtentY        =   661
+      End
+      Begin PhotoDemon.pdLabel lblTitle 
+         Height          =   330
+         Index           =   1
+         Left            =   120
+         Top             =   3360
+         Width           =   5955
+         _ExtentX        =   0
+         _ExtentY        =   0
+         Caption         =   "if pixels lie outside the image..."
+         FontSize        =   12
+         ForeColor       =   4210752
+      End
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -162,81 +226,6 @@ Begin VB.Form FormRipple
          FontSize        =   9
          ForeColor       =   4210752
          Layout          =   1
-      End
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   330
-      Index           =   2
-      Left            =   6000
-      Top             =   4800
-      Width           =   5940
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Caption         =   "options"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4335
-      Index           =   1
-      Left            =   5880
-      ScaleHeight     =   289
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   409
-      TabIndex        =   5
-      Top             =   120
-      Visible         =   0   'False
-      Width           =   6135
-      Begin PhotoDemon.sliderTextCombo sltRadius 
-         Height          =   705
-         Left            =   120
-         TabIndex        =   3
-         Top             =   1440
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1270
-         Caption         =   "radius (percentage)"
-         Min             =   1
-         Max             =   100
-         Value           =   100
-         NotchPosition   =   2
-         NotchValueCustom=   100
-      End
-      Begin PhotoDemon.sliderTextCombo sltPhase 
-         Height          =   705
-         Left            =   120
-         TabIndex        =   11
-         Top             =   2400
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1270
-         Caption         =   "time (phase)"
-         Max             =   360
-      End
-      Begin PhotoDemon.pdComboBox cboEdges 
-         Height          =   375
-         Left            =   360
-         TabIndex        =   12
-         Top             =   3720
-         Width           =   5655
-         _ExtentX        =   9975
-         _ExtentY        =   661
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   330
-         Index           =   1
-         Left            =   120
-         Top             =   3360
-         Width           =   5955
-         _ExtentX        =   0
-         _ExtentY        =   0
-         Caption         =   "if pixels lie outside the image..."
-         FontSize        =   12
-         ForeColor       =   4210752
       End
    End
 End

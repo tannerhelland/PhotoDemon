@@ -97,35 +97,24 @@ Begin VB.Form FormColorBalance
       Caption         =   "preserve luminance"
    End
    Begin PhotoDemon.buttonStrip btsTone 
-      Height          =   600
-      Left            =   6000
+      Height          =   1080
+      Left            =   5880
       TabIndex        =   6
-      Top             =   540
-      Width           =   6255
-      _ExtentX        =   10425
-      _ExtentY        =   1058
+      Top             =   120
+      Width           =   6375
+      _ExtentX        =   11245
+      _ExtentY        =   1905
+      Caption         =   "tonal range"
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
-      Index           =   1
+      Index           =   0
       Left            =   5880
       Top             =   1440
       Width           =   6345
       _ExtentX        =   11192
       _ExtentY        =   503
       Caption         =   "new balance"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   0
-      Left            =   5880
-      Top             =   120
-      Width           =   6240
-      _ExtentX        =   11007
-      _ExtentY        =   503
-      Caption         =   "tonal range"
       FontSize        =   12
       ForeColor       =   4210752
    End

@@ -6,7 +6,7 @@
 
 <langid>id-ID</langid>
 <langname>Indonesian</langname>
-<langversion>6.6.68</langversion>
+<langversion>6.6.70</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Ari Sohandri Putra</author>
@@ -2387,6 +2387,12 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for UserControl_Support.bas-->
 
+<!-- BEGIN text for VB_Hacks.bas -->
+
+<!-- VB_Hacks.bas contains 0 phrases. -->
+
+<!-- END text for VB_Hacks.bas-->
+
 <!-- BEGIN text for VBP_ZoomModule.bas -->
 
 <phrase>
@@ -2418,30 +2424,6 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for VBP_ZoomModule.bas-->
 
-<!-- BEGIN text for cSHA256.cls -->
-
-<!-- cSHA256.cls contains 0 phrases. -->
-
-<!-- END text for cSHA256.cls-->
-
-<!-- BEGIN text for IMRUList.cls -->
-
-<!-- IMRUList.cls contains 0 phrases. -->
-
-<!-- END text for IMRUList.cls-->
-
-<!-- BEGIN text for OutsideDevelopment_SPBuffer.cls -->
-
-<!-- OutsideDevelopment_SPBuffer.cls contains 0 phrases. -->
-
-<!-- END text for OutsideDevelopment_SPBuffer.cls-->
-
-<!-- BEGIN text for OutsideDevelopment_SmartBuffer.cls -->
-
-<!-- OutsideDevelopment_SmartBuffer.cls contains 0 phrases. -->
-
-<!-- END text for OutsideDevelopment_SmartBuffer.cls-->
-
 <!-- BEGIN text for cPerlin3D.cls -->
 
 <!-- cPerlin3D.cls contains 0 phrases. -->
@@ -2453,6 +2435,12 @@ Please masukkan nilai berangka.</translation>
 <!-- cProgressBarOfficial.cls contains 0 phrases. -->
 
 <!-- END text for cProgressBarOfficial.cls-->
+
+<!-- BEGIN text for cSHA256.cls -->
+
+<!-- cSHA256.cls contains 0 phrases. -->
+
+<!-- END text for cSHA256.cls-->
 
 <!-- BEGIN text for cBasicBuffer.cls -->
 
@@ -2472,6 +2460,12 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for clsMenuImage.cls-->
 
+<!-- BEGIN text for IMRUList.cls -->
+
+<!-- IMRUList.cls contains 0 phrases. -->
+
+<!-- END text for IMRUList.cls-->
+
 <!-- BEGIN text for pdCaption.cls -->
 
 <!-- pdCaption.cls contains 0 phrases. -->
@@ -2483,6 +2477,57 @@ Please masukkan nilai berangka.</translation>
 <!-- pdClipboard.cls contains 0 phrases. -->
 
 <!-- END text for pdClipboard.cls-->
+
+<!-- BEGIN text for pdClipboardMain.cls -->
+
+<phrase>
+<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
+<translation>Papan klip kosong atau Tidak Mengandung Format Gambar Yang Sah. Tolong Ganti URL Gambar Yang Sah Ke Papan Klip dan Coba Lagi.</translation>
+</phrase>
+
+<phrase>
+<original>Windows Clipboard Error</original>
+<translation>Kesalahan Papan Klip Windows</translation>
+</phrase>
+
+<phrase>
+<original>Clipboard Image</original>
+<translation>Papan Klip Gambar</translation>
+</phrase>
+
+<phrase>
+<original>Clipboard data imported successfully</original>
+<translation>Mengimpor Data Papan Klip Berhasil</translation>
+</phrase>
+
+<phrase>
+<original>Image URL found on clipboard.  Attempting to download</original>
+<translation>URL Gambar Di Temukan Di Papan Klip. Coba Untuk Uduh</translation>
+</phrase>
+
+<phrase>
+<original>Image download failed.  Please copy a valid image URL to the clipboard and try again.</original>
+<translation>Uduh Gambar Gagal. Tolong Ganti URL Gambar Yang Sah Ke Papan Klip dan Coba Lagi.</translation>
+</phrase>
+
+<phrase>
+<original>Imported Image</original>
+<translation>Gambar Yang Di Impor</translation>
+</phrase>
+
+<phrase>
+<original>Image imported successfully</original>
+<translation>Berhasil Mengimpor Gambar</translation>
+</phrase>
+
+<phrase>
+<original>Image download failed.  Please supply a valid image URL and try again.</original>
+<translation>Download Gambar Gagal. Tolong Ganti URL Gambar Yang Sah dan Coba Lagi.</translation>
+</phrase>
+
+<!-- pdClipboardMain.cls contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<!-- END text for pdClipboardMain.cls-->
 
 <!-- BEGIN text for pdCompositor.cls -->
 
@@ -2715,6 +2760,12 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for pdLayer.cls-->
 
+<!-- BEGIN text for pdListSupport.cls -->
+
+<!-- pdListSupport.cls contains 0 phrases. -->
+
+<!-- END text for pdListSupport.cls-->
+
 <!-- BEGIN text for pdMRUManager.cls -->
 
 <!-- pdMRUManager.cls contains 0 phrases. -->
@@ -2893,6 +2944,12 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for pdPixelBlender.cls-->
 
+<!-- BEGIN text for pdPixelIterator.cls -->
+
+<!-- pdPixelIterator.cls contains 0 phrases. -->
+
+<!-- END text for pdPixelIterator.cls-->
+
 <!-- BEGIN text for pdPreferences.cls -->
 
 <!-- pdPreferences.cls contains 0 phrases. -->
@@ -2910,6 +2967,12 @@ Please masukkan nilai berangka.</translation>
 <!-- pdRandomize.cls contains 0 phrases. -->
 
 <!-- END text for pdRandomize.cls-->
+
+<!-- BEGIN text for pdRedEye.cls -->
+
+<!-- pdRedEye.cls contains 0 phrases. -->
+
+<!-- END text for pdRedEye.cls-->
 
 <!-- BEGIN text for pdScrollBar.cls -->
 
@@ -3016,6 +3079,12 @@ Please masukkan nilai berangka.</translation>
 <!-- pdTextRenderer.cls contains 0 phrases. -->
 
 <!-- END text for pdTextRenderer.cls-->
+
+<!-- BEGIN text for pdThemeColors.cls -->
+
+<!-- pdThemeColors.cls contains 0 phrases. -->
+
+<!-- END text for pdThemeColors.cls-->
 
 <!-- BEGIN text for pdToolPreset.cls -->
 
@@ -3138,6 +3207,18 @@ Please masukkan nilai berangka.</translation>
 
 <!-- END text for pdZoom.cls-->
 
+<!-- BEGIN text for OutsideDevelopment_SmartBuffer.cls -->
+
+<!-- OutsideDevelopment_SmartBuffer.cls contains 0 phrases. -->
+
+<!-- END text for OutsideDevelopment_SmartBuffer.cls-->
+
+<!-- BEGIN text for OutsideDevelopment_SPBuffer.cls -->
+
+<!-- OutsideDevelopment_SPBuffer.cls contains 0 phrases. -->
+
+<!-- END text for OutsideDevelopment_SPBuffer.cls-->
+
 <!-- BEGIN text for ShellPipe.ctl -->
 
 <!-- ShellPipe.ctl contains 0 phrases. -->
@@ -3151,6 +3232,11 @@ Please masukkan nilai berangka.</translation>
 <!-- END text for brushSelector.ctl-->
 
 <!-- BEGIN text for colorSelector.ctl -->
+
+<phrase>
+<original>RGB(%1, %2, %3)</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>Click to enter a full color selection screen.</original>
@@ -3172,7 +3258,7 @@ Please masukkan nilai berangka.</translation>
 <translation></translation>
 </phrase>
 
-<!-- colorSelector.ctl contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- colorSelector.ctl contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for colorSelector.ctl-->
 
@@ -3602,6 +3688,12 @@ atau menu berkas >buka dan berkas > menu impor.</translation>
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdLabel.ctl-->
+
+<!-- BEGIN text for pdListBox.ctl -->
+
+<!-- pdListBox.ctl contains 0 phrases. -->
+
+<!-- END text for pdListBox.ctl-->
 
 <!-- BEGIN text for pdNavigator.ctl -->
 
@@ -5618,20 +5710,6 @@ Apakah Anda memiliki account GitHub? (Jika Anda tidak tahu apa artinya ini, menj
 </phrase>
 
 <phrase>
-<original>Language changed successfully!
-
-Note: some minor program text cannot be live-updated.  Such text will be properly translated the next time you start the application.</original>
-<translation>Bahasa  berhasil berubah!
-
-Catatan: beberapa teks Program kecil tidak bisa hidup-update. Teks tersebut akan diterjemahkan dengan baik pada saat Anda memulai aplikasi.</translation>
-</phrase>
-
-<phrase>
-<original>Language changed successfully</original>
-<translation>Bahasa berhasil diubah</translation>
-</phrase>
-
-<phrase>
 <original>No metadata available.</original>
 <translation>Tidak ada metadata yang tersedia.</translation>
 </phrase>
@@ -5766,7 +5844,7 @@ Catatan: beberapa teks Program kecil tidak bisa hidup-update. Teks tersebut akan
 <translation>Buang saluran alpha</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 569 phrases. 181 were duplicates of existing phrases, so only 388 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 181 were duplicates of existing phrases, so only 386 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -5925,6 +6003,11 @@ Catatan: beberapa teks Program kecil tidak bisa hidup-update. Teks tersebut akan
 </phrase>
 
 <phrase>
+<original>output channel</original>
+<translation>saluran output</translation>
+</phrase>
+
+<phrase>
 <original>input channel(s)</original>
 <translation>saluran input (s)</translation>
 </phrase>
@@ -5932,11 +6015,6 @@ Catatan: beberapa teks Program kecil tidak bisa hidup-update. Teks tersebut akan
 <phrase>
 <original>options for all channels</original>
 <translation>pilihan untuk semua saluran</translation>
-</phrase>
-
-<phrase>
-<original>output channel</original>
-<translation>saluran output</translation>
 </phrase>
 
 <phrase>
@@ -6012,13 +6090,13 @@ Catatan: beberapa teks Program kecil tidak bisa hidup-update. Teks tersebut akan
 </phrase>
 
 <phrase>
-<original>new balance</original>
-<translation>keseimbangan baru</translation>
+<original>tonal range</original>
+<translation>pelbagai yg mempergunakan gaya suara</translation>
 </phrase>
 
 <phrase>
-<original>tonal range</original>
-<translation>pelbagai yg mempergunakan gaya suara</translation>
+<original>new balance</original>
+<translation>keseimbangan baru</translation>
 </phrase>
 
 <phrase>
@@ -6260,8 +6338,8 @@ Catatan: beberapa teks Program kecil tidak bisa hidup-update. Teks tersebut akan
 </phrase>
 
 <phrase>
-<original>original curve (diagonal line)</original>
-<translation>lengkung asal (garis pepenjuru)</translation>
+<original>histogram overlay</original>
+<translation>histogram overlay</translation>
 </phrase>
 
 <phrase>
@@ -6270,8 +6348,8 @@ Catatan: beberapa teks Program kecil tidak bisa hidup-update. Teks tersebut akan
 </phrase>
 
 <phrase>
-<original>histogram overlay</original>
-<translation>histogram overlay</translation>
+<original>original curve (diagonal line)</original>
+<translation>lengkung asal (garis pepenjuru)</translation>
 </phrase>
 
 <phrase>
@@ -7026,6 +7104,67 @@ Catatan: beberapa teks Program kecil tidak bisa hidup-update. Teks tersebut akan
 
 <!-- END text for Adjustments_Photo_PhotoFilters.frm-->
 
+<!-- BEGIN text for Adjustments_Photo_RedEye.frm (FormRedEye) -->
+
+<phrase>
+<original>Red eye removal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>strictness</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>enforce shape restrictions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color sensitivity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>object sensitivity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>highlight detected regions (preview only)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>enforce size restrictions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Searching image for potential red-eye locations</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Refining list of eye candidates</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying final false-positive checks</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying final red-eye corrections (%1 of %2)</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+
+<!-- END text for Adjustments_Photo_RedEye.frm-->
+
 <!-- BEGIN text for Adjustments_Photo_SplitTone.frm (FormSplitTone) -->
 
 <phrase>
@@ -7450,6 +7589,11 @@ Catatan: beberapa teks Program kecil tidak bisa hidup-update. Teks tersebut akan
 </phrase>
 
 <phrase>
+<original>shape</original>
+<translation>bentuk</translation>
+</phrase>
+
+<phrase>
 <original>current node settings</original>
 <translation></translation>
 </phrase>
@@ -7462,11 +7606,6 @@ Catatan: beberapa teks Program kecil tidak bisa hidup-update. Teks tersebut akan
 <phrase>
 <original>full gradient settings</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>shape</original>
-<translation>bentuk</translation>
 </phrase>
 
 <phrase>
@@ -8102,6 +8241,21 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_Artistic_Kaleidoscope.frm (FormKaleidoscope) -->
 
 <phrase>
+<original>secondary angle</original>
+<translation>sudut menengah</translation>
+</phrase>
+
+<phrase>
+<original>radius (percentage)</original>
+<translation>jejari (peratusan)</translation>
+</phrase>
+
+<phrase>
+<original>render emphasis</original>
+<translation>menyebabkan penekanan</translation>
+</phrase>
+
+<phrase>
 <original>number of mirrors</original>
 <translation>beberapa cermin</translation>
 </phrase>
@@ -8119,21 +8273,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <phrase>
 <original>center position (x, y)</original>
 <translation>kedudukan pusat (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>secondary angle</original>
-<translation>sudut menengah</translation>
-</phrase>
-
-<phrase>
-<original>radius (percentage)</original>
-<translation>jejari (peratusan)</translation>
-</phrase>
-
-<phrase>
-<original>render emphasis</original>
-<translation>menyebabkan penekanan</translation>
 </phrase>
 
 <phrase>
@@ -8359,6 +8498,16 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 </phrase>
 
 <phrase>
+<original>Blurring chroma (color) data</original>
+<translation>Kabur kroma (warna) data</translation>
+</phrase>
+
+<phrase>
+<original>Merging luminance and chroma into final image</original>
+<translation>Menghimpunkan luminance dan kroma ke dalam imej akhir</translation>
+</phrase>
+
+<phrase>
 <original>good</original>
 <translation>baik</translation>
 </phrase>
@@ -8371,16 +8520,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <phrase>
 <original>best</original>
 <translation>terbaik</translation>
-</phrase>
-
-<phrase>
-<original>Blurring chroma (color) data</original>
-<translation>Kabur kroma (warna) data</translation>
-</phrase>
-
-<phrase>
-<original>Merging luminance and chroma into final image</original>
-<translation>Menghimpunkan luminance dan kroma ke dalam imej akhir</translation>
 </phrase>
 
 <!-- Effects_Blur_ChromaBlur.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -8455,6 +8594,17 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_RadialBlur.frm-->
+
+<!-- BEGIN text for Effects_Blur_SNN.frm (FormSNN) -->
+
+<phrase>
+<original>Generating symmetric pixel pairs</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Blur_SNN.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Effects_Blur_SNN.frm-->
 
 <!-- BEGIN text for Effects_Blur_SurfaceBlur.frm (FormSurfaceBlur) -->
 
@@ -8703,6 +8853,11 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_Distort_Ripple.frm (FormRipple) -->
 
 <phrase>
+<original>time (phase)</original>
+<translation>masa (fasa)</translation>
+</phrase>
+
+<phrase>
 <original>height of ripples (amplitude)</original>
 <translation>ketinggian riak (amplitud)</translation>
 </phrase>
@@ -8710,11 +8865,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <phrase>
 <original>length of ripples (wavelength)</original>
 <translation>panjang riak (panjang gelombang)</translation>
-</phrase>
-
-<phrase>
-<original>time (phase)</original>
-<translation>masa (fasa)</translation>
 </phrase>
 
 <phrase>
@@ -8922,6 +9072,32 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <!-- END text for Effects_Edge_FindEdges.frm-->
 
+<!-- BEGIN text for Effects_Edge_Range.frm (FormRangeFilter) -->
+
+<phrase>
+<original>synchronize search radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>horizontal radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Searching each pixel range for edges</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Edge_Range.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<!-- END text for Effects_Edge_Range.frm-->
+
 <!-- BEGIN text for Effects_Edge_TraceContour.frm (FormContour) -->
 
 <phrase>
@@ -8978,6 +9154,16 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_LightAndShadow_LensFlare.frm (FormLensFlare) -->
 
 <phrase>
+<original>Note: you can also set a position by clicking the preview window.</original>
+<translation>Nota: Anda juga boleh menetapkan kedudukan dengan mengklik tetingkap pratonton.</translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>kedudukan (x, y)</translation>
+</phrase>
+
+<phrase>
 <original>secondary intensity</original>
 <translation>keamatan menengah</translation>
 </phrase>
@@ -8990,16 +9176,6 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <phrase>
 <original>synchronize intensity</original>
 <translation>menyegerakkan keamatan</translation>
-</phrase>
-
-<phrase>
-<original>Note: you can also set a position by clicking the preview window.</original>
-<translation>Nota: Anda juga boleh menetapkan kedudukan dengan mengklik tetingkap pratonton.</translation>
-</phrase>
-
-<phrase>
-<original>position (x, y)</original>
-<translation>kedudukan (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -9131,6 +9307,62 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- Effects_Noise_AddRGBNoise.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_AddRGBNoise.frm-->
+
+<!-- BEGIN text for Effects_Noise_Anisotropic.frm (FormAnisotropic) -->
+
+<phrase>
+<original>directionality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>gradient flow</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>iterations</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>model</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Calculating energy gradients (pass %1 of %2)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>4-way cardinal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>4-way ordinal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>8-way</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>sharpen</original>
+<translation>mengasah</translation>
+</phrase>
+
+<phrase>
+<original>smooth</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+
+<!-- END text for Effects_Noise_Anisotropic.frm-->
 
 <!-- BEGIN text for Effects_Noise_BilateralFilter.frm (FormBilateral) -->
 
@@ -9307,17 +9539,17 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- BEGIN text for Effects_Pixelate_Mezzotint.frm (FormMezzotint) -->
 
 <phrase>
+<original>type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>randomness</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>stippling</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>type</original>
 <translation></translation>
 </phrase>
 
@@ -9383,12 +9615,7 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 
 <!-- BEGIN text for Effects_Sharpen_Sharpen.frm (FormSharpen) -->
 
-<phrase>
-<original>sharpen</original>
-<translation>mengasah</translation>
-</phrase>
-
-<!-- Effects_Sharpen_Sharpen.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Sharpen_Sharpen.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Effects_Sharpen_Sharpen.frm-->
 
@@ -9428,6 +9655,37 @@ If anda mahu menyimpannya dengan nama fail yang berbeza, sila pilih 'Batal', kem
 <!-- Effects_Stylize_Diffuse.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Diffuse.frm-->
+
+<!-- BEGIN text for Effects_Stylize_PortraitGlow.frm (FormPortraitGlow) -->
+
+<phrase>
+<original>glow radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>exposure boost</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying petroleum jelly to camera lens</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>classic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>subtle</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_PortraitGlow.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for Effects_Stylize_PortraitGlow.frm-->
 
 <!-- BEGIN text for Effects_Stylize_Solarize.frm (FormSolarize) -->
 
@@ -11431,13 +11689,8 @@ Dukung Di Perbolehkan untuk ciri ini, Tolong Salin Berkas FreeImage.dll ke Dalam
 </phrase>
 
 <phrase>
-<original>metadata options</original>
-<translation>pilihan metadata</translation>
-</phrase>
-
-<phrase>
-<original>tag values</original>
-<translation>nilai tag</translation>
+<original>metadata groups in this image</original>
+<translation>kumpulan metadata dalam imej ini</translation>
 </phrase>
 
 <phrase>
@@ -11446,13 +11699,18 @@ Dukung Di Perbolehkan untuk ciri ini, Tolong Salin Berkas FreeImage.dll ke Dalam
 </phrase>
 
 <phrase>
-<original>tags in this category</original>
-<translation>tag dalam kategori ini</translation>
+<original>tag values</original>
+<translation>nilai tag</translation>
 </phrase>
 
 <phrase>
-<original>metadata groups in this image</original>
-<translation>kumpulan metadata dalam imej ini</translation>
+<original>metadata options</original>
+<translation>pilihan metadata</translation>
+</phrase>
+
+<phrase>
+<original>tags in this category</original>
+<translation>tag dalam kategori ini</translation>
 </phrase>
 
 <phrase>
@@ -12009,16 +12267,11 @@ Dukung Di Perbolehkan untuk ciri ini, Tolong Salin Berkas FreeImage.dll ke Dalam
 <!-- BEGIN text for Startup_Splash.frm (FormSplash) -->
 
 <phrase>
-<original>Live updates</original>
-<translation>Langsung Perbarui</translation>
-</phrase>
-
-<phrase>
 <original>version %1</original>
 <translation>versi %1</translation>
 </phrase>
 
-<!-- Startup_Splash.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<!-- Startup_Splash.frm contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for Startup_Splash.frm-->
 
@@ -12457,8 +12710,28 @@ Dukung Di Perbolehkan untuk ciri ini, Tolong Salin Berkas FreeImage.dll ke Dalam
 </phrase>
 
 <phrase>
+<original>tolerance</original>
+<translation>toleransi</translation>
+</phrase>
+
+<phrase>
+<original>sampling area</original>
+<translation>kawasan persampelan</translation>
+</phrase>
+
+<phrase>
+<original>corner rounding</original>
+<translation>sudut pembundaran</translation>
+</phrase>
+
+<phrase>
 <original>size (w, h)</original>
 <translation>saiz (w, h)</translation>
+</phrase>
+
+<phrase>
+<original>smoothing</original>
+<translation>pelicinan</translation>
 </phrase>
 
 <phrase>
@@ -12479,26 +12752,6 @@ Dukung Di Perbolehkan untuk ciri ini, Tolong Salin Berkas FreeImage.dll ke Dalam
 <phrase>
 <original>stroke smoothing</original>
 <translation>strok pelicinan</translation>
-</phrase>
-
-<phrase>
-<original>sampling area</original>
-<translation>kawasan persampelan</translation>
-</phrase>
-
-<phrase>
-<original>tolerance</original>
-<translation>toleransi</translation>
-</phrase>
-
-<phrase>
-<original>corner rounding</original>
-<translation>sudut pembundaran</translation>
-</phrase>
-
-<phrase>
-<original>smoothing</original>
-<translation>pelicinan</translation>
 </phrase>
 
 <phrase>
@@ -14424,273 +14677,18 @@ Jika anda masih memilih untuk melumpuhkan Perbarui, jangan lupa untuk mengunjung
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdClipboardMain.cls -->
+<!-- BEGIN text for IControlThemable.cls -->
 
-<phrase>
-<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
-<translation>Papan klip kosong atau Tidak Mengandung Format Gambar Yang Sah. Tolong Ganti URL Gambar Yang Sah Ke Papan Klip dan Coba Lagi.</translation>
-</phrase>
+<!-- IControlThemable.cls contains 0 phrases. -->
 
-<phrase>
-<original>Windows Clipboard Error</original>
-<translation>Kesalahan Papan Klip Windows</translation>
-</phrase>
-
-<phrase>
-<original>Clipboard Image</original>
-<translation>Papan Klip Gambar</translation>
-</phrase>
-
-<phrase>
-<original>Clipboard data imported successfully</original>
-<translation>Mengimpor Data Papan Klip Berhasil</translation>
-</phrase>
-
-<phrase>
-<original>Image URL found on clipboard.  Attempting to download</original>
-<translation>URL Gambar Di Temukan Di Papan Klip. Coba Untuk Uduh</translation>
-</phrase>
-
-<phrase>
-<original>Image download failed.  Please copy a valid image URL to the clipboard and try again.</original>
-<translation>Uduh Gambar Gagal. Tolong Ganti URL Gambar Yang Sah Ke Papan Klip dan Coba Lagi.</translation>
-</phrase>
-
-<phrase>
-<original>Imported Image</original>
-<translation>Gambar Yang Di Impor</translation>
-</phrase>
-
-<phrase>
-<original>Image imported successfully</original>
-<translation>Berhasil Mengimpor Gambar</translation>
-</phrase>
-
-<phrase>
-<original>Image download failed.  Please supply a valid image URL and try again.</original>
-<translation>Download Gambar Gagal. Tolong Ganti URL Gambar Yang Sah dan Coba Lagi.</translation>
-</phrase>
-
-<!-- pdClipboardMain.cls contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- END text for pdClipboardMain.cls-->
-
-<!-- BEGIN text for Effects_Edge_Range.frm (FormRangeFilter) -->
-
-<phrase>
-<original>synchronize search radius</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>horizontal radius</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>vertical radius</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Searching each pixel range for edges</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Edge_Range.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
-
-<!-- END text for Effects_Edge_Range.frm-->
-
-<!-- BEGIN text for pdPixelIterator.cls -->
-
-<!-- pdPixelIterator.cls contains 0 phrases. -->
-
-<!-- END text for pdPixelIterator.cls-->
-
-<!-- BEGIN text for Effects_Noise_Anisotropic.frm (FormAnisotropic) -->
-
-<phrase>
-<original>directionality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>gradient flow</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>iterations</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>model</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Calculating energy gradients (pass %1 of %2)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>4-way cardinal</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>4-way ordinal</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>8-way</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>smooth</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- END text for Effects_Noise_Anisotropic.frm-->
-
-<!-- BEGIN text for Effects_Blur_SNN.frm (FormSNN) -->
-
-<phrase>
-<original>Generating symmetric pixel pairs</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Blur_SNN.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for Effects_Blur_SNN.frm-->
-
-<!-- BEGIN text for Effects_Stylize_PortraitGlow.frm (FormPortraitGlow) -->
-
-<phrase>
-<original>glow radius</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>exposure boost</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Applying petroleum jelly to camera lens</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>classic</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>subtle</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Stylize_PortraitGlow.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<!-- END text for Effects_Stylize_PortraitGlow.frm-->
-
-<!-- BEGIN text for pdListSupport.cls -->
-
-<!-- pdListSupport.cls contains 0 phrases. -->
-
-<!-- END text for pdListSupport.cls-->
-
-<!-- BEGIN text for pdListBox.ctl -->
-
-<!-- pdListBox.ctl contains 0 phrases. -->
-
-<!-- END text for pdListBox.ctl-->
-
-<!-- BEGIN text for Adjustments_Photo_RedEye.frm (FormRedEye) -->
-
-<phrase>
-<original>Red eye removal</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>strictness</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>enforce shape restrictions</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color sensitivity</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>object sensitivity</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>highlight detected regions (preview only)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>enforce size restrictions</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Searching image for potential red-eye locations</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Refining list of eye candidates</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Applying final false-positive checks</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Applying final red-eye corrections (%1 of %2)</original>
-<translation></translation>
-</phrase>
-
-<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
-
-<!-- END text for Adjustments_Photo_RedEye.frm-->
-
-<!-- BEGIN text for pdRedEye.cls -->
-
-<!-- pdRedEye.cls contains 0 phrases. -->
-
-<!-- END text for pdRedEye.cls-->
-
-<!-- BEGIN text for VB_Hacks.bas -->
-
-<!-- VB_Hacks.bas contains 0 phrases. -->
-
-<!-- END text for VB_Hacks.bas-->
+<!-- END text for IControlThemable.cls-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2517</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4321 phrases. -->
-<!-- 1802 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 13431 total words. -->
+<!-- As of this build, PhotoDemon contains 4320 phrases. -->
+<!-- 1803 are duplicates, so only 2517 unique phrases have been written to file. -->
+<!-- These 2517 phrases contain approximately 13403 total words. -->
 
 </pdData>

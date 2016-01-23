@@ -23,6 +23,16 @@ Begin VB.Form FormChromaBlur
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
+   Begin PhotoDemon.buttonStrip btsQuality 
+      Height          =   975
+      Left            =   6000
+      TabIndex        =   3
+      Top             =   2520
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1720
+      Caption         =   "quality"
+   End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
       Height          =   750
@@ -57,52 +67,6 @@ Begin VB.Form FormChromaBlur
       SigDigits       =   1
       Value           =   5
    End
-   Begin PhotoDemon.smartOptionButton OptQuality 
-      Height          =   360
-      Index           =   0
-      Left            =   6120
-      TabIndex        =   3
-      Top             =   3150
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   582
-      Caption         =   "good"
-      Value           =   -1  'True
-   End
-   Begin PhotoDemon.smartOptionButton OptQuality 
-      Height          =   360
-      Index           =   1
-      Left            =   6120
-      TabIndex        =   4
-      Top             =   3570
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   582
-      Caption         =   "better"
-   End
-   Begin PhotoDemon.smartOptionButton OptQuality 
-      Height          =   360
-      Index           =   2
-      Left            =   6120
-      TabIndex        =   5
-      Top             =   3990
-      Width           =   5700
-      _ExtentX        =   10054
-      _ExtentY        =   582
-      Caption         =   "best"
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   1
-      Left            =   6000
-      Top             =   2760
-      Width           =   5745
-      _ExtentX        =   10134
-      _ExtentY        =   503
-      Caption         =   "quality"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
 End
 Attribute VB_Name = "FormChromaBlur"
 Attribute VB_GlobalNameSpace = False
@@ -129,9 +93,6 @@ Attribute VB_Exposed = False
 '***************************************************************************
 
 Option Explicit
-
-'Track the active option button, so we can more easily pass it as a parameter when the user clicks OK
-Private qualityIndex As Long
 
 'Selectively blur just the chroma (color) data in an image, but not the luminance.  Very helpful for removing noise,
 ' particularly in digital photos.
@@ -289,8 +250,12 @@ Public Sub ChromaBlurFilter(ByVal gRadius As Double, Optional ByVal gaussQuality
     
 End Sub
 
+Private Sub btsQuality_Click(ByVal buttonIndex As Long)
+    UpdatePreview
+End Sub
+
 Private Sub cmdBar_OKClick()
-    Process "Chroma blur", , buildParams(sltRadius, qualityIndex), UNDO_LAYER
+    Process "Chroma blur", , buildParams(sltRadius, btsQuality.ListIndex), UNDO_LAYER
 End Sub
 
 Private Sub cmdBar_RequestPreviewUpdate()
@@ -302,7 +267,12 @@ Private Sub cmdBar_ResetClick()
 End Sub
 
 Private Sub Form_Activate()
-    
+        
+    btsQuality.AddItem "good", 0
+    btsQuality.AddItem "better", 1
+    btsQuality.AddItem "best", 2
+    btsQuality.ListIndex = 0
+        
     'Apply translations and visual themes
     ApplyThemeAndTranslations Me
     
@@ -323,18 +293,13 @@ Private Sub Form_Unload(Cancel As Integer)
     ReleaseFormTheming Me
 End Sub
 
-Private Sub OptQuality_Click(Index As Integer)
-    qualityIndex = Index
-    UpdatePreview
-End Sub
-
 Private Sub sltRadius_Change()
     UpdatePreview
 End Sub
 
 'Render a new effect preview
 Private Sub UpdatePreview()
-    If cmdBar.previewsAllowed Then ChromaBlurFilter sltRadius, qualityIndex, True, fxPreview
+    If cmdBar.previewsAllowed Then ChromaBlurFilter sltRadius, btsQuality.ListIndex, True, fxPreview
 End Sub
 
 'If the user changes the position and/or zoom of the preview viewport, the entire preview must be redrawn.

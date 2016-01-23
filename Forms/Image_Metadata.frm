@@ -60,13 +60,14 @@ Begin VB.Form FormMetadata
       Width           =   255
    End
    Begin PhotoDemon.buttonStrip btsGroup 
-      Height          =   615
+      Height          =   1095
       Left            =   120
       TabIndex        =   1
-      Top             =   540
-      Width           =   11730
-      _ExtentX        =   20690
-      _ExtentY        =   1085
+      Top             =   120
+      Width           =   11760
+      _ExtentX        =   20743
+      _ExtentY        =   1931
+      Caption         =   "metadata groups in this image"
    End
    Begin VB.PictureBox picBuffer 
       Appearance      =   0  'Flat
@@ -83,24 +84,26 @@ Begin VB.Form FormMetadata
       Width           =   6495
    End
    Begin PhotoDemon.buttonStrip btsTechnical 
-      Height          =   495
+      Height          =   975
       Index           =   0
       Left            =   7440
       TabIndex        =   6
-      Top             =   2160
+      Top             =   1800
       Width           =   4410
-      _ExtentX        =   20690
-      _ExtentY        =   1085
+      _ExtentX        =   7779
+      _ExtentY        =   1720
+      Caption         =   "tag names"
    End
    Begin PhotoDemon.buttonStrip btsTechnical 
-      Height          =   495
+      Height          =   975
       Index           =   1
       Left            =   7440
       TabIndex        =   5
-      Top             =   3240
+      Top             =   2880
       Width           =   4410
-      _ExtentX        =   6720
-      _ExtentY        =   873
+      _ExtentX        =   7779
+      _ExtentY        =   1720
+      Caption         =   "tag values"
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   270
@@ -139,30 +142,6 @@ Begin VB.Form FormMetadata
       ForeColor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   270
-      Index           =   3
-      Left            =   7440
-      Top             =   2820
-      Width           =   4365
-      _ExtentX        =   7699
-      _ExtentY        =   476
-      Caption         =   "tag values"
-      FontSize        =   11
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   270
-      Index           =   2
-      Left            =   7440
-      Top             =   1740
-      Width           =   4410
-      _ExtentX        =   7779
-      _ExtentY        =   476
-      Caption         =   "tag names"
-      FontSize        =   11
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285
       Index           =   1
       Left            =   120
@@ -171,18 +150,6 @@ Begin VB.Form FormMetadata
       _ExtentX        =   12012
       _ExtentY        =   503
       Caption         =   "tags in this category"
-      FontSize        =   12
-      ForeColor       =   4210752
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   0
-      Left            =   120
-      Top             =   120
-      Width           =   11745
-      _ExtentX        =   20717
-      _ExtentY        =   503
-      Caption         =   "metadata groups in this image"
       FontSize        =   12
       ForeColor       =   4210752
    End

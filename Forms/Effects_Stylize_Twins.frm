@@ -25,13 +25,14 @@ Begin VB.Form FormTwins
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.buttonStrip btsOrientation 
-      Height          =   615
-      Left            =   6240
+      Height          =   1095
+      Left            =   6000
       TabIndex        =   2
-      Top             =   2520
-      Width           =   5655
-      _ExtentX        =   9975
-      _ExtentY        =   1085
+      Top             =   2040
+      Width           =   5895
+      _ExtentX        =   10398
+      _ExtentY        =   1931
+      Caption         =   "orientation"
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -53,17 +54,6 @@ Begin VB.Form FormTwins
       _ExtentX        =   9922
       _ExtentY        =   9922
       DisableZoomPan  =   -1  'True
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Left            =   6000
-      Top             =   2160
-      Width           =   5820
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Caption         =   "orientation"
-      FontSize        =   12
-      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormTwins"

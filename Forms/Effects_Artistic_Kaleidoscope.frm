@@ -47,25 +47,67 @@ Begin VB.Form FormKaleidoscope
       PointSelection  =   -1  'True
    End
    Begin PhotoDemon.buttonStrip btsOptions 
-      Height          =   600
-      Left            =   6120
-      TabIndex        =   3
-      Top             =   4620
-      Width           =   5595
-      _ExtentX        =   9869
-      _ExtentY        =   1058
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   6
+      Height          =   1080
       Left            =   6000
-      Top             =   4200
-      Width           =   5700
-      _ExtentX        =   0
-      _ExtentY        =   0
+      TabIndex        =   3
+      Top             =   4080
+      Width           =   5955
+      _ExtentX        =   10504
+      _ExtentY        =   1905
       Caption         =   "options"
-      FontSize        =   12
-      ForeColor       =   4210752
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   3495
+      Index           =   1
+      Left            =   5880
+      ScaleHeight     =   233
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   409
+      TabIndex        =   5
+      Top             =   360
+      Visible         =   0   'False
+      Width           =   6135
+      Begin PhotoDemon.sliderTextCombo sltAngle2 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   2
+         Top             =   240
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "secondary angle"
+         Max             =   360
+         SigDigits       =   1
+      End
+      Begin PhotoDemon.sliderTextCombo sltRadius 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   10
+         Top             =   1200
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "radius (percentage)"
+         Min             =   1
+         Max             =   100
+         Value           =   100
+         NotchPosition   =   2
+         NotchValueCustom=   100
+      End
+      Begin PhotoDemon.buttonStrip btsQuality 
+         Height          =   1080
+         Left            =   120
+         TabIndex        =   11
+         Top             =   2160
+         Width           =   5715
+         _ExtentX        =   10081
+         _ExtentY        =   1905
+         Caption         =   "render emphasis"
+      End
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -157,70 +199,6 @@ Begin VB.Form FormKaleidoscope
          _ExtentX        =   0
          _ExtentY        =   0
          Caption         =   "center position (x, y)"
-         FontSize        =   12
-         ForeColor       =   4210752
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   3495
-      Index           =   1
-      Left            =   5880
-      ScaleHeight     =   233
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   409
-      TabIndex        =   5
-      Top             =   360
-      Visible         =   0   'False
-      Width           =   6135
-      Begin PhotoDemon.sliderTextCombo sltAngle2 
-         Height          =   705
-         Left            =   120
-         TabIndex        =   2
-         Top             =   240
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1270
-         Caption         =   "secondary angle"
-         Max             =   360
-         SigDigits       =   1
-      End
-      Begin PhotoDemon.sliderTextCombo sltRadius 
-         Height          =   705
-         Left            =   120
-         TabIndex        =   10
-         Top             =   1200
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1270
-         Caption         =   "radius (percentage)"
-         Min             =   1
-         Max             =   100
-         Value           =   100
-         NotchPosition   =   2
-         NotchValueCustom=   100
-      End
-      Begin PhotoDemon.buttonStrip btsQuality 
-         Height          =   600
-         Left            =   240
-         TabIndex        =   11
-         Top             =   2640
-         Width           =   5595
-         _ExtentX        =   9869
-         _ExtentY        =   1058
-      End
-      Begin PhotoDemon.pdLabel lblTitle 
-         Height          =   285
-         Index           =   2
-         Left            =   120
-         Top             =   2265
-         Width           =   5835
-         _ExtentX        =   10292
-         _ExtentY        =   503
-         Caption         =   "render emphasis"
          FontSize        =   12
          ForeColor       =   4210752
       End

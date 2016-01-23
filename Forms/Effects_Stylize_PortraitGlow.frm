@@ -24,23 +24,14 @@ Begin VB.Form FormPortraitGlow
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.buttonStrip btsStyle 
-      Height          =   615
-      Left            =   6120
-      TabIndex        =   5
-      Top             =   1320
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   1085
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   255
+      Height          =   1095
       Left            =   6000
-      Top             =   960
+      TabIndex        =   5
+      Top             =   840
       Width           =   5895
       _ExtentX        =   10398
-      _ExtentY        =   450
+      _ExtentY        =   1931
       Caption         =   "style"
-      FontSize        =   12
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -292,5 +283,5 @@ Private Sub UpdatePreview()
 End Sub
 
 Private Function GetLocalParamString() As String
-    GetLocalParamString = buildParamList("style", btsStyle.ListIndex, "radius", sltRadius.Value, "exposure", sltBoost.Value, "strength", sltStrength.Value)
+    GetLocalParamString = BuildParamList("style", btsStyle.ListIndex, "radius", sltRadius.Value, "exposure", sltBoost.Value, "strength", sltStrength.Value)
 End Function

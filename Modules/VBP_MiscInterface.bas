@@ -1305,19 +1305,17 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         ' TODO 6.8: remove these steps once and for all
         '*******************************************
         
-        'NOTE: as of 21 January 2016, I'm disabling the code below while trying to solve some bothersome issues with TypeOf failing
-        ' to report TRUE for implemented interfaces.  I don't have a good explanation at present, although this may be a step in
-        ' the right direction: http://stackoverflow.com/questions/863039/problems-passing-in-a-usercontrol-as-a-parameter-in-vb6
-        
         'All of PhotoDemon's custom UI controls implement the IControlThemable interface, meaning they support a standardize
         ' UpdateAgainstCurrentTheme function.  This function updates two things:
         ' 1) The control's visual appearance (to reflect any changes to visual themes)
         ' 2) Updating any translatable text against the current translation
-        'If (TypeOf eControl Is IControlThemable) Then
-        '    Debug.Print "I found a themable object!"
-        '    eControl.UpdateAgainstCurrentTheme
-        'End If
-        
+        '
+        'Note VB's default controls don't expose a .Object reference for us to test, so they will cause this line to error out.
+        ' (Many thanks to @Kroc for implementing this test.)
+        'On Error Resume Next
+        'If (TypeOf eControl.object Is IControlThemable) Then eControl.ApplyTheme
+        'On Error GoTo 0
+        ' (Actual implementation still pending... VB usercontrols do not behave very much like classes, it turns out!)
         If (TypeOf eControl Is smartOptionButton) Or (TypeOf eControl Is smartCheckBox) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is buttonStrip) Or (TypeOf eControl Is buttonStripVertical) Then eControl.UpdateAgainstCurrentTheme
         If (TypeOf eControl Is pdButton) Or (TypeOf eControl Is pdButtonToolbox) Then eControl.UpdateAgainstCurrentTheme
@@ -1334,7 +1332,7 @@ Public Sub ApplyThemeAndTranslations(ByRef dstForm As Form, Optional ByVal useDo
         If (TypeOf eControl Is PictureBox) Then eControl.TabStop = False
         
         'Optionally, DoEvents can be called after each change.  This slows the process, but it allows external progress
-        ' bars to be automatically refreshed.  We use this when the user actively changes the visual theme and/or translation,
+        ' bars to be automatically refreshed.  We use this when the user actively changes the visual theme and/or language,
         ' as it allows the user to "see" the changes appear on the main PD window.
         ' (TODO 6.8: investigate where else this is used, if anywhere, and consider removal.)
         If useDoEvents Then DoEvents

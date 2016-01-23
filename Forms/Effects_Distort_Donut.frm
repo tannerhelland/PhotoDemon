@@ -47,25 +47,85 @@ Begin VB.Form FormDonut
       PointSelection  =   -1  'True
    End
    Begin PhotoDemon.buttonStrip btsOptions 
-      Height          =   600
-      Left            =   6240
-      TabIndex        =   10
-      Top             =   5040
-      Width           =   5595
-      _ExtentX        =   9869
-      _ExtentY        =   1058
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   7
+      Height          =   1080
       Left            =   6000
+      TabIndex        =   10
       Top             =   4680
-      Width           =   5820
-      _ExtentX        =   10266
-      _ExtentY        =   503
+      Width           =   5835
+      _ExtentX        =   10292
+      _ExtentY        =   1905
       Caption         =   "options"
-      FontSize        =   12
-      ForeColor       =   4210752
+   End
+   Begin VB.PictureBox picContainer 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   4335
+      Index           =   0
+      Left            =   5880
+      ScaleHeight     =   289
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   409
+      TabIndex        =   2
+      Top             =   120
+      Width           =   6135
+      Begin PhotoDemon.sliderTextCombo sltAngle 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   3
+         Top             =   120
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "initial angle"
+         Min             =   -360
+         Max             =   360
+         SigDigits       =   1
+      End
+      Begin PhotoDemon.sliderTextCombo sltSpread 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   4
+         Top             =   1080
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "spread"
+         Max             =   360
+         SigDigits       =   1
+         Value           =   360
+         NotchPosition   =   2
+         NotchValueCustom=   360
+      End
+      Begin PhotoDemon.sliderTextCombo sltRadius 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   5
+         Top             =   2040
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "interior radius"
+         Max             =   100
+         SigDigits       =   1
+         NotchPosition   =   2
+      End
+      Begin PhotoDemon.sliderTextCombo sltHeight 
+         Height          =   705
+         Left            =   120
+         TabIndex        =   6
+         Top             =   3000
+         Width           =   5895
+         _ExtentX        =   10398
+         _ExtentY        =   1270
+         Caption         =   "height"
+         Max             =   100
+         SigDigits       =   1
+         Value           =   50
+         NotchPosition   =   2
+         NotchValueCustom=   50
+      End
    End
    Begin VB.PictureBox picContainer 
       Appearance      =   0  'Flat
@@ -168,77 +228,6 @@ Begin VB.Form FormDonut
          Caption         =   "Note: you can also set a center position by clicking the preview window."
          ForeColor       =   4210752
          Layout          =   1
-      End
-   End
-   Begin VB.PictureBox picContainer 
-      Appearance      =   0  'Flat
-      BackColor       =   &H80000005&
-      BorderStyle     =   0  'None
-      ForeColor       =   &H80000008&
-      Height          =   4335
-      Index           =   0
-      Left            =   5880
-      ScaleHeight     =   289
-      ScaleMode       =   3  'Pixel
-      ScaleWidth      =   409
-      TabIndex        =   2
-      Top             =   120
-      Width           =   6135
-      Begin PhotoDemon.sliderTextCombo sltAngle 
-         Height          =   705
-         Left            =   120
-         TabIndex        =   3
-         Top             =   120
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1270
-         Caption         =   "initial angle"
-         Min             =   -360
-         Max             =   360
-         SigDigits       =   1
-      End
-      Begin PhotoDemon.sliderTextCombo sltSpread 
-         Height          =   705
-         Left            =   120
-         TabIndex        =   4
-         Top             =   1080
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1270
-         Caption         =   "spread"
-         Max             =   360
-         SigDigits       =   1
-         Value           =   360
-         NotchPosition   =   2
-         NotchValueCustom=   360
-      End
-      Begin PhotoDemon.sliderTextCombo sltRadius 
-         Height          =   705
-         Left            =   120
-         TabIndex        =   5
-         Top             =   2040
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1270
-         Caption         =   "interior radius"
-         Max             =   100
-         SigDigits       =   1
-         NotchPosition   =   2
-      End
-      Begin PhotoDemon.sliderTextCombo sltHeight 
-         Height          =   705
-         Left            =   120
-         TabIndex        =   6
-         Top             =   3000
-         Width           =   5895
-         _ExtentX        =   10398
-         _ExtentY        =   1270
-         Caption         =   "height"
-         Max             =   100
-         SigDigits       =   1
-         Value           =   50
-         NotchPosition   =   2
-         NotchValueCustom=   50
       End
    End
 End

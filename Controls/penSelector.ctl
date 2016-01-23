@@ -141,7 +141,7 @@ Public Sub DisplayPenSelection()
     RaisePenDialog
 End Sub
 
-Private Sub IControlThemable_UpdateAgainstCurrentTheme()
+Private Sub IControlThemable_ApplyTheme()
     Call Me.UpdateAgainstCurrentTheme
 End Sub
 

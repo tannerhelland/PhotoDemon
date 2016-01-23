@@ -294,7 +294,7 @@ Public Sub AssignImage_Pressed(Optional ByVal resName As String = "", Optional B
 
 End Sub
 
-Private Sub IControlThemable_UpdateAgainstCurrentTheme()
+Private Sub IControlThemable_ApplyTheme()
     Call Me.UpdateAgainstCurrentTheme
 End Sub
 

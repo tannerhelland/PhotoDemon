@@ -29,8 +29,8 @@ Attribute VB_Exposed = False
 'PhotoDemon "Button Strip" control
 'Copyright 2014-2016 by Tanner Helland
 'Created: 13/September/14
-'Last updated: 04/November/15
-'Last update: convert to master usercontrol support class; switch to spitesheets for button images
+'Last updated: 23/January/16
+'Last update: add caption support; large overhaul of rendering logic to better work with dark themes
 '
 'In a surprise to precisely no one, PhotoDemon has some unique needs when it comes to user controls - needs that
 ' the intrinsic VB controls can't handle.  These range from the obnoxious (lack of an "autosize" property for
@@ -74,6 +74,10 @@ Public Event LostFocusAPI()
 ' via dedicated properties.
 Private m_FontSize As Single
 Private m_FontBold As Boolean
+
+'Now that this control supports a title caption (which sits above the button itself), we separately track the region of the
+' control corresponding to the "buttonstrip" only.
+Private m_ButtonStripRect As RECT, m_MouseInButtonStrip As Boolean
 
 'Current button indices
 Private m_ButtonIndex As Long
@@ -152,6 +156,20 @@ End Enum
 ' without worrying about the details locally.
 Private m_Colors As pdThemeColors
 
+'Caption is handled just like the common control label's caption property.  It is valid at design-time, and any translation,
+' if present, will not be processed until run-time.
+' IMPORTANT NOTE: only the ENGLISH caption is returned.  I don't have a reason for returning a translated caption (if any),
+'                  but I can revisit in the future if it ever becomes relevant.
+Public Property Get Caption() As String
+Attribute Caption.VB_UserMemId = -518
+    Caption = ucSupport.GetCaptionText()
+End Property
+
+Public Property Let Caption(ByRef newCaption As String)
+    ucSupport.SetCaptionText newCaption
+    PropertyChanged "Caption"
+End Property
+
 'The Enabled property is a bit unique; see http://msdn.microsoft.com/en-us/library/aa261357%28v=vs.60%29.aspx
 Public Property Get Enabled() As Boolean
 Attribute Enabled.VB_UserMemId = -514
@@ -196,11 +214,21 @@ Public Property Let FontSize(ByVal newSize As Single)
     If newSize <> m_FontSize Then
         m_FontSize = newSize
         UpdateControlLayout
+        PropertyChanged "FontSize"
     End If
 End Property
 
-Private Sub IControlThemable_UpdateAgainstCurrentTheme()
-    Call Me.UpdateAgainstCurrentTheme
+Public Property Get FontSizeCaption() As Single
+    FontSizeCaption = ucSupport.GetCaptionFontSize()
+End Property
+
+Public Property Let FontSizeCaption(ByVal newSize As Single)
+    ucSupport.SetCaptionFontSize newSize
+    PropertyChanged "FontSizeCaption"
+End Property
+
+Private Sub IControlThemable_ApplyTheme()
+    Me.UpdateAgainstCurrentTheme
 End Sub
 
 'When the control receives focus, if the focus isn't received via mouse click, display a focus rect around the active button
@@ -299,10 +327,13 @@ Private Sub ucSupport_MouseLeave(ByVal Button As PDMouseButtonConstants, ByVal S
     m_ButtonMouseDown = -1
     RedrawBackBuffer
     ucSupport.RequestCursor IDC_DEFAULT
+    UpdateCursor -100, -100
 End Sub
 
 'When the mouse enters the clickable portion of the UC, we must repaint the hovered button
 Private Sub ucSupport_MouseMoveCustom(ByVal Button As PDMouseButtonConstants, ByVal Shift As ShiftConstants, ByVal x As Long, ByVal y As Long)
+    
+    UpdateCursor x, y
     
     'TODO 6.8: what to do if the mouse button is down...?  Possibly just exit this sub?
     
@@ -516,6 +547,9 @@ Private Sub UserControl_Initialize()
     ucSupport.RequestExtraFunctionality True, True
     ucSupport.SpecifyRequiredKeys VK_RIGHT, VK_LEFT, VK_SPACE
     
+    'Enable caption support, so we don't need an attached label
+    ucSupport.RequestCaptionSupport
+    
     'Prep the color manager and load default colors
     Set m_Colors = New pdThemeColors
     Dim colorCount As BTS_COLOR_LIST: colorCount = [_Count]
@@ -531,10 +565,12 @@ End Sub
 
 'Set default properties
 Private Sub UserControl_InitProperties()
+    Caption = ""
+    ColorScheme = CM_DEFAULT
+    FontBold = False
+    FontSize = 10
+    FontSizeCaption = 12#
     ListIndex = 0
-    m_FontBold = False
-    m_FontSize = 10
-    m_ColoringMode = CM_DEFAULT
 End Sub
 
 'At run-time, painting is handled by the support class.  In the IDE, however, we must rely on VB's internal paint event.
@@ -543,18 +579,30 @@ Private Sub UserControl_Paint()
 End Sub
 
 Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
-
     With PropBag
-        ListIndex = .ReadProperty("ListIndex", 0)
+        Caption = .ReadProperty("Caption", "")
+        ColorScheme = .ReadProperty("ColorScheme", CM_DEFAULT)
         FontBold = .ReadProperty("FontBold", False)
         FontSize = .ReadProperty("FontSize", 10)
-        ColorScheme = .ReadProperty("ColorScheme", CM_DEFAULT)
+        FontSizeCaption = .ReadProperty("FontSizeCaption", 12#)
+        ListIndex = .ReadProperty("ListIndex", 0)
     End With
-
 End Sub
 
 Private Sub UserControl_Resize()
     If Not g_IsProgramRunning Then ucSupport.RequestRepaint True
+End Sub
+
+'Store all associated properties
+Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
+    With PropBag
+        .WriteProperty "Caption", ucSupport.GetCaptionText, ""
+        .WriteProperty "ColorScheme", m_ColoringMode, CM_DEFAULT
+        .WriteProperty "FontBold", m_FontBold, False
+        .WriteProperty "FontSize", m_FontSize, 10
+        .WriteProperty "FontSizeCaption", ucSupport.GetCaptionFontSize, 12#
+        .WriteProperty "ListIndex", ListIndex, 0
+    End With
 End Sub
 
 'Because this control automatically forces all internal buttons to identical sizes, we have to recalculate a number
@@ -565,6 +613,24 @@ Private Sub UpdateControlLayout()
     Dim bWidth As Long, bHeight As Long
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
+    
+    'Next, determine the positioning of the caption, if present.  (ucSupport.GetCaptionBottom tells us where the
+    ' caption text ends vertically.)
+    With m_ButtonStripRect
+        If ucSupport.IsCaptionActive Then
+            .Top = ucSupport.GetCaptionBottom + 2
+            .Left = FixDPI(8)
+        Else
+            .Top = 1
+            .Left = 1
+        End If
+        .Bottom = bHeight - 1
+        .Right = bWidth - 1
+    End With
+    
+    'Reset the width/height values to match our newly calculated rect; this simplifies subsequent steps
+    bWidth = m_ButtonStripRect.Right - m_ButtonStripRect.Left
+    bHeight = m_ButtonStripRect.Bottom - m_ButtonStripRect.Top
     
     'We now need to figure out the size of individual buttons within the strip.  While we could make these proportional
     ' to the text length of each button, I am instead taking the simpler route for now, and making all buttons a uniform size.
@@ -589,8 +655,8 @@ Private Sub UpdateControlLayout()
     
         With m_Buttons(i).btBounds
             '.Left is calculated as: 1px left border, plus 1px border for any preceding buttons, plus preceding button widths
-            .Left = 1 + i + (buttonWidth * i)
-            .Top = 1
+            .Left = m_ButtonStripRect.Left + 1 + i + (buttonWidth * i)
+            .Top = m_ButtonStripRect.Top + 1
             .Bottom = .Top + buttonHeight
         End With
     
@@ -601,7 +667,7 @@ Private Sub UpdateControlLayout()
     ' button in line.  The final button receives special consideration.
     If m_numOfButtons > 0 Then
     
-        m_Buttons(m_numOfButtons - 1).btBounds.Right = bWidth - 2
+        m_Buttons(m_numOfButtons - 1).btBounds.Right = m_ButtonStripRect.Right - 2
         
         If m_numOfButtons > 1 Then
         
@@ -726,14 +792,14 @@ Private Sub UpdateControlLayout()
             
 End Sub
 
-'Store all associated properties
-Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
-    With PropBag
-        .WriteProperty "ListIndex", ListIndex, 0
-        .WriteProperty "FontBold", m_FontBold, False
-        .WriteProperty "FontSize", m_FontSize, 10
-        .WriteProperty "ColorScheme", m_ColoringMode, CM_DEFAULT
-    End With
+'Because the control may consist of a non-clickable region (the caption) and a clickable region (the buttonstrip),
+' we can't blindly assign a hand cursor to the entire control.
+Private Sub UpdateCursor(ByVal x As Single, ByVal y As Single)
+    If Math_Functions.isPointInRect(x, y, m_ButtonStripRect) Then
+        ucSupport.RequestCursor IDC_HAND
+    Else
+        ucSupport.RequestCursor IDC_DEFAULT
+    End If
 End Sub
 
 'Use this function to completely redraw the back buffer from scratch.  Note that this is computationally expensive compared to just flipping the
@@ -746,6 +812,8 @@ Private Sub RedrawBackBuffer()
     bWidth = ucSupport.GetBackBufferWidth
     bHeight = ucSupport.GetBackBufferHeight
     
+    'NOTE: if a title caption exists, it has already been drawn.  We just need to draw the clickable button portion.
+    
     'To improve rendering performance, we cache all colors locally prior to rendering
     Dim btnColorBackground As Long
     Dim btnColorSelectedBorder As Long, btnColorSelectedFill As Long
@@ -755,7 +823,7 @@ Private Sub RedrawBackBuffer()
     Dim fontColorSelected As Long, fontColorSelectedHover As Long
     Dim fontColorUnselected As Long, fontColorUnselectedHover As Long
     
-    Dim curColor As Long
+    Dim curColor As Long, curWidth As Single
     Dim isButtonSelected As Boolean, isButtonHovered As Boolean
     Dim enabledState As Boolean
     enabledState = Me.Enabled
@@ -764,25 +832,20 @@ Private Sub RedrawBackBuffer()
     ' (as the default "invert" coloring tends to drown out the images themselves).
     If m_ColoringMode = CM_DEFAULT Then
         btnColorBackground = m_Colors.RetrieveColor(BTS_Background, enabledState, False, False)
-        
         btnColorUnselectedBorder = m_Colors.RetrieveColor(BTS_UnselectedItemBorder, enabledState, False, False)
         btnColorUnselectedFill = m_Colors.RetrieveColor(BTS_UnselectedItemFill, enabledState, False, False)
         btnColorUnselectedBorderHover = m_Colors.RetrieveColor(BTS_UnselectedItemBorder, enabledState, False, True)
         btnColorUnselectedFillHover = m_Colors.RetrieveColor(BTS_UnselectedItemFill, enabledState, False, True)
-        
         btnColorSelectedBorder = m_Colors.RetrieveColor(BTS_SelectedItemBorder, enabledState, False, False)
         btnColorSelectedFill = m_Colors.RetrieveColor(BTS_SelectedItemFill, enabledState, False, False)
         btnColorSelectedBorderHover = m_Colors.RetrieveColor(BTS_SelectedItemBorder, enabledState, False, True)
         btnColorSelectedFillHover = m_Colors.RetrieveColor(BTS_SelectedItemFill, enabledState, False, True)
-        
     Else
         btnColorBackground = m_Colors.RetrieveColor(BTS_Light_Background, enabledState, False, False)
-        
         btnColorUnselectedBorder = m_Colors.RetrieveColor(BTS_Light_UnselectedItemBorder, enabledState, False, False)
         btnColorUnselectedFill = m_Colors.RetrieveColor(BTS_Light_UnselectedItemFill, enabledState, False, False)
         btnColorUnselectedBorderHover = m_Colors.RetrieveColor(BTS_Light_UnselectedItemBorder, enabledState, False, True)
         btnColorUnselectedFillHover = m_Colors.RetrieveColor(BTS_Light_UnselectedItemFill, enabledState, False, True)
-        
         btnColorSelectedBorder = m_Colors.RetrieveColor(BTS_Light_SelectedItemBorder, enabledState, False, False)
         btnColorSelectedFill = m_Colors.RetrieveColor(BTS_Light_SelectedItemFill, enabledState, False, False)
         btnColorSelectedBorderHover = m_Colors.RetrieveColor(BTS_Light_SelectedItemBorder, enabledState, False, True)
@@ -797,8 +860,10 @@ Private Sub RedrawBackBuffer()
     
     'Start by filling the desired backgruond color, then rendering a single-pixel unselected border around the control.
     ' (The border will be overwritten with Selected or Hovered borders, as necessary.)
-    GDI_Plus.GDIPlusFillRectToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, btnColorBackground
-    GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, 0, 0, bWidth - 1, bHeight - 1, btnColorUnselectedBorder, 255, 1
+    With m_ButtonStripRect
+        GDI_Plus.GDIPlusFillRectToDC bufferDC, .Left, .Top, (.Right - .Left) - 1, (.Bottom - .Top) - 1, btnColorBackground
+        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left, .Top, .Right - 1, .Bottom - 1, btnColorUnselectedBorder, 255, 1
+    End With
     
     'This control doesn't maintain its own fonts; instead, it borrows it from the public PD UI font cache, as necessary
     Dim tmpFont As pdFont
@@ -821,25 +886,22 @@ Private Sub RedrawBackBuffer()
                 'For performance reasons, we only render each button's right-side border at this stage, and we always start
                 ' with the inactive border color.
                 If i < (m_numOfButtons - 1) Then
-                    GDI_Plus.GDIPlusDrawLineToDC bufferDC, .btBounds.Right + 1, 0, .btBounds.Right + 1, bHeight, btnColorUnselectedBorder, 255, 1
+                    GDI_Plus.GDIPlusDrawLineToDC bufferDC, .btBounds.Right + 1, m_ButtonStripRect.Top, .btBounds.Right + 1, .btBounds.Bottom, btnColorUnselectedBorder, 255, 1
                 End If
                 
                 'Active/hover changes are only rendered if the control is enabled
                 If enabledState Then
                 
                     'If this is the selected button (.ListIndex), paint its border with a special color.
+                    ' (Note that we skip this step if the button is hovered, because the hover rect is drawn LAST to ensure that it overlaps
+                    '  the surrounding buttons correctly.)
                     If isButtonSelected Then
-                        If isButtonHovered Then curColor = btnColorSelectedBorderHover Else curColor = btnColorSelectedBorder
-                        GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom, curColor, 255, 1
+                        If (Not isButtonHovered) Or (m_ColoringMode = CM_LIGHT) Then GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom, btnColorSelectedBorder, 255, 1
                         
-                    'If the user is hovering an inactive button, paint that button with a chunky border
+                    'If the user is hovering an inactive button, and we're in "light" color mode, paint the button immediately
                     Else
-                        If isButtonHovered Then
-                            If (m_ColoringMode = CM_DEFAULT) Then
-                                GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left, .btBounds.Top, .btBounds.Right + 1, .btBounds.Bottom, btnColorUnselectedBorderHover, 255, 2, False, LineJoinMiter
-                            Else
-                                GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom, btnColorUnselectedBorderHover, 255, 1, False, LineJoinMiter
-                            End If
+                        If isButtonHovered And (m_ColoringMode = CM_LIGHT) Then
+                            GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .btBounds.Left - 1, .btBounds.Top - 1, .btBounds.Right + 1, .btBounds.Bottom, btnColorUnselectedBorderHover, 255, 1, False, LineJoinMiter
                         End If
                     End If
                     
@@ -899,6 +961,18 @@ Private Sub RedrawBackBuffer()
         
         'This button has been rendered successfully.  Move on to the next one.
         Next i
+        
+        'In normal coloring mode, the hover rect is drawn last; because it's chunkier than normal borders, we must ensure that it overlaps
+        ' neighboring buttons correctly.
+        If (m_ButtonHoverIndex >= 0) And (m_ColoringMode = CM_DEFAULT) Then
+        
+            'Color changes when the active button is hovered, to indicate no change will be made.
+            If m_ButtonHoverIndex = m_ButtonIndex Then curColor = btnColorSelectedBorderHover Else curColor = btnColorUnselectedBorderHover
+            With m_Buttons(m_ButtonHoverIndex).btBounds
+                GDI_Plus.GDIPlusDrawRectOutlineToDC bufferDC, .Left - 1, .Top - 1, .Right + 1, .Bottom, curColor, 255, 3, False, LineJoinMiter
+            End With
+            
+        End If
         
     End If
     

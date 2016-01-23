@@ -100,13 +100,14 @@ Begin VB.Form FormSpherize
       NotchValueCustom=   2
    End
    Begin PhotoDemon.buttonStrip btsExterior 
-      Height          =   600
-      Left            =   6120
+      Height          =   1080
+      Left            =   6000
       TabIndex        =   2
-      Top             =   4320
-      Width           =   5595
-      _ExtentX        =   9869
-      _ExtentY        =   1058
+      Top             =   3840
+      Width           =   5835
+      _ExtentX        =   10292
+      _ExtentY        =   1905
+      Caption         =   "area outside sphere"
    End
    Begin PhotoDemon.pdComboBox cboEdges 
       Height          =   375
@@ -116,18 +117,6 @@ Begin VB.Form FormSpherize
       Width           =   5655
       _ExtentX        =   9975
       _ExtentY        =   661
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      Top             =   3960
-      Width           =   5895
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Caption         =   "area outside sphere"
-      FontSize        =   12
-      ForeColor       =   4210752
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   285

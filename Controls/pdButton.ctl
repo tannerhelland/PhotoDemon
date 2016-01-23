@@ -87,7 +87,7 @@ Public Event LostFocusAPI()
 ' settings like caption font size.)
 Private m_Caption As pdCaption
 
-'Rect where the caption is rendered.  This is calculated by updateControlLayout, and it needs to be revisited if either the caption
+'Rect where the caption is rendered.  This is calculated by UpdateControlLayout, and it needs to be revisited if either the caption
 ' or button images change.
 Private m_CaptionRect As RECT
 
@@ -374,7 +374,7 @@ Private Sub cPainter_PaintWindow(ByVal winLeft As Long, ByVal winTop As Long, By
     
 End Sub
 
-Private Sub IControlThemable_UpdateAgainstCurrentTheme()
+Private Sub IControlThemable_ApplyTheme()
     Call Me.UpdateAgainstCurrentTheme
 End Sub
 
@@ -619,7 +619,7 @@ Private Sub RedrawBackBuffer()
     'A border is always drawn around the control; its size varies by hover state.  (This is standard Win 10 behavior.)
     Dim borderWidth As Single
     If m_MouseInsideUC Or m_FocusRectActive Then borderWidth = 3 Else borderWidth = 1
-    GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, 0, 0, m_BackBuffer.getDIBWidth - 1, m_BackBuffer.getDIBHeight - 1, btnColorBorder, 255, borderWidth
+    GDI_Plus.GDIPlusDrawRectOutlineToDC m_BackBuffer.getDIBDC, 0, 0, m_BackBuffer.getDIBWidth - 1, m_BackBuffer.getDIBHeight - 1, btnColorBorder, 255, borderWidth, False, LineJoinMiter
     
     'Paint the image, if any
     If Not (btImage Is Nothing) Then
@@ -656,7 +656,7 @@ Private Sub RedrawBackBuffer()
         End With
         
         DrawFocusRect m_BackBuffer.getDIBDC, tmpRect
-
+    
     End If
     
     'Paint the buffer to the screen

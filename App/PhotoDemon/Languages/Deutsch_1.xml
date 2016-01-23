@@ -6,7 +6,7 @@
 
 <langid>de-DE</langid>
 <langname>Deutsch (Helmut Kuerbiss)</langname>
-<langversion>6.7.126</langversion>
+<langversion>6.7.128</langversion>
 <langstatus>Complete</langstatus>
 
 <author>Helmut Kuerbiss (orig. Frank Donckers)</author>
@@ -2385,6 +2385,12 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 
 <!-- END text for UserControl_Support.bas-->
 
+<!-- BEGIN text for VB_Hacks.bas -->
+
+<!-- VB_Hacks.bas contains 0 phrases. -->
+
+<!-- END text for VB_Hacks.bas-->
+
 <!-- BEGIN text for VBP_ZoomModule.bas -->
 
 <phrase>
@@ -2416,30 +2422,6 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 
 <!-- END text for VBP_ZoomModule.bas-->
 
-<!-- BEGIN text for cSHA256.cls -->
-
-<!-- cSHA256.cls contains 0 phrases. -->
-
-<!-- END text for cSHA256.cls-->
-
-<!-- BEGIN text for IMRUList.cls -->
-
-<!-- IMRUList.cls contains 0 phrases. -->
-
-<!-- END text for IMRUList.cls-->
-
-<!-- BEGIN text for OutsideDevelopment_SPBuffer.cls -->
-
-<!-- OutsideDevelopment_SPBuffer.cls contains 0 phrases. -->
-
-<!-- END text for OutsideDevelopment_SPBuffer.cls-->
-
-<!-- BEGIN text for OutsideDevelopment_SmartBuffer.cls -->
-
-<!-- OutsideDevelopment_SmartBuffer.cls contains 0 phrases. -->
-
-<!-- END text for OutsideDevelopment_SmartBuffer.cls-->
-
 <!-- BEGIN text for cPerlin3D.cls -->
 
 <!-- cPerlin3D.cls contains 0 phrases. -->
@@ -2451,6 +2433,12 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 <!-- cProgressBarOfficial.cls contains 0 phrases. -->
 
 <!-- END text for cProgressBarOfficial.cls-->
+
+<!-- BEGIN text for cSHA256.cls -->
+
+<!-- cSHA256.cls contains 0 phrases. -->
+
+<!-- END text for cSHA256.cls-->
 
 <!-- BEGIN text for cBasicBuffer.cls -->
 
@@ -2470,6 +2458,12 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 
 <!-- END text for clsMenuImage.cls-->
 
+<!-- BEGIN text for IMRUList.cls -->
+
+<!-- IMRUList.cls contains 0 phrases. -->
+
+<!-- END text for IMRUList.cls-->
+
 <!-- BEGIN text for pdCaption.cls -->
 
 <!-- pdCaption.cls contains 0 phrases. -->
@@ -2481,6 +2475,57 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 <!-- pdClipboard.cls contains 0 phrases. -->
 
 <!-- END text for pdClipboard.cls-->
+
+<!-- BEGIN text for pdClipboardMain.cls -->
+
+<phrase>
+<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
+<translation>Die Zwischenablage ist leer oder enthält kein gültigen Bildformat. Bitte kopieren Sie ein gültiges Bildformat in die Zwischenablage und versuchen Sie es erneut.</translation>
+</phrase>
+
+<phrase>
+<original>Windows Clipboard Error</original>
+<translation>Fehler der Windows-Zwischenablage</translation>
+</phrase>
+
+<phrase>
+<original>Clipboard Image</original>
+<translation>Bild in der Zwischenablage</translation>
+</phrase>
+
+<phrase>
+<original>Clipboard data imported successfully</original>
+<translation>Die Daten aus der Zwischenablage wurden importiert</translation>
+</phrase>
+
+<phrase>
+<original>Image URL found on clipboard.  Attempting to download</original>
+<translation>URL in der Zwischenablage gefunden - Download wird versucht</translation>
+</phrase>
+
+<phrase>
+<original>Image download failed.  Please copy a valid image URL to the clipboard and try again.</original>
+<translation>Bild-Download fehlgeschlagen. Bitte kopieren Sie eine gültige Bild-URL in die Zwischenablage und versuchen Sie es erneut.</translation>
+</phrase>
+
+<phrase>
+<original>Imported Image</original>
+<translation>Importiertes Bild</translation>
+</phrase>
+
+<phrase>
+<original>Image imported successfully</original>
+<translation>Das Bild wurde importiert</translation>
+</phrase>
+
+<phrase>
+<original>Image download failed.  Please supply a valid image URL and try again.</original>
+<translation>Das Bild konnte nicht heruntergeladen werden. Bitte geben Sie eine gültige Bild-URL an und versuchen Sie es noch mal.</translation>
+</phrase>
+
+<!-- pdClipboardMain.cls contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
+
+<!-- END text for pdClipboardMain.cls-->
 
 <!-- BEGIN text for pdCompositor.cls -->
 
@@ -2713,6 +2758,12 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 
 <!-- END text for pdLayer.cls-->
 
+<!-- BEGIN text for pdListSupport.cls -->
+
+<!-- pdListSupport.cls contains 0 phrases. -->
+
+<!-- END text for pdListSupport.cls-->
+
 <!-- BEGIN text for pdMRUManager.cls -->
 
 <!-- pdMRUManager.cls contains 0 phrases. -->
@@ -2891,6 +2942,12 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 
 <!-- END text for pdPixelBlender.cls-->
 
+<!-- BEGIN text for pdPixelIterator.cls -->
+
+<!-- pdPixelIterator.cls contains 0 phrases. -->
+
+<!-- END text for pdPixelIterator.cls-->
+
 <!-- BEGIN text for pdPreferences.cls -->
 
 <!-- pdPreferences.cls contains 0 phrases. -->
@@ -2908,6 +2965,12 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 <!-- pdRandomize.cls contains 0 phrases. -->
 
 <!-- END text for pdRandomize.cls-->
+
+<!-- BEGIN text for pdRedEye.cls -->
+
+<!-- pdRedEye.cls contains 0 phrases. -->
+
+<!-- END text for pdRedEye.cls-->
 
 <!-- BEGIN text for pdScrollBar.cls -->
 
@@ -3014,6 +3077,12 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 <!-- pdTextRenderer.cls contains 0 phrases. -->
 
 <!-- END text for pdTextRenderer.cls-->
+
+<!-- BEGIN text for pdThemeColors.cls -->
+
+<!-- pdThemeColors.cls contains 0 phrases. -->
+
+<!-- END text for pdThemeColors.cls-->
 
 <!-- BEGIN text for pdToolPreset.cls -->
 
@@ -3136,6 +3205,18 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 
 <!-- END text for pdZoom.cls-->
 
+<!-- BEGIN text for OutsideDevelopment_SmartBuffer.cls -->
+
+<!-- OutsideDevelopment_SmartBuffer.cls contains 0 phrases. -->
+
+<!-- END text for OutsideDevelopment_SmartBuffer.cls-->
+
+<!-- BEGIN text for OutsideDevelopment_SPBuffer.cls -->
+
+<!-- OutsideDevelopment_SPBuffer.cls contains 0 phrases. -->
+
+<!-- END text for OutsideDevelopment_SPBuffer.cls-->
+
 <!-- BEGIN text for ShellPipe.ctl -->
 
 <!-- ShellPipe.ctl contains 0 phrases. -->
@@ -3149,6 +3230,11 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 <!-- END text for brushSelector.ctl-->
 
 <!-- BEGIN text for colorSelector.ctl -->
+
+<phrase>
+<original>RGB(%1, %2, %3)</original>
+<translation></translation>
+</phrase>
 
 <phrase>
 <original>Click to enter a full color selection screen.</original>
@@ -3170,7 +3256,7 @@ Bitte geben Sie einen Zahlwert ein.</translation>
 <translation></translation>
 </phrase>
 
-<!-- colorSelector.ctl contains 6 phrases. 2 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+<!-- colorSelector.ctl contains 8 phrases. 3 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
 
 <!-- END text for colorSelector.ctl-->
 
@@ -3595,6 +3681,12 @@ Sie können aber auch den Button "Bild öffnen" oben links oder
 <!-- pdLabel.ctl contains 1 phrase.  One was a duplicate of an existing phrase, so only 0 new phrases were written to file. -->
 
 <!-- END text for pdLabel.ctl-->
+
+<!-- BEGIN text for pdListBox.ctl -->
+
+<!-- pdListBox.ctl contains 0 phrases. -->
+
+<!-- END text for pdListBox.ctl-->
 
 <!-- BEGIN text for pdNavigator.ctl -->
 
@@ -5611,20 +5703,6 @@ Sind Sie bei GitHub angemeldet? (Wenn Sie keine Ahnung haben, was das bedeutet, 
 </phrase>
 
 <phrase>
-<original>Language changed successfully!
-
-Note: some minor program text cannot be live-updated.  Such text will be properly translated the next time you start the application.</original>
-<translation>Die Spracheinstellung wurde geändert. Hinweis:
-
-Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Beim nächsten Programmstart wird aber alles übersetzt sein!</translation>
-</phrase>
-
-<phrase>
-<original>Language changed successfully</original>
-<translation>Die Spracheinstellung wurde geändert</translation>
-</phrase>
-
-<phrase>
 <original>No metadata available.</original>
 <translation>Keine Metadaten vorhanden.</translation>
 </phrase>
@@ -5759,7 +5837,7 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 <translation>Alphakanal entfernen</translation>
 </phrase>
 
-<!-- MainWindow.frm contains 569 phrases. 181 were duplicates of existing phrases, so only 388 new phrases were written to file. -->
+<!-- MainWindow.frm contains 567 phrases. 181 were duplicates of existing phrases, so only 386 new phrases were written to file. -->
 
 <!-- END text for MainWindow.frm-->
 
@@ -5918,6 +5996,11 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 </phrase>
 
 <phrase>
+<original>output channel</original>
+<translation>Ausgangskanal</translation>
+</phrase>
+
+<phrase>
 <original>input channel(s)</original>
 <translation>Eingangskanal/-kanäle</translation>
 </phrase>
@@ -5925,11 +6008,6 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 <phrase>
 <original>options for all channels</original>
 <translation>Einstellungen für alle Kanäle</translation>
-</phrase>
-
-<phrase>
-<original>output channel</original>
-<translation>Ausgangskanal</translation>
 </phrase>
 
 <phrase>
@@ -6005,13 +6083,13 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 </phrase>
 
 <phrase>
-<original>new balance</original>
-<translation>Neue Balance</translation>
+<original>tonal range</original>
+<translation>Tonumfang</translation>
 </phrase>
 
 <phrase>
-<original>tonal range</original>
-<translation>Tonumfang</translation>
+<original>new balance</original>
+<translation>Neue Balance</translation>
 </phrase>
 
 <phrase>
@@ -6253,8 +6331,8 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 </phrase>
 
 <phrase>
-<original>original curve (diagonal line)</original>
-<translation>Originalkurve (diagonale Gerade)</translation>
+<original>histogram overlay</original>
+<translation>Histogramm-Überlagerung</translation>
 </phrase>
 
 <phrase>
@@ -6263,8 +6341,8 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 </phrase>
 
 <phrase>
-<original>histogram overlay</original>
-<translation>Histogramm-Überlagerung</translation>
+<original>original curve (diagonal line)</original>
+<translation>Originalkurve (diagonale Gerade)</translation>
 </phrase>
 
 <phrase>
@@ -7019,6 +7097,67 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 
 <!-- END text for Adjustments_Photo_PhotoFilters.frm-->
 
+<!-- BEGIN text for Adjustments_Photo_RedEye.frm (FormRedEye) -->
+
+<phrase>
+<original>Red eye removal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>strictness</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>enforce shape restrictions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>color sensitivity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>object sensitivity</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>highlight detected regions (preview only)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>enforce size restrictions</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Searching image for potential red-eye locations</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Refining list of eye candidates</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying final false-positive checks</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying final red-eye corrections (%1 of %2)</original>
+<translation></translation>
+</phrase>
+
+<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
+
+<!-- END text for Adjustments_Photo_RedEye.frm-->
+
 <!-- BEGIN text for Adjustments_Photo_SplitTone.frm (FormSplitTone) -->
 
 <phrase>
@@ -7443,6 +7582,11 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 </phrase>
 
 <phrase>
+<original>shape</original>
+<translation>Form</translation>
+</phrase>
+
+<phrase>
 <original>current node settings</original>
 <translation></translation>
 </phrase>
@@ -7455,11 +7599,6 @@ Einige Texte konnten nicht übersetzt werden, weil das Programm noch läuft. Bei
 <phrase>
 <original>full gradient settings</original>
 <translation></translation>
-</phrase>
-
-<phrase>
-<original>shape</original>
-<translation>Form</translation>
 </phrase>
 
 <phrase>
@@ -8095,6 +8234,21 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Artistic_Kaleidoscope.frm (FormKaleidoscope) -->
 
 <phrase>
+<original>secondary angle</original>
+<translation>sekundärer Eckpunkt</translation>
+</phrase>
+
+<phrase>
+<original>radius (percentage)</original>
+<translation>Radius (in Prozent)</translation>
+</phrase>
+
+<phrase>
+<original>render emphasis</original>
+<translation>Rendering-Schwerpunkt</translation>
+</phrase>
+
+<phrase>
 <original>number of mirrors</original>
 <translation>Anzahl der Spiegel</translation>
 </phrase>
@@ -8112,21 +8266,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>center position (x, y)</original>
 <translation>Mittelposition (x, y)</translation>
-</phrase>
-
-<phrase>
-<original>secondary angle</original>
-<translation>sekundärer Eckpunkt</translation>
-</phrase>
-
-<phrase>
-<original>radius (percentage)</original>
-<translation>Radius (in Prozent)</translation>
-</phrase>
-
-<phrase>
-<original>render emphasis</original>
-<translation>Rendering-Schwerpunkt</translation>
 </phrase>
 
 <phrase>
@@ -8352,6 +8491,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 </phrase>
 
 <phrase>
+<original>Blurring chroma (color) data</original>
+<translation>Weichzeichnen Chroma (Farbe) Daten</translation>
+</phrase>
+
+<phrase>
+<original>Merging luminance and chroma into final image</original>
+<translation>Zusammenführen von Luminanz und Chroma in das endgültige Bild</translation>
+</phrase>
+
+<phrase>
 <original>good</original>
 <translation>gut</translation>
 </phrase>
@@ -8364,16 +8513,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>best</original>
 <translation>am besten</translation>
-</phrase>
-
-<phrase>
-<original>Blurring chroma (color) data</original>
-<translation>Weichzeichnen Chroma (Farbe) Daten</translation>
-</phrase>
-
-<phrase>
-<original>Merging luminance and chroma into final image</original>
-<translation>Zusammenführen von Luminanz und Chroma in das endgültige Bild</translation>
 </phrase>
 
 <!-- Effects_Blur_ChromaBlur.frm contains 9 phrases. 2 were duplicates of existing phrases, so only 7 new phrases were written to file. -->
@@ -8448,6 +8587,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Blur_RadialBlur.frm contains 8 phrases. 6 were duplicates of existing phrases, so only 2 new phrases were written to file. -->
 
 <!-- END text for Effects_Blur_RadialBlur.frm-->
+
+<!-- BEGIN text for Effects_Blur_SNN.frm (FormSNN) -->
+
+<phrase>
+<original>Generating symmetric pixel pairs</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Blur_SNN.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+
+<!-- END text for Effects_Blur_SNN.frm-->
 
 <!-- BEGIN text for Effects_Blur_SurfaceBlur.frm (FormSurfaceBlur) -->
 
@@ -8696,6 +8846,11 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Distort_Ripple.frm (FormRipple) -->
 
 <phrase>
+<original>time (phase)</original>
+<translation>Zeit (Phase)</translation>
+</phrase>
+
+<phrase>
 <original>height of ripples (amplitude)</original>
 <translation>Höhe der Falten (Amplitude)</translation>
 </phrase>
@@ -8703,11 +8858,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>length of ripples (wavelength)</original>
 <translation>Länge der Falten (Wellenlänge)</translation>
-</phrase>
-
-<phrase>
-<original>time (phase)</original>
-<translation>Zeit (Phase)</translation>
 </phrase>
 
 <phrase>
@@ -8915,6 +9065,32 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- END text for Effects_Edge_FindEdges.frm-->
 
+<!-- BEGIN text for Effects_Edge_Range.frm (FormRangeFilter) -->
+
+<phrase>
+<original>synchronize search radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>horizontal radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>vertical radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Searching each pixel range for edges</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Edge_Range.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
+
+<!-- END text for Effects_Edge_Range.frm-->
+
 <!-- BEGIN text for Effects_Edge_TraceContour.frm (FormContour) -->
 
 <phrase>
@@ -8971,6 +9147,16 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_LightAndShadow_LensFlare.frm (FormLensFlare) -->
 
 <phrase>
+<original>Note: you can also set a position by clicking the preview window.</original>
+<translation>Hinweis: Die Position können Sie auch mit einem Klick auf das Vorschaufenster setzen.</translation>
+</phrase>
+
+<phrase>
+<original>position (x, y)</original>
+<translation>Position (x, y)</translation>
+</phrase>
+
+<phrase>
 <original>secondary intensity</original>
 <translation>zweitrangige Intensität</translation>
 </phrase>
@@ -8983,16 +9169,6 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <phrase>
 <original>synchronize intensity</original>
 <translation>Intensität synchronisieren</translation>
-</phrase>
-
-<phrase>
-<original>Note: you can also set a position by clicking the preview window.</original>
-<translation>Hinweis: Die Position können Sie auch mit einem Klick auf das Vorschaufenster setzen.</translation>
-</phrase>
-
-<phrase>
-<original>position (x, y)</original>
-<translation>Position (x, y)</translation>
 </phrase>
 
 <phrase>
@@ -9124,6 +9300,62 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Noise_AddRGBNoise.frm contains 7 phrases. 4 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Noise_AddRGBNoise.frm-->
+
+<!-- BEGIN text for Effects_Noise_Anisotropic.frm (FormAnisotropic) -->
+
+<phrase>
+<original>directionality</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>gradient flow</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>iterations</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>model</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Calculating energy gradients (pass %1 of %2)</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>4-way cardinal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>4-way ordinal</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>8-way</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>sharpen</original>
+<translation>schärfen</translation>
+</phrase>
+
+<phrase>
+<original>smooth</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 3 were duplicates of existing phrases, so only 10 new phrases were written to file. -->
+
+<!-- END text for Effects_Noise_Anisotropic.frm-->
 
 <!-- BEGIN text for Effects_Noise_BilateralFilter.frm (FormBilateral) -->
 
@@ -9300,17 +9532,17 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- BEGIN text for Effects_Pixelate_Mezzotint.frm (FormMezzotint) -->
 
 <phrase>
+<original>type</original>
+<translation></translation>
+</phrase>
+
+<phrase>
 <original>randomness</original>
 <translation></translation>
 </phrase>
 
 <phrase>
 <original>stippling</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>type</original>
 <translation></translation>
 </phrase>
 
@@ -9376,12 +9608,7 @@ If you want to save it with a different file name, please select 'Cancel', then 
 
 <!-- BEGIN text for Effects_Sharpen_Sharpen.frm (FormSharpen) -->
 
-<phrase>
-<original>sharpen</original>
-<translation>schärfen</translation>
-</phrase>
-
-<!-- Effects_Sharpen_Sharpen.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
+<!-- Effects_Sharpen_Sharpen.frm contains 5 phrases.  All were duplicates of existing phrases, so no new phrases were written to file. -->
 
 <!-- END text for Effects_Sharpen_Sharpen.frm-->
 
@@ -9421,6 +9648,37 @@ If you want to save it with a different file name, please select 'Cancel', then 
 <!-- Effects_Stylize_Diffuse.frm contains 6 phrases. 3 were duplicates of existing phrases, so only 3 new phrases were written to file. -->
 
 <!-- END text for Effects_Stylize_Diffuse.frm-->
+
+<!-- BEGIN text for Effects_Stylize_PortraitGlow.frm (FormPortraitGlow) -->
+
+<phrase>
+<original>glow radius</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>exposure boost</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>Applying petroleum jelly to camera lens</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>classic</original>
+<translation></translation>
+</phrase>
+
+<phrase>
+<original>subtle</original>
+<translation></translation>
+</phrase>
+
+<!-- Effects_Stylize_PortraitGlow.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
+
+<!-- END text for Effects_Stylize_PortraitGlow.frm-->
 
 <!-- BEGIN text for Effects_Stylize_Solarize.frm (FormSolarize) -->
 
@@ -11424,13 +11682,8 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 </phrase>
 
 <phrase>
-<original>metadata options</original>
-<translation>Metadaten-Eigenschaften</translation>
-</phrase>
-
-<phrase>
-<original>tag values</original>
-<translation>Markierungswerte</translation>
+<original>metadata groups in this image</original>
+<translation>Metadatengruppen dieses Bildes</translation>
 </phrase>
 
 <phrase>
@@ -11439,13 +11692,18 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 </phrase>
 
 <phrase>
-<original>tags in this category</original>
-<translation>Markierungen in dieser Kategorie</translation>
+<original>tag values</original>
+<translation>Markierungswerte</translation>
 </phrase>
 
 <phrase>
-<original>metadata groups in this image</original>
-<translation>Metadatengruppen dieses Bildes</translation>
+<original>metadata options</original>
+<translation>Metadaten-Eigenschaften</translation>
+</phrase>
+
+<phrase>
+<original>tags in this category</original>
+<translation>Markierungen in dieser Kategorie</translation>
 </phrase>
 
 <phrase>
@@ -12002,16 +12260,11 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 <!-- BEGIN text for Startup_Splash.frm (FormSplash) -->
 
 <phrase>
-<original>Live updates</original>
-<translation>Live-Updates</translation>
-</phrase>
-
-<phrase>
 <original>version %1</original>
 <translation>Version %1</translation>
 </phrase>
 
-<!-- Startup_Splash.frm contains 3 phrases.  One was a duplicate of an existing phrase, so only 2 new phrases were written to file. -->
+<!-- Startup_Splash.frm contains 2 phrases.  One was a duplicate of an existing phrase, so only 1 new phrases were written to file. -->
 
 <!-- END text for Startup_Splash.frm-->
 
@@ -12450,8 +12703,28 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 </phrase>
 
 <phrase>
+<original>tolerance</original>
+<translation>Toleranz</translation>
+</phrase>
+
+<phrase>
+<original>sampling area</original>
+<translation>Untersuchungsbereich</translation>
+</phrase>
+
+<phrase>
+<original>corner rounding</original>
+<translation>Eckenabrundung</translation>
+</phrase>
+
+<phrase>
 <original>size (w, h)</original>
 <translation>Größe (b, h)</translation>
+</phrase>
+
+<phrase>
+<original>smoothing</original>
+<translation>Glättung</translation>
 </phrase>
 
 <phrase>
@@ -12472,26 +12745,6 @@ Um dieses Bildformat zugänglich zu machen, kopieren Sie bitte die Datei "FreeIm
 <phrase>
 <original>stroke smoothing</original>
 <translation>Strichglättung</translation>
-</phrase>
-
-<phrase>
-<original>sampling area</original>
-<translation>Untersuchungsbereich</translation>
-</phrase>
-
-<phrase>
-<original>tolerance</original>
-<translation>Toleranz</translation>
-</phrase>
-
-<phrase>
-<original>corner rounding</original>
-<translation>Eckenabrundung</translation>
-</phrase>
-
-<phrase>
-<original>smoothing</original>
-<translation>Glättung</translation>
 </phrase>
 
 <phrase>
@@ -14417,273 +14670,18 @@ Wenn Sie trotzdem automatische Updates deaktivieren, sollten Sie gelegentlich ph
 
 <!-- END text for Tools_PluginManager.frm-->
 
-<!-- BEGIN text for pdClipboardMain.cls -->
+<!-- BEGIN text for IControlThemable.cls -->
 
-<phrase>
-<original>The clipboard is empty or it does not contain a valid picture format.  Please copy a valid image onto the clipboard and try again.</original>
-<translation>Die Zwischenablage ist leer oder enthält kein gültigen Bildformat. Bitte kopieren Sie ein gültiges Bildformat in die Zwischenablage und versuchen Sie es erneut.</translation>
-</phrase>
+<!-- IControlThemable.cls contains 0 phrases. -->
 
-<phrase>
-<original>Windows Clipboard Error</original>
-<translation>Fehler der Windows-Zwischenablage</translation>
-</phrase>
-
-<phrase>
-<original>Clipboard Image</original>
-<translation>Bild in der Zwischenablage</translation>
-</phrase>
-
-<phrase>
-<original>Clipboard data imported successfully</original>
-<translation>Die Daten aus der Zwischenablage wurden importiert</translation>
-</phrase>
-
-<phrase>
-<original>Image URL found on clipboard.  Attempting to download</original>
-<translation>URL in der Zwischenablage gefunden - Download wird versucht</translation>
-</phrase>
-
-<phrase>
-<original>Image download failed.  Please copy a valid image URL to the clipboard and try again.</original>
-<translation>Bild-Download fehlgeschlagen. Bitte kopieren Sie eine gültige Bild-URL in die Zwischenablage und versuchen Sie es erneut.</translation>
-</phrase>
-
-<phrase>
-<original>Imported Image</original>
-<translation>Importiertes Bild</translation>
-</phrase>
-
-<phrase>
-<original>Image imported successfully</original>
-<translation>Das Bild wurde importiert</translation>
-</phrase>
-
-<phrase>
-<original>Image download failed.  Please supply a valid image URL and try again.</original>
-<translation>Das Bild konnte nicht heruntergeladen werden. Bitte geben Sie eine gültige Bild-URL an und versuchen Sie es noch mal.</translation>
-</phrase>
-
-<!-- pdClipboardMain.cls contains 20 phrases. 11 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- END text for pdClipboardMain.cls-->
-
-<!-- BEGIN text for Effects_Edge_Range.frm (FormRangeFilter) -->
-
-<phrase>
-<original>synchronize search radius</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>horizontal radius</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>vertical radius</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Searching each pixel range for edges</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Edge_Range.frm contains 7 phrases. 3 were duplicates of existing phrases, so only 4 new phrases were written to file. -->
-
-<!-- END text for Effects_Edge_Range.frm-->
-
-<!-- BEGIN text for pdPixelIterator.cls -->
-
-<!-- pdPixelIterator.cls contains 0 phrases. -->
-
-<!-- END text for pdPixelIterator.cls-->
-
-<!-- BEGIN text for Effects_Noise_Anisotropic.frm (FormAnisotropic) -->
-
-<phrase>
-<original>directionality</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>gradient flow</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>iterations</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>model</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Calculating energy gradients (pass %1 of %2)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>4-way cardinal</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>4-way ordinal</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>8-way</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>smooth</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Noise_Anisotropic.frm contains 13 phrases. 4 were duplicates of existing phrases, so only 9 new phrases were written to file. -->
-
-<!-- END text for Effects_Noise_Anisotropic.frm-->
-
-<!-- BEGIN text for Effects_Blur_SNN.frm (FormSNN) -->
-
-<phrase>
-<original>Generating symmetric pixel pairs</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Blur_SNN.frm contains 5 phrases. 4 were duplicates of existing phrases, so only one new phrase was written to file. -->
-
-<!-- END text for Effects_Blur_SNN.frm-->
-
-<!-- BEGIN text for Effects_Stylize_PortraitGlow.frm (FormPortraitGlow) -->
-
-<phrase>
-<original>glow radius</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>exposure boost</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Applying petroleum jelly to camera lens</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>classic</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>subtle</original>
-<translation></translation>
-</phrase>
-
-<!-- Effects_Stylize_PortraitGlow.frm contains 10 phrases. 5 were duplicates of existing phrases, so only 5 new phrases were written to file. -->
-
-<!-- END text for Effects_Stylize_PortraitGlow.frm-->
-
-<!-- BEGIN text for pdListSupport.cls -->
-
-<!-- pdListSupport.cls contains 0 phrases. -->
-
-<!-- END text for pdListSupport.cls-->
-
-<!-- BEGIN text for pdListBox.ctl -->
-
-<!-- pdListBox.ctl contains 0 phrases. -->
-
-<!-- END text for pdListBox.ctl-->
-
-<!-- BEGIN text for Adjustments_Photo_RedEye.frm (FormRedEye) -->
-
-<phrase>
-<original>Red eye removal</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>strictness</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>enforce shape restrictions</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>color sensitivity</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>object sensitivity</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>highlight detected regions (preview only)</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>enforce size restrictions</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Searching image for potential red-eye locations</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Refining list of eye candidates</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Applying final false-positive checks</original>
-<translation></translation>
-</phrase>
-
-<phrase>
-<original>Applying final red-eye corrections (%1 of %2)</original>
-<translation></translation>
-</phrase>
-
-<!-- Adjustments_Photo_RedEye.frm contains 13 phrases. 2 were duplicates of existing phrases, so only 11 new phrases were written to file. -->
-
-<!-- END text for Adjustments_Photo_RedEye.frm-->
-
-<!-- BEGIN text for pdRedEye.cls -->
-
-<!-- pdRedEye.cls contains 0 phrases. -->
-
-<!-- END text for pdRedEye.cls-->
-
-<!-- BEGIN text for VB_Hacks.bas -->
-
-<!-- VB_Hacks.bas contains 0 phrases. -->
-
-<!-- END text for VB_Hacks.bas-->
+<!-- END text for IControlThemable.cls-->
 
 <!-- Automatic text extraction complete. -->
 
-<phrasecount>2519</phrasecount>
+<phrasecount>2517</phrasecount>
 
-<!-- As of this build, PhotoDemon contains 4321 phrases. -->
-<!-- 1802 are duplicates, so only 2519 unique phrases have been written to file. -->
-<!-- These 2519 phrases contain approximately 13431 total words. -->
+<!-- As of this build, PhotoDemon contains 4320 phrases. -->
+<!-- 1803 are duplicates, so only 2517 unique phrases have been written to file. -->
+<!-- These 2517 phrases contain approximately 13403 total words. -->
 
 </pdData>

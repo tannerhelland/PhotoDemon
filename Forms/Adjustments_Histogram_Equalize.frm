@@ -38,24 +38,14 @@ Begin VB.Form FormEqualize
       GradientColorRight=   1703935
    End
    Begin PhotoDemon.buttonStrip btsTarget 
-      Height          =   615
-      Left            =   6120
-      TabIndex        =   2
-      Top             =   1200
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   1085
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   375
-      Index           =   0
+      Height          =   1095
       Left            =   5880
-      Top             =   840
+      TabIndex        =   2
+      Top             =   720
       Width           =   6015
       _ExtentX        =   10610
-      _ExtentY        =   661
+      _ExtentY        =   1931
       Caption         =   "target histogram"
-      FontSize        =   12
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -78,43 +68,24 @@ Begin VB.Form FormEqualize
       _ExtentY        =   9922
    End
    Begin PhotoDemon.buttonStrip btsMode 
-      Height          =   615
-      Left            =   6120
-      TabIndex        =   3
-      Top             =   2400
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   1085
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   375
-      Index           =   1
+      Height          =   1095
       Left            =   5880
-      Top             =   2040
+      TabIndex        =   3
+      Top             =   1920
       Width           =   6015
       _ExtentX        =   10610
-      _ExtentY        =   661
+      _ExtentY        =   1931
       Caption         =   "mode"
-      FontSize        =   12
    End
    Begin PhotoDemon.buttonStrip btsKernelShape 
-      Height          =   615
-      Left            =   6120
-      TabIndex        =   5
-      Top             =   3600
-      Width           =   5775
-      _ExtentX        =   10186
-      _ExtentY        =   1085
-   End
-   Begin PhotoDemon.pdLabel lblShape 
-      Height          =   375
+      Height          =   1095
       Left            =   5880
-      Top             =   3240
-      Width           =   5895
-      _ExtentX        =   10398
-      _ExtentY        =   661
+      TabIndex        =   5
+      Top             =   3120
+      Width           =   6015
+      _ExtentX        =   10610
+      _ExtentY        =   1931
       Caption         =   "kernel shape"
-      FontSize        =   12
    End
 End
 Attribute VB_Name = "FormEqualize"
@@ -589,7 +560,6 @@ End Sub
 
 Private Sub UpdateRadiusVisibility()
     sltRadius.Visible = CBool(btsMode.ListIndex = 1)
-    lblShape.Visible = CBool(btsMode.ListIndex = 1)
     btsKernelShape.Visible = CBool(btsMode.ListIndex = 1)
 End Sub
 
@@ -598,5 +568,5 @@ Private Sub UpdatePreview()
 End Sub
 
 Private Function GetLocalParamString() As String
-    GetLocalParamString = buildParamList("target", btsTarget.ListIndex, "mode", btsMode.ListIndex, "kernelShape", btsKernelShape.ListIndex, "radius", sltRadius.Value)
+    GetLocalParamString = BuildParamList("target", btsTarget.ListIndex, "mode", btsMode.ListIndex, "kernelShape", btsKernelShape.ListIndex, "radius", sltRadius.Value)
 End Function

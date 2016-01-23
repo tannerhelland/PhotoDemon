@@ -24,14 +24,24 @@ Begin VB.Form FormThemeEditor
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   884
    ShowInTaskbar   =   0   'False
-   Begin PhotoDemon.buttonStrip btsToggleTest 
+   Begin PhotoDemon.buttonStrip btsTest 
       Height          =   615
       Left            =   120
+      TabIndex        =   1
+      Top             =   1800
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   1085
+   End
+   Begin PhotoDemon.buttonStrip btsToggleTest 
+      Height          =   975
+      Left            =   120
       TabIndex        =   0
-      Top             =   600
-      Width           =   4575
-      _ExtentX        =   8070
-      _ExtentY        =   873
+      Top             =   120
+      Width           =   5655
+      _ExtentX        =   9975
+      _ExtentY        =   1720
+      Caption         =   "toggle theme (this dialog only):"
    End
    Begin PhotoDemon.pdLabel lblExplanation 
       Height          =   855
@@ -46,13 +56,13 @@ Begin VB.Form FormThemeEditor
    End
    Begin PhotoDemon.pdLabel pdLabelTitle 
       Height          =   285
-      Index           =   0
+      Index           =   1
       Left            =   120
-      Top             =   120
+      Top             =   1440
       Width           =   4455
       _ExtentX        =   7858
       _ExtentY        =   503
-      Caption         =   "Toggle theme (for testing purposes only!):"
+      Caption         =   "random control assortment:"
       FontSize        =   12
    End
 End
@@ -77,7 +87,16 @@ Private Sub btsToggleTest_Click(ByVal buttonIndex As Long)
 End Sub
 
 Private Sub Form_Load()
+    
     btsToggleTest.AddItem "Light theme", 0
     btsToggleTest.AddItem "Dark theme", 1
+    
+    Dim i As Long
+    
+    For i = 0 To 4
+        btsTest.AddItem "Button " & CStr(i + 1)
+    Next i
+    
     Interface.ApplyThemeAndTranslations Me
+    
 End Sub

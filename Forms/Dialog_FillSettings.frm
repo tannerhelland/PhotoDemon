@@ -31,13 +31,13 @@ Begin VB.Form dialog_FillSettings
       BackColor       =   &H00FFFFFF&
       ForeColor       =   &H00000000&
       Height          =   615
-      Left            =   120
+      Left            =   300
       ScaleHeight     =   39
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   799
+      ScaleWidth      =   787
       TabIndex        =   2
       Top             =   480
-      Width           =   12015
+      Width           =   11835
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -54,29 +54,19 @@ Begin VB.Form dialog_FillSettings
       dontResetAutomatically=   -1  'True
    End
    Begin PhotoDemon.buttonStrip btsStyle 
-      Height          =   615
+      Height          =   1050
       Left            =   120
       TabIndex        =   0
-      Top             =   1560
+      Top             =   1140
       Width           =   12015
       _ExtentX        =   21193
-      _ExtentY        =   1085
-      FontSize        =   12
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   315
-      Index           =   0
-      Left            =   120
-      Top             =   1200
-      Width           =   9375
-      _ExtentX        =   16536
-      _ExtentY        =   556
+      _ExtentY        =   1852
       Caption         =   "fill style"
       FontSize        =   12
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   315
-      Index           =   1
+      Index           =   0
       Left            =   120
       Top             =   120
       Width           =   9375
@@ -102,7 +92,7 @@ Begin VB.Form dialog_FillSettings
    End
    Begin PhotoDemon.pdLabel lblTitle 
       Height          =   315
-      Index           =   6
+      Index           =   5
       Left            =   6120
       Top             =   2400
       Width           =   6015
@@ -136,7 +126,7 @@ Begin VB.Form dialog_FillSettings
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
-         Index           =   4
+         Index           =   3
          Left            =   0
          Top             =   0
          Width           =   9375
@@ -147,7 +137,7 @@ Begin VB.Form dialog_FillSettings
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   8
+         Index           =   7
          Left            =   0
          Top             =   600
          Width           =   5565
@@ -183,7 +173,7 @@ Begin VB.Form dialog_FillSettings
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
-         Index           =   3
+         Index           =   2
          Left            =   0
          Top             =   0
          Width           =   5655
@@ -194,7 +184,7 @@ Begin VB.Form dialog_FillSettings
       End
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   285
-         Index           =   7
+         Index           =   6
          Left            =   0
          Top             =   525
          Width           =   5565
@@ -274,7 +264,7 @@ Begin VB.Form dialog_FillSettings
       Width           =   5775
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
-         Index           =   2
+         Index           =   1
          Left            =   0
          Top             =   0
          Width           =   9375
@@ -311,7 +301,7 @@ Begin VB.Form dialog_FillSettings
       Width           =   5775
       Begin PhotoDemon.pdLabel lblTitle 
          Height          =   315
-         Index           =   5
+         Index           =   4
          Left            =   0
          Top             =   0
          Width           =   9375

@@ -24,13 +24,14 @@ Begin VB.Form FormZoomBlur
    ScaleWidth      =   802
    ShowInTaskbar   =   0   'False
    Begin PhotoDemon.buttonStrip btsStyle 
-      Height          =   615
-      Left            =   6180
+      Height          =   1095
+      Left            =   6000
       TabIndex        =   3
-      Top             =   2160
-      Width           =   5610
-      _ExtentX        =   9895
-      _ExtentY        =   1085
+      Top             =   1680
+      Width           =   5850
+      _ExtentX        =   10319
+      _ExtentY        =   1931
+      Caption         =   "style"
    End
    Begin PhotoDemon.commandBar cmdBar 
       Align           =   2  'Align Bottom
@@ -64,18 +65,6 @@ Begin VB.Form FormZoomBlur
       Caption         =   "distance"
       Min             =   -200
       Max             =   200
-   End
-   Begin PhotoDemon.pdLabel lblTitle 
-      Height          =   285
-      Index           =   0
-      Left            =   6000
-      Top             =   1800
-      Width           =   5880
-      _ExtentX        =   0
-      _ExtentY        =   0
-      Caption         =   "style"
-      FontSize        =   12
-      ForeColor       =   4210752
    End
 End
 Attribute VB_Name = "FormZoomBlur"
